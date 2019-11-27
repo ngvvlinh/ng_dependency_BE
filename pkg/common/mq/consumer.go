@@ -56,10 +56,11 @@ func NewSingleConsumer(brokers []string, config *sarama.Config, group string) (*
 }
 
 // Consume ...
-func (c *SingleConsumer) Consume(topic string, partition int32) (Consumer, error) {
-	pom, err := c.om.ManagePartition(topic, partition)
+func (c *SingleConsumer) Consume(topic string, partition int) (Consumer, error) {
+	_partition := int32(partition)
+	pom, err := c.om.ManagePartition(topic, _partition)
 	if err != nil {
-		ll.Error("Cannot retrieve partition offset manager for this topic", l.String("topic", topic), l.Int32("partition", partition), l.Error(err))
+		ll.Error("Cannot retrieve partition offset manager for this topic", l.String("topic", topic), l.Int("partition", partition), l.Error(err))
 		return nil, err
 	}
 
@@ -67,18 +68,18 @@ func (c *SingleConsumer) Consume(topic string, partition int32) (Consumer, error
 
 	retry := 0
 retry:
-	pConsumer, err := c.consumer.ConsumePartition(topic, partition, nx)
+	pConsumer, err := c.consumer.ConsumePartition(topic, _partition, nx)
 	if err != nil {
-		ll.Error("Unable to init partition consumer", l.String("topic", topic), l.Int32("partition", partition), l.Error(err))
+		ll.Error("Unable to init partition consumer", l.String("topic", topic), l.Int32("partition", _partition), l.Error(err))
 		if err == sarama.ErrOffsetOutOfRange && retry < 1 {
-			ll.Info("Retry: Start consuming from the newest offset", l.String("topic", topic), l.Int32("partition", partition))
+			ll.Info("Retry: Start consuming from the newest offset", l.String("topic", topic), l.Int32("partition", _partition))
 			nx = sarama.OffsetNewest
 			retry++
 			goto retry
 		}
 		return nil, err
 	}
-	ll.Info("Start kafka consumer", l.Int64("offset", nx), l.String("topic", topic), l.Int32("partition", partition))
+	ll.Info("Start kafka consumer", l.Int64("offset", nx), l.String("topic", topic), l.Int32("partition", _partition))
 
 	return &kafkaConsumer{
 		PartitionConsumer: pConsumer,
@@ -108,7 +109,7 @@ type kafkaConsumer struct {
 	pom sarama.PartitionOffsetManager
 
 	topic     string
-	partition int32
+	partition int
 }
 
 func (c *kafkaConsumer) Ack(msg *sarama.ConsumerMessage) {
@@ -133,13 +134,13 @@ func (c *kafkaConsumer) ConsumeAndHandle(ctx context.Context, handler EventHandl
 
 		case err := <-c.Errors():
 			if err != nil {
-				ll.Error("Received Kafka error", l.Object("ConsumerError", err), l.String("topic", c.topic), l.Int32("partition", c.partition))
+				ll.Error("Received Kafka error", l.Object("ConsumerError", err), l.String("topic", c.topic), l.Int("partition", c.partition))
 				// TODO: Send to bot
 			}
 
 		case msg := <-c.Messages():
 			if msg == nil {
-				ll.Warn("Received nil message (the channel has been closed)", l.String("topic", c.topic), l.Int32("partition", c.partition))
+				ll.Warn("Received nil message (the channel has been closed)", l.String("topic", c.topic), l.Int("partition", c.partition))
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}

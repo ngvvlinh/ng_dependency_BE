@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type Source int32
+type Source int
 
 const (
 	Source_unknown  Source = 0
@@ -17,7 +17,7 @@ const (
 	Source_ts_app   Source = 8
 )
 
-var Source_name = map[int32]string{
+var Source_name = map[int]string{
 	0: "unknown",
 	1: "self",
 	2: "import",
@@ -28,7 +28,7 @@ var Source_name = map[int32]string{
 	8: "ts_app",
 }
 
-var Source_value = map[string]int32{
+var Source_value = map[string]int{
 	"unknown":  0,
 	"self":     1,
 	"import":   2,
@@ -46,7 +46,7 @@ func (x Source) Enum() *Source {
 }
 
 func (x Source) String() string {
-	return jsonx.EnumName(Source_name, int32(x))
+	return jsonx.EnumName(Source_name, int(x))
 }
 
 func (x *Source) UnmarshalJSON(data []byte) error {

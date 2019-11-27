@@ -11,7 +11,7 @@ type ShopCarrier struct {
 	ShopID    dot.ID
 	FullName  string
 	Note      string
-	Status    int32
+	Status    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

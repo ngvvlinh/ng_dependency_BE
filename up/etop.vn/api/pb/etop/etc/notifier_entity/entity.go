@@ -12,7 +12,7 @@ func (s *NotifierEntity) ToModel() string {
 	if s == nil {
 		return ""
 	}
-	return NotifierEntity_name[int32(*s)]
+	return NotifierEntity_name[int(*s)]
 }
 
 func (x NotifierEntity) MarshalJSON() ([]byte, error) {

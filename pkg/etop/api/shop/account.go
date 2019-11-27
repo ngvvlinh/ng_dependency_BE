@@ -148,7 +148,7 @@ func (s *AccountService) SetDefaultAddress(ctx context.Context, q *SetDefaultAdd
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
+		Updated: int(cmd.Result.Updated),
 	}
 
 	return nil

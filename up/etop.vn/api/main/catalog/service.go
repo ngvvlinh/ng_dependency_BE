@@ -70,7 +70,7 @@ type Aggregate interface {
 
 	UpdateBrandInfo(context.Context, *UpdateBrandArgs) (*ShopBrand, error)
 
-	DeleteShopBrand(ctx context.Context, ids []dot.ID, shopId dot.ID) (int32, error)
+	DeleteShopBrand(ctx context.Context, ids []dot.ID, shopId dot.ID) (int, error)
 
 	// -- variant_supplier -- //
 
@@ -147,31 +147,31 @@ type GetShopVariantByIDQueryArgs struct {
 
 type ShopProductsResponse struct {
 	Products []*ShopProduct
-	Count    int32
+	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopCategoriesResponse struct {
 	Categories []*ShopCategory
-	Count      int32
+	Count      int
 	Paging     meta.PageInfo
 }
 
 type ShopProductsWithVariantsResponse struct {
 	Products []*ShopProductWithVariants
-	Count    int32
+	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopVariantsResponse struct {
 	Variants []*ShopVariant
-	Count    int32
+	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopVariantsWithProductResponse struct {
 	Variants []*ShopVariantWithProduct
-	Count    int32
+	Count    int
 	Paging   meta.PageInfo
 }
 
@@ -187,7 +187,7 @@ type GetShopCollectionArgs struct {
 
 type ShopCollectionsResponse struct {
 	Collections []*ShopCollection
-	Count       int32
+	Count       int
 	Paging      meta.PageInfo
 }
 
@@ -227,9 +227,9 @@ type UpdateShopProductInfoArgs struct {
 	ShortDesc   NullString
 	Description NullString
 	DescHTML    NullString
-	CostPrice   NullInt32
-	ListPrice   NullInt32
-	RetailPrice NullInt32
+	CostPrice   NullInt
+	ListPrice   NullInt
+	RetailPrice NullInt
 	BrandID     NullID
 	ProductType ProductType
 	CategoryID  dot.ID
@@ -296,9 +296,9 @@ type UpdateShopVariantInfoArgs struct {
 	ShortDesc    NullString
 	Descripttion NullString
 	DescHTML     NullString
-	CostPrice    NullInt32
-	ListPrice    NullInt32
-	RetailPrice  NullInt32
+	CostPrice    NullInt
+	ListPrice    NullInt
+	RetailPrice  NullInt
 }
 
 type UpdateStatusArgs struct {
@@ -377,7 +377,7 @@ type ShopBrand struct {
 type ListBrandsResult struct {
 	ShopBrands []*ShopBrand
 	PageInfo   meta.PageInfo
-	Total      int32
+	Total      int
 }
 
 type GetVariantsBySupplierIDResponse struct {

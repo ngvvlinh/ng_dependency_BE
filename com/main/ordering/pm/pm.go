@@ -119,7 +119,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int32(model.S3Positive),
+		Status:  int(model.S3Positive),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err
@@ -268,7 +268,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int32(etop.S3Positive),
+		Status:  int(etop.S3Positive),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err

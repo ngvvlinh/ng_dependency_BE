@@ -27,7 +27,7 @@ type Address struct {
 }
 
 type ShippingRate struct {
-	ServiceID       int32     `json:"service_id"` // use int32
+	ServiceID       int       `json:"service_id"` // use int
 	ServiceName     string    `json:"service_name"`
 	ServiceCode     string    `json:"service_code"`
 	Currency        string    `json:"currency"`

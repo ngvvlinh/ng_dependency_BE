@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type Status int32
+type Status int
 
 const (
 	Status_Z Status = 0
@@ -12,13 +12,13 @@ const (
 	Status_N Status = 127
 )
 
-var Status_name = map[int32]string{
+var Status_name = map[int]string{
 	0:   "Z",
 	1:   "P",
 	127: "N",
 }
 
-var Status_value = map[string]int32{
+var Status_value = map[string]int{
 	"Z": 0,
 	"P": 1,
 	"N": 127,
@@ -31,7 +31,7 @@ func (x Status) Enum() *Status {
 }
 
 func (x Status) String() string {
-	return jsonx.EnumName(Status_name, int32(x))
+	return jsonx.EnumName(Status_name, int(x))
 }
 
 func (x *Status) UnmarshalJSON(data []byte) error {

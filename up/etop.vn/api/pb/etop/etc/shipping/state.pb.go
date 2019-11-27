@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type State int32
+type State int
 
 const (
 	State_default       State = 0
@@ -22,7 +22,7 @@ const (
 	State_cancelled     State = 127
 )
 
-var State_name = map[int32]string{
+var State_name = map[int]string{
 	0:   "default",
 	1:   "created",
 	2:   "confirmed",
@@ -38,7 +38,7 @@ var State_name = map[int32]string{
 	127: "cancelled",
 }
 
-var State_value = map[string]int32{
+var State_value = map[string]int{
 	"default":       0,
 	"created":       1,
 	"confirmed":     2,
@@ -61,7 +61,7 @@ func (x State) Enum() *State {
 }
 
 func (x State) String() string {
-	return jsonx.EnumName(State_name, int32(x))
+	return jsonx.EnumName(State_name, int(x))
 }
 
 func (x *State) UnmarshalJSON(data []byte) error {

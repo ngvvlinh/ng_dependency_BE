@@ -103,7 +103,7 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 	feelines := []*shippingtypes.FeeLine{
 		{
 			ShippingFeeType:     shippingtypes.FeeLineTypeMain,
-			Cost:                int32(response.Order.TotalFee),
+			Cost:                int(response.Order.TotalFee),
 			ExternalServiceName: "",
 			ExternalServiceType: "",
 		},
@@ -323,14 +323,14 @@ func toShipnowService(sfResp *client.CalcShippingFeeResponse, service *AhamoveSh
 		Carrier:     carriertypes.Ahamove,
 		Name:        service.Name,
 		Code:        providerServiceID,
-		Fee:         int32(sfResp.TotalPrice),
+		Fee:         int(sfResp.TotalPrice),
 		Description: service.Description,
 	}
 	// BIKE/POOL: discount, total_fee, total_pay
 	// SAMEDAY: partner_discount, partner_fee, partner_pay
 	// Ahamove đang fix, sau này sẽ dùng total_fee hết
 	if strings.Contains(service.Code, string(SAMEDAY)) {
-		res.Fee = int32(sfResp.PartnerFee)
+		res.Fee = int(sfResp.PartnerFee)
 	}
 
 	// Avoid fee == 0

@@ -176,10 +176,10 @@ type UpdateFulfillmentRequest struct {
 	Id                       dot.ID          `json:"id"`
 	FullName                 string          `json:"full_name"`
 	Phone                    string          `json:"phone"`
-	TotalCodAmount           *int32          `json:"total_cod_amount"`
+	TotalCodAmount           *int            `json:"total_cod_amount"`
 	IsPartialDelivery        bool            `json:"is_partial_delivery"`
 	AdminNote                string          `json:"admin_note"`
-	ActualCompensationAmount int32           `json:"actual_compensation_amount"`
+	ActualCompensationAmount int             `json:"actual_compensation_amount"`
 	ShippingState            *shipping.State `json:"shipping_state"`
 }
 
@@ -282,8 +282,8 @@ func (m *CreateNotificationsRequest) Reset()         { *m = CreateNotificationsR
 func (m *CreateNotificationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateNotificationsResponse struct {
-	Created int32 `json:"created"`
-	Errored int32 `json:"errored"`
+	Created int `json:"created"`
+	Errored int `json:"errored"`
 }
 
 func (m *CreateNotificationsResponse) Reset()         { *m = CreateNotificationsResponse{} }

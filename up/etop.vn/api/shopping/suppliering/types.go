@@ -15,13 +15,13 @@ type ShopSupplier struct {
 	FullName          string
 	Phone             string
 	Code              string
-	CodeNorm          int32
+	CodeNorm          int
 	Email             string
 	CompanyName       string
 	TaxNumber         string
 	HeadquaterAddress string
 	Note              string
-	Status            int32
+	Status            int
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }

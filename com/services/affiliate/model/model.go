@@ -13,7 +13,7 @@ var _ = sqlgenCommissionSetting(&CommissionSetting{})
 type CommissionSetting struct {
 	ProductID dot.ID
 	AccountID dot.ID
-	Amount    int32
+	Amount    int
 	Unit      string
 	Type      string
 	CreatedAt time.Time `sq:"create"`
@@ -26,7 +26,7 @@ type ProductPromotion struct {
 	ID          dot.ID
 	ProductID   dot.ID
 	ShopID      dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Code        string
 	Description string
@@ -47,13 +47,13 @@ type SellerCommission struct {
 	ShopID       dot.ID
 	SupplyID     dot.ID
 	OrderId      dot.ID
-	Amount       int32
+	Amount       int
 	Description  string
 	Note         string
 	Type         string
 	Status       int
-	OValue       int32
-	OBaseValue   int32
+	OValue       int
+	OBaseValue   int
 	ValidAt      time.Time
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
@@ -69,16 +69,16 @@ type OrderCreatedNotify struct {
 	ShopID                   dot.ID
 	SupplyID                 dot.ID
 	ReferralCode             string
-	PromotionSnapshotStatus  int32
+	PromotionSnapshotStatus  int
 	PromotionSnapshotErr     string
-	CommissionSnapshotStatus int32
+	CommissionSnapshotStatus int
 	CommissionSnapshotErr    string
-	CashbackProcessStatus    int32
+	CashbackProcessStatus    int
 	CashbackProcessErr       string
-	CommissionProcessStatus  int32
+	CommissionProcessStatus  int
 	CommissionProcessErr     string
-	PaymentStatus            int32
-	Status                   int32
+	PaymentStatus            int
+	Status                   int
 	CompletedAt              time.Time
 	CreatedAt                time.Time `sq:"create"`
 	UpdatedAt                time.Time `sq:"update"`
@@ -114,12 +114,12 @@ var _ = sqlgenSupplyCommissionSetting(&SupplyCommissionSetting{})
 type SupplyCommissionSetting struct {
 	ShopID                   dot.ID
 	ProductID                dot.ID
-	Level1DirectCommission   int32
-	Level1IndirectCommission int32
-	Level2DirectCommission   int32
-	Level2IndirectCommission int32
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
 	DependOn                 string
-	Level1LimitCount         int32
+	Level1LimitCount         int
 	Level1LimitDuration      int64
 	MLevel1LimitDuration     *DurationJSON
 	LifetimeDuration         int64
@@ -131,7 +131,7 @@ type SupplyCommissionSetting struct {
 }
 
 type DurationJSON struct {
-	Duration int32  `json:"duration"`
+	Duration int    `json:"duration"`
 	Type     string `json:"type"`
 }
 
@@ -141,9 +141,9 @@ type OrderPromotion struct {
 	ID                   dot.ID
 	ProductID            dot.ID
 	OrderID              dot.ID
-	ProductQuantity      int32
-	BaseValue            int32
-	Amount               int32
+	ProductQuantity      int
+	BaseValue            int
+	Amount               int
 	Unit                 string
 	Type                 string
 	OrderCreatedNotifyID dot.ID
@@ -159,13 +159,13 @@ type OrderCommissionSetting struct {
 	OrderID                  dot.ID
 	SupplyID                 dot.ID
 	ProductID                dot.ID
-	ProductQuantity          int32
-	Level1DirectCommission   int32
-	Level1IndirectCommission int32
-	Level2DirectCommission   int32
-	Level2IndirectCommission int32
+	ProductQuantity          int
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
 	DependOn                 string
-	Level1LimitCount         int32
+	Level1LimitCount         int
 	Level1LimitDuration      int64
 	LifetimeDuration         int64
 	Group                    string
@@ -180,7 +180,7 @@ type ShopCashback struct {
 	ID                   dot.ID
 	ShopID               dot.ID
 	OrderID              dot.ID
-	Amount               int32
+	Amount               int
 	OrderCreatedNotifyID dot.ID
 	Description          string
 	Status               int8
@@ -198,7 +198,7 @@ type ShopOrderProductHistory struct {
 	SupplyID              dot.ID
 	ProductID             dot.ID
 	CustomerPolicyGroupID dot.ID
-	ProductQuantity       int32
+	ProductQuantity       int
 	CreatedAt             time.Time `sq:"create"`
 	UpdatedAt             time.Time `sq:"update"`
 }

@@ -260,7 +260,7 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.ShopID),
 		core.String(m.Code),
-		core.Int32(m.CodeNorm),
+		core.Int(m.CodeNorm),
 		core.String(m.FullName),
 		core.String(m.Gender),
 		core.String(m.Type),
@@ -268,7 +268,7 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Note),
 		core.String(m.Phone),
 		core.String(m.Email),
-		core.Int32(m.Status),
+		core.Int(m.Status),
 		core.String(m.FullNameNorm),
 		core.String(m.PhoneNorm),
 		core.Now(m.CreatedAt, now, create),
@@ -282,7 +282,7 @@ func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ShopID),
 		(*core.String)(&m.Code),
-		(*core.Int32)(&m.CodeNorm),
+		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.Gender),
 		(*core.String)(&m.Type),
@@ -290,7 +290,7 @@ func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Note),
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Email),
-		(*core.Int32)(&m.Status),
+		(*core.Int)(&m.Status),
 		(*core.String)(&m.FullNameNorm),
 		(*core.String)(&m.PhoneNorm),
 		(*core.Time)(&m.CreatedAt),
@@ -659,7 +659,7 @@ func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
-		core.Int32(m.Status),
+		core.Int(m.Status),
 	}
 }
 
@@ -681,7 +681,7 @@ func (m *ShopTraderAddress) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
-		(*core.Int32)(&m.Status),
+		(*core.Int)(&m.Status),
 	}
 }
 
@@ -878,7 +878,7 @@ func (m *ShopTraderAddress) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int32(m.Status))
+		w.WriteArg(int(m.Status))
 	}
 	if !flag {
 		return core.ErrNoColumn

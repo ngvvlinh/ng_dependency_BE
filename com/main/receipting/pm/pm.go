@@ -94,7 +94,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		ShopID:  event.ShopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int32(etopmodel.S3Positive),
+		Status:  int(etopmodel.S3Positive),
 	}
 	if err := m.receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
 		return err
@@ -156,7 +156,7 @@ func (m *ProcessManager) createPayment(
 			Title:       "Thanh toán phí vận chuyển Topship",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipting.ReceiptTypePayment,
-			Status:      int32(etopmodel.S3Positive),
+			Status:      int(etopmodel.S3Positive),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
 			RefType:     receipting.ReceiptRefTypeFulfillment,
@@ -198,7 +198,7 @@ func createReceipts(
 			Title:       "Thanh toán đơn hàng",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipting.ReceiptTypeReceipt,
-			Status:      int32(etopmodel.S3Positive),
+			Status:      int(etopmodel.S3Positive),
 			Amount:      value - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
 			RefIDs:      []dot.ID{key},

@@ -83,16 +83,16 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		Discounts:       nil,
 		TotalItems:      r.TotalItems,
 		BasketValue:     r.BasketValue,
-		TotalWeight:     cmapi.BareInt32(shipping.ChargeableWeight),
+		TotalWeight:     cmapi.BareInt(shipping.ChargeableWeight),
 		OrderDiscount:   r.OrderDiscount,
-		TotalFee:        cmapi.BareInt32(r.TotalFee),
+		TotalFee:        cmapi.BareInt(r.TotalFee),
 		FeeLines:        r.FeeLines,
 		TotalDiscount:   &r.TotalDiscount,
 		TotalAmount:     r.TotalAmount,
 		OrderNote:       r.OrderNote,
 		ShippingNote:    cmapi.BareString(shipping.ShippingNote),
 		ShopShippingFee: 0, // deprecated
-		ShopCod:         cmapi.BareInt32(shipping.CodAmount),
+		ShopCod:         cmapi.BareInt(shipping.CodAmount),
 		ReferenceUrl:    "",
 		ShopShipping:    nil, // deprecated
 		Shipping: &pborder.OrderShipping{
@@ -105,7 +105,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 			ReturnAddress:       convertpb.OrderAddressToPbOrder(shipping.ReturnAddress),
 			ShippingServiceName: "", // TODO: be filled when confirm
 			ShippingServiceCode: cmapi.BareString(shipping.ShippingServiceCode),
-			ShippingServiceFee:  cmapi.BareInt32(shipping.ShippingServiceFee),
+			ShippingServiceFee:  cmapi.BareInt(shipping.ShippingServiceFee),
 			ShippingProvider:    0,
 			Carrier:             *shipping.Carrier,
 			IncludeInsurance:    *shipping.IncludeInsurance,

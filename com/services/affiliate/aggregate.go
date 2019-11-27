@@ -470,7 +470,7 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	supplyCommissionSetting := &model.SupplyCommissionSetting{
 		ShopID:                   args.ShopID,
 		ProductID:                args.ProductID,
-		Level1DirectCommission:   int32(args.Level1DirectCommission),
+		Level1DirectCommission:   int(args.Level1DirectCommission),
 		Level1IndirectCommission: args.Level1IndirectCommission,
 		Level2DirectCommission:   args.Level2DirectCommission,
 		Level2IndirectCommission: args.Level2IndirectCommission,
@@ -478,12 +478,12 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		Level1LimitCount:         args.Level1LimitCount,
 		Level1LimitDuration:      level1LimitDuration,
 		MLevel1LimitDuration: &model.DurationJSON{
-			Duration: int32(args.Level1LimitDuration),
+			Duration: int(args.Level1LimitDuration),
 			Type:     args.Level1LimitDurationType,
 		},
 		LifetimeDuration: lifetimeDuration,
 		MLifetimeDuration: &model.DurationJSON{
-			Duration: int32(args.LifetimeDuration),
+			Duration: int(args.LifetimeDuration),
 			Type:     args.LifetimeDurationType,
 		},
 		CustomerPolicyGroupID: customerPolicyGroupID,
@@ -528,7 +528,7 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID dot
 				ID:                   cm.NewID(),
 				ProductID:            line.ProductId,
 				OrderID:              getOrderQ.Result.ID,
-				BaseValue:            int32(basePrice),
+				BaseValue:            int(basePrice),
 				Amount:               tradingPromotion.Amount,
 				Unit:                 tradingPromotion.Unit,
 				Type:                 tradingPromotion.Type,
@@ -559,7 +559,7 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID dot
 			ProductID:            line.ProductId,
 			OrderID:              getOrderQ.Result.ID,
 			ProductQuantity:      line.Quantity,
-			BaseValue:            int32(basePrice),
+			BaseValue:            int(basePrice),
 			Amount:               sellerCashback.Amount,
 			Unit:                 sellerCashback.Unit,
 			Type:                 "cashback",
@@ -657,7 +657,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 		// process cashback for shop
 		var shopCashbacks []*model.ShopCashback
 		shopCashbackMap := map[dot.ID]*model.ShopCashback{}
-		sellerPromotionByProductID := map[dot.ID]int32{}
+		sellerPromotionByProductID := map[dot.ID]int{}
 		for _, promotion := range orderPromotions {
 			var cashback = float64(0)
 			if promotion.Type != "cashback" {
@@ -678,7 +678,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			}
 
 			if promotion.Src == "seller" {
-				sellerCashback := int32(cashback)
+				sellerCashback := int(cashback)
 				if promotion.Unit == "vnd" {
 					sellerCashback = sellerCashback * promotion.ProductQuantity
 				}
@@ -691,7 +691,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			}
 
 			if shopCashbackMap[productQ.ProductID] != nil {
-				shopCashbackMap[productQ.ProductID].Amount = shopCashbackMap[productQ.ProductID].Amount + int32(cashback)
+				shopCashbackMap[productQ.ProductID].Amount = shopCashbackMap[productQ.ProductID].Amount + int(cashback)
 			} else {
 				now := time.Now()
 				valid := now.Add(time.Hour * 24 * 3)
@@ -699,7 +699,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 					ID:                   cm.NewID(),
 					ShopID:               getOrderQ.Result.TradingShopID,
 					OrderID:              getOrderQ.Result.ID,
-					Amount:               int32(cashback),
+					Amount:               int(cashback),
 					OrderCreatedNotifyID: orderCreatedNotifyID,
 					Description:          "Hoàn tiền khi mua sản phẩm " + productQ.Result.Name + " từ eTop Trading",
 					Status:               0,
@@ -785,13 +785,13 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 				OrderId:      getOrderQ.Result.ID,
 				ShopID:       getOrderQ.Result.TradingShopID,
 				SupplyID:     getOrderQ.Result.ShopID,
-				Amount:       int32(directCommissionValue),
+				Amount:       int(directCommissionValue),
 				Description:  "",
 				Note:         "",
 				Type:         "direct",
 				Status:       0,
-				OValue:       int32(directCommission),
-				OBaseValue:   int32(basePrice),
+				OValue:       int(directCommission),
+				OBaseValue:   int(basePrice),
 				ValidAt:      time.Now().Add(time.Hour * 24 * 10),
 				CreatedAt:    time.Now(),
 				UpdatedAt:    time.Now(),
@@ -809,13 +809,13 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 					OrderId:      getOrderQ.Result.ID,
 					ShopID:       getOrderQ.Result.TradingShopID,
 					SupplyID:     getOrderQ.Result.ShopID,
-					Amount:       int32(indirectCommissionValue),
+					Amount:       int(indirectCommissionValue),
 					Description:  "",
 					Note:         "",
 					Type:         "indirect",
 					Status:       0,
-					OValue:       int32(indirectCommission),
-					OBaseValue:   int32(basePrice),
+					OValue:       int(indirectCommission),
+					OBaseValue:   int(basePrice),
 					ValidAt:      time.Now().Add(time.Hour * 24 * 10),
 					CreatedAt:    time.Now(),
 					UpdatedAt:    time.Now(),

@@ -30,5 +30,5 @@ func ShippingStateToModel(s *shipping.State) model.ShippingState {
 	if s == nil {
 		return ""
 	}
-	return model.ShippingState(shipping.State_name[int32(*s)])
+	return model.ShippingState(shipping.State_name[int(*s)])
 }

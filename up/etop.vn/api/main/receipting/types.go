@@ -31,12 +31,12 @@ type Receipt struct {
 	ShopID      dot.ID
 	TraderID    dot.ID
 	Code        string
-	CodeNorm    int32
+	CodeNorm    int
 	Title       string
 	Type        ReceiptType
 	Description string
 	Amount      int
-	Status      int32
+	Status      int
 	LedgerID    dot.ID
 	RefIDs      []dot.ID
 	RefType     ReceiptRefType

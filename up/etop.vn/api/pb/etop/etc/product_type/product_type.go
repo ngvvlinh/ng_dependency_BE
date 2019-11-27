@@ -6,7 +6,7 @@ func (s *ProductType) ToProductType() catalog.ProductType {
 	if s == nil || *s == 0 {
 		return ""
 	}
-	return catalog.ProductType(ProductType_name[int32(*s)])
+	return catalog.ProductType(ProductType_name[int(*s)])
 }
 
 func PbProductType(s string) *ProductType {

@@ -53,7 +53,7 @@ func (h AggregateHandler) HandleCreateAffiliateReferralCode(ctx context.Context,
 type CreateOrUpdateCommissionSettingCommand struct {
 	ProductID   dot.ID
 	AccountID   dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Type        string
 	Description string
@@ -70,15 +70,15 @@ func (h AggregateHandler) HandleCreateOrUpdateCommissionSetting(ctx context.Cont
 type CreateOrUpdateSupplyCommissionSettingCommand struct {
 	ShopID                   dot.ID
 	ProductID                dot.ID
-	Level1DirectCommission   int32
-	Level1IndirectCommission int32
-	Level2DirectCommission   int32
-	Level2IndirectCommission int32
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
 	DependOn                 string
-	Level1LimitCount         int32
-	Level1LimitDuration      int32
+	Level1LimitCount         int
+	Level1LimitDuration      int
 	Level1LimitDurationType  string
-	LifetimeDuration         int32
+	LifetimeDuration         int
 	LifetimeDurationType     string
 	Group                    string
 
@@ -106,7 +106,7 @@ func (h AggregateHandler) HandleCreateOrUpdateUserReferral(ctx context.Context, 
 type CreateProductPromotionCommand struct {
 	ShopID      dot.ID
 	ProductID   dot.ID
-	Amount      int32
+	Amount      int
 	Code        string
 	Description string
 	Unit        string
@@ -160,7 +160,7 @@ func (h AggregateHandler) HandleTradingOrderCreating(ctx context.Context, msg *T
 
 type UpdateProductPromotionCommand struct {
 	ID          dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Code        string
 	Description string

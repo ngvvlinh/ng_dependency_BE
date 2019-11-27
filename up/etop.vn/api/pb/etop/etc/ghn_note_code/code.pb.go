@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type GHNNoteCode int32
+type GHNNoteCode int
 
 const (
 	GHNNoteCode_unknown            GHNNoteCode = 0
@@ -13,14 +13,14 @@ const (
 	GHNNoteCode_KHONGCHOXEMHANG    GHNNoteCode = 3
 )
 
-var GHNNoteCode_name = map[int32]string{
+var GHNNoteCode_name = map[int]string{
 	0: "unknown",
 	1: "CHOTHUHANG",
 	2: "CHOXEMHANGKHONGTHU",
 	3: "KHONGCHOXEMHANG",
 }
 
-var GHNNoteCode_value = map[string]int32{
+var GHNNoteCode_value = map[string]int{
 	"unknown":            0,
 	"CHOTHUHANG":         1,
 	"CHOXEMHANGKHONGTHU": 2,
@@ -34,7 +34,7 @@ func (x GHNNoteCode) Enum() *GHNNoteCode {
 }
 
 func (x GHNNoteCode) String() string {
-	return jsonx.EnumName(GHNNoteCode_name, int32(x))
+	return jsonx.EnumName(GHNNoteCode_name, int(x))
 }
 
 func (x *GHNNoteCode) UnmarshalJSON(data []byte) error {

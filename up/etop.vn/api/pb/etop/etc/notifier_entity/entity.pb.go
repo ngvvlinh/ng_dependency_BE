@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type NotifierEntity int32
+type NotifierEntity int
 
 const (
 	NotifierEntity_unknown                    NotifierEntity = 0
@@ -12,13 +12,13 @@ const (
 	NotifierEntity_money_transaction_shipping NotifierEntity = 2
 )
 
-var NotifierEntity_name = map[int32]string{
+var NotifierEntity_name = map[int]string{
 	0: "unknown",
 	1: "fulfillment",
 	2: "money_transaction_shipping",
 }
 
-var NotifierEntity_value = map[string]int32{
+var NotifierEntity_value = map[string]int{
 	"unknown":                    0,
 	"fulfillment":                1,
 	"money_transaction_shipping": 2,
@@ -31,7 +31,7 @@ func (x NotifierEntity) Enum() *NotifierEntity {
 }
 
 func (x NotifierEntity) String() string {
-	return jsonx.EnumName(NotifierEntity_name, int32(x))
+	return jsonx.EnumName(NotifierEntity_name, int(x))
 }
 
 func (x *NotifierEntity) UnmarshalJSON(data []byte) error {

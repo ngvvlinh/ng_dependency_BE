@@ -141,7 +141,7 @@ type DeliveryPointRequest struct {
 	Lng            float32 `json:"lng"`
 	Mobile         string  `json:"mobile"`
 	Name           string  `json:"name"`
-	COD            int32   `json:"cod"`
+	COD            int     `json:"cod"`
 	TrackingNumber string  `json:"tracking_number"`
 	Remarks        string  `json:"remarks"`
 	SenderName     string  `json:"sender_name"`

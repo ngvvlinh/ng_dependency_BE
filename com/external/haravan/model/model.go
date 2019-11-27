@@ -24,7 +24,7 @@ type ShippingRate struct {
 	ServiceName     string
 	ServiceCode     string
 	Currency        string
-	TotalPrice      int32
+	TotalPrice      int
 	PhoneRequired   bool
 	MinDeliveryDate time.Time
 	MaxDeliveryDate time.Time

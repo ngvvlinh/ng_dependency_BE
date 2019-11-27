@@ -219,7 +219,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	action.Msg = fmt.Sprintf("Nhập số điện thoại hoặc email để kết nối với %v", partner.PublicName)
 	resp := &pbintegration.LoginResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
 		Actions:     []*pbintegration.Action{action},
 		AuthPartner: convertpb.PbPublicAccountInfo(partner),
 		RedirectUrl: info.RedirectURL,
@@ -529,7 +529,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		}
 		r.Result = &pbintegration.LoginResponse{
 			AccessToken:       tokenCmd.Result.TokenStr,
-			ExpiresIn:         int32(tokenCmd.Result.ExpiresIn),
+			ExpiresIn:         int(tokenCmd.Result.ExpiresIn),
 			User:              nil,
 			Account:           nil,
 			Shop:              nil,
@@ -611,7 +611,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 
 				availAcc.ExternalId = rel.ExternalSubjectID
 				availAcc.AccessToken = tokenCmd.Result.TokenStr
-				availAcc.ExpiresIn = int32(tokenCmd.Result.ExpiresIn)
+				availAcc.ExpiresIn = int(tokenCmd.Result.ExpiresIn)
 				break
 			}
 		}
@@ -661,7 +661,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 
 	r.Result = &pbintegration.LoginResponse{
 		AccessToken:       userTokenCmd.Result.TokenStr,
-		ExpiresIn:         int32(userTokenCmd.Result.ExpiresIn),
+		ExpiresIn:         int(userTokenCmd.Result.ExpiresIn),
 		User:              convertpb.PbPartnerUserInfo(userQuery.Result.User),
 		Account:           nil,
 		Shop:              nil,
@@ -798,7 +798,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	r.Result = &pbintegration.RegisterResponse{
 		User:        convertpb.PbUser(user),
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
 	}
 	return nil
 }
@@ -882,7 +882,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 
 	r.Result = &pbintegration.GrantAccessResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
 	}
 	return nil
 }
@@ -912,7 +912,7 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*pbintegration.Action) *pbintegration.LoginResponse {
 	resp := &pbintegration.LoginResponse{
 		AccessToken:       accessToken,
-		ExpiresIn:         int32(expiresIn),
+		ExpiresIn:         int(expiresIn),
 		Account:           nil,
 		AvailableAccounts: nil,
 		User:              convertpb.PbPartnerUserInfo(user),
@@ -927,7 +927,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 			Name:        shop.Name,
 			Type:        convertpb.PbAccountType(model.TypeShop),
 			AccessToken: accessToken,
-			ExpiresIn:   int32(expiresIn),
+			ExpiresIn:   int(expiresIn),
 			ImageUrl:    shop.ImageURL,
 		}
 		resp.Account = account

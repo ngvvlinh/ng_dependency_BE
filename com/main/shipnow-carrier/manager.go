@@ -143,7 +143,7 @@ func (ctrl *ShipnowManager) CheckShippingService(ffm *shipnow.ShipnowFulfillment
 	if service == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Gói dịch vụ đã chọn không hợp lệ")
 	}
-	if ffm.ShippingServiceFee != int32(service.Fee) {
+	if ffm.ShippingServiceFee != int(service.Fee) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số tiền phí giao hàng không hợp lệ cho dịch vụ %v: Phí trên đơn hàng %v, phí từ dịch vụ giao hàng: %v", service.Name, ffm.ShippingServiceFee, service.Fee)
 	}
 	return service, nil

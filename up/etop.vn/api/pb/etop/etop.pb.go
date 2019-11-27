@@ -11,7 +11,7 @@ import (
 )
 
 // Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
-type AccountType int32
+type AccountType int
 
 const (
 	AccountType_unknown   AccountType = 0
@@ -21,7 +21,7 @@ const (
 	AccountType_etop      AccountType = 101
 )
 
-var AccountType_name = map[int32]string{
+var AccountType_name = map[int]string{
 	0:   "unknown",
 	21:  "partner",
 	33:  "shop",
@@ -29,7 +29,7 @@ var AccountType_name = map[int32]string{
 	101: "etop",
 }
 
-var AccountType_value = map[string]int32{
+var AccountType_value = map[string]int{
 	"unknown":   0,
 	"partner":   21,
 	"shop":      33,
@@ -44,7 +44,7 @@ func (x AccountType) Enum() *AccountType {
 }
 
 func (x AccountType) String() string {
-	return jsonx.EnumName(AccountType_name, int32(x))
+	return jsonx.EnumName(AccountType_name, int(x))
 }
 
 func (x *AccountType) UnmarshalJSON(data []byte) error {
@@ -372,7 +372,7 @@ type LoginAccount struct {
 	// SwitchAccount with regenerate_tokens set to true.
 	AccessToken string `json:"access_token"`
 	// The same as access_token.
-	ExpiresIn   int32            `json:"expires_in"`
+	ExpiresIn   int              `json:"expires_in"`
 	ImageUrl    string           `json:"image_url"`
 	UrlSlug     string           `json:"url_slug"`
 	UserAccount *UserAccountInfo `json:"user_account"`
@@ -385,7 +385,7 @@ type LoginResponse struct {
 	// @required
 	AccessToken string `json:"access_token"`
 	// @required
-	ExpiresIn int32 `json:"expires_in"`
+	ExpiresIn int `json:"expires_in"`
 	// @required
 	User      *User         `json:"user"`
 	Account   *LoginAccount `json:"account"`
@@ -425,7 +425,7 @@ type AccessTokenResponse struct {
 	// @required
 	AccessToken string `json:"access_token"`
 	// @required
-	ExpiresIn int32 `json:"expires_in"`
+	ExpiresIn int `json:"expires_in"`
 	// @required
 	User            *User         `json:"user"`
 	Account         *LoginAccount `json:"account"`
@@ -943,7 +943,7 @@ type Device struct {
 	DeviceId          string   `json:"device_id"`
 	DeviceName        string   `json:"device_name"`
 	ExternalDeviceId  string   `json:"external_device_id"`
-	ExternalServiceId int32    `json:"external_service_id"`
+	ExternalServiceId int      `json:"external_service_id"`
 	AccountId         dot.ID   `json:"account_id"`
 	CreatedAt         dot.Time `json:"created_at"`
 	UpdatedAt         dot.Time `json:"updated_at"`

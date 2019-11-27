@@ -1173,8 +1173,7 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sort": {
           "type": "array",
@@ -1183,8 +1182,7 @@
           }
         },
         "total": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -1192,12 +1190,10 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "offset": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sort": {
           "type": "string"
@@ -1208,8 +1204,7 @@
       "type": "object",
       "properties": {
         "updated": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -1249,8 +1244,7 @@
           "$ref": "#/definitions/ocAffiliate"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shop": {
           "$ref": "#/definitions/ocShop"
@@ -1908,8 +1902,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "exported_fields": {
           "type": "array",
@@ -1978,8 +1971,7 @@
           }
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "invitation_accounts": {
           "type": "array",

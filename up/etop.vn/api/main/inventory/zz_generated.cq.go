@@ -117,7 +117,7 @@ type CreateInventoryVoucherCommand struct {
 	RefName     InventoryVoucherRefName
 	RefCode     string
 	TraderID    dot.ID
-	TotalAmount int32
+	TotalAmount int
 	Type        InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
@@ -170,7 +170,7 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByReference(ctx context.Co
 type UpdateInventoryVariantCostPriceCommand struct {
 	ShopID    dot.ID
 	VariantID dot.ID
-	CostPrice int32
+	CostPrice int
 
 	Result *InventoryVariant `json:"-"`
 }
@@ -186,7 +186,7 @@ type UpdateInventoryVoucherCommand struct {
 	Title       dot.NullString
 	UpdatedBy   dot.ID
 	TraderID    dot.NullID
-	TotalAmount int32
+	TotalAmount int
 	Note        dot.NullString
 	Lines       []*InventoryVoucherItem
 

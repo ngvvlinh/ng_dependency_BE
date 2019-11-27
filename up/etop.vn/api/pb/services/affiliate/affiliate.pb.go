@@ -29,13 +29,13 @@ func (m *UserReferral) String() string { return jsonx.MustMarshalToString(m) }
 
 type SellerCommission struct {
 	Id          dot.ID            `json:"id"`
-	Value       int32             `json:"value"`
+	Value       int               `json:"value"`
 	Description string            `json:"description"`
 	Note        string            `json:"note"`
 	Status      status4.Status    `json:"status"`
 	Type        string            `json:"type"`
-	OValue      int32             `json:"o_value"`
-	OBaseValue  int32             `json:"o_base_value"`
+	OValue      int               `json:"o_value"`
+	OBaseValue  int               `json:"o_base_value"`
 	Product     *shop.ShopProduct `json:"product"`
 	Order       *order.Order      `json:"order"`
 	FromSeller  *etop.Affiliate   `json:"from_seller"`
@@ -76,7 +76,7 @@ func (m *GetCouponsResponse) Reset()         { *m = GetCouponsResponse{} }
 func (m *GetCouponsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCouponRequest struct {
-	Value       int32   `json:"value"`
+	Value       int     `json:"value"`
 	Unit        *string `json:"unit"`
 	Description *string `json:"description"`
 	ProductId   dot.ID  `json:"product_id"`
@@ -88,7 +88,7 @@ func (m *CreateCouponRequest) String() string { return jsonx.MustMarshalToString
 type Coupon struct {
 	Id          dot.ID   `json:"id"`
 	Code        string   `json:"code"`
-	Value       int32    `json:"value"`
+	Value       int      `json:"value"`
 	Unit        string   `json:"unit"`
 	Description *string  `json:"description"`
 	UserId      dot.ID   `json:"user_id"`
@@ -117,7 +117,7 @@ func (m *Transaction) String() string { return jsonx.MustMarshalToString(m) }
 
 type CommissionSetting struct {
 	ProductId dot.ID   `json:"product_id"`
-	Amount    int32    `json:"amount"`
+	Amount    int      `json:"amount"`
 	Unit      string   `json:"unit"`
 	CreatedAt dot.Time `json:"created_at"`
 	UpdatedAt dot.Time `json:"updated_at"`
@@ -128,12 +128,12 @@ func (m *CommissionSetting) String() string { return jsonx.MustMarshalToString(m
 
 type SupplyCommissionSetting struct {
 	ProductId                dot.ID                                 `json:"product_id"`
-	Level1DirectCommission   int32                                  `json:"level1_direct_commission"`
-	Level1IndirectCommission int32                                  `json:"level1_indirect_commission"`
-	Level2DirectCommission   int32                                  `json:"level2_direct_commission"`
-	Level2IndirectCommission int32                                  `json:"level2_indirect_commission"`
+	Level1DirectCommission   int                                    `json:"level1_direct_commission"`
+	Level1IndirectCommission int                                    `json:"level1_indirect_commission"`
+	Level2DirectCommission   int                                    `json:"level2_direct_commission"`
+	Level2IndirectCommission int                                    `json:"level2_indirect_commission"`
 	DependOn                 string                                 `json:"depend_on"`
-	Level1LimitCount         int32                                  `json:"level1_limit_count"`
+	Level1LimitCount         int                                    `json:"level1_limit_count"`
 	MLifetimeDuration        *SupplyCommissionSettingDurationObject `json:"m_lifetime_duration"`
 	MLevel1LimitDuration     *SupplyCommissionSettingDurationObject `json:"m_level1_limit_duration"`
 	CreatedAt                dot.Time                               `json:"created_at"`
@@ -145,7 +145,7 @@ func (m *SupplyCommissionSetting) Reset()         { *m = SupplyCommissionSetting
 func (m *SupplyCommissionSetting) String() string { return jsonx.MustMarshalToString(m) }
 
 type SupplyCommissionSettingDurationObject struct {
-	Duration int32  `json:"duration"`
+	Duration int    `json:"duration"`
 	Type     string `json:"type"`
 }
 
@@ -196,7 +196,7 @@ func (m *GetCommissionSettingByProductIDsResponse) String() string {
 
 type CreateOrUpdateCommissionSettingRequest struct {
 	ProductId dot.ID  `json:"product_id"`
-	Amount    int32   `json:"amount"`
+	Amount    int     `json:"amount"`
 	Unit      *string `json:"unit"`
 }
 
@@ -207,19 +207,19 @@ func (m *CreateOrUpdateCommissionSettingRequest) String() string { return jsonx.
 
 type CreateOrUpdateTradingCommissionSettingRequest struct {
 	ProductId                dot.ID `json:"product_id"`
-	Level1DirectCommission   int32  `json:"level1_direct_commission"`
-	Level1IndirectCommission int32  `json:"level1_indirect_commission"`
-	Level2DirectCommission   int32  `json:"level2_direct_commission"`
-	Level2IndirectCommission int32  `json:"level2_indirect_commission"`
+	Level1DirectCommission   int    `json:"level1_direct_commission"`
+	Level1IndirectCommission int    `json:"level1_indirect_commission"`
+	Level2DirectCommission   int    `json:"level2_direct_commission"`
+	Level2IndirectCommission int    `json:"level2_indirect_commission"`
 	// product, customer
 	DependOn         string `json:"depend_on"`
-	Level1LimitCount int32  `json:"level1_limit_count"`
+	Level1LimitCount int    `json:"level1_limit_count"`
 	// day, month
 	Level1LimitDurationType string `json:"level1_limit_duration_type"`
-	Level1LimitDuration     int32  `json:"level1_limit_duration"`
+	Level1LimitDuration     int    `json:"level1_limit_duration"`
 	// day, month
 	LifetimeDurationType string `json:"lifetime_duration_type"`
-	LifetimeDuration     int32  `json:"lifetime_duration"`
+	LifetimeDuration     int    `json:"lifetime_duration"`
 	Group                string `json:"group"`
 }
 
@@ -234,7 +234,7 @@ type ProductPromotion struct {
 	Product   *shop.ShopProduct `json:"product"`
 	Id        dot.ID            `json:"id"`
 	ProductId dot.ID            `json:"product_id"`
-	Amount    int32             `json:"amount"`
+	Amount    int               `json:"amount"`
 	Unit      string            `json:"unit"`
 	Type      string            `json:"type"`
 }
@@ -245,7 +245,7 @@ func (m *ProductPromotion) String() string { return jsonx.MustMarshalToString(m)
 type CreateOrUpdateProductPromotionRequest struct {
 	Id          dot.ID `json:"id"`
 	ProductId   dot.ID `json:"product_id"`
-	Amount      int32  `json:"amount"`
+	Amount      int    `json:"amount"`
 	Unit        string `json:"unit"`
 	Code        string `json:"code"`
 	Description string `json:"description"`
@@ -396,9 +396,9 @@ type Referral struct {
 	Name            string   `json:"name"`
 	Phone           string   `json:"phone"`
 	Email           string   `json:"email"`
-	OrderCount      int32    `json:"order_count"`
-	TotalRevenue    int32    `json:"total_revenue"`
-	TotalCommission int32    `json:"total_commission"`
+	OrderCount      int      `json:"order_count"`
+	TotalRevenue    int      `json:"total_revenue"`
+	TotalCommission int      `json:"total_commission"`
 	CreatedAt       dot.Time `json:"created_at"`
 }
 

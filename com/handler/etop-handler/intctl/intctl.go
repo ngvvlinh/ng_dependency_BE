@@ -72,7 +72,7 @@ func (h *Handler) ConsumeAndHandle(ctx context.Context) {
 		wg.Add(1)
 		h.wg.Add(partition + 1) // single partition
 		go func() {
-			pc, err := h.consumer.Consume(kafkaTopic, int32(partition))
+			pc, err := h.consumer.Consume(kafkaTopic, int(partition))
 			if err != nil {
 				ll.S.Fatalf("Error while consuming topic: %v:%v", kafkaTopic, partition)
 				panic(err)

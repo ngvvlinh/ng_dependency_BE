@@ -209,8 +209,8 @@ func (h QueryServiceHandler) HandleGetContacts(ctx context.Context, msg *GetCont
 }
 
 type GetRecordLastTimeModifyQuery struct {
-	Offset int32
-	Limit  int32
+	Offset int
+	Limit  int
 	Sort   []string
 
 	Result *Contact `json:"-"`

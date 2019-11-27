@@ -29,7 +29,7 @@ type ShippingService struct {
 
 	Name string
 
-	Fee int32
+	Fee int
 
 	Carrier string
 
@@ -72,7 +72,7 @@ type Fulfillment struct {
 
 	Lines []*ItemLine
 
-	TotalItems int32
+	TotalItems int
 
 	WeightInfo
 
@@ -89,10 +89,10 @@ type ItemLine struct {
 	ImageURL    string
 	Attribute   []Attribute
 
-	Quantity     int32
-	ListPrice    int32
-	RetailPrice  int32
-	PaymentPrice int32
+	Quantity     int
+	ListPrice    int
+	RetailPrice  int
+	PaymentPrice int
 }
 
 type Attribute struct {
@@ -101,23 +101,23 @@ type Attribute struct {
 }
 
 type WeightInfo struct {
-	GrossWeight      int32
-	ChargeableWeight int32
-	Length           int32
-	Width            int32
-	Height           int32
+	GrossWeight      int
+	ChargeableWeight int
+	Length           int
+	Width            int
+	Height           int
 }
 
 type ValueInfo struct {
-	BasketValue      int32
-	CODAmount        int32
+	BasketValue      int
+	CODAmount        int
 	IncludeInsurance bool
 }
 
 type ExternalShipmentData struct {
 	State string
 
-	ShippingFee int32
+	ShippingFee int
 
 	// ShippingData
 

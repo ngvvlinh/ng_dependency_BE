@@ -97,7 +97,7 @@ func (s *QueryService) ListShopCategories(
 	}
 	return &catalog.ShopCategoriesResponse{
 		Categories: categories,
-		Count:      int32(count),
+		Count:      int(count),
 		Paging:     q.GetPaging(),
 	}, nil
 }
@@ -138,7 +138,7 @@ func (s *QueryService) ListShopProducts(
 	}
 	return &catalog.ShopProductsResponse{
 		Products: products,
-		Count:    int32(count),
+		Count:    int(count),
 		Paging:   q.GetPaging(),
 	}, nil
 }
@@ -172,7 +172,7 @@ func (s *QueryService) ListShopProductsWithVariants(
 	}
 	return &catalog.ShopProductsWithVariantsResponse{
 		Products: products,
-		Count:    int32(count),
+		Count:    int(count),
 		Paging:   q.GetPaging(),
 	}, nil
 }
@@ -193,7 +193,7 @@ func (s *QueryService) ListShopProductsByIDs(
 	}
 	return &catalog.ShopProductsResponse{
 		Products: products,
-		Count:    int32(len(products)),
+		Count:    int(len(products)),
 	}, nil
 }
 
@@ -207,7 +207,7 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 	}
 	return &catalog.ShopProductsWithVariantsResponse{
 		Products: products,
-		Count:    int32(len(products)),
+		Count:    int(len(products)),
 	}, nil
 }
 
@@ -221,7 +221,7 @@ func (s *QueryService) ListShopVariantsByIDs(
 	}
 	return &catalog.ShopVariantsResponse{
 		Variants: variants,
-		Count:    int32(len(variants)),
+		Count:    int(len(variants)),
 	}, nil
 }
 
@@ -235,7 +235,7 @@ func (s *QueryService) ListShopVariantsWithProductByIDs(
 	}
 	return &catalog.ShopVariantsWithProductResponse{
 		Variants: variants,
-		Count:    int32(len(variants)),
+		Count:    int(len(variants)),
 	}, nil
 }
 func (s *QueryService) GetShopCollection(
@@ -263,7 +263,7 @@ func (s *QueryService) ListShopCollections(
 	}
 	return &catalog.ShopCollectionsResponse{
 		Collections: collections,
-		Count:       int32(count),
+		Count:       int(count),
 		Paging:      q.GetPaging(),
 	}, nil
 }
@@ -328,7 +328,7 @@ func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopI
 	listBrandResult := &catalog.ListBrandsResult{
 		ShopBrands: result,
 		PageInfo:   query.GetPaging(),
-		Total:      int32(total),
+		Total:      int(total),
 	}
 	return listBrandResult, err
 }

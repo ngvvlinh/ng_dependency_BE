@@ -9,7 +9,7 @@ import (
 )
 
 type Foo struct {
-	Number int32          `protobuf:"varint,1,opt,name=number" json:"number"`
+	Number int            `protobuf:"varint,1,opt,name=number" json:"number"`
 	Object *RawJSONObject `protobuf:"bytes,2,opt,name=object,json=object" json:"object"`
 }
 

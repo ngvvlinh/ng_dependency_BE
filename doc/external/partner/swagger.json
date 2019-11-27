@@ -413,8 +413,7 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "since": {
           "type": "string"
@@ -554,8 +553,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "customer_address": {
           "$ref": "#/definitions/oyOrderAddress"
@@ -588,8 +586,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -601,20 +598,16 @@
           "$ref": "#/definitions/oyOrderAddress"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -668,16 +661,13 @@
       "type": "object",
       "properties": {
         "actual_cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "actual_shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cancel_reason": {
           "type": "string"
@@ -690,16 +680,14 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "closed_at": {
           "type": "string",
           "format": "date-time"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "confirm_status": {
           "$ref": "#/definitions/wwStatus"
@@ -752,8 +740,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -772,8 +759,7 @@
           "$ref": "#/definitions/wyStatus"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
@@ -814,31 +800,25 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "gross_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "height": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "length": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "pickup_address": {
           "$ref": "#/definitions/oyLocationAddress"
@@ -847,8 +827,7 @@
           "$ref": "#/definitions/oyLocationAddress"
         },
         "width": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -900,8 +879,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cancel_reason": {
           "type": "string"
@@ -963,8 +941,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -990,20 +967,16 @@
           "$ref": "#/definitions/wyStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -1091,12 +1064,10 @@
           "type": "string"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "payment_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "product_id": {
           "type": "string",
@@ -1106,12 +1077,10 @@
           "type": "string"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -1126,27 +1095,22 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "gross_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "height": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "length": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "pickup_address": {
           "$ref": "#/definitions/oyOrderAddress"
@@ -1161,8 +1125,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -1171,8 +1134,7 @@
           "$ref": "#/definitions/xdTryOnCode"
         },
         "width": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -1253,8 +1215,7 @@
           "format": "date-time"
         },
         "fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -1313,12 +1274,10 @@
           "type": "string"
         },
         "resp_status": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "retried": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sent_at": {
           "type": "string",
@@ -1367,8 +1326,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "code": {
           "type": "string"
@@ -1432,8 +1390,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "msg": {
           "type": "string"

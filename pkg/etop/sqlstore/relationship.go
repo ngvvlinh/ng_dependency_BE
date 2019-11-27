@@ -118,7 +118,7 @@ func GetAccountUserExtendeds(ctx context.Context, query *model.GetAccountUserExt
 		if err != nil {
 			return nil
 		}
-		query.Result.Total = int32(total)
+		query.Result.Total = int(total)
 	}
 	return nil
 }

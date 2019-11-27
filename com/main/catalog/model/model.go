@@ -77,9 +77,9 @@ type ShopVariant struct {
 	Note        string
 	Tags        []string
 
-	CostPrice   int32
-	ListPrice   int32
-	RetailPrice int32
+	CostPrice   int
+	ListPrice   int
+	RetailPrice int
 
 	Status     model.Status3
 	Attributes ProductAttributes
@@ -118,9 +118,9 @@ type ShopProduct struct {
 	Unit        string
 	CategoryID  dot.ID
 
-	CostPrice   int32
-	ListPrice   int32
-	RetailPrice int32
+	CostPrice   int
+	ListPrice   int
+	RetailPrice int
 	BrandID     dot.ID
 
 	Status model.Status3

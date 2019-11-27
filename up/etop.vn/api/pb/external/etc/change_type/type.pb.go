@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type ChangeType int32
+type ChangeType int
 
 const (
 	ChangeType_unknown ChangeType = 0
@@ -13,14 +13,14 @@ const (
 	ChangeType_delete  ChangeType = 3
 )
 
-var ChangeType_name = map[int32]string{
+var ChangeType_name = map[int]string{
 	0: "unknown",
 	1: "update",
 	2: "create",
 	3: "delete",
 }
 
-var ChangeType_value = map[string]int32{
+var ChangeType_value = map[string]int{
 	"unknown": 0,
 	"update":  1,
 	"create":  2,
@@ -34,7 +34,7 @@ func (x ChangeType) Enum() *ChangeType {
 }
 
 func (x ChangeType) String() string {
-	return jsonx.EnumName(ChangeType_name, int32(x))
+	return jsonx.EnumName(ChangeType_name, int(x))
 }
 
 func (x *ChangeType) UnmarshalJSON(data []byte) error {

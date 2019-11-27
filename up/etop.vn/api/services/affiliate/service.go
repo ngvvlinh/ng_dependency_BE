@@ -24,7 +24,7 @@ type Aggregate interface {
 type CreateCommissionSettingArgs struct {
 	ProductID   dot.ID
 	AccountID   dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Type        string
 	Description string
@@ -34,15 +34,15 @@ type CreateCommissionSettingArgs struct {
 type CreateOrUpdateSupplyCommissionSettingArgs struct {
 	ShopID                   dot.ID
 	ProductID                dot.ID
-	Level1DirectCommission   int32
-	Level1IndirectCommission int32
-	Level2DirectCommission   int32
-	Level2IndirectCommission int32
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
 	DependOn                 string
-	Level1LimitCount         int32
-	Level1LimitDuration      int32
+	Level1LimitCount         int
+	Level1LimitDuration      int
 	Level1LimitDurationType  string
-	LifetimeDuration         int32
+	LifetimeDuration         int
 	LifetimeDurationType     string
 	Group                    string
 }
@@ -50,7 +50,7 @@ type CreateOrUpdateSupplyCommissionSettingArgs struct {
 type CreateProductPromotionArgs struct {
 	ShopID      dot.ID
 	ProductID   dot.ID
-	Amount      int32
+	Amount      int
 	Code        string
 	Description string
 	Unit        string
@@ -60,7 +60,7 @@ type CreateProductPromotionArgs struct {
 
 type UpdateProductPromotionArgs struct {
 	ID          dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Code        string
 	Description string
@@ -121,7 +121,7 @@ type ListShopProductPromotionsArgs struct {
 
 type ListShopProductPromotionsResponse struct {
 	Promotions []*ProductPromotion
-	Count      int32
+	Count      int
 	Paging     meta.PageInfo
 }
 

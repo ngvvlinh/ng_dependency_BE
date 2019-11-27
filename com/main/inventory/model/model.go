@@ -14,9 +14,9 @@ var _ = sqlgenInventoryVariant(&InventoryVariant{})
 type InventoryVariant struct {
 	ShopID         dot.ID
 	VariantID      dot.ID
-	QuantityOnHand int32
-	QuantityPicked int32
-	CostPrice      int32
+	QuantityOnHand int
+	QuantityPicked int
+	CostPrice      int
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -30,12 +30,12 @@ type InventoryVoucher struct {
 	CreatedBy    dot.ID
 	UpdatedBy    dot.ID
 	Code         string
-	CodeNorm     int32
+	CodeNorm     int
 	Status       etop.Status3
 	Note         string
 	TraderID     dot.ID
 	Trader       *Trader
-	TotalAmount  int32
+	TotalAmount  int
 	Type         string
 	Lines        []*InventoryVoucherItem
 	VariantIDs   []dot.ID
@@ -57,8 +57,8 @@ type InventoryVoucherItem struct {
 	VariantID   dot.ID `json:"variant_id"`
 	VariantName string `json:"variant_name"`
 
-	Price    int32 `json:"price"`
-	Quantity int32 `json:"quantity"`
+	Price    int `json:"price"`
+	Quantity int `json:"quantity"`
 
 	Code       string       `json:"code"`
 	ImageURL   string       `json:"image_url"`

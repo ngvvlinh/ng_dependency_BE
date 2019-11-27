@@ -144,7 +144,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		Id:                   ffm.Id,
 		ShippingState:        shippingState,
 		ShippingStatus:       shipnowtypes.StateToStatus5(shippingState),
-		TotalFee:             int32(orderMsg.TotalFee),
+		TotalFee:             int(orderMsg.TotalFee),
 		ShippingPickingAt:    shipnowTimestamp.ShippingPickingAt,
 		ShippingDeliveringAt: shipnowTimestamp.ShippingDeliveringAt,
 		ShippingDeliveredAt:  shipnowTimestamp.ShippingDeliveredAt,

@@ -2,7 +2,7 @@ package location
 
 const CountryVietnam = "Việt Nam"
 
-type VietnamRegion int32
+type VietnamRegion int
 
 const (
 	North  VietnamRegion = 1
@@ -10,7 +10,7 @@ const (
 	South  VietnamRegion = 3
 )
 
-type UrbanType int32
+type UrbanType int
 
 const (
 	Unknown   UrbanType = 0
@@ -45,7 +45,7 @@ func (a UrbanType) Name() string {
 	}
 }
 
-type LocationCodeType int32
+type LocationCodeType int
 
 const (
 	LocCodeTypeInternal LocationCodeType = 0
@@ -78,7 +78,7 @@ type Ward struct {
 
 type Extra struct {
 	Special     bool
-	GhnId       int32
-	VtpostId    int32
+	GhnId       int
+	VtpostId    int
 	HaravanCode string
 }

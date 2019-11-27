@@ -18,7 +18,7 @@ type ShopLedger struct {
 	BankAccount *model.BankAccount
 	Note        string
 	Type        string
-	Status      int32
+	Status      int
 	CreatedBy   dot.ID
 	CreatedAt   time.Time `sq:"create"`
 	UpdatedAt   time.Time `sq:"update"`

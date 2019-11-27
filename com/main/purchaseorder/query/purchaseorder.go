@@ -162,7 +162,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int32(count),
+		Count:          int(count),
 	}, nil
 }
 
@@ -206,7 +206,7 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int32(count),
+		Count:          int(count),
 	}, nil
 }
 
@@ -221,7 +221,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 		ShopID:  shopID,
 		RefIDs:  purchaseOrderIDs,
 		RefType: receipting.ReceiptRefTypePurchaseOrder,
-		Status:  int32(model.S3Positive),
+		Status:  int(model.S3Positive),
 	}
 	if err := q.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err
@@ -258,6 +258,6 @@ func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
 	}
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int32(count),
+		Count:          int(count),
 	}, nil
 }

@@ -31,7 +31,7 @@ type QueryService interface {
 
 type CarriersResponse struct {
 	Carriers []*ShopCarrier
-	Count    int32
+	Count    int
 	Paging   meta.PageInfo
 }
 

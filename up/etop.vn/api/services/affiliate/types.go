@@ -9,7 +9,7 @@ import (
 
 type CommissionSetting struct {
 	ProductID dot.ID
-	Amount    int32
+	Amount    int
 	Unit      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -18,7 +18,7 @@ type CommissionSetting struct {
 type ProductPromotion struct {
 	ID          dot.ID
 	ProductID   dot.ID
-	Amount      int32
+	Amount      int
 	Unit        string
 	Code        string
 	Description string
@@ -36,13 +36,13 @@ type SellerCommission struct {
 	OrderID      dot.ID
 	ShopID       dot.ID
 	SupplyID     dot.ID
-	Amount       int32
+	Amount       int
 	Description  string
 	Note         string
 	Type         string
 	Status       int
-	OValue       int32
-	OBaseValue   int32
+	OValue       int
+	OBaseValue   int
 	ValidAt      time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
@@ -72,12 +72,12 @@ type UserReferral struct {
 type SupplyCommissionSetting struct {
 	ShopID                   dot.ID
 	ProductID                dot.ID
-	Level1DirectCommission   int32
-	Level1IndirectCommission int32
-	Level2DirectCommission   int32
-	Level2IndirectCommission int32
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
 	DependOn                 string
-	Level1LimitCount         int32
+	Level1LimitCount         int
 	Level1LimitDuration      int64
 	MLevel1LimitDuration     *Duration
 	LifetimeDuration         int64
@@ -89,7 +89,7 @@ type SupplyCommissionSetting struct {
 
 type Duration struct {
 	Type     string
-	Duration int32
+	Duration int
 }
 
 type OrderPaymentSuccessEvent struct {

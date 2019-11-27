@@ -9,7 +9,7 @@ func ShippingProviderToModel(s *shipping_provider.ShippingProvider) model.Shippi
 	if s == nil || *s == 0 {
 		return ""
 	}
-	return model.ShippingProvider(shipping_provider.ShippingProvider_name[int32(*s)])
+	return model.ShippingProvider(shipping_provider.ShippingProvider_name[int(*s)])
 }
 
 func PbShippingProviderType(sp model.ShippingProvider) shipping_provider.ShippingProvider {

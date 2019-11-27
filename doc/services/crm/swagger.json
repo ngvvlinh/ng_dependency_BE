@@ -400,12 +400,10 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "offset": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sort": {
           "type": "string"
@@ -425,8 +423,7 @@
       "type": "object",
       "properties": {
         "updated": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -655,8 +652,7 @@
           "type": "string"
         },
         "count": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -1205,12 +1201,10 @@
           "type": "string"
         },
         "direction": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "duration": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "etop_account_id": {
           "type": "string",
@@ -1226,8 +1220,7 @@
           "type": "string"
         },
         "record_file_size": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "recording_path": {
           "type": "string"

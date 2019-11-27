@@ -125,7 +125,7 @@ func (s *PurchaseOrderStore) ConfirmPurchaseOrder() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("purchase_order").UpdateMap(map[string]interface{}{
-		"status":       int32(etop.S5Positive),
+		"status":       int(etop.S5Positive),
 		"confirmed_at": time.Now(),
 	})
 
@@ -136,7 +136,7 @@ func (s *PurchaseOrderStore) CancelPurchaseOrder(reason string) (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("purchase_order").UpdateMap(map[string]interface{}{
-		"status":           int32(etop.S3Negative),
+		"status":           int(etop.S3Negative),
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})

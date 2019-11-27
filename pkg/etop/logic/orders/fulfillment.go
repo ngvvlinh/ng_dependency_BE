@@ -275,11 +275,11 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 		if line.VariantID != 0 {
 			_line := &ordertypes.ItemLine{
 				OrderId:    line.OrderID,
-				Quantity:   int32(line.Quantity),
+				Quantity:   int(line.Quantity),
 				ProductId:  line.ProductID,
 				VariantId:  line.VariantID,
 				IsOutside:  line.IsOutsideEtop,
-				TotalPrice: int32(line.TotalLineAmount),
+				TotalPrice: int(line.TotalLineAmount),
 			}
 			orderLines = append(orderLines, _line)
 		}

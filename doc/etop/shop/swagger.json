@@ -4947,8 +4947,7 @@
       "type": "object",
       "properties": {
         "deleted": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -5033,8 +5032,7 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sort": {
           "type": "array",
@@ -5043,8 +5041,7 @@
           }
         },
         "total": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -5052,12 +5049,10 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "offset": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "sort": {
           "type": "string"
@@ -5077,8 +5072,7 @@
       "type": "object",
       "properties": {
         "removed": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -5086,8 +5080,7 @@
       "type": "object",
       "properties": {
         "updated": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -5339,8 +5332,7 @@
           "type": "string"
         },
         "external_service_id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "id": {
           "type": "string",
@@ -5783,8 +5775,7 @@
           "type": "string"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "meta_fields": {
           "type": "array",
@@ -5793,19 +5784,16 @@
           }
         },
         "payment_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "product_name": {
           "type": "string"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -5817,8 +5805,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
@@ -5870,8 +5857,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -5904,38 +5890,31 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "shop_cod": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shop_shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
         "shop_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "source": {
           "$ref": "#/definitions/gjSource"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -5966,8 +5945,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -6005,8 +5983,7 @@
       "type": "object",
       "properties": {
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
@@ -6062,8 +6039,7 @@
           "type": "string"
         },
         "fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -6072,8 +6048,7 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -6081,8 +6056,7 @@
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "address_from": {
           "$ref": "#/definitions/ocAddress"
@@ -6091,8 +6065,7 @@
           "$ref": "#/definitions/ocAddress"
         },
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cancel_reason": {
           "type": "string"
@@ -6105,16 +6078,14 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "closed_at": {
           "type": "string",
           "format": "date-time"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_etop_transfered_at": {
           "type": "string",
@@ -6136,8 +6107,7 @@
           "format": "date-time"
         },
         "etop_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
@@ -6213,12 +6183,10 @@
           "type": "string"
         },
         "shipping_fee_customer": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_fee_shop": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_fee_shop_lines": {
           "type": "array",
@@ -6240,8 +6208,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -6263,20 +6230,16 @@
           "$ref": "#/definitions/wyStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
@@ -6301,8 +6264,7 @@
           "format": "date-time"
         },
         "x_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "x_shipping_id": {
           "type": "string"
@@ -6374,19 +6336,16 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "from_district": {
           "type": "string"
@@ -6401,19 +6360,16 @@
           "type": "string"
         },
         "gross_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "height": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "length": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "provider": {
           "$ref": "#/definitions/whShippingProvider"
@@ -6431,20 +6387,16 @@
           "type": "string"
         },
         "total_cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "width": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -6594,8 +6546,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
@@ -6710,8 +6661,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -6749,15 +6699,13 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_note": {
           "type": "string"
         },
         "shop_cod": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shop_id": {
           "type": "string",
@@ -6770,8 +6718,7 @@
           "$ref": "#/definitions/vmOrderShipping"
         },
         "shop_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "source": {
           "$ref": "#/definitions/gjSource"
@@ -6780,24 +6727,19 @@
           "$ref": "#/definitions/wyStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -6906,8 +6848,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "code": {
           "type": "string"
@@ -6921,8 +6862,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "code": {
           "type": "string"
@@ -6960,8 +6900,7 @@
           "type": "boolean"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "meta_fields": {
           "type": "array",
@@ -6974,8 +6913,7 @@
           "format": "int64"
         },
         "payment_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "product_id": {
           "type": "string",
@@ -6985,16 +6923,13 @@
           "type": "string"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -7023,12 +6958,10 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "exported_fields": {
           "type": "array",
@@ -7037,19 +6970,16 @@
           }
         },
         "gross_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "height": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "length": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
@@ -7070,8 +7000,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -7080,12 +7009,10 @@
           "$ref": "#/definitions/xdTryOnCode"
         },
         "weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "width": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "x_service_id": {
           "type": "string"
@@ -7094,8 +7021,7 @@
           "type": "string"
         },
         "x_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -7261,8 +7187,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -7313,8 +7238,7 @@
       "type": "object",
       "properties": {
         "cost": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "external_payment_channel_id": {
           "type": "string"
@@ -7349,8 +7273,7 @@
           "type": "string"
         },
         "fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -7361,8 +7284,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
@@ -7392,8 +7314,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -7411,20 +7332,16 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -7432,15 +7349,13 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "customer": {
           "$ref": "#/definitions/vmOrderCustomer"
@@ -7469,8 +7384,7 @@
           }
         },
         "order_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "order_note": {
           "type": "string"
@@ -7488,31 +7402,25 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "shop_cod": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shop_shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
         "shop_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -7547,8 +7455,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -7556,12 +7463,10 @@
       "type": "object",
       "properties": {
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
@@ -7572,24 +7477,19 @@
       "type": "object",
       "properties": {
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "gross_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "height": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "length": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "width": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -7597,8 +7497,7 @@
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "address_from": {
           "$ref": "#/definitions/ocAddress"
@@ -7607,8 +7506,7 @@
           "$ref": "#/definitions/ocAddress"
         },
         "basket_value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cancel_reason": {
           "type": "string"
@@ -7621,16 +7519,14 @@
           "$ref": "#/definitions/whShippingProvider"
         },
         "chargeable_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "closed_at": {
           "type": "string",
           "format": "date-time"
         },
         "cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "cod_etop_transfered_at": {
           "type": "string",
@@ -7652,8 +7548,7 @@
           "format": "date-time"
         },
         "etop_discount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
@@ -7729,12 +7624,10 @@
           "type": "string"
         },
         "shipping_fee_customer": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_fee_shop": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_fee_shop_lines": {
           "type": "array",
@@ -7756,8 +7649,7 @@
           "type": "string"
         },
         "shipping_service_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shipping_service_name": {
           "type": "string"
@@ -7779,20 +7671,16 @@
           "$ref": "#/definitions/wyStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_cod_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_items": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "total_weight": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
@@ -7817,8 +7705,7 @@
           "format": "date-time"
         },
         "x_shipping_fee": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "x_shipping_id": {
           "type": "string"
@@ -8057,8 +7944,7 @@
       "type": "object",
       "properties": {
         "balance": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -8489,8 +8375,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -8505,8 +8390,7 @@
           }
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "meta_fields": {
           "type": "array",
@@ -8524,8 +8408,7 @@
           "$ref": "#/definitions/tuProductType"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -8616,8 +8499,7 @@
           "type": "string"
         },
         "total_quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -8660,8 +8542,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -8676,8 +8557,7 @@
           }
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -8690,8 +8570,7 @@
           "format": "int64"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -8874,8 +8753,7 @@
           "type": "integer"
         },
         "total_orders": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -8897,8 +8775,7 @@
       "type": "object",
       "properties": {
         "count": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -8915,8 +8792,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -8931,8 +8807,7 @@
           }
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -8949,20 +8824,16 @@
           "format": "int64"
         },
         "quantity_available": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_reserved": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -8995,8 +8866,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -9015,8 +8885,7 @@
           }
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -9046,8 +8915,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -9066,8 +8934,7 @@
           }
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -9208,8 +9075,7 @@
           "format": "date-time"
         },
         "external_carrier_service_id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "external_connected_carrier_service_at": {
           "type": "string",
@@ -9261,8 +9127,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -9780,8 +9645,7 @@
           "type": "string"
         },
         "value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -9789,24 +9653,20 @@
       "type": "object",
       "properties": {
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "created_at": {
           "type": "string",
           "format": "date-time"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_picked": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "shop_id": {
           "type": "string",
@@ -9826,20 +9686,16 @@
       "type": "object",
       "properties": {
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "quantity_picked": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -9905,8 +9761,7 @@
           "type": "string"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "trader": {
           "$ref": "#/definitions/zkTrader"
@@ -9944,8 +9799,7 @@
           "type": "string"
         },
         "price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "product_id": {
           "type": "string",
@@ -9955,8 +9809,7 @@
           "type": "string"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -10041,8 +9894,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "code": {
           "type": "string"
@@ -10065,8 +9917,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc": {
           "type": "string"
@@ -10221,10 +10072,9 @@
           "type": "string"
         },
         "payment_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
-        "product_idint32": {
+        "product_idint": {
           "type": "string",
           "format": "int64"
         },
@@ -10232,8 +10082,7 @@
           "type": "string"
         },
         "quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -10695,8 +10544,7 @@
           "type": "boolean"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "meta_fields": {
           "type": "array",
@@ -10718,8 +10566,7 @@
           "$ref": "#/definitions/tuProductType"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -10818,8 +10665,7 @@
           "type": "boolean"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -10831,8 +10677,7 @@
           "$ref": "#/definitions/zkShopShortProduct"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -10914,8 +10759,7 @@
           "$ref": "#/definitions/wwStatus"
         },
         "total_quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -10940,19 +10784,16 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "image_url": {
           "type": "string"
         },
         "new_quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "old_quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "product_id": {
           "type": "string",
@@ -11018,8 +10859,7 @@
       "type": "object",
       "properties": {
         "indent": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "label": {
           "type": "string"
@@ -11051,8 +10891,7 @@
           "type": "string"
         },
         "value": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -11376,8 +11215,7 @@
       "type": "object",
       "properties": {
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "variant_id": {
           "type": "string",
@@ -11413,8 +11251,7 @@
           "type": "string"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "trader_id": {
           "type": "string",
@@ -11538,8 +11375,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -11552,8 +11388,7 @@
           "format": "int64"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "meta_fields": {
           "$ref": "#/definitions/maMetaField"
@@ -11568,8 +11403,7 @@
           "$ref": "#/definitions/tuProductType"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"
@@ -11614,8 +11448,7 @@
       "type": "object",
       "properties": {
         "updated": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -11819,8 +11652,7 @@
           "type": "string"
         },
         "total_quantity": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -11912,8 +11744,7 @@
           "type": "string"
         },
         "cost_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "desc_html": {
           "type": "string"
@@ -11926,8 +11757,7 @@
           "format": "int64"
         },
         "list_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -11936,8 +11766,7 @@
           "type": "string"
         },
         "retail_price": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "short_desc": {
           "type": "string"

@@ -16,7 +16,7 @@ func (m *InitRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LoginResponse struct {
 	AccessToken       string                     `json:"access_token"`
-	ExpiresIn         int32                      `json:"expires_in"`
+	ExpiresIn         int                        `json:"expires_in"`
 	User              *PartnerUserLogin          `json:"user"`
 	Account           *PartnerShopLoginAccount   `json:"account"`
 	Shop              *PartnerShopInfo           `json:"shop"`
@@ -67,7 +67,7 @@ type PartnerShopLoginAccount struct {
 	// SwitchAccount with regenerate_tokens set to true.
 	AccessToken string `json:"access_token"`
 	// The same as access_token.
-	ExpiresIn int32  `json:"expires_in"`
+	ExpiresIn int    `json:"expires_in"`
 	ImageUrl  string `json:"image_url"`
 }
 
@@ -136,7 +136,7 @@ func (m *RegisterRequest) String() string { return jsonx.MustMarshalToString(m) 
 type RegisterResponse struct {
 	User        *etop.User `json:"user"`
 	AccessToken string     `json:"access_token"`
-	ExpiresIn   int32      `json:"expires_in"`
+	ExpiresIn   int        `json:"expires_in"`
 }
 
 func (m *RegisterResponse) Reset()         { *m = RegisterResponse{} }
@@ -151,7 +151,7 @@ func (m *GrantAccessRequest) String() string { return jsonx.MustMarshalToString(
 
 type GrantAccessResponse struct {
 	AccessToken string `json:"access_token"`
-	ExpiresIn   int32  `json:"expires_in"`
+	ExpiresIn   int    `json:"expires_in"`
 }
 
 func (m *GrantAccessResponse) Reset()         { *m = GrantAccessResponse{} }

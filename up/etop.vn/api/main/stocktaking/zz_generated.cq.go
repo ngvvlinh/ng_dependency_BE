@@ -69,7 +69,7 @@ func (h AggregateHandler) HandleConfirmStocktake(ctx context.Context, msg *Confi
 
 type CreateStocktakeCommand struct {
 	ShopID        dot.ID
-	TotalQuantity int32
+	TotalQuantity int
 	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
@@ -85,7 +85,7 @@ func (h AggregateHandler) HandleCreateStocktake(ctx context.Context, msg *Create
 type UpdateStocktakeCommand struct {
 	ShopID        dot.ID
 	ID            dot.ID
-	TotalQuantity int32
+	TotalQuantity int
 	UpdatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string

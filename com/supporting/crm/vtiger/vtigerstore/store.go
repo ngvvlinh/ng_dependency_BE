@@ -171,6 +171,6 @@ func (v *VtigerStore) GetTickeyStatusByCategories(status string) (*vtiger.CountT
 	}
 	return &vtiger.CountTicketByStatusResponse{
 		Code:  status,
-		Count: int32(countAtoi),
+		Count: int(countAtoi),
 	}, nil
 }

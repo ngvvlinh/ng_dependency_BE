@@ -22,7 +22,7 @@ type AuthorizeShopResponse struct {
 	Msg       string `json:"msg"`
 	Type      string `json:"type"`
 	AuthToken string `json:"auth_token"`
-	ExpiresIn int32  `json:"expires_in"`
+	ExpiresIn int    `json:"expires_in"`
 	AuthUrl   string `json:"auth_url"`
 }
 

@@ -14,8 +14,8 @@ var ll = l.New()
 
 // Producer ...
 type Producer interface {
-	Send(partition int32, id string, data []byte)
-	SendJSON(partition int32, id string, v interface{})
+	Send(partition int, id string, data []byte)
+	SendJSON(partition int, id string, v interface{})
 }
 
 // KafkaProducer ...
@@ -62,7 +62,7 @@ func (mq *KafkaProducer) WithTopic(topic string) Producer {
 	return kafkaProducer{mq, topic}
 }
 
-func (mq *KafkaProducer) SendJSON(topic string, partition int32, id string, v interface{}) {
+func (mq *KafkaProducer) SendJSON(topic string, partition int, id string, v interface{}) {
 	data, err := jsonx.Marshal(v)
 	if err != nil {
 		ll.Panic("error marshalling", l.Error(err))
@@ -70,9 +70,9 @@ func (mq *KafkaProducer) SendJSON(topic string, partition int32, id string, v in
 	mq.Send(topic, partition, id, data)
 }
 
-func (mq *KafkaProducer) Send(topic string, partition int32, id string, data []byte) {
+func (mq *KafkaProducer) Send(topic string, partition int, id string, data []byte) {
 	if mq == nil {
-		ll.Warn("Send event to Kafka (skipped)", l.String("topic", topic), l.Int32("p", partition), l.String("key", id))
+		ll.Warn("Send event to Kafka (skipped)", l.String("topic", topic), l.Int("p", partition), l.String("key", id))
 		return
 	}
 
@@ -80,9 +80,9 @@ func (mq *KafkaProducer) Send(topic string, partition int32, id string, data []b
 		Topic:     topic,
 		Key:       sarama.StringEncoder(id),
 		Value:     sarama.ByteEncoder(data),
-		Partition: partition,
+		Partition: int32(partition),
 	}
-	ll.Debug("Send event to Kafka", l.String("topic", topic), l.Int32("p", partition), l.String("key", id))
+	ll.Debug("Send event to Kafka", l.String("topic", topic), l.Int("p", partition), l.String("key", id))
 	mq.producer.Input() <- pmsg
 }
 
@@ -91,7 +91,7 @@ type kafkaProducer struct {
 	topic string
 }
 
-func (mq kafkaProducer) SendJSON(partition int32, id string, v interface{}) {
+func (mq kafkaProducer) SendJSON(partition int, id string, v interface{}) {
 	data, err := jsonx.Marshal(v)
 	if err != nil {
 		ll.Panic("error marshalling", l.Error(err))
@@ -100,12 +100,12 @@ func (mq kafkaProducer) SendJSON(partition int32, id string, v interface{}) {
 }
 
 // Send ...
-func (mq kafkaProducer) Send(partition int32, id string, data []byte) {
+func (mq kafkaProducer) Send(partition int, id string, data []byte) {
 	pmsg := &sarama.ProducerMessage{
 		Topic:     mq.topic,
 		Key:       sarama.StringEncoder(id),
 		Value:     sarama.ByteEncoder(data),
-		Partition: partition,
+		Partition: int32(partition),
 	}
 	ll.Debug("Send event to Kafka", l.String("topic", mq.topic), l.String("key", id))
 	mq.producer.Input() <- pmsg

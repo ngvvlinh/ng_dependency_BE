@@ -195,7 +195,7 @@ func (ft *ShopVariantFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopVariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
+func (ft *ShopVariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -204,7 +204,7 @@ func (ft *ShopVariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVariantFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopVariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -214,7 +214,7 @@ func (ft *ShopVariantFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopVariantFilters) ByListPrice(ListPrice int32) *sq.ColumnFilter {
+func (ft *ShopVariantFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -223,7 +223,7 @@ func (ft *ShopVariantFilters) ByListPrice(ListPrice int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVariantFilters) ByListPricePtr(ListPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopVariantFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -233,7 +233,7 @@ func (ft *ShopVariantFilters) ByListPricePtr(ListPrice *int32) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopVariantFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter {
+func (ft *ShopVariantFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -242,7 +242,7 @@ func (ft *ShopVariantFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter 
 	}
 }
 
-func (ft *ShopVariantFilters) ByRetailPricePtr(RetailPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -570,7 +570,7 @@ func (ft *ShopProductFilters) ByCategoryIDPtr(CategoryID *dot.ID) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShopProductFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
+func (ft *ShopProductFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -579,7 +579,7 @@ func (ft *ShopProductFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopProductFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopProductFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -589,7 +589,7 @@ func (ft *ShopProductFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopProductFilters) ByListPrice(ListPrice int32) *sq.ColumnFilter {
+func (ft *ShopProductFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -598,7 +598,7 @@ func (ft *ShopProductFilters) ByListPrice(ListPrice int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopProductFilters) ByListPricePtr(ListPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopProductFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -608,7 +608,7 @@ func (ft *ShopProductFilters) ByListPricePtr(ListPrice *int32) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopProductFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter {
+func (ft *ShopProductFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -617,7 +617,7 @@ func (ft *ShopProductFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter 
 	}
 }
 
-func (ft *ShopProductFilters) ByRetailPricePtr(RetailPrice *int32) *sq.ColumnFilterPtr {
+func (ft *ShopProductFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",

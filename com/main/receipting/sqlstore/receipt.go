@@ -156,7 +156,7 @@ func (s *ReceiptStore) ConfirmReceipt() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
-		"status":       int32(etopmodel.S3Positive),
+		"status":       int(etopmodel.S3Positive),
 		"confirmed_at": time.Now(),
 	})
 
@@ -167,7 +167,7 @@ func (s *ReceiptStore) CancelReceipt(reason string) (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
-		"status":           int32(etopmodel.S3Negative),
+		"status":           int(etopmodel.S3Negative),
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})

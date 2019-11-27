@@ -62,7 +62,7 @@ func (ft *ShopStocktakeFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByTotalQuantity(TotalQuantity int32) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByTotalQuantity(TotalQuantity int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_quantity",
@@ -71,7 +71,7 @@ func (ft *ShopStocktakeFilters) ByTotalQuantity(TotalQuantity int32) *sq.ColumnF
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByTotalQuantityPtr(TotalQuantity *int32) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByTotalQuantityPtr(TotalQuantity *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_quantity",
@@ -157,7 +157,7 @@ func (ft *ShopStocktakeFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -166,7 +166,7 @@ func (ft *ShopStocktakeFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code_norm",

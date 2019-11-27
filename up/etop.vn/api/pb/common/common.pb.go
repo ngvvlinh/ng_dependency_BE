@@ -68,8 +68,8 @@ func (m *IDMRequest) Reset()         { *m = IDMRequest{} }
 func (m *IDMRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Paging struct {
-	Offset int32  `json:"offset"`
-	Limit  int32  `json:"limit"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
 	Sort   string `json:"sort"`
 }
 
@@ -78,15 +78,15 @@ func (m *Paging) String() string { return jsonx.MustMarshalToString(m) }
 
 type ForwardPaging struct {
 	Since string `json:"since"`
-	Limit int32  `json:"limit"`
+	Limit int    `json:"limit"`
 }
 
 func (m *ForwardPaging) Reset()         { *m = ForwardPaging{} }
 func (m *ForwardPaging) String() string { return jsonx.MustMarshalToString(m) }
 
 type PageInfo struct {
-	Total int32    `json:"total"`
-	Limit int32    `json:"limit"`
+	Total int      `json:"total"`
+	Limit int      `json:"limit"`
 	Sort  []string `json:"sort"`
 }
 
@@ -95,7 +95,7 @@ func (m *PageInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type ForwardPageInfo struct {
 	Since   string `json:"since"`
-	Limit   int32  `json:"limit"`
+	Limit   int    `json:"limit"`
 	HasNext bool   `json:"has_next"`
 }
 
@@ -126,21 +126,21 @@ func (m *ErrorsResponse) Reset()         { *m = ErrorsResponse{} }
 func (m *ErrorsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatedResponse struct {
-	Updated int32 `json:"updated"`
+	Updated int `json:"updated"`
 }
 
 func (m *UpdatedResponse) Reset()         { *m = UpdatedResponse{} }
 func (m *UpdatedResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemovedResponse struct {
-	Removed int32 `json:"removed"`
+	Removed int `json:"removed"`
 }
 
 func (m *RemovedResponse) Reset()         { *m = RemovedResponse{} }
 func (m *RemovedResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeletedResponse struct {
-	Deleted int32 `json:"deleted"`
+	Deleted int `json:"deleted"`
 }
 
 func (m *DeletedResponse) Reset()         { *m = DeletedResponse{} }

@@ -59,7 +59,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		RefType:     receipting.ReceiptRefType(q.RefType),
 		Type:        receipting.ReceiptType(q.Type),
 		CreatedType: receipting.ReceiptCreatedTypeManual,
-		Status:      int32(model.S3Zero),
+		Status:      int(model.S3Zero),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
 	}
@@ -101,7 +101,7 @@ func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEn
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
 
 	return nil
 }
@@ -115,7 +115,7 @@ func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndp
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
 
 	return nil
 }
@@ -204,7 +204,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 }
 
 func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
-	mapOrderIDAndReceivedAmount := make(map[dot.ID]int32)
+	mapOrderIDAndReceivedAmount := make(map[dot.ID]int)
 	mapLedger := make(map[dot.ID]*ledgering.ShopLedger)
 	var refIDs, userIDs, traderIDs, ledgerIDs []dot.ID
 

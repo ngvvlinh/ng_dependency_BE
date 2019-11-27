@@ -69,7 +69,7 @@ func mapVtigerToEtop(e interface{}, mappingFieldMap map[string]string, viterValu
 			}
 			field.Set(reflect.ValueOf(intValue))
 
-		case "int32":
+		case "int":
 			rawValue = strings.ReplaceAll(rawValue, ".", "")
 			intValue, err := strconv.ParseInt(rawValue, 10, 32)
 			if err != nil {
@@ -117,11 +117,11 @@ func mapEtopToVtiger(e interface{}, mappingFieldMap map[string]string) (map[stri
 		}
 
 		switch fieldType {
-		case "int32", "int64":
+		case "int", "int64":
 			if fieldType == "int64" && field.Interface().(int64) == 0 {
 				continue
 			}
-			if fieldType == "int32" && field.Interface().(int32) == 0 {
+			if fieldType == "int" && field.Interface().(int) == 0 {
 				continue
 			}
 			mapVtiger[key] = fmt.Sprint(field)

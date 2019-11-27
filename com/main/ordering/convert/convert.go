@@ -143,7 +143,7 @@ func OrderLine(in *model.OrderLine) (out *types.ItemLine) {
 	}
 	return &types.ItemLine{
 		OrderId:   in.OrderID,
-		Quantity:  int32(in.Quantity),
+		Quantity:  int(in.Quantity),
 		ProductId: in.ProductID,
 		VariantId: in.VariantID,
 		IsOutside: in.IsOutsideEtop,
@@ -152,7 +152,7 @@ func OrderLine(in *model.OrderLine) (out *types.ItemLine) {
 			ImageUrl:    in.ImageURL,
 			Attributes:  catalogconvert.Attributes(in.Attributes),
 		},
-		TotalPrice: int32(in.TotalLineAmount),
+		TotalPrice: int(in.TotalLineAmount),
 	}
 }
 
@@ -222,6 +222,6 @@ func CoordinatesDB(in *types.Coordinates) (out *model.Coordinates) {
 }
 
 func Fulfill(in model.FulfillType) ordertypes.Fulfill {
-	res, _ := ordertypes.FulfillFromInt(int32(in))
+	res, _ := ordertypes.FulfillFromInt(int(in))
 	return res
 }

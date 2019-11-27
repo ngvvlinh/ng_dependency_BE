@@ -77,12 +77,12 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
 		ToDistrict:       to.District.Name,
-		Weight:           int32(args.TotalGrams),
+		Weight:           int(args.TotalGrams),
 		GrossWeight:      0,
 		ChargeableWeight: 0,
 		Value:            0,
-		TotalCodAmount:   int32(args.CodAmount),
-		CodAmount:        int32(args.CodAmount),
+		TotalCodAmount:   int(args.CodAmount),
+		CodAmount:        int(args.CodAmount),
 		BasketValue:      0,
 		IncludeInsurance: nil,
 	}
@@ -93,7 +93,7 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 	}
 	shippingRates := make([]*haravan.ShippingRate, len(services))
 	for i, s := range services {
-		serviceID := SHA256StringToInt32(s.ProviderServiceID)
+		serviceID := sha256StringToInt(s.ProviderServiceID)
 		shippingRates[i] = &haravan.ShippingRate{
 			ServiceID:       serviceID,
 			ServiceName:     s.Name,
@@ -143,12 +143,12 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
 		ToDistrict:       to.District.Name,
-		Weight:           int32(args.TotalGrams),
+		Weight:           int(args.TotalGrams),
 		GrossWeight:      0,
 		ChargeableWeight: 0,
 		Value:            0,
-		TotalCodAmount:   int32(args.CodAmount),
-		CodAmount:        int32(args.CodAmount),
+		TotalCodAmount:   int(args.CodAmount),
+		CodAmount:        int(args.CodAmount),
 		BasketValue:      0,
 		IncludeInsurance: nil,
 	}
@@ -159,7 +159,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 
 	var service *model.AvailableShippingService
 	for _, s := range services {
-		serviceID := SHA256StringToInt32(s.ProviderServiceID)
+		serviceID := sha256StringToInt(s.ProviderServiceID)
 		if serviceID == args.ShippingRateID {
 			service = s
 			break
@@ -170,7 +170,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	externalID := strconv.FormatInt(int64(args.ExternalOrderID), 10)
 	externalFulfillmentID := strconv.FormatInt(int64(args.ExternalFulfillmentID), 10)
-	totalValue := int32(getOrderValue(args.Items))
+	totalValue := int(getOrderValue(args.Items))
 	codAmount := int(args.CodAmount)
 	weight := int(args.TotalGrams)
 	carrier := convertpb.PbShippingProviderType(service.Provider)
@@ -188,7 +188,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		CustomerAddress: convert.ToPbExternalAddress(args.Origin, to),
 		ShippingAddress: convert.ToPbExternalAddress(args.Destination, to),
 		Lines:           convert.ToPbExternalCreateOrderLines(args.Items),
-		TotalItems:      int32(len(args.Items)),
+		TotalItems:      int(len(args.Items)),
 		BasketValue:     totalValue,
 		OrderDiscount:   0,
 		TotalDiscount:   0,
@@ -201,14 +201,14 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			ReturnAddress:       nil,
 			ShippingServiceName: nil,
 			ShippingServiceCode: cm.PString(service.ProviderServiceID),
-			ShippingServiceFee:  cm.PIntToInt32(service.ServiceFee),
+			ShippingServiceFee:  cm.PInt(service.ServiceFee),
 			Carrier:             &carrier,
 			IncludeInsurance:    &includeInsurance,
 			TryOn:               pbtryon.TryOnCode_none.Enum(),
 			ShippingNote:        cm.PString(args.Note),
-			CodAmount:           cm.PIntToInt32(codAmount),
+			CodAmount:           cm.PInt(codAmount),
 			GrossWeight:         nil,
-			ChargeableWeight:    cm.PIntToInt32(weight),
+			ChargeableWeight:    cm.PInt(weight),
 		},
 	}
 
@@ -254,9 +254,9 @@ func (a *Aggregate) GetOrder(ctx context.Context, args *gateway.GetOrderRequestA
 	ffm := ffmQuery.Result
 	return &gateway.GetOrderResponse{
 		TrackingNumber: ffm.ShippingCode,
-		ShippingFee:    int32(ffm.ShippingFeeShop),
+		ShippingFee:    int(ffm.ShippingFeeShop),
 		TrackingURL:    generateTrackingUrl(ffm.ShopID),
-		CodAmount:      int32(ffm.TotalCODAmount),
+		CodAmount:      int(ffm.TotalCODAmount),
 		Status:         haravanconvert.ToFulfillmentState(ffm.ShippingState).Name(),
 		CodStatus:      haravanconvert.ToCODStatus(ffm.EtopPaymentStatus).Name(),
 	}, nil
@@ -300,12 +300,12 @@ func (a *Aggregate) GetLocation(ctx context.Context, addr *haravan.Address) (*lo
 	return query.Result, nil
 }
 
-func SHA256StringToInt32(s string) int32 {
+func sha256StringToInt(s string) int {
 	sha256Bytes := sha256.Sum256([]byte(s))
 	num := binary.LittleEndian.Uint32(sha256Bytes[:4])
 
-	// convert to int32 and make sure it always positive
-	res := int32(num)
+	// convert to int and make sure it always positive
+	res := int(num)
 	if res < 0 {
 		return ^(res - 1)
 	}

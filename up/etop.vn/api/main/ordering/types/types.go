@@ -11,21 +11,21 @@ import (
 
 type ItemLine struct {
 	OrderId     dot.ID
-	Quantity    int32
+	Quantity    int
 	ProductId   dot.ID
 	VariantId   dot.ID
 	IsOutside   bool
 	ProductInfo ProductInfo
-	TotalPrice  int32
+	TotalPrice  int
 }
 
 type ProductInfo struct {
 	ProductName  string
 	ImageUrl     string
 	Attributes   []*types.Attribute
-	ListPrice    int32
-	RetailPrice  int32
-	PaymentPrice int32
+	ListPrice    int
+	RetailPrice  int
+	PaymentPrice int
 }
 
 type Address struct {
@@ -50,7 +50,7 @@ type Coordinates struct {
 	Longitude float32
 }
 
-type Fulfill int32
+type Fulfill int
 
 const (
 	FulfillNone     Fulfill = 0
@@ -59,21 +59,21 @@ const (
 	FulfillShipnow  Fulfill = 11
 )
 
-var Fulfill_name = map[int32]string{
+var Fulfill_name = map[int]string{
 	0:  "none",
 	1:  "manual",
 	10: "shipment",
 	11: "shipnow",
 }
 
-var Fulfill_value = map[string]int32{
+var Fulfill_value = map[string]int{
 	"none":     0,
 	"manual":   1,
 	"shipment": 10,
 	"shipnow":  11,
 }
 
-func FulfillFromInt(s int32) (Fulfill, error) {
+func FulfillFromInt(s int) (Fulfill, error) {
 	_, ok := Fulfill_name[s]
 	if !ok {
 		return 0, errors.New("invalid fulfill code")
@@ -82,7 +82,7 @@ func FulfillFromInt(s int32) (Fulfill, error) {
 }
 
 func (f Fulfill) String() string {
-	return Fulfill_name[int32(f)]
+	return Fulfill_name[int(f)]
 }
 
 func GetFullAddress(a *Address, location *location.LocationQueryResult) string {

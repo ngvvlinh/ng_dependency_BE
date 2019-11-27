@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type AddressType int32
+type AddressType int
 
 const (
 	AddressType_unknown   AddressType = 0
@@ -14,7 +14,7 @@ const (
 	AddressType_shipfrom  AddressType = 4
 )
 
-var AddressType_name = map[int32]string{
+var AddressType_name = map[int]string{
 	0: "unknown",
 	1: "general",
 	2: "warehouse",
@@ -22,7 +22,7 @@ var AddressType_name = map[int32]string{
 	4: "shipfrom",
 }
 
-var AddressType_value = map[string]int32{
+var AddressType_value = map[string]int{
 	"unknown":   0,
 	"general":   1,
 	"warehouse": 2,
@@ -37,7 +37,7 @@ func (x AddressType) Enum() *AddressType {
 }
 
 func (x AddressType) String() string {
-	return jsonx.EnumName(AddressType_name, int32(x))
+	return jsonx.EnumName(AddressType_name, int(x))
 }
 
 func (x *AddressType) UnmarshalJSON(data []byte) error {

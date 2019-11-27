@@ -49,7 +49,7 @@ type ListReceiptsArgs struct {
 
 type ReceiptsResponse struct {
 	Receipts                    []*Receipt
-	Count                       int32
+	Count                       int
 	TotalAmountConfirmedReceipt int
 	TotalAmountConfirmedPayment int
 	Paging                      meta.PageInfo
@@ -63,7 +63,7 @@ type CreateReceiptArgs struct {
 	TraderID    dot.ID
 	Title       string
 	Type        ReceiptType
-	Status      int32
+	Status      int
 	Description string
 	Amount      int
 	LedgerID    dot.ID
@@ -115,5 +115,5 @@ type ListReceiptsByRefsAndStatusArgs struct {
 	ShopID  dot.ID
 	RefIDs  []dot.ID
 	RefType ReceiptRefType
-	Status  int32
+	Status  int
 }

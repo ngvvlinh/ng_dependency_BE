@@ -30,7 +30,7 @@ type QueryService interface {
 //-- queries --//
 type SuppliersResponse struct {
 	Suppliers []*ShopSupplier
-	Count     int32
+	Count     int
 	Paging    meta.PageInfo
 }
 

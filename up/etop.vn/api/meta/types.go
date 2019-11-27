@@ -22,7 +22,7 @@ type Empty struct{}
 type UUID struct{ Data []byte }
 
 type UpdatedResponse struct {
-	Updated int32
+	Updated int
 }
 
 func NewUUID() UUID {
@@ -31,8 +31,8 @@ func NewUUID() UUID {
 }
 
 type PageInfo struct {
-	Offset int32
-	Limit  int32
+	Offset int
+	Limit  int
 	Sort   []string
 
 	// TODO: next, prev
@@ -43,8 +43,8 @@ func FromPaging(paging Paging) PageInfo {
 }
 
 type Paging struct {
-	Offset int32
-	Limit  int32
+	Offset int
+	Limit  int
 	Sort   []string
 }
 
@@ -89,9 +89,9 @@ type UpdateListInt64 struct {
 	Changes []int64
 }
 
-type UpdateListInt32 struct {
+type UpdateListInt struct {
 	Op      UpdateOp
-	Changes []int32
+	Changes []int
 }
 
 func (u *UpdateSet) Update(set []string) (result []string, count int, err error) {

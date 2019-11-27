@@ -225,7 +225,7 @@ type CountTicketByStatusArgs struct {
 
 type CountTicketByStatusResponse struct {
 	Code  string
-	Count int32
+	Count int
 }
 
 type GetTicketStatusCountResponse struct {

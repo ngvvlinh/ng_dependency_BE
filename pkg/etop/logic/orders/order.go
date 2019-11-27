@@ -684,7 +684,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		TotalItems:      int(q.TotalItems),
 		OrderDiscount:   cm.PInt(orderDiscount),
 		TotalDiscount:   totalDiscount,
-		ShopCOD:         cm.PInt32(shopCod),
+		ShopCOD:         shopCod,
 		CustomerID:      customerId,
 	}
 	if authPartner != nil {
@@ -864,7 +864,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 	orderDiscount := int(m.OrderDiscount)
 	totalDiscount = totalLineDiscount + orderDiscount
 	if m.TotalDiscount != nil {
-		if int32(totalDiscount) != *m.TotalDiscount {
+		if int(totalDiscount) != *m.TotalDiscount {
 			return nil, cm.Error(cm.InvalidArgument, "Tổng giá trị giảm không đúng", nil).
 				WithMetap("expected total_discount (= order_discount + sum(lines.total_discount))", totalDiscount)
 		}

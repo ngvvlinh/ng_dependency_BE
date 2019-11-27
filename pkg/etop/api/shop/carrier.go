@@ -100,6 +100,6 @@ func (s *CarrierService) DeleteCarrier(ctx context.Context, r *DeleteCarrierEndp
 	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
 	return nil
 }

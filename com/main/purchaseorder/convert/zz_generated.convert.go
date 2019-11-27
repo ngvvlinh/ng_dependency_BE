@@ -266,13 +266,13 @@ func Convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLin
 }
 
 func convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLine(arg *purchaseordermodel.PurchaseOrderLine, out *purchaseorder.PurchaseOrderLine) {
-	out.VariantID = arg.VariantID              // simple assign
-	out.Quantity = int32(arg.Quantity)         // simple conversion
-	out.PaymentPrice = int32(arg.PaymentPrice) // simple conversion
-	out.ProductID = arg.ProductID              // simple assign
-	out.ProductName = arg.ProductName          // simple assign
-	out.Code = arg.Code                        // simple assign
-	out.ImageUrl = arg.ImageUrl                // simple assign
+	out.VariantID = arg.VariantID            // simple assign
+	out.Quantity = int(arg.Quantity)         // simple conversion
+	out.PaymentPrice = int(arg.PaymentPrice) // simple conversion
+	out.ProductID = arg.ProductID            // simple assign
+	out.ProductName = arg.ProductName        // simple assign
+	out.Code = arg.Code                      // simple assign
+	out.ImageUrl = arg.ImageUrl              // simple assign
 	out.Attributes = catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
 }
 

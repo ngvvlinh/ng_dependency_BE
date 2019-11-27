@@ -190,7 +190,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 		Id:                         ffm.Id,
 		ShippingCode:               xShipnow.ID,
 		ShippingState:              xShipnow.State,
-		TotalFee:                   int32(xShipnow.TotalFee),
+		TotalFee:                   int(xShipnow.TotalFee),
 		FeeLines:                   xShipnow.FeeLines,
 		CarrierFeeLines:            xShipnow.FeeLines,
 		ShippingCreatedAt:          xShipnow.CreatedAt,

@@ -25,13 +25,13 @@ func NewClient(userName string, passWord string) *Client {
 
 // query dto
 type VHTHistoryQueryDTO struct {
-	Page        int32
-	Limit       int32
+	Page        int
+	Limit       int
 	SortBy      string
 	SortType    string //: 'ASC' | 'DESC';
 	State       string
-	Direction   int32
-	Extension   int32
+	Direction   int
+	Extension   int
 	FromNumber  string
 	ToNumber    string
 	DateStarted int64
@@ -49,22 +49,22 @@ type VhtCallHistory struct {
 	ToExtension     string `json:"to_extension"`
 	FromNumber      string `json:"from_number"`
 	ToNumber        string `json:"to_number"`
-	Duration        int32  `json:"duration"`
-	Direction       int32  `json:"direction"`
+	Duration        int    `json:"duration"`
+	Direction       int    `json:"direction"`
 	TimeStarted     int64  `json:"time_started"`
 	TimeConnected   int64  `json:"time_connected"`
 	TimeEnd         int64  `json:"time_ended"`
 	RecordingPath   string `json:"recording_path"`
 	RecordingUrl    string `json:"recording_url"`
-	RecordFileSize  int32  `json:"record_file_size"`
+	RecordFileSize  int    `json:"record_file_size"`
 	EtopAccountID   dot.ID `json:"etop_account_"id`
 	VtigerAccountID string `json:"vtiger_account_id"`
 }
 
 // Response
 type VhCallHistoriesResponse struct {
-	Total       int32             `json:"total"`
-	Currentpage int32             `json:"currentpage"`
-	Limit       int32             `json:"limit"`
+	Total       int               `json:"total"`
+	Currentpage int               `json:"currentpage"`
+	Limit       int               `json:"limit"`
 	Items       []*VhtCallHistory `json:"items"`
 }

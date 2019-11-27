@@ -78,7 +78,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if err != nil {
 		return nil, err
 	}
-	var totalAmount int32 = 0
+	var totalAmount int = 0
 	var listInventoryModel []*inventory.InventoryVariant
 	totalAmount, listInventoryModel, err = q.PreInventoryVariantForVoucher(ctx, Overstock, inventoryVoucher)
 	if err != nil {
@@ -106,7 +106,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 				return err
 			}
 		}
-		var maxCodeNorm int32
+		var maxCodeNorm int
 		inventoryVoucherTemp, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).GetInventoryVoucherByMaximumCodeNorm()
 		switch cm.ErrorCode(err) {
 		case cm.NoError:
@@ -153,7 +153,7 @@ func (q *InventoryAggregate) validateTrader(ctx context.Context, shopID dot.ID, 
 	return nil
 }
 
-func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, overStock bool, args *inventory.CreateInventoryVoucherArgs) (totalAmount int32, listInventoryVariants []*inventory.InventoryVariant, err error) {
+func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, overStock bool, args *inventory.CreateInventoryVoucherArgs) (totalAmount int, listInventoryVariants []*inventory.InventoryVariant, err error) {
 
 	totalAmount = 0
 	var inventoryvariant *inventory.InventoryVariant
@@ -238,7 +238,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if err != nil {
 		return nil, err
 	}
-	var totalAmount int32 = 0
+	var totalAmount int = 0
 	for _, value := range args.Lines {
 		if errValidate := validateInventoryVoucherItem(value); errValidate != nil {
 			return nil, errValidate
@@ -355,7 +355,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 func (q *InventoryAggregate) CreateVoucherForAdjustInventoryQuantity(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
 	lines []*inventory.InventoryVoucherItem,
 	typeVoucher inventory.InventoryVoucherType) (dot.ID, error) {
-	var totalValue int32 = 0
+	var totalValue int = 0
 	for _, value := range lines {
 		totalValue = totalValue + value.Price*value.Quantity
 	}
@@ -418,11 +418,11 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 	return q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
 }
 
-func AvgValue(value1 int32, value2 int32, quantity1 int32, quantity2 int32) int32 {
+func AvgValue(value1 int, value2 int, quantity1 int, quantity2 int) int {
 	if quantity1+quantity2 == 0 {
 		return 0
 	}
-	return int32((int64(value1)*int64(quantity1) + int64(value2)*int64(quantity2)) / (int64(quantity1) + int64(quantity2)))
+	return int((int64(value1)*int64(quantity1) + int64(value2)*int64(quantity2)) / (int64(quantity1) + int64(quantity2)))
 }
 
 func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *inventory.CancelInventoryVoucherArgs) (*inventory.InventoryVoucher, error) {
@@ -688,8 +688,8 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 			ProductID:   value.ProductID,
 			ProductName: value.ProductName,
 			VariantID:   value.VariantID,
-			Quantity:    int32(value.Quantity),
-			Price:       int32(value.PaymentPrice),
+			Quantity:    int(value.Quantity),
+			Price:       int(value.PaymentPrice),
 			Code:        value.Code,
 			ImageURL:    value.ImageUrl,
 			Attributes:  convert.ConvertAttributesPurchaseOrder(value.Attributes),
@@ -734,7 +734,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 				ProductID:   value.ProductID,
 				ProductName: value.ProductName,
 				VariantID:   value.VariantID,
-				Quantity:    int32(value.Quantity),
+				Quantity:    int(value.Quantity),
 				Code:        value.Code,
 				ImageURL:    value.ImageURL,
 				Attributes:  convert.ConvertAttributesOrder(value.Attributes),

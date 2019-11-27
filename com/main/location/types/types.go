@@ -39,7 +39,7 @@ type Province struct {
 
 	Code        string
 	Region      Region
-	VTPostID    int32
+	VTPostID    int
 	HaravanCode string
 }
 
@@ -50,9 +50,9 @@ type District struct {
 
 	Code         string
 	ProvinceCode string
-	GhnID        int32
+	GhnID        int
 	UrbanType    UrbanType
-	VTPostID     int32
+	VTPostID     int
 	HaravanCode  string
 }
 
@@ -60,7 +60,7 @@ type Ward struct {
 	Name        string
 	NameNorm    string
 	Alias       []string
-	VTPostID    int32
+	VTPostID    int
 	HaravanCode string
 
 	Code         string
@@ -68,9 +68,9 @@ type Ward struct {
 }
 
 type VTPostWard struct {
-	WardsID          int32
+	WardsID          int
 	WardsName        string
-	DistrictID       int32
+	DistrictID       int
 	EtopDistrictCode string
 }
 

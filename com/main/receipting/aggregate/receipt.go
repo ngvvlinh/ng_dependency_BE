@@ -104,7 +104,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 		return nil, err
 	}
 
-	var maxCodeNorm int32
+	var maxCodeNorm int
 	receiptTemp, err := a.store(ctx).ShopID(args.ShopID).GetReceiptByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
@@ -149,7 +149,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 			Throw()
 	}
 
-	if receipt.Status == int32(etopmodel.S3Negative) {
+	if receipt.Status == int(etopmodel.S3Negative) {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể thay đổi phiếu đã hủy.")
 	}
 
@@ -163,7 +163,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		RefType:     receipt.RefType,
 		ShopID:      receipt.ShopID,
 	}
-	if receipt.Status == int32(etopmodel.S3Zero) {
+	if receipt.Status == int(etopmodel.S3Zero) {
 		if args.TraderID.Valid && args.TraderID.ID != receipt.TraderID {
 			receiptNeedValidate.TraderID = args.TraderID.ID
 		}
@@ -176,7 +176,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		return nil, err
 	}
 
-	if receipt.Status != int32(etopmodel.S3Zero) {
+	if receipt.Status != int(etopmodel.S3Zero) {
 		args.TraderID = PID(&receipt.TraderID)
 		args.Amount = PInt(&receipt.Amount)
 		args.RefType = receipt.RefType
@@ -372,7 +372,7 @@ func (a *ReceiptAggregate) CancelReceipt(
 			Throw()
 	}
 
-	if receipt.Status == int32(etopmodel.S3Negative) {
+	if receipt.Status == int(etopmodel.S3Negative) {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
 	}
 
@@ -407,9 +407,9 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 	}
 
 	switch receipt.Status {
-	case int32(etopmodel.S3Positive):
+	case int(etopmodel.S3Positive):
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã xác nhận")
-	case int32(etopmodel.S3Negative):
+	case int(etopmodel.S3Negative):
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
 	default:
 		//no-op

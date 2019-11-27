@@ -31,7 +31,7 @@ type RemoveShopVariantsCommand struct {
 type UpdateShopVariantCommand struct {
 	ShopID     dot.ID
 	Variant    *catalogmodel.ShopVariant
-	CostPrice  int32
+	CostPrice  int
 	Code       string
 	Attributes []catalogmodel.ProductAttribute
 
@@ -100,9 +100,9 @@ type DeprecatedCreateVariantCommand struct {
 	QuantityOnHand    int
 	QuantityReserved  int
 
-	ListPrice   int32
-	RetailPrice int32
-	CostPrice   int32
+	ListPrice   int
+	RetailPrice int
+	CostPrice   int
 
 	Attributes []*catalogmodel.ProductAttribute
 	DescHTML   string

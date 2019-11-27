@@ -7,7 +7,7 @@ import (
 	orderingtypes "etop.vn/api/main/ordering/types"
 )
 
-type TryOn int32
+type TryOn int
 
 const (
 	TryOnUnknown TryOn = 0
@@ -16,7 +16,7 @@ const (
 	TryOnTry     TryOn = 3
 )
 
-type FeeLineType int32
+type FeeLineType int
 
 const (
 	FeeLineTypeOther         FeeLineType = 0
@@ -29,14 +29,14 @@ const (
 	FeeLineTypeDiscount      FeeLineType = 7
 )
 
-var TryOnCode_name = map[int32]string{
+var TryOnCode_name = map[int]string{
 	0: "unknown",
 	1: "none",
 	2: "open",
 	3: "try",
 }
 
-var TryOnCode_value = map[string]int32{
+var TryOnCode_value = map[string]int{
 	"unknown": 0,
 	"none":    1,
 	"open":    2,
@@ -51,7 +51,7 @@ func TryOnFromString(s string) (TryOn, error) {
 	return TryOn(t), nil
 }
 
-var FeeLineType_name = map[int32]string{
+var FeeLineType_name = map[int]string{
 	0: "other",
 	1: "main",
 	2: "return",
@@ -62,7 +62,7 @@ var FeeLineType_name = map[int32]string{
 	7: "discount",
 }
 
-var FeeLineType_value = map[string]int32{
+var FeeLineType_value = map[string]int{
 	"other":          0,
 	"main":           1,
 	"return":         2,
@@ -82,7 +82,7 @@ func FeelineTypeFromString(s string) FeeLineType {
 }
 
 func (t FeeLineType) String() string {
-	return FeeLineType_name[int32(t)]
+	return FeeLineType_name[int(t)]
 }
 
 type ShippingInfo struct {
@@ -105,29 +105,29 @@ type ShippingInfo struct {
 type ShippingService struct {
 	Carrier             string
 	Code                string
-	Fee                 int32
+	Fee                 int
 	Name                string
 	EstimatedPickupAt   time.Time
 	EstimatedDeliveryAt time.Time
 }
 
 type WeightInfo struct {
-	GrossWeight      int32
-	ChargeableWeight int32
-	Length           int32
-	Width            int32
-	Height           int32
+	GrossWeight      int
+	ChargeableWeight int
+	Length           int
+	Width            int
+	Height           int
 }
 
 type ValueInfo struct {
-	BasketValue      int32
-	CodAmount        int32
+	BasketValue      int
+	CodAmount        int
 	IncludeInsurance bool
 }
 
 type FeeLine struct {
 	ShippingFeeType     FeeLineType
-	Cost                int32
+	Cost                int
 	ExternalServiceName string
 	ExternalServiceType string
 }

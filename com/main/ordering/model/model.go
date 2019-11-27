@@ -16,7 +16,7 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 type OrderFeeType string
-type FulfillType int32
+type FulfillType int
 
 const (
 	OrderFeeOther    OrderFeeType = "other"
@@ -507,7 +507,7 @@ func (m *OrderAddress) GetFullName() string {
 	return m.FirstName + " " + m.LastName
 }
 
-func GetFeeLinesWithFallback(lines []OrderFeeLine, totalFee *int32, shopShippingFee *int32) []OrderFeeLine {
+func GetFeeLinesWithFallback(lines []OrderFeeLine, totalFee *int, shopShippingFee *int) []OrderFeeLine {
 	if len(lines) == 0 &&
 		(totalFee == nil || *totalFee == 0) &&
 		shopShippingFee != nil && *shopShippingFee != 0 {

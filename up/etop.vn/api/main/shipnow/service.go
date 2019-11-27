@@ -42,7 +42,7 @@ type CreateShipnowFulfillmentArgs struct {
 	Carrier             carriertypes.Carrier
 	ShopId              dot.ID
 	ShippingServiceCode string
-	ShippingServiceFee  int32
+	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *types.Address
@@ -65,7 +65,7 @@ type UpdateShipnowFulfillmentArgs struct {
 	Carrier             carriertypes.Carrier
 	ShopId              dot.ID
 	ShippingServiceCode string
-	ShippingServiceFee  int32
+	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *types.Address
@@ -75,7 +75,7 @@ type UpdateShipnowFulfillmentCarrierInfoArgs struct {
 	Id                         dot.ID
 	ShippingCode               string
 	ShippingState              shipnowtypes.State
-	TotalFee                   int32
+	TotalFee                   int
 	FeeLines                   []*shippingtypes.FeeLine
 	CarrierFeeLines            []*shippingtypes.FeeLine
 	ShippingCreatedAt          time.Time
@@ -124,7 +124,7 @@ type GetShipnowFulfillmentQueryResult struct {
 
 type GetShipnowFulfillmentsQueryResult struct {
 	ShipnowFulfillments []*ShipnowFulfillment
-	Count               int32
+	Count               int
 }
 
 type GetShipnowFulfillmentByShippingCodeQueryArgs struct {

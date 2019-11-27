@@ -23,7 +23,7 @@ type QueryService interface {
 }
 
 type VhtCallLog struct {
-	Direction       int32
+	Direction       int
 	CdrID           string
 	CallID          string
 	SipCallID       string
@@ -34,13 +34,13 @@ type VhtCallLog struct {
 	ToExtension     string
 	FromNumber      string
 	ToNumber        string
-	Duration        int32
+	Duration        int
 	TimeStarted     time.Time
 	TimeConnected   time.Time
 	TimeEnded       time.Time
 	RecordingPath   string
 	RecordingUrl    string
-	RecordFileSize  int32
+	RecordFileSize  int
 	EtopAccountID   dot.ID
 	VtigerAccountID string
 }

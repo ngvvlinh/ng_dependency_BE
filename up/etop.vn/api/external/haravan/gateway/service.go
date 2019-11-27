@@ -48,14 +48,14 @@ type CreateOrderRequestArgs struct {
 	ExternalCode string `json:"external_code"`
 	Note         string `json:"note"`
 	// ShippingRateID: Là service_id nhận được khi post lấy danh sách gói vận chuyển
-	ShippingRateID int32 `json:"shipping_rate_id"`
+	ShippingRateID int `json:"shipping_rate_id"`
 }
 
 type CreateOrderResponse struct {
 	TrackingNumber string `json:"tracking_number"`
-	ShippingFee    int32  `json:"shipping_fee"`
+	ShippingFee    int    `json:"shipping_fee"`
 	TrackingURL    string `json:"tracking_url"`
-	CodAmount      int32  `json:"cod_amount"`
+	CodAmount      int    `json:"cod_amount"`
 }
 
 type GetOrderRequestArgs struct {
@@ -65,9 +65,9 @@ type GetOrderRequestArgs struct {
 
 type GetOrderResponse struct {
 	TrackingNumber string `json:"tracking_number"`
-	ShippingFee    int32  `json:"shipping_fee"`
+	ShippingFee    int    `json:"shipping_fee"`
 	TrackingURL    string `json:"tracking_url"`
-	CodAmount      int32  `json:"cod_amount"`
+	CodAmount      int    `json:"cod_amount"`
 	Status         string `json:"status"`
 	CodStatus      string `json:"cod_status"`
 }

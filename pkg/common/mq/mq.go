@@ -49,12 +49,12 @@ func NewKafkaConsumer(brokers []string, group string, cfgs ...*sarama.Config) (K
 	}, nil
 }
 
-func (h KafkaConsumer) Consume(topic string, partition int32) (Consumer, error) {
+func (h KafkaConsumer) Consume(topic string, partition int) (Consumer, error) {
 	return h.consumer.Consume(topic, partition)
 }
 
 // ConsumeAndHandle consumes and handles messages from kafka topic and partitions.
-func (h KafkaConsumer) ConsumeAndHandle(ctx context.Context, handler EventHandler, topic string, partitions []int32) {
+func (h KafkaConsumer) ConsumeAndHandle(ctx context.Context, handler EventHandler, topic string, partitions []int) {
 	if len(partitions) == 0 {
 		return
 	}
@@ -62,10 +62,10 @@ func (h KafkaConsumer) ConsumeAndHandle(ctx context.Context, handler EventHandle
 	for _, p := range partitions {
 		pconsumer, err := h.consumer.Consume(topic, p)
 		if err != nil {
-			ll.Fatal("Unable to consume messages", l.String("topic", topic), l.Int32("partition", p))
+			ll.Fatal("Unable to consume messages", l.String("topic", topic), l.Int("partition", p))
 		}
 
-		ll.Info("Start consuming messages", l.String("topic", topic), l.Int32("partition", p))
+		ll.Info("Start consuming messages", l.String("topic", topic), l.Int("partition", p))
 		h.wg.Add(1)
 		go func() {
 			defer h.wg.Done()

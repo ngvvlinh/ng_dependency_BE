@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type FeeType int32
+type FeeType int
 
 const (
 	FeeType_other    FeeType = 0
@@ -12,13 +12,13 @@ const (
 	FeeType_tax      FeeType = 2
 )
 
-var FeeType_name = map[int32]string{
+var FeeType_name = map[int]string{
 	0: "other",
 	1: "shipping",
 	2: "tax",
 }
 
-var FeeType_value = map[string]int32{
+var FeeType_value = map[string]int{
 	"other":    0,
 	"shipping": 1,
 	"tax":      2,
@@ -31,7 +31,7 @@ func (x FeeType) Enum() *FeeType {
 }
 
 func (x FeeType) String() string {
-	return jsonx.EnumName(FeeType_name, int32(x))
+	return jsonx.EnumName(FeeType_name, int(x))
 }
 
 func (x *FeeType) UnmarshalJSON(data []byte) error {

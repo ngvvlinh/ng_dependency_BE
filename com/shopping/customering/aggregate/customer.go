@@ -99,7 +99,7 @@ func (a *CustomerAggregate) CreateCustomer(
 	}
 
 	customer := convert.CreateShopCustomer(args)
-	var maxCodeNorm int32
+	var maxCodeNorm int
 	customerTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetCustomerByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
@@ -221,11 +221,11 @@ func (a *CustomerAggregate) DeleteCustomer(
 }
 
 func (a *CustomerAggregate) BatchSetCustomersStatus(
-	ctx context.Context, ids []dot.ID, shopID dot.ID, status int32,
+	ctx context.Context, ids []dot.ID, shopID dot.ID, status int,
 ) (*meta.UpdatedResponse, error) {
 	update := &model.ShopCustomer{Status: status}
 	n, err := a.store(ctx).IDs(ids...).PatchCustomerDB(update)
-	return &meta.UpdatedResponse{Updated: int32(n)}, err
+	return &meta.UpdatedResponse{Updated: int(n)}, err
 }
 
 func (a *CustomerAggregate) CreateCustomerGroup(ctx context.Context, args *customering.CreateCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {

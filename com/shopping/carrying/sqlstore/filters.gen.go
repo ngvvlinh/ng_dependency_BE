@@ -99,7 +99,7 @@ func (ft *ShopCarrierFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCarrierFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *ShopCarrierFilters) ByStatus(Status int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -108,7 +108,7 @@ func (ft *ShopCarrierFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCarrierFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *ShopCarrierFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

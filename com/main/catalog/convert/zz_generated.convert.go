@@ -509,7 +509,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.CategoryID = arg.CategoryID                 // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Tags = arg.Tags                             // simple assign
-	out.Status = int32(arg.Status)                  // simple conversion
+	out.Status = int(arg.Status)                    // simple conversion
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DeletedAt = arg.DeletedAt                   // simple assign

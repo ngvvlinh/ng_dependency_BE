@@ -54,7 +54,7 @@ func (q *LedgerQuery) ListLedgers(
 	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   int32(count),
+		Count:   int(count),
 	}, nil
 }
 
@@ -72,7 +72,7 @@ func (q *LedgerQuery) ListLedgersByIDs(
 	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   int32(count),
+		Count:   int(count),
 	}, nil
 }
 
@@ -90,7 +90,7 @@ func (q *LedgerQuery) ListLedgersByType(
 	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   int32(count),
+		Count:   int(count),
 	}, nil
 }
 

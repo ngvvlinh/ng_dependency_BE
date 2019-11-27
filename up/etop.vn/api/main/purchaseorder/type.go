@@ -22,7 +22,7 @@ type PurchaseOrder struct {
 	TotalDiscount    int
 	TotalAmount      int
 	Code             string
-	CodeNorm         int32
+	CodeNorm         int
 	Note             string
 	Status           etop.Status3
 	VariantIDs       []dot.ID
@@ -38,8 +38,8 @@ type PurchaseOrder struct {
 
 type PurchaseOrderLine struct {
 	VariantID    dot.ID
-	Quantity     int32
-	PaymentPrice int32
+	Quantity     int
+	PaymentPrice int
 	ProductID    dot.ID
 	ProductName  string
 	Code         string

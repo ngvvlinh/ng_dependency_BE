@@ -53,14 +53,14 @@ type VHTCallLog struct {
 	ToExtension     string   `json:"to_extension"`
 	FromNumber      string   `json:"from_number"`
 	ToNumber        string   `json:"to_number"`
-	Duration        int32    `json:"duration"`
-	Direction       int32    `json:"direction"`
+	Duration        int      `json:"duration"`
+	Direction       int      `json:"direction"`
 	TimeStarted     dot.Time `json:"time_started"`
 	TimeConnected   dot.Time `json:"time_connected"`
 	TimeEnded       dot.Time `json:"time_ended"`
 	RecordingPath   string   `json:"recording_path"`
 	RecordingUrl    string   `json:"recording_url"`
-	RecordFileSize  int32    `json:"record_file_size"`
+	RecordFileSize  int      `json:"record_file_size"`
 	EtopAccountId   dot.ID   `json:"etop_account_id"`
 	VtigerAccountId string   `json:"vtiger_account_id"`
 }
@@ -84,7 +84,7 @@ func (m *GetTicketStatusCountResponse) String() string { return jsonx.MustMarsha
 
 type CountTicketByStatusResponse struct {
 	Code  string `json:"code"`
-	Count int32  `json:"count"`
+	Count int    `json:"count"`
 }
 
 func (m *CountTicketByStatusResponse) Reset()         { *m = CountTicketByStatusResponse{} }

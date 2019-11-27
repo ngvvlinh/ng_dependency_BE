@@ -18,7 +18,7 @@ type Aggregate interface {
 
 	DeleteCustomer(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
 
-	BatchSetCustomersStatus(ctx context.Context, IDs []dot.ID, shopID dot.ID, status int32) (*meta.UpdatedResponse, error)
+	BatchSetCustomersStatus(ctx context.Context, IDs []dot.ID, shopID dot.ID, status int) (*meta.UpdatedResponse, error)
 
 	AddCustomersToGroup(ctx context.Context, _ *AddCustomerToGroupArgs) (updateed int, _ error)
 
@@ -62,13 +62,13 @@ type ListCustomerGroupArgs struct {
 
 type CustomerGroupsResponse struct {
 	CustomerGroups []*ShopCustomerGroup
-	Count          int32
+	Count          int
 	Paging         meta.PageInfo
 }
 
 type CustomersResponse struct {
 	Customers []*ShopCustomer
-	Count     int32
+	Count     int
 	Paging    meta.PageInfo
 }
 
@@ -106,7 +106,7 @@ type UpdateCustomerArgs struct {
 type BatchSetCustomersStatusArgs struct {
 	IDs    []dot.ID
 	ShopID dot.ID
-	Status int32
+	Status int
 }
 
 type AddCustomerToGroupArgs struct {

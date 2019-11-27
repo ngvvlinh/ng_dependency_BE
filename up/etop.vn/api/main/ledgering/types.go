@@ -21,7 +21,7 @@ type ShopLedger struct {
 	BankAccount *identity.BankAccount
 	Note        string
 	Type        string
-	Status      int32
+	Status      int
 	CreatedBy   dot.ID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

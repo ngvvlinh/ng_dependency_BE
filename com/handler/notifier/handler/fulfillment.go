@@ -52,7 +52,7 @@ func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel
 		cmd := templateFfmChangedNote(ffm)
 		res = append(res, cmd)
 	}
-	if history.ShippingFeeShop().Int32() != nil {
+	if history.ShippingFeeShop().Int() != nil {
 		cmd := templateFfmChangedFee(ffm)
 		res = append(res, cmd)
 	}

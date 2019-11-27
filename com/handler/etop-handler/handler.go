@@ -114,7 +114,7 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 		h.wg.Add(d.Partitions)
 
 		for i := 0; i < d.Partitions; i++ {
-			partition := int32(i)
+			partition := int(i)
 			go func() {
 				pc, err := h.consumer.Consume(kafkaTopic, partition)
 				if err != nil {

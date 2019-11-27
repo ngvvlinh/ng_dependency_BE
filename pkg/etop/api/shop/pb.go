@@ -249,7 +249,7 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 		Note:        m.Note,
 		Status:      convertpb.Pb3(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
-		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
+		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	return res
@@ -331,7 +331,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVar
 		Note:        m.Note,
 		Status:      convertpb.Pb3(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
-		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
+		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	if m.ShopProduct != nil {
@@ -392,7 +392,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		Status:          convertpb.Pb3(model.Status3(m.ShopProduct.Status)),
 		IsAvailable:     false,
 		ListPrice:       m.ShopProduct.ListPrice,
-		RetailPrice:     coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
+		RetailPrice:     coalesceInt(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
 		CollectionIds:   m.ShopProduct.CollectionIDs,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
@@ -414,7 +414,7 @@ func coalesce(ss ...string) string {
 	return ""
 }
 
-func coalesceInt32(is ...int32) int32 {
+func coalesceInt(is ...int) int {
 	for _, i := range is {
 		if i != 0 {
 			return i

@@ -122,9 +122,9 @@ func (m *UpdatePurchaseOrderRequest) String() string { return jsonx.MustMarshalT
 
 type PurchaseOrderLine struct {
 	VariantId    dot.ID       `json:"variant_id"`
-	Quantity     int32        `json:"quantity"`
-	PaymentPrice int32        `json:"payment_price"`
-	ProductId    dot.ID       `json:"product_idint32"`
+	Quantity     int          `json:"quantity"`
+	PaymentPrice int          `json:"payment_price"`
+	ProductId    dot.ID       `json:"product_idint"`
 	ProductName  string       `json:"product_name"`
 	ImageUrl     string       `json:"image_url"`
 	Code         string       `json:"code"`
@@ -345,8 +345,8 @@ type EtopVariant struct {
 	ShortDesc   string       `json:"short_desc"`
 	DescHtml    string       `json:"desc_html"`
 	ImageUrls   []string     `json:"image_urls"`
-	ListPrice   int32        `json:"list_price"`
-	CostPrice   int32        `json:"cost_price"`
+	ListPrice   int          `json:"list_price"`
+	CostPrice   int          `json:"cost_price"`
 	Attributes  []*Attribute `json:"attributes"`
 }
 
@@ -362,8 +362,8 @@ type EtopProduct struct {
 	DescHtml    string   `json:"desc_html"`
 	Unit        string   `json:"unit"`
 	ImageUrls   []string `json:"image_urls"`
-	ListPrice   int32    `json:"list_price"`
-	CostPrice   int32    `json:"cost_price"`
+	ListPrice   int      `json:"list_price"`
+	CostPrice   int      `json:"cost_price"`
 	CategoryId  dot.ID   `json:"category_id"`
 	// @deprecated
 	ProductSourceCategoryId dot.ID `json:"product_source_category_id"`
@@ -384,8 +384,8 @@ type ShopVariant struct {
 	ShortDesc        string                       `json:"short_desc"`
 	DescHtml         string                       `json:"desc_html"`
 	ImageUrls        []string                     `json:"image_urls"`
-	ListPrice        int32                        `json:"list_price"`
-	RetailPrice      int32                        `json:"retail_price"`
+	ListPrice        int                          `json:"list_price"`
+	RetailPrice      int                          `json:"retail_price"`
 	Note             string                       `json:"note"`
 	Status           status3.Status               `json:"status"`
 	IsAvailable      bool                         `json:"is_available"`
@@ -401,10 +401,10 @@ func (m *ShopVariant) Reset()         { *m = ShopVariant{} }
 func (m *ShopVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVariantShopVariant struct {
-	QuantityOnHand int32 `json:"quantity_on_hand"`
-	QuantityPicked int32 `json:"quantity_picked"`
-	CostPrice      int32 `json:"cost_price"`
-	Quantity       int32 `json:"quantity"`
+	QuantityOnHand int `json:"quantity_on_hand"`
+	QuantityPicked int `json:"quantity_picked"`
+	CostPrice      int `json:"cost_price"`
+	Quantity       int `json:"quantity"`
 }
 
 func (m *InventoryVariantShopVariant) Reset()         { *m = InventoryVariantShopVariant{} }
@@ -429,8 +429,8 @@ type ShopProduct struct {
 	Note            string                    `json:"note"`
 	Status          status3.Status            `json:"status"`
 	IsAvailable     bool                      `json:"is_available"`
-	ListPrice       int32                     `json:"list_price"`
-	RetailPrice     int32                     `json:"retail_price"`
+	ListPrice       int                       `json:"list_price"`
+	RetailPrice     int                       `json:"retail_price"`
 	CollectionIds   []dot.ID                  `json:"collection_ids"`
 	Variants        []*ShopVariant            `json:"variants"`
 	ProductSourceId dot.ID                    `json:"product_source_id"`
@@ -510,9 +510,9 @@ type UpdateVariantRequest struct {
 	Name        *string      `json:"name"`
 	Note        *string      `json:"note"`
 	Code        *string      `json:"code"`
-	CostPrice   *int32       `json:"cost_price"`
-	ListPrice   *int32       `json:"list_price"`
-	RetailPrice *int32       `json:"retail_price"`
+	CostPrice   *int         `json:"cost_price"`
+	ListPrice   *int         `json:"list_price"`
+	RetailPrice *int         `json:"retail_price"`
 	Description *string      `json:"description"`
 	ShortDesc   *string      `json:"short_desc"`
 	DescHtml    *string      `json:"desc_html"`
@@ -534,9 +534,9 @@ type UpdateProductRequest struct {
 	Description *string                   `json:"description"`
 	ShortDesc   *string                   `json:"short_desc"`
 	DescHtml    *string                   `json:"desc_html"`
-	CostPrice   *int32                    `json:"cost_price"`
-	ListPrice   *int32                    `json:"list_price"`
-	RetailPrice *int32                    `json:"retail_price"`
+	CostPrice   *int                      `json:"cost_price"`
+	ListPrice   *int                      `json:"list_price"`
+	RetailPrice *int                      `json:"retail_price"`
 	ProductType *product_type.ProductType `json:"product_type"`
 	MetaFields  *common.MetaField         `json:"meta_fields"`
 	BrandId     *dot.ID                   `json:"brand_id"`
@@ -718,9 +718,9 @@ type CreateProductRequest struct {
 	ShortDesc   string                    `json:"short_desc"`
 	DescHtml    string                    `json:"desc_html"`
 	ImageUrls   []string                  `json:"image_urls"`
-	CostPrice   int32                     `json:"cost_price"`
-	ListPrice   int32                     `json:"list_price"`
-	RetailPrice int32                     `json:"retail_price"`
+	CostPrice   int                       `json:"cost_price"`
+	ListPrice   int                       `json:"list_price"`
+	RetailPrice int                       `json:"retail_price"`
 	ProductType *product_type.ProductType `json:"product_type"`
 	BrandId     dot.ID                    `json:"brand_id"`
 	MetaFields  []*common.MetaField       `json:"meta_fields"`
@@ -739,9 +739,9 @@ type CreateVariantRequest struct {
 	DescHtml    string       `json:"desc_html"`
 	ImageUrls   []string     `json:"image_urls"`
 	Attributes  []*Attribute `json:"attributes"`
-	CostPrice   int32        `json:"cost_price"`
-	ListPrice   int32        `json:"list_price"`
-	RetailPrice int32        `json:"retail_price"`
+	CostPrice   int          `json:"cost_price"`
+	ListPrice   int          `json:"list_price"`
+	RetailPrice int          `json:"retail_price"`
 }
 
 func (m *CreateVariantRequest) Reset()         { *m = CreateVariantRequest{} }
@@ -761,13 +761,13 @@ type DeprecatedCreateVariantRequest struct {
 	ImageUrls         []string       `json:"image_urls"`
 	Tags              []string       `json:"tags"`
 	Status            status3.Status `json:"status"`
-	CostPrice         int32          `json:"cost_price"`
-	ListPrice         int32          `json:"list_price"`
-	RetailPrice       int32          `json:"retail_price"`
+	CostPrice         int            `json:"cost_price"`
+	ListPrice         int            `json:"list_price"`
+	RetailPrice       int            `json:"retail_price"`
 	Code              string         `json:"code"`
-	QuantityAvailable int32          `json:"quantity_available"`
-	QuantityOnHand    int32          `json:"quantity_on_hand"`
-	QuantityReserved  int32          `json:"quantity_reserved"`
+	QuantityAvailable int            `json:"quantity_available"`
+	QuantityOnHand    int            `json:"quantity_on_hand"`
+	QuantityReserved  int            `json:"quantity_reserved"`
 	Attributes        []*Attribute   `json:"attributes"`
 	Unit              string         `json:"unit"`
 	// deprecated: use code instead
@@ -802,7 +802,7 @@ func (m *UpdateProductsPSCategoryRequest) Reset()         { *m = UpdateProductsP
 func (m *UpdateProductsPSCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductsCollectionResponse struct {
-	Updated int32           `json:"updated"`
+	Updated int             `json:"updated"`
 	Errors  []*common.Error `json:"errors"`
 }
 
@@ -847,7 +847,7 @@ func (m *GetFulfillmentHistoryRequest) Reset()         { *m = GetFulfillmentHist
 func (m *GetFulfillmentHistoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBalanceShopResponse struct {
-	Amount int32 `json:"amount"`
+	Amount int `json:"amount"`
 }
 
 func (m *GetBalanceShopResponse) Reset()         { *m = GetBalanceShopResponse{} }
@@ -934,7 +934,7 @@ type SummaryColRow struct {
 	Label  string `json:"label"`
 	Spec   string `json:"spec"`
 	Unit   string `json:"unit"`
-	Indent int32  `json:"indent"`
+	Indent int    `json:"indent"`
 }
 
 func (m *SummaryColRow) Reset()         { *m = SummaryColRow{} }
@@ -943,7 +943,7 @@ func (m *SummaryColRow) String() string { return jsonx.MustMarshalToString(m) }
 type SummaryItem struct {
 	Label     string   `json:"label"`
 	Spec      string   `json:"spec"`
-	Value     int32    `json:"value"`
+	Value     int      `json:"value"`
 	Unit      string   `json:"unit"`
 	ImageUrls []string `json:"image_urls"`
 }
@@ -962,7 +962,7 @@ func (m *ImportProductsResponse) Reset()         { *m = ImportProductsResponse{}
 func (m *ImportProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CalcBalanceShopResponse struct {
-	Balance int32 `json:"balance"`
+	Balance int `json:"balance"`
 }
 
 func (m *CalcBalanceShopResponse) Reset()         { *m = CalcBalanceShopResponse{} }
@@ -1035,9 +1035,9 @@ func (m *GetExportsStatusRequest) String() string { return jsonx.MustMarshalToSt
 
 type ExportStatusItem struct {
 	Id            string        `json:"id"`
-	ProgressMax   int32         `json:"progress_max"`
-	ProgressValue int32         `json:"progress_value"`
-	ProgressError int32         `json:"progress_error"`
+	ProgressMax   int           `json:"progress_max"`
+	ProgressValue int           `json:"progress_value"`
+	ProgressError int           `json:"progress_error"`
 	Error         *common.Error `json:"error"`
 }
 
@@ -1174,7 +1174,7 @@ type ExternalAccountHaravan struct {
 	Id                                dot.ID   `json:"id"`
 	ShopId                            dot.ID   `json:"shop_id"`
 	Subdomain                         string   `json:"subdomain"`
-	ExternalCarrierServiceId          int32    `json:"external_carrier_service_id"`
+	ExternalCarrierServiceId          int      `json:"external_carrier_service_id"`
 	ExternalConnectedCarrierServiceAt dot.Time `json:"external_connected_carrier_service_at"`
 	ExpiresAt                         dot.Time `json:"expires_at"`
 	CreatedAt                         dot.Time `json:"created_at"`
@@ -1197,10 +1197,10 @@ func (m *ExternalAccountHaravanRequest) Reset()         { *m = ExternalAccountHa
 func (m *ExternalAccountHaravanRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerLiability struct {
-	TotalOrders    int32 `json:"total_orders"`
-	TotalAmount    int   `json:"total_amount"`
-	ReceivedAmount int   `json:"received_amount"`
-	Liability      int   `json:"liability"`
+	TotalOrders    int `json:"total_orders"`
+	TotalAmount    int `json:"total_amount"`
+	ReceivedAmount int `json:"received_amount"`
+	Liability      int `json:"liability"`
 }
 
 func (m *CustomerLiability) Reset()         { *m = CustomerLiability{} }
@@ -1294,7 +1294,7 @@ type IndependentSummaryItem struct {
 	Name  string `json:"name"`
 	Label string `json:"label"`
 	Spec  string `json:"spec"`
-	Value int32  `json:"value"`
+	Value int    `json:"value"`
 	Unit  string `json:"unit"`
 }
 
@@ -1384,7 +1384,7 @@ func (m *UpdateProductStatusRequest) Reset()         { *m = UpdateProductStatusR
 func (m *UpdateProductStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductStatusResponse struct {
-	Updated int32 `json:"updated"`
+	Updated int `json:"updated"`
 }
 
 func (m *UpdateProductStatusResponse) Reset()         { *m = UpdateProductStatusResponse{} }
@@ -1394,7 +1394,7 @@ type PaymentTradingOrderRequest struct {
 	OrderId         dot.ID                           `json:"order_id"`
 	Desc            string                           `json:"desc"`
 	ReturnUrl       string                           `json:"return_url"`
-	Amount          int32                            `json:"amount"`
+	Amount          int                              `json:"amount"`
 	PaymentProvider payment_provider.PaymentProvider `json:"payment_provider"`
 }
 
@@ -1421,7 +1421,7 @@ type PaymentCheckReturnDataRequest struct {
 	Id                    string                           `json:"id"`
 	Code                  string                           `json:"code"`
 	PaymentStatus         string                           `json:"payment_status"`
-	Amount                int32                            `json:"amount"`
+	Amount                int                              `json:"amount"`
 	ExternalTransactionId string                           `json:"external_transaction_id"`
 	PaymentProvider       payment_provider.PaymentProvider `json:"payment_provider"`
 }
@@ -1749,8 +1749,8 @@ type InventoryVoucherLine struct {
 	ProductName string      `json:"product_name"`
 	ImageUrl    string      `json:"image_url"`
 	Attributes  []Attribute `json:"attributes"`
-	Price       int32       `json:"price"`
-	Quantity    int32       `json:"quantity"`
+	Price       int         `json:"price"`
+	Quantity    int         `json:"quantity"`
 }
 
 func (m *InventoryVoucherLine) Reset()         { *m = InventoryVoucherLine{} }
@@ -1799,7 +1799,7 @@ type UpdateInventoryVoucherRequest struct {
 	Note        *string                `json:"note"`
 	Type        string                 `json:"type"`
 	Title       *string                `json:"title"`
-	TotalAmount int32                  `json:"total_amount"`
+	TotalAmount int                    `json:"total_amount"`
 }
 
 func (m *UpdateInventoryVoucherRequest) Reset()         { *m = UpdateInventoryVoucherRequest{} }
@@ -1854,10 +1854,10 @@ func (m *GetInventoryVariantsByVariantIDsRequest) String() string { return jsonx
 type InventoryVariant struct {
 	ShopId         dot.ID   `json:"shop_id"`
 	VariantId      dot.ID   `json:"variant_id"`
-	QuantityOnHand int32    `json:"quantity_on_hand"`
-	QuantityPicked int32    `json:"quantity_picked"`
-	CostPrice      int32    `json:"cost_price"`
-	Quantity       int32    `json:"quantity"`
+	QuantityOnHand int      `json:"quantity_on_hand"`
+	QuantityPicked int      `json:"quantity_picked"`
+	CostPrice      int      `json:"cost_price"`
+	Quantity       int      `json:"quantity"`
 	CreatedAt      dot.Time `json:"created_at"`
 	UpdatedAt      dot.Time `json:"updated_at"`
 }
@@ -1866,16 +1866,16 @@ func (m *InventoryVariant) Reset()         { *m = InventoryVariant{} }
 func (m *InventoryVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVariantQuantity struct {
-	QuantityOnHand int32 `json:"quantity_on_hand"`
-	QuantityPicked int32 `json:"quantity_picked"`
-	Quantity       int32 `json:"quantity"`
+	QuantityOnHand int `json:"quantity_on_hand"`
+	QuantityPicked int `json:"quantity_picked"`
+	Quantity       int `json:"quantity"`
 }
 
 func (m *InventoryVariantQuantity) Reset()         { *m = InventoryVariantQuantity{} }
 func (m *InventoryVariantQuantity) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVoucher struct {
-	TotalAmount  int32                   `json:"total_amount"`
+	TotalAmount  int                     `json:"total_amount"`
 	CreatedBy    dot.ID                  `json:"created_by"`
 	UpdatedBy    dot.ID                  `json:"updated_by"`
 	Lines        []*InventoryVoucherLine `json:"lines"`
@@ -1995,7 +1995,7 @@ func (m *UpdateBrandRequest) Reset()         { *m = UpdateBrandRequest{} }
 func (m *UpdateBrandRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteBrandResponse struct {
-	Count int32 `json:"count"`
+	Count int `json:"count"`
 }
 
 func (m *DeleteBrandResponse) Reset()         { *m = DeleteBrandResponse{} }
@@ -2072,7 +2072,7 @@ func (m *GetStocktakesByIDsResponse) Reset()         { *m = GetStocktakesByIDsRe
 func (m *GetStocktakesByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateStocktakeRequest struct {
-	TotalQuantity int32  `json:"total_quantity"`
+	TotalQuantity int    `json:"total_quantity"`
 	Note          string `json:"note"`
 	//  length more than one
 	Lines []*StocktakeLine `json:"lines"`
@@ -2083,7 +2083,7 @@ func (m *CreateStocktakeRequest) String() string { return jsonx.MustMarshalToStr
 
 type UpdateStocktakeRequest struct {
 	Id            dot.ID `json:"id"`
-	TotalQuantity int32  `json:"total_quantity"`
+	TotalQuantity int    `json:"total_quantity"`
 	Note          string `json:"note"`
 	//  length more than one
 	Lines []*StocktakeLine `json:"lines"`
@@ -2095,7 +2095,7 @@ func (m *UpdateStocktakeRequest) String() string { return jsonx.MustMarshalToStr
 type Stocktake struct {
 	Id            dot.ID           `json:"id"`
 	ShopId        dot.ID           `json:"shop_id"`
-	TotalQuantity int32            `json:"total_quantity"`
+	TotalQuantity int              `json:"total_quantity"`
 	Note          string           `json:"note"`
 	Code          string           `json:"code"`
 	CancelReason  string           `json:"cancel_reason"`
@@ -2133,11 +2133,11 @@ type StocktakeLine struct {
 	ProductName string       `json:"product_name"`
 	VariantName string       `json:"variant_name"`
 	VariantId   dot.ID       `json:"variant_id"`
-	OldQuantity int32        `json:"old_quantity"`
-	NewQuantity int32        `json:"new_quantity"`
+	OldQuantity int          `json:"old_quantity"`
+	NewQuantity int          `json:"new_quantity"`
 	Code        string       `json:"code"`
 	ImageUrl    string       `json:"image_url"`
-	CostPrice   int32        `json:"cost_price"`
+	CostPrice   int          `json:"cost_price"`
 	Attributes  []*Attribute `json:"attributes"`
 }
 
@@ -2185,7 +2185,7 @@ func (m *UpdateInventoryVariantCostPriceResponse) String() string { return jsonx
 
 type UpdateInventoryVariantCostPriceRequest struct {
 	VariantId dot.ID `json:"variant_id"`
-	CostPrice int32  `json:"cost_price"`
+	CostPrice int    `json:"cost_price"`
 }
 
 func (m *UpdateInventoryVariantCostPriceRequest) Reset() {

@@ -12,7 +12,7 @@ func (s *CreditType) ToModel() string {
 	if s == nil {
 		return ""
 	}
-	return CreditType_name[int32(*s)]
+	return CreditType_name[int(*s)]
 }
 
 func (x CreditType) MarshalJSON() ([]byte, error) {

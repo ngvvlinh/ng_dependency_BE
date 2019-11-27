@@ -385,8 +385,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "exported_fields": {
           "type": "array",
@@ -434,8 +433,7 @@
           }
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "invitation_accounts": {
           "type": "array",

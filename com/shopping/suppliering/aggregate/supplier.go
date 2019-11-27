@@ -72,7 +72,7 @@ func (a *SupplierAggregate) CreateSupplier(
 	if err = scheme.Convert(args, supplier); err != nil {
 		return nil, err
 	}
-	var maxCodeNorm int32
+	var maxCodeNorm int
 	supplierTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetSupplierByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:

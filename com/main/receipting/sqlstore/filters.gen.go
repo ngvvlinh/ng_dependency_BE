@@ -100,7 +100,7 @@ func (ft *ReceiptFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -109,7 +109,7 @@ func (ft *ReceiptFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -195,7 +195,7 @@ func (ft *ReceiptFilters) ByTraderFullNameNormPtr(TraderFullNameNorm *string) *s
 	}
 }
 
-func (ft *ReceiptFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -204,7 +204,7 @@ func (ft *ReceiptFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",

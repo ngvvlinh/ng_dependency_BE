@@ -28,10 +28,10 @@ func ToPbExternalCreateOrderLine(in *haravan.Item) *pbexternal.OrderLine {
 	}
 	return &pbexternal.OrderLine{
 		ProductName:  in.Name,
-		Quantity:     int32(in.Quantity),
-		ListPrice:    int32(in.Price),
-		RetailPrice:  int32(in.Price),
-		PaymentPrice: cm.PIntToInt32(int(in.Price)),
+		Quantity:     in.Quantity,
+		ListPrice:    int(in.Price),
+		RetailPrice:  int(in.Price),
+		PaymentPrice: cm.PInt(int(in.Price)),
 	}
 }
 

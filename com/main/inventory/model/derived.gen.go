@@ -56,9 +56,9 @@ func (m *InventoryVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Int64(m.ShopID),
 		core.Int64(m.VariantID),
-		core.Int32(m.QuantityOnHand),
-		core.Int32(m.QuantityPicked),
-		core.Int32(m.CostPrice),
+		core.Int(m.QuantityOnHand),
+		core.Int(m.QuantityPicked),
+		core.Int(m.CostPrice),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -68,9 +68,9 @@ func (m *InventoryVariant) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ShopID),
 		(*core.Int64)(&m.VariantID),
-		(*core.Int32)(&m.QuantityOnHand),
-		(*core.Int32)(&m.QuantityPicked),
-		(*core.Int32)(&m.CostPrice),
+		(*core.Int)(&m.QuantityOnHand),
+		(*core.Int)(&m.QuantityPicked),
+		(*core.Int)(&m.CostPrice),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -319,12 +319,12 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.CreatedBy),
 		core.Int64(m.UpdatedBy),
 		core.String(m.Code),
-		core.Int32(m.CodeNorm),
-		core.Int32(m.Status),
+		core.Int(m.CodeNorm),
+		core.Int(m.Status),
 		core.String(m.Note),
 		core.Int64(m.TraderID),
 		core.JSON{m.Trader},
-		core.Int32(m.TotalAmount),
+		core.Int(m.TotalAmount),
 		core.String(m.Type),
 		core.JSON{m.Lines},
 		core.Array{m.VariantIDs, opts},
@@ -348,12 +348,12 @@ func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.CreatedBy),
 		(*core.Int64)(&m.UpdatedBy),
 		(*core.String)(&m.Code),
-		(*core.Int32)(&m.CodeNorm),
-		(*core.Int32)(&m.Status),
+		(*core.Int)(&m.CodeNorm),
+		(*core.Int)(&m.Status),
 		(*core.String)(&m.Note),
 		(*core.Int64)(&m.TraderID),
 		core.JSON{&m.Trader},
-		(*core.Int32)(&m.TotalAmount),
+		(*core.Int)(&m.TotalAmount),
 		(*core.String)(&m.Type),
 		core.JSON{&m.Lines},
 		core.Array{&m.VariantIDs, opts},
@@ -483,7 +483,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int32(m.Status))
+		w.WriteArg(int(m.Status))
 	}
 	if m.Note != "" {
 		flag = true

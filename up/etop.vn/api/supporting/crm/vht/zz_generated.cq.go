@@ -40,7 +40,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateOrUpdateCallHistoryByCallIDCommand struct {
-	Direction       int32
+	Direction       int
 	CdrID           string
 	CallID          string
 	SipCallID       string
@@ -51,13 +51,13 @@ type CreateOrUpdateCallHistoryByCallIDCommand struct {
 	ToExtension     string
 	FromNumber      string
 	ToNumber        string
-	Duration        int32
+	Duration        int
 	TimeStarted     time.Time
 	TimeConnected   time.Time
 	TimeEnded       time.Time
 	RecordingPath   string
 	RecordingUrl    string
-	RecordFileSize  int32
+	RecordFileSize  int
 	EtopAccountID   dot.ID
 	VtigerAccountID string
 
@@ -70,7 +70,7 @@ func (h AggregateHandler) HandleCreateOrUpdateCallHistoryByCallID(ctx context.Co
 }
 
 type CreateOrUpdateCallHistoryBySDKCallIDCommand struct {
-	Direction       int32
+	Direction       int
 	CdrID           string
 	CallID          string
 	SipCallID       string
@@ -81,13 +81,13 @@ type CreateOrUpdateCallHistoryBySDKCallIDCommand struct {
 	ToExtension     string
 	FromNumber      string
 	ToNumber        string
-	Duration        int32
+	Duration        int
 	TimeStarted     time.Time
 	TimeConnected   time.Time
 	TimeEnded       time.Time
 	RecordingPath   string
 	RecordingUrl    string
-	RecordFileSize  int32
+	RecordFileSize  int
 	EtopAccountID   dot.ID
 	VtigerAccountID string
 
@@ -132,8 +132,8 @@ func (h QueryServiceHandler) HandleGetCallHistories(ctx context.Context, msg *Ge
 }
 
 type GetLastCallHistoryQuery struct {
-	Offset int32
-	Limit  int32
+	Offset int
+	Limit  int
 	Sort   []string
 
 	Result *VhtCallLog `json:"-"`

@@ -19,7 +19,7 @@ type ShopCustomer struct {
 	ShopID    dot.ID
 	GroupIDs  []dot.ID
 	Code      string
-	CodeNorm  int32
+	CodeNorm  int
 	FullName  string
 	Gender    string
 	Type      CustomerType
@@ -27,7 +27,7 @@ type ShopCustomer struct {
 	Note      string
 	Phone     string
 	Email     string
-	Status    int32
+	Status    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

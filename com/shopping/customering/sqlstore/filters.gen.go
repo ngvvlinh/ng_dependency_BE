@@ -153,7 +153,7 @@ func (ft *ShopCustomerFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+func (ft *ShopCustomerFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -162,7 +162,7 @@ func (ft *ShopCustomerFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+func (ft *ShopCustomerFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -305,7 +305,7 @@ func (ft *ShopCustomerFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *ShopCustomerFilters) ByStatus(Status int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -314,7 +314,7 @@ func (ft *ShopCustomerFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *ShopCustomerFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

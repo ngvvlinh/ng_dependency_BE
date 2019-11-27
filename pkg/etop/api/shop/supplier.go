@@ -124,7 +124,7 @@ func (s *SupplierService) DeleteSupplier(ctx context.Context, r *DeleteSupplierE
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
 	return nil
 }
 

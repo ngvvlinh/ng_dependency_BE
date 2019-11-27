@@ -1,18 +1,18 @@
 package types
 
-type Carrier int32
+type Carrier int
 
 const (
 	Default Carrier = 0
 	Ahamove Carrier = 1
 )
 
-var Carrier_name = map[int32]string{
+var Carrier_name = map[int]string{
 	0: "default",
 	1: "ahamove",
 }
 
-var Carrier_value = map[string]int32{
+var Carrier_value = map[string]int{
 	"default": 0,
 	"ahamove": 1,
 }
@@ -21,7 +21,7 @@ func CarrierToString(s Carrier) string {
 	if s == 0 {
 		return ""
 	}
-	return Carrier_name[int32(s)]
+	return Carrier_name[int(s)]
 }
 
 func CarrierFromString(s string) Carrier {
@@ -30,5 +30,5 @@ func CarrierFromString(s string) Carrier {
 }
 
 func (c Carrier) String() string {
-	return Carrier_name[int32(c)]
+	return Carrier_name[int(c)]
 }

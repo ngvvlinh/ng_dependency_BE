@@ -82,7 +82,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Paging: cmapi.PbPageInfo(paging, int(query.Result.Total)),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
@@ -163,7 +163,7 @@ func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *UpdateOrdersSt
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result.Updated)}
+	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result.Updated)}
 	return nil
 }
 
@@ -288,7 +288,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int32(model.S3Positive),
+		Status:  int(model.S3Positive),
 	}
 	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err
@@ -360,7 +360,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	}
 	q.Result = &pborder.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
-		Paging:       cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Paging:       cmapi.PbPageInfo(paging, int(query.Result.Total)),
 	}
 	return nil
 }
@@ -403,7 +403,7 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
+		Updated: int(cmd.Result.Updated),
 	}
 	return nil
 }
@@ -418,7 +418,7 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
+		Updated: int(cmd.Result.Updated),
 	}
 	return nil
 }
@@ -443,7 +443,7 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
+		Updated: int(cmd.Result.Updated),
 	}
 	return nil
 }

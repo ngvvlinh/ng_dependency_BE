@@ -159,7 +159,7 @@ func (q *QueryService) CountTicketByStatus(ctx context.Context, req *vtiger.Coun
 	}
 	return &vtiger.CountTicketByStatusResponse{
 		Code:  status,
-		Count: int32(countAtoi),
+		Count: int(countAtoi),
 	}, nil
 }
 

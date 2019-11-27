@@ -33,7 +33,7 @@ type QueryService interface {
 
 type PurchaseOrdersResponse struct {
 	PurchaseOrders []*PurchaseOrder
-	Count          int32
+	Count          int
 	Paging         meta.PageInfo
 }
 

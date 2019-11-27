@@ -54,7 +54,7 @@ func (h AggregateHandler) HandleAddCustomersToGroup(ctx context.Context, msg *Ad
 type BatchSetCustomersStatusCommand struct {
 	IDs    []dot.ID
 	ShopID dot.ID
-	Status int32
+	Status int
 
 	Result *meta.UpdatedResponse `json:"-"`
 }
@@ -290,7 +290,7 @@ func (q *AddCustomersToGroupCommand) SetAddCustomerToGroupArgs(args *AddCustomer
 	q.CustomerIDs = args.CustomerIDs
 }
 
-func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID, status int32) {
+func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID, status int) {
 	return ctx,
 		q.IDs,
 		q.ShopID,

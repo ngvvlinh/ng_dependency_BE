@@ -15,7 +15,7 @@ type GenerateEventsRequest struct {
 	// Control how many events are dispatched asynchronously as a group.
 	// We don't want to dispatch too many events together.
 	// Example: 100. Default: 0 - events are dispatched synchronously.
-	ItemsPerBatch int32 `json:"items_per_batch"`
+	ItemsPerBatch int `json:"items_per_batch"`
 }
 
 func (m *GenerateEventsRequest) Reset()         { *m = GenerateEventsRequest{} }

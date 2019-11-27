@@ -10,5 +10,5 @@ func PbSource(s model.OrderSourceType) source.Source {
 }
 
 func SourceToModel(s source.Source) model.OrderSourceType {
-	return model.OrderSourceType(source.Source_name[int32(s)])
+	return model.OrderSourceType(source.Source_name[int(s)])
 }

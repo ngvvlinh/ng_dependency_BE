@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type ShippingProvider int32
+type ShippingProvider int
 
 const (
 	ShippingProvider_unknown ShippingProvider = 0
@@ -15,7 +15,7 @@ const (
 	ShippingProvider_vtpost  ShippingProvider = 23
 )
 
-var ShippingProvider_name = map[int32]string{
+var ShippingProvider_name = map[int]string{
 	0:  "unknown",
 	22: "all",
 	20: "manual",
@@ -24,7 +24,7 @@ var ShippingProvider_name = map[int32]string{
 	23: "vtpost",
 }
 
-var ShippingProvider_value = map[string]int32{
+var ShippingProvider_value = map[string]int{
 	"unknown": 0,
 	"all":     22,
 	"manual":  20,
@@ -40,7 +40,7 @@ func (x ShippingProvider) Enum() *ShippingProvider {
 }
 
 func (x ShippingProvider) String() string {
-	return jsonx.EnumName(ShippingProvider_name, int32(x))
+	return jsonx.EnumName(ShippingProvider_name, int(x))
 }
 
 func (x *ShippingProvider) UnmarshalJSON(data []byte) error {

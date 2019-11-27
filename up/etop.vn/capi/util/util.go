@@ -38,6 +38,15 @@ func CoalesceInt32(ints ...int32) int32 {
 	return 0
 }
 
+func CoalesceInt(ints ...int) int {
+	for _, i := range ints {
+		if i != 0 {
+			return i
+		}
+	}
+	return 0
+}
+
 func ListStringsContain(list []string, item string) bool {
 	for _, x := range list {
 		if x == item {

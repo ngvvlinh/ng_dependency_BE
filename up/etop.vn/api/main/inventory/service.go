@@ -59,7 +59,7 @@ type UpdateInventoryVoucherArgs struct {
 	UpdatedBy dot.ID
 
 	TraderID    dot.NullID
-	TotalAmount int32
+	TotalAmount int
 
 	Note  dot.NullString
 	Lines []*InventoryVoucherItem
@@ -99,10 +99,10 @@ type AdjustInventoryQuantityRespone struct {
 type InventoryVariant struct {
 	ShopID          dot.ID
 	VariantID       dot.ID
-	QuantityOnHand  int32
-	QuantityPicked  int32
-	CostPrice       int32
-	QuantitySummary int32
+	QuantityOnHand  int
+	QuantityPicked  int
+	CostPrice       int
+	QuantitySummary int
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -141,7 +141,7 @@ type CreateInventoryVoucherArgs struct {
 	RefCode string
 
 	TraderID    dot.ID
-	TotalAmount int32
+	TotalAmount int
 	Type        InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
@@ -167,7 +167,7 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 
 type InventoryVariantQuantityChange struct {
 	ItemInfo       *InventoryVoucherItem
-	QuantityChange int32
+	QuantityChange int
 }
 
 type CheckInventoryVariantQuantityRequest struct {
@@ -182,7 +182,7 @@ type InventoryVoucher struct {
 	ShopID    dot.ID
 	Title     string
 	Code      string
-	CodeNorm  int32
+	CodeNorm  int
 	CreatedBy dot.ID
 	UpdatedBy dot.ID
 
@@ -198,7 +198,7 @@ type InventoryVoucher struct {
 
 	TraderID    dot.ID
 	Trader      *Trader
-	TotalAmount int32
+	TotalAmount int
 
 	// enum "in" or "out"
 	Type InventoryVoucherType
@@ -222,8 +222,8 @@ type InventoryVoucherItem struct {
 	VariantID   dot.ID
 	VariantName string
 
-	Quantity int32
-	Price    int32
+	Quantity int
+	Price    int
 
 	Code       string
 	ImageURL   string
@@ -277,5 +277,5 @@ type CreateInventoryVoucherByReferenceArgs struct {
 type UpdateInventoryVariantCostPriceRequest struct {
 	ShopID    dot.ID
 	VariantID dot.ID
-	CostPrice int32
+	CostPrice int
 }

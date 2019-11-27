@@ -76,7 +76,7 @@ func (p *ProcessManager) ReceiptCreating(
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
 		RefType: receipting.ReceiptRefTypePurchaseOrder,
-		Status:  int32(etop.S3Positive),
+		Status:  int(etop.S3Positive),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err

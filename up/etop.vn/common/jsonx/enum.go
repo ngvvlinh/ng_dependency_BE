@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func UnmarshalJSONEnum(m map[string]int32, data []byte, enumName string) (int32, error) {
+func UnmarshalJSONEnum(m map[string]int, data []byte, enumName string) (int, error) {
 	if data[0] == '"' {
 		var repr string
 		if err := json.Unmarshal(data, &repr); err != nil {
@@ -19,14 +19,14 @@ func UnmarshalJSONEnum(m map[string]int32, data []byte, enumName string) (int32,
 		return val, nil
 	}
 
-	var val int32
+	var val int
 	if err := json.Unmarshal(data, &val); err != nil {
 		return 0, fmt.Errorf("cannot unmarshal %#q into enum %s", data, enumName)
 	}
 	return val, nil
 }
 
-func EnumName(m map[int32]string, v int32) string {
+func EnumName(m map[int]string, v int) string {
 	s, ok := m[v]
 	if ok {
 		return s

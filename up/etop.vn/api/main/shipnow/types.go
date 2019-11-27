@@ -22,7 +22,7 @@ type ShipnowFulfillment struct {
 	DeliveryPoints             []*DeliveryPoint
 	Carrier                    v1.Carrier
 	ShippingServiceCode        string
-	ShippingServiceFee         int32
+	ShippingServiceFee         int
 	ShippingServiceName        string
 	ShippingServiceDescription string
 	shippingtypes.WeightInfo

@@ -38,14 +38,14 @@ type ShipnowFulfillment struct {
 	Carrier Carrier
 
 	ShippingServiceCode        string
-	ShippingServiceFee         int32
+	ShippingServiceFee         int
 	ShippingServiceName        string
 	ShippingServiceDescription string
 
-	ChargeableWeight int32
-	GrossWeight      int32
-	BasketValue      int32
-	CODAmount        int32
+	ChargeableWeight int
+	GrossWeight      int
+	BasketValue      int
+	CODAmount        int
 	ShippingNote     string
 	RequestPickupAt  time.Time
 
@@ -93,13 +93,13 @@ type DeliveryPoint struct {
 
 	OrderID          dot.ID      `json:"order_id"`
 	OrderCode        string      `json:"order_code"`
-	GrossWeight      int32       `json:"gross_weight"`
-	ChargeableWeight int32       `json:"chargeable_weight"`
-	Length           int32       `json:"lenght"`
-	Width            int32       `json:"width"`
-	Height           int32       `json:"height"`
-	BasketValue      int32       `json:"basket_value"`
-	CODAmount        int32       `json:"cod_amount"`
+	GrossWeight      int         `json:"gross_weight"`
+	ChargeableWeight int         `json:"chargeable_weight"`
+	Length           int         `json:"lenght"`
+	Width            int         `json:"width"`
+	Height           int         `json:"height"`
+	BasketValue      int         `json:"basket_value"`
+	CODAmount        int         `json:"cod_amount"`
 	TryOn            model.TryOn `json:"try_on"`
 	ShippingNote     string      `json:"shipping_note"`
 }

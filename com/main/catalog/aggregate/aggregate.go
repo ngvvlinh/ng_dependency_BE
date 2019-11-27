@@ -510,14 +510,14 @@ func (a *Aggregate) UpdateBrandInfo(ctx context.Context, brand *catalog.UpdateBr
 	return resultDB, err
 }
 
-func (a *Aggregate) DeleteShopBrand(ctx context.Context, ids []dot.ID, shopID dot.ID) (int32, error) {
-	var count int32 = 0
+func (a *Aggregate) DeleteShopBrand(ctx context.Context, ids []dot.ID, shopID dot.ID) (int, error) {
+	var count int = 0
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		countRecord, errTrans := a.shopBrand(ctx).ShopID(shopID).IDs(ids...).SoftDelete()
 		if errTrans != nil {
 			return errTrans
 		}
-		count = int32(countRecord)
+		count = int(countRecord)
 		products, errTrans := a.shopProduct(ctx).BrandIDs(ids...).ListShopProductsDB()
 		if errTrans != nil {
 			return errTrans

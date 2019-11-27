@@ -26,7 +26,7 @@ func PbTimeToModel(t dot.Time) time.Time {
 	return time.Time(t)
 }
 
-func BareInt32(v *int32) int32 {
+func BareInt(v *int) int {
 	if v == nil {
 		return 0
 	}
@@ -40,12 +40,11 @@ func BareString(v *string) string {
 	return *v
 }
 
-func PbPtrInt32(v int) *int32 {
-	i := int32(v)
-	return &i
+func PbPtrInt(v int) *int {
+	return &v
 }
 
-func PatchInt32(v int, p *int32) int {
+func PatchInt(v int, p *int) int {
 	if p == nil {
 		return v
 	}
@@ -79,7 +78,7 @@ func CMPaging(p *common.Paging, sorts ...string) *cm.Paging {
 	return res
 }
 
-func PbPageInfo(p *cm.Paging, total int32) *common.PageInfo {
+func PbPageInfo(p *cm.Paging, total int) *common.PageInfo {
 	return &common.PageInfo{
 		Total: total,
 		Limit: p.Limit,
@@ -87,7 +86,7 @@ func PbPageInfo(p *cm.Paging, total int32) *common.PageInfo {
 	}
 }
 
-func PbPaging(p cm.Paging, total int32) *common.PageInfo {
+func PbPaging(p cm.Paging, total int) *common.PageInfo {
 	return &common.PageInfo{
 		Total: total,
 		Limit: p.Limit,
@@ -197,7 +196,7 @@ func CountErrors(errs []*common.Error) (c int) {
 
 func Updated(updated int) *common.UpdatedResponse {
 	return &common.UpdatedResponse{
-		Updated: int32(updated),
+		Updated: updated,
 	}
 }
 
@@ -258,7 +257,7 @@ func ErrorsToModel(errs []*common.Error) []*model.Error {
 	return res
 }
 
-func PagingToModel(paging *common.Paging, defaultOffset int32, defaultLimit int32, maxLimit int32) *meta.Paging {
+func PagingToModel(paging *common.Paging, defaultOffset int, defaultLimit int, maxLimit int) *meta.Paging {
 	if defaultLimit == 0 {
 		defaultLimit = 10
 	}

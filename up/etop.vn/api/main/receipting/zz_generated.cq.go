@@ -70,7 +70,7 @@ type CreateReceiptCommand struct {
 	TraderID    dot.ID
 	Title       string
 	Type        ReceiptType
-	Status      int32
+	Status      int
 	Description string
 	Amount      int
 	LedgerID    dot.ID
@@ -192,7 +192,7 @@ type ListReceiptsByRefsAndStatusQuery struct {
 	ShopID  dot.ID
 	RefIDs  []dot.ID
 	RefType ReceiptRefType
-	Status  int32
+	Status  int
 
 	Result *ReceiptsResponse `json:"-"`
 }

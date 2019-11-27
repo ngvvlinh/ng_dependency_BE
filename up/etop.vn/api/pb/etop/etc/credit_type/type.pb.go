@@ -4,17 +4,17 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type CreditType int32
+type CreditType int
 
 const (
 	CreditType_shop CreditType = 1
 )
 
-var CreditType_name = map[int32]string{
+var CreditType_name = map[int]string{
 	1: "shop",
 }
 
-var CreditType_value = map[string]int32{
+var CreditType_value = map[string]int{
 	"shop": 1,
 }
 
@@ -25,7 +25,7 @@ func (x CreditType) Enum() *CreditType {
 }
 
 func (x CreditType) String() string {
-	return jsonx.EnumName(CreditType_name, int32(x))
+	return jsonx.EnumName(CreditType_name, int(x))
 }
 
 func (x *CreditType) UnmarshalJSON(data []byte) error {

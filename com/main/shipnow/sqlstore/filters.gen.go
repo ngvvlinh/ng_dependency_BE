@@ -120,7 +120,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCod
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
@@ -129,7 +129,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
@@ -177,7 +177,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingServiceDescriptionPtr(ShippingSer
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
@@ -186,7 +186,7 @@ func (ft *ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) 
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
@@ -196,7 +196,7 @@ func (ft *ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "gross_weight",
@@ -205,7 +205,7 @@ func (ft *ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.Column
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "gross_weight",
@@ -215,7 +215,7 @@ func (ft *ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.Co
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByBasketValue(BasketValue int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -224,7 +224,7 @@ func (ft *ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.Column
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -234,7 +234,7 @@ func (ft *ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.Co
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCODAmount(CODAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cod_amount",
@@ -243,7 +243,7 @@ func (ft *ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cod_amount",

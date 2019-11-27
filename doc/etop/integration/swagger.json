@@ -445,8 +445,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         }
       }
     },
@@ -483,8 +482,7 @@
           }
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "redirect_url": {
           "type": "string"
@@ -549,8 +547,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "external_id": {
           "type": "string"
@@ -618,8 +615,7 @@
           "type": "string"
         },
         "expires_in": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "user": {
           "$ref": "#/definitions/ocUser"

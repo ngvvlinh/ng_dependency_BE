@@ -16,13 +16,13 @@ type Receipt struct {
 	ShopID             dot.ID
 	TraderID           dot.ID
 	Code               string
-	CodeNorm           int32
+	CodeNorm           int
 	Title              string
 	Type               string
 	Description        string
 	TraderFullNameNorm string
 
-	Amount          int32
+	Amount          int
 	Status          model.Status3
 	RefIDs          []dot.ID
 	RefType         string
@@ -43,7 +43,7 @@ type Receipt struct {
 type ReceiptLine struct {
 	RefID  dot.ID `json:"ref_id"`
 	Title  string `json:"title"`
-	Amount int32  `json:"amount"`
+	Amount int    `json:"amount"`
 }
 
 type Trader struct {

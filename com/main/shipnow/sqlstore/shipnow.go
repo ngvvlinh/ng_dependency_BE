@@ -133,7 +133,7 @@ type UpdateInfoArgs struct {
 	PickupAddress       *ordertypes.Address
 	Carrier             carriertypes.Carrier
 	ShippingServiceCode string
-	ShippingServiceFee  int32
+	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	DeliveryPoints      []*shipnow.DeliveryPoint

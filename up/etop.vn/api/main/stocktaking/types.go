@@ -21,7 +21,7 @@ type StocktakeConfirmedEvent struct {
 type ShopStocktake struct {
 	ID            dot.ID
 	ShopID        dot.ID
-	TotalQuantity int32
+	TotalQuantity int
 
 	CreatedBy    dot.ID
 	UpdatedBy    dot.ID
@@ -29,7 +29,7 @@ type ShopStocktake struct {
 
 	Note     string
 	Code     string
-	CodeNorm int32
+	CodeNorm int
 
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -45,13 +45,13 @@ type StocktakeLine struct {
 	ProductName string
 
 	VariantID   dot.ID
-	OldQuantity int32
-	NewQuantity int32
+	OldQuantity int
+	NewQuantity int
 	VariantName string
 	Code        string
 	ImageURL    string
 
-	CostPrice  int32
+	CostPrice  int
 	Attributes []*Attribute
 }
 

@@ -118,7 +118,7 @@ func (ft *ShopLedgerFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *ShopLedgerFilters) ByStatus(Status int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -127,7 +127,7 @@ func (ft *ShopLedgerFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *ShopLedgerFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

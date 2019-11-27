@@ -62,7 +62,7 @@ func (ft *InventoryVariantFilters) ByVariantIDPtr(VariantID *dot.ID) *sq.ColumnF
 	}
 }
 
-func (ft *InventoryVariantFilters) ByQuantityOnHand(QuantityOnHand int32) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByQuantityOnHand(QuantityOnHand int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "quantity_on_hand",
@@ -71,7 +71,7 @@ func (ft *InventoryVariantFilters) ByQuantityOnHand(QuantityOnHand int32) *sq.Co
 	}
 }
 
-func (ft *InventoryVariantFilters) ByQuantityOnHandPtr(QuantityOnHand *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByQuantityOnHandPtr(QuantityOnHand *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "quantity_on_hand",
@@ -81,7 +81,7 @@ func (ft *InventoryVariantFilters) ByQuantityOnHandPtr(QuantityOnHand *int32) *s
 	}
 }
 
-func (ft *InventoryVariantFilters) ByQuantityPicked(QuantityPicked int32) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByQuantityPicked(QuantityPicked int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "quantity_picked",
@@ -90,7 +90,7 @@ func (ft *InventoryVariantFilters) ByQuantityPicked(QuantityPicked int32) *sq.Co
 	}
 }
 
-func (ft *InventoryVariantFilters) ByQuantityPickedPtr(QuantityPicked *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByQuantityPickedPtr(QuantityPicked *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "quantity_picked",
@@ -100,7 +100,7 @@ func (ft *InventoryVariantFilters) ByQuantityPickedPtr(QuantityPicked *int32) *s
 	}
 }
 
-func (ft *InventoryVariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -109,7 +109,7 @@ func (ft *InventoryVariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter
 	}
 }
 
-func (ft *InventoryVariantFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -266,7 +266,7 @@ func (ft *InventoryVoucherFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -275,7 +275,7 @@ func (ft *InventoryVoucherFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -342,7 +342,7 @@ func (ft *InventoryVoucherFilters) ByTraderIDPtr(TraderID *dot.ID) *sq.ColumnFil
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTotalAmount(TotalAmount int32) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -351,7 +351,7 @@ func (ft *InventoryVoucherFilters) ByTotalAmount(TotalAmount int32) *sq.ColumnFi
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTotalAmountPtr(TotalAmount *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_amount",

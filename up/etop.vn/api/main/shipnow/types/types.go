@@ -25,13 +25,13 @@ type ShipnowService struct {
 	Carrier            v1.Carrier
 	Name               string
 	Code               string
-	Fee                int32
+	Fee                int
 	ExpectedPickupAt   time.Time
 	ExpectedDeliveryAt time.Time
 	Description        string
 }
 
-type State int32
+type State int
 
 const (
 	StateDefault       State = 0
@@ -48,10 +48,10 @@ const (
 )
 
 func (s State) String() string {
-	return State_name[int32(s)]
+	return State_name[int(s)]
 }
 
-var State_name = map[int32]string{
+var State_name = map[int]string{
 	0:   "default",
 	1:   "created",
 	2:   "assigning",
@@ -65,7 +65,7 @@ var State_name = map[int32]string{
 	127: "cancelled",
 }
 
-var State_value = map[string]int32{
+var State_value = map[string]int{
 	"default":       0,
 	"created":       1,
 	"assigning":     2,

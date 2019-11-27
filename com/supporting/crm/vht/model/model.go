@@ -22,8 +22,8 @@ type VhtCallHistory struct {
 	ToExtension     string
 	FromNumber      string
 	ToNumber        string
-	Duration        int32
-	Direction       int32
+	Duration        int
+	Direction       int
 	TimeStarted     time.Time
 	TimeConnected   time.Time
 	TimeEnded       time.Time
@@ -31,7 +31,7 @@ type VhtCallHistory struct {
 	UpdatedAt       time.Time `sq:"update"`
 	RecordingPath   string
 	RecordingURL    string
-	RecordFileSize  int32
+	RecordFileSize  int
 	EtopAccountID   dot.ID
 	VtigerAccountID string
 	SyncStatus      string

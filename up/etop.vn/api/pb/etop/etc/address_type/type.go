@@ -12,7 +12,7 @@ func (s *AddressType) ToModel() string {
 	if s == nil {
 		return ""
 	}
-	return AddressType_name[int32(*s)]
+	return AddressType_name[int(*s)]
 }
 
 func (x AddressType) MarshalJSON() ([]byte, error) {

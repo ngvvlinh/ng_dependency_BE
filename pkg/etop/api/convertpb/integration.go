@@ -32,7 +32,7 @@ func PbPartnerShopInfo(m *model.Shop) *integration.PartnerShopInfo {
 	}
 }
 
-func PbPartnerShopLoginAccount(m *model.Shop, accessToken string, expiresIn int32) *integration.PartnerShopLoginAccount {
+func PbPartnerShopLoginAccount(m *model.Shop, accessToken string, expiresIn int) *integration.PartnerShopLoginAccount {
 	return &integration.PartnerShopLoginAccount{
 		Id:          m.ID,
 		Name:        m.Name,

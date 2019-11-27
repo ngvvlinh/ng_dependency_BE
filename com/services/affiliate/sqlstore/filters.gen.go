@@ -61,7 +61,7 @@ func (ft *CommissionSettingFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.Column
 	}
 }
 
-func (ft *CommissionSettingFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *CommissionSettingFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -70,7 +70,7 @@ func (ft *CommissionSettingFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CommissionSettingFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *CommissionSettingFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -227,7 +227,7 @@ func (ft *ProductPromotionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ProductPromotionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *ProductPromotionFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -236,7 +236,7 @@ func (ft *ProductPromotionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ProductPromotionFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *ProductPromotionFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -545,7 +545,7 @@ func (ft *SellerCommissionFilters) ByOrderIdPtr(OrderId *dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *SellerCommissionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -554,7 +554,7 @@ func (ft *SellerCommissionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -640,7 +640,7 @@ func (ft *SellerCommissionFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOValue(OValue int32) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByOValue(OValue int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "o_value",
@@ -649,7 +649,7 @@ func (ft *SellerCommissionFilters) ByOValue(OValue int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOValuePtr(OValue *int32) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByOValuePtr(OValue *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "o_value",
@@ -659,7 +659,7 @@ func (ft *SellerCommissionFilters) ByOValuePtr(OValue *int32) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOBaseValue(OBaseValue int32) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByOBaseValue(OBaseValue int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "o_base_value",
@@ -668,7 +668,7 @@ func (ft *SellerCommissionFilters) ByOBaseValue(OBaseValue int32) *sq.ColumnFilt
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOBaseValuePtr(OBaseValue *int32) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByOBaseValuePtr(OBaseValue *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "o_base_value",
@@ -882,7 +882,7 @@ func (ft *OrderCreatedNotifyFilters) ByReferralCodePtr(ReferralCode *string) *sq
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotStatus(PromotionSnapshotStatus int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotStatus(PromotionSnapshotStatus int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "promotion_snapshot_status",
@@ -891,7 +891,7 @@ func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotStatus(PromotionSnapshot
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotStatusPtr(PromotionSnapshotStatus *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotStatusPtr(PromotionSnapshotStatus *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "promotion_snapshot_status",
@@ -920,7 +920,7 @@ func (ft *OrderCreatedNotifyFilters) ByPromotionSnapshotErrPtr(PromotionSnapshot
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotStatus(CommissionSnapshotStatus int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotStatus(CommissionSnapshotStatus int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "commission_snapshot_status",
@@ -929,7 +929,7 @@ func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotStatus(CommissionSnapsh
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotStatusPtr(CommissionSnapshotStatus *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotStatusPtr(CommissionSnapshotStatus *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "commission_snapshot_status",
@@ -958,7 +958,7 @@ func (ft *OrderCreatedNotifyFilters) ByCommissionSnapshotErrPtr(CommissionSnapsh
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCashbackProcessStatus(CashbackProcessStatus int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByCashbackProcessStatus(CashbackProcessStatus int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cashback_process_status",
@@ -967,7 +967,7 @@ func (ft *OrderCreatedNotifyFilters) ByCashbackProcessStatus(CashbackProcessStat
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCashbackProcessStatusPtr(CashbackProcessStatus *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByCashbackProcessStatusPtr(CashbackProcessStatus *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cashback_process_status",
@@ -996,7 +996,7 @@ func (ft *OrderCreatedNotifyFilters) ByCashbackProcessErrPtr(CashbackProcessErr 
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCommissionProcessStatus(CommissionProcessStatus int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByCommissionProcessStatus(CommissionProcessStatus int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "commission_process_status",
@@ -1005,7 +1005,7 @@ func (ft *OrderCreatedNotifyFilters) ByCommissionProcessStatus(CommissionProcess
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByCommissionProcessStatusPtr(CommissionProcessStatus *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByCommissionProcessStatusPtr(CommissionProcessStatus *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "commission_process_status",
@@ -1034,7 +1034,7 @@ func (ft *OrderCreatedNotifyFilters) ByCommissionProcessErrPtr(CommissionProcess
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByPaymentStatus(PaymentStatus int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByPaymentStatus(PaymentStatus int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "payment_status",
@@ -1043,7 +1043,7 @@ func (ft *OrderCreatedNotifyFilters) ByPaymentStatus(PaymentStatus int32) *sq.Co
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByPaymentStatusPtr(PaymentStatus *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByPaymentStatusPtr(PaymentStatus *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "payment_status",
@@ -1053,7 +1053,7 @@ func (ft *OrderCreatedNotifyFilters) ByPaymentStatusPtr(PaymentStatus *int32) *s
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByStatus(Status int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1062,7 +1062,7 @@ func (ft *OrderCreatedNotifyFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1494,7 +1494,7 @@ func (ft *SupplyCommissionSettingFilters) ByProductIDPtr(ProductID *dot.ID) *sq.
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int32) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -1503,7 +1503,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectC
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -1513,7 +1513,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1Dire
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int32) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -1522,7 +1522,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1Indir
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -1532,7 +1532,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1In
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int32) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -1541,7 +1541,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectC
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -1551,7 +1551,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2Dire
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int32) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -1560,7 +1560,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2Indir
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -1589,7 +1589,7 @@ func (ft *SupplyCommissionSettingFilters) ByDependOnPtr(DependOn *string) *sq.Co
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int32) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",
@@ -1598,7 +1598,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount in
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int32) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",
@@ -1793,7 +1793,7 @@ func (ft *OrderPromotionFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterP
 	}
 }
 
-func (ft *OrderPromotionFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByProductQuantity(ProductQuantity int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",
@@ -1802,7 +1802,7 @@ func (ft *OrderPromotionFilters) ByProductQuantity(ProductQuantity int32) *sq.Co
 	}
 }
 
-func (ft *OrderPromotionFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByProductQuantityPtr(ProductQuantity *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",
@@ -1812,7 +1812,7 @@ func (ft *OrderPromotionFilters) ByProductQuantityPtr(ProductQuantity *int32) *s
 	}
 }
 
-func (ft *OrderPromotionFilters) ByBaseValue(BaseValue int32) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByBaseValue(BaseValue int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "base_value",
@@ -1821,7 +1821,7 @@ func (ft *OrderPromotionFilters) ByBaseValue(BaseValue int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByBaseValuePtr(BaseValue *int32) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByBaseValuePtr(BaseValue *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "base_value",
@@ -1831,7 +1831,7 @@ func (ft *OrderPromotionFilters) ByBaseValuePtr(BaseValue *int32) *sq.ColumnFilt
 	}
 }
 
-func (ft *OrderPromotionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -1840,7 +1840,7 @@ func (ft *OrderPromotionFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -2054,7 +2054,7 @@ func (ft *OrderCommissionSettingFilters) ByProductIDPtr(ProductID *dot.ID) *sq.C
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByProductQuantity(ProductQuantity int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",
@@ -2063,7 +2063,7 @@ func (ft *OrderCommissionSettingFilters) ByProductQuantity(ProductQuantity int32
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByProductQuantityPtr(ProductQuantity *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",
@@ -2073,7 +2073,7 @@ func (ft *OrderCommissionSettingFilters) ByProductQuantityPtr(ProductQuantity *i
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -2082,7 +2082,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCo
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -2092,7 +2092,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1Direc
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -2101,7 +2101,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommission(Level1Indire
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -2111,7 +2111,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1Ind
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -2120,7 +2120,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCo
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -2130,7 +2130,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2Direc
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -2139,7 +2139,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel2IndirectCommission(Level2Indire
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -2168,7 +2168,7 @@ func (ft *OrderCommissionSettingFilters) ByDependOnPtr(DependOn *string) *sq.Col
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int32) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",
@@ -2177,7 +2177,7 @@ func (ft *OrderCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int32) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",
@@ -2372,7 +2372,7 @@ func (ft *ShopCashbackFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *ShopCashbackFilters) ByAmount(Amount int32) *sq.ColumnFilter {
+func (ft *ShopCashbackFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -2381,7 +2381,7 @@ func (ft *ShopCashbackFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
+func (ft *ShopCashbackFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "amount",
@@ -2633,7 +2633,7 @@ func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupIDPtr(CustomerPol
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByProductQuantity(ProductQuantity int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",
@@ -2642,7 +2642,7 @@ func (ft *ShopOrderProductHistoryFilters) ByProductQuantity(ProductQuantity int3
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByProductQuantityPtr(ProductQuantity *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_quantity",

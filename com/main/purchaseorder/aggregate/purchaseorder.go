@@ -90,7 +90,7 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 		HeadquarterAddress: getSupplier.Result.HeadquaterAddress,
 	}
 
-	var maxCodeNorm int32
+	var maxCodeNorm int
 	purchaseOrderTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetReceiptByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
@@ -329,8 +329,8 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 	for _, line := range purchaseOrder.Lines {
 		lines = append(lines, &inventory.InventoryVoucherItem{
 			VariantID: line.VariantID,
-			Price:     int32(line.PaymentPrice),
-			Quantity:  int32(line.Quantity),
+			Price:     int(line.PaymentPrice),
+			Quantity:  int(line.Quantity),
 		})
 	}
 

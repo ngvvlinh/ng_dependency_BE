@@ -81,9 +81,9 @@ func (m *WebhookStates) String() string { return jsonx.MustMarshalToString(m) }
 
 type WebhookError struct {
 	Error      string   `json:"error"`
-	RespStatus int32    `json:"resp_status"`
+	RespStatus int      `json:"resp_status"`
 	RespBody   string   `json:"resp_body"`
-	Retried    int32    `json:"retried"`
+	Retried    int      `json:"retried"`
 	SentAt     dot.Time `json:"sent_at"`
 }
 
@@ -205,13 +205,13 @@ type Order struct {
 	FulfillmentShippingStatus *status5.Status       `json:"fulfillment_shipping_status"`
 	EtopPaymentStatus         *status4.Status       `json:"etop_payment_status"`
 	Lines                     []*OrderLine          `json:"lines"`
-	TotalItems                *int32                `json:"total_items"`
-	BasketValue               *int32                `json:"basket_value"`
-	OrderDiscount             *int32                `json:"order_discount"`
-	TotalDiscount             *int32                `json:"total_discount"`
-	TotalFee                  *int32                `json:"total_fee"`
+	TotalItems                *int                  `json:"total_items"`
+	BasketValue               *int                  `json:"basket_value"`
+	OrderDiscount             *int                  `json:"order_discount"`
+	TotalDiscount             *int                  `json:"total_discount"`
+	TotalFee                  *int                  `json:"total_fee"`
 	FeeLines                  []*order.OrderFeeLine `json:"fee_lines"`
-	TotalAmount               *int32                `json:"total_amount"`
+	TotalAmount               *int                  `json:"total_amount"`
 	OrderNote                 *string               `json:"order_note"`
 	Shipping                  *OrderShipping        `json:"shipping"`
 }
@@ -224,17 +224,17 @@ type OrderShipping struct {
 	ReturnAddress       *OrderAddress                       `json:"return_address"`
 	ShippingServiceName *string                             `json:"shipping_service_name"`
 	ShippingServiceCode *string                             `json:"shipping_service_code"`
-	ShippingServiceFee  *int32                              `json:"shipping_service_fee"`
+	ShippingServiceFee  *int                                `json:"shipping_service_fee"`
 	Carrier             *shipping_provider.ShippingProvider `json:"carrier"`
 	IncludeInsurance    *bool                               `json:"include_insurance"`
 	TryOn               *try_on.TryOnCode                   `json:"try_on"`
 	ShippingNote        *string                             `json:"shipping_note"`
-	CodAmount           *int32                              `json:"cod_amount"`
-	GrossWeight         *int32                              `json:"gross_weight"`
-	Length              *int32                              `json:"length"`
-	Width               *int32                              `json:"width"`
-	Height              *int32                              `json:"height"`
-	ChargeableWeight    *int32                              `json:"chargeable_weight"`
+	CodAmount           *int                                `json:"cod_amount"`
+	GrossWeight         *int                                `json:"gross_weight"`
+	Length              *int                                `json:"length"`
+	Width               *int                                `json:"width"`
+	Height              *int                                `json:"height"`
+	ChargeableWeight    *int                                `json:"chargeable_weight"`
 }
 
 func (m *OrderShipping) Reset()         { *m = OrderShipping{} }
@@ -247,14 +247,14 @@ type CreateOrderRequest struct {
 	CustomerAddress *OrderAddress `json:"customer_address"`
 	ShippingAddress *OrderAddress `json:"shipping_address"`
 	Lines           []*OrderLine  `json:"lines"`
-	TotalItems      int32         `json:"total_items"`
+	TotalItems      int           `json:"total_items"`
 	// basket_value = SUM(lines.retail_price)
-	BasketValue   int32                 `json:"basket_value"`
-	OrderDiscount int32                 `json:"order_discount"`
-	TotalDiscount int32                 `json:"total_discount"`
-	TotalFee      *int32                `json:"total_fee"`
+	BasketValue   int                   `json:"basket_value"`
+	OrderDiscount int                   `json:"order_discount"`
+	TotalDiscount int                   `json:"total_discount"`
+	TotalFee      *int                  `json:"total_fee"`
 	FeeLines      []*order.OrderFeeLine `json:"fee_lines"`
-	TotalAmount   int32                 `json:"total_amount"`
+	TotalAmount   int                   `json:"total_amount"`
 	OrderNote     string                `json:"order_note"`
 	Shipping      *OrderShipping        `json:"shipping"`
 	ExternalMeta  map[string]string     `json:"external_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -267,11 +267,11 @@ type OrderLine struct {
 	VariantId   dot.ID `json:"variant_id"`
 	ProductId   dot.ID `json:"product_id"`
 	ProductName string `json:"product_name"`
-	Quantity    int32  `json:"quantity"`
-	ListPrice   int32  `json:"list_price"`
-	RetailPrice int32  `json:"retail_price"`
+	Quantity    int    `json:"quantity"`
+	ListPrice   int    `json:"list_price"`
+	RetailPrice int    `json:"retail_price"`
 	// payment_price = retail_price - discount_per_item
-	PaymentPrice *int32             `json:"payment_price"`
+	PaymentPrice *int               `json:"payment_price"`
 	ImageUrl     string             `json:"image_url"`
 	Attributes   []*order.Attribute `json:"attributes"`
 }
@@ -284,8 +284,8 @@ type Fulfillment struct {
 	OrderId                  dot.ID                              `json:"order_id"`
 	ShopId                   dot.ID                              `json:"shop_id"`
 	SelfUrl                  *string                             `json:"self_url"`
-	TotalItems               *int32                              `json:"total_items"`
-	BasketValue              *int32                              `json:"basket_value"`
+	TotalItems               *int                                `json:"total_items"`
+	BasketValue              *int                                `json:"basket_value"`
 	CreatedAt                dot.Time                            `json:"created_at"`
 	UpdatedAt                dot.Time                            `json:"updated_at"`
 	ClosedAt                 dot.Time                            `json:"closed_at"`
@@ -293,8 +293,8 @@ type Fulfillment struct {
 	CancelReason             *string                             `json:"cancel_reason"`
 	Carrier                  *shipping_provider.ShippingProvider `json:"carrier"`
 	ShippingServiceName      *string                             `json:"shipping_service_name"`
-	ShippingServiceFee       *int32                              `json:"shipping_service_fee"`
-	ActualShippingServiceFee *int32                              `json:"actual_shipping_service_fee"`
+	ShippingServiceFee       *int                                `json:"shipping_service_fee"`
+	ActualShippingServiceFee *int                                `json:"actual_shipping_service_fee"`
 	ShippingServiceCode      *string                             `json:"shipping_service_code"`
 	ShippingCode             *string                             `json:"shipping_code"`
 	ShippingNote             *string                             `json:"shipping_note"`
@@ -304,9 +304,9 @@ type Fulfillment struct {
 	ShippingState            *shipping.State                     `json:"shipping_state"`
 	ShippingStatus           *status5.Status                     `json:"shipping_status"`
 	Status                   *status5.Status                     `json:"status"`
-	CodAmount                *int32                              `json:"cod_amount"`
-	ActualCodAmount          *int32                              `json:"actual_cod_amount"`
-	ChargeableWeight         *int32                              `json:"chargeable_weight"`
+	CodAmount                *int                                `json:"cod_amount"`
+	ActualCodAmount          *int                                `json:"actual_cod_amount"`
+	ChargeableWeight         *int                                `json:"chargeable_weight"`
 	PickupAddress            *OrderAddress                       `json:"pickup_address"`
 	ReturnAddress            *OrderAddress                       `json:"return_address"`
 	ShippingAddress          *OrderAddress                       `json:"shipping_address"`
@@ -352,17 +352,17 @@ type GetShippingServicesRequest struct {
 	PickupAddress   *LocationAddress `json:"pickup_address"`
 	ShippingAddress *LocationAddress `json:"shipping_address"`
 	// in gram (g)
-	GrossWeight int32 `json:"gross_weight"`
+	GrossWeight int `json:"gross_weight"`
 	// in gram (g)
-	ChargeableWeight int32 `json:"chargeable_weight"`
+	ChargeableWeight int `json:"chargeable_weight"`
 	// in centimetre (cm)
-	Length int32 `json:"length"`
+	Length int `json:"length"`
 	// in centimetre (cm)
-	Width int32 `json:"width"`
+	Width int `json:"width"`
 	// in centimetre (cm)
-	Height           int32 `json:"height"`
-	BasketValue      int32 `json:"basket_value"`
-	CodAmount        int32 `json:"cod_amount"`
+	Height           int   `json:"height"`
+	BasketValue      int   `json:"basket_value"`
+	CodAmount        int   `json:"cod_amount"`
 	IncludeInsurance *bool `json:"include_insurance"`
 }
 
@@ -387,7 +387,7 @@ func (m *GetShippingServicesResponse) String() string { return jsonx.MustMarshal
 type ShippingService struct {
 	Code                string                             `json:"code"`
 	Name                string                             `json:"name"`
-	Fee                 int32                              `json:"fee"`
+	Fee                 int                                `json:"fee"`
 	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
 	EstimatedPickupAt   dot.Time                           `json:"estimated_pickup_at"`
 	EstimatedDeliveryAt dot.Time                           `json:"estimated_delivery_at"`

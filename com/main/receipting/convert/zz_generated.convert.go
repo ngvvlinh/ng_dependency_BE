@@ -115,8 +115,8 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.Title = arg.Title                                // simple assign
 	out.Type = receipting.ReceiptType(arg.Type)          // simple conversion
 	out.Description = arg.Description                    // simple assign
-	out.Amount = int(arg.Amount)                         // simple conversion
-	out.Status = int32(arg.Status)                       // simple conversion
+	out.Amount = arg.Amount                              // simple assign
+	out.Status = int(arg.Status)                         // simple conversion
 	out.LedgerID = arg.LedgerID                          // simple assign
 	out.RefIDs = arg.RefIDs                              // simple assign
 	out.RefType = receipting.ReceiptRefType(arg.RefType) // simple conversion
@@ -161,7 +161,7 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.Type = string(arg.Type)                // simple conversion
 	out.Description = arg.Description          // simple assign
 	out.TraderFullNameNorm = ""                // zero value
-	out.Amount = int32(arg.Amount)             // simple conversion
+	out.Amount = arg.Amount                    // simple assign
 	out.Status = etopmodel.Status3(arg.Status) // simple conversion
 	out.RefIDs = arg.RefIDs                    // simple assign
 	out.RefType = string(arg.RefType)          // simple conversion
@@ -274,9 +274,9 @@ func Convert_receiptingmodel_ReceiptLine_receipting_ReceiptLine(arg *receiptingm
 }
 
 func convert_receiptingmodel_ReceiptLine_receipting_ReceiptLine(arg *receiptingmodel.ReceiptLine, out *receipting.ReceiptLine) {
-	out.RefID = arg.RefID        // simple assign
-	out.Title = arg.Title        // simple assign
-	out.Amount = int(arg.Amount) // simple conversion
+	out.RefID = arg.RefID   // simple assign
+	out.Title = arg.Title   // simple assign
+	out.Amount = arg.Amount // simple assign
 }
 
 func Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(args []*receiptingmodel.ReceiptLine) (outs []*receipting.ReceiptLine) {
@@ -300,9 +300,9 @@ func Convert_receipting_ReceiptLine_receiptingmodel_ReceiptLine(arg *receipting.
 }
 
 func convert_receipting_ReceiptLine_receiptingmodel_ReceiptLine(arg *receipting.ReceiptLine, out *receiptingmodel.ReceiptLine) {
-	out.RefID = arg.RefID          // simple assign
-	out.Title = arg.Title          // simple assign
-	out.Amount = int32(arg.Amount) // simple conversion
+	out.RefID = arg.RefID   // simple assign
+	out.Title = arg.Title   // simple assign
+	out.Amount = arg.Amount // simple assign
 }
 
 func Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(args []*receipting.ReceiptLine) (outs []*receiptingmodel.ReceiptLine) {

@@ -558,9 +558,9 @@ func rowToCreateVariant(row *RowProduct, now time.Time) *pbshop.CreateVariantReq
 		ShortDesc:   "",
 		DescHtml:    "",
 		ImageUrls:   row.ImageURLs,
-		CostPrice:   int32(row.CostPrice),
-		ListPrice:   int32(row.ListPrice),
-		RetailPrice: int32(row.ListPrice),
+		CostPrice:   int(row.CostPrice),
+		ListPrice:   int(row.ListPrice),
+		RetailPrice: int(row.ListPrice),
 	}
 }
 
@@ -574,8 +574,8 @@ func rowToCreateProduct(row *RowProduct, now time.Time) *pbshop.CreateProductReq
 		ShortDesc:   "",
 		DescHtml:    "",
 		ImageUrls:   row.ImageURLs,
-		CostPrice:   int32(row.CostPrice),
-		ListPrice:   int32(row.ListPrice),
+		CostPrice:   int(row.CostPrice),
+		ListPrice:   int(row.ListPrice),
 		RetailPrice: 0,
 	}
 }

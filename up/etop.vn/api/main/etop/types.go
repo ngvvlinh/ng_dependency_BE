@@ -1,9 +1,9 @@
 package etop
 
 type (
-	Status3 int32
-	Status4 int32
-	Status5 int32
+	Status3 int
+	Status4 int
+	Status5 int
 )
 
 const (

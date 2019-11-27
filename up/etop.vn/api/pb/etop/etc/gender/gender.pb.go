@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type Gender int32
+type Gender int
 
 const (
 	Gender_unknown Gender = 0
@@ -13,14 +13,14 @@ const (
 	Gender_other   Gender = 3
 )
 
-var Gender_name = map[int32]string{
+var Gender_name = map[int]string{
 	0: "unknown",
 	1: "male",
 	2: "female",
 	3: "other",
 }
 
-var Gender_value = map[string]int32{
+var Gender_value = map[string]int{
 	"unknown": 0,
 	"male":    1,
 	"female":  2,
@@ -34,7 +34,7 @@ func (x Gender) Enum() *Gender {
 }
 
 func (x Gender) String() string {
-	return jsonx.EnumName(Gender_name, int32(x))
+	return jsonx.EnumName(Gender_name, int(x))
 }
 
 func (x *Gender) UnmarshalJSON(data []byte) error {

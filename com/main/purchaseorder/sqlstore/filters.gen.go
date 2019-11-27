@@ -157,7 +157,7 @@ func (ft *PurchaseOrderFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code_norm",
@@ -166,7 +166,7 @@ func (ft *PurchaseOrderFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code_norm",

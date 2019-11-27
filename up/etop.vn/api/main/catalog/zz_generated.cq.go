@@ -167,7 +167,7 @@ type DeleteShopBrandCommand struct {
 	Ids    []dot.ID
 	ShopId dot.ID
 
-	Result int32 `json:"-"`
+	Result int `json:"-"`
 }
 
 func (h AggregateHandler) HandleDeleteShopBrand(ctx context.Context, msg *DeleteShopBrandCommand) (err error) {
@@ -329,9 +329,9 @@ type UpdateShopProductInfoCommand struct {
 	ShortDesc   dot.NullString
 	Description dot.NullString
 	DescHTML    dot.NullString
-	CostPrice   dot.NullInt32
-	ListPrice   dot.NullInt32
-	RetailPrice dot.NullInt32
+	CostPrice   dot.NullInt
+	ListPrice   dot.NullInt
+	RetailPrice dot.NullInt
 	BrandID     dot.NullID
 	ProductType string
 	CategoryID  dot.ID
@@ -405,9 +405,9 @@ type UpdateShopVariantInfoCommand struct {
 	ShortDesc    dot.NullString
 	Descripttion dot.NullString
 	DescHTML     dot.NullString
-	CostPrice    dot.NullInt32
-	ListPrice    dot.NullInt32
-	RetailPrice  dot.NullInt32
+	CostPrice    dot.NullInt
+	ListPrice    dot.NullInt
+	RetailPrice  dot.NullInt
 
 	Result *ShopVariant `json:"-"`
 }

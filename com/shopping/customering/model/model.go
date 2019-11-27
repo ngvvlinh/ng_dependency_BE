@@ -27,7 +27,7 @@ type ShopCustomer struct {
 	ID           dot.ID
 	ShopID       dot.ID
 	Code         string
-	CodeNorm     int32
+	CodeNorm     int
 	FullName     string
 	Gender       string
 	Type         customering.CustomerType
@@ -35,7 +35,7 @@ type ShopCustomer struct {
 	Note         string
 	Phone        string
 	Email        string
-	Status       int32
+	Status       int
 	FullNameNorm string
 	PhoneNorm    string
 	GroupIDs     []dot.ID  `sq:"-"`

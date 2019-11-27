@@ -24,6 +24,6 @@ type QueryService interface {
 
 type TradersResponse struct {
 	Traders []*ShopTrader
-	Count   int32
+	Count   int
 	Paging  meta.PageInfo
 }

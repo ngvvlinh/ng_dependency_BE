@@ -81,7 +81,7 @@ func (s *CustomerStore) Code(code string) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) CodeNorm(codeNorm int32) *CustomerStore {
+func (s *CustomerStore) CodeNorm(codeNorm int) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByCodeNorm(codeNorm))
 	return s
 }

@@ -82,7 +82,7 @@ func (s *CustomerService) BatchSetCustomersStatus(ctx context.Context, r *BatchS
 	cmd := &customering.BatchSetCustomersStatusCommand{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
-		Status: int32(r.Status),
+		Status: int(r.Status),
 	}
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -99,7 +99,7 @@ func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerE
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
 	return nil
 }
 
@@ -217,7 +217,7 @@ func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustome
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	r.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
 	return nil
 }
 
@@ -229,7 +229,7 @@ func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *Remov
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.RemovedResponse{Removed: int32(cmd.Result)}
+	r.Result = &pbcm.RemovedResponse{Removed: int(cmd.Result)}
 	return nil
 }
 
@@ -274,7 +274,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 
 	for _, customer := range customers {
 		customer.Liability = &pbshop.CustomerLiability{
-			TotalOrders:    int32(mapCustomerIDAndNumberOfOrders[customer.Id]),
+			TotalOrders:    int(mapCustomerIDAndNumberOfOrders[customer.Id]),
 			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
 			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],
 			Liability:      mapCustomerIDAndTotalAmountOrders[customer.Id] - mapCustomerIDAndTotalAmountReceipts[customer.Id],

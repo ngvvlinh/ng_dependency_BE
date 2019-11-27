@@ -16,7 +16,7 @@ func (s *GHNNoteCode) ToModel() string {
 	if s == nil || *s == 0 {
 		return ""
 	}
-	return GHNNoteCode_name[int32(*s)]
+	return GHNNoteCode_name[int(*s)]
 }
 
 func (s GHNNoteCode) ToTryOn() try_on2.TryOnCode {

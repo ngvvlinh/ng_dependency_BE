@@ -17,14 +17,14 @@ type ShopSupplier struct {
 	Phone             string
 	Email             string
 	Code              string
-	CodeNorm          int32
+	CodeNorm          int
 	CompanyName       string
 	TaxNumber         string
 	HeadquaterAddress string
 	Note              string
 	FullNameNorm      string
 	PhoneNorm         string
-	Status            int32
+	Status            int
 	CreatedAt         time.Time `sq:"create"`
 	UpdatedAt         time.Time `sq:"update"`
 	DeletedAt         time.Time

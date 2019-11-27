@@ -31,7 +31,7 @@ type QueryService interface {
 // +convert:create=ShopStocktake
 type CreateStocktakeRequest struct {
 	ShopID        dot.ID
-	TotalQuantity int32
+	TotalQuantity int
 	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
@@ -41,7 +41,7 @@ type CreateStocktakeRequest struct {
 type UpdateStocktakeRequest struct {
 	ShopID        dot.ID
 	ID            dot.ID
-	TotalQuantity int32
+	TotalQuantity int
 	UpdatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
@@ -70,5 +70,5 @@ type ListStocktakeRequest struct {
 type ListStocktakeResponse struct {
 	Stocktakes []*ShopStocktake
 	PageInfo   meta.PageInfo
-	Total      int32
+	Total      int
 }

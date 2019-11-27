@@ -4,19 +4,19 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type PaymentProvider int32
+type PaymentProvider int
 
 const (
 	PaymentProvider_unknown PaymentProvider = 0
 	PaymentProvider_vtpay   PaymentProvider = 1
 )
 
-var PaymentProvider_name = map[int32]string{
+var PaymentProvider_name = map[int]string{
 	0: "unknown",
 	1: "vtpay",
 }
 
-var PaymentProvider_value = map[string]int32{
+var PaymentProvider_value = map[string]int{
 	"unknown": 0,
 	"vtpay":   1,
 }
@@ -28,7 +28,7 @@ func (x PaymentProvider) Enum() *PaymentProvider {
 }
 
 func (x PaymentProvider) String() string {
-	return jsonx.EnumName(PaymentProvider_name, int32(x))
+	return jsonx.EnumName(PaymentProvider_name, int(x))
 }
 
 func (x *PaymentProvider) UnmarshalJSON(data []byte) error {

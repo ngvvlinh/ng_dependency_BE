@@ -47,7 +47,7 @@ func (q *StocktakeAggregate) CreateStocktake(ctx context.Context, args *stocktak
 		return nil, err
 	}
 	InventoryMaxCode, err := q.StocktakeStore(ctx).ShopID(args.ShopID).GetStocktakeMaximumCodeNorm()
-	var maxCodeNorm int32
+	var maxCodeNorm int
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
 		maxCodeNorm = InventoryMaxCode.CodeNorm

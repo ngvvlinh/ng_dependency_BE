@@ -112,7 +112,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.TryOn),
 		core.String(m.CustomerNameNorm),
 		core.String(m.ProductNameNorm),
-		core.Int32(m.FulfillmentType),
+		core.Int(m.FulfillmentType),
 		core.Array{m.FulfillmentIDs, opts},
 		core.JSON{m.ExternalMeta},
 		core.Int64(m.TradingShopID),
@@ -183,7 +183,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.TryOn),
 		(*core.String)(&m.CustomerNameNorm),
 		(*core.String)(&m.ProductNameNorm),
-		(*core.Int32)(&m.FulfillmentType),
+		(*core.Int)(&m.FulfillmentType),
 		core.Array{&m.FulfillmentIDs, opts},
 		core.JSON{&m.ExternalMeta},
 		(*core.Int64)(&m.TradingShopID),
@@ -723,7 +723,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int32(m.FulfillmentType))
+		w.WriteArg(int(m.FulfillmentType))
 	}
 	if m.FulfillmentIDs != nil {
 		flag = true

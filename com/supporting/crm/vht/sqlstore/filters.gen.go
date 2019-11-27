@@ -213,7 +213,7 @@ func (ft *VhtCallHistoryFilters) ByToNumberPtr(ToNumber *string) *sq.ColumnFilte
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByDuration(Duration int32) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByDuration(Duration int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "duration",
@@ -222,7 +222,7 @@ func (ft *VhtCallHistoryFilters) ByDuration(Duration int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByDurationPtr(Duration *int32) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByDurationPtr(Duration *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "duration",
@@ -232,7 +232,7 @@ func (ft *VhtCallHistoryFilters) ByDurationPtr(Duration *int32) *sq.ColumnFilter
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByDirection(Direction int32) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByDirection(Direction int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "direction",
@@ -241,7 +241,7 @@ func (ft *VhtCallHistoryFilters) ByDirection(Direction int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByDirectionPtr(Direction *int32) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByDirectionPtr(Direction *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "direction",
@@ -384,7 +384,7 @@ func (ft *VhtCallHistoryFilters) ByRecordingURLPtr(RecordingURL *string) *sq.Col
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByRecordFileSize(RecordFileSize int32) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByRecordFileSize(RecordFileSize int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "record_file_size",
@@ -393,7 +393,7 @@ func (ft *VhtCallHistoryFilters) ByRecordFileSize(RecordFileSize int32) *sq.Colu
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByRecordFileSizePtr(RecordFileSize *int32) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByRecordFileSizePtr(RecordFileSize *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "record_file_size",

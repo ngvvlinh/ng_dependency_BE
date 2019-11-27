@@ -21,7 +21,7 @@ type PurchaseOrder struct {
 	TotalDiscount   int64
 	TotalAmount     int64
 	Code            string
-	CodeNorm        int32
+	CodeNorm        int
 	Note            string
 	Status          etop.Status3
 	VariantIDs      []dot.ID

@@ -61,8 +61,8 @@ func (s *OrderStore) GetOrderSummary(dateFrom time.Time, dateTo time.Time) (*Tot
 
 type TotalPerDate struct {
 	Day         time.Time
-	TotalAmount int32
-	Count       int32
+	TotalAmount int
+	Count       int
 }
 
 func (s *OrderStore) GetAmoumtPerDay(dateFrom time.Time, dateTo time.Time) ([]*TotalPerDate, error) {
@@ -79,8 +79,8 @@ func (s *OrderStore) GetAmoumtPerDay(dateFrom time.Time, dateTo time.Time) ([]*T
 	oldTime := time.Date(dateFrom.Year(), dateFrom.Month(), dateFrom.Day(), 0, 0, 0, 0, time.UTC)
 	for rows.Next() {
 		var day time.Time
-		var total int32
-		var count int32
+		var total int
+		var count int
 		err = rows.Scan(&day, &total, &count)
 		if err != nil {
 			return nil, err
@@ -106,7 +106,7 @@ func (s *OrderStore) GetAmoumtPerDay(dateFrom time.Time, dateTo time.Time) ([]*T
 type TopSellItem struct {
 	ProductId dot.ID
 	Name      string
-	Count     int32
+	Count     int
 	ImageUrls []string
 }
 
@@ -126,7 +126,7 @@ func (s *OrderStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo ti
 	for rows.Next() {
 		var productID dot.ID
 		var name string
-		var quantity int32
+		var quantity int
 		var imageUrls []string
 		var imageUrlsValue = core.Array{V: &imageUrls, Opts: core.Opts{UseArrayInsteadOfJSON: true}}
 		err = rows.Scan(imageUrlsValue, &name, &productID, &quantity)

@@ -62,9 +62,9 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.TotalDiscount),
 		core.Int64(m.TotalAmount),
 		core.String(m.Code),
-		core.Int32(m.CodeNorm),
+		core.Int(m.CodeNorm),
 		core.String(m.Note),
-		core.Int32(m.Status),
+		core.Int(m.Status),
 		core.Array{m.VariantIDs, opts},
 		core.JSON{m.Lines},
 		core.Int64(m.CreatedBy),
@@ -87,9 +87,9 @@ func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.TotalDiscount),
 		(*core.Int64)(&m.TotalAmount),
 		(*core.String)(&m.Code),
-		(*core.Int32)(&m.CodeNorm),
+		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Note),
-		(*core.Int32)(&m.Status),
+		(*core.Int)(&m.Status),
 		core.Array{&m.VariantIDs, opts},
 		core.JSON{&m.Lines},
 		(*core.Int64)(&m.CreatedBy),
@@ -247,7 +247,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int32(m.Status))
+		w.WriteArg(int(m.Status))
 	}
 	if m.VariantIDs != nil {
 		flag = true

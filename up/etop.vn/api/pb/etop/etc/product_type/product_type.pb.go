@@ -4,7 +4,7 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type ProductType int32
+type ProductType int
 
 const (
 	ProductType_unknown  ProductType = 0
@@ -12,13 +12,13 @@ const (
 	ProductType_goods    ProductType = 2
 )
 
-var ProductType_name = map[int32]string{
+var ProductType_name = map[int]string{
 	0: "unknown",
 	1: "services",
 	2: "goods",
 }
 
-var ProductType_value = map[string]int32{
+var ProductType_value = map[string]int{
 	"unknown":  0,
 	"services": 1,
 	"goods":    2,
@@ -31,7 +31,7 @@ func (x ProductType) Enum() *ProductType {
 }
 
 func (x ProductType) String() string {
-	return jsonx.EnumName(ProductType_name, int32(x))
+	return jsonx.EnumName(ProductType_name, int(x))
 }
 
 func (x *ProductType) UnmarshalJSON(data []byte) error {

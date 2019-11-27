@@ -62,7 +62,7 @@ type CreateOrderCommand struct {
 	ExternalFulfillmentID int              `json:"external_fulfillment_id"`
 	ExternalCode          string           `json:"external_code"`
 	Note                  string           `json:"note"`
-	ShippingRateID        int32            `json:"shipping_rate_id"`
+	ShippingRateID        int              `json:"shipping_rate_id"`
 
 	Result *CreateOrderResponse `json:"-"`
 }

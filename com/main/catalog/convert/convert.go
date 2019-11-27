@@ -69,7 +69,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 			CostPrice:   in.CostPrice,
 			RetailPrice: in.RetailPrice,
 		},
-		Status:      int32(in.Status),
+		Status:      int(in.Status),
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
 		CategoryID:  in.CategoryID,
@@ -106,9 +106,9 @@ func ShopProductUpdate(in *catalogmodel.ShopProduct) (out *catalog.UpdateShopPro
 		ShortDesc:   PString(&in.ShortDesc),
 		Description: PString(&in.Description),
 		DescHTML:    PString(&in.DescHTML),
-		CostPrice:   PInt32(&in.CostPrice),
-		ListPrice:   PInt32(&in.ListPrice),
-		RetailPrice: PInt32(&in.RetailPrice),
+		CostPrice:   PInt(&in.CostPrice),
+		ListPrice:   PInt(&in.ListPrice),
+		RetailPrice: PInt(&in.RetailPrice),
 	}
 	return out
 }

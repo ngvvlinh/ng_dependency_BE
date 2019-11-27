@@ -247,7 +247,7 @@ func (s *InvitationService) AcceptInvitation(ctx context.Context, q *AcceptInvit
 		return err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
 	return nil
 }
 
@@ -260,7 +260,7 @@ func (s *InvitationService) RejectInvitation(ctx context.Context, q *RejectInvit
 		return err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
 	return nil
 }
 

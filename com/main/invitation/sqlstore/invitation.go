@@ -133,7 +133,7 @@ func (s *InvitationStore) Accept() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("invitation").UpdateMap(map[string]interface{}{
-		"status":      int32(etop.S3Positive),
+		"status":      int(etop.S3Positive),
 		"accepted_at": time.Now(),
 	})
 
@@ -144,7 +144,7 @@ func (s *InvitationStore) Reject() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("invitation").UpdateMap(map[string]interface{}{
-		"status":      int32(etop.S3Negative),
+		"status":      int(etop.S3Negative),
 		"rejected_at": time.Now(),
 	})
 

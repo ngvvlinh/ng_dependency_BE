@@ -42,7 +42,7 @@ type ShopProduct struct {
 
 	Tags []string
 
-	Status int32
+	Status int
 
 	CreatedAt time.Time
 
@@ -132,19 +132,19 @@ type DescriptionInfo struct {
 }
 
 type PriceDeclareInfo struct {
-	ListPrice int32
+	ListPrice int
 
-	CostPrice int32
+	CostPrice int
 
-	RetailPrice int32
+	RetailPrice int
 }
 
 type PriceInfo struct {
-	CostPrice int32
+	CostPrice int
 
-	ListPrice int32
+	ListPrice int
 
-	RetailPrice int32
+	RetailPrice int
 }
 
 type Attribute = types.Attribute
@@ -165,15 +165,15 @@ func (v *ShopVariantWithProduct) GetFullName() string {
 	return v.ShopVariant.GetName()
 }
 
-func (v ShopVariantWithProduct) GetListPrice() int32 {
-	return cmutil.CoalesceInt32(
+func (v ShopVariantWithProduct) GetListPrice() int {
+	return cmutil.CoalesceInt(
 		v.ShopVariant.ListPrice,
 		v.ShopProduct.ListPrice,
 	)
 }
 
-func (v ShopVariantWithProduct) GetRetailPrice() int32 {
-	return cmutil.CoalesceInt32(
+func (v ShopVariantWithProduct) GetRetailPrice() int {
+	return cmutil.CoalesceInt(
 		v.ShopVariant.RetailPrice, v.ShopVariant.ListPrice,
 		v.ShopProduct.RetailPrice, v.ShopProduct.ListPrice,
 	)
