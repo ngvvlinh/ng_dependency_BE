@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/location"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
@@ -244,7 +246,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
 		update.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(ghtkOrder)
 		var shippingFeeShopLines []*model.ShippingFeeLine
-		shippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+		shippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost

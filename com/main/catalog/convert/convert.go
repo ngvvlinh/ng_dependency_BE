@@ -99,16 +99,16 @@ func ShopProductUpdate(in *catalogmodel.ShopProduct) (out *catalog.UpdateShopPro
 	out = &catalog.UpdateShopProductInfoArgs{
 		ShopID:      in.ShopID,
 		ProductID:   in.ProductID,
-		Code:        PString(&in.Code),
-		Name:        PString(&in.Name),
-		Unit:        PString(&in.Unit),
-		Note:        PString(&in.Note),
-		ShortDesc:   PString(&in.ShortDesc),
-		Description: PString(&in.Description),
-		DescHTML:    PString(&in.DescHTML),
-		CostPrice:   PInt(&in.CostPrice),
-		ListPrice:   PInt(&in.ListPrice),
-		RetailPrice: PInt(&in.RetailPrice),
+		Code:        String(in.Code),
+		Name:        String(in.Name),
+		Unit:        String(in.Unit),
+		Note:        String(in.Note),
+		ShortDesc:   String(in.ShortDesc),
+		Description: String(in.Description),
+		DescHTML:    String(in.DescHTML),
+		CostPrice:   Int(in.CostPrice),
+		ListPrice:   Int(in.ListPrice),
+		RetailPrice: Int(in.RetailPrice),
 	}
 	return out
 }

@@ -84,7 +84,6 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 		TotalCodAmount:   int(args.CodAmount),
 		CodAmount:        int(args.CodAmount),
 		BasketValue:      0,
-		IncludeInsurance: nil,
 	}
 
 	services, err := a.ShippingCtrl.GetExternalShippingServices(ctx, args.EtopShopID, req)
@@ -150,7 +149,6 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		TotalCodAmount:   int(args.CodAmount),
 		CodAmount:        int(args.CodAmount),
 		BasketValue:      0,
-		IncludeInsurance: nil,
 	}
 	services, err := a.ShippingCtrl.GetExternalShippingServices(ctx, args.EtopShopID, req)
 	if err != nil {
@@ -192,23 +190,20 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		BasketValue:     totalValue,
 		OrderDiscount:   0,
 		TotalDiscount:   0,
-		TotalFee:        nil,
 		FeeLines:        nil,
 		TotalAmount:     totalValue,
 		OrderNote:       args.Note,
 		Shipping: &pbexternal.OrderShipping{
 			PickupAddress:       convert.ToPbExternalAddress(args.Origin, from),
 			ReturnAddress:       nil,
-			ShippingServiceName: nil,
-			ShippingServiceCode: cm.PString(service.ProviderServiceID),
-			ShippingServiceFee:  cm.PInt(service.ServiceFee),
+			ShippingServiceCode: dot.String(service.ProviderServiceID),
+			ShippingServiceFee:  dot.Int(service.ServiceFee),
 			Carrier:             &carrier,
-			IncludeInsurance:    &includeInsurance,
+			IncludeInsurance:    dot.Bool(includeInsurance),
 			TryOn:               pbtryon.TryOnCode_none.Enum(),
-			ShippingNote:        cm.PString(args.Note),
-			CodAmount:           cm.PInt(codAmount),
-			GrossWeight:         nil,
-			ChargeableWeight:    cm.PInt(weight),
+			ShippingNote:        dot.String(args.Note),
+			CodAmount:           dot.Int(codAmount),
+			ChargeableWeight:    dot.Int(weight),
 		},
 	}
 
@@ -229,10 +224,10 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	ffm := resp.Fulfillments[0]
 	return &gateway.CreateOrderResponse{
-		TrackingNumber: *ffm.ShippingCode,
-		ShippingFee:    *ffm.ActualShippingServiceFee,
+		TrackingNumber: ffm.ShippingCode.Apply(""),
+		ShippingFee:    ffm.ActualShippingServiceFee.Apply(0),
 		TrackingURL:    generateTrackingUrl(shop.ID),
-		CodAmount:      *ffm.ActualCodAmount,
+		CodAmount:      ffm.ActualCodAmount.Apply(0),
 	}, nil
 }
 

@@ -274,7 +274,7 @@ func PbShop(m *model.Shop) *etop.Shop {
 func PbShopExtended(m *model.ShopExtended) *etop.Shop {
 	return &etop.Shop{
 		Id:                            m.ID,
-		InventoryOverstock:            cm.BoolDefault(m.InventoryOverstock, true),
+		InventoryOverstock:            m.InventoryOverstock.Apply(true),
 		Name:                          m.Name,
 		Status:                        Pb3(m.Status),
 		Address:                       PbAddress(m.Address),

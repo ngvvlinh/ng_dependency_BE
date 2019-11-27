@@ -4,7 +4,7 @@ import (
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/main/location"
 	pbexternal "etop.vn/api/pb/external"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 func ToPbExternalAddress(in *haravan.Address, loc *location.LocationQueryResult) *pbexternal.OrderAddress {
@@ -31,7 +31,7 @@ func ToPbExternalCreateOrderLine(in *haravan.Item) *pbexternal.OrderLine {
 		Quantity:     in.Quantity,
 		ListPrice:    int(in.Price),
 		RetailPrice:  int(in.Price),
-		PaymentPrice: cm.PInt(int(in.Price)),
+		PaymentPrice: dot.Int(int(in.Price)),
 	}
 }
 

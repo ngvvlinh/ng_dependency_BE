@@ -21,38 +21,11 @@ import (
 
 const SaltSize = 16
 
-func MinInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func PInt(i int) *int {
-	return &i
-}
-
-func PInt32(i *int32) *int {
-	if i == nil {
-		return nil
-	}
-	j := int(*i)
-	return &j
-}
-
-func PString(s string) *string {
-	return &s
-}
-
-func PNonZeroString(s string) *string {
+func PNonZeroString(s string) dot.NullString {
 	if s == "" {
-		return nil
+		return dot.NullString{}
 	}
-	return &s
-}
-
-func PBool(b bool) *bool {
-	return &b
+	return dot.String(s)
 }
 
 func BoolDefault(b *bool, def bool) bool {
@@ -60,12 +33,6 @@ func BoolDefault(b *bool, def bool) bool {
 		return def
 	}
 	return *b
-}
-
-// JSONTime encodes time for json request
-func JSONTime(t time.Time) string {
-	data, _ := jsonx.Marshal(t)
-	return string(data[1 : len(data)-1])
 }
 
 func JSON(v interface{}) []byte {

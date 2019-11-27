@@ -10,7 +10,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -110,11 +109,11 @@ func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *Updat
 	cmd := &purchaseorder.UpdatePurchaseOrderCommand{
 		ID:            r.Id,
 		ShopID:        r.Context.Shop.ID,
-		SupplierID:    PID(r.SupplierId),
-		BasketValue:   PInt(r.BasketValue),
-		TotalDiscount: PInt(r.TotalDiscount),
-		TotalAmount:   PInt(r.TotalAmount),
-		Note:          PString(r.Note),
+		SupplierID:    r.SupplierId,
+		BasketValue:   r.BasketValue,
+		TotalDiscount: r.TotalDiscount,
+		TotalAmount:   r.TotalAmount,
+		Note:          r.Note,
 		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {

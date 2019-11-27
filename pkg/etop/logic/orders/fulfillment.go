@@ -62,12 +62,9 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 }
 
 func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderRequest) (resp *pborder.Order, _err error) {
-	var autoInventoryVoucher inventory.AutoInventoryVoucher
-	if r.AutoInventoryVoucher != nil {
-		autoInventoryVoucher = inventory.AutoInventoryVoucher(*r.AutoInventoryVoucher)
-		if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
-		}
+	autoInventoryVoucher := inventory.AutoInventoryVoucher(r.AutoInventoryVoucher.Apply(""))
+	if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
 	}
 	autoCreateFfm := r.AutoCreateFulfillment
 
@@ -115,7 +112,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 			OrderID:              order.ID,
 			AutoInventoryVoucher: autoInventoryVoucher,
 			ShopID:               shop.ID,
-			InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+			InventoryOverStock:   shop.InventoryOverstock.Apply(true),
 		}
 		if err := eventBus.Publish(ctx, event); err != nil {
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
@@ -287,7 +284,7 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 	event := &ordering.OrderConfirmingEvent{
 		OrderID:              order.ID,
 		ShopID:               shop.ID,
-		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+		InventoryOverStock:   shop.InventoryOverstock.Apply(true),
 		Lines:                orderLines,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	}

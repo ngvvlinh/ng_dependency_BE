@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/location"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
@@ -251,7 +253,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 			}
 		}
 		update.ProviderShippingFeeLines = ffm.ProviderShippingFeeLines
-		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, nil)
+		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, dot.NullInt{})
 	}
 
 	// Only update status5 if the current status is not ending status

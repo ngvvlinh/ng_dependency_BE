@@ -29,7 +29,7 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndp
 	if r.AccountId == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
-	if r.UrlSlug == nil {
+	if !r.UrlSlug.Valid {
 		return cm.Error(cm.InvalidArgument, "Missing url_slug", nil)
 	}
 
@@ -51,7 +51,7 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndp
 
 	cmd := &model.UpdateAccountURLSlugCommand{
 		AccountID: r.AccountId,
-		URLSlug:   *r.UrlSlug,
+		URLSlug:   r.UrlSlug.String,
 	}
 
 	r.Result = &pbcm.Empty{}

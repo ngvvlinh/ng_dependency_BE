@@ -277,8 +277,8 @@ func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductProm
 		return err
 	}
 	var pbReferralDiscount *pbaff.CommissionSetting
-	if q.ReferralCode != nil {
-		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, *q.ReferralCode, q.ProductId)
+	if q.ReferralCode.Valid {
+		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, q.ReferralCode.String, q.ProductId)
 		if err == nil {
 			pbReferralDiscount = convertpb.PbCommissionSetting(commissionSetting)
 		}
@@ -421,7 +421,7 @@ func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.
 		ProductID: q.ProductId,
 		AccountID: q.Context.Affiliate.ID,
 		Amount:    q.Amount,
-		Unit:      *q.Unit,
+		Unit:      q.Unit.Apply(""),
 		Type:      "affiliate",
 	}
 	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {

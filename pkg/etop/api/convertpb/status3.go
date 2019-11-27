@@ -3,6 +3,7 @@ package convertpb
 import (
 	"etop.vn/api/pb/etop/etc/status3"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func Pb3(s model.Status3) status3.Status {
@@ -17,11 +18,11 @@ func Pb3PtrStatus(s model.Status3) *status3.Status {
 	return &res
 }
 
-func Pb3Ptr(s *int) *status3.Status {
-	if s == nil {
+func Pb3Ptr(s dot.NullInt) *status3.Status {
+	if !s.Valid {
 		return nil
 	}
-	res := status3.Status(*s)
+	res := status3.Status(s.Int)
 	if res < 0 {
 		res += 128
 	}

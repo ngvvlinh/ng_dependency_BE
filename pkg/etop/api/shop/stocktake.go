@@ -174,7 +174,7 @@ func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStock
 		ID:                   q.Id,
 		ShopID:               shopID,
 		ConfirmedBy:          userID,
-		OverStock:            cm.BoolDefault(overStock, true),
+		OverStock:            overStock.Apply(true),
 		AutoInventoryVoucher: inventory.AutoInventoryVoucher(q.AutoInventoryVoucher),
 		Result:               nil,
 	}

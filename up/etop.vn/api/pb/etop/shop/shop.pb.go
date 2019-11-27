@@ -109,11 +109,11 @@ func (m *CreatePurchaseOrderRequest) String() string { return jsonx.MustMarshalT
 
 type UpdatePurchaseOrderRequest struct {
 	Id            dot.ID               `json:"id"`
-	SupplierId    *dot.ID              `json:"supplier_id"`
-	BasketValue   *int                 `json:"basket_value"`
-	TotalDiscount *int                 `json:"total_discount"`
-	TotalAmount   *int                 `json:"total_amount"`
-	Note          *string              `json:"note"`
+	SupplierId    dot.NullID           `json:"supplier_id"`
+	BasketValue   dot.NullInt          `json:"basket_value"`
+	TotalDiscount dot.NullInt          `json:"total_discount"`
+	TotalAmount   dot.NullInt          `json:"total_amount"`
+	Note          dot.NullString       `json:"note"`
 	Lines         []*PurchaseOrderLine `json:"lines"`
 }
 
@@ -171,11 +171,11 @@ func (m *CreateLedgerRequest) Reset()         { *m = CreateLedgerRequest{} }
 func (m *CreateLedgerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateLedgerRequest struct {
-	Id   dot.ID  `json:"id"`
-	Name *string `json:"name"`
+	Id   dot.ID         `json:"id"`
+	Name dot.NullString `json:"name"`
 	// required name, account_number, account_name
 	BankAccount *etop.BankAccount `json:"bank_account"`
-	Note        *string           `json:"note"`
+	Note        dot.NullString    `json:"note"`
 }
 
 func (m *UpdateLedgerRequest) Reset()         { *m = UpdateLedgerRequest{} }
@@ -233,7 +233,7 @@ func (m *RegisterShopResponse) Reset()         { *m = RegisterShopResponse{} }
 func (m *RegisterShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShopRequest struct {
-	InventoryOverstock *bool             `json:"inventory_overstock"`
+	InventoryOverstock dot.NullBool      `json:"inventory_overstock"`
 	Name               string            `json:"name"`
 	Address            *etop.Address     `json:"address"`
 	Phone              string            `json:"phone"`
@@ -241,7 +241,7 @@ type UpdateShopRequest struct {
 	WebsiteUrl         string            `json:"website_url"`
 	ImageUrl           string            `json:"image_url"`
 	Email              string            `json:"email"`
-	AutoCreateFfm      *bool             `json:"auto_create_ffm"`
+	AutoCreateFfm      dot.NullBool      `json:"auto_create_ffm"`
 	// @deprecated use try_on instead
 	GhnNoteCode *ghn_note_code.GHNNoteCode `json:"ghn_note_code"`
 	TryOn       *try_on.TryOnCode          `json:"try_on"`
@@ -310,10 +310,10 @@ type UpdateCollectionRequest struct {
 	// @required
 	Id dot.ID `json:"id"`
 	// @required
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
-	ShortDesc   *string `json:"short_desc"`
-	DescHtml    *string `json:"desc_html"`
+	Name        dot.NullString `json:"name"`
+	Description dot.NullString `json:"description"`
+	ShortDesc   dot.NullString `json:"short_desc"`
+	DescHtml    dot.NullString `json:"desc_html"`
 }
 
 func (m *UpdateCollectionRequest) Reset()         { *m = UpdateCollectionRequest{} }
@@ -506,17 +506,17 @@ func (m *ShopCategoriesResponse) String() string { return jsonx.MustMarshalToStr
 
 type UpdateVariantRequest struct {
 	// @required
-	Id          dot.ID       `json:"id"`
-	Name        *string      `json:"name"`
-	Note        *string      `json:"note"`
-	Code        *string      `json:"code"`
-	CostPrice   *int         `json:"cost_price"`
-	ListPrice   *int         `json:"list_price"`
-	RetailPrice *int         `json:"retail_price"`
-	Description *string      `json:"description"`
-	ShortDesc   *string      `json:"short_desc"`
-	DescHtml    *string      `json:"desc_html"`
-	Attributes  []*Attribute `json:"attributes"`
+	Id          dot.ID         `json:"id"`
+	Name        dot.NullString `json:"name"`
+	Note        dot.NullString `json:"note"`
+	Code        dot.NullString `json:"code"`
+	CostPrice   dot.NullInt    `json:"cost_price"`
+	ListPrice   dot.NullInt    `json:"list_price"`
+	RetailPrice dot.NullInt    `json:"retail_price"`
+	Description dot.NullString `json:"description"`
+	ShortDesc   dot.NullString `json:"short_desc"`
+	DescHtml    dot.NullString `json:"desc_html"`
+	Attributes  []*Attribute   `json:"attributes"`
 	// deprecated
 	Sku string `json:"sku"`
 }
@@ -527,28 +527,28 @@ func (m *UpdateVariantRequest) String() string { return jsonx.MustMarshalToStrin
 type UpdateProductRequest struct {
 	// @required
 	Id          dot.ID                    `json:"id"`
-	Name        *string                   `json:"name"`
-	Code        *string                   `json:"code"`
-	Note        *string                   `json:"note"`
-	Unit        *string                   `json:"unit"`
-	Description *string                   `json:"description"`
-	ShortDesc   *string                   `json:"short_desc"`
-	DescHtml    *string                   `json:"desc_html"`
-	CostPrice   *int                      `json:"cost_price"`
-	ListPrice   *int                      `json:"list_price"`
-	RetailPrice *int                      `json:"retail_price"`
+	Name        dot.NullString            `json:"name"`
+	Code        dot.NullString            `json:"code"`
+	Note        dot.NullString            `json:"note"`
+	Unit        dot.NullString            `json:"unit"`
+	Description dot.NullString            `json:"description"`
+	ShortDesc   dot.NullString            `json:"short_desc"`
+	DescHtml    dot.NullString            `json:"desc_html"`
+	CostPrice   dot.NullInt               `json:"cost_price"`
+	ListPrice   dot.NullInt               `json:"list_price"`
+	RetailPrice dot.NullInt               `json:"retail_price"`
 	ProductType *product_type.ProductType `json:"product_type"`
 	MetaFields  *common.MetaField         `json:"meta_fields"`
-	BrandId     *dot.ID                   `json:"brand_id"`
+	BrandId     dot.NullID                `json:"brand_id"`
 }
 
 func (m *UpdateProductRequest) Reset()         { *m = UpdateProductRequest{} }
 func (m *UpdateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCategoryRequest struct {
-	Id       dot.ID  `json:"id"`
-	Name     *string `json:"name"`
-	ParentId dot.ID  `json:"parent_id"`
+	Id       dot.ID         `json:"id"`
+	Name     dot.NullString `json:"name"`
+	ParentId dot.ID         `json:"parent_id"`
 }
 
 func (m *UpdateCategoryRequest) Reset()         { *m = UpdateCategoryRequest{} }
@@ -629,8 +629,8 @@ func (m *UpdateOrdersStatusRequest) String() string { return jsonx.MustMarshalTo
 type ConfirmOrderRequest struct {
 	OrderId dot.ID `json:"order_id"`
 	// enum ('create', 'create')
-	AutoInventoryVoucher  *string `json:"auto_inventory_voucher"`
-	AutoCreateFulfillment bool    `json:"auto_create_fulfillment"`
+	AutoInventoryVoucher  dot.NullString `json:"auto_inventory_voucher"`
+	AutoCreateFulfillment bool           `json:"auto_create_fulfillment"`
 }
 
 func (m *ConfirmOrderRequest) Reset()         { *m = ConfirmOrderRequest{} }
@@ -1244,15 +1244,15 @@ func (m *CreateCustomerRequest) Reset()         { *m = CreateCustomerRequest{} }
 func (m *CreateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerRequest struct {
-	Id       dot.ID  `json:"id"`
-	FullName *string `json:"full_name"`
-	Gender   *string `json:"gender"`
-	Birthday *string `json:"birthday"`
+	Id       dot.ID         `json:"id"`
+	FullName dot.NullString `json:"full_name"`
+	Gender   dot.NullString `json:"gender"`
+	Birthday dot.NullString `json:"birthday"`
 	// enum ('individual', 'organization','independent')
-	Type  *string `json:"type"`
-	Note  *string `json:"note"`
-	Phone *string `json:"phone"`
-	Email *string `json:"email"`
+	Type  dot.NullString `json:"type"`
+	Note  dot.NullString `json:"note"`
+	Phone dot.NullString `json:"phone"`
+	Email dot.NullString `json:"email"`
 }
 
 func (m *UpdateCustomerRequest) Reset()         { *m = UpdateCustomerRequest{} }
@@ -1351,17 +1351,17 @@ func (m *CreateCustomerAddressRequest) String() string { return jsonx.MustMarsha
 
 type UpdateCustomerAddressRequest struct {
 	Id           dot.ID            `json:"id"`
-	ProvinceCode *string           `json:"province_code"`
-	DistrictCode *string           `json:"district_code"`
-	WardCode     *string           `json:"ward_code"`
-	Address1     *string           `json:"address1"`
-	Address2     *string           `json:"address2"`
-	Country      *string           `json:"country"`
-	FullName     *string           `json:"full_name"`
-	Phone        *string           `json:"phone"`
-	Email        *string           `json:"email"`
-	Position     *string           `json:"position"`
-	Company      *string           `json:"company"`
+	ProvinceCode dot.NullString    `json:"province_code"`
+	DistrictCode dot.NullString    `json:"district_code"`
+	WardCode     dot.NullString    `json:"ward_code"`
+	Address1     dot.NullString    `json:"address1"`
+	Address2     dot.NullString    `json:"address2"`
+	Country      dot.NullString    `json:"country"`
+	FullName     dot.NullString    `json:"full_name"`
+	Phone        dot.NullString    `json:"phone"`
+	Email        dot.NullString    `json:"email"`
+	Position     dot.NullString    `json:"position"`
+	Company      dot.NullString    `json:"company"`
 	Coordinates  *etop.Coordinates `json:"coordinates"`
 }
 
@@ -1532,14 +1532,14 @@ func (m *CreateSupplierRequest) Reset()         { *m = CreateSupplierRequest{} }
 func (m *CreateSupplierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateSupplierRequest struct {
-	Id                dot.ID  `json:"id"`
-	FullName          *string `json:"full_name"`
-	Note              *string `json:"note"`
-	Phone             *string `json:"phone"`
-	Email             *string `json:"email"`
-	CompanyName       *string `json:"company_name"`
-	TaxNumber         *string `json:"tax_number"`
-	HeadquaterAddress *string `json:"headquater_address"`
+	Id                dot.ID         `json:"id"`
+	FullName          dot.NullString `json:"full_name"`
+	Note              dot.NullString `json:"note"`
+	Phone             dot.NullString `json:"phone"`
+	Email             dot.NullString `json:"email"`
+	CompanyName       dot.NullString `json:"company_name"`
+	TaxNumber         dot.NullString `json:"tax_number"`
+	HeadquaterAddress dot.NullString `json:"headquater_address"`
 }
 
 func (m *UpdateSupplierRequest) Reset()         { *m = UpdateSupplierRequest{} }
@@ -1583,9 +1583,9 @@ func (m *CreateCarrierRequest) Reset()         { *m = CreateCarrierRequest{} }
 func (m *CreateCarrierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCarrierRequest struct {
-	Id       dot.ID  `json:"id"`
-	FullName *string `json:"full_name"`
-	Note     *string `json:"note"`
+	Id       dot.ID         `json:"id"`
+	FullName dot.NullString `json:"full_name"`
+	Note     dot.NullString `json:"note"`
 }
 
 func (m *UpdateCarrierRequest) Reset()         { *m = UpdateCarrierRequest{} }
@@ -1674,14 +1674,14 @@ func (m *CreateReceiptRequest) Reset()         { *m = CreateReceiptRequest{} }
 func (m *CreateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateReceiptRequest struct {
-	Id          dot.ID  `json:"id"`
-	TraderId    *dot.ID `json:"trader_id"`
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Amount      *int    `json:"amount"`
-	LedgerId    *dot.ID `json:"ledger_id"`
+	Id          dot.ID         `json:"id"`
+	TraderId    dot.NullID     `json:"trader_id"`
+	Title       dot.NullString `json:"title"`
+	Description dot.NullString `json:"description"`
+	Amount      dot.NullInt    `json:"amount"`
+	LedgerId    dot.NullID     `json:"ledger_id"`
 	// enum ('order', 'fulfillment', 'inventory voucher'
-	RefType *string        `json:"ref_type"`
+	RefType dot.NullString `json:"ref_type"`
 	PaidAt  dot.Time       `json:"paid_at"`
 	Lines   []*ReceiptLine `json:"lines"`
 }
@@ -1794,11 +1794,11 @@ func (m *CancelInventoryVoucherResponse) String() string { return jsonx.MustMars
 
 type UpdateInventoryVoucherRequest struct {
 	Id          dot.ID                 `json:"id"`
-	TraderId    *dot.ID                `json:"trader_id"`
+	TraderId    dot.NullID             `json:"trader_id"`
 	Lines       []InventoryVoucherLine `json:"lines"`
-	Note        *string                `json:"note"`
+	Note        dot.NullString         `json:"note"`
 	Type        string                 `json:"type"`
-	Title       *string                `json:"title"`
+	Title       dot.NullString         `json:"title"`
 	TotalAmount int                    `json:"total_amount"`
 }
 

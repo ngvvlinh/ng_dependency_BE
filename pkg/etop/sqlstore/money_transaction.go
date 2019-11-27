@@ -1862,7 +1862,7 @@ func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 		}
 		lines := ffm.ProviderShippingFeeLines
 		ffm.ProviderShippingFeeLines = model.UpdateShippingFees(lines, newReturnedFee, model.ShippingFeeTypeReturn)
-		ffm.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+		ffm.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		updateFFms = append(updateFFms, &shipmodel.Fulfillment{
 			ID:                       ffm.ID,
 			ProviderShippingFeeLines: ffm.ProviderShippingFeeLines,

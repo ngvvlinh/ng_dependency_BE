@@ -3,6 +3,7 @@ package convertpb
 import (
 	"etop.vn/api/pb/etop/etc/shipping"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func PbShippingState(s model.ShippingState) shipping.State {
@@ -18,11 +19,11 @@ func PbPtrShippingState(s model.ShippingState) *shipping.State {
 	return &res
 }
 
-func PbPtr(s *string) *shipping.State {
-	if s == nil || *s == "" {
+func PbPtr(s dot.NullString) *shipping.State {
+	if s.Apply("") == "" {
 		return nil
 	}
-	st := PbShippingState(model.ShippingState(*s))
+	st := PbShippingState(model.ShippingState(s.String))
 	return &st
 }
 

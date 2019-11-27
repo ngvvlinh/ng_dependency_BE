@@ -259,7 +259,7 @@ type CreateUserRequest struct {
 	// @required
 	AgreeTos bool `json:"agree_tos"`
 	// @required
-	AgreeEmailInfo *bool `json:"agree_email_info"`
+	AgreeEmailInfo dot.NullBool `json:"agree_email_info"`
 	// This field must be set if the user uses generated password to register.
 	// Automatically set phone_verified if it's sent within a specific time.
 	RegisterToken string                 `json:"register_token"`
@@ -874,8 +874,8 @@ func (m *SetDefaultAddressRequest) Reset()         { *m = SetDefaultAddressReque
 func (m *SetDefaultAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateURLSlugRequest struct {
-	AccountId dot.ID  `json:"account_id"`
-	UrlSlug   *string `json:"url_slug"`
+	AccountId dot.ID         `json:"account_id"`
+	UrlSlug   dot.NullString `json:"url_slug"`
 }
 
 func (m *UpdateURLSlugRequest) Reset()         { *m = UpdateURLSlugRequest{} }

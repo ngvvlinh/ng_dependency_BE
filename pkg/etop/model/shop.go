@@ -28,7 +28,7 @@ type CreateShopCommand struct {
 
 type UpdateShopCommand struct {
 	Shop          *Shop
-	AutoCreateFFM *bool
+	AutoCreateFFM dot.NullBool
 	Result        *ShopExtended
 }
 

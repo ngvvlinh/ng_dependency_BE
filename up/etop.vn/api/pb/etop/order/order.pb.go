@@ -230,7 +230,7 @@ type CreateOrderRequest struct {
 	OrderDiscount int             `json:"order_discount"`
 	TotalFee      int             `json:"total_fee"`
 	FeeLines      []*OrderFeeLine `json:"fee_lines"`
-	TotalDiscount *int            `json:"total_discount"`
+	TotalDiscount dot.NullInt     `json:"total_discount"`
 	TotalAmount   int             `json:"total_amount"`
 	OrderNote     string          `json:"order_note"`
 	ShippingNote  string          `json:"shipping_note"`
@@ -263,14 +263,14 @@ type UpdateOrderRequest struct {
 	OrderNote       string         `json:"order_note"`
 	ShippingNote    string         `json:"shipping_note"`
 	// @deprecated use fee_lines instead
-	ShopShippingFee *int `json:"shop_shipping_fee"`
+	ShopShippingFee dot.NullInt `json:"shop_shipping_fee"`
 	// @deprecated use shipping.cod_amount instead
-	ShopCod *int `json:"shop_cod"`
+	ShopCod dot.NullInt `json:"shop_cod"`
 	// @deprecated use shipping instead
 	ShopShipping  *OrderShipping  `json:"shop_shipping"`
 	Shipping      *OrderShipping  `json:"shipping"`
 	FeeLines      []*OrderFeeLine `json:"fee_lines"`
-	OrderDiscount *int            `json:"order_discount"`
+	OrderDiscount dot.NullInt     `json:"order_discount"`
 	// @deprecated
 	TotalWeight      int                `json:"total_weight"`
 	ChargeableWeight int                `json:"chargeable_weight"`
@@ -278,7 +278,7 @@ type UpdateOrderRequest struct {
 	BasketValue      int                `json:"basket_value"`
 	TotalAmount      int                `json:"total_amount"`
 	TotalItems       int                `json:"total_items"`
-	TotalFee         *int               `json:"total_fee"`
+	TotalFee         dot.NullInt        `json:"total_fee"`
 	CustomerId       dot.ID             `json:"customer_id"`
 }
 
@@ -306,14 +306,14 @@ type OrderShipping struct {
 	IncludeInsurance bool                               `json:"include_insurance"`
 	TryOn            try_on.TryOnCode                   `json:"try_on"`
 	ShippingNote     string                             `json:"shipping_note"`
-	CodAmount        *int                               `json:"cod_amount"`
+	CodAmount        dot.NullInt                        `json:"cod_amount"`
 	// @deprecated
-	Weight           *int `json:"weight"`
-	GrossWeight      *int `json:"gross_weight"`
-	Length           *int `json:"length"`
-	Width            *int `json:"width"`
-	Height           *int `json:"height"`
-	ChargeableWeight *int `json:"chargeable_weight"`
+	Weight           dot.NullInt `json:"weight"`
+	GrossWeight      dot.NullInt `json:"gross_weight"`
+	Length           dot.NullInt `json:"length"`
+	Width            dot.NullInt `json:"width"`
+	Height           dot.NullInt `json:"height"`
+	ChargeableWeight dot.NullInt `json:"chargeable_weight"`
 }
 
 func (m *OrderShipping) Reset()         { *m = OrderShipping{} }
@@ -473,10 +473,10 @@ type GetExternalShippingServicesRequest struct {
 	// @deprecated use basket_value instead
 	Value int `json:"value"`
 	// @deprecated use cod_amount instead
-	TotalCodAmount   int   `json:"total_cod_amount"`
-	CodAmount        int   `json:"cod_amount"`
-	BasketValue      int   `json:"basket_value"`
-	IncludeInsurance *bool `json:"include_insurance"`
+	TotalCodAmount   int          `json:"total_cod_amount"`
+	CodAmount        int          `json:"cod_amount"`
+	BasketValue      int          `json:"basket_value"`
+	IncludeInsurance dot.NullBool `json:"include_insurance"`
 }
 
 func (m *GetExternalShippingServicesRequest) Reset()         { *m = GetExternalShippingServicesRequest{} }
@@ -922,7 +922,7 @@ type TradingCreateOrderRequest struct {
 	OrderDiscount   int                `json:"order_discount"`
 	TotalFee        int                `json:"total_fee"`
 	FeeLines        []*OrderFeeLine    `json:"fee_lines"`
-	TotalDiscount   *int               `json:"total_discount"`
+	TotalDiscount   dot.NullInt        `json:"total_discount"`
 	TotalAmount     int                `json:"total_amount"`
 	OrderNote       string             `json:"order_note"`
 	PaymentMethod   string             `json:"payment_method"`

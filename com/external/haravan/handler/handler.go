@@ -45,15 +45,15 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	} else if !ok {
 		return mq.CodeIgnore, nil
 	}
-	id := *ffmHistory.ID().ID()
-	if ffmHistory.ShippingState().String() != nil {
+	id := ffmHistory.ID().ID().Apply(0)
+	if ffmHistory.ShippingState().String().Valid {
 		cmd := &haravan.SendUpdateExternalFulfillmentStateCommand{
 			FulfillmentID: id,
 		}
 		// Ignore err
 		_ = haravanAggr.Dispatch(ctx, cmd)
 	}
-	if ffmHistory.EtopPaymentStatus().Int() != nil {
+	if ffmHistory.EtopPaymentStatus().Int().Valid {
 		cmd := &haravan.SendUpdateExternalPaymentStatusCommand{
 			FulfillmentID: id,
 		}

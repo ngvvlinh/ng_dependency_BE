@@ -27,7 +27,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 		ll.Warn("fulfillment not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil
 	}
-	id := *history.ID().Int64()
+	id := history.ID().Int64().Apply(0)
 	var ffm shipmodel.Fulfillment
 	if ok, err := x.Where("id = ?", id).Get(&ffm); err != nil {
 		return mq.CodeStop, nil
@@ -48,15 +48,15 @@ func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel
 	var res []*notifiermodel.CreateNotificationArgs
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
-	if (externalShippingNote != nil && ffm.ExternalShippingNote != "") || (externalSubState != nil && ffm.ExternalShippingSubState != "") {
+	if (externalShippingNote.Valid && ffm.ExternalShippingNote != "") || (externalSubState.Valid && ffm.ExternalShippingSubState != "") {
 		cmd := templateFfmChangedNote(ffm)
 		res = append(res, cmd)
 	}
-	if history.ShippingFeeShop().Int() != nil {
+	if history.ShippingFeeShop().Int().Valid {
 		cmd := templateFfmChangedFee(ffm)
 		res = append(res, cmd)
 	}
-	if history.ShippingState().String() != nil {
+	if history.ShippingState().String().Valid {
 		cmd := templateFfmChangedStatus(ffm)
 		res = append(res, cmd)
 	}

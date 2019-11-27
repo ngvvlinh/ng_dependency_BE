@@ -682,7 +682,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	if !r.AgreeTos {
 		return cm.Error(cm.InvalidArgument, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-	if r.AgreeEmailInfo == nil {
+	if !r.AgreeEmailInfo.Valid {
 		return cm.Error(cm.InvalidArgument, "Missing agree_email_info", nil)
 	}
 
@@ -717,7 +717,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		Password:       generatedPassword,
 		Status:         model.StatusActive,
 		AgreeTOS:       r.AgreeTos,
-		AgreeEmailInfo: *r.AgreeEmailInfo,
+		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
 		Source:         source,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {

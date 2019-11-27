@@ -95,10 +95,10 @@ func PbOrder(m *ordermodel.Order) *external.Order {
 	res := &external.Order{
 		Id:                        m.ID,
 		ShopId:                    m.ShopID,
-		Code:                      &m.Code,
-		ExternalId:                &m.ExternalOrderID,
-		ExternalCode:              &m.EdCode,
-		ExternalUrl:               &m.ExternalURL,
+		Code:                      dot.String(m.Code),
+		ExternalId:                dot.String(m.ExternalOrderID),
+		ExternalCode:              dot.String(m.EdCode),
+		ExternalUrl:               dot.String(m.ExternalURL),
 		SelfUrl:                   cm.PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
 		CustomerAddress:           PbOrderAddress(m.CustomerAddress),
 		ShippingAddress:           PbOrderAddress(m.ShippingAddress),
@@ -108,7 +108,7 @@ func PbOrder(m *ordermodel.Order) *external.Order {
 		ClosedAt:                  cmapi.PbTime(m.ClosedAt),
 		ConfirmedAt:               cmapi.PbTime(m.ConfirmedAt),
 		CancelledAt:               cmapi.PbTime(m.CancelledAt),
-		CancelReason:              &m.CancelReason,
+		CancelReason:              dot.String(m.CancelReason),
 		ConfirmStatus:             convertpb.Pb3PtrStatus(m.ConfirmStatus),
 		Status:                    convertpb.Pb5PtrStatus(m.Status),
 		FulfillmentShippingStatus: convertpb.Pb5PtrStatus(m.FulfillmentShippingStatus),
@@ -121,7 +121,7 @@ func PbOrder(m *ordermodel.Order) *external.Order {
 		TotalFee:                  cmapi.PbPtrInt(m.GetTotalFee()),
 		FeeLines:                  convertpb.PbOrderFeeLines(m.GetFeeLines()),
 		TotalAmount:               cmapi.PbPtrInt(m.TotalAmount),
-		OrderNote:                 &m.OrderNote,
+		OrderNote:                 dot.String(m.OrderNote),
 		Shipping:                  PbOrderShipping(m),
 	}
 	return res
@@ -135,13 +135,13 @@ func PbOrderShipping(m *ordermodel.Order) *external.OrderShipping {
 	return &external.OrderShipping{
 		PickupAddress:       PbOrderAddress(shipping.GetPickupAddress()),
 		ReturnAddress:       PbOrderAddress(shipping.ReturnAddress),
-		ShippingServiceName: &shipping.ExternalServiceName,
+		ShippingServiceName: dot.String(shipping.ExternalServiceName),
 		ShippingServiceCode: shipping.GetPtrShippingServiceCode(),
 		ShippingServiceFee:  cmapi.PbPtrInt(shipping.ExternalShippingFee),
 		Carrier:             convertpb.PbPtrShippingProvider(shipping.GetShippingProvider()),
-		IncludeInsurance:    &shipping.IncludeInsurance,
+		IncludeInsurance:    dot.Bool(shipping.IncludeInsurance),
 		TryOn:               convertpb.PbPtrTryOn(m.GetTryOn()),
-		ShippingNote:        &m.ShippingNote,
+		ShippingNote:        dot.String(m.ShippingNote),
 		CodAmount:           cmapi.PbPtrInt(m.ShopCOD),
 		GrossWeight:         cmapi.PbPtrInt(m.TotalWeight),
 		Length:              cmapi.PbPtrInt(shipping.Length),
@@ -173,8 +173,8 @@ func PbOrderHistory(order ordermodel.OrderHistory) *external.Order {
 	_ = order.FeeLines().Unmarshal(&feeLines)
 
 	res := &external.Order{
-		Id:                        *order.ID().ID(),
-		ShopId:                    *order.ID().ID(),
+		Id:                        order.ID().ID().Apply(0),
+		ShopId:                    order.ID().ID().Apply(0),
 		Code:                      order.Code().String(),
 		ExternalId:                order.ExternalOrderID().String(),
 		ExternalCode:              order.EdCode().String(),
@@ -215,20 +215,11 @@ func PbOrderShippingHistory(order ordermodel.OrderHistory, shipping *ordermodel.
 		shipping = &ordermodel.OrderShipping{}
 	}
 	res := &external.OrderShipping{
-		PickupAddress:       nil,
-		ShippingServiceName: nil,
-		ShippingServiceCode: nil,
-		ShippingServiceFee:  nil,
-		Carrier:             nil,
-		IncludeInsurance:    nil,
-		TryOn:               nil,
-		ShippingNote:        nil,
-		CodAmount:           nil,
-		GrossWeight:         order.TotalWeight().Int(),
-		Length:              cmapi.PbPtrInt(shipping.Length),
-		Width:               cmapi.PbPtrInt(shipping.Width),
-		Height:              cmapi.PbPtrInt(shipping.Height),
-		ChargeableWeight:    order.TotalWeight().Int(),
+		GrossWeight:      order.TotalWeight().Int(),
+		Length:           cmapi.PbPtrInt(shipping.Length),
+		Width:            cmapi.PbPtrInt(shipping.Width),
+		Height:           cmapi.PbPtrInt(shipping.Height),
+		ChargeableWeight: order.TotalWeight().Int(),
 	}
 	return res
 }
@@ -369,16 +360,16 @@ func PbFulfillment(m *shipmodel.Fulfillment) *external.Fulfillment {
 		UpdatedAt:                cmapi.PbTime(m.UpdatedAt),
 		ClosedAt:                 cmapi.PbTime(m.ClosedAt),
 		CancelledAt:              cmapi.PbTime(m.ShippingCancelledAt),
-		CancelReason:             &m.CancelReason,
+		CancelReason:             dot.String(m.CancelReason),
 		Carrier:                  convertpb.PbPtrShippingProvider(m.ShippingProvider),
-		ShippingServiceName:      &m.ExternalShippingName,
+		ShippingServiceName:      dot.String(m.ExternalShippingName),
 		ShippingServiceFee:       cmapi.PbPtrInt(m.ShippingServiceFee),
 		ActualShippingServiceFee: cmapi.PbPtrInt(m.ShippingFeeShop),
-		ShippingServiceCode:      &m.ProviderServiceID,
-		ShippingCode:             &m.ShippingCode,
-		ShippingNote:             &m.ShippingNote,
+		ShippingServiceCode:      dot.String(m.ProviderServiceID),
+		ShippingCode:             dot.String(m.ShippingCode),
+		ShippingNote:             dot.String(m.ShippingNote),
 		TryOn:                    convertpb.PbPtrTryOn(m.TryOn),
-		IncludeInsurance:         &m.IncludeInsurance,
+		IncludeInsurance:         dot.Bool(m.IncludeInsurance),
 		ConfirmStatus:            convertpb.Pb3PtrStatus(m.ConfirmStatus),
 		ShippingState:            convertpb.PbPtrShippingState(m.ShippingState),
 		ShippingStatus:           convertpb.Pb5PtrStatus(m.ShippingStatus),
@@ -410,9 +401,9 @@ func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *external.Fulfillment 
 	_ = m.AddressReturn().Unmarshal(&addressReturn)
 
 	return &external.Fulfillment{
-		Id:                       *m.ID().ID(),
-		OrderId:                  *m.OrderID().ID(),
-		ShopId:                   *m.ShopID().ID(),
+		Id:                       m.ID().ID().Apply(0),
+		OrderId:                  m.OrderID().ID().Apply(0),
+		ShopId:                   m.ShopID().ID().Apply(0),
 		TotalItems:               m.TotalItems().Int(),
 		BasketValue:              m.BasketValue().Int(),
 		CreatedAt:                cmapi.PbTime(m.CreatedAt().Time()),
@@ -479,7 +470,7 @@ func OrderLineToCreateOrderLine(m *external.OrderLine) (*order.CreateOrderLine, 
 	if m == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "order_line must not be null")
 	}
-	if m.PaymentPrice == nil {
+	if !m.PaymentPrice.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp payment_price")
 	}
 
@@ -489,7 +480,7 @@ func OrderLineToCreateOrderLine(m *external.OrderLine) (*order.CreateOrderLine, 
 		Quantity:     m.Quantity,
 		ListPrice:    m.ListPrice,
 		RetailPrice:  m.RetailPrice,
-		PaymentPrice: *m.PaymentPrice,
+		PaymentPrice: m.PaymentPrice.Apply(0),
 		ImageUrl:     m.ImageUrl,
 		Attributes:   m.Attributes,
 	}, nil

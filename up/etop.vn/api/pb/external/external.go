@@ -5,8 +5,8 @@ func (m *Order) HasChanged() bool {
 		m.ConfirmStatus != nil ||
 		m.FulfillmentShippingStatus != nil ||
 		m.EtopPaymentStatus != nil ||
-		m.BasketValue != nil ||
-		m.TotalAmount != nil ||
+		m.BasketValue.Valid ||
+		m.TotalAmount.Valid ||
 		m.Shipping != nil ||
 		m.CustomerAddress != nil || m.ShippingAddress != nil
 }
@@ -15,9 +15,9 @@ func (m *Fulfillment) HasChanged() bool {
 	return m.Status != nil ||
 		m.ShippingState != nil ||
 		m.EtopPaymentStatus != nil ||
-		m.ActualShippingServiceFee != nil ||
-		m.CodAmount != nil ||
-		m.ActualCodAmount != nil ||
-		m.ShippingNote != nil ||
-		m.ChargeableWeight != nil
+		m.ActualShippingServiceFee.Valid ||
+		m.CodAmount.Valid ||
+		m.ActualCodAmount.Valid ||
+		m.ShippingNote.Valid ||
+		m.ChargeableWeight.Valid
 }

@@ -176,7 +176,7 @@ type UpdateFulfillmentRequest struct {
 	Id                       dot.ID          `json:"id"`
 	FullName                 string          `json:"full_name"`
 	Phone                    string          `json:"phone"`
-	TotalCodAmount           *int            `json:"total_cod_amount"`
+	TotalCodAmount           dot.NullInt     `json:"total_cod_amount"`
 	IsPartialDelivery        bool            `json:"is_partial_delivery"`
 	AdminNote                string          `json:"admin_note"`
 	ActualCompensationAmount int             `json:"actual_compensation_amount"`

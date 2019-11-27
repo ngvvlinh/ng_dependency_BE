@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	logmodel "etop.vn/backend/com/etc/log/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -114,8 +116,8 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	subState := ghtkclient.SubStateMapping[stateID]
 	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment:              updateFfm,
-		ExternalShippingNote:     cm.PString(note),
-		ExternalShippingSubState: cm.PString(subState),
+		ExternalShippingNote:     dot.String(note),
+		ExternalShippingSubState: dot.String(subState),
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
 		return err

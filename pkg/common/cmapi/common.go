@@ -40,15 +40,8 @@ func BareString(v *string) string {
 	return *v
 }
 
-func PbPtrInt(v int) *int {
-	return &v
-}
-
-func PatchInt(v int, p *int) int {
-	if p == nil {
-		return v
-	}
-	return int(*p)
+func PbPtrInt(v int) dot.NullInt {
+	return dot.Int(v)
 }
 
 func CMPaging(p *common.Paging, sorts ...string) *cm.Paging {

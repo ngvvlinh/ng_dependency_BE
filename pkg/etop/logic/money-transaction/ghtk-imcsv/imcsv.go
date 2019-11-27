@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	txmodel "etop.vn/backend/com/main/moneytx/model"
@@ -373,7 +375,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
-		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		totalFee := calcTotalFee(update.ShippingFeeShopLines)
 		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(totalFee, update)
 

@@ -488,7 +488,7 @@ type Shop struct {
 	SurveyInfo                    []*SurveyInfo
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem
 
-	InventoryOverstock *bool
+	InventoryOverstock dot.NullBool
 }
 
 func (s *Shop) CheckInfo() error {
@@ -1136,7 +1136,7 @@ type ShippingFeeLine struct {
 	ExternalShippingCode     string              `json:"external_shipping_code"`
 }
 
-func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainFee *int) []*ShippingFeeLine {
+func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) []*ShippingFeeLine {
 	res := make([]*ShippingFeeLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
@@ -1150,9 +1150,9 @@ func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainF
 	return res
 }
 
-func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee *int) *ShippingFeeLine {
-	if item.ShippingFeeType == ShippingFeeTypeMain && etopPriceRule && mainFee != nil {
-		item.Cost = *mainFee
+func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) *ShippingFeeLine {
+	if item.ShippingFeeType == ShippingFeeTypeMain && etopPriceRule {
+		item.Cost = mainFee.Apply(item.Cost)
 	}
 	if contains(ShippingFeeShopTypes, item.ShippingFeeType) {
 		return &item

@@ -14,7 +14,6 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -59,15 +58,13 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerE
 	cmd := &customering.UpdateCustomerCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
-		FullName: PString(r.FullName),
-		Gender:   PString(r.Gender),
-		Birthday: PString(r.Birthday),
-		Note:     PString(r.Note),
-		Phone:    PString(r.Phone),
-		Email:    PString(r.Email),
-	}
-	if r.Type != nil {
-		cmd.Type = customering.CustomerType(*r.Type)
+		FullName: r.FullName,
+		Gender:   r.Gender,
+		Birthday: r.Birthday,
+		Note:     r.Note,
+		Phone:    r.Phone,
+		Email:    r.Email,
+		Type:     customering.CustomerType(r.Type.Apply("")),
 	}
 	err := customerAggr.Dispatch(ctx, cmd)
 	if err != nil {

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"github.com/PuerkitoBio/goquery"
 
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -72,7 +74,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	}
 
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
-		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost

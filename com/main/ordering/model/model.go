@@ -265,11 +265,11 @@ func (s *OrderShipping) GetShippingServiceCode() string {
 	return cm.Coalesce(s.ProviderServiceID, s.ExternalServiceID)
 }
 
-func (s *OrderShipping) GetPtrShippingServiceCode() *string {
+func (s *OrderShipping) GetPtrShippingServiceCode() dot.NullString {
 	if s == nil || s.ExternalServiceID == "" {
-		return nil
+		return dot.NullString{}
 	}
-	return &s.ExternalServiceID
+	return dot.String(s.ExternalServiceID)
 }
 
 type OrderDiscount struct {
@@ -507,13 +507,13 @@ func (m *OrderAddress) GetFullName() string {
 	return m.FirstName + " " + m.LastName
 }
 
-func GetFeeLinesWithFallback(lines []OrderFeeLine, totalFee *int, shopShippingFee *int) []OrderFeeLine {
+func GetFeeLinesWithFallback(lines []OrderFeeLine, totalFee dot.NullInt, shopShippingFee dot.NullInt) []OrderFeeLine {
 	if len(lines) == 0 &&
-		(totalFee == nil || *totalFee == 0) &&
-		shopShippingFee != nil && *shopShippingFee != 0 {
+		totalFee.Apply(0) == 0 &&
+		shopShippingFee.Apply(0) == 0 {
 		return []OrderFeeLine{
 			{
-				Amount: int(*shopShippingFee),
+				Amount: shopShippingFee.Apply(0),
 				Desc:   "Phí giao hàng tính cho khách",
 				Name:   "Phí giao hàng tính cho khách",
 				Type:   OrderFeeShipping,

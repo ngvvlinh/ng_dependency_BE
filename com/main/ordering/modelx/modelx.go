@@ -70,7 +70,7 @@ type GetOrdersQuery struct {
 	Paging  *cm.Paging
 	Filters []cm.Filter
 	IDs     []dot.ID
-	Status  *int
+	Status  dot.NullInt
 
 	Result struct {
 		Orders []OrderWithFulfillments
@@ -109,17 +109,17 @@ type UpdateOrderCommand struct {
 	CustomerAddress *ordermodel.OrderAddress
 	BillingAddress  *ordermodel.OrderAddress
 	ShippingAddress *ordermodel.OrderAddress
-	ShopShippingFee *int
+	ShopShippingFee dot.NullInt
 	FeeLines        []ordermodel.OrderFeeLine
-	TotalFee        *int
-	ShopCOD         *int
+	TotalFee        dot.NullInt
+	ShopCOD         dot.NullInt
 	TotalWeight     int
 	OrderNote       string
 	ShopNote        string
 	ShippingNote    string
 	ShopShipping    *ordermodel.OrderShipping
 	TryOn           model.TryOn
-	OrderDiscount   *int
+	OrderDiscount   dot.NullInt
 	Lines           []*ordermodel.OrderLine
 	BasketValue     int
 	TotalAmount     int

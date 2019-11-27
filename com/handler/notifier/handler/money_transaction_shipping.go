@@ -21,7 +21,7 @@ func HandleMoneyTransactionShippingEvent(ctx context.Context, event *pgevent.PgE
 		ll.Warn("money_transaction_shipping not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil
 	}
-	id := *history.ID().Int64()
+	id := history.ID().Int64().Apply(0)
 	var mts txmodel.MoneyTransactionShipping
 	if ok, err := x.Where("id = ?", id).Get(&mts); err != nil {
 		return mq.CodeStop, err
@@ -43,7 +43,7 @@ func prepareMtsNotiCommands(event *pgevent.PgEvent, history txmodel.MoneyTransac
 		res = append(res, cmd)
 	}
 
-	if history.Status().Int() != nil && mts.Status == etopmodel.S3Positive {
+	if history.Status().Int().Valid && mts.Status == etopmodel.S3Positive {
 		cmd := templateMtsConfirmed(mts)
 		res = append(res, cmd)
 	}

@@ -218,22 +218,4 @@ func parseValue(v string, cfg valueConfig) (interface{}, error) {
 	return v, nil
 }
 
-func sqlPlaceholder(counter int) (*int, func(sql []byte) []byte) {
-	fn := func(sql []byte) []byte {
-		counter++
-		sql = append(sql, ",$"...)
-		sql = strconv.AppendInt(sql, int64(counter), 10)
-		return sql
-	}
-	return &counter, fn
-}
-
-func appendInt(b []byte, i int) []byte {
-	return strconv.AppendInt(b, int64(i), 10)
-}
-
-func appendInt64(b []byte, i int64) []byte {
-	return strconv.AppendInt(b, i, 10)
-}
-
 func ignoreError(err error) {}

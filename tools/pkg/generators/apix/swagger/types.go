@@ -3,20 +3,25 @@ package swagger
 import (
 	"fmt"
 	"go/types"
+	"strings"
 
 	"etop.vn/backend/tools/pkg/generator"
 )
 
+const dotPkgPath = "etop.vn/capi/dot"
+
 var (
-	typeID        types.Type
 	typeTime      types.Type
 	typeTimestamp types.Type
+	typeID        types.Type
+	typeNullID    types.Type
 )
 
 func initTypes(ng generator.Engine) {
-	populateType(ng, &typeID, "etop.vn/capi/dot", "ID")
 	populateType(ng, &typeTime, "time", "Time")
-	populateType(ng, &typeTimestamp, "etop.vn/capi/dot", "Time")
+	populateType(ng, &typeTimestamp, dotPkgPath, "Time")
+	populateType(ng, &typeID, dotPkgPath, "ID")
+	populateType(ng, &typeNullID, dotPkgPath, "NullID")
 }
 
 func populateType(ng generator.Engine, typ *types.Type, pkgPath, name string) {
@@ -43,6 +48,44 @@ func skipPointer(typ types.Type) types.Type {
 		return ptr.Elem()
 	}
 	return typ
+}
+
+func isNullID(typ types.Type) bool {
+	return typ == typeNullID
+}
+
+func isNullBasic(typ types.Type, inner *types.Type) bool {
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return false
+	}
+	pkg := named.Obj().Pkg()
+	if pkg == nil {
+		return false
+	}
+	if pkg.Path() != dotPkgPath {
+		return false
+	}
+	name := named.Obj().Name()
+	if strings.HasPrefix(name, "Null") {
+		field := named.Underlying().(*types.Struct).Field(0)
+		if field.Name() == "Valid" {
+			panic(fmt.Sprintf("invalid type %v", named))
+		}
+		*inner = field.Type()
+		return true
+	}
+	return false
+}
+
+func isBasic(typ types.Type, inner *types.Type) bool {
+	typ = skipPointer(typ)
+	basic, ok := typ.(*types.Basic)
+	if !ok {
+		return false
+	}
+	*inner = basic
+	return true
 }
 
 func isNamedStruct(typ types.Type, inner *types.Type) bool {
@@ -109,16 +152,6 @@ func isEnum(typ types.Type, inner *types.Type) bool {
 func isID(typ types.Type) bool {
 	typ = skipPointer(typ)
 	return typ == typeID
-}
-
-func isBasic(typ types.Type, inner *types.Type) bool {
-	typ = skipPointer(typ)
-	basic, ok := typ.(*types.Basic)
-	if !ok {
-		return false
-	}
-	*inner = basic
-	return true
 }
 
 func isNamedInterface(typ types.Type, inner *types.Type) bool {

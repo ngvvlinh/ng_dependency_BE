@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -111,8 +112,8 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	subState := vtpostclient.SubStateMap[statusCode]
 	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment:              updateFfm,
-		ExternalShippingNote:     cm.PString(note),
-		ExternalShippingSubState: cm.PString(subState),
+		ExternalShippingNote:     dot.String(note),
+		ExternalShippingSubState: dot.String(subState),
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
 		return err

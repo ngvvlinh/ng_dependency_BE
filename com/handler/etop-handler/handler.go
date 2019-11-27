@@ -192,7 +192,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 		return mq.CodeOK, nil
 	}
 
-	id := *history.ID().ID()
+	id := history.ID().ID().Apply(0)
 	var order ordermodel.Order
 	if ok, err := h.db.Where("id = ?", id).Get(&order); err != nil {
 		return mq.CodeStop, nil
@@ -229,7 +229,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 		return mq.CodeOK, nil
 	}
 
-	id := *history.ID().ID()
+	id := history.ID().ID().Apply(0)
 	var ffm shipmodel.Fulfillment
 	if ok, err := h.db.Where("id = ?", id).Get(&ffm); err != nil {
 		return mq.CodeStop, nil

@@ -25,7 +25,7 @@ type GetAccountUserExtendedsQuery struct {
 
 	Paging  *cm.Paging
 	Filters []cm.Filter
-	Status  *int
+	Status  dot.NullInt
 
 	Result struct {
 		AccountUsers []*AccountUserExtended

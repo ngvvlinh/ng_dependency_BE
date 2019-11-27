@@ -76,27 +76,27 @@ func (m *GetCouponsResponse) Reset()         { *m = GetCouponsResponse{} }
 func (m *GetCouponsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCouponRequest struct {
-	Value       int     `json:"value"`
-	Unit        *string `json:"unit"`
-	Description *string `json:"description"`
-	ProductId   dot.ID  `json:"product_id"`
+	Value       int            `json:"value"`
+	Unit        dot.NullString `json:"unit"`
+	Description dot.NullString `json:"description"`
+	ProductId   dot.ID         `json:"product_id"`
 }
 
 func (m *CreateCouponRequest) Reset()         { *m = CreateCouponRequest{} }
 func (m *CreateCouponRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Coupon struct {
-	Id          dot.ID   `json:"id"`
-	Code        string   `json:"code"`
-	Value       int      `json:"value"`
-	Unit        string   `json:"unit"`
-	Description *string  `json:"description"`
-	UserId      dot.ID   `json:"user_id"`
-	StartDate   dot.Time `json:"start_date"`
-	EndDate     dot.Time `json:"end_date"`
-	ProductId   dot.ID   `json:"product_id"`
-	CreatedAt   dot.Time `json:"created_at"`
-	UpdatedAt   dot.Time `json:"updated_at"`
+	Id          dot.ID         `json:"id"`
+	Code        string         `json:"code"`
+	Value       int            `json:"value"`
+	Unit        string         `json:"unit"`
+	Description dot.NullString `json:"description"`
+	UserId      dot.ID         `json:"user_id"`
+	StartDate   dot.Time       `json:"start_date"`
+	EndDate     dot.Time       `json:"end_date"`
+	ProductId   dot.ID         `json:"product_id"`
+	CreatedAt   dot.Time       `json:"created_at"`
+	UpdatedAt   dot.Time       `json:"updated_at"`
 }
 
 func (m *Coupon) Reset()         { *m = Coupon{} }
@@ -195,9 +195,9 @@ func (m *GetCommissionSettingByProductIDsResponse) String() string {
 }
 
 type CreateOrUpdateCommissionSettingRequest struct {
-	ProductId dot.ID  `json:"product_id"`
-	Amount    int     `json:"amount"`
-	Unit      *string `json:"unit"`
+	ProductId dot.ID         `json:"product_id"`
+	Amount    int            `json:"amount"`
+	Unit      dot.NullString `json:"unit"`
 }
 
 func (m *CreateOrUpdateCommissionSettingRequest) Reset() {
@@ -330,8 +330,8 @@ func (m *AffiliateGetProductsResponse) Reset()         { *m = AffiliateGetProduc
 func (m *AffiliateGetProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionRequest struct {
-	ProductId    dot.ID  `json:"product_id"`
-	ReferralCode *string `json:"referral_code"`
+	ProductId    dot.ID         `json:"product_id"`
+	ReferralCode dot.NullString `json:"referral_code"`
 }
 
 func (m *GetProductPromotionRequest) Reset()         { *m = GetProductPromotionRequest{} }

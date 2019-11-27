@@ -123,11 +123,11 @@ func (m *LoginUsingTokenRequest) Reset()         { *m = LoginUsingTokenRequest{}
 func (m *LoginUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RegisterRequest struct {
-	FullName       string `json:"full_name"`
-	Phone          string `json:"phone"`
-	Email          string `json:"email"`
-	AgreeTos       bool   `json:"agree_tos"`
-	AgreeEmailInfo *bool  `json:"agree_email_info"`
+	FullName       string       `json:"full_name"`
+	Phone          string       `json:"phone"`
+	Email          string       `json:"email"`
+	AgreeTos       bool         `json:"agree_tos"`
+	AgreeEmailInfo dot.NullBool `json:"agree_email_info"`
 }
 
 func (m *RegisterRequest) Reset()         { *m = RegisterRequest{} }

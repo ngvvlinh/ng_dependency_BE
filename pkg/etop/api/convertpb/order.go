@@ -224,13 +224,13 @@ func PbOrderShipping(m *ordermodel.Order) *order.OrderShipping {
 		IncludeInsurance:    item.IncludeInsurance,
 		TryOn:               PbTryOn(m.GetTryOn()),
 		ShippingNote:        m.ShippingNote,
-		CodAmount:           cm.PInt(m.ShopCOD),
-		Weight:              cm.PInt(m.TotalWeight),
-		GrossWeight:         cm.PInt(m.TotalWeight),
-		Length:              cm.PInt(item.Length),
-		Width:               cm.PInt(item.Width),
-		Height:              cm.PInt(item.Height),
-		ChargeableWeight:    cm.PInt(m.TotalWeight),
+		CodAmount:           dot.Int(m.ShopCOD),
+		Weight:              dot.Int(m.TotalWeight),
+		GrossWeight:         dot.Int(m.TotalWeight),
+		Length:              dot.Int(item.Length),
+		Width:               dot.Int(item.Width),
+		Height:              dot.Int(item.Height),
+		ChargeableWeight:    dot.Int(m.TotalWeight),
 	}
 }
 
@@ -445,26 +445,16 @@ func OrderShippingToModel(m *order.OrderShipping, mo *ordermodel.Order) error {
 		carrier = m.Carrier
 	}
 
-	grossWeight := 0
-	if m.Weight != nil {
-		grossWeight = int(*m.Weight)
-	}
-	if m.GrossWeight != nil {
-		grossWeight = int(*m.GrossWeight)
-	}
+	grossWeight := m.Weight.Apply(0)
+	grossWeight = m.GrossWeight.Apply(grossWeight)
 
-	chargeableWeight := 0
-	if m.ChargeableWeight != nil {
-		chargeableWeight = int(*m.ChargeableWeight)
-
-	} else {
+	chargeableWeight := m.ChargeableWeight.Apply(0)
+	if chargeableWeight == 0 {
 		switch {
-		case m.Length == nil && m.Width == nil && m.Height == nil:
+		case !m.Length.Valid && !m.Width.Valid && !m.Height.Valid:
 			// continue
-		case m.Length != nil && m.Width != nil && m.Height != nil:
-			chargeableWeight = model.CalcChargeableWeight(
-				grossWeight, int(*m.Length), int(*m.Width), int(*m.Height))
-
+		case m.Length.Valid && m.Width.Valid && m.Height.Valid:
+			chargeableWeight = model.CalcChargeableWeight(grossWeight, m.Length.Int, m.Width.Int, m.Height.Int)
 		default:
 			return cm.Errorf(cm.InvalidArgument, err, "Cần cung cấp đủ các giá trị length, width, height (hoặc để trống cả 3)", err)
 		}
@@ -491,16 +481,16 @@ func OrderShippingToModel(m *order.OrderShipping, mo *ordermodel.Order) error {
 		ShippingProvider:    carrierName,
 		ProviderServiceID:   cm.Coalesce(shippingServiceCode, m.XServiceId),
 		IncludeInsurance:    m.IncludeInsurance,
-		Length:              cmapi.PatchInt(0, m.Length),
-		Width:               cmapi.PatchInt(0, m.Width),
-		Height:              cmapi.PatchInt(0, m.Height),
+		Length:              m.Length.Apply(0),
+		Width:               m.Width.Apply(0),
+		Height:              m.Height.Apply(0),
 		GrossWeight:         grossWeight,
 		ChargeableWeight:    chargeableWeight,
 	}
 
 	// when adding new fields here, remember to also change UpdateOrderCommand
 	mo.ShopShipping = orderShipping
-	mo.ShopCOD = cmapi.PatchInt(mo.ShopCOD, m.CodAmount)
+	mo.ShopCOD = m.CodAmount.Apply(mo.ShopCOD)
 	mo.TotalWeight = chargeableWeight
 
 	if m.TryOn != 0 {

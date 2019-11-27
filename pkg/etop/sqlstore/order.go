@@ -661,17 +661,17 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 		}
 
 		// TODO: Handler pointer in common/sql
-		if cmd.ShopCOD != nil {
-			m["shop_cod"] = *cmd.ShopCOD
+		if cmd.ShopCOD.Valid {
+			m["shop_cod"] = cmd.ShopCOD.Int
 		}
-		if cmd.ShopShippingFee != nil {
-			m["shop_shipping_fee"] = *cmd.ShopShippingFee
+		if cmd.ShopShippingFee.Valid {
+			m["shop_shipping_fee"] = cmd.ShopShippingFee.Int
 		}
-		if cmd.OrderDiscount != nil {
-			m["order_discount"] = *cmd.OrderDiscount
+		if cmd.OrderDiscount.Valid {
+			m["order_discount"] = cmd.OrderDiscount.Int
 		}
-		if cmd.TotalFee != nil {
-			m["total_fee"] = *cmd.TotalFee
+		if cmd.TotalFee.Valid {
+			m["total_fee"] = cmd.TotalFee.Int
 		}
 		if len(m) == 0 {
 			return nil
@@ -959,11 +959,11 @@ func UpdateFulfillment(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentCom
 		s = s.Where("partner_id = ?", cmd.Fulfillment.PartnerID)
 	}
 	m := M{}
-	if cmd.ExternalShippingNote != nil {
-		m["external_shipping_note"] = *cmd.ExternalShippingNote
+	if cmd.ExternalShippingNote.Valid {
+		m["external_shipping_note"] = cmd.ExternalShippingNote.Apply("")
 	}
-	if cmd.ExternalShippingSubState != nil {
-		m["external_shipping_sub_state"] = *cmd.ExternalShippingSubState
+	if cmd.ExternalShippingSubState.Valid {
+		m["external_shipping_sub_state"] = cmd.ExternalShippingSubState.Apply("")
 	}
 	if err := s.ShouldUpdate(cmd.Fulfillment); err != nil {
 		return err
@@ -1325,7 +1325,7 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	}
 	updateFfmMap := M{}
 	updateOrderMap := M{}
-	if cmd.TotalCODAmount != nil {
+	if cmd.TotalCODAmount.Valid {
 		updateFfmMap["total_cod_amount"] = cmd.TotalCODAmount
 		if cmd.IsPartialDelivery {
 			updateFfmMap["is_partial_delivery"] = true

@@ -50,7 +50,6 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -462,17 +461,17 @@ func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndp
 	cmd := &catalog.UpdateShopVariantInfoCommand{
 		ShopID:    shopID,
 		VariantID: q.Id,
-		Name:      PString(q.Name),
-		Code:      PString(q.Code),
-		Note:      PString(q.Note),
+		Name:      q.Name,
+		Code:      q.Code,
+		Note:      q.Note,
 
-		ShortDesc:    PString(q.ShortDesc),
-		Descripttion: PString(q.Description),
-		DescHTML:     PString(q.DescHtml),
+		ShortDesc:    q.ShortDesc,
+		Descripttion: q.Description,
+		DescHTML:     q.DescHtml,
 
-		CostPrice:   PInt(q.CostPrice),
-		ListPrice:   PInt(q.ListPrice),
-		RetailPrice: PInt(q.RetailPrice),
+		CostPrice:   q.CostPrice,
+		ListPrice:   q.ListPrice,
+		RetailPrice: q.RetailPrice,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -631,19 +630,19 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndp
 	cmd := &catalog.UpdateShopProductInfoCommand{
 		ShopID:    shopID,
 		ProductID: q.Id,
-		Code:      PString(q.Code),
-		Name:      PString(q.Name),
-		Unit:      PString(q.Unit),
-		Note:      PString(q.Note),
-		BrandID:   PID(q.BrandId),
+		Code:      q.Code,
+		Name:      q.Name,
+		Unit:      q.Unit,
+		Note:      q.Note,
+		BrandID:   q.BrandId,
 
-		ShortDesc:   PString(q.ShortDesc),
-		Description: PString(q.Description),
-		DescHTML:    PString(q.DescHtml),
+		ShortDesc:   q.ShortDesc,
+		Description: q.Description,
+		DescHTML:    q.DescHtml,
 
-		CostPrice:   PInt(q.CostPrice),
-		ListPrice:   PInt(q.ListPrice),
-		RetailPrice: PInt(q.RetailPrice),
+		CostPrice:   q.CostPrice,
+		ListPrice:   q.ListPrice,
+		RetailPrice: q.RetailPrice,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -1570,7 +1569,7 @@ func (s *CategoryService) UpdateCategory(ctx context.Context, q *UpdateCategoryE
 	cmd := &catalog.UpdateShopCategoryCommand{
 		ID:       q.Id,
 		ShopID:   shopID,
-		Name:     PString(q.Name),
+		Name:     q.Name,
 		ParentID: q.ParentId,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
@@ -1640,10 +1639,10 @@ func (s *CollectionService) UpdateCollection(ctx context.Context, q *UpdateColle
 	cmd := &catalog.UpdateShopCollectionCommand{
 		ID:          q.Id,
 		ShopID:      shopID,
-		Name:        PString(q.Name),
-		Description: PString(q.Description),
-		DescHTML:    PString(q.DescHtml),
-		ShortDesc:   PString(q.ShortDesc),
+		Name:        q.Name,
+		Description: q.Description,
+		DescHTML:    q.DescHtml,
+		ShortDesc:   q.ShortDesc,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err

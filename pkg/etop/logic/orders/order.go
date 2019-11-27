@@ -26,7 +26,6 @@ import (
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -182,8 +181,8 @@ func CreateOrder(
 				cmd := &customering.UpdateCustomerCommand{
 					ID:       phoneCustomer.ID,
 					ShopID:   claim.Shop.ID,
-					FullName: PString(&shippingAddress.FullName),
-					Email:    PString(&shippingAddress.Email),
+					FullName: dot.String(shippingAddress.FullName),
+					Email:    dot.String(shippingAddress.Email),
 				}
 				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 					return nil, err
@@ -192,7 +191,7 @@ func CreateOrder(
 				cmd := &customering.UpdateCustomerCommand{
 					ID:       phoneCustomer.ID,
 					ShopID:   claim.Shop.ID,
-					FullName: PString(&shippingAddress.FullName),
+					FullName: dot.String(shippingAddress.FullName),
 				}
 				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 					return nil, err
@@ -342,14 +341,14 @@ func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.I
 		updateCustomerAddressCmd := &addressing.UpdateAddressCommand{
 			ID:           addressDB.ID,
 			ShopID:       shopID,
-			FullName:     PString(&address.FullName),
-			Phone:        PString(&address.Phone),
-			Email:        PString(&address.Email),
-			Company:      PString(&address.Company),
-			Address1:     PString(&address.Address1),
-			Address2:     PString(&address.Address2),
-			DistrictCode: PString(&address.DistrictCode),
-			WardCode:     PString(&address.WardCode),
+			FullName:     dot.String(address.FullName),
+			Phone:        dot.String(address.Phone),
+			Email:        dot.String(address.Email),
+			Company:      dot.String(address.Company),
+			Address1:     dot.String(address.Address1),
+			Address2:     dot.String(address.Address2),
+			DistrictCode: dot.String(address.DistrictCode),
+			WardCode:     dot.String(address.WardCode),
 		}
 		if err := traderAddressAggr.Dispatch(ctx, updateCustomerAddressCmd); err != nil {
 			return err
@@ -518,18 +517,13 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	if len(lines) == 0 {
 		lines = oldOrder.Lines
 	}
-	orderDiscount := 0
-	if q.OrderDiscount != nil {
-		orderDiscount = int(*q.OrderDiscount)
-	} else {
-		orderDiscount = oldOrder.OrderDiscount
-	}
+	orderDiscount := q.OrderDiscount.Apply(oldOrder.OrderDiscount)
 	feeLines := convertpb.PbOrderFeeLinesToModel(q.FeeLines)
 	if len(feeLines) == 0 {
 		feeLines = oldOrder.FeeLines
 	} else {
 		// calculate fee lines from shop_shipping_fee
-		feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, nil, q.ShopShippingFee)
+		feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, dot.NullInt{}, q.ShopShippingFee)
 	}
 
 	var basketValue, totalDiscount, totalAmount, totalItems int
@@ -543,17 +537,13 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 	// calculate shop_cod back from fee_lines
 	shopShippingFee := ordermodel.GetShippingFeeFromFeeLines(feeLines)
-	if q.ShopShippingFee != nil {
-		if int(*q.ShopShippingFee) != shopShippingFee {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Phí giao hàng không đúng").
-				WithMetap("expected shop_shipping_cod (= SUM(fee_lines.amount) WHERE (type=shipping))", totalFee)
-		}
+	if q.ShopShippingFee.Apply(shopShippingFee) != shopShippingFee {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phí giao hàng không đúng").
+			WithMetap("expected shop_shipping_cod (= SUM(fee_lines.amount) WHERE (type=shipping))", totalFee)
 	}
-	if q.TotalFee != nil {
-		if int(*q.TotalFee) != totalFee {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng phí không đúng").
-				WithMetap("expected total_fee (= SUM(fee_lines.amount))", totalFee)
-		}
+	if q.TotalFee.Apply(totalFee) != totalFee {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng phí không đúng").
+			WithMetap("expected total_fee (= SUM(fee_lines.amount))", totalFee)
 	}
 	totalAmount = basketValue - totalDiscount + totalFee
 
@@ -672,17 +662,17 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		ShippingAddress: shippingAddress,
 		OrderNote:       q.OrderNote,
 		ShippingNote:    cm.Coalesce(q.ShippingNote, fakeOrder.ShippingNote),
-		ShopShippingFee: cm.PInt(shopShippingFee),
+		ShopShippingFee: dot.Int(shopShippingFee),
 		TryOn:           fakeOrder.TryOn,
 		TotalWeight:     cm.CoalesceInt(int(q.TotalWeight), fakeOrder.TotalWeight),
 		ShopShipping:    fakeOrder.ShopShipping,
 		Lines:           lines,
 		FeeLines:        feeLines,
-		TotalFee:        cm.PInt(totalFee),
+		TotalFee:        dot.Int(totalFee),
 		BasketValue:     int(q.BasketValue),
 		TotalAmount:     int(q.TotalAmount),
 		TotalItems:      int(q.TotalItems),
-		OrderDiscount:   cm.PInt(orderDiscount),
+		OrderDiscount:   dot.Int(orderDiscount),
 		TotalDiscount:   totalDiscount,
 		ShopCOD:         shopCod,
 		CustomerID:      customerId,
@@ -824,7 +814,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 
 	// calculate fee lines from shop_shipping_fee
 	feeLines := convertpb.PbOrderFeeLinesToModel(m.FeeLines)
-	feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, &m.TotalFee, &m.ShopShippingFee)
+	feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, dot.Int(m.TotalFee), dot.Int(m.ShopShippingFee))
 	totalFee := 0
 	for _, line := range feeLines {
 		totalFee += line.Amount
@@ -863,11 +853,9 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 	totalLineDiscount := ordermodelx.SumOrderLineDiscount(lines)
 	orderDiscount := int(m.OrderDiscount)
 	totalDiscount = totalLineDiscount + orderDiscount
-	if m.TotalDiscount != nil {
-		if int(totalDiscount) != *m.TotalDiscount {
-			return nil, cm.Error(cm.InvalidArgument, "Tổng giá trị giảm không đúng", nil).
-				WithMetap("expected total_discount (= order_discount + sum(lines.total_discount))", totalDiscount)
-		}
+	if m.TotalDiscount.Apply(totalDiscount) != totalDiscount {
+		return nil, cm.Error(cm.InvalidArgument, "Tổng giá trị giảm không đúng", nil).
+			WithMetap("expected total_discount (= order_discount + sum(lines.total_discount))", totalDiscount)
 	}
 	if len(lines) != 0 && basketValue != int(m.BasketValue) {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không đúng", nil).
@@ -917,7 +905,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 		// return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping/shop_shipping")
 		if m.PaymentMethod == "" {
 			paymentMethod = model.PaymentMethodCOD
-			if m.ShopCod == 0 && (shipping.CodAmount == nil || *shipping.CodAmount == 0) {
+			if m.ShopCod == 0 && shipping.CodAmount.Apply(0) == 0 {
 				paymentMethod = model.PaymentMethodOther
 			}
 		}

@@ -104,8 +104,8 @@ type CreateFulfillmentsCommand struct {
 
 type UpdateFulfillmentCommand struct {
 	Fulfillment              *shipmodel.Fulfillment
-	ExternalShippingNote     *string
-	ExternalShippingSubState *string
+	ExternalShippingNote     dot.NullString
+	ExternalShippingSubState dot.NullString
 }
 
 type UpdateFulfillmentsCommand struct {
@@ -154,7 +154,7 @@ type AdminUpdateFulfillmentCommand struct {
 	FulfillmentID            dot.ID
 	FullName                 string
 	Phone                    string
-	TotalCODAmount           *int
+	TotalCODAmount           dot.NullInt
 	IsPartialDelivery        bool
 	AdminNote                string
 	ActualCompensationAmount int

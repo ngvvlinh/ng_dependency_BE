@@ -1168,16 +1168,6 @@ func (ft *ShopFilters) ByMoneyTransactionRRulePtr(MoneyTransactionRRule *string)
 	}
 }
 
-func (ft *ShopFilters) ByInventoryOverstockPtr(InventoryOverstock *bool) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "inventory_overstock",
-		Value:  InventoryOverstock,
-		IsNil:  InventoryOverstock == nil,
-		IsZero: InventoryOverstock != nil && bool(!(*InventoryOverstock)),
-	}
-}
-
 type ShopDeleteFilters struct{ prefix string }
 
 func NewShopDeleteFilters(prefix string) ShopDeleteFilters {
@@ -1728,7 +1718,7 @@ func (ft *PartnerRelationFilters) ByExternalSubjectIDPtr(ExternalSubjectID *stri
 	}
 }
 
-func (ft *PartnerRelationFilters) ByNonce(Nonce int64) *sq.ColumnFilter {
+func (ft *PartnerRelationFilters) ByNonce(Nonce dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "nonce",
@@ -1737,7 +1727,7 @@ func (ft *PartnerRelationFilters) ByNonce(Nonce int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PartnerRelationFilters) ByNoncePtr(Nonce *int64) *sq.ColumnFilterPtr {
+func (ft *PartnerRelationFilters) ByNoncePtr(Nonce *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "nonce",
@@ -2430,7 +2420,7 @@ func (ft *AccountUserFilters) ByInvitationSentBy(InvitationSentBy dot.ID) *sq.Co
 	}
 }
 
-func (ft *AccountUserFilters) ByInvitationSentByPtr(InvitationSentBy *int64) *sq.ColumnFilterPtr {
+func (ft *AccountUserFilters) ByInvitationSentByPtr(InvitationSentBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "invitation_sent_by",

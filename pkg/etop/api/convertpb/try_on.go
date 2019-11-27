@@ -3,6 +3,7 @@ package convertpb
 import (
 	"etop.vn/api/pb/etop/etc/try_on"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func TryOnCodeToModel(x *try_on.TryOnCode) model.TryOn {
@@ -21,10 +22,10 @@ func PbPtrTryOn(m model.TryOn) *try_on.TryOnCode {
 	return &res
 }
 
-func PbTryOnPtr(m *string) *try_on.TryOnCode {
-	if m == nil || *m == "" {
+func PbTryOnPtr(m dot.NullString) *try_on.TryOnCode {
+	if m.Apply("") == "" {
 		return nil
 	}
-	res := PbTryOn(model.TryOn(*m))
+	res := PbTryOn(model.TryOn(m.String))
 	return &res
 }

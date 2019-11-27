@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -200,7 +202,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		if err != nil {
 			return err
 		}
-		ffmToUpdate.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, &ffmToUpdate.EtopAdjustedShippingFeeMain)
+		ffmToUpdate.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
 
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{

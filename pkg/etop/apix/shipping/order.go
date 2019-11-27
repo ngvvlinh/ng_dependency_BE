@@ -15,7 +15,6 @@ import (
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/validate"
 	convertpbint "etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
@@ -37,13 +36,13 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	if err != nil {
 		return nil, err
 	}
-	if shipping.CodAmount == nil {
+	if !shipping.CodAmount.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.cod_amount")
 	}
 	if shipping.Carrier == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.carrier")
 	}
-	if shipping.IncludeInsurance == nil {
+	if !shipping.IncludeInsurance.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.include_insurance")
 	}
 	if shipping.TryOn == nil {
@@ -83,16 +82,16 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		Discounts:       nil,
 		TotalItems:      r.TotalItems,
 		BasketValue:     r.BasketValue,
-		TotalWeight:     cmapi.BareInt(shipping.ChargeableWeight),
+		TotalWeight:     shipping.ChargeableWeight.Apply(0),
 		OrderDiscount:   r.OrderDiscount,
-		TotalFee:        cmapi.BareInt(r.TotalFee),
+		TotalFee:        r.TotalFee.Apply(0),
 		FeeLines:        r.FeeLines,
-		TotalDiscount:   &r.TotalDiscount,
+		TotalDiscount:   dot.Int(r.TotalDiscount),
 		TotalAmount:     r.TotalAmount,
 		OrderNote:       r.OrderNote,
-		ShippingNote:    cmapi.BareString(shipping.ShippingNote),
+		ShippingNote:    shipping.ShippingNote.Apply(""),
 		ShopShippingFee: 0, // deprecated
-		ShopCod:         cmapi.BareInt(shipping.CodAmount),
+		ShopCod:         shipping.CodAmount.Apply(0),
 		ReferenceUrl:    "",
 		ShopShipping:    nil, // deprecated
 		Shipping: &pborder.OrderShipping{
@@ -104,15 +103,14 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 			PickupAddress:       convertpb.OrderAddressToPbOrder(shipping.PickupAddress),
 			ReturnAddress:       convertpb.OrderAddressToPbOrder(shipping.ReturnAddress),
 			ShippingServiceName: "", // TODO: be filled when confirm
-			ShippingServiceCode: cmapi.BareString(shipping.ShippingServiceCode),
-			ShippingServiceFee:  cmapi.BareInt(shipping.ShippingServiceFee),
+			ShippingServiceCode: shipping.ShippingServiceCode.Apply(""),
+			ShippingServiceFee:  shipping.ShippingServiceFee.Apply(0),
 			ShippingProvider:    0,
 			Carrier:             *shipping.Carrier,
-			IncludeInsurance:    *shipping.IncludeInsurance,
+			IncludeInsurance:    shipping.IncludeInsurance.Apply(false),
 			TryOn:               *shipping.TryOn,
-			ShippingNote:        cmapi.BareString(shipping.ShippingNote),
+			ShippingNote:        shipping.ShippingNote.Apply(""),
 			CodAmount:           shipping.CodAmount,
-			Weight:              nil,
 			GrossWeight:         shipping.GrossWeight,
 			Length:              shipping.Length,
 			Width:               shipping.Width,

@@ -215,56 +215,56 @@ type SQLWriter interface {
 
 type Interface struct{ V interface{} }
 
-func (i Interface) Bool() *bool {
+func (i Interface) Bool() dot.NullBool {
 	if i.V == nil {
-		return nil
+		return dot.NullBool{}
 	}
 	v := i.V.(bool)
-	return &v
+	return dot.Bool(v)
 }
 
-func (i Interface) Int() *int {
+func (i Interface) Int() dot.NullInt {
 	if i.V == nil {
-		return nil
+		return dot.NullInt{}
 	}
 	v := int(i.V.(int64))
-	return &v
+	return dot.Int(v)
 }
 
-func (i Interface) Int32() *int32 {
+func (i Interface) Int32() dot.NullInt32 {
 	if i.V == nil {
-		return nil
+		return dot.NullInt32{}
 	}
 	v := int32(i.V.(int64))
-	return &v
+	return dot.Int32(v)
 }
 
-func (i Interface) Int64() *int64 {
+func (i Interface) Int64() dot.NullInt64 {
 	if i.V == nil {
-		return nil
+		return dot.NullInt64{}
 	}
 	v := i.V.(int64)
-	return &v
+	return dot.Int64(v)
 }
 
-func (i Interface) ID() *dot.ID {
+func (i Interface) ID() dot.NullID {
 	if i.V == nil {
-		return nil
+		return dot.NullID{}
 	}
 	v := i.V.(int64)
-	return (*dot.ID)(&v)
+	return dot.NID(dot.ID(v))
 }
 
-func (i Interface) String() *string {
+func (i Interface) String() dot.NullString {
 	if i.V == nil {
-		return nil
+		return dot.NullString{}
 	}
 	switch v := i.V.(type) {
 	case string:
-		return &v
+		return dot.String(v)
 	case []byte:
 		res := unsafeBytesToString(v)
-		return &res
+		return dot.String(res)
 	default:
 		panic(fmt.Sprintf("unknown type: %v", reflect.TypeOf(i.V)))
 	}

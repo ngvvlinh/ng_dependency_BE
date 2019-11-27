@@ -20,7 +20,7 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 		ShopID:    q.Context.Shop.ID,
 		UserID:    q.Context.UserID,
 		Type:      inventory.InventoryVoucherType(q.Type),
-		OverStock: cm.BoolDefault(q.Context.Shop.InventoryOverstock, true),
+		OverStock: q.Context.Shop.InventoryOverstock.Apply(true),
 	}
 	err := inventoryAggregate.Dispatch(ctx, cmd)
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 		ShopID:      shopID,
 		TotalAmount: q.TotalAmount,
 		UpdatedBy:   userID,
-		TraderID:    PID(q.TraderId),
+		TraderID:    q.TraderId,
 		Note:        PString(q.Note),
 		Lines:       items,
 	}
@@ -114,7 +114,7 @@ func (s *InventoryService) AdjustInventoryQuantity(ctx context.Context, q *Adjus
 		})
 	}
 	cmd := &inventory.AdjustInventoryQuantityCommand{
-		Overstock: cm.BoolDefault(inventoryOverstock, true),
+		Overstock: inventoryOverstock.Apply(true),
 		ShopID:    shopID,
 		Lines:     items,
 		UserID:    userID,

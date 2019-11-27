@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -159,7 +161,7 @@ func (p *Carrier) CreateFulfillment(
 		updateFfm.ProviderShippingFeeLines = ghnclient.CalcAndConvertShippingFeeLines(ghnGetOrderCmd.Result.ShippingOrderCosts)
 	}
 
-	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, &updateFfm.EtopAdjustedShippingFeeMain)
+	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, dot.Int(updateFfm.EtopAdjustedShippingFeeMain))
 	return updateFfm, nil
 }
 
@@ -298,7 +300,7 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	update.AddressTo = ffm.AddressTo.UpdateAddress(orderGHN.CustomerPhone.String(), orderGHN.CustomerName.String())
 	update.TotalCODAmount = int(orderGHN.CoDAmount)
 
-	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 	shippingFeeShop := 0
 	for _, line := range shippingFeeShopLines {
 		shippingFeeShop += line.Cost

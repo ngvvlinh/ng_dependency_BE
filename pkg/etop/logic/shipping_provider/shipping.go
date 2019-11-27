@@ -45,14 +45,14 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 	}
 
 	var res []*model.AvailableShippingService
-	weight := int(q.Weight)
+	weight := q.Weight
 	if q.GrossWeight != 0 {
-		weight = int(q.GrossWeight)
+		weight = q.GrossWeight
 	}
-	length := int(q.Length)
-	width := int(q.Width)
-	height := int(q.Height)
-	chargeableWeight := int(q.ChargeableWeight)
+	length := q.Length
+	width := q.Width
+	height := q.Height
+	chargeableWeight := q.ChargeableWeight
 	calculatedChargeableWeight := model.CalcChargeableWeight(weight, length, width, height)
 	if chargeableWeight == 0 {
 		chargeableWeight = calculatedChargeableWeight
@@ -65,18 +65,15 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			WithMetap("expected chargeable_weight (= MAX(gross_weight, volumetric_weight))", calculatedChargeableWeight)
 	}
 
-	value := int(q.Value)
+	value := q.Value
 	if q.BasketValue != 0 {
-		value = int(q.BasketValue)
+		value = q.BasketValue
 	}
-	includeInsurance := false
-	if q.IncludeInsurance != nil {
-		includeInsurance = *q.IncludeInsurance
-	}
+	includeInsurance := q.IncludeInsurance.Apply(false)
 
-	totalCODAmount := int(q.TotalCodAmount)
+	totalCODAmount := q.TotalCodAmount
 	if q.CodAmount != 0 {
-		totalCODAmount = int(q.CodAmount)
+		totalCODAmount = q.CodAmount
 	}
 
 	args := GetShippingServicesArgs{

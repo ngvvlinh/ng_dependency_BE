@@ -19,7 +19,6 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -73,16 +72,16 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 	cmd := &receipting.UpdateReceiptCommand{
 		ID:          q.Id,
 		ShopID:      q.Context.Shop.ID,
-		Title:       PString(q.Title),
-		Description: PString(q.Description),
-		LedgerID:    PID(q.LedgerId),
-		TraderID:    PID(q.TraderId),
-		Amount:      PInt(q.Amount),
+		Title:       q.Title,
+		Description: q.Description,
+		LedgerID:    q.LedgerId,
+		TraderID:    q.TraderId,
+		Amount:      q.Amount,
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
 	}
-	if q.RefType != nil {
-		cmd.RefType = receipting.ReceiptRefType(*q.RefType)
+	if q.RefType.Valid {
+		cmd.RefType = receipting.ReceiptRefType(q.RefType.String)
 	}
 	err = receiptAggr.Dispatch(ctx, cmd)
 	if err != nil {

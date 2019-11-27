@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -237,7 +239,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	}
 	if lines, err := shippingFees.CalcAndConvertShippingFeeLines(); err == nil {
 		updateFfm.ProviderShippingFeeLines = lines
-		updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(lines, false, nil)
+		updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(lines, false, dot.NullInt{})
 	}
 
 	return updateFfm, nil

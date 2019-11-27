@@ -86,10 +86,10 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustom
 }
 
 func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCustomerAddressEndpoint) error {
-	if r.DistrictCode != nil && r.WardCode != nil {
+	if r.DistrictCode.Valid && r.WardCode.Valid {
 		query := &location.GetLocationQuery{
-			DistrictCode: *r.DistrictCode,
-			WardCode:     *r.WardCode,
+			DistrictCode: r.DistrictCode.String,
+			WardCode:     r.WardCode.String,
 		}
 		if err := locationQuery.Dispatch(ctx, query); err != nil {
 			return err

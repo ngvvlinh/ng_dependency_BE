@@ -168,10 +168,10 @@ func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
 			return err
 		}
 		updateMapValue := make(map[string]interface{})
-		if shop.InventoryOverstock != nil {
+		if shop.InventoryOverstock.Valid {
 			updateMapValue["inventory_overstock"] = shop.InventoryOverstock
 		}
-		if cmd.AutoCreateFFM != nil {
+		if cmd.AutoCreateFFM.Valid {
 			updateMapValue["auto_create_ffm"] = cmd.AutoCreateFFM
 		}
 		if len(updateMapValue) != 0 {

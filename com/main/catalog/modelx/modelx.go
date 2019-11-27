@@ -12,7 +12,7 @@ type GetShopVariantQuery struct {
 	ShopID    dot.ID
 	VariantID dot.ID
 
-	ShopVariantStatus *int
+	ShopVariantStatus dot.NullInt
 
 	Result *catalog.ShopVariant
 }

@@ -204,6 +204,33 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 	case isSliceOfBytes(typ):
 		return simpleType("string", "byte")
 
+	case isNullID(typ):
+		return simpleType("string", "int64")
+
+	case isBasic(typ, &inner) || isNullBasic(typ, &inner):
+		switch inner.(*types.Basic).Kind() {
+		case types.Bool:
+			return simpleType("boolean", "")
+
+		case types.Int:
+			return simpleType("integer", "")
+
+		case types.Int32:
+			return simpleType("integer", "int32")
+
+		case types.Int64:
+			return simpleType("string", "int64")
+
+		case types.Float32:
+			return simpleType("integer", "float32")
+
+		case types.Float64:
+			return simpleType("integer", "float32")
+
+		case types.String:
+			return simpleType("string", "")
+		}
+
 	case isNamedStruct(typ, &inner):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
@@ -312,30 +339,6 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 
 	case isID(typ):
 		return simpleType("string", "int64")
-
-	case isBasic(typ, &inner):
-		switch inner.(*types.Basic).Kind() {
-		case types.Bool:
-			return simpleType("boolean", "")
-
-		case types.Int:
-			return simpleType("integer", "")
-
-		case types.Int32:
-			return simpleType("integer", "int32")
-
-		case types.Int64:
-			return simpleType("string", "int64")
-
-		case types.Float32:
-			return simpleType("integer", "float32")
-
-		case types.Float64:
-			return simpleType("integer", "float32")
-
-		case types.String:
-			return simpleType("string", "")
-		}
 
 	case isNamedInterface(typ, &inner):
 		panic(fmt.Sprintf("oneof is not supported"))

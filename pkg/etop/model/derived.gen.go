@@ -156,7 +156,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -164,7 +164,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -172,7 +172,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.OriginalFile != "" {
 		flag = true
@@ -523,7 +523,7 @@ func (m *ExportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -531,7 +531,7 @@ func (m *ExportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.ExportType != "" {
 		flag = true
@@ -911,7 +911,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.OwnerID != 0 {
 		flag = true
@@ -919,7 +919,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OwnerID)
+		w.WriteArg(int64(m.OwnerID))
 	}
 	if m.Name != "" {
 		flag = true
@@ -1095,7 +1095,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.MoneyTransactionRRule),
 		core.JSON{m.SurveyInfo},
 		core.JSON{m.ShippingServiceSelectStrategy},
-		m.InventoryOverstock,
+		core.JSON{&m.InventoryOverstock},
 	}
 }
 
@@ -1127,7 +1127,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.MoneyTransactionRRule),
 		core.JSON{&m.SurveyInfo},
 		core.JSON{&m.ShippingServiceSelectStrategy},
-		&m.InventoryOverstock,
+		core.JSON{&m.InventoryOverstock},
 	}
 }
 
@@ -1196,7 +1196,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.Name != "" {
 		flag = true
@@ -1212,7 +1212,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OwnerID)
+		w.WriteArg(int64(m.OwnerID))
 	}
 	if m.IsTest != 0 {
 		flag = true
@@ -1228,7 +1228,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AddressID)
+		w.WriteArg(int64(m.AddressID))
 	}
 	if m.ShipToAddressID != 0 {
 		flag = true
@@ -1236,7 +1236,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShipToAddressID)
+		w.WriteArg(int64(m.ShipToAddressID))
 	}
 	if m.ShipFromAddressID != 0 {
 		flag = true
@@ -1244,7 +1244,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShipFromAddressID)
+		w.WriteArg(int64(m.ShipFromAddressID))
 	}
 	if m.Phone != "" {
 		flag = true
@@ -1308,7 +1308,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderSourceID)
+		w.WriteArg(int64(m.OrderSourceID))
 	}
 	if m.Status != 0 {
 		flag = true
@@ -1398,13 +1398,13 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ShippingServiceSelectStrategy})
 	}
-	if m.InventoryOverstock != nil {
+	if true {
 		flag = true
 		w.WriteName("inventory_overstock")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(*m.InventoryOverstock)
+		w.WriteArg(core.JSON{&m.InventoryOverstock})
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -2034,7 +2034,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.OwnerID != 0 {
 		flag = true
@@ -2042,7 +2042,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OwnerID)
+		w.WriteArg(int64(m.OwnerID))
 	}
 	if m.Status != 0 {
 		flag = true
@@ -2425,7 +2425,7 @@ func (m *AccountAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.Status != 0 {
 		flag = true
@@ -2898,7 +2898,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.PartnerID)
+		w.WriteArg(int64(m.PartnerID))
 	}
 	if m.SubjectID != 0 {
 		flag = true
@@ -2906,7 +2906,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SubjectID)
+		w.WriteArg(int64(m.SubjectID))
 	}
 	if m.SubjectType != "" {
 		flag = true
@@ -2930,7 +2930,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Nonce)
+		w.WriteArg(int64(m.Nonce))
 	}
 	if m.Status != 0 {
 		flag = true
@@ -3337,7 +3337,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.UserInner.FullName != "" {
 		flag = true
@@ -3473,7 +3473,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.RefUserID)
+		w.WriteArg(int64(m.RefUserID))
 	}
 	if m.RefSaleID != 0 {
 		flag = true
@@ -3481,7 +3481,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.RefSaleID)
+		w.WriteArg(int64(m.RefSaleID))
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -3755,7 +3755,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -3763,7 +3763,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.Status != 0 {
 		flag = true
@@ -3859,7 +3859,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.InvitationSentBy)
+		w.WriteArg(int64(m.InvitationSentBy))
 	}
 	if !m.InvitationAcceptedAt.IsZero() {
 		flag = true
@@ -4481,7 +4481,7 @@ func (m *UserAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.AuthType != "" {
 		flag = true
@@ -4707,7 +4707,7 @@ func (m *UserInternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.Hashpwd != "" {
 		flag = true
@@ -4955,7 +4955,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.FullName != "" {
 		flag = true
@@ -5115,7 +5115,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.Notes != nil {
 		flag = true
@@ -5615,7 +5615,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -5631,7 +5631,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.Type != "" {
 		flag = true
@@ -5978,7 +5978,7 @@ func (m *ShippingSource) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.Name != "" {
 		flag = true
@@ -6223,7 +6223,7 @@ func (m *ShippingSourceInternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -6497,7 +6497,7 @@ func (m *Webhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -6505,7 +6505,7 @@ func (m *Webhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.Entities != nil {
 		flag = true
@@ -6773,7 +6773,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.WebhookID != 0 {
 		flag = true
@@ -6781,7 +6781,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.WebhookID)
+		w.WriteArg(int64(m.WebhookID))
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -6789,7 +6789,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
