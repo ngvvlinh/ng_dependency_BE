@@ -10074,7 +10074,7 @@
         "payment_price": {
           "type": "integer"
         },
-        "product_idint": {
+        "product_id": {
           "type": "string",
           "format": "int64"
         },

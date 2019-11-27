@@ -124,7 +124,7 @@ type PurchaseOrderLine struct {
 	VariantId    dot.ID       `json:"variant_id"`
 	Quantity     int          `json:"quantity"`
 	PaymentPrice int          `json:"payment_price"`
-	ProductId    dot.ID       `json:"product_idint"`
+	ProductId    dot.ID       `json:"product_id"`
 	ProductName  string       `json:"product_name"`
 	ImageUrl     string       `json:"image_url"`
 	Code         string       `json:"code"`
