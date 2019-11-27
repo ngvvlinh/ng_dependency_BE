@@ -203,6 +203,13 @@ type FulfillmentService interface {
 	UpdateFulfillmentsShippingState(context.Context, *UpdateFulfillmentsShippingStateRequest) (*cm.UpdatedResponse, error)
 }
 
+// +apix:path=/shop.Shipment
+type ShipmentService interface {
+	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
+
+	CreateFulfillments(context.Context, *CreateFulfillmentsRequest) (*CreateFulfillmentsResponse, error)
+}
+
 // +apix:path=/shop.Shipnow
 type ShipnowService interface {
 	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*types.ShipnowFulfillment, error)
@@ -338,6 +345,13 @@ type StocktakeService interface {
 	GetStocktake(context.Context, *cm.IDRequest) (*Stocktake, error)
 	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*GetStocktakesByIDsResponse, error)
 	GetStocktakes(context.Context, *GetStocktakesRequest) (*GetStocktakesResponse, error)
+}
+
+// +apix:path=/shop.Connection
+type ConnectionService interface {
+	RegisterShopConnection(context.Context, *RegisterShopConnectionRequest) (*ShopConnection, error)
+
+	LoginShopConnection(context.Context, *LoginShopConnectionRequest) (*ShopConnection, error)
 }
 
 // +apix:path=/shop.Refund

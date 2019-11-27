@@ -20,6 +20,7 @@ const (
 
 	// Environment Partner constants
 	PartnerEnvTest = "test"
+	PartnerEnvDev  = "dev"
 	PartnerEnvProd = "prod"
 )
 

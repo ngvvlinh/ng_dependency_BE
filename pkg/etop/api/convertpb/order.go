@@ -13,7 +13,6 @@ import (
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
-	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -119,7 +118,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		ShopShipping:              nil,
 		Shipping:                  nil,
 		GhnNoteCode:               m.GhnNoteCode,
-		FulfillmentType:           orderconvert.Fulfill(m.FulfillmentType).String(),
+		FulfillmentType:           m.FulfillmentType.String(),
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
 	}
@@ -184,7 +183,7 @@ func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accT
 		ShopShipping:              nil,
 		Shipping:                  nil,
 		GhnNoteCode:               m.GhnNoteCode,
-		FulfillmentType:           orderconvert.Fulfill(m.FulfillmentType).String(),
+		FulfillmentType:           m.FulfillmentType.String(),
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
 		CreatedBy:                 m.CreatedBy,
@@ -489,6 +488,8 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 		Height:              m.Height.Apply(0),
 		GrossWeight:         grossWeight,
 		ChargeableWeight:    chargeableWeight,
+		ConnectionID:        m.ConnectionID,
+		ShopCarrierID:       m.ShopCarrierID,
 	}
 
 	// when adding new fields here, remember to also change UpdateOrderCommand
@@ -859,6 +860,7 @@ func PbAvailableShippingService(s *model.AvailableShippingService) *types.Extern
 		Carrier:             PbShippingProviderType(s.Provider),
 		EstimatedPickupAt:   cmapi.PbTime(s.ExpectedPickAt),
 		EstimatedDeliveryAt: cmapi.PbTime(s.ExpectedDeliveryAt),
+		ConnectionID:        s.ConnectionID,
 	}
 }
 

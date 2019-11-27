@@ -258,7 +258,7 @@ func (c *Carrier) PrepareDeliveryPoints(ctx context.Context, pickupAddress *orde
 			Lng:            address.Coordinates.Longitude,
 			Mobile:         address.Phone,
 			Name:           address.FullName,
-			COD:            point.CodAmount,
+			COD:            point.CODAmount,
 			TrackingNumber: point.OrderCode,
 			Remarks:        prepareRemarksForDeliveryPoint(point),
 			ProvinceCode:   address.ProvinceCode,

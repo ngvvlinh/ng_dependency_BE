@@ -66,7 +66,7 @@ type Config struct {
 	Captcha           captcha.Config   `yaml:"captcha"`
 
 	GHN            ghn.Config           `yaml:"ghn"`
-	GHNWebhook     cc.HTTP              `yaml:"ghn_webhook"`
+	GHNWebhook     ghn.WebhookConfig    `yaml:"ghn_webhook"`
 	GHTK           ghtk.Config          `yaml:"ghtk"`
 	GHTKWebhook    cc.HTTP              `yaml:"ghtk_webhook"`
 	VTPost         vtpost.Config        `yaml:"vtpost"`
@@ -122,7 +122,7 @@ func Default() Config {
 		},
 
 		GHN:            ghn.DefaultConfig(),
-		GHNWebhook:     cc.HTTP{Port: 9022},
+		GHNWebhook:     ghn.DefaultWebhookConfig(),
 		GHTK:           ghtk.DefaultConfig(),
 		GHTKWebhook:    cc.HTTP{Port: 9032},
 		VTPost:         vtpost.DefaultConfig(),
@@ -188,7 +188,6 @@ func Load(isTest bool) (Config, error) {
 	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
 	cfg.Redis.MustLoadEnv()
 	cfg.TelegramBot.MustLoadEnv()
-	cfg.GHN.MustLoadEnv()
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
@@ -207,6 +206,9 @@ func Load(isTest bool) (Config, error) {
 	}
 	if cfg.ThirdPartyHost == "" && !cm.IsDev() {
 		return cfg, errors.New("Empty third_party_host")
+	}
+	if cfg.GHNWebhook.Endpoint == "" {
+		return cfg, errors.New("Empty GHN webhook endpoint")
 	}
 	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")
 	cc.EnvMap{

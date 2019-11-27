@@ -7,7 +7,10 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/main/shipping"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/receipt_ref"
@@ -491,4 +494,81 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 		Updated: cmd.Result.Updated,
 	}
 	return nil
+}
+
+func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippingServicesEndpoint) error {
+	shopID := q.Context.Shop.ID
+	args, err := shipmentManager.PrepareDataGetShippingService(ctx, shopID, q.GetShippingServicesRequest)
+	if err != nil {
+		return err
+	}
+	resp, err := shipmentManager.GetShippingServices(ctx, shopID, args)
+	if err != nil {
+		return err
+	}
+	q.Result = &types.GetShippingServicesResponse{
+		Services: convertpb.PbAvailableShippingServices(resp),
+	}
+	return nil
+}
+
+func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) error {
+	key := fmt.Sprintf("CreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderID)
+	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+		func() (interface{}, error) {
+			return s.createFulfillments(ctx, q)
+		}, "tạo đơn giao hàng")
+
+	if err != nil {
+		return err
+	}
+	q.Result = res.(*CreateFulfillmentsEndpoint).Result
+	return err
+}
+
+func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) (_ *CreateFulfillmentsEndpoint, _err error) {
+	shopID := q.Context.Shop.ID
+	args := &shipping.CreateFulfillmentsCommand{
+		ShopID:              shopID,
+		OrderID:             q.OrderID,
+		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
+		ShippingAddress:     convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
+		ReturnAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ReturnAddress),
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingServiceName: q.ShippingServiceName,
+		WeightInfo: shippingtypes.WeightInfo{
+			GrossWeight:      q.GrossWeight,
+			ChargeableWeight: q.ChargeableWeight,
+			Length:           q.Length,
+			Width:            q.Width,
+			Height:           q.Heigh,
+		},
+		ValueInfo: shippingtypes.ValueInfo{
+			CODAmount:        q.CODAmount,
+			IncludeInsurance: q.IncludeInsurance,
+		},
+		TryOn:         q.TryOn,
+		ShippingNote:  q.ShippingNote,
+		ShippingType:  q.ShippingType,
+		ConnectionID:  q.ConnectionID,
+		ShopCarrierID: q.ShopCarrierID,
+	}
+	if err := shippingAggregate.Dispatch(ctx, args); err != nil {
+		return nil, err
+	}
+	query := &shipmodelx.GetFulfillmentExtendedsQuery{
+		ShopIDs: []dot.ID{shopID},
+		IDs:     args.Result,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	ffms := convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop)
+	res := &CreateFulfillmentsEndpoint{
+		Result: &shop.CreateFulfillmentsResponse{
+			Fulfillments: ffms,
+		},
+	}
+	return res, nil
 }

@@ -20,6 +20,11 @@ type Config struct {
 	AccountExt     Account `yaml:"account_ext"`
 }
 
+type WebhookConfig struct {
+	cc.HTTP  `yaml:",inline"`
+	Endpoint string `yaml:"endpoint"`
+}
+
 func (c *Config) MustLoadEnv(prefix ...string) {
 	p := "ET_GHN"
 	if len(prefix) > 0 {
@@ -44,6 +49,13 @@ func DefaultConfig() Config {
 	}
 }
 
+func DefaultWebhookConfig() WebhookConfig {
+	return WebhookConfig{
+		HTTP:     cc.HTTP{Port: 9022},
+		Endpoint: "http://callback-url",
+	}
+}
+
 type RequestCreateOrderCommand struct {
 	ServiceID string // Required for detecting which client
 	Request   *ghnclient.CreateOrderRequest
@@ -63,6 +75,13 @@ type RequestCalculateFeeCommand struct {
 	ServiceID string // Required for detecting which client
 	Request   *ghnclient.CalculateFeeRequest
 	Result    *ghnclient.CalculateFeeResponse
+}
+
+type CalcShippingFeeCommand struct {
+	FromDistrict *location.District
+	ToDistrict   *location.District
+	Request      *ghnclient.FindAvailableServicesRequest
+	Result       []*ghnclient.AvailableService
 }
 
 type RequestGetOrderCommand struct {

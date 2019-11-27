@@ -241,7 +241,7 @@ func GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentI
 	} else if r.ShippingCode != "" {
 		s = s.ShippingCode(r.ShippingCode)
 	}
-	ffm, err := s.Get()
+	ffm, err := s.GetFfmDB()
 	if err != nil {
 		return nil, err
 	}

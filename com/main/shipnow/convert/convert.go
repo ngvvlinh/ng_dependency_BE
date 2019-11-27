@@ -31,7 +31,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ShippingServiceFee:         in.ShippingServiceFee,
 		ChargeableWeight:           in.ChargeableWeight,
 		BasketValue:                in.ValueInfo.BasketValue,
-		CODAmount:                  in.ValueInfo.CodAmount,
+		CODAmount:                  in.ValueInfo.CODAmount,
 		ShippingNote:               in.ShippingNote,
 		RequestPickupAt:            in.RequestPickupAt,
 		DeliveryPoints:             DeliveryPointsToModel(in.DeliveryPoints),
@@ -86,7 +86,7 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		},
 		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      in.BasketValue,
-			CodAmount:        in.CODAmount,
+			CODAmount:        in.CODAmount,
 			IncludeInsurance: false,
 		},
 		ShippingNote:               in.ShippingNote,
@@ -139,7 +139,7 @@ func DeliveryPoint(in *shipnowmodel.DeliveryPoint) (outs *shipnowtypes.DeliveryP
 		},
 		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      in.BasketValue,
-			CodAmount:        in.CODAmount,
+			CODAmount:        in.CODAmount,
 			IncludeInsurance: false,
 		},
 		TryOn: 0,
@@ -166,7 +166,7 @@ func DeliveryPointToModel(in *shipnowtypes.DeliveryPoint) (out *shipnowmodel.Del
 		Width:            in.Width,
 		Height:           in.Height,
 		BasketValue:      in.BasketValue,
-		CODAmount:        in.CodAmount,
+		CODAmount:        in.CODAmount,
 		TryOn:            0,
 		ShippingNote:     in.ShippingNote,
 		OrderID:          in.OrderId,
@@ -209,7 +209,7 @@ func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 		},
 		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      in.BasketValue,
-			CodAmount:        codAmount,
+			CODAmount:        codAmount,
 			IncludeInsurance: in.Shipping.IncludeInsurance,
 		},
 		TryOn: tryOn,
@@ -236,7 +236,7 @@ func GetValueInfo(orders []*ordering.Order) shippingtypes.ValueInfo {
 	}
 	return shippingtypes.ValueInfo{
 		BasketValue: basketValue,
-		CodAmount:   codAmount,
+		CODAmount:   codAmount,
 	}
 }
 

@@ -12,14 +12,18 @@ import (
 	haravanserver "etop.vn/backend/com/external/haravan/gateway/server"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
+	connectionaggregate "etop.vn/backend/com/main/connectioning/aggregate"
+	connectionquery "etop.vn/backend/com/main/connectioning/query"
 	"etop.vn/backend/com/main/identity"
 	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
+	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/metrics"
+	"etop.vn/backend/pkg/common/redis"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/common/l"
@@ -31,6 +35,11 @@ func startServers() *http.Server {
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 	haravan := aggregate.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
 
+	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
+	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
+	redisStore := redis.Connect(cfg.Redis.ConnectionString())
+	shipmentManager := shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, cfg.Env, redisStore)
+
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderAggr := serviceordering.NewAggregate(eventBus, db).MessageBus()
 	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
@@ -39,7 +48,7 @@ func startServers() *http.Server {
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	locationBus := servicelocation.New().MessageBus()
 	orderS.Init(shippingManager, catalogQueryService, orderAggr, customerAggr,
-		customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus)
+		customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	haravanServer := haravanserver.New(haravan, haravanIdentityQuery)
 
 	mux := http.NewServeMux()

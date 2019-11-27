@@ -55,7 +55,7 @@ func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shi
 	// Call orderAggr for ReserveOrdersForFfm
 	cmd := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   event.OrderIds,
-		Fulfill:    ordertypes.FulfillShipnow,
+		Fulfill:    ordertypes.ShippingTypeShipnow,
 		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
@@ -75,7 +75,7 @@ func (m *ProcessManager) ShipnowOrderChanged(ctx context.Context, event *shipnow
 
 	cmd2 := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   event.OrderIds,
-		Fulfill:    ordertypes.FulfillShipnow,
+		Fulfill:    ordertypes.ShippingTypeShipnow,
 		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
 	}
 	if err := m.order.Dispatch(ctx, cmd2); err != nil {

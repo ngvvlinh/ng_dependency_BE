@@ -9,7 +9,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-type ShippingProvider interface {
+type ShippingCarrier interface {
 	CreateFulfillment(context.Context, *ordermodel.Order, *shipmodel.Fulfillment, GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 	CancelFulfillment(context.Context, *shipmodel.Fulfillment, model.FfmAction) error
 	GetShippingServices(ctx context.Context, args GetShippingServicesArgs) ([]*model.AvailableShippingService, error)

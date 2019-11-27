@@ -7,7 +7,8 @@ package shipping
 import (
 	context "context"
 
-	meta "etop.vn/api/meta"
+	orderingtypes "etop.vn/api/main/ordering/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -21,134 +22,74 @@ func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) er
 	return b.bus.Dispatch(ctx, msg)
 }
 
-type CancelFulfillmentCommand struct {
-	FulfillmentID dot.ID
-	CancelReason  string
-
-	Result *meta.Empty `json:"-"`
-}
-
-func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, msg *CancelFulfillmentCommand) (err error) {
-	msg.Result, err = h.inner.CancelFulfillment(msg.GetArgs(ctx))
-	return err
-}
-
-type ConfirmFulfillmentCommand struct {
-	FulfillmentID dot.ID
-
-	Result *meta.Empty `json:"-"`
-}
-
-func (h AggregateHandler) HandleConfirmFulfillment(ctx context.Context, msg *ConfirmFulfillmentCommand) (err error) {
-	msg.Result, err = h.inner.ConfirmFulfillment(msg.GetArgs(ctx))
-	return err
-}
-
-type CreateFulfillmentCommand struct {
+type CreateFulfillmentsCommand struct {
+	ShopID              dot.ID
 	OrderID             dot.ID
-	PickupAddress       *Address
-	ShippingAddress     *Address
-	ReturnAddress       *Address
-	Carrier             string
+	PickupAddress       *orderingtypes.Address
+	ShippingAddress     *orderingtypes.Address
+	ReturnAddress       *orderingtypes.Address
+	ShippingType        orderingtypes.ShippingType
 	ShippingServiceCode string
-	ShippingServiceFee  string
-	WeightInfo          WeightInfo
-	ValueInfo           ValueInfo
+	ShippingServiceFee  int
+	ShippingServiceName string
+	WeightInfo          shippingtypes.WeightInfo
+	ValueInfo           shippingtypes.ValueInfo
 	TryOn               try_on.TryOnCode
 	ShippingNote        string
+	ConnectionID        dot.ID
+	ShopCarrierID       dot.ID
 
-	Result *meta.Empty `json:"-"`
+	Result []dot.ID `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFulfillment(ctx context.Context, msg *CreateFulfillmentCommand) (err error) {
-	msg.Result, err = h.inner.CreateFulfillment(msg.GetArgs(ctx))
-	return err
-}
-
-type GetFulfillmentByIDCommand struct {
-	FulfillmentID dot.ID
-
-	Result *Fulfillment `json:"-"`
-}
-
-func (h AggregateHandler) HandleGetFulfillmentByID(ctx context.Context, msg *GetFulfillmentByIDCommand) (err error) {
-	msg.Result, err = h.inner.GetFulfillmentByID(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFulfillments(ctx context.Context, msg *CreateFulfillmentsCommand) (err error) {
+	msg.Result, err = h.inner.CreateFulfillments(msg.GetArgs(ctx))
 	return err
 }
 
 // implement interfaces
 
-func (q *CancelFulfillmentCommand) command()  {}
-func (q *ConfirmFulfillmentCommand) command() {}
-func (q *CreateFulfillmentCommand) command()  {}
-func (q *GetFulfillmentByIDCommand) command() {}
+func (q *CreateFulfillmentsCommand) command() {}
 
 // implement conversion
 
-func (q *CancelFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelFulfillmentArgs) {
+func (q *CreateFulfillmentsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentsArgs) {
 	return ctx,
-		&CancelFulfillmentArgs{
-			FulfillmentID: q.FulfillmentID,
-			CancelReason:  q.CancelReason,
-		}
-}
-
-func (q *CancelFulfillmentCommand) SetCancelFulfillmentArgs(args *CancelFulfillmentArgs) {
-	q.FulfillmentID = args.FulfillmentID
-	q.CancelReason = args.CancelReason
-}
-
-func (q *ConfirmFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmFulfillmentArgs) {
-	return ctx,
-		&ConfirmFulfillmentArgs{
-			FulfillmentID: q.FulfillmentID,
-		}
-}
-
-func (q *ConfirmFulfillmentCommand) SetConfirmFulfillmentArgs(args *ConfirmFulfillmentArgs) {
-	q.FulfillmentID = args.FulfillmentID
-}
-
-func (q *CreateFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentArgs) {
-	return ctx,
-		&CreateFulfillmentArgs{
+		&CreateFulfillmentsArgs{
+			ShopID:              q.ShopID,
 			OrderID:             q.OrderID,
 			PickupAddress:       q.PickupAddress,
 			ShippingAddress:     q.ShippingAddress,
 			ReturnAddress:       q.ReturnAddress,
-			Carrier:             q.Carrier,
+			ShippingType:        q.ShippingType,
 			ShippingServiceCode: q.ShippingServiceCode,
 			ShippingServiceFee:  q.ShippingServiceFee,
+			ShippingServiceName: q.ShippingServiceName,
 			WeightInfo:          q.WeightInfo,
 			ValueInfo:           q.ValueInfo,
 			TryOn:               q.TryOn,
 			ShippingNote:        q.ShippingNote,
+			ConnectionID:        q.ConnectionID,
+			ShopCarrierID:       q.ShopCarrierID,
 		}
 }
 
-func (q *CreateFulfillmentCommand) SetCreateFulfillmentArgs(args *CreateFulfillmentArgs) {
+func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfillmentsArgs) {
+	q.ShopID = args.ShopID
 	q.OrderID = args.OrderID
 	q.PickupAddress = args.PickupAddress
 	q.ShippingAddress = args.ShippingAddress
 	q.ReturnAddress = args.ReturnAddress
-	q.Carrier = args.Carrier
+	q.ShippingType = args.ShippingType
 	q.ShippingServiceCode = args.ShippingServiceCode
 	q.ShippingServiceFee = args.ShippingServiceFee
+	q.ShippingServiceName = args.ShippingServiceName
 	q.WeightInfo = args.WeightInfo
 	q.ValueInfo = args.ValueInfo
 	q.TryOn = args.TryOn
 	q.ShippingNote = args.ShippingNote
-}
-
-func (q *GetFulfillmentByIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetFulfillmentByIDQueryArgs) {
-	return ctx,
-		&GetFulfillmentByIDQueryArgs{
-			FulfillmentID: q.FulfillmentID,
-		}
-}
-
-func (q *GetFulfillmentByIDCommand) SetGetFulfillmentByIDQueryArgs(args *GetFulfillmentByIDQueryArgs) {
-	q.FulfillmentID = args.FulfillmentID
+	q.ConnectionID = args.ConnectionID
+	q.ShopCarrierID = args.ShopCarrierID
 }
 
 // implement dispatching
@@ -163,9 +104,6 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleCancelFulfillment)
-	b.AddHandler(h.HandleConfirmFulfillment)
-	b.AddHandler(h.HandleCreateFulfillment)
-	b.AddHandler(h.HandleGetFulfillmentByID)
+	b.AddHandler(h.HandleCreateFulfillments)
 	return CommandBus{b}
 }

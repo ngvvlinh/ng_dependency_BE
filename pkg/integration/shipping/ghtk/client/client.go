@@ -26,9 +26,10 @@ func init() {
 }
 
 type Client struct {
-	baseUrl string
-	token   string
-	rclient *httpreq.Resty
+	baseUrl  string
+	token    string
+	b2ctoken string
+	rclient  *httpreq.Resty
 }
 
 const (
@@ -36,6 +37,8 @@ const (
 	PathCreateOrder     = "/services/shipment/order"
 	PathGetOrder        = "/services/shipment/v2"
 	PathCancelOrder     = "/services/shipment/cancel"
+	PathSignIn          = "/services/shops/token"
+	PathSignUp          = "/services/shops/add"
 )
 
 func New(env string, cfg GhtkAccount) *Client {
@@ -47,11 +50,12 @@ func New(env string, cfg GhtkAccount) *Client {
 	}
 	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
-		token:   cfg.Token,
-		rclient: httpreq.NewResty(rcfg),
+		token:    cfg.Token,
+		b2ctoken: cfg.B2CToken,
+		rclient:  httpreq.NewResty(rcfg),
 	}
 	switch env {
-	case cm.PartnerEnvTest:
+	case cm.PartnerEnvTest, cm.PartnerEnvDev:
 		c.baseUrl = "https://dev.ghtk.vn"
 	case cm.PartnerEnvProd:
 		c.baseUrl = "https://services.giaohangtietkiem.vn"
@@ -174,6 +178,18 @@ func (c *Client) CancelOrder(ctx context.Context, labelID, orderPartnerID string
 	return &resp, err
 }
 
+func (c *Client) SignIn(ctx context.Context, req *SignInRequest) (*SignInResponse, error) {
+	var resp SignInResponse
+	err := c.sendPostRequest(ctx, PathSignIn, req, &resp, "Không thể đăng nhập tài khoản")
+	return &resp, err
+}
+
+func (c *Client) SignUp(ctx context.Context, req *SignUpRequest) (*SignUpResponse, error) {
+	var resp SignUpResponse
+	err := c.sendPostRequest(ctx, PathSignUp, req, &resp, "Không thể tạo tài khoản mới")
+	return &resp, err
+}
+
 func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{}, resp ResponseInterface, msg string) error {
 	queryString := url.Values{}
 	if req != nil {
@@ -195,10 +211,14 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 }
 
 func (c *Client) sendPostRequest(ctx context.Context, path string, req interface{}, resp ResponseInterface, msg string) error {
-	res, err := c.rclient.R().
+	_req := c.rclient.R().
 		SetBody(req).
-		SetHeader("token", c.token).
-		Post(model.URL(c.baseUrl, path))
+		SetHeader("token", c.token)
+	if c.b2ctoken != "" {
+		_req.SetHeader("X-Refer-Token", c.b2ctoken)
+	}
+
+	res, err := _req.Post(model.URL(c.baseUrl, path))
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với GHTK", err)
 	}

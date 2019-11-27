@@ -44,7 +44,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	t0 := time.Now()
 	var msg ghnclient.CallbackOrder
 	if err := c.DecodeJson(&msg); err != nil {
-		return cm.Errorf(cm.InvalidArgument, err, "...")
+		return cm.Errorf(cm.InvalidArgument, err, "GHN: can not decode JSON callback")
 	}
 
 	defer func() {
@@ -89,19 +89,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	}
 	ffm := query.Result
 
-	// get order GHN info to update service fee
-	providerServiceID := ffm.ProviderServiceID
-	ghnCmd := &ghn.RequestGetOrderCommand{
-		ServiceID: providerServiceID,
-		Request: &ghnclient.OrderCodeRequest{
-			OrderCode: query.Result.ExternalShippingCode,
-		},
-	}
-	if err := wh.carrier.GetOrder(ctx, ghnCmd); err != nil {
-		return err
-	}
-
-	updateFfm := update.CalcUpdateFulfillment(ffm, &msg, ghnCmd.Result)
+	updateFfm := update.CalcUpdateFulfillment(ffm, &msg)
 	updateFfm.LastSyncAt = t0
 	// UpdateInfo other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)

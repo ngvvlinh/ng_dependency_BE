@@ -58,7 +58,7 @@ const (
 )
 
 func (s AutoInventoryVoucher) ValidateAutoInventoryVoucher() bool {
-	if s == AutoCreateInventory || s == AutoCreateAndConfirmInventory {
+	if s == "" || s == AutoCreateInventory || s == AutoCreateAndConfirmInventory {
 		return true
 	}
 	return false

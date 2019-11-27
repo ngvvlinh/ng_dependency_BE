@@ -6,8 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
+	"etop.vn/backend/com/main/shipping/carrier"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
@@ -17,6 +19,8 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	ghtkdriver "etop.vn/backend/pkg/integration/shipping/ghtk/driver"
+	ghtkupdate "etop.vn/backend/pkg/integration/shipping/ghtk/update"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -24,14 +28,16 @@ import (
 var ll = l.New()
 
 type Webhook struct {
-	dbLogs  *cmsql.Database
-	carrier *ghtk.Carrier
+	dbLogs          *cmsql.Database
+	carrier         *ghtk.Carrier
+	shipmentManager *carrier.ShipmentManager
 }
 
-func New(dbLogs *cmsql.Database, carrier *ghtk.Carrier) *Webhook {
+func New(dbLogs *cmsql.Database, carrier *ghtk.Carrier, shipmentManager *carrier.ShipmentManager) *Webhook {
 	wh := &Webhook{
-		dbLogs:  dbLogs,
-		carrier: carrier,
+		dbLogs:          dbLogs,
+		carrier:         carrier,
+		shipmentManager: shipmentManager,
 	}
 	return wh
 }
@@ -44,8 +50,9 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	t0 := time.Now()
 	var msg ghtkclient.CallbackOrder
 	if err := c.DecodeJson(&msg); err != nil {
-		return cm.Errorf(cm.InvalidArgument, err, "Can not decode JSON callback")
+		return cm.Errorf(cm.InvalidArgument, err, "GHTK: can not decode JSON callback")
 	}
+	ll.Logger.Info("ghtk webhook", l.Object("msg", msg))
 	statusID := int(msg.StatusID)
 	stateID := ghtkclient.StateID(statusID)
 	shippingState := stateID.ToModel().String()
@@ -94,21 +101,34 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	}
 
 	ffm := query.Result
-	providerServiceID := ffm.ProviderServiceID
-	_, _, err = ghtk.ParseServiceID(providerServiceID)
-	if err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
-	}
-	// get order info to update service fee
-	ghtkCmd := &ghtk.GetOrderCommand{
-		ServiceID: ffm.ProviderServiceID,
-		LabelID:   msg.LabelID.String(),
-	}
-	if err := wh.carrier.GetOrder(ctx, ghtkCmd); err != nil {
-		return err
+
+	// backward compatible
+	// set default driver when ffm.ConnectionID = 0
+	if ffm.ConnectionID == 0 {
+		queryShopConn := &connectioning.GetShopConnectionByIDQuery{
+			ConnectionID: connectioning.DefaultGHTKConnectionID,
+		}
+		if err := wh.shipmentManager.ConnectionQS.Dispatch(ctx, queryShopConn); err != nil {
+			return cm.Errorf(cm.InvalidArgument, err, "Không thể lấy default driver cho ghtk, err = %v", err)
+		}
+		cfg := ghtkclient.GhtkAccount{
+			Token: queryShopConn.Result.Token,
+		}
+		driver := ghtkdriver.New(wh.shipmentManager.Env, cfg, wh.shipmentManager.LocationQS)
+		wh.shipmentManager.SetDriver(driver)
+
+		defer func() {
+			wh.shipmentManager.ResetDriver()
+		}()
 	}
 
-	updateFfm := ghtk.CalcUpdateFulfillment(ffm, &msg, &ghtkCmd.Result.Order)
+	updateFfm, err := wh.shipmentManager.UpdateFulfillment(ctx, ffm)
+	if err != nil {
+		return err
+	}
+	// trạng thái phụ của đơn ghtk nằm trong data webhook
+	ghtkupdate.CalcUpdateFulfillmentFromWebhook(ffm, &msg, updateFfm)
+
 	updateFfm.LastSyncAt = t0
 	// UpdateInfo other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)

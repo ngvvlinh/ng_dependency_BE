@@ -47,8 +47,8 @@ type ResultOrder struct {
 	} `json:"result"`
 }
 
-func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOrder, orderGHN *ghnclient.Order) *shipmodel.Fulfillment {
-	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOrder) *shipmodel.Fulfillment {
+	if !shipping.CanUpdateFulfillment(ffm) {
 		return ffm
 	}
 
@@ -58,6 +58,10 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 
 	// GET LOGS
 	ffm, _ = SyncTrackingOrder(ffm)
+	var isReturnOrder bool
+	if msg.ReturnInfo != "" {
+		isReturnOrder = true
+	}
 
 	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
@@ -65,8 +69,8 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ExternalShippingState:     msg.CurrentStatus.String(),
 		ExternalShippingStatus:    state.ToStatus5(ffm.ShippingState),
 		ExternalShippingData:      data,
-		ProviderShippingFeeLines:  ghnclient.CalcAndConvertShippingFeeLines(orderGHN.ShippingOrderCosts),
-		ShippingState:             state.ToModel(ffm.ShippingState, msg),
+		ProviderShippingFeeLines:  ghnclient.CalcAndConvertShippingFeeLines(msg.ShippingOrderCosts),
+		ShippingState:             state.ToModel(ffm.ShippingState, isReturnOrder),
 		EtopDiscount:              ffm.EtopDiscount,
 		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
@@ -199,4 +203,42 @@ func SyncTrackingOrder(ffm *shipmodel.Fulfillment) (*shipmodel.Fulfillment, erro
 		}
 	})
 	return ffm, _err
+}
+
+func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, orderGHN *ghnclient.Order) (*shipmodel.Fulfillment, error) {
+	if !shipping.CanUpdateFulfillment(ffm) {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this fulfillment")
+	}
+	state := ghnclient.State(orderGHN.CurrentStatus)
+	var isReturnOrder bool
+	if orderGHN.ReturnInfo != "" {
+		isReturnOrder = true
+	}
+
+	update := &shipmodel.Fulfillment{
+		ID:                        ffm.ID,
+		ExternalShippingUpdatedAt: time.Now(),
+		ExternalShippingState:     orderGHN.CurrentStatus.String(),
+		ExternalShippingStatus:    state.ToStatus5(ffm.ShippingState),
+		ProviderShippingFeeLines:  ghnclient.CalcAndConvertShippingFeeLines(orderGHN.ShippingOrderCosts),
+		ShippingState:             state.ToModel(ffm.ShippingState, isReturnOrder),
+		EtopDiscount:              ffm.EtopDiscount,
+		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
+		ExternalShippingLogs:      ffm.ExternalShippingLogs,
+		ShippingCode:              ffm.ShippingCode,
+	}
+	update.AddressTo = ffm.AddressTo.UpdateAddress(orderGHN.CustomerPhone.String(), orderGHN.CustomerName.String())
+	update.TotalCODAmount = int(orderGHN.CoDAmount)
+
+	if shipping.CanUpdateFulfillmentFeelines(ffm) {
+		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShop := 0
+		for _, line := range shippingFeeShopLines {
+			shippingFeeShop += line.Cost
+		}
+		update.ShippingFeeShopLines = shippingFeeShopLines
+		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
+	}
+
+	return update, nil
 }

@@ -21,6 +21,7 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
+	"etop.vn/backend/com/main/shipping/carrier"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -44,6 +45,7 @@ var (
 	traderAddressQuery addressing.QueryBus
 	locationQuery      location.QueryBus
 	eventBus           capi.EventBus
+	shipmentManager    *carrier.ShipmentManager
 )
 
 func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
@@ -54,7 +56,8 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	traderAddressAggregate addressing.CommandBus,
 	traderAddressQueryBus addressing.QueryBus,
 	locationQueryBus location.QueryBus,
-	eventB capi.EventBus) {
+	eventB capi.EventBus,
+	shipmentCarrierCtrl *carrier.ShipmentManager) {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
 	orderAggr = orderAggregate
@@ -64,6 +67,7 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	traderAddressQuery = traderAddressQueryBus
 	locationQuery = locationQueryBus
 	eventBus = eventB
+	shipmentManager = shipmentCarrierCtrl
 }
 
 var districtsBlockList = []string{
@@ -258,7 +262,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	}
 	cmd := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   []dot.ID{order.ID},
-		Fulfill:    ordertypes.Fulfill(ordermodel.FulfillShipment),
+		Fulfill:    ordertypes.ShippingTypeShipment,
 		FulfillIDs: ffmIDs,
 	}
 	if err = orderAggr.Dispatch(ctx, cmd); err != nil {
@@ -560,10 +564,8 @@ func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.A
 
 func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) ([]error, error) {
 	var ffmToCancel []*shipmodel.Fulfillment
-	ffmSendToProvider := make([]model.FfmAction, len(fulfillments))
-	count := 0
 
-	for i, ffm := range fulfillments {
+	for _, ffm := range fulfillments {
 		switch ffm.Status {
 		case status5.P, status5.N, status5.NS:
 			continue
@@ -571,22 +573,6 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 
 		if ffm.ShopConfirm != status3.N {
 			ffmToCancel = append(ffmToCancel, ffm)
-		}
-
-		switch ffm.ShippingState {
-		case shipping.Created, shipping.Picking:
-			ffmSendToProvider[i] = model.FfmActionCancel
-			count++
-
-		case shipping.Holding,
-			shipping.Delivering,
-			shipping.Undeliverable,
-			shipping.Returning:
-			ffmSendToProvider[i] = model.FfmActionReturn
-			count++
-
-		default:
-			ffmSendToProvider[i] = model.FfmActionNothing
 		}
 	}
 
@@ -605,22 +591,13 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}
 	}
 
-	// MUSTDO: wait at least 10s before retry
-
-	now := time.Now()
 	var wg sync.WaitGroup
 	var errs []error
-	if count <= 0 {
-		return nil, nil
-	}
 
-	errs = make([]error, len(ffmSendToProvider))
-	for i, action := range ffmSendToProvider {
+	errs = make([]error, len(fulfillments))
+	for i, ffm := range fulfillments {
 		// https://golang.org/doc/faq#closures_and_goroutines
-		i, action, ffm := i, action, fulfillments[i]
-		if action == model.FfmActionNothing {
-			continue
-		}
+		i, ffm := i, ffm
 
 		wg.Add(1)
 		go ignoreError(func() (_err error) {
@@ -629,31 +606,22 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				errs[i] = _err
 			}()
 
-			// UpdateInfo to pending
-			update := &shipmodel.Fulfillment{
-				ID:         ffm.ID,
-				SyncStatus: status4.S,
-				SyncStates: &model.FulfillmentSyncStates{
-					SyncAt:            now,
-					NextShippingState: action.ToShippingState(),
-				},
-			}
-			updateCmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update}
-			if err := bus.Dispatch(ctx, updateCmd); err != nil {
-				return cm.Errorf(cm.Internal, err, "Lỗi khi cập nhật vận đơn: %v", err.Error())
-			}
-
-			// TODO
 			var shippingProviderErr error
-			switch ffm.ShippingProvider {
-			case typeshippingprovider.GHN:
-				shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, action)
-			case typeshippingprovider.GHTK:
-				shippingProviderErr = ctrl.GHTK.CancelFulfillment(ctx, ffm, 0)
-			case typeshippingprovider.VTPost:
-				shippingProviderErr = ctrl.VTPost.CancelFulfillment(ctx, ffm, 0)
-			default:
-				panic("Shipping provider was not supported.")
+			if ffm.ShippingType == 0 {
+				// backward compatible
+				// remove later
+				switch ffm.ShippingProvider {
+				case typeshippingprovider.GHN:
+					shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, 0)
+				case typeshippingprovider.GHTK:
+					shippingProviderErr = ctrl.GHTK.CancelFulfillment(ctx, ffm, 0)
+				case typeshippingprovider.VTPost:
+					shippingProviderErr = ctrl.VTPost.CancelFulfillment(ctx, ffm, 0)
+				default:
+					panic("Shipping provider was not supported.")
+				}
+			} else if ffm.ConnectionID != 0 {
+				shippingProviderErr = shipmentManager.CancelFulfillment(ctx, ffm)
 			}
 
 			// Send
@@ -666,7 +634,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 						SyncAt: time.Now(),
 						Error:  model.ToError(shippingProviderErr),
 
-						NextShippingState: update.SyncStates.NextShippingState,
+						NextShippingState: shipping.Cancelled,
 					},
 				}
 				update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
@@ -679,7 +647,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 			// UpdateInfo to ok
 			update2 := &shipmodel.Fulfillment{
 				ID:            ffm.ID,
-				ShippingState: update.SyncStates.NextShippingState,
+				ShippingState: shipping.Cancelled,
 				SyncStatus:    status4.P,
 				SyncStates: &model.FulfillmentSyncStates{
 					SyncAt: time.Now(),

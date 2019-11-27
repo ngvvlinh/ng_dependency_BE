@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/credit_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_fee_type"
@@ -671,6 +672,10 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 				line.ImportError = &model.Error{
 					Code: "ffm_not_balance",
 					Msg:  "Giá trị vận đơn không đúng",
+					Meta: map[string]string{
+						"Etop":     strconv.Itoa(ffm.TotalCODAmount),
+						"Provider": strconv.Itoa(line.ExternalTotalCOD),
+					},
 				}
 			} else if ffm.ShippingState == shipping.Undeliverable && line.ExternalTotalCOD != ffm.ActualCompensationAmount {
 				line.ImportError = &model.Error{
@@ -690,6 +695,17 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 						"Etop":     strconv.Itoa(ffm.ShippingFeeShop),
 						"Provider": strconv.Itoa(line.ExternalTotalShippingFee),
 					},
+				}
+			} else if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+				if ffm.ShippingType == 0 {
+					// backward compatible
+					// remove later
+					// no error
+				} else {
+					line.ImportError = &model.Error{
+						Code: "ffm_not_in_etop",
+						Msg:  "Vận đơn không được đối soát bởi Etop",
+					}
 				}
 			}
 		}
@@ -1058,14 +1074,36 @@ func combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
 	// merge with VTPOST's ffms
 	VtpostFfms := GetVtpostExtraFfms()
 	ffmAdditionals = append(ffmAdditionals, VtpostFfms...)
+	ffms := FilterCombineExtraFfms(ffmAdditionals)
 
-	for _, ffm := range ffmAdditionals {
+	for _, ffm := range ffms {
 		if ffm.ID == 0 {
 			continue
 		}
 		shopFfmMap[ffm.ShopID] = append(shopFfmMap[ffm.ShopID], ffm)
 	}
 	return shopFfmMap
+}
+
+func FilterCombineExtraFfms(ffms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
+	// Sau khi lấy extra ffms, chỉ lấy những ffm có ConnectionMethod là TOPSHIP
+	// Xử lý backward compatible cho trường hợp ffm cũ, ko có ConnectionMethod, ShippingType (mặc định cho vào phiên luôn)
+	var res []*shipmodel.Fulfillment
+	for _, ffm := range ffms {
+		// backward compatible
+		// remove later
+		if ffm.ShippingType == 0 && ffm.ConnectionMethod == 0 {
+			res = append(res, ffm)
+			continue
+		}
+		// -- end backward compatible
+
+		if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+			continue
+		}
+		res = append(res, ffm)
+	}
+	return res
 }
 
 func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
@@ -1176,6 +1214,16 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	}
 	if !ffm.CODEtopTransferedAt.IsZero() {
 		return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" has paid.", nil)
+	}
+	// backward compatible
+	// remove later
+	if ffm.ShippingType == 0 && ffm.ConnectionMethod == 0 {
+		return nil
+	}
+	// -- end backward compatible
+
+	if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Fulfillment #%v can not be paid by Etop", ffm.ShippingCode)
 	}
 	return nil
 }

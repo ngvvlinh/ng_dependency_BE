@@ -24,11 +24,11 @@ import (
 const MinShopBalance = -200000
 
 type ProviderManager struct {
-	GHN, GHTK, VTPost ShippingProvider
+	GHN, GHTK, VTPost ShippingCarrier
 	location          location.QueryBus
 }
 
-func NewCtrl(locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingProvider) *ProviderManager {
+func NewCtrl(locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingCarrier) *ProviderManager {
 	return &ProviderManager{
 		GHN:    ghnCarrier,
 		GHTK:   ghtkCarrier,
@@ -71,7 +71,7 @@ func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *orde
 	return err
 }
 
-func (ctrl *ProviderManager) GetShippingProviderDriver(provider shipping_provider.ShippingProvider) ShippingProvider {
+func (ctrl *ProviderManager) GetShippingProviderDriver(provider shipping_provider.ShippingProvider) ShippingCarrier {
 	switch provider {
 	case shipping_provider.GHN:
 		return ctrl.GHN
@@ -189,7 +189,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		// Provider service
 		// => Check price
 		// => Get this service
-		providerService, err = checkShippingService(order, allServices)
+		providerService, err = CheckShippingService(order, allServices)
 		if err != nil {
 			return err
 		}
@@ -237,7 +237,7 @@ func GetShippingProviderNote(order *ordermodel.Order, ffm *shipmodel.Fulfillment
 	return noteB.String()
 }
 
-func checkShippingService(order *ordermodel.Order, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
+func CheckShippingService(order *ordermodel.Order, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
 	if order.ShopShipping != nil {
 		providerServiceID := cm.Coalesce(order.ShopShipping.ProviderServiceID, order.ShopShipping.ExternalServiceID)
 		if providerServiceID == "" {

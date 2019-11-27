@@ -101,6 +101,25 @@ func New(env string, cfg ConfigAccount) *ClientImpl {
 	return c
 }
 
+func NewClientWithToken(env string, token string) *ClientImpl {
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	rcfg := httpreq.RestyConfig{Client: client}
+	c := &ClientImpl{
+		rclient: httpreq.NewResty(rcfg),
+		ClientStates: ClientStates{
+			AccessToken: token,
+		},
+	}
+	c.baseUrl = "https://partner.viettelpost.vn/v2/"
+	return c
+}
+
 func (c *ClientImpl) Ping() error {
 	ctx := context.Background()
 	req := &CalcShippingFeeRequest{

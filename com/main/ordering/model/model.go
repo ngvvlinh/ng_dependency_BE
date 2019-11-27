@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/api/top/types/etc/ghn_note_code"
 	"etop.vn/api/top/types/etc/order_source"
@@ -24,18 +25,10 @@ import (
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
-type FulfillType int
-
 const (
 	OrderFeeOther    = fee.Other
 	OrderFeeShipping = fee.Shipping
 	OrderFeeTax      = fee.Tax
-
-	// FulfillNone: Tự quản lý trên đơn hàng
-	FulfillNone     FulfillType = 0  // none
-	FulfillManual   FulfillType = 1  // manual
-	FulfillShipment FulfillType = 10 // shipment
-	FulfillShipnow  FulfillType = 11 // shipnow
 )
 
 var _ = sqlgenOrder(&Order{})
@@ -86,6 +79,7 @@ type Order struct {
 
 	FulfillmentShippingStates  []string
 	FulfillmentPaymentStatuses []int
+	FulfillmentStatuses        []int
 
 	Lines           OrderLinesList
 	Discounts       []*OrderDiscount
@@ -118,7 +112,7 @@ type Order struct {
 
 	CustomerNameNorm string
 	ProductNameNorm  string
-	FulfillmentType  FulfillType
+	FulfillmentType  ordertypes.ShippingType
 	FulfillmentIDs   []dot.ID
 	ExternalMeta     json.RawMessage
 	TradingShopID    dot.ID
@@ -244,6 +238,9 @@ type OrderShipping struct {
 
 	GrossWeight      int `json:"gross_weight"`
 	ChargeableWeight int `json:"chargeable_weight"`
+
+	ConnectionID  dot.ID
+	ShopCarrierID dot.ID
 }
 
 func (s *OrderShipping) Validate() error {

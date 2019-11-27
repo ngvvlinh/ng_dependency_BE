@@ -161,7 +161,7 @@ func CalcOtherTimeBaseOnState(update *shipmodel.Fulfillment, oldFfm *shipmodel.F
 	return update
 }
 
-func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
+func CanUpdateFulfillment(ffm *shipmodel.Fulfillment) bool {
 	return ffm.Status == status5.Z ||
 		ffm.Status == status5.S ||
 

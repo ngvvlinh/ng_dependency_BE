@@ -1091,6 +1091,7 @@ type AvailableShippingService struct {
 	ExpectedPickAt     time.Time
 	ExpectedDeliveryAt time.Time
 	Source             ShippingPriceSource
+	ConnectionID       dot.ID
 }
 
 func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {

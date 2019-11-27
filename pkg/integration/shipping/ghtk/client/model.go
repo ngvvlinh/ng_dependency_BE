@@ -31,6 +31,7 @@ func (t TransportType) Name() string {
 type GhtkAccount struct {
 	AccountID string `yaml:"account_id"`
 	Token     string `yaml:"token"`
+	B2CToken  string `yaml:"-"`
 }
 
 type StateID int
@@ -161,6 +162,7 @@ type ShippingFee struct {
 	Name         String `json:"name"`
 	Fee          Int    `json:"fee"`
 	InsuranceFee Int    `json:"insurance_fee"`
+	// Delivery - Boolean - Hỗ trợ giao ở địa chỉ này chưa, nếu điểm giao đã được GHTK hỗ trợ giao trả về true, nếu GTHK chưa hỗ trợ giao đến khu vực này thì trả về false
 	Delivery     Bool   `json:"delivery"`
 	DeliveryType String `json:"delivery_type"`
 }
@@ -351,4 +353,40 @@ type CallbackOrder struct {
 	Reason     String `json:"reason"`      // Lý do chi tiết cập nhật
 	Weight     Float  `json:"weight"`      // khối lượng đơn hàng tính theo kilogram
 	Fee        Int    `json:"fee"`
+}
+
+type SignUpRequest struct {
+	// required
+	Name string `json:"name"`
+	// required: Địa chỉ chi tiết của tài khoản (số nhà, ngõ, đường, phường,…)
+	FirstAddress string `json:"first_address"`
+	// required
+	Province string `json:"province"`
+	// required
+	District string `json:"district"`
+	// required
+	Tel string `json:"tel"`
+	// required
+	Email string `json:"email"`
+}
+
+type SignUpResponse struct {
+	CommonResponse
+	Data *AccountData `json:"data"`
+}
+
+type AccountData struct {
+	// Mã tài khoản trên hệ thống GHTK
+	Code  string `json:"code"`
+	Token string `json:"token"`
+}
+
+type SignInRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type SignInResponse struct {
+	CommonResponse
+	Data *AccountData `json:"data"`
 }

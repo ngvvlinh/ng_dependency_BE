@@ -20,7 +20,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var _ shipping_provider.ShippingProvider = &Carrier{}
+var _ shipping_provider.ShippingCarrier = &Carrier{}
 
 type Carrier struct {
 	clients  map[byte]*ghtkclient.Client

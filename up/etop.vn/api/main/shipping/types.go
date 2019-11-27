@@ -5,22 +5,22 @@ import (
 	"time"
 
 	catalogtype "etop.vn/api/main/catalog/types"
+	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 )
 
 // +gen:api
+// +gen:event:topic=event/shipping
 
 type AggregateBus struct{ capi.Bus }
 
 type Aggregate interface {
-	GetFulfillmentByID(context.Context, *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)
-
-	CreateFulfillment(context.Context, *CreateFulfillmentArgs) (*meta.Empty, error)
-	ConfirmFulfillment(context.Context, *ConfirmFulfillmentArgs) (*meta.Empty, error)
-	CancelFulfillment(context.Context, *CancelFulfillmentArgs) (*meta.Empty, error)
+	CreateFulfillments(context.Context, *CreateFulfillmentsArgs) (fulfillmentID []dot.ID, _ error)
 }
 
 //-- Types --//
@@ -39,31 +39,6 @@ type ShippingService struct {
 	EstimatedDeliveryAt time.Time
 }
 
-type Address struct {
-	// @required
-	FullName string
-
-	Phone string
-
-	Email string
-
-	// optional
-	Company string
-
-	// @required
-	Address1 string
-
-	// optional
-	Address2 string
-
-	Location
-}
-
-type Location struct {
-	DistrictCode string
-	WardCode     string
-}
-
 type Fulfillment struct {
 	ID        dot.ID
 	OrderID   dot.ID
@@ -73,11 +48,16 @@ type Fulfillment struct {
 
 	Lines []*ItemLine
 
-	TotalItems int
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 
-	WeightInfo
+	TotalItems    int
+	TotalDiscount int
+	TotalAmount   int
 
-	ValueInfo
+	types.WeightInfo
+
+	types.ValueInfo
 }
 
 type ItemLine struct {
@@ -96,18 +76,9 @@ type ItemLine struct {
 	PaymentPrice int
 }
 
-type WeightInfo struct {
-	GrossWeight      int
-	ChargeableWeight int
-	Length           int
-	Width            int
-	Height           int
-}
-
-type ValueInfo struct {
-	BasketValue      int
-	CODAmount        int
-	IncludeInsurance bool
+type Attribute struct {
+	Name  string
+	Value string
 }
 
 type ExternalShipmentData struct {
@@ -157,28 +128,36 @@ type ShippingFeeLine struct {
 
 //-- Commands --//
 
-type CreateFulfillmentArgs struct {
+type CreateFulfillmentsArgs struct {
+	ShopID dot.ID
+
 	OrderID dot.ID
 
-	PickupAddress *Address
+	PickupAddress *ordertypes.Address
 
-	ShippingAddress *Address
+	ShippingAddress *ordertypes.Address
 
-	ReturnAddress *Address
+	ReturnAddress *ordertypes.Address
 
-	Carrier string
+	ShippingType ordertypes.ShippingType
 
 	ShippingServiceCode string
 
-	ShippingServiceFee string
+	ShippingServiceFee int
 
-	WeightInfo
+	ShippingServiceName string
 
-	ValueInfo
+	types.WeightInfo
+
+	types.ValueInfo
 
 	TryOn try_on.TryOnCode
 
 	ShippingNote string
+
+	ConnectionID dot.ID
+
+	ShopCarrierID dot.ID
 }
 
 type ConfirmFulfillmentArgs struct {
@@ -195,4 +174,10 @@ type CancelFulfillmentArgs struct {
 
 type GetFulfillmentByIDQueryArgs struct {
 	FulfillmentID dot.ID
+}
+
+type FulfillmentCreatingEvent struct {
+	meta.EventMeta
+	ShopID      dot.ID
+	ShippingFee int
 }

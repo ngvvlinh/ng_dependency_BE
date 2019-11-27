@@ -15,6 +15,7 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/cmd/etop-server/config"
 	smsAgg "etop.vn/backend/com/etc/logging/smslog/aggregate"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
@@ -26,6 +27,8 @@ import (
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
 	catalogpm "etop.vn/backend/com/main/catalog/pm"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
+	connectionaggregate "etop.vn/backend/com/main/connectioning/aggregate"
+	connectionquery "etop.vn/backend/com/main/connectioning/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
 	identitypm "etop.vn/backend/com/main/identity/pm"
 	inventoryaggregate "etop.vn/backend/com/main/inventory/aggregate"
@@ -53,6 +56,8 @@ import (
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
+	shippingaggregate "etop.vn/backend/com/main/shipping/aggregate"
+	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	stocktakeaggregate "etop.vn/backend/com/main/stocktaking/aggregate"
 	stocktakequery "etop.vn/backend/com/main/stocktaking/query"
@@ -154,7 +159,8 @@ var (
 
 	vtpayClient *vtpayclient.Client
 
-	receiptQuery receipting.QueryBus
+	receiptQuery    receipting.QueryBus
+	shipmentManager *shippingcarrier.ShipmentManager
 )
 
 func main() {
@@ -434,6 +440,12 @@ func main() {
 	authorizeauth.SetMode(cfg.FlagEnablePermission)
 
 	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
+	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
+	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
+	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, cfg.Env, redisStore)
+	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
+	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery).MessageBus()
+
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)
 	api.Init(
@@ -489,6 +501,8 @@ func main() {
 		summaryQuery,
 		stocktakeQuery,
 		stocktakeAggr,
+		shipmentManager,
+		shippingAggr,
 		refundAggr,
 		refundQuery,
 	)
@@ -498,7 +512,7 @@ func main() {
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
-		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus)
+		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)

@@ -30,8 +30,8 @@ func sqlgenOrder(_ *Order) bool { return true }
 type Orders []*Order
 
 const __sqlOrder_Table = "order"
-const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\",\"customer_id\",\"created_by\""
-const __sqlOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"ed_code\" = EXCLUDED.\"ed_code\",\"product_ids\" = EXCLUDED.\"product_ids\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"partner_id\" = EXCLUDED.\"partner_id\",\"currency\" = EXCLUDED.\"currency\",\"payment_method\" = EXCLUDED.\"payment_method\",\"customer\" = EXCLUDED.\"customer\",\"customer_address\" = EXCLUDED.\"customer_address\",\"billing_address\" = EXCLUDED.\"billing_address\",\"shipping_address\" = EXCLUDED.\"shipping_address\",\"customer_name\" = EXCLUDED.\"customer_name\",\"customer_phone\" = EXCLUDED.\"customer_phone\",\"customer_email\" = EXCLUDED.\"customer_email\",\"created_at\" = EXCLUDED.\"created_at\",\"processed_at\" = EXCLUDED.\"processed_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"customer_confirm\" = EXCLUDED.\"customer_confirm\",\"shop_confirm\" = EXCLUDED.\"shop_confirm\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"fulfillment_shipping_status\" = EXCLUDED.\"fulfillment_shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"status\" = EXCLUDED.\"status\",\"fulfillment_shipping_states\" = EXCLUDED.\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\" = EXCLUDED.\"fulfillment_payment_statuses\",\"lines\" = EXCLUDED.\"lines\",\"discounts\" = EXCLUDED.\"discounts\",\"total_items\" = EXCLUDED.\"total_items\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_weight\" = EXCLUDED.\"total_weight\",\"total_tax\" = EXCLUDED.\"total_tax\",\"order_discount\" = EXCLUDED.\"order_discount\",\"total_discount\" = EXCLUDED.\"total_discount\",\"shop_shipping_fee\" = EXCLUDED.\"shop_shipping_fee\",\"total_fee\" = EXCLUDED.\"total_fee\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"shop_cod\" = EXCLUDED.\"shop_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"order_note\" = EXCLUDED.\"order_note\",\"shop_note\" = EXCLUDED.\"shop_note\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"order_source_type\" = EXCLUDED.\"order_source_type\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"external_order_id\" = EXCLUDED.\"external_order_id\",\"reference_url\" = EXCLUDED.\"reference_url\",\"external_url\" = EXCLUDED.\"external_url\",\"shop_shipping\" = EXCLUDED.\"shop_shipping\",\"is_outside_etop\" = EXCLUDED.\"is_outside_etop\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"customer_name_norm\" = EXCLUDED.\"customer_name_norm\",\"product_name_norm\" = EXCLUDED.\"product_name_norm\",\"fulfillment_type\" = EXCLUDED.\"fulfillment_type\",\"fulfillment_ids\" = EXCLUDED.\"fulfillment_ids\",\"external_meta\" = EXCLUDED.\"external_meta\",\"trading_shop_id\" = EXCLUDED.\"trading_shop_id\",\"payment_status\" = EXCLUDED.\"payment_status\",\"payment_id\" = EXCLUDED.\"payment_id\",\"referral_meta\" = EXCLUDED.\"referral_meta\",\"customer_id\" = EXCLUDED.\"customer_id\",\"created_by\" = EXCLUDED.\"created_by\""
+const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"fulfillment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\",\"customer_id\",\"created_by\""
+const __sqlOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"ed_code\" = EXCLUDED.\"ed_code\",\"product_ids\" = EXCLUDED.\"product_ids\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"partner_id\" = EXCLUDED.\"partner_id\",\"currency\" = EXCLUDED.\"currency\",\"payment_method\" = EXCLUDED.\"payment_method\",\"customer\" = EXCLUDED.\"customer\",\"customer_address\" = EXCLUDED.\"customer_address\",\"billing_address\" = EXCLUDED.\"billing_address\",\"shipping_address\" = EXCLUDED.\"shipping_address\",\"customer_name\" = EXCLUDED.\"customer_name\",\"customer_phone\" = EXCLUDED.\"customer_phone\",\"customer_email\" = EXCLUDED.\"customer_email\",\"created_at\" = EXCLUDED.\"created_at\",\"processed_at\" = EXCLUDED.\"processed_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"customer_confirm\" = EXCLUDED.\"customer_confirm\",\"shop_confirm\" = EXCLUDED.\"shop_confirm\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"fulfillment_shipping_status\" = EXCLUDED.\"fulfillment_shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"status\" = EXCLUDED.\"status\",\"fulfillment_shipping_states\" = EXCLUDED.\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\" = EXCLUDED.\"fulfillment_payment_statuses\",\"fulfillment_statuses\" = EXCLUDED.\"fulfillment_statuses\",\"lines\" = EXCLUDED.\"lines\",\"discounts\" = EXCLUDED.\"discounts\",\"total_items\" = EXCLUDED.\"total_items\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_weight\" = EXCLUDED.\"total_weight\",\"total_tax\" = EXCLUDED.\"total_tax\",\"order_discount\" = EXCLUDED.\"order_discount\",\"total_discount\" = EXCLUDED.\"total_discount\",\"shop_shipping_fee\" = EXCLUDED.\"shop_shipping_fee\",\"total_fee\" = EXCLUDED.\"total_fee\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"shop_cod\" = EXCLUDED.\"shop_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"order_note\" = EXCLUDED.\"order_note\",\"shop_note\" = EXCLUDED.\"shop_note\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"order_source_type\" = EXCLUDED.\"order_source_type\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"external_order_id\" = EXCLUDED.\"external_order_id\",\"reference_url\" = EXCLUDED.\"reference_url\",\"external_url\" = EXCLUDED.\"external_url\",\"shop_shipping\" = EXCLUDED.\"shop_shipping\",\"is_outside_etop\" = EXCLUDED.\"is_outside_etop\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"customer_name_norm\" = EXCLUDED.\"customer_name_norm\",\"product_name_norm\" = EXCLUDED.\"product_name_norm\",\"fulfillment_type\" = EXCLUDED.\"fulfillment_type\",\"fulfillment_ids\" = EXCLUDED.\"fulfillment_ids\",\"external_meta\" = EXCLUDED.\"external_meta\",\"trading_shop_id\" = EXCLUDED.\"trading_shop_id\",\"payment_status\" = EXCLUDED.\"payment_status\",\"payment_id\" = EXCLUDED.\"payment_id\",\"referral_meta\" = EXCLUDED.\"referral_meta\",\"customer_id\" = EXCLUDED.\"customer_id\",\"created_by\" = EXCLUDED.\"created_by\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
@@ -87,6 +87,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Status,
 		core.Array{m.FulfillmentShippingStates, opts},
 		core.Array{m.FulfillmentPaymentStatuses, opts},
+		core.Array{m.FulfillmentStatuses, opts},
 		core.JSON{m.Lines},
 		core.JSON{m.Discounts},
 		core.Int(m.TotalItems),
@@ -114,7 +115,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.TryOn,
 		core.String(m.CustomerNameNorm),
 		core.String(m.ProductNameNorm),
-		core.Int(m.FulfillmentType),
+		m.FulfillmentType,
 		core.Array{m.FulfillmentIDs, opts},
 		core.JSON{m.ExternalMeta},
 		m.TradingShopID,
@@ -159,6 +160,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Status,
 		core.Array{&m.FulfillmentShippingStates, opts},
 		core.Array{&m.FulfillmentPaymentStatuses, opts},
+		core.Array{&m.FulfillmentStatuses, opts},
 		core.JSON{&m.Lines},
 		core.JSON{&m.Discounts},
 		(*core.Int)(&m.TotalItems),
@@ -186,7 +188,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.TryOn,
 		(*core.String)(&m.CustomerNameNorm),
 		(*core.String)(&m.ProductNameNorm),
-		(*core.Int)(&m.FulfillmentType),
+		&m.FulfillmentType,
 		core.Array{&m.FulfillmentIDs, opts},
 		core.JSON{&m.ExternalMeta},
 		&m.TradingShopID,
@@ -232,7 +234,7 @@ func (_ *Orders) SQLSelect(w SQLWriter) error {
 func (m *Order) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(67)
+	w.WriteMarkers(68)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -242,7 +244,7 @@ func (ms Orders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(67)
+		w.WriteMarkers(68)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -521,6 +523,14 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.FulfillmentPaymentStatuses, opts})
 	}
+	if m.FulfillmentStatuses != nil {
+		flag = true
+		w.WriteName("fulfillment_statuses")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.FulfillmentStatuses, opts})
+	}
 	if m.Lines != nil {
 		flag = true
 		w.WriteName("lines")
@@ -743,7 +753,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.FulfillmentType))
+		w.WriteArg(m.FulfillmentType)
 	}
 	if m.FulfillmentIDs != nil {
 		flag = true
@@ -819,7 +829,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 func (m *Order) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(67)
+	w.WriteMarkers(68)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -880,6 +890,9 @@ func (m OrderHistory) FulfillmentShippingStates() core.Interface {
 func (m OrderHistory) FulfillmentPaymentStatuses() core.Interface {
 	return core.Interface{m["fulfillment_payment_statuses"]}
 }
+func (m OrderHistory) FulfillmentStatuses() core.Interface {
+	return core.Interface{m["fulfillment_statuses"]}
+}
 func (m OrderHistory) Lines() core.Interface           { return core.Interface{m["lines"]} }
 func (m OrderHistory) Discounts() core.Interface       { return core.Interface{m["discounts"]} }
 func (m OrderHistory) TotalItems() core.Interface      { return core.Interface{m["total_items"]} }
@@ -920,15 +933,15 @@ func (m OrderHistory) CustomerID() core.Interface      { return core.Interface{m
 func (m OrderHistory) CreatedBy() core.Interface       { return core.Interface{m["created_by"]} }
 
 func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 67)
-	args := make([]interface{}, 67)
-	for i := 0; i < 67; i++ {
+	data := make([]interface{}, 68)
+	args := make([]interface{}, 68)
+	for i := 0; i < 68; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderHistory, 67)
+	res := make(OrderHistory, 68)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["code"] = data[2]
@@ -960,50 +973,51 @@ func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["status"] = data[28]
 	res["fulfillment_shipping_states"] = data[29]
 	res["fulfillment_payment_statuses"] = data[30]
-	res["lines"] = data[31]
-	res["discounts"] = data[32]
-	res["total_items"] = data[33]
-	res["basket_value"] = data[34]
-	res["total_weight"] = data[35]
-	res["total_tax"] = data[36]
-	res["order_discount"] = data[37]
-	res["total_discount"] = data[38]
-	res["shop_shipping_fee"] = data[39]
-	res["total_fee"] = data[40]
-	res["fee_lines"] = data[41]
-	res["shop_cod"] = data[42]
-	res["total_amount"] = data[43]
-	res["order_note"] = data[44]
-	res["shop_note"] = data[45]
-	res["shipping_note"] = data[46]
-	res["order_source_type"] = data[47]
-	res["order_source_id"] = data[48]
-	res["external_order_id"] = data[49]
-	res["reference_url"] = data[50]
-	res["external_url"] = data[51]
-	res["shop_shipping"] = data[52]
-	res["is_outside_etop"] = data[53]
-	res["ghn_note_code"] = data[54]
-	res["try_on"] = data[55]
-	res["customer_name_norm"] = data[56]
-	res["product_name_norm"] = data[57]
-	res["fulfillment_type"] = data[58]
-	res["fulfillment_ids"] = data[59]
-	res["external_meta"] = data[60]
-	res["trading_shop_id"] = data[61]
-	res["payment_status"] = data[62]
-	res["payment_id"] = data[63]
-	res["referral_meta"] = data[64]
-	res["customer_id"] = data[65]
-	res["created_by"] = data[66]
+	res["fulfillment_statuses"] = data[31]
+	res["lines"] = data[32]
+	res["discounts"] = data[33]
+	res["total_items"] = data[34]
+	res["basket_value"] = data[35]
+	res["total_weight"] = data[36]
+	res["total_tax"] = data[37]
+	res["order_discount"] = data[38]
+	res["total_discount"] = data[39]
+	res["shop_shipping_fee"] = data[40]
+	res["total_fee"] = data[41]
+	res["fee_lines"] = data[42]
+	res["shop_cod"] = data[43]
+	res["total_amount"] = data[44]
+	res["order_note"] = data[45]
+	res["shop_note"] = data[46]
+	res["shipping_note"] = data[47]
+	res["order_source_type"] = data[48]
+	res["order_source_id"] = data[49]
+	res["external_order_id"] = data[50]
+	res["reference_url"] = data[51]
+	res["external_url"] = data[52]
+	res["shop_shipping"] = data[53]
+	res["is_outside_etop"] = data[54]
+	res["ghn_note_code"] = data[55]
+	res["try_on"] = data[56]
+	res["customer_name_norm"] = data[57]
+	res["product_name_norm"] = data[58]
+	res["fulfillment_type"] = data[59]
+	res["fulfillment_ids"] = data[60]
+	res["external_meta"] = data[61]
+	res["trading_shop_id"] = data[62]
+	res["payment_status"] = data[63]
+	res["payment_id"] = data[64]
+	res["referral_meta"] = data[65]
+	res["customer_id"] = data[66]
+	res["created_by"] = data[67]
 	*m = res
 	return nil
 }
 
 func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 67)
-	args := make([]interface{}, 67)
-	for i := 0; i < 67; i++ {
+	data := make([]interface{}, 68)
+	args := make([]interface{}, 68)
+	for i := 0; i < 68; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderHistories, 0, 128)
@@ -1043,42 +1057,43 @@ func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["status"] = data[28]
 		m["fulfillment_shipping_states"] = data[29]
 		m["fulfillment_payment_statuses"] = data[30]
-		m["lines"] = data[31]
-		m["discounts"] = data[32]
-		m["total_items"] = data[33]
-		m["basket_value"] = data[34]
-		m["total_weight"] = data[35]
-		m["total_tax"] = data[36]
-		m["order_discount"] = data[37]
-		m["total_discount"] = data[38]
-		m["shop_shipping_fee"] = data[39]
-		m["total_fee"] = data[40]
-		m["fee_lines"] = data[41]
-		m["shop_cod"] = data[42]
-		m["total_amount"] = data[43]
-		m["order_note"] = data[44]
-		m["shop_note"] = data[45]
-		m["shipping_note"] = data[46]
-		m["order_source_type"] = data[47]
-		m["order_source_id"] = data[48]
-		m["external_order_id"] = data[49]
-		m["reference_url"] = data[50]
-		m["external_url"] = data[51]
-		m["shop_shipping"] = data[52]
-		m["is_outside_etop"] = data[53]
-		m["ghn_note_code"] = data[54]
-		m["try_on"] = data[55]
-		m["customer_name_norm"] = data[56]
-		m["product_name_norm"] = data[57]
-		m["fulfillment_type"] = data[58]
-		m["fulfillment_ids"] = data[59]
-		m["external_meta"] = data[60]
-		m["trading_shop_id"] = data[61]
-		m["payment_status"] = data[62]
-		m["payment_id"] = data[63]
-		m["referral_meta"] = data[64]
-		m["customer_id"] = data[65]
-		m["created_by"] = data[66]
+		m["fulfillment_statuses"] = data[31]
+		m["lines"] = data[32]
+		m["discounts"] = data[33]
+		m["total_items"] = data[34]
+		m["basket_value"] = data[35]
+		m["total_weight"] = data[36]
+		m["total_tax"] = data[37]
+		m["order_discount"] = data[38]
+		m["total_discount"] = data[39]
+		m["shop_shipping_fee"] = data[40]
+		m["total_fee"] = data[41]
+		m["fee_lines"] = data[42]
+		m["shop_cod"] = data[43]
+		m["total_amount"] = data[44]
+		m["order_note"] = data[45]
+		m["shop_note"] = data[46]
+		m["shipping_note"] = data[47]
+		m["order_source_type"] = data[48]
+		m["order_source_id"] = data[49]
+		m["external_order_id"] = data[50]
+		m["reference_url"] = data[51]
+		m["external_url"] = data[52]
+		m["shop_shipping"] = data[53]
+		m["is_outside_etop"] = data[54]
+		m["ghn_note_code"] = data[55]
+		m["try_on"] = data[56]
+		m["customer_name_norm"] = data[57]
+		m["product_name_norm"] = data[58]
+		m["fulfillment_type"] = data[59]
+		m["fulfillment_ids"] = data[60]
+		m["external_meta"] = data[61]
+		m["trading_shop_id"] = data[62]
+		m["payment_status"] = data[63]
+		m["payment_id"] = data[64]
+		m["referral_meta"] = data[65]
+		m["customer_id"] = data[66]
+		m["created_by"] = data[67]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

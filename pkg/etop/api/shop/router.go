@@ -46,6 +46,8 @@ func NewShopServer(m httprpc.Muxer) {
 		service.NewLedgerServiceServer(WrapLedgerService(ledgerService)),
 		service.NewPurchaseOrderServiceServer(WrapPurchaseOrderService(purchaseOrderService)),
 		service.NewStocktakeServiceServer(WrapStocktakeService(stocktakeService)),
+		service.NewShipmentServiceServer(WrapShipmentService(shipmentService)),
+		service.NewConnectionServiceServer(WrapConnectionService(connectionService)),
 		service.NewRefundServiceServer(WrapRefundService(refundService)),
 	}
 	for _, s := range servers {

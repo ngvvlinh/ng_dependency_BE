@@ -45,7 +45,7 @@ type WeightInfo struct {
 
 type ValueInfo struct {
 	BasketValue      int
-	CodAmount        int
+	CODAmount        int
 	IncludeInsurance bool
 }
 

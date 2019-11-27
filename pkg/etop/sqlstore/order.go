@@ -811,7 +811,7 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 func GetUnCompleteFulfillments(ctx context.Context, query *shipmodelx.GetUnCompleteFulfillmentsQuery) error {
 	s := x.Table("fulfillment").Where("status = 2 AND shipping_status not in (1, -2, -1)").OrderBy("created_at DESC")
 	if len(query.ShippingProviders) != 0 {
-		s = s.In("shipping_provider ", query.ShippingProviders)
+		s = s.In("shipping_provider", query.ShippingProviders)
 	}
 	var fulfillments []*shipmodel.Fulfillment
 	if err := s.Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {

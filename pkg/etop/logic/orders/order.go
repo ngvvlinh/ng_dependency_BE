@@ -10,6 +10,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
@@ -237,7 +238,7 @@ func CreateOrder(
 	order.ShopID = shop.ID
 	order.OrderSourceType = r.Source
 	// fulfillment_type will be filled after create fulfillment
-	order.FulfillmentType = ordermodel.FulfillManual
+	order.FulfillmentType = ordertypes.ShippingTypeManual
 	if tradingShopID != nil {
 		order.TradingShopID = *tradingShopID
 	}
@@ -1021,7 +1022,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 	}
 
 	// Do not allow cancel order if it had a shipnow fulfillment
-	if order.FulfillmentType == ordermodel.FulfillShipnow {
+	if order.FulfillmentType == ordertypes.ShippingTypeShipnow {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã tạo đơn giao hàng tức thì. Không thể hủy đơn.")
 	}
 

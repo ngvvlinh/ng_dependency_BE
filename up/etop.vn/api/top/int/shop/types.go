@@ -2,6 +2,7 @@ package shop
 
 import (
 	catalogtypes "etop.vn/api/main/catalog/types"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
@@ -2346,3 +2347,93 @@ type GetVariantRequest struct {
 
 func (m *GetVariantRequest) Reset()         { *m = GetVariantRequest{} }
 func (m *GetVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type LoginShopConnectionRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+	Email        string `json:"email"`
+	Password     string `json:"password"`
+}
+
+func (m *LoginShopConnectionRequest) Reset() {
+	*m = LoginShopConnectionRequest{}
+}
+func (m *LoginShopConnectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RegisterShopConnectionRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Password     string `json:"password"`
+	Phone        string `json:"phone"`
+	Province     string `json:"province"`
+	District     string `json:"district"`
+	Address      string `json:"address"`
+}
+
+func (m *RegisterShopConnectionRequest) Reset() {
+	*m = RegisterShopConnectionRequest{}
+}
+func (m *RegisterShopConnectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopConnection struct {
+	ShopID       dot.ID                      `json:"shop_id"`
+	ConnectionID dot.ID                      `json:"connection_id"`
+	Status       status3.Status              `json:"status"`
+	CreatedAt    dot.Time                    `json:"created_at"`
+	UpdatedAt    dot.Time                    `json:"updated_at"`
+	DeletedAt    dot.Time                    `json:"deleted_at"`
+	IsGlobal     bool                        `json:"is_global"`
+	ExternalData *ShopConnectionExternalData `json:"external_data"`
+}
+
+func (m *ShopConnection) Reset() {
+	*m = ShopConnection{}
+}
+func (m *ShopConnection) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopConnectionExternalData struct {
+	Email string `json:"email"`
+}
+
+func (m *ShopConnectionExternalData) Reset() {
+	*m = ShopConnectionExternalData{}
+}
+func (m *ShopConnectionExternalData) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateFulfillmentsRequest struct {
+	OrderID             dot.ID                  `json:"order_id"`
+	ShippingType        ordertypes.ShippingType `json:"shipping_type"`
+	ShippingServiceCode string                  `json:"shipping_service_code"`
+	ShippingServiceFee  int                     `json:"shipping_service_fee"`
+	ShippingServiceName string                  `json:"shipping_service_name"`
+	ShippingNote        string                  `json:"shipping_note"`
+	PickupAddress       *types.OrderAddress     `json:"pickup_address"`
+	ReturnAddress       *types.OrderAddress     `json:"return_address"`
+	ShippingAddress     *types.OrderAddress     `json:"shipping_address"`
+	TryOn               try_on.TryOnCode        `json:"try_on"`
+	ChargeableWeight    int                     `json:"chargeable_weight"`
+	GrossWeight         int                     `json:"gross_weight"`
+	Heigh               int                     `json:"heigh"`
+	Width               int                     `json:"width"`
+	Length              int                     `json:"length"`
+	CODAmount           int                     `json:"cod_amount"`
+	IncludeInsurance    bool                    `json:"include_insurance"`
+
+	ConnectionID  dot.ID `json:"connection_id"`
+	ShopCarrierID dot.ID `json:"shop_carrier_id"`
+}
+
+func (m *CreateFulfillmentsRequest) Reset() {
+	*m = CreateFulfillmentsRequest{}
+}
+func (m *CreateFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateFulfillmentsResponse struct {
+	Fulfillments []*types.Fulfillment `json:"fulfillment"`
+	Errors       []*common.Error      `json:"errors"`
+}
+
+func (m *CreateFulfillmentsResponse) Reset() {
+	*m = CreateFulfillmentsResponse{}
+}
+func (m *CreateFulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }

@@ -219,7 +219,7 @@ func (c *Carrier) CancelOrder(ctx context.Context, cmd *CancelOrderCommand) erro
 }
 
 func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackOrder, ghtkOrder *ghtkclient.OrderInfo) *shipmodel.Fulfillment {
-	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
+	if !shipping.CanUpdateFulfillment(ffm) {
 		return ffm
 	}
 

@@ -2,6 +2,7 @@ package shop
 
 import (
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
@@ -447,4 +448,20 @@ func coalesceInt(is ...int) int {
 		}
 	}
 	return 0
+}
+
+func PbShopConnection(c *connectioning.ShopConnection) *shop.ShopConnection {
+	if c == nil {
+		return nil
+	}
+	res := &shop.ShopConnection{
+		ShopID:       c.ShopID,
+		ConnectionID: c.ConnectionID,
+		Status:       c.Status,
+		CreatedAt:    cmapi.PbTime(c.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(c.UpdatedAt),
+		DeletedAt:    cmapi.PbTime(c.DeletedAt),
+		IsGlobal:     c.IsGlobal,
+	}
+	return res
 }

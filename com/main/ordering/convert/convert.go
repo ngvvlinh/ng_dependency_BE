@@ -22,9 +22,9 @@ func AddressDB(in *types.Address) (out *model.OrderAddress) {
 		Email:        in.Email,
 		Country:      "",
 		City:         "",
-		Province:     "",
-		District:     "",
-		Ward:         "",
+		Province:     in.Province,
+		District:     in.District,
+		Ward:         in.Ward,
 		Zip:          "",
 		DistrictCode: in.DistrictCode,
 		ProvinceCode: in.ProvinceCode,
@@ -50,8 +50,11 @@ func Address(in *model.OrderAddress) (out *types.Address) {
 		Address2: in.Address2,
 		Location: types.Location{
 			ProvinceCode: in.ProvinceCode,
+			Province:     in.Province,
 			DistrictCode: in.DistrictCode,
+			District:     in.District,
 			WardCode:     in.WardCode,
+			Ward:         in.Ward,
 			Coordinates:  Coordinates(in.Coordinates),
 		},
 	}
@@ -65,11 +68,13 @@ func Order(in *model.Order) (out *ordering.Order) {
 	out = &ordering.Order{
 		ID:                        in.ID,
 		ShopID:                    in.ShopID,
+		PartnerID:                 in.PartnerID,
 		Code:                      in.Code,
 		CustomerAddress:           Address(in.CustomerAddress),
 		ShippingAddress:           Address(in.ShippingAddress),
 		CancelReason:              in.CancelReason,
 		ConfirmStatus:             in.ConfirmStatus,
+		ShopConfirm:               in.ShopConfirm,
 		Status:                    in.Status,
 		FulfillmentShippingStatus: in.FulfillmentShippingStatus,
 		EtopPaymentStatus:         in.EtopPaymentStatus,
@@ -80,6 +85,7 @@ func Order(in *model.Order) (out *ordering.Order) {
 		TotalDiscount:             in.TotalDiscount,
 		TotalFee:                  in.TotalFee,
 		TotalAmount:               in.TotalAmount,
+		ShopCOD:                   in.ShopCOD,
 		OrderNote:                 in.OrderNote,
 		FeeLines:                  FeeLines(in.FeeLines),
 		Shipping:                  OrderToShippingInfo(in),
@@ -90,11 +96,12 @@ func Order(in *model.Order) (out *ordering.Order) {
 		ConfirmedAt:               in.ConfirmedAt,
 		CancelledAt:               in.CancelledAt,
 		FulfillmentIDs:            in.FulfillmentIDs,
-		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
+		FulfillmentType:           ordertypes.ShippingType(in.FulfillmentType),
 		PaymentStatus:             in.PaymentStatus,
 		PaymentID:                 in.PaymentID,
 		CustomerID:                in.CustomerID,
 		TradingShopID:             in.TradingShopID,
+		ShopShippingFee:           in.ShopShippingFee,
 	}
 	var referralMeta ordering.ReferralMeta
 	if err := jsonx.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {
@@ -217,9 +224,4 @@ func CoordinatesDB(in *types.Coordinates) (out *model.Coordinates) {
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
-}
-
-func Fulfill(in model.FulfillType) ordertypes.Fulfill {
-	res, _ := ordertypes.FulfillFromInt(int(in))
-	return res
 }

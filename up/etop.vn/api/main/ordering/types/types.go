@@ -40,8 +40,11 @@ type Address struct {
 
 type Location struct {
 	ProvinceCode string
+	Province     string
 	DistrictCode string
+	District     string
 	WardCode     string
+	Ward         string
 	Coordinates  *Coordinates
 }
 
@@ -51,33 +54,30 @@ type Coordinates struct {
 }
 
 // +enum
-type Fulfill int
-
-type NullFulfill struct {
-	Enum  Fulfill
-	Valid bool
-}
+// +enum:sql=int
+// +enum:zero=null
+type ShippingType int
 
 const (
 	// +enum=none
-	FulfillNone Fulfill = 0
+	ShippingTypeNone ShippingType = 0
 
 	// +enum=manual
-	FulfillManual Fulfill = 1
+	ShippingTypeManual ShippingType = 1
 
 	// +enum=shipment
-	FulfillShipment Fulfill = 10
+	ShippingTypeShipment ShippingType = 10
 
 	// +enum=shipnow
-	FulfillShipnow Fulfill = 11
+	ShippingTypeShipnow ShippingType = 11
 )
 
-func FulfillFromInt(s int) (Fulfill, error) {
-	_, ok := enumFulfillName[s]
+func ShippingTypeFromInt(s int) (ShippingType, error) {
+	_, ok := enumShippingTypeName[s]
 	if !ok {
 		return 0, errors.New("invalid fulfill code")
 	}
-	return Fulfill(s), nil
+	return ShippingType(s), nil
 }
 
 func GetFullAddress(a *Address, location *location.LocationQueryResult) string {

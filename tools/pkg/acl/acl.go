@@ -483,6 +483,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Fulfillment/GetFulfillments":                   {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
 	"shop.Fulfillment/UpdateFulfillmentsShippingState":   {Type: Shop},
 
+	"shop.Shipment/GetShippingServices": {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CreateFulfillments":  {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+
 	"shop.Shipnow/GetShipnowFulfillment":     {Type: Shop, Actions: actions(ShopShipNowView)},
 	"shop.Shipnow/GetShipnowFulfillments":    {Type: Shop, Actions: actions(ShopShipNowView)},
 	"shop.Shipnow/CreateShipnowFulfillment":  {Type: Shop, Actions: actions(ShopShipNowCreate)},
@@ -556,6 +559,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Brand/GetBrandByID":    {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Brand/GetBrandsByIDs":  {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Brand/ListBrands":      {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
+
+	"shop.Connection/LoginShopConnection":    {Type: Shop},
+	"shop.Connection/RegisterShopConnection": {Type: Shop},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

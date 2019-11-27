@@ -21,7 +21,8 @@ import (
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
-	"etop.vn/api/main/shipping/types"
+	"etop.vn/api/main/shipping"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	st "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
@@ -39,6 +40,7 @@ import (
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
+	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/idemp"
@@ -212,6 +214,8 @@ var (
 	purchaseOrderQuery   purchaseorder.QueryBus
 	StocktakeQuery       st.QueryBus
 	StocktakeAggregate   st.CommandBus
+	shipmentManager      *shippingcarrier.ShipmentManager
+	shippingAggregate    shipping.CommandBus
 	RefundAggr           refund.CommandBus
 	RefundQuery          refund.QueryBus
 )
@@ -254,6 +258,8 @@ func Init(
 	summary summary.QueryBus,
 	StocktakeQ st.QueryBus,
 	StocktakeA st.CommandBus,
+	shipmentM *shippingcarrier.ShipmentManager,
+	shippingA shipping.CommandBus,
 	refundA refund.CommandBus,
 	refundQ refund.QueryBus,
 ) {
@@ -294,6 +300,8 @@ func Init(
 	purchaseOrderQuery = purchaseOrderQ
 	StocktakeQuery = StocktakeQ
 	StocktakeAggregate = StocktakeA
+	shipmentManager = shipmentM
+	shippingAggregate = shippingA
 	RefundAggr = refundA
 	RefundQuery = refundQ
 }
@@ -326,6 +334,8 @@ type BrandService struct{}
 type LedgerService struct{}
 type PurchaseOrderService struct{}
 type StocktakeService struct{}
+type ShipmentService struct{}
+type ConnectionService struct{}
 type RefundService struct{}
 
 var miscService = &MiscService{}
@@ -356,6 +366,8 @@ var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
 var purchaseOrderService = &PurchaseOrderService{}
 var stocktakeService = &StocktakeService{}
+var shipmentService = &ShipmentService{}
+var connectionService = &ConnectionService{}
 var refundService = &RefundService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
@@ -1264,8 +1276,8 @@ func (s *ShipnowService) GetShipnowServices(ctx context.Context, q *GetShipnowSe
 			}
 			points = append(points, &shipnow.DeliveryPoint{
 				ShippingAddress: convertpb.Convert_api_OrderAddress_To_core_OrderAddress(addr),
-				ValueInfo: types.ValueInfo{
-					CodAmount: p.CodAmount,
+				ValueInfo: shippingtypes.ValueInfo{
+					CODAmount: p.CodAmount,
 				},
 			})
 		}

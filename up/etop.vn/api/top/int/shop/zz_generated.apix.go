@@ -465,6 +465,57 @@ func (s *CollectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 	}
 }
 
+type ConnectionServiceServer struct {
+	inner ConnectionService
+}
+
+func NewConnectionServiceServer(svc ConnectionService) Server {
+	return &ConnectionServiceServer{
+		inner: svc,
+	}
+}
+
+const ConnectionServicePathPrefix = "/shop.Connection/"
+
+func (s *ConnectionServiceServer) PathPrefix() string {
+	return ConnectionServicePathPrefix
+}
+
+func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Connection/LoginShopConnection":
+		msg := &LoginShopConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.LoginShopConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Connection/RegisterShopConnection":
+		msg := &RegisterShopConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.RegisterShopConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type CustomerGroupServiceServer struct {
 	inner CustomerGroupService
 }
@@ -1927,6 +1978,57 @@ func (s *RefundServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 		msg := &UpdateRefundRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ShipmentServiceServer struct {
+	inner ShipmentService
+}
+
+func NewShipmentServiceServer(svc ShipmentService) Server {
+	return &ShipmentServiceServer{
+		inner: svc,
+	}
+}
+
+const ShipmentServicePathPrefix = "/shop.Shipment/"
+
+func (s *ShipmentServiceServer) PathPrefix() string {
+	return ShipmentServicePathPrefix
+}
+
+func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ShipmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Shipment/CreateFulfillments":
+		msg := &CreateFulfillmentsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateFulfillments(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Shipment/GetShippingServices":
+		msg := &inttypes.GetShippingServicesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

@@ -1,0 +1,84 @@
+package connection_type
+
+// +enum
+// +enum:zero=null
+type ConnectionType int
+
+type NullConnectionType struct {
+	Enum  ConnectionType
+	Valid bool
+}
+
+const (
+	// +enum=unknown
+	Unknown ConnectionType = 0
+
+	// +enum=shipping
+	Shipping ConnectionType = 1
+)
+
+// +enum
+// +enum:zero=null
+type ConnectionSubtype int
+
+type NullConnectionSubtype struct {
+	Enum  ConnectionSubtype
+	Valid bool
+}
+
+const (
+	// +enum=unknown
+	ConnectionSubtypeUnknown ConnectionSubtype = 0
+
+	// +enum=shipment
+	ConnectionSubtypeShipment ConnectionSubtype = 1
+
+	// +enum=manual
+	ConnectionSubtypeManual ConnectionSubtype = 2
+)
+
+// +enum
+// +enum:zero=null
+type ConnectionMethod int
+
+type NullConnectionMethod struct {
+	Enum  ConnectionMethod
+	Valid bool
+}
+
+const (
+	// +enum=unknown
+	ConnectionMethodUnknown ConnectionMethod = 0
+
+	// +enum=topship
+	ConnectionMethodTopship ConnectionMethod = 1
+
+	// +enum=direct
+	ConnectionMethodDirect ConnectionMethod = 2
+)
+
+// +enum
+// +enum:zero=null
+type ConnectionProvider int
+
+type NullConnectionProvider struct {
+	Enum  ConnectionProvider
+	Valid bool
+}
+
+const (
+	// +enum=unknown
+	ConnectionProviderUnknown ConnectionProvider = 0
+
+	// +enum=ghn
+	ConnectionProviderGHN ConnectionProvider = 1
+
+	// +enum=ghtk
+	ConnectionProviderGHTK ConnectionProvider = 2
+
+	// +enum=vtpost
+	ConnectionProviderVTP ConnectionProvider = 3
+
+	// +enum=partner
+	ConnectionProviderPartner ConnectionProvider = 4
+)

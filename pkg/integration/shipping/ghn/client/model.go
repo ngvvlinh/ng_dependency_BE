@@ -29,6 +29,12 @@ type State string
 type ServiceFeeID string
 type ServiceFeeType string
 
+type GHNAccountCfg struct {
+	ClientID    int    `yaml:"client_id"`
+	AffiliateID int    `yaml:"affiliate_id"`
+	Token       string `yaml:"token"`
+}
+
 const (
 	StateReadyToPick     State = "ReadyToPick"
 	StatePicking         State = "Picking"
@@ -63,7 +69,7 @@ const (
 	ServiceFeeTypeMain ServiceFeeType = "1"
 )
 
-func (s State) ToModel(old typesshipping.State, callbackOrder *CallbackOrder) typesshipping.State {
+func (s State) ToModel(old typesshipping.State, isReturnOrder bool) typesshipping.State {
 	switch s {
 	case StateReadyToPick:
 		return typesshipping.Created
@@ -90,7 +96,7 @@ func (s State) ToModel(old typesshipping.State, callbackOrder *CallbackOrder) ty
 		case typesshipping.Cancelled, typesshipping.Delivered, typesshipping.Undeliverable:
 			return old
 		}
-		if callbackOrder.ReturnInfo != "" {
+		if isReturnOrder {
 			return typesshipping.Returned
 		}
 		return typesshipping.Delivered
@@ -277,6 +283,8 @@ type CreateOrderRequest struct {
 	IsCreditCreate       bool    `json:"IsCreditCreate"`       // true,
 
 	ShippingOrderCosts []ShippingOrderCostRequest `json:"ShippingOrderCosts"`
+	// AffiliateID: This field is ClientID, use for tracking commission between GHN and Client.
+	AffiliateID int `json:"AffiliateID"`
 }
 
 func (r *CreateOrderRequest) Validate() error {
@@ -420,18 +428,19 @@ type OrderLogInfo struct {
 
 // Use for webhook
 type CallbackOrder struct {
-	CoDAmount            Int    `json:"CoDAmount"`            // 0,
-	CurrentStatus        String `json:"CurrentStatus"`        // "ReadyToPick",
-	CurrentWarehouseName String `json:"CurrentWarehouseName"` // "Kho giao nhận Đống Đa_Hà Nội",
-	CustomerID           Int    `json:"CustomerID"`           // 252905,
-	CustomerName         String `json:"CustomerName"`         // "Hà Anh",
-	CustomerPhone        String `json:"CustomerPhone"`        // "0973636049",
-	ExternalCode         String `json:"ExternalCode"`         // "",
-	Note                 String `json:"Note"`                 // "Gửi hàng",
-	OrderCode            String `json:"OrderCode"`            // "DC5D4NFUH",
-	ReturnInfo           String `json:"ReturnInfo"`           // "",
-	ServiceName          String `json:"ServiceName"`          // "Nhanh",
-	Weight               Int    `json:"Weight"`               // 800
+	CoDAmount            Int                  `json:"CoDAmount"`            // 0,
+	CurrentStatus        String               `json:"CurrentStatus"`        // "ReadyToPick",
+	CurrentWarehouseName String               `json:"CurrentWarehouseName"` // "Kho giao nhận Đống Đa_Hà Nội",
+	CustomerID           Int                  `json:"CustomerID"`           // 252905,
+	CustomerName         String               `json:"CustomerName"`         // "Hà Anh",
+	CustomerPhone        String               `json:"CustomerPhone"`        // "0973636049",
+	ExternalCode         String               `json:"ExternalCode"`         // "",
+	Note                 String               `json:"Note"`                 // "Gửi hàng",
+	OrderCode            String               `json:"OrderCode"`            // "DC5D4NFUH",
+	ReturnInfo           String               `json:"ReturnInfo"`           // "",
+	ServiceName          String               `json:"ServiceName"`          // "Nhanh",
+	Weight               Int                  `json:"Weight"`               // 800
+	ShippingOrderCosts   []*ShippingOrderCost `json:"ShippingOrderCosts"`
 }
 type ShippingOrderCost struct {
 	Cost             String `json:"Cost"`             // 0,
@@ -458,10 +467,11 @@ type FindAvailableServicesRequest struct {
 type AvailableService struct {
 	ExpectedDeliveryTime Time `json:"ExpectedDeliveryTime"`
 
-	Name       String       `json:"Name"`
-	ServiceFee Int          `json:"ServiceFee"`
-	ServiceID  Int          `json:"ServiceID"`
-	Extras     ExtraService `json:"Extra"`
+	Name           String       `json:"Name"`
+	ServiceFee     Int          `json:"ServiceFee"`
+	ServiceFeeMain Int          `json:"-"`
+	ServiceID      Int          `json:"ServiceID"`
+	Extras         ExtraService `json:"Extra"`
 
 	IsPromotion bool `json:"-"`
 }
@@ -477,10 +487,11 @@ func (s *AvailableService) ToShippingService(providerServiceID string) *model.Av
 	if s == nil {
 		return nil
 	}
+	serviceFeeMain := cm.CoalesceInt(int(s.ServiceFeeMain), int(s.ServiceFee))
 	return &model.AvailableShippingService{
 		Name:              s.Name.String(),
 		ServiceFee:        int(s.ServiceFee),
-		ShippingFeeMain:   int(s.ServiceFee),
+		ShippingFeeMain:   serviceFeeMain,
 		Provider:          shipping_provider.GHN,
 		ProviderServiceID: providerServiceID,
 
@@ -610,4 +621,66 @@ func GetInsuranceFee(orderCosts []*OrderCost) int {
 		}
 	}
 	return insuranceFee
+}
+
+type SignInRequest struct {
+	Connection
+	Email    string `json:"Email"`
+	Password string `json:"Password"`
+}
+
+type SignInResponse struct {
+	ClientID   Int    `json:"ClientID"`
+	ClientName string `json:"ClientName"`
+	Token      string `json:"Token"`
+}
+
+type SignUpRequest struct {
+	Connection
+	Email        string `json:"Email"`
+	Password     string `json:"Password"`
+	ContactPhone string `json:"ContactPhone"`
+	ContactName  string `json:"ContactName"`
+}
+
+// document: https://api.ghn.vn/home/docs/detail?id=41
+type RegisterWebhookForClientRequest struct {
+	Connection
+	TokenClient []string `json:"TokenClient"`
+	// ConfigCod: Receive COD callback
+	ConfigCOD        bool `json:"ConfigCod"`
+	ConfigReturnData bool `json:"ConfigReturnData"`
+	// URLCallback: the endpoint you receive data.
+	URLCallback  string              `json:"URLCallback"`
+	ConfigField  WebhookConfigField  `json:"ConfigField"`
+	ConfigStatus WebhookConfigStatus `json:"ConfigStatus"`
+}
+
+type WebhookConfigField struct {
+	CODAmount            bool `json:"CoDAmount"`
+	CurrentWarehouseName bool `json:"CurrentWarehouseName"`
+	CustomerID           bool `json:"CustomerID"`
+	CustomerName         bool `json:"CustomerName"`
+	CustomerPhone        bool `json:"CustomerPhone"`
+	Note                 bool `json:"Note"`
+	OrderCode            bool `json:"OrderCode"`
+	ServiceName          bool `json:"ServiceName"`
+	ShippingOrderCosts   bool `json:"ShippingOrderCosts"`
+	Weight               bool `json:"Weight"`
+	ExternalCode         bool `json:"ExternalCode"`
+	ReturnInfo           bool `json:"ReturnInfo"`
+}
+
+type WebhookConfigStatus struct {
+	ReadyToPick     bool `json:"ReadyToPick"`
+	Picking         bool `json:"Picking"`
+	Storing         bool `json:"Storing"`
+	Delivering      bool `json:"Delivering"`
+	Delivered       bool `json:"Delivered"`
+	WaitingToFinish bool `json:"WaitingToFinish"`
+	Return          bool `json:"Return"`
+	Returned        bool `json:"Returned"`
+	Finish          bool `json:"Finish"`
+	LostOrder       bool `json:"LostOrder"`
+	Cancel          bool `json:"Cancel"`
 }

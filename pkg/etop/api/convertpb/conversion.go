@@ -117,7 +117,7 @@ func Convert_core_WeightInfo_To_api_WeightInfo(in shippingtypes.WeightInfo) type
 func Convert_api_ValueInfo_To_core_ValueInfo(in types.ValueInfo) shippingtypes.ValueInfo {
 	return shippingtypes.ValueInfo{
 		BasketValue:      in.BasketValue,
-		CodAmount:        in.CodAmount,
+		CODAmount:        in.CodAmount,
 		IncludeInsurance: in.IncludeInsurance,
 	}
 }
@@ -125,7 +125,7 @@ func Convert_api_ValueInfo_To_core_ValueInfo(in types.ValueInfo) shippingtypes.V
 func Convert_core_ValueInfo_To_api_ValueInfo(in shippingtypes.ValueInfo) types.ValueInfo {
 	return types.ValueInfo{
 		BasketValue:      in.BasketValue,
-		CodAmount:        in.CodAmount,
+		CodAmount:        in.CODAmount,
 		IncludeInsurance: in.IncludeInsurance,
 	}
 }
@@ -186,8 +186,11 @@ func Convert_api_OrderAddress_To_core_OrderAddress(in *types.OrderAddress) *orde
 		Address2: in.Address2,
 		Location: ordertypes.Location{
 			ProvinceCode: in.ProvinceCode,
+			Province:     in.Province,
 			DistrictCode: in.DistrictCode,
+			District:     in.District,
 			WardCode:     in.WardCode,
+			Ward:         in.Ward,
 			Coordinates:  Convert_api_Coordinates_To_core_Coordinates(in.Coordinates),
 		},
 	}

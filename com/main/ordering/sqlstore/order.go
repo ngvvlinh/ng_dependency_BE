@@ -126,7 +126,7 @@ func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering
 
 type UpdateOrdersForReserveOrdersFfmArgs struct {
 	OrderIDs   []dot.ID
-	Fulfill    ordertypes.Fulfill
+	Fulfill    ordertypes.ShippingType
 	FulfillIDs []dot.ID
 }
 
@@ -138,7 +138,7 @@ func (s *OrderStore) UpdateOrdersForReserveOrdersFfm(args UpdateOrdersForReserve
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs")
 	}
 	update := &model.Order{
-		FulfillmentType: model.FulfillType(args.Fulfill),
+		FulfillmentType: args.Fulfill,
 		FulfillmentIDs:  args.FulfillIDs,
 	}
 	if err := s.query().In("id", args.OrderIDs).ShouldUpdate(update); err != nil {

@@ -43,7 +43,7 @@ func (ctrl *ProviderManager) GetShippingService(ffm *model.Fulfillment, order *m
 	// Provider service
 	// => Check price
 	// => Get this service
-	providerService, err = checkShippingService(order, allServices)
+	providerService, err = CheckShippingService(order, allServices)
 	return providerService, nil, err
 }
 */

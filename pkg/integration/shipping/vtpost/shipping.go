@@ -22,7 +22,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var _ shippingprovider.ShippingProvider = &Carrier{}
+var _ shippingprovider.ShippingCarrier = &Carrier{}
 
 type Carrier struct {
 	clients  map[byte]vtpostclient.Client

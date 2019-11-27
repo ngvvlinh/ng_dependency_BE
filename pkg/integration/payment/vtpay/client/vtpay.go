@@ -82,7 +82,7 @@ func New(cfg Config) *Client {
 		rclient:      httpreq.NewResty(rcfg),
 	}
 	switch cfg.Env {
-	case cm.PartnerEnvTest:
+	case cm.PartnerEnvTest, cm.PartnerEnvDev:
 		c.baseUrl = "https://sandbox.viettel.vn/"
 	case cm.PartnerEnvProd:
 		c.baseUrl = "https://pay.bankplus.vn:8450/"

@@ -42,7 +42,7 @@ func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, msg *Re
 
 type ReserveOrdersForFfmCommand struct {
 	OrderIDs   []dot.ID
-	Fulfill    orderingtypes.Fulfill
+	Fulfill    orderingtypes.ShippingType
 	FulfillIDs []dot.ID
 
 	Result *ReserveOrdersForFfmResponse `json:"-"`

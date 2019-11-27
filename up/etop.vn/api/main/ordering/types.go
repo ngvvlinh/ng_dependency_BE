@@ -65,30 +65,34 @@ type UpdateOrdersConfirmStatusResponse struct{}
 type Order struct {
 	ID              dot.ID
 	ShopID          dot.ID
+	PartnerID       dot.ID
 	Code            string
 	CustomerAddress *types.Address
 	ShippingAddress *types.Address
 	CancelReason    string
 
 	ConfirmStatus             status3.Status
+	ShopConfirm               status3.Status
 	Status                    status5.Status
 	FulfillmentShippingStatus status5.Status
 	EtopPaymentStatus         status4.Status
 
-	Lines         []*types.ItemLine
-	TotalItems    int
-	BasketValue   int
-	TotalWeight   int
-	OrderDiscount int
-	TotalDiscount int
-	TotalFee      int
-	TotalAmount   int
+	Lines           []*types.ItemLine
+	TotalItems      int
+	BasketValue     int
+	TotalWeight     int
+	OrderDiscount   int
+	TotalDiscount   int
+	TotalFee        int
+	TotalAmount     int
+	ShopCOD         int
+	ShopShippingFee int
 
 	OrderNote string
 	FeeLines  []OrderFeeLine
 	Shipping  *shippingtypes.ShippingInfo
 
-	FulfillmentType ordertypes.Fulfill
+	FulfillmentType ordertypes.ShippingType
 	FulfillmentIDs  []dot.ID
 
 	CreatedAt   time.Time
@@ -123,7 +127,7 @@ type ValidateOrdersForShippingArgs struct {
 
 type ReserveOrdersForFfmArgs struct {
 	OrderIDs   []dot.ID
-	Fulfill    ordertypes.Fulfill
+	Fulfill    ordertypes.ShippingType
 	FulfillIDs []dot.ID
 }
 

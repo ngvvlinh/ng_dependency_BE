@@ -20,10 +20,11 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
+	ghnupdate "etop.vn/backend/pkg/integration/shipping/ghn/update"
 	"etop.vn/capi/dot"
 )
 
-var _ shipping_provider.ShippingProvider = &Carrier{}
+var _ shipping_provider.ShippingCarrier = &Carrier{}
 
 type Carrier struct {
 	clients  map[ClientType]*ghnclient.Client
@@ -31,7 +32,11 @@ type Carrier struct {
 }
 
 func New(cfg Config, location location.QueryBus) *Carrier {
-	clientDefault := ghnclient.New(cfg.Env, cfg.AccountDefault.AccountID, cfg.AccountDefault.Token)
+	accountCfg := ghnclient.GHNAccountCfg{
+		ClientID: cfg.AccountDefault.AccountID,
+		Token:    cfg.AccountDefault.Token,
+	}
+	clientDefault := ghnclient.New(cfg.Env, accountCfg)
 	clients := map[ClientType]*ghnclient.Client{
 		GHNCodeDefault: clientDefault,
 	}
@@ -285,32 +290,10 @@ func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermod
 }
 
 func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment, orderGHN *ghnclient.Order) (*shipmodel.Fulfillment, error) {
-	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this fulfillment")
+	update, err := ghnupdate.CalcRefreshFulfillmentInfo(ffm, orderGHN)
+	if err != nil {
+		return nil, err
 	}
-	state := ghnclient.State(orderGHN.CurrentStatus)
-	update := &shipmodel.Fulfillment{
-		ID:                        ffm.ID,
-		ExternalShippingUpdatedAt: time.Now(),
-		ExternalShippingState:     orderGHN.CurrentStatus.String(),
-		ExternalShippingStatus:    state.ToStatus5(ffm.ShippingState),
-		ProviderShippingFeeLines:  ghnclient.CalcAndConvertShippingFeeLines(orderGHN.ShippingOrderCosts),
-		ShippingState:             state.ToModel(ffm.ShippingState, nil),
-		EtopDiscount:              ffm.EtopDiscount,
-		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
-		ExternalShippingLogs:      ffm.ExternalShippingLogs,
-		ShippingCode:              ffm.ShippingCode,
-	}
-	update.AddressTo = ffm.AddressTo.UpdateAddress(orderGHN.CustomerPhone.String(), orderGHN.CustomerName.String())
-	update.TotalCODAmount = int(orderGHN.CoDAmount)
-
-	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
-	shippingFeeShop := 0
-	for _, line := range shippingFeeShopLines {
-		shippingFeeShop += line.Cost
-	}
-	update.ShippingFeeShopLines = shippingFeeShopLines
-	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 
 	// Always update shipping address because we don't know whether it was changed
 	addressQuery := &location.GetLocationQuery{

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
@@ -101,12 +103,17 @@ type Fulfillment struct {
 	// UpdatedBy   dot.ID
 	// CancelledBy dot.ID
 
-	ShippingProvider  shipping_provider.ShippingProvider
-	ProviderServiceID string
-	ShippingCode      string
-	ShippingNote      string
-	TryOn             try_on.TryOnCode
-	IncludeInsurance  bool
+	ShippingProvider    shipping_provider.ShippingProvider
+	ProviderServiceID   string
+	ShippingCode        string
+	ShippingNote        string
+	TryOn               try_on.TryOnCode
+	IncludeInsurance    bool
+	ShippingType        ordertypes.ShippingType
+	ConnectionID        dot.ID
+	ConnectionMethod    connection_type.ConnectionMethod
+	ShopCarrierID       dot.ID
+	ShippingServiceName string
 
 	ExternalShippingName        string
 	ExternalShippingID          string // it's shipping_service_code
@@ -148,6 +155,12 @@ type Fulfillment struct {
 	AdminNote            string
 	IsPartialDelivery    bool
 	CreatedBy            dot.ID
+
+	GrossWeight      int
+	ChargeableWeight int
+	Length           int
+	Width            int
+	Height           int
 
 	DeliveryRoute string
 }

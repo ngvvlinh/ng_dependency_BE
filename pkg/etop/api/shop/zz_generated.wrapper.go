@@ -1924,6 +1924,102 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 	return resp, nil
 }
 
+func WrapConnectionService(s *ConnectionService) api.ConnectionService {
+	return wrapConnectionService{s: s}
+}
+
+type wrapConnectionService struct {
+	s *ConnectionService
+}
+
+type LoginShopConnectionEndpoint struct {
+	*api.LoginShopConnectionRequest
+	Result  *api.ShopConnection
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *api.LoginShopConnectionRequest) (resp *api.ShopConnection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/LoginShopConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &LoginShopConnectionEndpoint{LoginShopConnectionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.LoginShopConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type RegisterShopConnectionEndpoint struct {
+	*api.RegisterShopConnectionRequest
+	Result  *api.ShopConnection
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *api.RegisterShopConnectionRequest) (resp *api.ShopConnection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/RegisterShopConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &RegisterShopConnectionEndpoint{RegisterShopConnectionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.RegisterShopConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapCustomerService(s *CustomerService) api.CustomerService {
 	return wrapCustomerService{s: s}
 }
@@ -8859,6 +8955,122 @@ func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefu
 	query.Context.Actions = strings.Split("shop/refund:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapShipmentService(s *ShipmentService) api.ShipmentService {
+	return wrapShipmentService{s: s}
+}
+
+type wrapShipmentService struct {
+	s *ShipmentService
+}
+
+type CreateFulfillmentsEndpoint struct {
+	*api.CreateFulfillmentsRequest
+	Result  *api.CreateFulfillmentsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapShipmentService) CreateFulfillments(ctx context.Context, req *api.CreateFulfillmentsRequest) (resp *api.CreateFulfillmentsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipment/CreateFulfillments"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateFulfillmentsEndpoint{CreateFulfillmentsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateFulfillments(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShippingServicesEndpoint struct {
+	*inttypes.GetShippingServicesRequest
+	Result  *inttypes.GetShippingServicesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapShipmentService) GetShippingServices(ctx context.Context, req *inttypes.GetShippingServicesRequest) (resp *inttypes.GetShippingServicesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipment/GetShippingServices"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShippingServicesEndpoint{GetShippingServicesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

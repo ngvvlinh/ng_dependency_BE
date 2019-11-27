@@ -186,8 +186,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		ffmLastSyncAt := ffm.LastSyncAt
 		if logUpdateAt.After(ffmLastSyncAt) {
 			msgFakeCallback := oLog.OrderInfo.ToFakeCallbackOrder()
-			ghnOrder := oLog.OrderInfo.ToGHNOrder()
-			ffm = update.CalcUpdateFulfillment(ffm, msgFakeCallback, ghnOrder)
+			ffm = update.CalcUpdateFulfillment(ffm, msgFakeCallback)
 			ffm.LastSyncAt = logUpdateAt
 
 			// update ffms Map

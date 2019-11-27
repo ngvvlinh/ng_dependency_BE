@@ -5,6 +5,8 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/main/ordering/types"
+	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
@@ -1132,6 +1134,101 @@ func (ft *FulfillmentFilters) ByIncludeInsurancePtr(IncludeInsurance *bool) *sq.
 	}
 }
 
+func (ft *FulfillmentFilters) ByShippingType(ShippingType types.ShippingType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_type",
+		Value:  ShippingType,
+		IsNil:  ShippingType == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingTypePtr(ShippingType *types.ShippingType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_type",
+		Value:  ShippingType,
+		IsNil:  ShippingType == nil,
+		IsZero: ShippingType != nil && (*ShippingType) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByConnectionMethod(ConnectionMethod connection_type.ConnectionMethod) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByConnectionMethodPtr(ConnectionMethod *connection_type.ConnectionMethod) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == nil,
+		IsZero: ConnectionMethod != nil && (*ConnectionMethod) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShopCarrierID(ShopCarrierID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_carrier_id",
+		Value:  ShopCarrierID,
+		IsNil:  ShopCarrierID == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShopCarrierIDPtr(ShopCarrierID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_carrier_id",
+		Value:  ShopCarrierID,
+		IsNil:  ShopCarrierID == nil,
+		IsZero: ShopCarrierID != nil && (*ShopCarrierID) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingServiceName(ShippingServiceName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_name",
+		Value:  ShippingServiceName,
+		IsNil:  ShippingServiceName == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingServiceNamePtr(ShippingServiceName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_name",
+		Value:  ShippingServiceName,
+		IsNil:  ShippingServiceName == nil,
+		IsZero: ShippingServiceName != nil && (*ShippingServiceName) == "",
+	}
+}
+
 func (ft *FulfillmentFilters) ByExternalShippingName(ExternalShippingName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1547,6 +1644,120 @@ func (ft *FulfillmentFilters) ByIsPartialDeliveryPtr(IsPartialDelivery *bool) *s
 		Value:  IsPartialDelivery,
 		IsNil:  IsPartialDelivery == nil,
 		IsZero: IsPartialDelivery != nil && bool(!(*IsPartialDelivery)),
+	}
+}
+
+func (ft *FulfillmentFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByGrossWeight(GrossWeight int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "gross_weight",
+		Value:  GrossWeight,
+		IsNil:  GrossWeight == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByGrossWeightPtr(GrossWeight *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "gross_weight",
+		Value:  GrossWeight,
+		IsNil:  GrossWeight == nil,
+		IsZero: GrossWeight != nil && (*GrossWeight) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByChargeableWeight(ChargeableWeight int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "chargeable_weight",
+		Value:  ChargeableWeight,
+		IsNil:  ChargeableWeight == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "chargeable_weight",
+		Value:  ChargeableWeight,
+		IsNil:  ChargeableWeight == nil,
+		IsZero: ChargeableWeight != nil && (*ChargeableWeight) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByLength(Length int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "length",
+		Value:  Length,
+		IsNil:  Length == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByLengthPtr(Length *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "length",
+		Value:  Length,
+		IsNil:  Length == nil,
+		IsZero: Length != nil && (*Length) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByWidth(Width int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "width",
+		Value:  Width,
+		IsNil:  Width == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByWidthPtr(Width *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "width",
+		Value:  Width,
+		IsNil:  Width == nil,
+		IsZero: Width != nil && (*Width) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByHeight(Height int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "height",
+		Value:  Height,
+		IsNil:  Height == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByHeightPtr(Height *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "height",
+		Value:  Height,
+		IsNil:  Height == nil,
+		IsZero: Height != nil && (*Height) == 0,
 	}
 }
 

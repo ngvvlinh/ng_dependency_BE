@@ -332,6 +332,8 @@ type OrderShipping struct {
 	Width            dot.NullInt `json:"width"`
 	Height           dot.NullInt `json:"height"`
 	ChargeableWeight dot.NullInt `json:"chargeable_weight"`
+	ConnectionID     dot.ID      `json:"connection_id"`
+	ShopCarrierID    dot.ID      `json:"shop_carrier_id"`
 }
 
 func (m *OrderShipping) Reset()         { *m = OrderShipping{} }
@@ -517,6 +519,7 @@ type ExternalShippingService struct {
 	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
 	EstimatedPickupAt   dot.Time                           `json:"estimated_pickup_at"`
 	EstimatedDeliveryAt dot.Time                           `json:"estimated_delivery_at"`
+	ConnectionID        dot.ID                             `json:"connection_id"`
 }
 
 func (m *ExternalShippingService) Reset()         { *m = ExternalShippingService{} }
@@ -941,3 +944,44 @@ type TradingCreateOrderRequest struct {
 
 func (m *TradingCreateOrderRequest) Reset()         { *m = TradingCreateOrderRequest{} }
 func (m *TradingCreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShippingServicesRequest struct {
+	FromDistrictCode string       `json:"from_district_code"`
+	FromProvinceCode string       `json:"from_province_code"`
+	ToDistrictCode   string       `json:"to_district_code"`
+	ToProvinceCode   string       `json:"to_province_code"`
+	FromProvince     string       `json:"from_province"`
+	FromDistrict     string       `json:"from_district"`
+	ToProvince       string       `json:"to_province"`
+	ToDistrict       string       `json:"to_district"`
+	GrossWeight      int          `json:"gross_weight"`
+	ChargeableWeight int          `json:"chargeable_weight"`
+	Length           int          `json:"length"`
+	Width            int          `json:"width"`
+	Height           int          `json:"height"`
+	TotalCodAmount   int          `json:"total_cod_amount"`
+	BasketValue      int          `json:"basket_value"`
+	IncludeInsurance dot.NullBool `json:"include_insurance"`
+}
+
+func (m *GetShippingServicesRequest) Reset()         { *m = GetShippingServicesRequest{} }
+func (m *GetShippingServicesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShippingServicesResponse struct {
+	Services []*ExternalShippingService `json:"services"`
+}
+
+func (m *GetShippingServicesResponse) Reset()         { *m = GetShippingServicesResponse{} }
+func (m *GetShippingServicesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShippingService struct {
+	Name                string   `json:"name"`
+	Code                string   `json:"code"`
+	Fee                 int      `json:"fee"`
+	ConnectionID        dot.ID   `json:"connection_id"`
+	EstimatedPickupAt   dot.Time `json:"estimated_pickup_at"`
+	EstimatedDeliveryAt dot.Time `json:"estimated_delivery_at"`
+}
+
+func (m *ShippingService) Reset()         { *m = ShippingService{} }
+func (m *ShippingService) String() string { return jsonx.MustMarshalToString(m) }

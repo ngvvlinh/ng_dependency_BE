@@ -17,14 +17,15 @@ import (
 var ll = l.New()
 
 type Client struct {
-	clientID int
+	clientID    int
+	affiliateID int
 
 	baseUrl string
 	token   string
 	rclient *httpreq.Resty
 }
 
-func New(env string, clientID int, token string) *Client {
+func New(env string, cfg GHNAccountCfg) *Client {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 		Transport: &http.Transport{
@@ -33,12 +34,13 @@ func New(env string, clientID int, token string) *Client {
 	}
 	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
-		token:    token,
-		clientID: clientID,
-		rclient:  httpreq.NewResty(rcfg),
+		token:       cfg.Token,
+		affiliateID: cfg.AffiliateID,
+		clientID:    cfg.ClientID,
+		rclient:     httpreq.NewResty(rcfg),
 	}
 	switch env {
-	case cm.PartnerEnvTest:
+	case cm.PartnerEnvTest, cm.PartnerEnvDev:
 		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
 	case cm.PartnerEnvProd:
 		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
@@ -52,6 +54,10 @@ func (c *Client) ClientID() int {
 	return c.clientID
 }
 
+func (c *Client) GetToken() string {
+	return c.token
+}
+
 func (c *Client) Ping() error {
 	req := &FindAvailableServicesRequest{
 		FromDistrictID: 1442, // Quận 1, HCM
@@ -63,6 +69,8 @@ func (c *Client) Ping() error {
 
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	req.Token = c.token
+	req.AffiliateID = c.affiliateID
+
 	var resp CreateOrderResponse
 	err := c.sendRequest(ctx, "CreateOrder", req, &resp)
 	if err != nil {
@@ -127,6 +135,56 @@ func (c *Client) CancelOrder(ctx context.Context, req *OrderCodeRequest) error {
 func (c *Client) ReturnOrder(ctx context.Context, req *OrderCodeRequest) error {
 	req.Token = c.token
 	return c.sendRequest(ctx, "ReturnOrder", req, nil)
+}
+
+func (c *Client) SignIn(ctx context.Context, req *SignInRequest) (*SignInResponse, error) {
+	req.Token = c.token
+	var resp SignInResponse
+	err := c.sendRequest(ctx, "SignIn", req, &resp)
+	return &resp, err
+}
+
+func (c *Client) SignUp(ctx context.Context, req *SignUpRequest) (*SignInResponse, error) {
+	req.Token = c.token
+	var resp SignInResponse
+	err := c.sendRequest(ctx, "SignUp", req, &resp)
+	return &resp, err
+}
+
+func (c *Client) RegisterWebhookForClient(ctx context.Context, req *RegisterWebhookForClientRequest) error {
+	req.Token = c.token
+	// auto turn on all configs
+	req.ConfigCOD = true
+	req.ConfigReturnData = true
+	req.ConfigField = WebhookConfigField{
+		CODAmount:            true,
+		CurrentWarehouseName: true,
+		CustomerID:           true,
+		CustomerName:         true,
+		CustomerPhone:        true,
+		Note:                 true,
+		OrderCode:            true,
+		ServiceName:          true,
+		ShippingOrderCosts:   true,
+		Weight:               true,
+		ExternalCode:         true,
+		ReturnInfo:           true,
+	}
+	req.ConfigStatus = WebhookConfigStatus{
+		ReadyToPick:     true,
+		Picking:         true,
+		Storing:         true,
+		Delivering:      true,
+		Delivered:       true,
+		WaitingToFinish: true,
+		Return:          true,
+		Returned:        true,
+		Finish:          true,
+		LostOrder:       true,
+		Cancel:          true,
+	}
+	err := c.sendRequest(ctx, "SetConfigClient", req, nil)
+	return err
 }
 
 func (c *Client) sendRequest(ctx context.Context, path string, req, resp interface{}) error {

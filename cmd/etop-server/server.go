@@ -262,7 +262,7 @@ func startGHTKWebhookServer() *http.Server {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(botWebhook, true))
 
-	webhook := webhookghtk.New(dbLogs, ghtkCarrier)
+	webhook := webhookghtk.New(dbLogs, ghtkCarrier, shipmentManager)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.GHTKWebhook.Address(),

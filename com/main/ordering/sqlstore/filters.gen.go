@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/main/ordering/types"
 	"etop.vn/api/top/types/etc/ghn_note_code"
 	"etop.vn/api/top/types/etc/order_source"
 	"etop.vn/api/top/types/etc/payment_method"
@@ -12,7 +13,6 @@ import (
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
-	m "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
@@ -905,7 +905,7 @@ func (ft *OrderFilters) ByProductNameNormPtr(ProductNameNorm *string) *sq.Column
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentType(FulfillmentType m.FulfillType) *sq.ColumnFilter {
+func (ft *OrderFilters) ByFulfillmentType(FulfillmentType types.ShippingType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_type",
@@ -914,7 +914,7 @@ func (ft *OrderFilters) ByFulfillmentType(FulfillmentType m.FulfillType) *sq.Col
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *m.FulfillType) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *types.ShippingType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_type",
