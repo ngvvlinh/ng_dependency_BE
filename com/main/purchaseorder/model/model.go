@@ -17,9 +17,9 @@ type PurchaseOrder struct {
 	ShopID          dot.ID
 	SupplierID      dot.ID
 	Supplier        *PurchaseOrderSupplier
-	BasketValue     int64
-	TotalDiscount   int64
-	TotalAmount     int64
+	BasketValue     int
+	TotalDiscount   int
+	TotalAmount     int
 	Code            string
 	CodeNorm        int
 	Note            string
@@ -43,8 +43,8 @@ type PurchaseOrderLine struct {
 	ProductID   dot.ID `json:"product_id"`
 
 	VariantID    dot.ID `json:"variant_id"`
-	Quantity     int64  `json:"quantity"`
-	PaymentPrice int64  `json:"payment_price"`
+	Quantity     int    `json:"quantity"`
+	PaymentPrice int    `json:"payment_price"`
 	Code         string `json:"code"`
 
 	ImageUrl   string                           `json:"image_url"`

@@ -81,7 +81,7 @@ func (ft *PurchaseOrderFilters) BySupplierIDPtr(SupplierID *dot.ID) *sq.ColumnFi
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByBasketValue(BasketValue int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByBasketValue(BasketValue int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -90,7 +90,7 @@ func (ft *PurchaseOrderFilters) ByBasketValue(BasketValue int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByBasketValuePtr(BasketValue *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByBasketValuePtr(BasketValue *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -100,7 +100,7 @@ func (ft *PurchaseOrderFilters) ByBasketValuePtr(BasketValue *int64) *sq.ColumnF
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByTotalDiscount(TotalDiscount int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByTotalDiscount(TotalDiscount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_discount",
@@ -109,7 +109,7 @@ func (ft *PurchaseOrderFilters) ByTotalDiscount(TotalDiscount int64) *sq.ColumnF
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByTotalDiscountPtr(TotalDiscount *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByTotalDiscountPtr(TotalDiscount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_discount",
@@ -119,7 +119,7 @@ func (ft *PurchaseOrderFilters) ByTotalDiscountPtr(TotalDiscount *int64) *sq.Col
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByTotalAmount(TotalAmount int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -128,7 +128,7 @@ func (ft *PurchaseOrderFilters) ByTotalAmount(TotalAmount int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByTotalAmountPtr(TotalAmount *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_amount",

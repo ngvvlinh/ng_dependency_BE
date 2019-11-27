@@ -141,7 +141,7 @@ func (m *CommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -149,7 +149,7 @@ func (m *CommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AccountID)
+		w.WriteArg(int64(m.AccountID))
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -407,7 +407,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -415,7 +415,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -423,7 +423,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -738,7 +738,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.SellerID != 0 {
 		flag = true
@@ -746,7 +746,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SellerID)
+		w.WriteArg(int64(m.SellerID))
 	}
 	if m.FromSellerID != 0 {
 		flag = true
@@ -754,7 +754,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.FromSellerID)
+		w.WriteArg(int64(m.FromSellerID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -762,7 +762,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -770,7 +770,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -778,7 +778,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplyID)
+		w.WriteArg(int64(m.SupplyID))
 	}
 	if m.OrderId != 0 {
 		flag = true
@@ -786,7 +786,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderId)
+		w.WriteArg(int64(m.OrderId))
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -1132,7 +1132,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -1140,7 +1140,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.ShopUserID != 0 {
 		flag = true
@@ -1148,7 +1148,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopUserID)
+		w.WriteArg(int64(m.ShopUserID))
 	}
 	if m.SellerID != 0 {
 		flag = true
@@ -1156,7 +1156,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SellerID)
+		w.WriteArg(int64(m.SellerID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -1164,7 +1164,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -1172,7 +1172,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplyID)
+		w.WriteArg(int64(m.SupplyID))
 	}
 	if m.ReferralCode != "" {
 		flag = true
@@ -1553,7 +1553,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.Code != "" {
 		flag = true
@@ -1569,7 +1569,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AffiliateID)
+		w.WriteArg(int64(m.AffiliateID))
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -1577,7 +1577,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -1812,7 +1812,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.ReferralID != 0 {
 		flag = true
@@ -1820,7 +1820,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ReferralID)
+		w.WriteArg(int64(m.ReferralID))
 	}
 	if m.ReferralCode != "" {
 		flag = true
@@ -1836,7 +1836,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SaleReferralID)
+		w.WriteArg(int64(m.SaleReferralID))
 	}
 	if m.SaleReferralCode != "" {
 		flag = true
@@ -2114,7 +2114,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2122,7 +2122,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.Level1DirectCommission != 0 {
 		flag = true
@@ -2210,7 +2210,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.CustomerPolicyGroupID)
+		w.WriteArg(int64(m.CustomerPolicyGroupID))
 	}
 	if m.Group != "" {
 		flag = true
@@ -2513,7 +2513,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2521,7 +2521,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -2529,7 +2529,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -2577,7 +2577,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderCreatedNotifyID)
+		w.WriteArg(int64(m.OrderCreatedNotifyID))
 	}
 	if m.Description != "" {
 		flag = true
@@ -2857,7 +2857,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -2865,7 +2865,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplyID)
+		w.WriteArg(int64(m.SupplyID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2873,7 +2873,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -2961,7 +2961,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.CustomerPolicyGroupID)
+		w.WriteArg(int64(m.CustomerPolicyGroupID))
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -3250,7 +3250,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -3258,7 +3258,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -3266,7 +3266,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -3282,7 +3282,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderCreatedNotifyID)
+		w.WriteArg(int64(m.OrderCreatedNotifyID))
 	}
 	if m.Description != "" {
 		flag = true
@@ -3545,7 +3545,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(int64(m.UserID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -3553,7 +3553,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -3561,7 +3561,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -3569,7 +3569,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplyID)
+		w.WriteArg(int64(m.SupplyID))
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -3577,7 +3577,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.CustomerPolicyGroupID != 0 {
 		flag = true
@@ -3585,7 +3585,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.CustomerPolicyGroupID)
+		w.WriteArg(int64(m.CustomerPolicyGroupID))
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -3835,7 +3835,7 @@ func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -3843,7 +3843,7 @@ func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplyID)
+		w.WriteArg(int64(m.SupplyID))
 	}
 	if m.Name != "" {
 		flag = true

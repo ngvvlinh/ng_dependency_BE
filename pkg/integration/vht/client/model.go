@@ -57,7 +57,7 @@ type VhtCallHistory struct {
 	RecordingPath   string `json:"recording_path"`
 	RecordingUrl    string `json:"recording_url"`
 	RecordFileSize  int    `json:"record_file_size"`
-	EtopAccountID   dot.ID `json:"etop_account_"id`
+	EtopAccountID   dot.ID `json:"etop_account_id"`
 	VtigerAccountID string `json:"vtiger_account_id"`
 }
 
