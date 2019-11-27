@@ -11,7 +11,7 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-server/config"
-	paymentlogaggregate "etop.vn/backend/com/etc/log/payment/aggregate"
+	paymentlogaggregate "etop.vn/backend/com/etc/logging/payment/aggregate"
 	paymentaggregate "etop.vn/backend/com/external/payment/payment/aggregate"
 	"etop.vn/backend/com/external/payment/vtpay"
 	vtpaygatewayaggregate "etop.vn/backend/com/external/payment/vtpay/gateway/aggregate"

@@ -129,7 +129,9 @@ func Default() Config {
 		AhamoveWebhook: cc.HTTP{Port: 9052},
 		Haravan:        haravanclient.DefaultConfig(),
 		VTPay:          vtpayclient.DefaultConfig(),
-
+		SMS: sms.Config{
+			Mock: true,
+		},
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 		ServeDoc:    true,
 		Captcha: captcha.Config{

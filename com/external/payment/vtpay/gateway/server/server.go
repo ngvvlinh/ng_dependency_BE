@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/external/payment"
 	vtpaygateway "etop.vn/api/external/payment/vtpay/gateway"
-	paymentlogaggregate "etop.vn/backend/com/etc/log/payment/aggregate"
-	paymentlogmodel "etop.vn/backend/com/etc/log/payment/model"
+	paymentlogaggregate "etop.vn/backend/com/etc/logging/payment/aggregate"
+	paymentlogmodel "etop.vn/backend/com/etc/logging/payment/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/common/jsonx"

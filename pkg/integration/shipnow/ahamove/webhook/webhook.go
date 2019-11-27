@@ -11,7 +11,7 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/backend/com/etc/log/webhook/model"
+	"etop.vn/backend/com/etc/logging/webhook/model"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"

@@ -3,8 +3,8 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/backend/com/etc/log/payment/model"
-	"etop.vn/backend/com/etc/log/payment/sqlstore"
+	"etop.vn/backend/com/etc/logging/payment/model"
+	"etop.vn/backend/com/etc/logging/payment/sqlstore"
 	"etop.vn/backend/pkg/common/cmsql"
 )
 

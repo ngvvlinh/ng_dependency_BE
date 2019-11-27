@@ -3,7 +3,7 @@ package vtpostWebhook
 import (
 	"time"
 
-	logmodel "etop.vn/backend/com/etc/log/webhook/model"
+	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

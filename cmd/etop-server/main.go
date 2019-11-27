@@ -16,6 +16,7 @@ import (
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
+	smsAgg "etop.vn/backend/com/etc/logging/smslog/aggregate"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
@@ -416,9 +417,10 @@ func main() {
 	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
 	invitationPM.RegisterEventHandlers(eventBus)
-
+	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	api.Init(eventBus, identityAggr, identityQuery, invitationAggr, invitationQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
+	sms.Init(smsArg)
 	shop.Init(
 		locationBus,
 		catalogQuery,

@@ -835,7 +835,6 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	if r.Phone == "" {
 		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-
 	user := r.Context.User.User
 	phoneNorm, ok := validate.NormalizePhone(r.Phone)
 	if !ok || user.Phone != phoneNorm.String() {
@@ -845,12 +844,10 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
 		return r, nil
 	}
-
 	_, code, _, err := generateToken(auth.UsagePhoneVerification, user.ID, true, 2*60*60, user.Phone)
 	if err != nil {
 		return r, err
 	}
-
 	msg := fmt.Sprintf(smsVerificationTpl, code, user.Phone)
 	phone := user.Phone
 	cmd := &sms.SendSMSCommand{
