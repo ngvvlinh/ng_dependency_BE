@@ -14,20 +14,18 @@ import (
 
 /*
 Custom conversions:
-    ApplyUpdateInventoryVoucher    // in use
-    InventoryVariantFromModel      // in use
-    InventoryVariantToModel        // in use
-    InventoryVoucherFromModel      // in use
-    InventoryVoucherToModel        // in use
-    createInventoryVoucher         // in use
+    createInventoryVoucher    // in use
+    inventoryVariant          // in use
+    inventoryVariantModel     // in use
+    inventoryVoucher          // in use
+    inventoryVoucherModel     // in use
+    updateInventoryVoucher    // in use
 
 Ignored functions:
     ConvertAttributesOrder            // params are not pointer to named types
     ConvertAttributesPurchaseOrder    // params are not pointer to named types
     ConvertAttributesStocktake        // params are not pointer to named types
     GenerateCode                      // params are not pointer to named types
-    InventoryVariantsFromModel        // params are not pointer to named types
-    InventoryVouchersFromModel        // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -190,7 +188,7 @@ func Convert_inventory_Attributes_inventorymodel_Attributes(args []*inventory.At
 //-- convert etop.vn/api/main/inventory.InventoryVariant --//
 
 func Convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg *inventorymodel.InventoryVariant, out *inventory.InventoryVariant) *inventory.InventoryVariant {
-	return InventoryVariantFromModel(arg, out)
+	return inventoryVariant(arg, out)
 }
 
 func convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg *inventorymodel.InventoryVariant, out *inventory.InventoryVariant) {
@@ -214,7 +212,7 @@ func Convert_inventorymodel_InventoryVariants_inventory_InventoryVariants(args [
 }
 
 func Convert_inventory_InventoryVariant_inventorymodel_InventoryVariant(arg *inventory.InventoryVariant, out *inventorymodel.InventoryVariant) *inventorymodel.InventoryVariant {
-	return InventoryVariantToModel(arg, out)
+	return inventoryVariantModel(arg, out)
 }
 
 func convert_inventory_InventoryVariant_inventorymodel_InventoryVariant(arg *inventory.InventoryVariant, out *inventorymodel.InventoryVariant) {
@@ -239,7 +237,7 @@ func Convert_inventory_InventoryVariants_inventorymodel_InventoryVariants(args [
 //-- convert etop.vn/api/main/inventory.InventoryVoucher --//
 
 func Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inventorymodel.InventoryVoucher, out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
-	return InventoryVoucherFromModel(arg, out)
+	return inventoryVoucher(arg, out)
 }
 
 func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inventorymodel.InventoryVoucher, out *inventory.InventoryVoucher) {
@@ -278,7 +276,7 @@ func Convert_inventorymodel_InventoryVouchers_inventory_InventoryVouchers(args [
 }
 
 func Convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inventory.InventoryVoucher, out *inventorymodel.InventoryVoucher) *inventorymodel.InventoryVoucher {
-	return InventoryVoucherToModel(arg, out)
+	return inventoryVoucherModel(arg, out)
 }
 
 func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inventory.InventoryVoucher, out *inventorymodel.InventoryVoucher) {
@@ -355,7 +353,7 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 }
 
 func Apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs, out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
-	return ApplyUpdateInventoryVoucher(arg, out)
+	return updateInventoryVoucher(arg, out)
 }
 
 func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs, out *inventory.InventoryVoucher) {

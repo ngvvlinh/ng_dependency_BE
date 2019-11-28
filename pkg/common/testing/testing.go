@@ -312,7 +312,7 @@ func canGetKey(t reflect.Type, key string) string {
 			similar := ""
 			for i, n := 0, t.NumField(); i < n; i++ {
 				name := t.Field(i).Name
-				if strings.ToLower(name) == strings.ToLower(key) {
+				if strings.EqualFold(name, key) {
 					similar = name
 				}
 			}

@@ -14,7 +14,6 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -102,12 +101,12 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierE
 	cmd := &suppliering.UpdateSupplierCommand{
 		ID:                r.Id,
 		ShopID:            r.Context.Shop.ID,
-		FullName:          PString(r.FullName),
-		Phone:             PString(r.Phone),
-		Email:             PString(r.Email),
-		CompanyName:       PString(r.CompanyName),
-		TaxNumber:         PString(r.TaxNumber),
-		HeadquaterAddress: PString(r.HeadquaterAddress),
+		FullName:          r.FullName,
+		Phone:             r.Phone,
+		Email:             r.Email,
+		CompanyName:       r.CompanyName,
+		TaxNumber:         r.TaxNumber,
+		HeadquaterAddress: r.HeadquaterAddress,
 	}
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err

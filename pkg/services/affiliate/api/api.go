@@ -6,7 +6,6 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
-	"etop.vn/api/main/ordering"
 	"etop.vn/api/meta"
 	pbaff "etop.vn/api/pb/services/affiliate"
 	"etop.vn/api/services/affiliate"
@@ -55,7 +54,6 @@ var (
 	affiliateCmd   affiliate.CommandBus
 	affiliateQuery affiliate.QueryBus
 	identityQuery  identity.QueryBus
-	orderingQuery  ordering.QueryBus
 )
 
 type UserService struct{}
@@ -73,13 +71,11 @@ func Init(
 	affQuery affiliate.QueryBus,
 	catQuery catalog.QueryBus,
 	idenQuery identity.QueryBus,
-	orderingQ ordering.QueryBus,
 ) {
 	affiliateCmd = affCmd
 	catalogQuery = catQuery
 	affiliateQuery = affQuery
 	identityQuery = idenQuery
-	orderingQuery = orderingQ
 }
 
 func (s *UserService) UpdateReferral(ctx context.Context, q *UpdateReferralEndpoint) error {

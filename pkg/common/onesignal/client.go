@@ -64,7 +64,7 @@ func (c *Client) sendPostRequest(ctx context.Context, path string, req interface
 	res, err := c.rclient.R().
 		SetBody(req).
 		SetHeader("Authorization", fmt.Sprintf("Basic %v", c.apiKey)).
-		Post(cm.URL(c.baseUrl, path))
+		Post(makeURL(c.baseUrl, path))
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Onesignal", err)
 	}

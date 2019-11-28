@@ -42,7 +42,7 @@ func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Tim
 
 func CalcServicesTime(shippingProvider model.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
 	for _, service := range services {
-		service = CalcServiceTime(shippingProvider, fromDistrict, toDistrict, service)
+		_ = CalcServiceTime(shippingProvider, fromDistrict, toDistrict, service)
 	}
 	return services
 }

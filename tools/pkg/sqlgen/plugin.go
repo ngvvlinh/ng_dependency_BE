@@ -71,7 +71,6 @@ type typeDef struct {
 	selecT bool
 	insert bool
 	update bool
-	delete bool
 
 	timeLevel timeLevel
 }
@@ -524,20 +523,6 @@ func listScanArgs(cols []*colDef) []string {
 		res[i] = genScanArg(col)
 	}
 	return res
-}
-
-func tableName(def *typeDef) string {
-	typ := def.typ
-	if def.base != nil {
-		typ = def.base
-	}
-	name := gt.TypeString(typ)[1:]
-	return tableNameFromType(name)
-}
-
-func (g *gen) tableNameOf(typ types.Type) string {
-	def := g.mapType[typ.String()]
-	return tableName(def)
 }
 
 func (g *gen) genConvertMethodsFor(typ, base types.Type) error {

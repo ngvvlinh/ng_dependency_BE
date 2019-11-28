@@ -186,7 +186,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 			AccountID:     0, // shop has not login yet
 			AuthPartnerID: partner.ID,
 			Extra: map[string]string{
-				"request_login": cm.JSONString(info),
+				"request_login": jsonx.MustMarshalToString(info),
 			},
 		},
 		TTL: 2 * 60 * 60,

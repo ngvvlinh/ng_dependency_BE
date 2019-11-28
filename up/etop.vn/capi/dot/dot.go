@@ -58,17 +58,6 @@ func Int32(i int32) NullInt32       { return NullInt32{Int32: i, Valid: true} }
 func Int(i int) NullInt             { return NullInt{Int: i, Valid: true} }
 func Float64(f float64) NullFloat64 { return NullFloat64{Float64: f, Valid: true} }
 
-func PBool(b *bool) NullBool {
-	if b == nil {
-		return NullBool{}
-	}
-	return Bool(*b)
-}
-
-func PString(s NullString) NullString {
-	return s
-}
-
 func PID(i *ID) NullID {
 	if i == nil {
 		return NullID{}

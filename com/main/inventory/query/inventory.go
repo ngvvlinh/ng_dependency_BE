@@ -42,11 +42,11 @@ func (q *InventoryQueryService) GetInventoryVariants(ctx context.Context, args *
 	var page cm.Paging
 	page.Limit = args.Paging.Limit
 	page.Offset = args.Paging.Offset
-	result, err := q.InventoryStore(ctx).ShopID(args.ShopID).Paging(&page).ListInventoryDB()
+	result, err := q.InventoryStore(ctx).ShopID(args.ShopID).Paging(&page).ListInventory()
 	if err != nil {
 		return nil, err
 	}
-	return &inventory.GetInventoryVariantsResponse{InventoryVariants: convert.InventoryVariantsFromModel(result)}, nil
+	return &inventory.GetInventoryVariantsResponse{InventoryVariants: result}, nil
 }
 
 func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, args *inventory.ListInventoryVouchersArgs) (*inventory.GetInventoryVouchersResponse, error) {
@@ -68,11 +68,11 @@ func (q *InventoryQueryService) GetInventoryVariantsByVariantIDs(ctx context.Con
 	if args.ShopID == 0 || args.VariantIDs == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	result, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(args.VariantIDs...).ListInventoryDB()
+	result, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(args.VariantIDs...).ListInventory()
 	if err != nil {
 		return nil, err
 	}
-	return &inventory.GetInventoryVariantsResponse{InventoryVariants: convert.InventoryVariantsFromModel(result)}, nil
+	return &inventory.GetInventoryVariantsResponse{InventoryVariants: result}, nil
 }
 
 func (q *InventoryQueryService) GetInventoryVouchersByIDs(ctx context.Context, args *inventory.GetInventoryVouchersByIDArgs) (*inventory.GetInventoryVouchersResponse, error) {

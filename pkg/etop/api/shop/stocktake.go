@@ -65,7 +65,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		mapProductIDs[value.ProductID] = value.ProductID
 	}
 	var productIDs []dot.ID
-	for key, _ := range mapProductIDs {
+	for key := range mapProductIDs {
 		productIDs = append(productIDs, key)
 	}
 	queryProducts := &catalog.ListShopProductsByIDsQuery{

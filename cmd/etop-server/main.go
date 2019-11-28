@@ -461,7 +461,7 @@ func main() {
 		invitationQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
-	xshop.Init(shutdowner, redisStore, authStore)
+	xshop.Init(shutdowner, redisStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
@@ -469,7 +469,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
-	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)
+	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
 	admin.Init(eventBus)
 
 	err = db.GetSchemaErrors()

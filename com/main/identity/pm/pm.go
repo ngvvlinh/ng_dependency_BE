@@ -91,7 +91,7 @@ func (m *ProcessManager) updateAccountUserWithRoles(
 	for _, role := range currInvitation.Roles {
 		mapRole[string(role)] = true
 	}
-	for role, _ := range mapRole {
+	for role := range mapRole {
 		roles = append(roles, role)
 	}
 	accountUser.Roles = roles

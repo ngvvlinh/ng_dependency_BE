@@ -402,7 +402,7 @@ func validateStruct(obj types.Object) *types.Struct {
 
 func parseConvertDirective(directive generator.Directive) (apiPkgs, toPkgs []string, err error) {
 	// parse "pkg" without "->"
-	if strings.Index(directive.Arg, "->") < 0 {
+	if !strings.Contains(directive.Arg, "->") {
 		pkgs := strings.Split(directive.Arg, ",")
 		for i := range pkgs {
 			pkgs[i] = strings.TrimSpace(pkgs[i])

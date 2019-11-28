@@ -3108,6 +3108,9 @@
         "code": {
           "type": "string"
         },
+        "cost_price": {
+          "type": "integer"
+        },
         "desc_html": {
           "type": "string"
         },
@@ -3147,6 +3150,15 @@
         },
         "product": {
           "$ref": "#/definitions/zkShopShortProduct"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quantity_on_hand": {
+          "type": "integer"
+        },
+        "quantity_picked": {
+          "type": "integer"
         },
         "retail_price": {
           "type": "integer"

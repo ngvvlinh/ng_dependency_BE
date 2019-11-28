@@ -10,7 +10,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/capi/dot"
-	. "etop.vn/capi/dot"
 )
 
 func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEndpoint) error {
@@ -81,13 +80,13 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 		})
 	}
 	cmd := &inventory.UpdateInventoryVoucherCommand{
-		Title:       PString(q.Title),
+		Title:       q.Title,
 		ID:          q.Id,
 		ShopID:      shopID,
 		TotalAmount: q.TotalAmount,
 		UpdatedBy:   userID,
 		TraderID:    q.TraderId,
-		Note:        PString(q.Note),
+		Note:        q.Note,
 		Lines:       items,
 	}
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {

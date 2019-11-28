@@ -65,6 +65,9 @@ func DeleteWebhook(ctx context.Context, accountID dot.ID, r *pbexternal.DeleteWe
 	}
 
 	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
+	if err != nil {
+		return nil, err
+	}
 	resp := &pbexternal.WebhooksResponse{
 		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),
 	}

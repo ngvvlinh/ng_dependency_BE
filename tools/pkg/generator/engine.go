@@ -295,7 +295,7 @@ func (ng *wrapEngine) GenerateFile(pkgName string, filePath string) (Printer, er
 			// create an empty doc.go for working around "can not find module
 			// providing package ..." error
 			docFile := filepath.Join(dir, "doc.go")
-			err = ioutil.WriteFile(docFile, []byte("package "+pkgName), 644)
+			err = ioutil.WriteFile(docFile, []byte("package "+pkgName), 0644)
 			if err != nil {
 				return nil, Errorf(err, "can not write file %v: %v", docFile, err)
 			}
@@ -336,8 +336,6 @@ func cloneDirectives(directives []Directive) []Directive {
 		return nil
 	}
 	result := make([]Directive, len(directives))
-	for i, d := range directives {
-		result[i] = d
-	}
+	copy(result, directives)
 	return result
 }

@@ -50,6 +50,9 @@ func main() {
 		contents = append(contents, Content{path, body})
 		return nil
 	})
+	if err != nil {
+		ll.Fatal(err.Error())
+	}
 
 	cfg := config.DefaultTest().Postgres
 	cfg.Database = *flDBName

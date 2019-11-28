@@ -5,7 +5,6 @@ import (
 
 	pbcm "etop.vn/api/pb/common"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
@@ -15,7 +14,6 @@ import (
 
 var (
 	idempgroup *idemp.RedisGroup
-	authStore  auth.Generator
 )
 
 const PrefixIdempShopAPI = "IdempShopAPI"
@@ -27,9 +25,7 @@ func init() {
 	)
 }
 
-func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
-	authStore = s
-
+func Init(sd cmservice.Shutdowner, rd redis.Store) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
 	sd.Register(idempgroup.Shutdown)
 }

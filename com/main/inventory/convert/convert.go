@@ -38,11 +38,7 @@ func createInventoryVoucher(args *inventory.CreateInventoryVoucherArgs, out *inv
 	}
 }
 
-func InventoryVariantsFromModel(args []*model.InventoryVariant) (outs []*inventory.InventoryVariant) {
-	return Convert_inventorymodel_InventoryVariants_inventory_InventoryVariants(args)
-}
-
-func InventoryVariantToModel(args *inventory.InventoryVariant,
+func inventoryVariantModel(args *inventory.InventoryVariant,
 	out *model.InventoryVariant) *model.InventoryVariant {
 	if out == nil {
 		out = &model.InventoryVariant{}
@@ -51,31 +47,21 @@ func InventoryVariantToModel(args *inventory.InventoryVariant,
 	return out
 }
 
-func InventoryVariantFromModel(args *model.InventoryVariant,
+func inventoryVariant(args *model.InventoryVariant,
 	out *inventory.InventoryVariant) *inventory.InventoryVariant {
-	if args == nil {
-		return nil
-	}
-	if out == nil {
-		out = &inventory.InventoryVariant{}
-	}
 	convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(args, out)
 	out.QuantitySummary = args.QuantityOnHand + args.QuantityPicked
 	return out
 }
 
-func InventoryVouchersFromModel(args []*model.InventoryVoucher) []*inventory.InventoryVoucher {
-	return Convert_inventorymodel_InventoryVouchers_inventory_InventoryVouchers(args)
-}
-
-func ApplyUpdateInventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs,
+func updateInventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs,
 	out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
 	apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg, out)
 	out.UpdatedAt = time.Time{}
 	return out
 }
 
-func InventoryVoucherToModel(args *inventory.InventoryVoucher,
+func inventoryVoucherModel(args *inventory.InventoryVoucher,
 	out *model.InventoryVoucher) *model.InventoryVoucher {
 	if args == nil {
 		return nil
@@ -87,7 +73,7 @@ func InventoryVoucherToModel(args *inventory.InventoryVoucher,
 	return out
 }
 
-func InventoryVoucherFromModel(args *model.InventoryVoucher,
+func inventoryVoucher(args *model.InventoryVoucher,
 	out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
 	if args == nil {
 		return nil

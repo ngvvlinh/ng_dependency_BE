@@ -37,7 +37,7 @@ func (v *SyncVtiger) SyncContact(syncTime time.Time) error {
 	page := 0
 	perPage := 50
 	modifiedTime := syncTime.Format(mapping.TimeLayout)
-	for true {
+	for {
 		var b sqlbuilder.SimpleSQLBuilder
 
 		b.Printf(`SELECT * FROM Contacts WHERE modifiedtime > ? LIMIT ?, ? ;`, modifiedTime, page*perPage, perPage)

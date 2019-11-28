@@ -10,7 +10,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -100,14 +99,14 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 	cmd := &addressing.UpdateAddressCommand{
 		ID:           r.Id,
 		ShopID:       r.Context.Shop.ID,
-		FullName:     PString(r.FullName),
-		Phone:        PString(r.Phone),
-		Email:        PString(r.Email),
-		Company:      PString(r.Company),
-		Address1:     PString(r.Address1),
-		Address2:     PString(r.Address2),
-		DistrictCode: PString(r.DistrictCode),
-		WardCode:     PString(r.WardCode),
+		FullName:     r.FullName,
+		Phone:        r.Phone,
+		Email:        r.Email,
+		Company:      r.Company,
+		Address1:     r.Address1,
+		Address2:     r.Address2,
+		DistrictCode: r.DistrictCode,
+		WardCode:     r.WardCode,
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {

@@ -9,7 +9,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -73,9 +72,9 @@ func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint
 	cmd := &ledgering.UpdateLedgerCommand{
 		ID:          r.Id,
 		ShopID:      r.Context.Shop.ID,
-		Name:        PString(r.Name),
+		Name:        r.Name,
 		BankAccount: convertpb.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
-		Note:        PString(r.Note),
+		Note:        r.Note,
 	}
 	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err

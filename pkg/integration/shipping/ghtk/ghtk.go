@@ -245,8 +245,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	// make sure can not update ffm's shipping fee when it belong to a money transaction
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
 		update.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(ghtkOrder)
-		var shippingFeeShopLines []*model.ShippingFeeLine
-		shippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost

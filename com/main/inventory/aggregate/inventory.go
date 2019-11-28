@@ -224,14 +224,14 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if args.ShopID == 0 || args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	dbResult, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
+	inventoryVoucher, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
 	if err != nil {
 		return nil, err
 	}
-	if dbResult.Status != etop.S3Zero {
+	if inventoryVoucher.Status != etop.S3Zero {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "This inventory is already confirmed or cancelled")
 	}
-	if dbResult.Type == inventory.InventoryVoucherTypeOut {
+	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Can not update inventory delivery voucher")
 	}
 	event := &inventory.InventoryVoucherUpdatingEvent{
@@ -253,16 +253,16 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng giá trị phiếu không hợp lệ")
 	}
 
-	updateInventoryCore := convert.ApplyUpdateInventoryVoucher(args, dbResult)
-	if args.TraderID.Valid {
-		if args.TraderID.ID != updateInventoryCore.TraderID {
-			err := q.validateTrader(ctx, updateInventoryCore.ShopID, updateInventoryCore)
-			if err != nil {
-				return nil, err
-			}
+	if err := scheme.Convert(args, inventoryVoucher); err != nil {
+		return nil, err
+	}
+	if args.TraderID.Apply(inventoryVoucher.TraderID) != inventoryVoucher.TraderID {
+		err := q.validateTrader(ctx, inventoryVoucher.ShopID, inventoryVoucher)
+		if err != nil {
+			return nil, err
 		}
 	}
-	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAll(updateInventoryCore)
+	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAll(inventoryVoucher)
 	if err != nil {
 		return nil, err
 	}
@@ -300,17 +300,17 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 		}
 	}
 
-	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).IDs(inventoryVoucherInID, inventoryVoucherOutID).ListInventoryVoucherDB()
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).IDs(inventoryVoucherInID, inventoryVoucherOutID).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}
-	resultUpdate, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(listVariantID...).ListInventoryDB()
+	resultUpdate, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(listVariantID...).ListInventory()
 	if err != nil {
 		return nil, err
 	}
 	return &inventory.AdjustInventoryQuantityRespone{
-		InventoryVariants: convert.InventoryVariantsFromModel(resultUpdate),
-		InventoryVouchers: convert.InventoryVouchersFromModel(inventoryVouchers),
+		InventoryVariants: resultUpdate,
+		InventoryVouchers: inventoryVouchers,
 	}, nil
 }
 
@@ -623,7 +623,7 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 	if args.ShopID == 0 || args.VariantID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id")
 	}
-	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(string(inventory.RefTypePurchaseOrder)).VariantId(args.VariantID).ListInventoryVoucher()
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(string(inventory.RefTypePurchaseOrder)).VariantID(args.VariantID).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}

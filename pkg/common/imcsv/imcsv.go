@@ -269,3 +269,10 @@ func IsRowEmpty(row []string) bool {
 	}
 	return true
 }
+
+func GetFormValue(ss []string) string {
+	if ss == nil {
+		return ""
+	}
+	return ss[0]
+}

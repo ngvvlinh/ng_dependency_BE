@@ -376,23 +376,33 @@ type ShopVariant struct {
 	// @required
 	Id   dot.ID       `json:"id"`
 	Info *EtopVariant `json:"info"`
-	Code string       `json:"code"`
+
+	Code string `json:"code"`
 	// @deprecated use code instead
-	EdCode           string                       `json:"ed_code"`
-	Name             string                       `json:"name"`
-	Description      string                       `json:"description"`
-	ShortDesc        string                       `json:"short_desc"`
-	DescHtml         string                       `json:"desc_html"`
-	ImageUrls        []string                     `json:"image_urls"`
-	ListPrice        int                          `json:"list_price"`
-	RetailPrice      int                          `json:"retail_price"`
-	Note             string                       `json:"note"`
-	Status           status3.Status               `json:"status"`
-	IsAvailable      bool                         `json:"is_available"`
+	EdCode string `json:"ed_code"`
+
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	ShortDesc   string         `json:"short_desc"`
+	DescHtml    string         `json:"desc_html"`
+	ImageUrls   []string       `json:"image_urls"`
+	ListPrice   int            `json:"list_price"`
+	RetailPrice int            `json:"retail_price"`
+	Note        string         `json:"note"`
+	Status      status3.Status `json:"status"`
+	IsAvailable bool           `json:"is_available"`
+
+	QuantityOnHand int `json:"quantity_on_hand"`
+	QuantityPicked int `json:"quantity_picked"`
+	CostPrice      int `json:"cost_price"`
+	Quantity       int `json:"quantity"`
+	// @deprecated
 	InventoryVariant *InventoryVariantShopVariant `json:"inventory_variant"`
+
 	// @deprecated use stags instead
-	Tags       []string          `json:"tags"`
-	Stags      []*Tag            `json:"stags"`
+	Tags  []string `json:"tags"`
+	Stags []*Tag   `json:"stags"`
+
 	Attributes []*Attribute      `json:"attributes"`
 	Product    *ShopShortProduct `json:"product"`
 }

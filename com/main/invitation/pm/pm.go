@@ -81,7 +81,7 @@ func (m *ProcessManager) UserCreated(ctx context.Context, event *identity.UserCr
 			}
 
 			var roles []string
-			for key, _ := range mapRole {
+			for key := range mapRole {
 				roles = append(roles, key)
 			}
 

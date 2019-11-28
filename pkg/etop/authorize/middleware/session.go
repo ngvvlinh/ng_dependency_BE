@@ -179,10 +179,6 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	return nil
 }
 
-func startSessionAPIKey(ctx context.Context, require bool, s *Session) bool {
-	return false
-}
-
 func startSessionUser(ctx context.Context, require bool, s *Session) bool {
 	if require {
 		if s.Claim.UserID == 0 {

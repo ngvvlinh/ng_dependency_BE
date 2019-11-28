@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/imcsv"
+
 	"etop.vn/capi/dot"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -128,11 +130,11 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 
 	provider := form.Value["provider"]
 	externalPaidAtStr := form.Value["external_paid_at"]
-	note := cm.GetFormValue(form.Value["note"])
-	accountNumber := cm.GetFormValue(form.Value["account_number"])
-	accountName := cm.GetFormValue(form.Value["account_name"])
-	bankName := cm.GetFormValue(form.Value["bank_name"])
-	invoiceNumber := cm.GetFormValue(form.Value["invoice_number"])
+	note := imcsv.GetFormValue(form.Value["note"])
+	accountNumber := imcsv.GetFormValue(form.Value["account_number"])
+	accountName := imcsv.GetFormValue(form.Value["account_name"])
+	bankName := imcsv.GetFormValue(form.Value["bank_name"])
+	invoiceNumber := imcsv.GetFormValue(form.Value["invoice_number"])
 
 	if provider == nil || provider[0] == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Provider", nil)

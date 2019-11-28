@@ -21,7 +21,6 @@ var (
 	cfg        config.Config
 	db         *cmsql.Database
 	dbNotifier *cmsql.Database
-	ctx        context.Context
 )
 
 type M map[string]interface{}

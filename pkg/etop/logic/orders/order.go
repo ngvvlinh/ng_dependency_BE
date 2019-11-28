@@ -1058,7 +1058,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 	var errs []error
 	fulfillments := getOrderQuery.Result.Fulfillments
 	if len(fulfillments) > 0 {
-		err, _errs := TryCancellingFulfillments(ctx, order, fulfillments)
+		_errs, err := TryCancellingFulfillments(ctx, order, fulfillments)
 		if err != nil {
 			return nil, err
 		}

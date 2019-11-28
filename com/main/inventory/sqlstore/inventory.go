@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"etop.vn/api/main/inventory"
-	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -67,8 +66,10 @@ func (s *InventoryStore) UpdateInventoryVariantAllDB(args *model.InventoryVarian
 }
 
 func (s *InventoryStore) UpdateInventoryVariantAll(args *inventory.InventoryVariant) error {
-	var inventoryCore *model.InventoryVariant
-	inventoryCore = convert.InventoryVariantToModel(args, inventoryCore)
+	inventoryCore := &model.InventoryVariant{}
+	if err := scheme.Convert(args, inventoryCore); err != nil {
+		return err
+	}
 	return s.UpdateInventoryVariantAllDB(inventoryCore)
 }
 
@@ -82,9 +83,11 @@ func (s *InventoryStore) Get() (*inventory.InventoryVariant, error) {
 	if err != nil {
 		return nil, err
 	}
-	var inventoryVariant *inventory.InventoryVariant
-	inventoryVariant = convert.InventoryVariantFromModel(result, inventoryVariant)
-	return inventoryVariant, err
+	inventoryVariant := &inventory.InventoryVariant{}
+	if err := scheme.Convert(result, inventoryVariant); err != nil {
+		return nil, err
+	}
+	return inventoryVariant, nil
 }
 
 func (s *InventoryStore) GetDB() (*model.InventoryVariant, error) {
@@ -111,6 +114,8 @@ func (s *InventoryStore) ListInventory() ([]*inventory.InventoryVariant, error) 
 		return nil, err
 	}
 	var inventoryVariants []*inventory.InventoryVariant
-	inventoryVariants = convert.InventoryVariantsFromModel(result)
-	return inventoryVariants, err
+	if err := scheme.Convert(result, &inventoryVariants); err != nil {
+		return nil, err
+	}
+	return inventoryVariants, nil
 }

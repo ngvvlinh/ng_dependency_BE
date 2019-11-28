@@ -870,7 +870,7 @@ func (s *ProductService) UpdateProductImages(ctx context.Context, q *UpdateProdu
 	shopID := q.Context.Shop.ID
 
 	var metaUpdate []*meta.UpdateSet
-	if q.DeleteAll == true {
+	if q.DeleteAll {
 		metaUpdate = append(metaUpdate, &meta.UpdateSet{
 			Op: meta.OpDeleteAll,
 		})
@@ -927,7 +927,7 @@ func (s *ProductService) UpdateVariantImages(ctx context.Context, q *UpdateVaria
 	shopID := q.Context.Shop.ID
 
 	var metaUpdate []*meta.UpdateSet
-	if q.DeleteAll == true {
+	if q.DeleteAll {
 		metaUpdate = append(metaUpdate, &meta.UpdateSet{
 			Op: meta.OpDeleteAll,
 		})

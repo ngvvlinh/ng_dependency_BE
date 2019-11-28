@@ -6,7 +6,6 @@ import (
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
@@ -68,7 +67,7 @@ func (s *InventoryVoucherStore) ShopID(id dot.ID) *InventoryVoucherStore {
 	return s
 }
 
-func (s *InventoryVoucherStore) VariantId(id dot.ID) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) VariantID(id dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, sq.NewExpr("variant_ids @> ?", core.Array{V: []dot.ID{id}}))
 	return s
 }
@@ -109,14 +108,18 @@ func (s *InventoryVoucherStore) UpdateInventoryVoucherAllDB(inventoryVoucher *mo
 }
 
 func (s *InventoryVoucherStore) UpdateInventoryVoucherAll(inventory *inventory.InventoryVoucher) error {
-	var updateValue *model.InventoryVoucher
-	updateValue = convert.InventoryVoucherToModel(inventory, updateValue)
+	updateValue := &model.InventoryVoucher{}
+	if err := scheme.Convert(inventory, updateValue); err != nil {
+		return err
+	}
 	return s.UpdateInventoryVoucherAllDB(updateValue)
 }
 
 func (s *InventoryVoucherStore) Create(inventoryVoucher *inventory.InventoryVoucher) error {
-	var voucherDB *model.InventoryVoucher
-	voucherDB = convert.InventoryVoucherToModel(inventoryVoucher, voucherDB)
+	voucherDB := &model.InventoryVoucher{}
+	if err := scheme.Convert(inventoryVoucher, voucherDB); err != nil {
+		return err
+	}
 	return s.CreateDB(voucherDB)
 }
 
@@ -141,8 +144,10 @@ func (s *InventoryVoucherStore) Get() (*inventory.InventoryVoucher, error) {
 	if err != nil {
 		return nil, err
 	}
-	var resultCore *inventory.InventoryVoucher
-	resultCore = convert.InventoryVoucherFromModel(resultDB, resultCore)
+	resultCore := &inventory.InventoryVoucher{}
+	if err := scheme.Convert(resultDB, resultCore); err != nil {
+		return nil, err
+	}
 	return resultCore, nil
 }
 
@@ -171,7 +176,9 @@ func (s *InventoryVoucherStore) ListInventoryVoucher() ([]*inventory.InventoryVo
 		return nil, err
 	}
 	var resultCore []*inventory.InventoryVoucher
-	resultCore = convert.InventoryVouchersFromModel(resultDB)
+	if err := scheme.Convert(resultDB, &resultCore); err != nil {
+		return nil, err
+	}
 	return resultCore, nil
 }
 

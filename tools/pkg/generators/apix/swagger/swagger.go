@@ -11,7 +11,7 @@ import (
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/apix/defs"
-	. "etop.vn/backend/tools/pkg/genutil"
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
@@ -183,8 +183,8 @@ func rotateChar(c byte, i byte) byte {
 }
 
 func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ types.Type) spec.Ref {
-	typs, inner := ExtractType(typ)
-	if typs[len(typs)-1] != Named {
+	typs, inner := genutil.ExtractType(typ)
+	if typs[len(typs)-1] != genutil.Named {
 		panic(fmt.Sprintf("must be named type (got %v)", inner))
 	}
 	id := getDefinitionID(inner)
@@ -356,7 +356,7 @@ func simpleType(typ, format string) spec.Schema {
 }
 
 func parseJsonTag(tag string) string {
-	st, err := ParseStructTags(tag)
+	st, err := genutil.ParseStructTags(tag)
 	if err != nil {
 		panic(fmt.Sprintf("invalid tag %v", tag))
 	}

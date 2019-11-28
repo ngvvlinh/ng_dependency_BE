@@ -166,7 +166,7 @@ func (c *Client) sendPostFormRequest(ctx context.Context, fullURL string, req in
 		}
 	}
 	var formData = make(map[string]string)
-	for key, _ := range values {
+	for key := range values {
 		formData[key] = values.Get(key)
 	}
 	res, err := c.rclient.R().

@@ -46,6 +46,10 @@ func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inven
 			Quantity:       inventoryVariant.QuantitySummary,
 			CostPrice:      inventoryVariant.CostPrice,
 		}
+		shopVariantDB.QuantityOnHand = inventoryVariant.QuantityOnHand
+		shopVariantDB.QuantityPicked = inventoryVariant.QuantityPicked
+		shopVariantDB.Quantity = inventoryVariant.QuantitySummary
+		shopVariantDB.CostPrice = inventoryVariant.CostPrice
 	}
 	return shopVariantDB
 }
@@ -405,15 +409,6 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 	return res
 }
 
-func coalesce(ss ...string) string {
-	for _, s := range ss {
-		if s != "" {
-			return s
-		}
-	}
-	return ""
-}
-
 func coalesceInt(is ...int) int {
 	for _, i := range is {
 		if i != 0 {
@@ -421,34 +416,4 @@ func coalesceInt(is ...int) int {
 		}
 	}
 	return 0
-}
-
-func coalesceStrings(sss ...[]string) []string {
-	for _, ss := range sss {
-		if len(ss) != 0 {
-			return ss
-		}
-	}
-	return nil
-}
-
-func merge(sss ...[]string) []string {
-	s0 := sss[0]
-	for _, ss := range sss[1:] {
-		for _, s := range ss {
-			if !contain(s0, s) {
-				s0 = append(s0, s)
-			}
-		}
-	}
-	return s0
-}
-
-func contain(ss []string, s string) bool {
-	for _, S := range ss {
-		if S == s {
-			return true
-		}
-	}
-	return false
 }

@@ -9,7 +9,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	. "etop.vn/capi/dot"
 )
 
 func init() {
@@ -82,8 +81,8 @@ func (s *CarrierService) UpdateCarrier(ctx context.Context, r *UpdateCarrierEndp
 	cmd := &carrying.UpdateCarrierCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
-		FullName: PString(r.FullName),
-		Note:     PString(r.Note),
+		FullName: r.FullName,
+		Note:     r.Note,
 	}
 	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err

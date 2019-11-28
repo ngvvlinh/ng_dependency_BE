@@ -14,6 +14,13 @@ import (
 	"etop.vn/capi/dot"
 )
 
+func PNonZeroString(s string) dot.NullString {
+	if s == "" {
+		return dot.NullString{}
+	}
+	return dot.String(s)
+}
+
 func PbPartner(m *model.Partner) *external.Partner {
 	return &external.Partner{
 		Id:              m.ID,
@@ -99,7 +106,7 @@ func PbOrder(m *ordermodel.Order) *external.Order {
 		ExternalId:                dot.String(m.ExternalOrderID),
 		ExternalCode:              dot.String(m.EdCode),
 		ExternalUrl:               dot.String(m.ExternalURL),
-		SelfUrl:                   cm.PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		SelfUrl:                   PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
 		CustomerAddress:           PbOrderAddress(m.CustomerAddress),
 		ShippingAddress:           PbOrderAddress(m.ShippingAddress),
 		CreatedAt:                 cmapi.PbTime(m.CreatedAt),
@@ -353,7 +360,7 @@ func PbFulfillment(m *shipmodel.Fulfillment) *external.Fulfillment {
 		Id:                       m.ID,
 		OrderId:                  m.OrderID,
 		ShopId:                   m.ShopID,
-		SelfUrl:                  cm.PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		SelfUrl:                  PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
 		TotalItems:               cmapi.PbPtrInt(m.TotalItems),
 		BasketValue:              cmapi.PbPtrInt(m.BasketValue),
 		CreatedAt:                cmapi.PbTime(m.CreatedAt),

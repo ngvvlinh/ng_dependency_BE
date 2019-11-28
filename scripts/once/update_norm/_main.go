@@ -1,6 +1,7 @@
 package main
 
 import (
+	"etop.vn/common/jsonx"
 	"flag"
 
 	"etop.vn/backend/cmd/etop-server/config"
@@ -129,7 +130,7 @@ func main() {
 					if len(attrsNorm) == 0 {
 						update["attributes"] = nil
 					} else {
-						update["attributes"] = string(cm.ToJSON(attrsNorm))
+						update["attributes"] = jsonx.MustMarshalToString(attrsNorm))
 					}
 					err = db.
 						Table("variant").

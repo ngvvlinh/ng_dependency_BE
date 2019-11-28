@@ -4,18 +4,18 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	shippingprovider "etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"etop.vn/capi/dot"
 )
 
 var _ shippingprovider.ShippingProvider = &Carrier{}
@@ -86,7 +86,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 			Secret: &model.ShippingSourceSecret{
 				CustomerID: newStates.CustomerID,
 				Username:   cmd.Username,
-				Password:   cm.EncodePassword(cmd.Password),
+				Password:   login.EncodePassword(cmd.Password),
 			},
 		}
 		if err := bus.Dispatch(ctx, updateCmd); err != nil {

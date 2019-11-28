@@ -548,7 +548,7 @@ func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.A
 	}, nil
 }
 
-func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) (error, []error) {
+func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) ([]error, error) {
 	var ffmToCancel []*shipmodel.Fulfillment
 	ffmSendToProvider := make([]model.FfmAction, len(fulfillments))
 	count := 0
@@ -591,7 +591,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 			ShopConfirm:    model.S3Negative.P(),
 		}
 		if err := bus.Dispatch(ctx, updateCmd); err != nil {
-			return err, nil
+			return nil, err
 		}
 	}
 
@@ -686,7 +686,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}())
 	}
 	wg.Wait()
-	return nil, errs
+	return errs, nil
 }
 
 func ignoreError(err error) {}
