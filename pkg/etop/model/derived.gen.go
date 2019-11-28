@@ -1095,7 +1095,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.MoneyTransactionRRule),
 		core.JSON{m.SurveyInfo},
 		core.JSON{m.ShippingServiceSelectStrategy},
-		core.JSON{&m.InventoryOverstock},
+		m.InventoryOverstock,
 	}
 }
 
@@ -1127,7 +1127,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.MoneyTransactionRRule),
 		core.JSON{&m.SurveyInfo},
 		core.JSON{&m.ShippingServiceSelectStrategy},
-		core.JSON{&m.InventoryOverstock},
+		&m.InventoryOverstock,
 	}
 }
 
@@ -1398,13 +1398,13 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ShippingServiceSelectStrategy})
 	}
-	if true {
+	if m.InventoryOverstock.Valid {
 		flag = true
 		w.WriteName("inventory_overstock")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(core.JSON{&m.InventoryOverstock})
+		w.WriteArg(m.InventoryOverstock)
 	}
 	if !flag {
 		return core.ErrNoColumn

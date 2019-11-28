@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"go/types"
 	"reflect"
+	"strings"
 )
+
+const dotPkgPath = "etop.vn/capi/dot"
 
 // TypeDesc describes types for generating code
 type TypeDesc struct {
@@ -86,6 +89,18 @@ func IsNumber(k reflect.Kind) bool {
 
 func (k KindTuple) IsPtrBasic() bool {
 	return k.Ptr && k.IsBasic()
+}
+
+func (k KindTuple) IsNullBasic(typ types.Type) bool {
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return false
+	}
+	pkg := named.Obj().Pkg()
+	if pkg == nil {
+		return false
+	}
+	return pkg.Path() == dotPkgPath && strings.HasPrefix(named.Obj().Name(), "Null")
 }
 
 func (k KindTuple) IsBasic() bool {

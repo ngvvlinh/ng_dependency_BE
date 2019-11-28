@@ -76,6 +76,9 @@ func genScanArg2(path string, typ types.Type) string {
 	case desc.IsPtrBasic():
 		return "&" + path
 
+	case desc.IsNullBasic(typ):
+		return "&" + path
+
 	case desc.IsBasic(): // && !IsPtrBasic()
 		return "(*core." + basicWrappers[desc.Elem] + ")(&" + path + ")"
 
@@ -128,6 +131,9 @@ func genInsertArg2(path string, typ types.Type, timeLevel timeLevel) string {
 		return "core.JSON{" + path + "}"
 
 	case desc.IsPtrBasic():
+		return path
+
+	case desc.IsNullBasic(typ):
 		return path
 
 	case desc.IsBasic(): // && !desc.IsBasic()
@@ -192,6 +198,9 @@ func genUpdateArg2(path string, typ types.Type, timeLevel timeLevel) string {
 		}
 		return "(" + desc.Underlying + ")(" + path + ")"
 
+	case desc.IsNullBasic(typ):
+		return path
+
 	case desc.IsBasic(): // && !desc.IsPtrBasic()
 		if desc.TypeString == desc.Underlying {
 			return path
@@ -236,6 +245,8 @@ func genNotEqualToZero(path string, typ types.Type) string {
 		return "!" + path + ".IsZero()"
 	case desc.IsNillable():
 		return path + " != nil"
+	case desc.IsNullBasic(typ):
+		return path + ".Valid"
 	case desc.IsNumber():
 		return path + " != 0"
 	case desc.IsKind(reflect.Bool):
