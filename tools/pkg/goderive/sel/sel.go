@@ -9,6 +9,7 @@ import (
 
 	"github.com/awalterschulze/goderive/derive"
 
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/backend/tools/pkg/sqlgen"
 )
 
@@ -92,18 +93,46 @@ func (g *gen) genStruct(typ types.Type) error {
 	}
 
 	text := `
-func (m *{{.Name}}) SQLTableName() string { return "" }
+type {{.NamePlural}} []*{{.Name}}
 
-func (m *{{.Name}}) SQLScan(opts core.Opts, row *sql.Row) error {
-	args := []interface{}{
+func (m *{{.Name}}) SQLTableName() string { return "" }
+func (m *{{.NamePlural}}) SQLTableName() string { return "" }
+
+func (m *{{.Name}}) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
 {{- range .Args}}
 		{{.}},
 {{- end}}
 	}
-	return row.Scan(args...)
+}
+
+func (m *{{.Name}}) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *{{.NamePlural}}) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make({{.NamePlural}}, 0, 128)
+	for rows.Next() {
+		m := new({{.Name}})
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
 }
 
 func (_ *{{.Name}}) SQLSelect(w SQLWriter) error {
+	w.WriteRawString(` + "`" + `SELECT {{.Selects}}` + "`" + `)
+	return nil
+}
+
+func (_ *{{.NamePlural}}) SQLSelect(w SQLWriter) error {
 	w.WriteRawString(` + "`" + `SELECT {{.Selects}}` + "`" + `)
 	return nil
 }
@@ -111,9 +140,10 @@ func (_ *{{.Name}}) SQLSelect(w SQLWriter) error {
 	tpl := template.Must(template.New("tpl").Parse(text))
 	var buf strings.Builder
 	if err := tpl.Execute(&buf, map[string]interface{}{
-		"Name":    name,
-		"Args":    args,
-		"Selects": selects.String(),
+		"Name":       name,
+		"NamePlural": genutil.Plural(name),
+		"Args":       args,
+		"Selects":    selects.String(),
 	}); err != nil {
 		return err
 	}

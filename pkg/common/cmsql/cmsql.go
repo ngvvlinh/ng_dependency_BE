@@ -331,6 +331,14 @@ func (q Query) Scan(dest ...interface{}) error {
 	return q.query.Scan(dest...)
 }
 
+func (q Query) ScanRow(dest ...interface{}) (bool, error) {
+	err := q.query.Scan(dest...)
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+	return err == nil, err
+}
+
 type tx struct {
 	tx sq.Tx
 	db Database

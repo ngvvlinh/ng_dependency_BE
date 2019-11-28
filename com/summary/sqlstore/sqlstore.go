@@ -11,6 +11,8 @@ import (
 	"etop.vn/capi/dot"
 )
 
+//go:generate $ETOPDIR/backend/scripts/derive.sh
+
 type OrderStoreFactory func(context.Context) *OrderStore
 
 func NewOrderStore(db *cmsql.Database) OrderStoreFactory {
@@ -44,18 +46,20 @@ func (s *OrderStore) OrderIDs(ids dot.ID) *OrderStore {
 	return s
 }
 
+var _ = selTotal(&Total{})
+
 type Total struct {
-	TotalAmount  sql.NullInt64
-	TotalOrder   sql.NullInt64
-	AverageOrder sql.NullFloat64
+	TotalAmount  sql.NullInt64   `sel:"SUM(total_amount)"`
+	TotalOrder   sql.NullInt64   `sel:"COUNT(id)"`
+	AverageOrder sql.NullFloat64 `sel:"AVG(total_amount)"`
 }
 
 func (s *OrderStore) GetOrderSummary(dateFrom time.Time, dateTo time.Time) (*Total, error) {
 	var total Total
 	q := s.query().Where(s.preds)
-	q = q.SQL("select SUM(total_amount), COUNT(id), AVG(total_amount) FROM \"order\" ")
+	q = q.SQL("FROM \"order\" ")
 	q = q.Where("created_at BETWEEN ? AND ?", dateFrom, dateTo).Where("status = 1")
-	err := q.Scan(&total.TotalAmount, &total.TotalOrder, &total.AverageOrder)
+	_, err := q.Get(&total)
 	return &total, err
 }
 
