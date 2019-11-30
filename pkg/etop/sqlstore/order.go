@@ -1319,10 +1319,6 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 		updateFfm.ShippingState = cmd.ShippingState
 	}
 
-	order := query.Result.Order
-	updateOrder := &ordermodel.Order{
-		ID: ffm.OrderID,
-	}
 	updateFfmMap := M{}
 	updateOrderMap := M{}
 	if cmd.TotalCODAmount.Valid {
@@ -1334,23 +1330,9 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 		}
 	}
 
-	updateOrder.Customer = order.Customer.UpdateCustomer(cmd.FullName)
-	updateOrder.CustomerAddress = order.CustomerAddress.UpdateAddress(cmd.Phone, cmd.FullName)
-	updateOrder.BillingAddress = order.BillingAddress.UpdateAddress(cmd.Phone, cmd.FullName)
-	updateOrder.ShippingAddress = order.ShippingAddress.UpdateAddress(cmd.Phone, cmd.FullName)
-	if cmd.FullName != "" {
-		updateOrder.CustomerName = cmd.FullName
-	}
-	if cmd.Phone != "" {
-		updateOrder.CustomerPhone = cmd.Phone
-	}
 	updateFfm.AddressTo = ffm.AddressTo.UpdateAddress(cmd.Phone, cmd.FullName)
 
 	return inTransaction(func(s Qx) error {
-		if err := s.Table("order").Where("id = ?", ffm.OrderID).
-			Where("status = 0 OR status = 2 OR status IS NULL").ShouldUpdate(updateOrder); err != nil {
-			return err
-		}
 		if err := s.Table("fulfillment").Where("id = ?", ffm.ID).
 			Where("status = 0 OR status = 2 OR status IS NULL").ShouldUpdate(updateFfm); err != nil {
 			return err
