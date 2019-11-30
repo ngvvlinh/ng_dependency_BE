@@ -1,7 +1,7 @@
 package defs
 
 import (
-	"etop.vn/backend/tools/pkg/generators/cq"
+	"etop.vn/backend/tools/pkg/generators/api"
 )
 
 type Service struct {
@@ -11,6 +11,6 @@ type Service struct {
 	Methods  []*Method
 }
 
-type Method = cq.HandlerDef
+type Method = api.HandlerDef
 
-type Message = cq.Message
+type Message = api.Message

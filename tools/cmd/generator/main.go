@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api"
 	"etop.vn/backend/tools/pkg/generators/apix"
 	"etop.vn/backend/tools/pkg/generators/convert"
-	"etop.vn/backend/tools/pkg/generators/cq"
 	"etop.vn/backend/tools/pkg/generators/event"
 	"etop.vn/backend/tools/pkg/generators/sample"
 	"etop.vn/backend/tools/pkg/generators/wrapper"
@@ -33,7 +33,7 @@ func main() {
 	plugins := []generator.Plugin{
 		apix.New(),
 		convert.New(),
-		cq.New(),
+		api.New(),
 		event.New(),
 		sample.New(),
 		wrapper.New(),

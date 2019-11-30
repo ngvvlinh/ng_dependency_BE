@@ -12,9 +12,9 @@ import (
 
 	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api"
 	"etop.vn/backend/tools/pkg/generators/apix/defs"
 	"etop.vn/backend/tools/pkg/generators/apix/swagger"
-	"etop.vn/backend/tools/pkg/generators/cq"
 	"etop.vn/backend/tools/pkg/generators/wrapper"
 	"etop.vn/common/l"
 )
@@ -131,7 +131,7 @@ func (p *plugin) parseService(iface *types.Interface) (*defs.Service, error) {
 }
 
 func (p *plugin) parseMethod(method *types.Func) (_ *defs.Method, err error) {
-	def, err := cq.ExtractHandlerDef(p.ng, method)
+	def, err := api.ExtractHandlerDef(p.ng, method)
 	if err != nil {
 		return nil, generator.Errorf(err, "%v", err)
 	}
