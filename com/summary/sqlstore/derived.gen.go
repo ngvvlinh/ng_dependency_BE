@@ -3,7 +3,7 @@
 package sqlstore
 
 import (
-	sql "database/sql"
+	"database/sql"
 
 	core "etop.vn/backend/pkg/common/sq/core"
 )
@@ -19,9 +19,9 @@ func (m *Totals) SQLTableName() string { return "" }
 
 func (m *Total) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		core.JSON{&m.TotalAmount},
-		core.JSON{&m.TotalOrder},
-		core.JSON{&m.AverageOrder},
+		(*core.Int)(&m.TotalAmount),
+		(*core.Int)(&m.TotalOrder),
+		(*core.Float64)(&m.AverageOrder),
 	}
 }
 

@@ -101,15 +101,15 @@ func BuildTotalTable(args *sqlstore.Total) *summary.SummaryTable {
 
 	summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 		Spec:  "sum(total_count):value",
-		Value: int(args.TotalAmount.Int64),
+		Value: args.TotalAmount,
 	})
 	summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 		Spec:  "count(order_id):value",
-		Value: int(args.TotalOrder.Int64),
+		Value: args.TotalOrder,
 	})
 	summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 		Spec:  "avg(total_count):value",
-		Value: int(args.AverageOrder.Float64),
+		Value: int(args.AverageOrder),
 	})
 
 	return &summaryTable
@@ -137,14 +137,14 @@ func BuildDiagramTable(args []*sqlstore.TotalPerDate) *summary.SummaryTable {
 	for index, value := range args {
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[index].Spec + ":" + summaryTable.Rows[0].Spec,
-			Value: int(value.TotalAmount),
+			Value: value.TotalAmount,
 			Unit:  "",
 		})
 	}
 	for index, value := range args {
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[index].Spec + ":" + summaryTable.Rows[1].Spec,
-			Value: int(value.Count),
+			Value: value.Count,
 			Unit:  "",
 		})
 	}
@@ -185,7 +185,7 @@ func BuildTopSellTable(args []*sqlstore.TopSellItem) *summary.SummaryTable {
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[2].Spec + ":" + summaryTable.Rows[index].Spec,
-			Value: int(value.Count),
+			Value: value.Count,
 			Unit:  "",
 		})
 	}

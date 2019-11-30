@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"etop.vn/backend/pkg/common/cmsql"
@@ -49,9 +48,9 @@ func (s *OrderStore) OrderIDs(ids dot.ID) *OrderStore {
 var _ = selTotal(&Total{})
 
 type Total struct {
-	TotalAmount  sql.NullInt64   `sel:"SUM(total_amount)"`
-	TotalOrder   sql.NullInt64   `sel:"COUNT(id)"`
-	AverageOrder sql.NullFloat64 `sel:"AVG(total_amount)"`
+	TotalAmount  int     `sel:"SUM(total_amount)"`
+	TotalOrder   int     `sel:"COUNT(id)"`
+	AverageOrder float64 `sel:"AVG(total_amount)"`
 }
 
 func (s *OrderStore) GetOrderSummary(dateFrom time.Time, dateTo time.Time) (*Total, error) {
