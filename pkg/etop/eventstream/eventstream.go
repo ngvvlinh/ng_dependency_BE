@@ -11,6 +11,7 @@ import (
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/capi/dot"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -183,6 +184,11 @@ func writeEvent(w http.ResponseWriter, event *Event) {
 		_, _ = fmt.Fprintf(w, "data: %s\n\n", payload)
 
 	default:
-		panic("unsupported payload type")
+		_, _ = fmt.Fprint(w, "data: ")
+		// TODO: must implement capi.Message
+		if err := jsonx.MarshalTo(w, payload); err != nil {
+			panic(err)
+		}
+		_, _ = fmt.Fprint(w, "\n")
 	}
 }
