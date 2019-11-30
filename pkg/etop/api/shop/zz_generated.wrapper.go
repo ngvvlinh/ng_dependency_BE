@@ -7936,6 +7936,7 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *shop.Cre
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:     ctx,
 		RequireAuth: true,
+		RequireUser: true,
 		RequireShop: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
@@ -7944,7 +7945,13 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *shop.Cre
 	session = sessionQuery.Result
 	query := &CreateStocktakeEndpoint{CreateStocktakeRequest: req}
 	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
 	query.Context.Shop = session.Shop
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions

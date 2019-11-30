@@ -378,7 +378,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Summary/SummarizePOS":          {Type: Shop},
 	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt},
 
-	"shop.Export/GetExports":    {Type: Shop, Auth: User},
+	"shop.Export/GetExports":    {Type: Shop},
 	"shop.Export/RequestExport": {Type: Shop},
 
 	"shop.Notification/CreateDevice":        {Type: Shop},
@@ -537,7 +537,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.PurchaseOrder/CancelPurchaseOrder":          {Type: Shop},
 
 	// Stocktake:
-	"shop.Stocktake/CreateStocktake":    {Type: Shop},
+	"shop.Stocktake/CreateStocktake":    {Type: Shop, Auth: User},
 	"shop.Stocktake/UpdateStocktake":    {Type: Shop},
 	"shop.Stocktake/ConfirmStocktake":   {Type: Shop},
 	"shop.Stocktake/CancelStocktake":    {Type: Shop},

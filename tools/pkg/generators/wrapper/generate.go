@@ -94,7 +94,7 @@ func requireLogin(m *Method) bool {
 
 func requireUser(m *Method) bool {
 	p := getPermission(m)
-	return p.Type == permission.CurUsr
+	return p.Type == permission.CurUsr || p.Auth == permission.User
 }
 
 func requireAPIKey(m *Method) bool {

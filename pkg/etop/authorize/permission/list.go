@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	User AuthType = iota
+	User AuthType = iota + 1
 	APIKey
 	APIPartnerShopKey
 )
