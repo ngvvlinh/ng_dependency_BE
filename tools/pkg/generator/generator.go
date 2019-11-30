@@ -315,8 +315,7 @@ func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package
 var startDirective = []byte(startDirectiveStr)
 
 func parseDirectivesFromBody(directives []Directive, body []byte) (_ []Directive, errs []error) {
-	// store processing directives, they may be discarded if they are not
-	// followed by a blank line
+	// store processing directives
 	var tmp []Directive
 	lastIdx := -1
 	for idx := 1; idx < len(body); idx++ {

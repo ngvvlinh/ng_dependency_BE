@@ -61,11 +61,3 @@ func mustWrite(w io.Writer, p []byte) {
 	_, err := w.Write(p)
 	must(err)
 }
-
-func toTitle(s string) string {
-	s = strings.TrimPrefix(s, "_")
-	if s == "" {
-		return ""
-	}
-	return strings.ToUpper(s[0:1]) + s[1:]
-}

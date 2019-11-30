@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=etop/sadmin
+// +gen:swagger:doc-path=etop/sadmin
 
 // +apix:path=/sadmin.Misc
 type MiscService interface {

@@ -13,6 +13,7 @@ type Printer interface {
 	Import(name, path string)
 	Qualifier(pkg *types.Package) string
 	TypeString(types.Type) string
+	Bytes() []byte
 
 	io.WriteCloser
 }
@@ -58,6 +59,10 @@ func (p *printer) Write(data []byte) (n int, err error) {
 		panic("already closed")
 	}
 	return p.buf.Write(data)
+}
+
+func (p *printer) Bytes() []byte {
+	return p.buf.Bytes()
 }
 
 func (p *printer) Close() (_err error) {

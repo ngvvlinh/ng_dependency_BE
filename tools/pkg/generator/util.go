@@ -76,6 +76,7 @@ func processDoc(doc, cmt *ast.CommentGroup) (Comment, error) {
 		if !strings.HasPrefix(line.Text, startDirectiveStr) {
 			continue
 		}
+
 		// remove "// " but keep "+"
 		text := line.Text[len(startDirectiveStr)-1:]
 		_directives, err := ParseDirective(text)

@@ -7,7 +7,6 @@ type Server interface {
 }
 
 {{range $s := .Services}}
-
 type {{.Name}}ServiceServer struct {
 	inner {{.Name}}Service
 }

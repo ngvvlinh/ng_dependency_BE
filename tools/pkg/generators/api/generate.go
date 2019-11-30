@@ -1,172 +1,13 @@
 package api
 
 import (
-	"fmt"
 	"go/types"
 	"strings"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api/defs"
 	"etop.vn/backend/tools/pkg/genutil"
 )
-
-func processService(w *MultiWriter, ng generator.Engine, def ServiceDef) {
-	switch def.Kind {
-	case QueryService:
-		processQueryService(w, ng, def.PkgPath, def.Name, def.Type)
-	case Aggregate:
-		processAggregate(w, ng, def.PkgPath, def.Name, def.Type)
-	default:
-		panic("unexpected")
-	}
-}
-
-func processQueryService(w *MultiWriter, ng generator.Engine, pkgPath string, name string, typ *types.Interface) {
-	defs := ExtractHandlerDefs(ng, pkgPath, name, typ)
-	generateQueries(w, name, defs)
-	mustNoError("type %v.%v:\n", pkgPath, name)
-}
-
-func processAggregate(w *MultiWriter, ng generator.Engine, pkgPath string, name string, typ *types.Interface) {
-	defs := ExtractHandlerDefs(ng, pkgPath, name, typ)
-	generateCommands(w, name, defs)
-	mustNoError("type %v.%v:\n", pkgPath, name)
-}
-
-func ExtractHandlerDefs(ng generator.Engine, pkgPath string, name string, typ *types.Interface) (defs []*HandlerDef) {
-	n := typ.NumMethods()
-	for i := 0; i < n; i++ {
-		method := typ.Method(i)
-		if !method.Exported() {
-			continue
-		}
-		def, err := ExtractHandlerDef(ng, method)
-		if err != nil {
-			errorf("%v", err)
-			continue
-		}
-		defs = append(defs, def)
-	}
-	mustNoError("type %v.%v:\n", pkgPath, name)
-	return defs
-}
-
-func ExtractHandlerDef(ng generator.Engine, method *types.Func) (*HandlerDef, error) {
-	mtyp := method.Type()
-	styp := mtyp.(*types.Signature)
-	params := styp.Params()
-	results := styp.Results()
-	requests, responses, err := CheckMethodSignature(method.Name(), params, results)
-	if err != nil {
-		return nil, fmt.Errorf("%v: %v", method.Name(), err)
-	}
-	return &HandlerDef{
-		Name:     method.Name(),
-		Comment:  ng.GetComment(method).Text(),
-		Method:   method,
-		Request:  requests,
-		Response: responses,
-	}, nil
-}
-
-func CheckMethodSignature(name string, params *types.Tuple, results *types.Tuple) (request, response *Message, err error) {
-	if params.Len() == 0 {
-		err = generator.Errorf(nil, "expect at least 1 param")
-		return
-	}
-	if results.Len() == 0 {
-		err = generator.Errorf(nil, "expect at least 1 param")
-		return
-	}
-	var requestItems, responseItems []*ArgItem
-	{
-		t := params.At(0)
-		if t.Type().String() != "context.Context" {
-			err = generator.Errorf(nil, "expect the first param is context.Context")
-			return
-		}
-	}
-	{
-		t := results.At(results.Len() - 1)
-		if t.Type().String() != "error" {
-			err = generator.Errorf(nil, "expect the last return value is error")
-			return
-		}
-	}
-	{
-		// skip the first param (context.Context)
-		for i, n := 1, params.Len(); i < n; i++ {
-			arg, err := checkArg(params.At(i), n == 2)
-			if err != nil {
-				errorf("%v: %v", name, err)
-			}
-			requestItems = append(requestItems, arg)
-			if !arg.Inline && arg.Name == "" {
-				errorf("%v: must provide name for param %v", name, arg.Type)
-			}
-		}
-	}
-	{
-		// skip the last result (error)
-		for i, n := 0, results.Len()-1; i < n; i++ {
-			arg, err := checkArg(results.At(i), n == 2)
-			if err != nil {
-				errorf("%v: %v", name, err)
-			}
-			responseItems = append(responseItems, arg)
-		}
-		if len(responseItems) > 1 {
-			for _, arg := range responseItems {
-				if arg.Name == "" || strings.HasPrefix(arg.Name, "_") {
-					errorf("%v: must provide name for result %v", name, arg.Type)
-				}
-			}
-		}
-	}
-	request = &Message{Items: requestItems}
-	response = &Message{Items: responseItems}
-	return request, response, nil
-}
-
-func checkArg(v *types.Var, autoInline bool) (*ArgItem, error) {
-	arg := &ArgItem{
-		Inline: v.Name() == "_" || v.Name() == "" && autoInline,
-		Name:   toTitle(v.Name()),
-		Var:    v,
-		Type:   v.Type(),
-	}
-	// when inline, the param must be struct or pointer to struct
-	if arg.Inline {
-		var err error
-		arg.Struct, arg.Ptr, err = checkStruct(v.Type())
-		if err != nil {
-			return nil, fmt.Errorf("type must be a struct or a pointer to struct to be inline: %v", err)
-		}
-	}
-	return arg, nil
-}
-
-func checkStruct(t types.Type) (_ *types.Struct, ptr bool, _ error) {
-	p, ptr := t.(*types.Pointer)
-	if ptr {
-		t = p.Elem()
-	}
-
-underlying:
-	switch typ := t.(type) {
-	case *types.Pointer:
-		return nil, false, fmt.Errorf("got double pointer (%v)", t)
-
-	case *types.Named:
-		t = typ.Underlying()
-		goto underlying
-
-	case *types.Struct:
-		return typ, ptr, nil
-
-	default:
-		return nil, false, fmt.Errorf("got %v", typ)
-	}
-}
 
 func writeCommonDeclaration(w *MultiWriter) {
 	w.Import("capi", "etop.vn/capi")
@@ -201,7 +42,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	mustWrite(w, []byte(tmpl))
 }
 
-func generateQueries(w *MultiWriter, serviceName string, defs []*HandlerDef) {
+func generateQueries(w *MultiWriter, serviceName string, methods []*defs.Method) {
+	serviceName += defs.KindQuery
 	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
@@ -220,14 +62,14 @@ func (h %v) RegisterHandlers(b interface{
 `
 		w2 := &w.WriteDispatch
 		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
-		for _, item := range defs {
+		for _, item := range methods {
 			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
 		}
 		p(w2, "\treturn QueryBus{b}\n")
 		p(w2, "}\n")
 	}
 
-	for _, item := range defs {
+	for _, item := range methods {
 		methodName := item.Method.Name()
 		genQueryName := item.Method.Name() + "Query"
 
@@ -258,7 +100,8 @@ func (h %v) RegisterHandlers(b interface{
 	}
 }
 
-func generateCommands(w *MultiWriter, serviceName string, defs []*HandlerDef) {
+func generateCommands(w *MultiWriter, serviceName string, methods []*defs.Method) {
+	serviceName += defs.KindAggregate
 	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
@@ -277,14 +120,14 @@ func (h %v) RegisterHandlers(b interface{
 `
 		w2 := &w.WriteDispatch
 		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
-		for _, item := range defs {
+		for _, item := range methods {
 			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
 		}
 		p(w2, "\treturn CommandBus{b}")
 		p(w2, "}\n")
 	}
 
-	for _, item := range defs {
+	for _, item := range methods {
 		methodName := item.Method.Name()
 		genCommandName := item.Method.Name() + "Command"
 
@@ -312,7 +155,7 @@ func (h %v) RegisterHandlers(b interface{
 	}
 }
 
-func generateGetArgs(w ImportWriter, wrapperName string, requests *Message) {
+func generateGetArgs(w ImportWriter, wrapperName string, requests *defs.Message) {
 	p(w, "func (q *%v) GetArgs(ctx context.Context) (_ context.Context, ", wrapperName)
 	generateArgList(w, requests.Items)
 	p(w, ") {\n")
@@ -321,23 +164,23 @@ func generateGetArgs(w ImportWriter, wrapperName string, requests *Message) {
 	comma := false
 	inline := false
 	err := requests.Items.Walk(
-		func(node NodeType, name string, field *types.Var, tag string) error {
+		func(node defs.NodeType, name string, field *types.Var, tag string) error {
 			if comma {
 				p(w, ",\n")
 				comma = false
 			}
 
 			switch node {
-			case NodeStartInline:
+			case defs.NodeStartInline:
 				inline = true
 				p(w, "%v{\n", renderType(w, field.Type(), true))
 
-			case NodeEndInline:
+			case defs.NodeEndInline:
 				inline = false
 				p(w, "}\n")
 				comma = true
 
-			case NodeField:
+			case defs.NodeField:
 				if inline {
 					p(w, "\t%v: q.%v", name, name)
 				} else {
@@ -354,7 +197,7 @@ func generateGetArgs(w ImportWriter, wrapperName string, requests *Message) {
 	p(w, "}\n\n")
 }
 
-func generateSetArgs(w ImportWriter, wrapperName string, requests *Message) {
+func generateSetArgs(w ImportWriter, wrapperName string, requests *defs.Message) {
 	for _, req := range requests.Items {
 		if !req.Inline {
 			continue
@@ -368,7 +211,7 @@ func generateSetArgs(w ImportWriter, wrapperName string, requests *Message) {
 	}
 }
 
-func generateArgList(w ImportWriter, args []*ArgItem) {
+func generateArgList(w ImportWriter, args []*defs.ArgItem) {
 	for i, arg := range args {
 		if i > 0 {
 			p(w, ", ")
@@ -397,11 +240,11 @@ func renderTypeName(typ types.Type) string {
 	return typ.(*types.Named).Obj().Name()
 }
 
-func generateStruct(w ImportWriter, args *Message) {
+func generateStruct(w ImportWriter, args *defs.Message) {
 	err := args.Items.Walk(
-		func(node NodeType, name string, field *types.Var, tag string) error {
+		func(node defs.NodeType, name string, field *types.Var, tag string) error {
 			switch node {
-			case NodeField:
+			case defs.NodeField:
 				processedTag, err := processTag(tag)
 				if err != nil {
 					errorf("field %v: incorrect tag format (%v)\n", field.Name(), err)
@@ -414,7 +257,7 @@ func generateStruct(w ImportWriter, args *Message) {
 	must(err)
 }
 
-func generateResult(w ImportWriter, item *HandlerDef) {
+func generateResult(w ImportWriter, item *defs.Method) {
 	items := item.Response.Items
 	if len(items) == 1 {
 		p(w, "\nResult %v `json:\"-\"`\n", renderType(w, items[0].Type, false))
@@ -427,7 +270,7 @@ func generateResult(w ImportWriter, item *HandlerDef) {
 	}
 }
 
-func generateHandle(w ImportWriter, item *HandlerDef, methodName, genHandlerName, genQueryName string) {
+func generateHandle(w ImportWriter, item *defs.Method, methodName, genHandlerName, genQueryName string) {
 	p(w, "\nfunc (h %v) Handle%v(ctx context.Context, msg *%v) (err error) {\n", genHandlerName, methodName, genQueryName)
 	switch len(item.Response.Items) {
 	case 0:

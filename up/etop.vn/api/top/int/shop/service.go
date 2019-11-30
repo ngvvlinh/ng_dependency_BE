@@ -10,7 +10,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=etop/shop
+// +gen:swagger:doc-path=etop/shop
 
 // +apix:path=/shop.Misc
 type MiscService interface {

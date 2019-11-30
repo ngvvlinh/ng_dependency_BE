@@ -11,7 +11,7 @@ import (
 
 // +gen:apix
 // +gen:apix:base-path=/v1
-// +gen:apix:doc-path=external/partner
+// +gen:swagger:doc-path=external/partner
 
 // +apix:path=/partner.Misc
 type MiscService interface {

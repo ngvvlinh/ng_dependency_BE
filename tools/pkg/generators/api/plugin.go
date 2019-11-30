@@ -1,10 +1,8 @@
 package api
 
 import (
-	"fmt"
-	"go/types"
-	"sort"
-	"strings"
+	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"etop.vn/backend/tools/pkg/generators/api/parse"
 
 	"golang.org/x/tools/go/packages"
 
@@ -28,40 +26,23 @@ func (g *gen) Generate(ng generator.Engine) error {
 }
 
 func generatePackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {
-	var services []ServiceDef
-	kinds := []string{QueryService, Aggregate}
-	for _, obj := range ng.GetObjectsByPackage(pkg) {
-		switch obj := obj.(type) {
-		case *types.TypeName:
-			kind, iface, err := checkService(kinds, obj, ng.GetComment(obj))
-			if err != nil {
-				errorf("%v\n", err)
-				continue
-			}
-			if iface != nil {
-				services = append(services, ServiceDef{
-					Kind: kind,
-					Name: obj.Name(),
-					Type: iface,
-				})
-			}
-		}
+	kinds := []defs.Kind{defs.KindQuery, defs.KindAggregate}
+	services, err := parse.Services(ng, pkg, kinds)
+	if err != nil {
+		return err
 	}
-	mustNoError("package %v:\n", pkg.PkgPath)
-	if len(services) == 0 {
-		fmt.Printf("  skipped %v\n", pkg.PkgPath)
-		return nil
-	}
-	sort.Slice(services, func(i, j int) bool {
-		return services[i].Name < services[j].Name
-	})
 
 	w := NewWriter(pkg.Name, pkg.PkgPath, printer, printer)
 	ws := &MultiWriter{Writer: w}
 	writeCommonDeclaration(ws)
 	for _, item := range services {
 		debugf("processing service %v", item.Name)
-		processService(ws, ng, item)
+		switch item.Kind {
+		case defs.KindQuery:
+			generateQueries(ws, item.Name, item.Methods)
+		case defs.KindAggregate:
+			generateCommands(ws, item.Name, item.Methods)
+		}
 	}
 
 	p(w, "\n// implement interfaces\n\n")
@@ -71,31 +52,4 @@ func generatePackage(ng generator.Engine, pkg *packages.Package, printer generat
 	p(w, "\n// implement dispatching\n\n")
 	mustWrite(w, ws.WriteDispatch.Bytes())
 	return nil
-}
-
-func checkService(kinds []string, obj *types.TypeName, cmt generator.Comment) (kind string, _ *types.Interface, err error) {
-	name := obj.Name()
-	for _, suffix := range kinds {
-		if strings.HasSuffix(name, suffix) {
-			kind = suffix
-			break
-		}
-	}
-	if kind == "" {
-		return
-	}
-
-	if obj == nil {
-		return "", nil, generator.Errorf(nil, "%v: can not load definition", name)
-	}
-	typ := obj.Type()
-	if typ == nil {
-		return "", nil, generator.Errorf(nil, "%v: can not load type information", name)
-	}
-	if typ, ok := typ.(*types.Named); ok {
-		if typ, ok := typ.Underlying().(*types.Interface); ok {
-			return kind, typ, nil
-		}
-	}
-	return "", nil, generator.Errorf(nil, "%v: must be an interface", name)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=services/crm
+// +gen:swagger:doc-path=services/crm
 
 // +apix:path=/crm.Misc
 type MiscService interface {

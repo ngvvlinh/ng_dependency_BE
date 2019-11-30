@@ -1,35 +1,101 @@
 package swagger
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/types"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/go-openapi/jsonreference"
 	"github.com/go-openapi/spec"
+	"golang.org/x/tools/go/packages"
 
+	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/apix/defs"
+	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"etop.vn/backend/tools/pkg/generators/api/parse"
+	"etop.vn/backend/tools/pkg/generators/apix"
 	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
-const description = `API Documentation:
-- [/doc/etop](/doc/etop) Shared API for managing login and account
-- [/doc/shop](/doc/shop) API for shops
-- [/doc/affiliate](/doc/affiliate) API for affiliates
-- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service
-- [/doc/integration](/doc/integration) API for shop to integrate with external partners
-- [/doc/admin](/doc/admin) API for eTop admins
-- [/doc/ext/shop](/doc/ext/shop) External API for shops
-- [/doc/ext/partner](/doc/ext/partner) External API for partners
-- [/doc/sadmin](/doc/sadmin) Special API for super admins
-`
-
 var ll = l.New()
 
-func GenerateSwagger(ng generator.Engine, services []*defs.Service) (*spec.SwaggerProps, error) {
+var _ generator.Plugin = &plugin{}
+
+type plugin struct {
+	generator.Filterer
+}
+
+type Opts struct {
+	apix.Opts
+	Description string
+}
+
+func New() generator.Plugin {
+	return &plugin{
+		Filterer: generator.FilterByCommand("gen:apix"),
+	}
+}
+
+func (p *plugin) Name() string { return "swagger" }
+
+func (p *plugin) Generate(ng generator.Engine) error {
+	return ng.GenerateEachPackage(p.generatePackage)
+}
+
+func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ generator.Printer) (_err error) {
+	pkgDirectives := ng.GetDirectivesByPackage(pkg)
+	basePath := pkgDirectives.GetArg("gen:apix:base-path")
+	if basePath == "" {
+		basePath = "/api"
+	}
+	docPath := pkgDirectives.GetArg("gen:swagger:doc-path")
+	if docPath == "" {
+		return generator.Errorf(nil, "no doc-path for pkg %v", pkg.Name)
+	}
+	description, err := parseDescription(pkg, pkgDirectives)
+	if err != nil {
+		return err
+	}
+	opts := Opts{Description: description}
+	opts.BasePath = basePath
+
+	services, err := parse.Services(ng, pkg, []defs.Kind{defs.KindService})
+	if err != nil {
+		return err
+	}
+	swaggerDoc, err := GenerateSwagger(ng, opts, services)
+	if err != nil {
+		return generator.Errorf(err, "generate swagger: %v", err)
+	}
+	{
+		dir := filepath.Join(gen.ProjectPath(), "doc", docPath)
+		filename := filepath.Join(dir, "swagger.json")
+		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
+		defer func() {
+			err := f.Close()
+			if _err == nil {
+				_err = err
+			}
+		}()
+		encoder := json.NewEncoder(f)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(swaggerDoc); err != nil {
+			return generator.Errorf(nil, "generate swagger: %v", err)
+		}
+	}
+	return nil
+}
+
+func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (*spec.SwaggerProps, error) {
 	initTypes(ng)
 	definitions := map[string]spec.Schema{}
 	pathItems := map[string]spec.PathItem{}
@@ -39,7 +105,7 @@ func GenerateSwagger(ng generator.Engine, services []*defs.Service) (*spec.Swagg
 			requestRef := getReference(ng, definitions, sign.Params().At(1).Type())
 			responseRef := getReference(ng, definitions, sign.Results().At(0).Type())
 
-			apiPath := service.BasePath + service.APIPath + "/" + method.Name
+			apiPath := opts.BasePath + service.APIPath + "/" + method.Name
 			pathItem := spec.PathItem{
 				Refable:          spec.Refable{},
 				VendorExtensible: spec.VendorExtensible{},
@@ -91,13 +157,10 @@ func GenerateSwagger(ng generator.Engine, services []*defs.Service) (*spec.Swagg
 	paths := &spec.Paths{Paths: pathItems}
 	info := &spec.Info{
 		InfoProps: spec.InfoProps{
-			Version: "v1",
-			Title:   "etop API",
+			Version:     "v1",
+			Title:       "etop API",
+			Description: opts.Description,
 		},
-	}
-	// TODO: remove hard-code
-	if services[0].BasePath == "/api" {
-		info.Description = description
 	}
 	var tags []spec.Tag
 	for _, s := range services {
@@ -367,4 +430,17 @@ func parseJsonTag(tag string) string {
 		}
 	}
 	return ""
+}
+
+func parseDescription(pkg *packages.Package, ds generator.Directives) (string, error) {
+	filePath := ds.GetArg("gen:swagger:description")
+	if filePath == "" {
+		return "", nil
+	}
+	absPath := filepath.Join(filepath.Dir(pkg.GoFiles[0]), filePath)
+	data, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		return "", generator.Errorf(err, "%v", err)
+	}
+	return strings.TrimSpace(string(data)), nil
 }

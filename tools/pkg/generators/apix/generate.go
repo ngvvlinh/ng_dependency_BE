@@ -5,7 +5,7 @@ import (
 	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/apix/defs"
+	"etop.vn/backend/tools/pkg/generators/api/defs"
 )
 
 var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
@@ -16,7 +16,11 @@ var funcs = map[string]interface{}{
 	"new":  renderNew,
 }
 
-func (p *plugin) generateServices(printer generator.Printer, services []*defs.Service) error {
+type Opts struct {
+	BasePath string
+}
+
+func generateServices(printer generator.Printer, opts Opts, services []*defs.Service) error {
 	currentPrinter = printer
 	printer.Import("context", "context")
 	printer.Import("fmt", "fmt")
@@ -24,6 +28,7 @@ func (p *plugin) generateServices(printer generator.Printer, services []*defs.Se
 	printer.Import("httprpc", "etop.vn/capi/httprpc")
 	vars := map[string]interface{}{
 		"Services": services,
+		"Opts":     opts,
 	}
 	return tpl.Execute(printer, vars)
 }

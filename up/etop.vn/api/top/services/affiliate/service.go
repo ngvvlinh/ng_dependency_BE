@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=services/affiliate
+// +gen:swagger:doc-path=services/affiliate
 
 // +apix:path=/affiliate.User
 type UserService interface {

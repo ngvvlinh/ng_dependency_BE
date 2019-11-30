@@ -201,6 +201,9 @@ func (ng *wrapEngine) GenerateEachPackage(
 		if err := fn(ng, pkg.Package, printer); err != nil {
 			return Errorf(err, "generating package %v: %v", pkg.PkgPath, err)
 		}
+		if len(printer.Bytes()) == 0 {
+			continue
+		}
 		if err := printer.Close(); err != nil {
 			return err
 		}

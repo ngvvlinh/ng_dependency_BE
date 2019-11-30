@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=services/pgevent
+// +gen:swagger:doc-path=services/pgevent
 
 // +apix:path=/pgevent.Misc
 type MiscService interface {

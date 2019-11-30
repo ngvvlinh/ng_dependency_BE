@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/tools/pkg/generators/convert"
 	"etop.vn/backend/tools/pkg/generators/event"
 	"etop.vn/backend/tools/pkg/generators/sample"
+	"etop.vn/backend/tools/pkg/generators/swagger"
 	"etop.vn/backend/tools/pkg/generators/wrapper"
 )
 
@@ -36,6 +37,7 @@ func main() {
 		api.New(),
 		event.New(),
 		sample.New(),
+		swagger.New(),
 		wrapper.New(),
 	}
 

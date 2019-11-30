@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=etop/affiliate
+// +gen:swagger:doc-path=etop/affiliate
 
 // +apix:path=/affiliate.Misc
 type MiscService interface {

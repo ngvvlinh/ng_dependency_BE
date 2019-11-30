@@ -1,21 +1,25 @@
-package api
+package defs
 
 import (
 	"go/types"
 )
 
-const QueryService = "QueryService"
-const Aggregate = "Aggregate"
-const API = "API"
+type Kind string
 
-type ServiceDef struct {
-	Kind    string
-	PkgPath string
+const (
+	KindQuery     = "QueryService"
+	KindAggregate = "Aggregate"
+	KindService   = "Service"
+)
+
+type Service struct {
+	Kind    Kind
 	Name    string
-	Type    *types.Interface
+	APIPath string
+	Methods []*Method
 }
 
-type HandlerDef struct {
+type Method struct {
 	Name     string
 	Comment  string
 	Method   *types.Func

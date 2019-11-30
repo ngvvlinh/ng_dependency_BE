@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:apix
-// +gen:apix:doc-path=etop/integration
+// +gen:swagger:doc-path=etop/integration
 
 // +apix:path=/integration.Misc
 type MiscService interface {
