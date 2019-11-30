@@ -86,7 +86,7 @@ func (s *LedgerStore) AccountNumber(accountNumber string) *LedgerStore {
 	return s
 }
 
-func (s *LedgerStore) Count() (uint64, error) {
+func (s *LedgerStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.Count((*model.ShopLedger)(nil))
@@ -98,7 +98,7 @@ func (s *LedgerStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_ledger").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *LedgerStore) CreateLedger(ledger *ledgering.ShopLedger) error {

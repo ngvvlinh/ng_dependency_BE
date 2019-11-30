@@ -64,7 +64,7 @@ func (q *ReceiptQuery) ListReceipts(
 
 	return &receipting.ReceiptsResponse{
 		Receipts:                    receipts,
-		Count:                       int(count),
+		Count:                       count,
 		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
 		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
 	}, nil
@@ -123,7 +123,7 @@ func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 
 	return &receipting.ReceiptsResponse{
 		Receipts:                    receipts,
-		Count:                       int(count),
+		Count:                       count,
 		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
 		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
 	}, nil

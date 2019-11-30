@@ -517,7 +517,7 @@ func (a *Aggregate) DeleteShopBrand(ctx context.Context, ids []dot.ID, shopID do
 		if errTrans != nil {
 			return errTrans
 		}
-		count = int(countRecord)
+		count = countRecord
 		products, errTrans := a.shopProduct(ctx).BrandIDs(ids...).ListShopProductsDB()
 		if errTrans != nil {
 			return errTrans

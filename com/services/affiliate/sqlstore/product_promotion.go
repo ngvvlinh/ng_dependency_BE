@@ -54,7 +54,7 @@ func (s *ProductPromotionStore) ProductIDs(ids ...dot.ID) *ProductPromotionStore
 	return s
 }
 
-func (s *ProductPromotionStore) Count() (uint64, error) {
+func (s *ProductPromotionStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ProductPromotion)(nil))
 }

@@ -199,15 +199,15 @@ func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 		OrderId:         in.ID,
 		OrderCode:       in.Code,
 		WeightInfo: shippingtypes.WeightInfo{
-			GrossWeight:      int(grossWeight),
-			ChargeableWeight: int(chargeableWeight),
-			Length:           int(lenght),
+			GrossWeight:      grossWeight,
+			ChargeableWeight: chargeableWeight,
+			Length:           lenght,
 			Width:            0,
-			Height:           int(height),
+			Height:           height,
 		},
 		ValueInfo: shippingtypes.ValueInfo{
-			BasketValue:      int(in.BasketValue),
-			CodAmount:        int(codAmount),
+			BasketValue:      in.BasketValue,
+			CodAmount:        codAmount,
 			IncludeInsurance: in.Shipping.IncludeInsurance,
 		},
 		TryOn: tryOn,
@@ -233,8 +233,8 @@ func GetValueInfo(orders []*ordering.Order) shippingtypes.ValueInfo {
 		codAmount += o.Shipping.CODAmount
 	}
 	return shippingtypes.ValueInfo{
-		BasketValue: int(basketValue),
-		CodAmount:   int(codAmount),
+		BasketValue: basketValue,
+		CodAmount:   codAmount,
 	}
 }
 
@@ -244,7 +244,7 @@ func FeelineToModel(in *shippingtypes.FeeLine) (out *model.ShippingFeeLine) {
 	}
 	return &model.ShippingFeeLine{
 		ShippingFeeType:     model.ShippingFeeLineType(in.ShippingFeeType.String()),
-		Cost:                int(in.Cost),
+		Cost:                in.Cost,
 		ExternalServiceName: in.ExternalServiceName,
 		ExternalServiceType: in.ExternalServiceType,
 	}

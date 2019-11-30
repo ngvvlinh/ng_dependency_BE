@@ -36,7 +36,7 @@ func (s *OrderCreatedNotifyStore) Pred(pred interface{}) *OrderCreatedNotifyStor
 	return s
 }
 
-func (s *OrderCreatedNotifyStore) Count() (uint64, error) {
+func (s *OrderCreatedNotifyStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ProductPromotion)(nil))
 }

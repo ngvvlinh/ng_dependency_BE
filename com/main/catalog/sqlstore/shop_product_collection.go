@@ -86,7 +86,7 @@ func (s *ShopProductCollectionStore) OptionalShopID(id dot.ID) *ShopProductColle
 func (s *ShopProductCollectionStore) RemoveProductFromCollection() (int, error) {
 	query := s.query().Where(s.preds)
 	_deleted, err := query.Table("shop_product_collection").Delete((*model.ShopProductCollection)(nil))
-	return int(_deleted), err
+	return _deleted, err
 }
 
 // AddProductToCollection adds a product to a collection. If the product already exists in the collection, it's a no-op.
@@ -95,7 +95,7 @@ func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *c
 	var out model.ShopProductCollection
 	convert.ShopProductCollectionDB(productCollection, &out)
 	created, err := s.query().Suffix("ON CONFLICT ON CONSTRAINT shop_product_collection_constraint DO NOTHING").Insert(&out)
-	return int(created), err
+	return created, err
 }
 
 func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() ([]*model.ShopProductCollection, error) {

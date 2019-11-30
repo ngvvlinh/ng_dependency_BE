@@ -69,6 +69,6 @@ func (q *StocktakeQuery) ListStocktake(ctx context.Context, args *st.ListStockta
 			Limit:  args.Page.Limit,
 			Sort:   args.Page.Sort,
 		},
-		Total: int(total),
+		Total: total,
 	}, err
 }

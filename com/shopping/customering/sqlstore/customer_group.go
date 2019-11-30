@@ -62,7 +62,7 @@ func (s *CustomerGroupStore) IDs(ids ...dot.ID) *CustomerGroupStore {
 	return s
 }
 
-func (s *CustomerGroupStore) Count() (uint64, error) {
+func (s *CustomerGroupStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.Count((*model.ShopCustomerGroup)(nil))

@@ -89,7 +89,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 		Type:        args.Type,
 		RefType:     args.RefType,
 		Description: args.Description,
-		Amount:      int(args.Amount),
+		Amount:      args.Amount,
 		LedgerID:    args.LedgerID,
 		PaidAt:      args.PaidAt,
 		Lines:       args.Lines,
@@ -119,7 +119,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
 	codeNorm := maxCodeNorm + 1
-	receipt.Code = convert.GenerateCode(int(codeNorm))
+	receipt.Code = convert.GenerateCode(codeNorm)
 	receipt.CodeNorm = codeNorm
 
 	if err = a.store(ctx).CreateReceipt(receipt); err != nil {
@@ -336,7 +336,7 @@ func (a *ReceiptAggregate) validateReceiptLines(
 	if err != nil {
 		return err
 	}
-	if int(totalAmountOfReceiptLines) != receipt.Amount {
+	if totalAmountOfReceiptLines != receipt.Amount {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Amount of receipt must be equal to total amount of receiptLines")
 	}
 	if len(refIDs) == 0 {

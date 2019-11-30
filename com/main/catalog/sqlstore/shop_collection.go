@@ -85,10 +85,10 @@ func (s *ShopCollectionStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_Collection").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
-func (s *ShopCollectionStore) Count() (uint64, error) {
+func (s *ShopCollectionStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopCollection.NotDeleted())
 	return query.Count((*model.ShopCollection)(nil))

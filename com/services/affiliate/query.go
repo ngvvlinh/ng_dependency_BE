@@ -56,7 +56,7 @@ func (a *QueryService) ListShopProductPromotions(ctx context.Context, args *affi
 	}
 	return &affiliate.ListShopProductPromotionsResponse{
 		Promotions: promotions,
-		Count:      int(count),
+		Count:      count,
 		Paging:     query.GetPaging(),
 	}, nil
 }

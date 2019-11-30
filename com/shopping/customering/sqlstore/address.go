@@ -80,7 +80,7 @@ func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID dot.ID) (int, erro
 		UpdateMap(map[string]interface{}{
 			"is_default": true,
 		})
-	return int(updated), err
+	return updated, err
 }
 
 func (s *AddressStore) CreateAddress(addr *addressing.ShopTraderAddress) error {
@@ -109,7 +109,7 @@ func (s *AddressStore) SoftDelete() (deleted int, _ error) {
 	_deleted, err := query.Table("shop_trader_address").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *AddressStore) GetAddressDB() (*model.ShopTraderAddress, error) {

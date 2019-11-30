@@ -78,13 +78,13 @@ func (s *CustomerGroupCustomerStore) AddShopCustomerToGroup(groupCustomer *custo
 		return 0, err
 	}
 	created, err := s.query().Suffix("ON CONFLICT ON CONSTRAINT shop_customer_group_customer_constraint DO NOTHING").Insert(out)
-	return int(created), err
+	return created, err
 }
 
 func (s *CustomerGroupCustomerStore) RemoveCustomerFromGroup() (int, error) {
 	query := s.query().Where(s.preds)
 	_deleted, err := query.Table("shop_customer_group_customer").Delete((*model.ShopCustomerGroupCustomer)(nil))
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *CustomerGroupCustomerStore) GetShopCustomerToGroupDB() (*model.ShopCustomerGroupCustomer, error) {

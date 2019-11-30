@@ -390,7 +390,7 @@ func (q *queryImpl) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, 
 }
 
 // Insert ...
-func (q *queryImpl) Insert(objs ...core.IInsert) (int64, error) {
+func (q *queryImpl) Insert(objs ...core.IInsert) (int, error) {
 	switch len(objs) {
 	case 0:
 		return 0, nil
@@ -406,15 +406,16 @@ func (q *queryImpl) Insert(objs ...core.IInsert) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return res.RowsAffected()
+		count, err := res.RowsAffected()
+		return int(count), err
 	default:
-		doInsert := func(tx Tx) (int64, error) {
+		doInsert := func(tx Tx) (int, error) {
 			for _, obj := range objs {
 				if err := execBeforeInsert(obj); err != nil {
 					return 0, err
 				}
 			}
-			var count int64
+			var count int
 			for _, obj := range objs {
 				c, err := tx.Insert(obj)
 				if err != nil {
@@ -446,7 +447,7 @@ func (q *queryImpl) Insert(objs ...core.IInsert) (int64, error) {
 }
 
 // UpdateInfo ...
-func (q *queryImpl) Update(objs ...core.IUpdate) (int64, error) {
+func (q *queryImpl) Update(objs ...core.IUpdate) (int, error) {
 	switch len(objs) {
 	case 1:
 		query, args, err := q.BuildUpdate(objs[0])
@@ -457,7 +458,8 @@ func (q *queryImpl) Update(objs ...core.IUpdate) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return res.RowsAffected()
+		count, err := res.RowsAffected()
+		return int(count), err
 	case 0:
 		return 0, nil
 	}
@@ -465,12 +467,12 @@ func (q *queryImpl) Update(objs ...core.IUpdate) (int64, error) {
 }
 
 // UpdateMap ...
-func (q *queryImpl) UpdateMap(m map[string]interface{}) (int64, error) {
+func (q *queryImpl) UpdateMap(m map[string]interface{}) (int, error) {
 	return q.Update(core.Map{Table: q.table, M: m})
 }
 
 // Delete ...
-func (q *queryImpl) Delete(obj core.ITableName) (int64, error) {
+func (q *queryImpl) Delete(obj core.ITableName) (int, error) {
 	query, args, err := q.BuildDelete(obj)
 	if err != nil {
 		return 0, err
@@ -479,11 +481,12 @@ func (q *queryImpl) Delete(obj core.ITableName) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return res.RowsAffected()
+	count, err := res.RowsAffected()
+	return int(count), err
 }
 
 // Count ...
-func (q *queryImpl) Count(obj core.ITableName, preds ...interface{}) (n uint64, err error) {
+func (q *queryImpl) Count(obj core.ITableName, preds ...interface{}) (n int, err error) {
 	query, args, err := q.withPreds(preds).BuildCount(obj)
 	if err != nil {
 		return 0, err

@@ -178,6 +178,6 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 		}
 	}
 	_total, err := x.Count(&model.Notification{})
-	total = int(_total)
+	total = _total
 	return
 }

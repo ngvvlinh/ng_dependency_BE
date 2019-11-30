@@ -162,7 +162,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int(count),
+		Count:          count,
 	}, nil
 }
 
@@ -206,7 +206,7 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int(count),
+		Count:          count,
 	}, nil
 }
 
@@ -258,6 +258,6 @@ func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
 	}
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          int(count),
+		Count:          count,
 	}, nil
 }

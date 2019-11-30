@@ -47,7 +47,7 @@ func (q *SupplierQuery) ListSuppliers(
 	}
 	return &suppliering.SuppliersResponse{
 		Suppliers: suppliers,
-		Count:     int(count),
+		Count:     count,
 		Paging:    query.GetPaging(),
 	}, nil
 }

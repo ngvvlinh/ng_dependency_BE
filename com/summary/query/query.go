@@ -37,7 +37,7 @@ func (q *DashboardQuery) MessageBus() summary.QueryBus {
 
 func buildKey(shopID dot.ID, dateFrom, dateTo time.Time) string {
 	key := "summary/pos:version=" + currentVersion +
-		",shop=" + strconv.Itoa(int(shopID)) +
+		",shop=" + shopID.String() +
 		",from=" + dateFrom.Format(dateLayout) +
 		",to=" + dateTo.Format(dateLayout)
 	return key

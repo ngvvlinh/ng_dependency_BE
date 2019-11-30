@@ -36,7 +36,7 @@ func (s *CustomerPolicyGroupStore) Pred(pred interface{}) *CustomerPolicyGroupSt
 	return s
 }
 
-func (s *CustomerPolicyGroupStore) Count() (uint64, error) {
+func (s *CustomerPolicyGroupStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.CustomerPolicyGroup)(nil))
 }

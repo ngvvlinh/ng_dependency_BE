@@ -403,7 +403,7 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -418,7 +418,7 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -443,7 +443,7 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }

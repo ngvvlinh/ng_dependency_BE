@@ -121,8 +121,8 @@ func OrderLineToModel(in *types.ItemLine) (out *model.OrderLine) {
 		VariantID:       in.VariantId,
 		ProductName:     in.ProductInfo.ProductName,
 		ProductID:       in.ProductId,
-		Quantity:        int(in.Quantity),
-		TotalLineAmount: int(in.TotalPrice),
+		Quantity:        in.Quantity,
+		TotalLineAmount: in.TotalPrice,
 		ImageURL:        in.ProductInfo.ImageUrl,
 		Attributes:      catalogconvert.AttributesDB(in.ProductInfo.Attributes),
 		IsOutsideEtop:   in.IsOutside,
@@ -143,7 +143,7 @@ func OrderLine(in *model.OrderLine) (out *types.ItemLine) {
 	}
 	return &types.ItemLine{
 		OrderId:   in.OrderID,
-		Quantity:  int(in.Quantity),
+		Quantity:  in.Quantity,
 		ProductId: in.ProductID,
 		VariantId: in.VariantID,
 		IsOutside: in.IsOutsideEtop,
@@ -152,7 +152,7 @@ func OrderLine(in *model.OrderLine) (out *types.ItemLine) {
 			ImageUrl:    in.ImageURL,
 			Attributes:  catalogconvert.Attributes(in.Attributes),
 		},
-		TotalPrice: int(in.TotalLineAmount),
+		TotalPrice: in.TotalLineAmount,
 	}
 }
 

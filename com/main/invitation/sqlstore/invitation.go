@@ -114,10 +114,10 @@ func (s *InvitationStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("invitation").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
-func (s *InvitationStore) Count() (uint64, error) {
+func (s *InvitationStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
@@ -137,7 +137,7 @@ func (s *InvitationStore) Accept() (int, error) {
 		"accepted_at": time.Now(),
 	})
 
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *InvitationStore) Reject() (int, error) {
@@ -148,7 +148,7 @@ func (s *InvitationStore) Reject() (int, error) {
 		"rejected_at": time.Now(),
 	})
 
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *InvitationStore) GetInvitationDB() (*model.Invitation, error) {

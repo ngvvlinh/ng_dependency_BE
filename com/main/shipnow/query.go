@@ -57,7 +57,7 @@ func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipno
 
 	return &shipnow.GetShipnowFulfillmentsQueryResult{
 		ShipnowFulfillments: ffms,
-		Count:               int(count),
+		Count:               count,
 	}, nil
 }
 

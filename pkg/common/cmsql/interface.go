@@ -14,11 +14,11 @@ import (
 type QueryInterface interface {
 	Get(obj core.IGet, preds ...interface{}) (bool, error)
 	Find(objs core.IFind, preds ...interface{}) error
-	Insert(objs ...core.IInsert) (int64, error)
-	Update(objs ...core.IUpdate) (int64, error)
-	UpdateMap(m map[string]interface{}) (int64, error)
-	Delete(obj core.ITableName) (int64, error)
-	Count(obj core.ITableName, preds ...interface{}) (uint64, error)
+	Insert(objs ...core.IInsert) (int, error)
+	Update(objs ...core.IUpdate) (int, error)
+	UpdateMap(m map[string]interface{}) (int, error)
+	Delete(obj core.ITableName) (int, error)
+	Count(obj core.ITableName, preds ...interface{}) (int, error)
 	FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.Rows, error)
 
 	ShouldGet(obj core.IGet, preds ...interface{}) error
@@ -93,27 +93,27 @@ func (q Query) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.
 }
 
 // Insert ...
-func (q Query) Insert(objs ...core.IInsert) (int64, error) {
+func (q Query) Insert(objs ...core.IInsert) (int, error) {
 	return q.query.Insert(objs...)
 }
 
 // UpdateInfo ...
-func (q Query) Update(objs ...core.IUpdate) (int64, error) {
+func (q Query) Update(objs ...core.IUpdate) (int, error) {
 	return q.query.Update(objs...)
 }
 
 // UpdateMap ...
-func (q Query) UpdateMap(obj map[string]interface{}) (int64, error) {
-	return q.query.UpdateMap(obj)
+func (q Query) UpdateMap(m map[string]interface{}) (int, error) {
+	return q.query.UpdateMap(m)
 }
 
 // Delete ...
-func (q Query) Delete(obj core.ITableName) (int64, error) {
+func (q Query) Delete(obj core.ITableName) (int, error) {
 	return q.query.Delete(obj)
 }
 
 // Count ...
-func (q Query) Count(obj core.ITableName, preds ...interface{}) (uint64, error) {
+func (q Query) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return q.query.Count(obj, preds...)
 }
 
@@ -228,27 +228,27 @@ func (db Database) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *
 }
 
 // Insert ...
-func (db Database) Insert(objs ...core.IInsert) (int64, error) {
+func (db Database) Insert(objs ...core.IInsert) (int, error) {
 	return db.db.Insert(objs...)
 }
 
 // UpdateInfo ...
-func (db Database) Update(objs ...core.IUpdate) (int64, error) {
+func (db Database) Update(objs ...core.IUpdate) (int, error) {
 	return db.db.Update(objs...)
 }
 
 // UpdateMap ...
-func (db Database) UpdateMap(obj map[string]interface{}) (int64, error) {
-	return db.db.UpdateMap(obj)
+func (db Database) UpdateMap(m map[string]interface{}) (int, error) {
+	return db.db.UpdateMap(m)
 }
 
 // Delete ...
-func (db Database) Delete(obj core.ITableName) (int64, error) {
+func (db Database) Delete(obj core.ITableName) (int, error) {
 	return db.db.Delete(obj)
 }
 
 // Count ...
-func (db Database) Count(obj core.ITableName, preds ...interface{}) (uint64, error) {
+func (db Database) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return db.db.Count(obj, preds...)
 }
 
@@ -367,27 +367,27 @@ func (tx tx) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.Ro
 }
 
 // Insert ...
-func (tx tx) Insert(objs ...core.IInsert) (int64, error) {
+func (tx tx) Insert(objs ...core.IInsert) (int, error) {
 	return tx.tx.Insert(objs...)
 }
 
 // UpdateInfo ...
-func (tx tx) Update(objs ...core.IUpdate) (int64, error) {
+func (tx tx) Update(objs ...core.IUpdate) (int, error) {
 	return tx.tx.Update(objs...)
 }
 
 // UpdateMap ...
-func (tx tx) UpdateMap(obj map[string]interface{}) (int64, error) {
-	return tx.tx.UpdateMap(obj)
+func (tx tx) UpdateMap(m map[string]interface{}) (int, error) {
+	return tx.tx.UpdateMap(m)
 }
 
 // Delete ...
-func (tx tx) Delete(obj core.ITableName) (int64, error) {
+func (tx tx) Delete(obj core.ITableName) (int, error) {
 	return tx.tx.Delete(obj)
 }
 
 // Count ...
-func (tx tx) Count(obj core.ITableName, preds ...interface{}) (uint64, error) {
+func (tx tx) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return tx.tx.Count(obj, preds...)
 }
 
@@ -561,7 +561,7 @@ func (tx tx) ShouldDelete(obj core.ITableName) error {
 	return Should(tx.tx.Delete(obj))
 }
 
-func Should(n int64, err error) error {
+func Should(n int, err error) error {
 	if err != nil {
 		return err
 	}

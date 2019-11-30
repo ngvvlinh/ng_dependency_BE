@@ -9,7 +9,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func createCode(ctx context.Context, x Qx, cmd *model.CreateCodeCommand) (int64, error) {
+func createCode(ctx context.Context, x Qx, cmd *model.CreateCodeCommand) (int, error) {
 	code := cmd.Code
 	if err := cmd.Code.Validate(); err != nil {
 		return 0, err

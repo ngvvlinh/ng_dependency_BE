@@ -79,10 +79,10 @@ func (s *ShopCategoryStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_category").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
-func (s *ShopCategoryStore) Count() (uint64, error) {
+func (s *ShopCategoryStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopCategory.NotDeleted())
 	return query.Count((*model.ShopCategory)(nil))
@@ -151,5 +151,5 @@ func (s *ShopCategoryStore) UpdateShopCategory(category *model.ShopCategory) err
 
 func (s *ShopCategoryStore) DeleteShopCategory() (int, error) {
 	n, err := s.query().Where(s.preds).Delete((*model.ShopCategory)(nil))
-	return int(n), err
+	return n, err
 }

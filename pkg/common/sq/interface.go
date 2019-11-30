@@ -54,27 +54,27 @@ func (db *Database) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, 
 }
 
 // Insert ...
-func (db *Database) Insert(objs ...core.IInsert) (int64, error) {
+func (db *Database) Insert(objs ...core.IInsert) (int, error) {
 	return db.NewQuery().Insert(objs...)
 }
 
 // UpdateInfo ...
-func (db *Database) Update(objs ...core.IUpdate) (int64, error) {
+func (db *Database) Update(objs ...core.IUpdate) (int, error) {
 	return db.NewQuery().Update(objs...)
 }
 
 // UpdateMap ...
-func (db *Database) UpdateMap(m map[string]interface{}) (int64, error) {
+func (db *Database) UpdateMap(m map[string]interface{}) (int, error) {
 	return db.NewQuery().UpdateMap(m)
 }
 
 // Delete ...
-func (db *Database) Delete(obj core.ITableName) (int64, error) {
+func (db *Database) Delete(obj core.ITableName) (int, error) {
 	return db.NewQuery().Delete(obj)
 }
 
 // Count ...
-func (db *Database) Count(obj core.ITableName, preds ...interface{}) (uint64, error) {
+func (db *Database) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return db.NewQuery().Count(obj, preds...)
 }
 
@@ -307,27 +307,27 @@ func (tx *tx) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.R
 }
 
 // Insert ...
-func (tx *tx) Insert(objs ...core.IInsert) (int64, error) {
+func (tx *tx) Insert(objs ...core.IInsert) (int, error) {
 	return tx.NewQuery().Insert(objs...)
 }
 
 // UpdateInfo ...
-func (tx *tx) Update(objs ...core.IUpdate) (int64, error) {
+func (tx *tx) Update(objs ...core.IUpdate) (int, error) {
 	return tx.NewQuery().Update(objs...)
 }
 
 // UpdateMap ...
-func (tx *tx) UpdateMap(m map[string]interface{}) (int64, error) {
+func (tx *tx) UpdateMap(m map[string]interface{}) (int, error) {
 	return tx.NewQuery().UpdateMap(m)
 }
 
 // Delete ...
-func (tx *tx) Delete(obj core.ITableName) (int64, error) {
+func (tx *tx) Delete(obj core.ITableName) (int, error) {
 	return tx.NewQuery().Delete(obj)
 }
 
 // Count ...
-func (tx *tx) Count(obj core.ITableName, preds ...interface{}) (uint64, error) {
+func (tx *tx) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return tx.NewQuery().Count(obj, preds...)
 }
 

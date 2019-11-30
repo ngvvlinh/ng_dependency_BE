@@ -36,7 +36,7 @@ func (s *OrderCommissionSettingStore) Pred(pred interface{}) *OrderCommissionSet
 	return s
 }
 
-func (s *OrderCommissionSettingStore) Count() (uint64, error) {
+func (s *OrderCommissionSettingStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.OrderCommissionSetting)(nil))
 }

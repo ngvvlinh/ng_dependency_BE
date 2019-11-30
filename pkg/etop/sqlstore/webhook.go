@@ -53,7 +53,7 @@ func (s *WebhookStore) List() ([]*model.Webhook, error) {
 	return items, err
 }
 
-func (s *WebhookStore) Count() (uint64, error) {
+func (s *WebhookStore) Count() (int, error) {
 	return x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).Count((*model.Webhook)(nil))
 }
 

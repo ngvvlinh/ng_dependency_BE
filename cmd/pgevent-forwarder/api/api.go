@@ -72,7 +72,7 @@ func (s *EventService) GenerateEvents(ctx context.Context, q *GenerateEventsEndp
 		return cm.Errorf(cm.InvalidArgument, nil, "must provide exactly one argument")
 	}
 
-	itemsPerBatch := int(q.ItemsPerBatch)
+	itemsPerBatch := q.ItemsPerBatch
 	if itemsPerBatch <= 0 {
 		itemsPerBatch = len(events)
 	}

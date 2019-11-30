@@ -79,7 +79,7 @@ func (d includeDeleted) filterDeleted(f filterDeletable) sq.WriterTo {
 
 type multiplelity bool
 
-func (m multiplelity) ensureMultiplelity(countable interface{ Count() (uint64, error) }) error {
+func (m multiplelity) ensureMultiplelity(countable interface{ Count() (int, error) }) error {
 	n, err := countable.Count()
 	if err != nil {
 		return err

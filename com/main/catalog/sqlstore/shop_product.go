@@ -115,7 +115,7 @@ func (s *ShopProductStore) ByNameNormUas(names ...string) *ShopProductStore {
 	return s
 }
 
-func (s *ShopProductStore) Count() (uint64, error) {
+func (s *ShopProductStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
 	return query.Count((*model.ShopProduct)(nil))
@@ -263,7 +263,7 @@ func (s *ShopProductStore) UpdateStatusShopProducts(status int16) (int, error) {
 	updateStatus, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
 		"status": status,
 	})
-	return int(updateStatus), err
+	return updateStatus, err
 }
 
 func (s *ShopProductStore) UpdateImageShopProduct(product *catalog.ShopProduct) error {
@@ -294,7 +294,7 @@ func (s *ShopProductStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func checkProductOrVariantError(e error, code string) error {
@@ -316,5 +316,5 @@ func (s *ShopProductStore) RemoveShopProductCategory() (int, error) {
 	_deleted, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
 		"category_id": nil,
 	})
-	return int(_deleted), err
+	return _deleted, err
 }

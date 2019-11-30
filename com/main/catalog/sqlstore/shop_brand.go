@@ -111,7 +111,7 @@ func (s *ShopBrandStore) ListShopBrandsDB() ([]*model.ShopBrand, error) {
 	err = query.Find(&brands)
 	return brands, err
 }
-func (s *ShopBrandStore) Count() (uint64, error) {
+func (s *ShopBrandStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopBrand.NotDeleted())
 	return query.Count((*model.ShopBrand)(nil))
@@ -131,5 +131,5 @@ func (s *ShopBrandStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_brand").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }

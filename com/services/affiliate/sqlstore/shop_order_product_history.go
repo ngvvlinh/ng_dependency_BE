@@ -80,7 +80,7 @@ func (s *ShopOrderProductHistoryStore) UpdateShopOrderProductHistory(shopOrderPr
 	return err
 }
 
-func (s *ShopOrderProductHistoryStore) Count() (uint64, error) {
+func (s *ShopOrderProductHistoryStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ShopOrderProductHistory)(nil))
 }

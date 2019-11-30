@@ -186,7 +186,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		CustomerAddress: convert.ToPbExternalAddress(args.Origin, to),
 		ShippingAddress: convert.ToPbExternalAddress(args.Destination, to),
 		Lines:           convert.ToPbExternalCreateOrderLines(args.Items),
-		TotalItems:      int(len(args.Items)),
+		TotalItems:      len(args.Items),
 		BasketValue:     totalValue,
 		OrderDiscount:   0,
 		TotalDiscount:   0,

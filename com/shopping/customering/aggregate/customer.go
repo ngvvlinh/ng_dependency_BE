@@ -113,7 +113,7 @@ func (a *CustomerAggregate) CreateCustomer(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
 	codeNorm := maxCodeNorm + 1
-	customer.Code = convert.GenerateCode(int(codeNorm))
+	customer.Code = convert.GenerateCode(codeNorm)
 	customer.CodeNorm = codeNorm
 
 	err = a.store(ctx).CreateCustomer(customer)
@@ -225,7 +225,7 @@ func (a *CustomerAggregate) BatchSetCustomersStatus(
 ) (*meta.UpdatedResponse, error) {
 	update := &model.ShopCustomer{Status: status}
 	n, err := a.store(ctx).IDs(ids...).PatchCustomerDB(update)
-	return &meta.UpdatedResponse{Updated: int(n)}, err
+	return &meta.UpdatedResponse{Updated: n}, err
 }
 
 func (a *CustomerAggregate) CreateCustomerGroup(ctx context.Context, args *customering.CreateCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {

@@ -87,7 +87,7 @@ func (a *SupplierAggregate) CreateSupplier(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
 	codeNorm := maxCodeNorm + 1
-	supplier.Code = convert.GenerateCode(int(codeNorm))
+	supplier.Code = convert.GenerateCode(codeNorm)
 	supplier.CodeNorm = codeNorm
 
 	err = a.store(ctx).CreateSupplier(supplier)

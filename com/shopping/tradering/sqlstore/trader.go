@@ -73,7 +73,7 @@ func (s *TraderStore) OptionalShopID(id dot.ID) *TraderStore {
 	return s
 }
 
-func (s *TraderStore) Count() (uint64, error) {
+func (s *TraderStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ShopTrader)(nil))
 }
@@ -125,5 +125,5 @@ func (s *TraderStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_trader").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }

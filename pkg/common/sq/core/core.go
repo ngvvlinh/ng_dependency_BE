@@ -33,11 +33,11 @@ func (r Row) Scan(dest ...interface{}) error {
 type CommonQuery interface {
 	Get(obj IGet, preds ...interface{}) (bool, error)
 	Find(objs IFind, preds ...interface{}) error
-	Insert(objs ...IInsert) (int64, error)
-	Update(objs ...IUpdate) (int64, error)
-	UpdateMap(m map[string]interface{}) (int64, error)
-	Delete(obj ITableName) (int64, error)
-	Count(obj ITableName, preds ...interface{}) (uint64, error)
+	Insert(objs ...IInsert) (int, error)
+	Update(objs ...IUpdate) (int, error)
+	UpdateMap(m map[string]interface{}) (int, error)
+	Delete(obj ITableName) (int, error)
+	Count(obj ITableName, preds ...interface{}) (int, error)
 	FindRows(objs IFind, preds ...interface{}) (Opts, *sql.Rows, error)
 
 	Table(name string) Query

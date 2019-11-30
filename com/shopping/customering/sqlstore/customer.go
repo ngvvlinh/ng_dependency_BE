@@ -101,7 +101,7 @@ func (s *CustomerStore) OptionalShopID(id dot.ID) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) Count() (uint64, error) {
+func (s *CustomerStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.Count((*model.ShopCustomer)(nil))
@@ -128,7 +128,7 @@ func (s *CustomerStore) PatchCustomerDB(customer *model.ShopCustomer) (int, erro
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	n, err := query.Update(customer)
-	return int(n), err
+	return n, err
 }
 
 func (s *CustomerStore) SoftDelete() (int, error) {
@@ -137,12 +137,12 @@ func (s *CustomerStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_customer").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *CustomerStore) DeleteCustomer() (int, error) {
 	n, err := s.query().Where(s.preds).Delete((*model.ShopCustomer)(nil))
-	return int(n), err
+	return n, err
 }
 
 func (s *CustomerStore) GetCustomerDB() (*model.ShopCustomer, error) {

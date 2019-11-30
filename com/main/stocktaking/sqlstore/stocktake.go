@@ -137,7 +137,7 @@ func (s *ShopStocktakeStore) ListShopStocktakeDB() ([]*model.ShopStocktake, erro
 	return stocktakes, err
 }
 
-func (s *ShopStocktakeStore) Count() (uint64, error) {
+func (s *ShopStocktakeStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ShopStocktake)(nil))
 }

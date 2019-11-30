@@ -43,7 +43,7 @@ func (s *UserReferralStore) ReferralID(id dot.ID) *UserReferralStore {
 	return s
 }
 
-func (s *UserReferralStore) Count() (uint64, error) {
+func (s *UserReferralStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.ProductPromotion)(nil))
 }

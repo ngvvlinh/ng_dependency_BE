@@ -33,7 +33,7 @@ type AffiliateReferralCodeStore struct {
 	filters meta.Filters
 }
 
-func (s *AffiliateReferralCodeStore) Count() (uint64, error) {
+func (s *AffiliateReferralCodeStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Count((*model.SellerCommission)(nil))
 }

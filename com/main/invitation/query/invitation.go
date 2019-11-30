@@ -73,7 +73,7 @@ func (q *InvitationQuery) ListInvitationsByEmail(
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       int(count),
+		Count:       count,
 	}, nil
 }
 
@@ -91,7 +91,7 @@ func (q *InvitationQuery) ListInvitations(
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       int(count),
+		Count:       count,
 	}, nil
 }
 
@@ -109,6 +109,6 @@ func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       int(count),
+		Count:       count,
 	}, nil
 }

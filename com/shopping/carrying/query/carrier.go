@@ -47,7 +47,7 @@ func (q *CarrierQuery) ListCarriers(
 	}
 	return &carrying.CarriersResponse{
 		Carriers: carriers,
-		Count:    int(count),
+		Count:    count,
 	}, nil
 }
 

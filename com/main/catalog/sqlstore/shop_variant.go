@@ -199,7 +199,7 @@ func (s *ShopVariantStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("shop_variant").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *ShopVariantStore) UpdateStatusShopVariant(status int16) (int, error) {

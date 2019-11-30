@@ -85,7 +85,7 @@ func (q *CustomerQuery) ListCustomers(
 	}
 	return &customering.CustomersResponse{
 		Customers: customers,
-		Count:     int(count),
+		Count:     count,
 		Paging:    query.GetPaging(),
 	}, nil
 }
@@ -131,7 +131,7 @@ func (q *CustomerQuery) ListCustomerGroups(
 	}
 	return &customering.CustomerGroupsResponse{
 		CustomerGroups: customerGroup,
-		Count:          int(count),
+		Count:          count,
 		Paging:         query.GetPaging(),
 	}, nil
 }

@@ -88,7 +88,7 @@ func (s *PurchaseOrderStore) SupplierIDs(supplierIDs ...dot.ID) *PurchaseOrderSt
 	return s
 }
 
-func (s *PurchaseOrderStore) Count() (uint64, error) {
+func (s *PurchaseOrderStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
@@ -118,7 +118,7 @@ func (s *PurchaseOrderStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("purchase_order").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *PurchaseOrderStore) ConfirmPurchaseOrder() (int, error) {
@@ -129,7 +129,7 @@ func (s *PurchaseOrderStore) ConfirmPurchaseOrder() (int, error) {
 		"confirmed_at": time.Now(),
 	})
 
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *PurchaseOrderStore) CancelPurchaseOrder(reason string) (int, error) {
@@ -140,7 +140,7 @@ func (s *PurchaseOrderStore) CancelPurchaseOrder(reason string) (int, error) {
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *PurchaseOrderStore) GetPurchaseOrderDB() (*model.PurchaseOrder, error) {

@@ -60,7 +60,7 @@ func (q *StocktakeAggregate) CreateStocktake(ctx context.Context, args *stocktak
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
 	codeNorm := maxCodeNorm + 1
-	stockTake.Code = convert.GenerateCode(int(codeNorm))
+	stockTake.Code = convert.GenerateCode(codeNorm)
 	stockTake.CodeNorm = codeNorm
 	err = q.StocktakeStore(ctx).Create(stockTake)
 	return stockTake, err

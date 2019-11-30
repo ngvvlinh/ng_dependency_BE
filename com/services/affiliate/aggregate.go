@@ -742,16 +742,14 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 					basePrice = math.Round(basePrice - basePrice*(float64(tradingPromotion.Amount)/100/100))
 				}
 			}
-			var countByUser uint64 = math.MaxInt64
-			var countByProduct uint64 = math.MaxInt64
-
+			var countByUser = math.MaxInt64
+			var countByProduct = math.MaxInt64
 			if orderCommissionSetting.DependOn == DependOnCustomer {
 				countByUser, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).CustomerPolicyGroup(orderCommissionSetting.CustomerPolicyGroupID).Count()
 				if err != nil {
 					return err
 				}
 			}
-
 			if orderCommissionSetting.DependOn == DependOnProduct {
 				countByProduct, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
 				if err != nil {
@@ -761,9 +759,8 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 			var directCommission float64
 			var indirectCommission float64
-
-			if (orderCommissionSetting.DependOn == DependOnProduct && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) ||
-				(orderCommissionSetting.DependOn == DependOnCustomer && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
+			if (orderCommissionSetting.DependOn == DependOnProduct && countByProduct < orderCommissionSetting.Level1LimitCount) ||
+				(orderCommissionSetting.DependOn == DependOnCustomer && countByUser < orderCommissionSetting.Level1LimitCount) {
 				directCommission = float64(orderCommissionSetting.Level1DirectCommission)
 				indirectCommission = float64(orderCommissionSetting.Level1IndirectCommission)
 			} else {

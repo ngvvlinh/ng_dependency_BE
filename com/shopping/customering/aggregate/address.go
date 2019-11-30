@@ -102,5 +102,5 @@ func (a *AddressAggregate) SetDefaultAddress(
 	}
 
 	updated, err := a.store(ctx).SetDefaultAddress(ID, shopID, traderID)
-	return &meta.UpdatedResponse{Updated: int(updated)}, err
+	return &meta.UpdatedResponse{Updated: updated}, err
 }

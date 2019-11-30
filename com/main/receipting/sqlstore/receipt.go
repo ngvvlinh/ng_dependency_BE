@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -131,7 +130,7 @@ func (s *ReceiptStore) LedgerIDs(LedgerIDs ...dot.ID) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) Count() (_ uint64, err error) {
+func (s *ReceiptStore) Count() (_ int, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
@@ -149,7 +148,7 @@ func (s *ReceiptStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("receipt").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *ReceiptStore) ConfirmReceipt() (int, error) {
@@ -160,7 +159,7 @@ func (s *ReceiptStore) ConfirmReceipt() (int, error) {
 		"confirmed_at": time.Now(),
 	})
 
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *ReceiptStore) CancelReceipt(reason string) (int, error) {
@@ -171,8 +170,7 @@ func (s *ReceiptStore) CancelReceipt(reason string) (int, error) {
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})
-
-	return int(_updated), err
+	return _updated, err
 }
 
 func (s *ReceiptStore) GetReceiptDB() (*model.Receipt, error) {
@@ -278,12 +276,12 @@ func (s *ReceiptStore) ListReceipts() (receiptsResult []*receipting.Receipt, _ e
 }
 
 func (s *ReceiptStore) SumAmountReceiptAndPayment() (receipt, payment int, err error) {
-	var sqlReceipt, sqlPayment sql.NullInt64
+	var sqlReceipt, sqlPayment core.Int
 	query := s.query().Where(s.preds)
 	err = query.Table("receipt").Select(
 		"SUM(amount) FILTER(WHERE type = 'receipt')",
 		"SUM(amount) FILTER(WHERE type = 'payment')").
 		Scan(&sqlReceipt, &sqlPayment)
 
-	return int(sqlReceipt.Int64), int(sqlPayment.Int64), err
+	return int(sqlReceipt), int(sqlPayment), err
 }

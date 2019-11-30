@@ -2,7 +2,8 @@ package sqlstore
 
 import (
 	"context"
-	"database/sql"
+
+	"etop.vn/backend/pkg/common/sq/core"
 
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/transaction"
@@ -104,7 +105,7 @@ func (s *TransactionStore) ListTransactions() ([]*transaction.Transaction, error
 func (s *TransactionStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	count, err := query.Count((*transactionmodel.Transaction)(nil))
-	return int(count), err
+	return count, err
 }
 
 func (s *TransactionStore) CreateTransaction(trxn *transaction.Transaction) (*transaction.Transaction, error) {
@@ -139,9 +140,9 @@ func (s *TransactionStore) UpdateTransactionStatus(args *UpdateTransactionStatus
 }
 
 func (s *TransactionStore) GetBalance() (int, error) {
-	var totalAmount sql.NullInt64
+	var totalAmount core.Int
 	if err := s.query().SQL("SELECT SUM(amount) from transaction").Where(s.preds).Scan(&totalAmount); err != nil {
 		return 0, err
 	}
-	return int(totalAmount.Int64), nil
+	return int(totalAmount), nil
 }
