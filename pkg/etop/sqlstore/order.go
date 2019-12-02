@@ -9,6 +9,7 @@ import (
 
 	"github.com/lib/pq"
 
+	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
@@ -938,9 +939,13 @@ func CreateFulfillments(ctx context.Context, cmd *shipmodelx.CreateFulfillmentsC
 			return cm.Error(cm.InvalidArgument, "Missing FulfillmentID", nil)
 		}
 	}
-
 	return inTransaction(func(x Qx) error {
 		for _, ffm := range cmd.Fulfillments {
+			deliveryRoute, err := getDeliveryRoute(ctx, ffm)
+			if err != nil {
+				return err
+			}
+			ffm.DeliveryRoute = deliveryRoute
 			if err := ffm.BeforeInsert(); err != nil {
 				return err
 			}
@@ -971,6 +976,13 @@ func UpdateFulfillment(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentCom
 	if cmd.ExternalShippingSubState.Valid {
 		m["external_shipping_sub_state"] = cmd.ExternalShippingSubState.Apply("")
 	}
+	if cmd.Fulfillment.AddressTo != nil && cmd.Fulfillment.AddressFrom != nil {
+		deliveryRoute, err := getDeliveryRoute(ctx, cmd.Fulfillment)
+		if err != nil {
+			return err
+		}
+		cmd.Fulfillment.DeliveryRoute = deliveryRoute
+	}
 	if err := s.ShouldUpdate(cmd.Fulfillment); err != nil {
 		return err
 	}
@@ -980,6 +992,33 @@ func UpdateFulfillment(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentCom
 		}
 	}
 	return nil
+}
+
+func getDeliveryRoute(ctx context.Context, ffm *shipmodel.Fulfillment) (string, error) {
+	deliveryRoute := model.RouteNationWide
+	if ffm.AddressTo.ProvinceCode == ffm.AddressFrom.ProvinceCode {
+		deliveryRoute = model.RouteSameProvince
+	} else {
+		queryFrom := location.GetLocationQuery{
+			ProvinceCode: ffm.AddressFrom.ProvinceCode,
+		}
+		err := locationBus.Dispatch(ctx, &queryFrom)
+		if err != nil {
+			return "", err
+		}
+		queryTo := location.GetLocationQuery{
+			ProvinceCode: ffm.AddressTo.ProvinceCode,
+		}
+		err = locationBus.Dispatch(ctx, &queryTo)
+		if err != nil {
+			return "", err
+		}
+		if queryFrom.Result.Province.Region == queryFrom.Result.Province.Region {
+			deliveryRoute = model.RouteSameRegion
+		}
+	}
+
+	return string(deliveryRoute), nil
 }
 
 func UpdateFulfillments(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsCommand) error {

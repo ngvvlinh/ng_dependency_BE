@@ -4513,6 +4513,32 @@
         }
       }
     },
+    "/api/shop.Summary/SummarizeTopShip": {
+      "post": {
+        "tags": [
+          "Summary"
+        ],
+        "operationId": "SummarizeTopShip",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paSummarizeTopShipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paSummarizeTopShipResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Supplier/CreateSupplier": {
       "post": {
         "tags": [
@@ -8640,6 +8666,28 @@
       }
     },
     "paSummarizePOSResponse": {
+      "type": "object",
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryTable"
+          }
+        }
+      }
+    },
+    "paSummarizeTopShipRequest": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        }
+      }
+    },
+    "paSummarizeTopShipResponse": {
       "type": "object",
       "properties": {
         "tables": {

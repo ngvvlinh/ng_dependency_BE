@@ -153,6 +153,8 @@ type Fulfillment struct {
 	ExternalShippingLogs []*model.ExternalShippingLog
 	AdminNote            string
 	IsPartialDelivery    bool
+
+	DeliveryRoute string
 }
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {

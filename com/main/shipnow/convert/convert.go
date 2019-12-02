@@ -54,6 +54,8 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,
 		ShippingServiceDescription: in.ShippingServiceDescription,
+		AddressToDistrictCode:      in.DeliveryPoints[0].ShippingAddress.DistrictCode,
+		AddressToProvinceCode:      in.DeliveryPoints[0].ShippingAddress.ProvinceCode,
 	}
 	var orderIDs []dot.ID
 	for _, point := range in.DeliveryPoints {

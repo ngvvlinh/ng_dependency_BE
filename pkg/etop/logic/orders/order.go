@@ -920,6 +920,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		EdCode:     m.ExternalCode,
 		ProductIDs: productIDs,
 		VariantIDs: variantIDs,
+		CreatedBy:  userID,
 		PartnerID:  0,
 		Currency:   "",
 		// Source:          m.Source.ToModel(),
@@ -976,7 +977,6 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ExternalMeta:               externalMeta,
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
-		CreatedBy:                  userID,
 	}
 	if err = convertpb.OrderShippingToModel(shipping, order); err != nil {
 		return nil, err

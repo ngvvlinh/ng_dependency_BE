@@ -1550,3 +1550,22 @@ func (ft *FulfillmentFilters) ByIsPartialDeliveryPtr(IsPartialDelivery *bool) *s
 		IsZero: IsPartialDelivery != nil && bool(!(*IsPartialDelivery)),
 	}
 }
+
+func (ft *FulfillmentFilters) ByDeliveryRoute(DeliveryRoute string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "delivery_route",
+		Value:  DeliveryRoute,
+		IsNil:  DeliveryRoute == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByDeliveryRoutePtr(DeliveryRoute *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "delivery_route",
+		Value:  DeliveryRoute,
+		IsNil:  DeliveryRoute == nil,
+		IsZero: DeliveryRoute != nil && (*DeliveryRoute) == "",
+	}
+}

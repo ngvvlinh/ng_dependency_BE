@@ -993,6 +993,25 @@ func (s *SummaryService) SummarizeFulfillments(ctx context.Context, q *Summarize
 	return nil
 }
 
+func (s *SummaryService) SummarizeTopShip(ctx context.Context, q *SummarizeTopShipEndpoint) error {
+	dateFrom, dateTo, err := cm.ParseDateFromTo(q.DateFrom, q.DateTo)
+	if err != nil {
+		return err
+	}
+	query := &summary.SummaryTopShipQuery{
+		ShopID:   q.Context.Shop.ID,
+		DateFrom: dateFrom,
+		DateTo:   dateTo,
+	}
+	if err = summaryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &shop.SummarizeTopShipResponse{
+		Tables: convertpb.PbSummaryTablesNew(query.Result.ListTable),
+	}
+	return nil
+}
+
 func (s *SummaryService) SummarizePOS(ctx context.Context, q *SummarizePOSEndpoint) error {
 	dateFrom, dateTo, err := cm.ParseDateFromTo(q.DateFrom, q.DateTo)
 	if err != nil {
@@ -1003,7 +1022,7 @@ func (s *SummaryService) SummarizePOS(ctx context.Context, q *SummarizePOSEndpoi
 		DateFrom: dateFrom,
 		DateTo:   dateTo,
 	}
-	if err := summaryQuery.Dispatch(ctx, query); err != nil {
+	if err = summaryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &shop.SummarizePOSResponse{

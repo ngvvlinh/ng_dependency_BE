@@ -333,7 +333,7 @@ func main() {
 
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
-	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore).MessageBus()
+	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore, locationBus).MessageBus()
 
 	vhtQuery := vhtquery.New(crmDB).MessageBus()
 	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()

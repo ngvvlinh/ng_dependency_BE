@@ -100,6 +100,8 @@ type Order struct {
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 
+	CreatedBy dot.ID
+
 	PaymentStatus status4.Status
 	PaymentID     dot.ID
 	ReferralMeta  *ReferralMeta

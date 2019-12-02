@@ -7,6 +7,7 @@ import (
 
 	notisqlstore "etop.vn/backend/com/handler/notifier/sqlstore"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
+	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -25,6 +26,7 @@ var (
 	deviceStore       *notisqlstore.DeviceStore
 	notificationStore *notisqlstore.NotificationStore
 	eventBus          capi.EventBus
+	locationBus       = servicelocation.New().MessageBus()
 )
 
 type (

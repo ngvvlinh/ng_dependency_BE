@@ -85,6 +85,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		BillingAddress:            PbOrderAddress(m.BillingAddress),
 		ShippingAddress:           PbOrderAddress(m.ShippingAddress),
 		CreatedAt:                 cmapi.PbTime(m.CreatedAt),
+		CreatedBy:                 m.CreatedBy,
 		ProcessedAt:               cmapi.PbTime(m.ProcessedAt),
 		UpdatedAt:                 cmapi.PbTime(m.UpdatedAt),
 		ClosedAt:                  cmapi.PbTime(m.ClosedAt),
@@ -122,7 +123,6 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		FulfillmentType:           orderconvert.Fulfill(m.FulfillmentType).String(),
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
-		CreatedBy:                 m.CreatedBy,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping

@@ -891,6 +891,19 @@ type SummarizeFulfillmentsResponse struct {
 func (m *SummarizeFulfillmentsResponse) Reset()         { *m = SummarizeFulfillmentsResponse{} }
 func (m *SummarizeFulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type SummarizeTopShipRequest struct {
+	DateFrom string `json:"date_from"`
+	DateTo   string `json:"date_to"`
+}
+
+func (m *SummarizeTopShipRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type SummarizeTopShipResponse struct {
+	Tables []*SummaryTable `json:"tables"`
+}
+
+func (m *SummarizeTopShipResponse) String() string { return jsonx.MustMarshalToString(m) }
+
 type SummarizePOSResponse struct {
 	Tables []*SummaryTable `json:"tables"`
 }

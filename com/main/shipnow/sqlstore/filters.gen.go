@@ -634,3 +634,41 @@ func (ft *ShipnowFulfillmentFilters) ByShippingSharedLinkPtr(ShippingSharedLink 
 		IsZero: ShippingSharedLink != nil && (*ShippingSharedLink) == "",
 	}
 }
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToProvinceCode(AddressToProvinceCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_province_code",
+		Value:  AddressToProvinceCode,
+		IsNil:  AddressToProvinceCode == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToProvinceCodePtr(AddressToProvinceCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_province_code",
+		Value:  AddressToProvinceCode,
+		IsNil:  AddressToProvinceCode == nil,
+		IsZero: AddressToProvinceCode != nil && (*AddressToProvinceCode) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToDistrictCode(AddressToDistrictCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_district_code",
+		Value:  AddressToDistrictCode,
+		IsNil:  AddressToDistrictCode == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToDistrictCodePtr(AddressToDistrictCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_district_code",
+		Value:  AddressToDistrictCode,
+		IsNil:  AddressToDistrictCode == nil,
+		IsZero: AddressToDistrictCode != nil && (*AddressToDistrictCode) == "",
+	}
+}

@@ -11,6 +11,7 @@ import (
 
 type QueryService interface {
 	SummaryPOS(context.Context, *SummaryPOSRequest) (*SummaryPOSResponse, error)
+	SummaryTopShip(context.Context, *SummaryTopShipRequest) (*SummaryTopShipResponse, error)
 }
 
 type SummaryPOSRequest struct {
@@ -20,6 +21,16 @@ type SummaryPOSRequest struct {
 }
 
 type SummaryPOSResponse struct {
+	ListTable []*SummaryTable
+}
+
+type SummaryTopShipRequest struct {
+	DateFrom time.Time
+	DateTo   time.Time
+	ShopID   dot.ID
+}
+
+type SummaryTopShipResponse struct {
 	ListTable []*SummaryTable
 }
 

@@ -30,7 +30,7 @@ func sqlgenShipnowFulfillment(_ *ShipnowFulfillment) bool { return true }
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -92,6 +92,8 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.CODEtopTransferedAt),
 		core.String(m.ShippingSharedLink),
+		core.String(m.AddressToProvinceCode),
+		core.String(m.AddressToDistrictCode),
 	}
 }
 
@@ -135,6 +137,8 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.CODEtopTransferedAt),
 		(*core.String)(&m.ShippingSharedLink),
+		(*core.String)(&m.AddressToProvinceCode),
+		(*core.String)(&m.AddressToDistrictCode),
 	}
 }
 
@@ -172,7 +176,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(38)
+	w.WriteMarkers(40)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -182,7 +186,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(38)
+		w.WriteMarkers(40)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -501,6 +505,22 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShippingSharedLink)
 	}
+	if m.AddressToProvinceCode != "" {
+		flag = true
+		w.WriteName("address_to_province_code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToProvinceCode)
+	}
+	if m.AddressToDistrictCode != "" {
+		flag = true
+		w.WriteName("address_to_district_code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToDistrictCode)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -511,7 +531,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(38)
+	w.WriteMarkers(40)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -625,17 +645,23 @@ func (m ShipnowFulfillmentHistory) CODEtopTransferedAt() core.Interface {
 func (m ShipnowFulfillmentHistory) ShippingSharedLink() core.Interface {
 	return core.Interface{m["shipping_shared_link"]}
 }
+func (m ShipnowFulfillmentHistory) AddressToProvinceCode() core.Interface {
+	return core.Interface{m["address_to_province_code"]}
+}
+func (m ShipnowFulfillmentHistory) AddressToDistrictCode() core.Interface {
+	return core.Interface{m["address_to_district_code"]}
+}
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 38)
-	args := make([]interface{}, 38)
-	for i := 0; i < 38; i++ {
+	data := make([]interface{}, 40)
+	args := make([]interface{}, 40)
+	for i := 0; i < 40; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 38)
+	res := make(ShipnowFulfillmentHistory, 40)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -674,14 +700,16 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["updated_at"] = data[35]
 	res["cod_etop_transfered_at"] = data[36]
 	res["shipping_shared_link"] = data[37]
+	res["address_to_province_code"] = data[38]
+	res["address_to_district_code"] = data[39]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 38)
-	args := make([]interface{}, 38)
-	for i := 0; i < 38; i++ {
+	data := make([]interface{}, 40)
+	args := make([]interface{}, 40)
+	for i := 0; i < 40; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -728,6 +756,8 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["updated_at"] = data[35]
 		m["cod_etop_transfered_at"] = data[36]
 		m["shipping_shared_link"] = data[37]
+		m["address_to_province_code"] = data[38]
+		m["address_to_district_code"] = data[39]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

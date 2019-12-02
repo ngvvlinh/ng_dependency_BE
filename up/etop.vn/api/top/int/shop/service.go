@@ -230,6 +230,7 @@ type MoneyTransactionService interface {
 // +apix:path=/shop.Summary
 type SummaryService interface {
 	SummarizeFulfillments(context.Context, *SummarizeFulfillmentsRequest) (*SummarizeFulfillmentsResponse, error)
+	SummarizeTopShip(context.Context, *SummarizeTopShipRequest) (*SummarizeTopShipResponse, error)
 	SummarizePOS(context.Context, *SummarizePOSRequest) (*SummarizePOSResponse, error)
 	CalcBalanceShop(context.Context, *cm.Empty) (*CalcBalanceShopResponse, error)
 }

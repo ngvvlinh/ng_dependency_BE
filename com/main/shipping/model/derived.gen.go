@@ -30,7 +30,7 @@ func sqlgenFulfillment(_ *Fulfillment) bool { return true }
 type Fulfillments []*Fulfillment
 
 const __sqlFulfillment_Table = "fulfillment"
-const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"partner_id\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\""
+const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"partner_id\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\",\"delivery_route\""
 const __sqlFulfillment_Insert = "INSERT INTO \"fulfillment\" (" + __sqlFulfillment_ListCols + ") VALUES"
 const __sqlFulfillment_Select = "SELECT " + __sqlFulfillment_ListCols + " FROM \"fulfillment\""
 const __sqlFulfillment_Select_history = "SELECT " + __sqlFulfillment_ListCols + " FROM history.\"fulfillment\""
@@ -144,6 +144,7 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.ExternalShippingLogs},
 		core.String(m.AdminNote),
 		core.Bool(m.IsPartialDelivery),
+		core.String(m.DeliveryRoute),
 	}
 }
 
@@ -239,6 +240,7 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.ExternalShippingLogs},
 		(*core.String)(&m.AdminNote),
 		(*core.Bool)(&m.IsPartialDelivery),
+		(*core.String)(&m.DeliveryRoute),
 	}
 }
 
@@ -276,7 +278,7 @@ func (_ *Fulfillments) SQLSelect(w SQLWriter) error {
 func (m *Fulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(90)
+	w.WriteMarkers(91)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -286,7 +288,7 @@ func (ms Fulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(90)
+		w.WriteMarkers(91)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1021,6 +1023,14 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IsPartialDelivery)
 	}
+	if m.DeliveryRoute != "" {
+		flag = true
+		w.WriteName("delivery_route")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeliveryRoute)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1031,7 +1041,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 func (m *Fulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(90)
+	w.WriteMarkers(91)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1259,17 +1269,18 @@ func (m FulfillmentHistory) AdminNote() core.Interface { return core.Interface{m
 func (m FulfillmentHistory) IsPartialDelivery() core.Interface {
 	return core.Interface{m["is_partial_delivery"]}
 }
+func (m FulfillmentHistory) DeliveryRoute() core.Interface { return core.Interface{m["delivery_route"]} }
 
 func (m *FulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 90)
-	args := make([]interface{}, 90)
-	for i := 0; i < 90; i++ {
+	data := make([]interface{}, 91)
+	args := make([]interface{}, 91)
+	for i := 0; i < 91; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FulfillmentHistory, 90)
+	res := make(FulfillmentHistory, 91)
 	res["id"] = data[0]
 	res["order_id"] = data[1]
 	res["shop_id"] = data[2]
@@ -1360,14 +1371,15 @@ func (m *FulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["external_shipping_logs"] = data[87]
 	res["admin_note"] = data[88]
 	res["is_partial_delivery"] = data[89]
+	res["delivery_route"] = data[90]
 	*m = res
 	return nil
 }
 
 func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 90)
-	args := make([]interface{}, 90)
-	for i := 0; i < 90; i++ {
+	data := make([]interface{}, 91)
+	args := make([]interface{}, 91)
+	for i := 0; i < 91; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FulfillmentHistories, 0, 128)
@@ -1466,6 +1478,7 @@ func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["external_shipping_logs"] = data[87]
 		m["admin_note"] = data[88]
 		m["is_partial_delivery"] = data[89]
+		m["delivery_route"] = data[90]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

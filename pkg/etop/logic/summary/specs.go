@@ -50,6 +50,10 @@ func dayOfWeek(weekday time.Weekday) time.Time {
 }
 
 func pred_giao_sau(labelFormat string, dayFromToday int) Predicate {
+	return Pred_sau_ngày("expected_delivery_at", labelFormat, dayFromToday)
+}
+
+func Pred_sau_ngày(column string, labelFormat string, dayFromToday int) Predicate {
 	dayStr := "today"
 	if dayFromToday > 0 {
 		dayStr = fmt.Sprintf("(today+%v)", dayFromToday)
@@ -60,19 +64,23 @@ func pred_giao_sau(labelFormat string, dayFromToday int) Predicate {
 
 	return Predicate{
 		Label: fmt.Sprintf(labelFormat, fmt.Sprintf("%2d/%d", day, month)),
-		Spec:  fmt.Sprintf("%v(expected_delivery_at)", dayStr),
-		Expr:  sq.NewExpr("expected_delivery_at BETWEEN ? AND ?", start, end),
+		Spec:  fmt.Sprintf("%v(%v)", dayStr, column),
+		Expr:  sq.NewExpr(column+" BETWEEN ? AND ?", start, end),
 	}
 }
 
 func pred_tạo_thứ(labelFormat string, weekday time.Weekday) Predicate {
+	return Pred_thứ("created_at", labelFormat, weekday)
+}
+
+func Pred_thứ(column string, labelFormat string, weekday time.Weekday) Predicate {
 	start := dayOfWeek(weekday)
 	end := start.Add(24 * time.Hour)
 	_, month, day := start.Date()
 	return Predicate{
 		Label: fmt.Sprintf(labelFormat, fmt.Sprintf("%2d/%d", day, month)),
-		Spec:  fmt.Sprintf("%v(created_at)", strings.ToLower(weekday.String())),
-		Expr:  sq.NewExpr("created_at BETWEEN ? AND ?", start, end),
+		Spec:  fmt.Sprintf("%v(%v)", strings.ToLower(weekday.String()), column),
+		Expr:  sq.NewExpr(column+" BETWEEN ? AND ?", start, end),
 	}
 }
 
@@ -234,7 +242,7 @@ func buildTables(moneyTransactionIDs []dot.ID) []*Table {
 				Compose("Đã giao hoặc trả hàng [Gồm đơn sắp chuyển]", pred_chưa_đối_soát, pred_đã_giao_hoặc_đã_trả_hàng),
 				Compose("Đang giao [Chưa hoàn tất]", pred_chưa_đối_soát, pred_đang_giao),
 			}
-			table00 = buildTable(rows, cols, "Thống kê đơn hàng chưa đối soát", "overview_before_cross_check", "before_cross_check")
+			table00 = BuildTable(rows, cols, "Thống kê đơn hàng chưa đối soát", "overview_before_cross_check", "before_cross_check")
 		}
 		{
 			rows := []Subject{
@@ -254,7 +262,7 @@ func buildTables(moneyTransactionIDs []dot.ID) []*Table {
 				col_trả_hàng,
 				col_tất_cả,
 			}
-			table01 = buildTable(rows, cols, "Trạng thái giao hàng", "shipping_status_before_cross_check", "before_cross_check", "shipping_status")
+			table01 = BuildTable(rows, cols, "Trạng thái giao hàng", "shipping_status_before_cross_check", "before_cross_check", "shipping_status")
 		}
 		{
 			// Không bao gồm các đơn mới vì shop có thể huỷ.
@@ -278,7 +286,7 @@ func buildTables(moneyTransactionIDs []dot.ID) []*Table {
 				col_giao_7_ngày_trở_lên,
 				col_đang_giao.Clone("Tất cả"),
 			}
-			table02 = buildTable(rows, cols, "Ngày giao hàng dự kiến [Không thống kê các đơn hàng MỚI vì có thể hủy]", "expected_delivery_at_before_cross_check", "before_cross_check", "expected_delivery_at")
+			table02 = BuildTable(rows, cols, "Ngày giao hàng dự kiến [Không thống kê các đơn hàng MỚI vì có thể hủy]", "expected_delivery_at_before_cross_check", "before_cross_check", "expected_delivery_at")
 		}
 	}
 	// cả đối soát và chưa đối soát
@@ -317,7 +325,7 @@ func buildTables(moneyTransactionIDs []dot.ID) []*Table {
 				col_tuần_trước,
 				col_tuần_trước_nữa,
 			}
-			table03 = buildTable(rows, cols, "Số lượng đơn giao hàng đã được tạo [Tính theo đơn giao hàng được tạo ra và không HUỶ mỗi ngày.\nBao gồm cả đơn đã đối soát và đơn đang giao]", "created_at_before_cross_check", "before_cross_check", "created_at")
+			table03 = BuildTable(rows, cols, "Số lượng đơn giao hàng đã được tạo [Tính theo đơn giao hàng được tạo ra và không HUỶ mỗi ngày.\nBao gồm cả đơn đã đối soát và đơn đang giao]", "created_at_before_cross_check", "before_cross_check", "created_at")
 		}
 	}
 	return []*Table{table00, table01, table02, table03}
@@ -373,7 +381,7 @@ func buildTables2(dateFrom, dateTo time.Time) []*Table {
 			Compose("VTP", pred_đã_đối_soát, pred_time_between, pred_vtp),
 			Compose("Tổng", pred_đã_đối_soát, pred_time_between),
 		}
-		table00 = buildTable(rows, cols, "Tổng quan giao hàng", "shipping_provider_after_cross_check", "after_cross_check", "shipping_provider")
+		table00 = BuildTable(rows, cols, "Tổng quan giao hàng", "shipping_provider_after_cross_check", "after_cross_check", "shipping_provider")
 	}
 	{
 		pred_đã_chuyển_tiền := Predicate{
@@ -414,12 +422,12 @@ func buildTables2(dateFrom, dateTo time.Time) []*Table {
 			Compose("", pred_tạo_tuần(-8), pred_đã_đối_soát),
 			Compose("", pred_tạo_tuần(-9), pred_đã_đối_soát),
 		}
-		table01 = buildTable(rows, cols, "Số lượng đơn giao hàng đã được đối soát trong 10 tuần gần đây [Tính theo mốc thời gian đơn giao hàng tạo ra. Ghi nhận khi đơn giao hàng đã đối soát hoàn tất. Nghĩa là đã thanh toán phí vận chuyển và nhận tiền COD.\nĐơn COD hoặc giá trị đơn giao COD được tính trên các đơn giao hàng thành công. Các đơn trả hàng xem như bằng 0.]", "created_at_after_cross_check", "after_cross_check", "created_at")
+		table01 = BuildTable(rows, cols, "Số lượng đơn giao hàng đã được đối soát trong 10 tuần gần đây [Tính theo mốc thời gian đơn giao hàng tạo ra. Ghi nhận khi đơn giao hàng đã đối soát hoàn tất. Nghĩa là đã thanh toán phí vận chuyển và nhận tiền COD.\nĐơn COD hoặc giá trị đơn giao COD được tính trên các đơn giao hàng thành công. Các đơn trả hàng xem như bằng 0.]", "created_at_after_cross_check", "after_cross_check", "created_at")
 	}
 	return []*Table{table00, table01}
 }
 
-func buildTable(rows []Subject, cols []Predicator, label string, tags ...string) *Table {
+func BuildTable(rows []Subject, cols []Predicator, label string, tags ...string) *Table {
 	table := NewTable(len(rows), len(cols), label, tags...)
 	table.Rows = rows
 	table.Cols = cols

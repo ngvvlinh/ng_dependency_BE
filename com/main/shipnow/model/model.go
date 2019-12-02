@@ -82,6 +82,9 @@ type ShipnowFulfillment struct {
 	UpdatedAt           time.Time `sq:"update"`
 	CODEtopTransferedAt time.Time
 	ShippingSharedLink  string
+
+	AddressToProvinceCode string
+	AddressToDistrictCode string
 }
 
 func (m *ShipnowFulfillment) Validate() error {

@@ -2067,6 +2067,12 @@ func (s *SummaryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 			return s.inner.SummarizePOS(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Summary/SummarizeTopShip":
+		msg := &SummarizeTopShipRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.SummarizeTopShip(ctx, msg)
+		}
+		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
