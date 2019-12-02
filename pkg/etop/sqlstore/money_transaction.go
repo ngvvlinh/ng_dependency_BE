@@ -258,7 +258,7 @@ func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransa
 }
 
 func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransactions) error {
-	s := x.Table("money_transaction_shipping")
+	s := x.Table("money_transaction_shipping").Where("m.status != ?", model.S3Negative)
 	if query.ShopID != 0 {
 		s = s.Where("m.shop_id = ?", query.ShopID)
 	}
@@ -1455,7 +1455,7 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoney
 		return err
 	}
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
-	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", query.ID).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
+	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ? AND status != ?", query.ID, model.S3Negative).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
 	moneyTransactionShippingIDs := make([]dot.ID, len(moneyTransactionShippings))
