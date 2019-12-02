@@ -3,188 +3,67 @@ package api
 import (
 	"go/types"
 	"strings"
+	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/genutil"
 )
 
-func writeCommonDeclaration(w *MultiWriter) {
+var currentPrinter generator.Printer
+var tpl = template.Must(template.New("template").Funcs(funcs).Parse(tplText))
+
+var funcs = map[string]interface{}{
+	"busName":         renderBusName,
+	"generateGetArgs": generateGetArgs,
+	"generateHandle":  generateHandle,
+	"generateResult":  generateResult,
+	"generateSetArgs": generateSetArgs,
+	"generateStruct":  generateStruct,
+	"interfaceMethod": renderInterfaceMethod,
+	"messageName":     renderMessageName,
+}
+
+func generate(w generator.Printer, services []*defs.Service) {
+	w.Import("context", "context")
 	w.Import("capi", "etop.vn/capi")
-
-	tmpl := `
-type Command interface { command() }
-type Query interface { query() }
-type CommandBus struct { bus capi.Bus }
-type QueryBus struct { bus capi.Bus }
-
-func NewCommandBus(bus capi.Bus) CommandBus                          { return CommandBus{bus} }
-func NewQueryBus(bus capi.Bus) QueryBus                              { return QueryBus{bus} }
-func (c CommandBus) Dispatch(ctx context.Context, msg Command) error { return c.bus.Dispatch(ctx, msg) }
-func (c QueryBus) Dispatch(ctx context.Context, msg Query) error     { return c.bus.Dispatch(ctx, msg) }
-func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
+	vars := map[string]interface{}{
+		"Services": services,
 	}
-	return nil
-}
-func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-`
-	mustWrite(w, []byte(tmpl))
+	err := tpl.Execute(w, vars)
+	must(err)
 }
 
-func generateQueries(w *MultiWriter, serviceName string, methods []*defs.Method) {
-	serviceName += defs.KindQuery
-	w.Import("context", "context")
-
-	genHandlerName := serviceName + "Handler"
-	{
-		tmpl := `
-type %v struct {
-	inner %v
-}
-
-func New%v(service %v) %v { return %v{service} }
-
-func (h %v) RegisterHandlers(b interface{
-	capi.Bus
-	AddHandler(handler interface{})
-}) QueryBus {
-`
-		w2 := &w.WriteDispatch
-		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
-		for _, item := range methods {
-			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
-		}
-		p(w2, "\treturn QueryBus{b}\n")
-		p(w2, "}\n")
-	}
-
-	for _, item := range methods {
-		methodName := item.Method.Name()
-		genQueryName := item.Method.Name() + "Query"
-
-		// generate declaration
-		{
-			p(w, "type %v struct {\n", genQueryName)
-			generateStruct(w.Writer, item.Request)
-			mustNoError("method %v:\n", item.Method)
-			generateResult(w, item)
-			p(w, "}\n\n")
-		}
-		// implement Handle()
-		{
-			generateHandle(w, item, methodName, genHandlerName, genQueryName)
-		}
-		// implement GetArgs()
-		{
-			w2 := w.GetImportWriter(&w.WriteArgs)
-			generateGetArgs(w2, genQueryName, item.Request)
-			generateSetArgs(w2, genQueryName, item.Request)
-		}
-		// implement Query
-		{
-			w2 := &w.WriteIface
-			p(w2, "func (q *%v) query() {}\n", genQueryName)
-		}
-
-	}
-}
-
-func generateCommands(w *MultiWriter, serviceName string, methods []*defs.Method) {
-	serviceName += defs.KindAggregate
-	w.Import("context", "context")
-
-	genHandlerName := serviceName + "Handler"
-	{
-		tmpl := `
-type %v struct {
-	inner %v
-}
-
-func New%v(service %v) %v { return %v{service} }
-
-func (h %v) RegisterHandlers(b interface{
-	capi.Bus
-	AddHandler(handler interface{})
-}) CommandBus {
-`
-		w2 := &w.WriteDispatch
-		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
-		for _, item := range methods {
-			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
-		}
-		p(w2, "\treturn CommandBus{b}")
-		p(w2, "}\n")
-	}
-
-	for _, item := range methods {
-		methodName := item.Method.Name()
-		genCommandName := item.Method.Name() + "Command"
-
-		p(w, "type %v struct {\n", genCommandName)
-		generateStruct(w.Writer, item.Request)
-		mustNoError("method %v:\n", item.Method)
-		generateResult(w, item)
-		p(w, "}\n\n")
-
-		// implement GetArgs()
-		{
-			w2 := w.GetImportWriter(&w.WriteArgs)
-			generateGetArgs(w2, genCommandName, item.Request)
-			generateSetArgs(w2, genCommandName, item.Request)
-		}
-		// implement Handle()
-		{
-			generateHandle(w, item, methodName, genHandlerName, genCommandName)
-		}
-		// implement Command
-		{
-			w2 := &w.WriteIface
-			p(w2, "func (q *%v) command() {}\n", genCommandName)
-		}
-	}
-}
-
-func generateGetArgs(w ImportWriter, wrapperName string, requests *defs.Message) {
-	p(w, "func (q *%v) GetArgs(ctx context.Context) (_ context.Context, ", wrapperName)
-	generateArgList(w, requests.Items)
-	p(w, ") {\n")
-	p(w, "\treturn ctx,\n")
+func generateGetArgs(m *defs.Method) string {
+	var b strings.Builder
+	p(&b, "func (q *%v) GetArgs(ctx context.Context) (_ context.Context, ", renderMessageName(m))
+	p(&b, generateArgList(m.Request.Items))
+	p(&b, ") {\n")
+	p(&b, "\treturn ctx,\n")
 
 	comma := false
 	inline := false
-	err := requests.Items.Walk(
+	err := m.Request.Items.Walk(
 		func(node defs.NodeType, name string, field *types.Var, tag string) error {
 			if comma {
-				p(w, ",\n")
+				p(&b, ",\n")
 				comma = false
 			}
 
 			switch node {
 			case defs.NodeStartInline:
 				inline = true
-				p(w, "%v{\n", renderType(w, field.Type(), true))
+				p(&b, "%v{\n", renderNew(field.Type()))
 
 			case defs.NodeEndInline:
 				inline = false
-				p(w, "}\n")
+				p(&b, "}\n")
 				comma = true
 
 			case defs.NodeField:
 				if inline {
-					p(w, "\t%v: q.%v", name, name)
+					p(&b, "\t%v: q.%v", name, name)
 				} else {
-					p(w, "q.%v", name)
+					p(&b, "q.%v", name)
 				}
 				comma = true
 
@@ -194,42 +73,95 @@ func generateGetArgs(w ImportWriter, wrapperName string, requests *defs.Message)
 			return nil
 		})
 	must(err)
-	p(w, "}\n\n")
+	p(&b, "}\n\n")
+	return b.String()
 }
 
-func generateSetArgs(w ImportWriter, wrapperName string, requests *defs.Message) {
-	for _, req := range requests.Items {
+func generateSetArgs(m *defs.Method) string {
+	var b strings.Builder
+	for _, req := range m.Request.Items {
 		if !req.Inline {
 			continue
 		}
-		p(w, "func (q *%v) Set%v(args %v) {\n", wrapperName, renderTypeName(req.Type), renderType(w, req.Type, false))
+		p(&b, "func (q *%v) Set%v(args %v) {\n", renderMessageName(m), renderTypeName(req.Type), renderType(req.Type))
 		for i, n := 0, req.Struct.NumFields(); i < n; i++ {
 			field := req.Struct.Field(i)
-			p(w, "q.%v = args.%v\n", field.Name(), field.Name())
+			p(&b, "q.%v = args.%v\n", field.Name(), field.Name())
 		}
-		p(w, "}\n\n")
+		p(&b, "}\n\n")
 	}
+	return b.String()
 }
 
-func generateArgList(w ImportWriter, args []*defs.ArgItem) {
+func generateArgList(args []*defs.ArgItem) string {
+	var b strings.Builder
 	for i, arg := range args {
 		if i > 0 {
-			p(w, ", ")
+			p(&b, ", ")
 		}
 		name := arg.Var.Name()
 		if name == "" {
 			name = "_"
 		}
-		p(w, "%v %v", name, renderType(w, arg.Type, false))
+		p(&b, "%v %v", name, renderType(arg.Type))
 	}
+	return b.String()
 }
 
-func renderType(w Importer, typ types.Type, literal bool) string {
-	result := w.TypeString(typ)
-	if literal && result[0] == '*' {
-		result = "&" + result[1:]
+func renderBusName(s *defs.Service) string {
+	return cache(&s.Meta, "busName", func() interface{} {
+		switch s.Kind {
+		case defs.KindQuery:
+			return s.Name + "QueryBus"
+		case defs.KindAggregate:
+			return s.Name + "CommandBus"
+		case defs.KindService:
+			return s.Name + "Bus"
+		default:
+			return "<invalid>"
+		}
+	}).(string)
+}
+
+func renderInterfaceMethod(s *defs.Service) string {
+	return cache(&s.Meta, "interfaceMethod", func() interface{} {
+		switch s.Kind {
+		case defs.KindQuery:
+			return "query" + s.Name
+		case defs.KindAggregate:
+			return "command" + s.Name
+		case defs.KindService:
+			return "request" + s.Name
+		default:
+			return "<invalid>"
+		}
+	}).(string)
+}
+
+func renderMessageName(m *defs.Method) string {
+	return cache(&m.Meta, "messageName", func() interface{} {
+		switch m.Service.Kind {
+		case defs.KindQuery:
+			return m.Name + "Query"
+		case defs.KindAggregate:
+			return m.Name + "Command"
+		case defs.KindService:
+			return m.Name + "Request"
+		default:
+			return "<invalid>"
+		}
+	}).(string)
+}
+
+func renderType(typ types.Type) string {
+	return currentPrinter.TypeString(typ)
+}
+
+func renderNew(typ types.Type) string {
+	if ptr, ok := typ.(*types.Pointer); ok {
+		return "&" + currentPrinter.TypeString(ptr.Elem())
 	}
-	return result
+	return currentPrinter.TypeString(typ)
 }
 
 func renderTypeName(typ types.Type) string {
@@ -240,8 +172,9 @@ func renderTypeName(typ types.Type) string {
 	return typ.(*types.Named).Obj().Name()
 }
 
-func generateStruct(w ImportWriter, args *defs.Message) {
-	err := args.Items.Walk(
+func generateStruct(m *defs.Method) string {
+	var b strings.Builder
+	err := m.Request.Items.Walk(
 		func(node defs.NodeType, name string, field *types.Var, tag string) error {
 			switch node {
 			case defs.NodeField:
@@ -250,61 +183,64 @@ func generateStruct(w ImportWriter, args *defs.Message) {
 					errorf("field %v: incorrect tag format (%v)\n", field.Name(), err)
 					return nil
 				}
-				p(w, "%v %v %v\n", name, renderType(w, field.Type(), false), processedTag)
+				p(&b, "%v %v %v\n", name, renderType(field.Type()), processedTag)
 			}
 			return nil
 		})
 	must(err)
+	return b.String()
 }
 
-func generateResult(w ImportWriter, item *defs.Method) {
-	items := item.Response.Items
+func generateResult(m *defs.Method) string {
+	var b strings.Builder
+	items := m.Response.Items
 	if len(items) == 1 {
-		p(w, "\nResult %v `json:\"-\"`\n", renderType(w, items[0].Type, false))
+		p(&b, "\nResult %v `json:\"-\"`\n", renderType(items[0].Type))
 	} else {
-		p(w, "\nResult struct {\n")
+		p(&b, "\nResult struct {\n")
 		for _, arg := range items {
-			p(w, "%v %v\n", arg.Name, renderType(w, arg.Type, false))
+			p(&b, "%v %v\n", arg.Name, renderType(arg.Type))
 		}
-		p(w, "} `json:\"-\"`\n")
+		p(&b, "} `json:\"-\"`\n")
 	}
+	return b.String()
 }
 
-func generateHandle(w ImportWriter, item *defs.Method, methodName, genHandlerName, genQueryName string) {
-	p(w, "\nfunc (h %v) Handle%v(ctx context.Context, msg *%v) (err error) {\n", genHandlerName, methodName, genQueryName)
-	switch len(item.Response.Items) {
+func generateHandle(m *defs.Method) string {
+	var b strings.Builder
+	p(&b, "\nfunc (h %vHandler) Handle%v(ctx context.Context, msg *%v) (err error) {\n", m.Service.FullName, m.Name, renderMessageName(m))
+	switch len(m.Response.Items) {
 	case 0:
-		p(w, "return h.inner.%v(msg.GetArgs(ctx))\n", methodName)
+		p(&b, "return h.inner.%v(msg.GetArgs(ctx))\n", m.Name)
 	case 1:
-		p(w, "msg.Result, err = h.inner.%v(msg.GetArgs(ctx))\n", methodName)
-		p(w, "return err\n")
+		p(&b, "msg.Result, err = h.inner.%v(msg.GetArgs(ctx))\n", m.Name)
+		p(&b, "return err\n")
 	default:
-		for _, arg := range item.Response.Items {
-			p(w, "msg.Result.%v, ", arg.Var.Name())
+		for _, arg := range m.Response.Items {
+			p(&b, "msg.Result.%v, ", arg.Var.Name())
 		}
-		p(w, "err = h.inner.%v(msg.GetArgs(ctx))\n", methodName)
-		p(w, "return err")
+		p(&b, "err = h.inner.%v(msg.GetArgs(ctx))\n", m.Name)
+		p(&b, "return err")
 	}
-	p(w, "}\n")
+	p(&b, "}\n")
+	return b.String()
 }
 
 func processTag(tag string) (string, error) {
-	stag, err := genutil.ParseStructTags(tag)
-	if err != nil {
-		return "", err
-	}
-	if strings.Contains(tag, "`") {
-		return "", generator.Errorf(nil, "backquote (`) is not supported in tag")
-	}
-
-	result := make(genutil.StructTags, 0, len(stag))
-	for _, t := range stag {
-		if t.Name != "protobuf" {
-			result = append(result, t)
-		}
-	}
-	if len(result) == 0 {
+	if tag == "" {
 		return "", nil
 	}
-	return result.String(), nil
+	return "`" + tag + "`", nil
+}
+
+func cache(meta *map[interface{}]interface{}, key interface{}, fn func() interface{}) interface{} {
+	if *meta == nil {
+		*meta = map[interface{}]interface{}{}
+	}
+	if val := (*meta)[key]; val != nil {
+		return val
+	}
+	val := fn()
+	(*meta)[key] = val
+	return val
 }

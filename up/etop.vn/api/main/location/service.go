@@ -6,7 +6,7 @@ import (
 
 // +gen:api
 
-type LocationQueryService interface {
+type QueryService interface {
 	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*GetAllLocationsQueryResult, error)
 
 	GetLocation(ctx context.Context, _ *GetLocationQueryArgs) (*LocationQueryResult, error)
@@ -14,6 +14,15 @@ type LocationQueryService interface {
 	FindLocation(ctx context.Context, _ *FindLocationQueryArgs) (*LocationQueryResult, error)
 
 	FindOrGetLocation(ctx context.Context, _ *FindOrGetLocationQueryArgs) (*LocationQueryResult, error)
+}
+
+func (b QueryBus) DispatchAll(ctx context.Context, msgs ...interface{ query() }) error {
+	for _, msg := range msgs {
+		if err := b.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //-- queries --//

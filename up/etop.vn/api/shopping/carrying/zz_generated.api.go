@@ -13,30 +13,17 @@ import (
 	dot "etop.vn/capi/dot"
 )
 
-type Command interface{ command() }
-type Query interface{ query() }
 type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewCommandBus(bus capi.Bus) CommandBus                          { return CommandBus{bus} }
-func NewQueryBus(bus capi.Bus) QueryBus                              { return QueryBus{bus} }
-func (c CommandBus) Dispatch(ctx context.Context, msg Command) error { return c.bus.Dispatch(ctx, msg) }
-func (c QueryBus) Dispatch(ctx context.Context, msg Query) error     { return c.bus.Dispatch(ctx, msg) }
-func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
+
+func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
-func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
 
 type CreateCarrierCommand struct {
@@ -116,10 +103,10 @@ func (h QueryServiceHandler) HandleListCarriersByIDs(ctx context.Context, msg *L
 }
 
 // implement interfaces
-
 func (q *CreateCarrierCommand) command() {}
 func (q *DeleteCarrierCommand) command() {}
 func (q *UpdateCarrierCommand) command() {}
+
 func (q *GetCarrierByIDQuery) query()    {}
 func (q *ListCarriersQuery) query()      {}
 func (q *ListCarriersByIDsQuery) query() {}

@@ -12,30 +12,17 @@ import (
 	dot "etop.vn/capi/dot"
 )
 
-type Command interface{ command() }
-type Query interface{ query() }
 type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewCommandBus(bus capi.Bus) CommandBus                          { return CommandBus{bus} }
-func NewQueryBus(bus capi.Bus) QueryBus                              { return QueryBus{bus} }
-func (c CommandBus) Dispatch(ctx context.Context, msg Command) error { return c.bus.Dispatch(ctx, msg) }
-func (c QueryBus) Dispatch(ctx context.Context, msg Query) error     { return c.bus.Dispatch(ctx, msg) }
-func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
+
+func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
-func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
 
 type AdjustInventoryQuantityCommand struct {
@@ -299,7 +286,6 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByRefIDs(ctx context.Cont
 }
 
 // implement interfaces
-
 func (q *AdjustInventoryQuantityCommand) command()                {}
 func (q *CancelInventoryVoucherCommand) command()                 {}
 func (q *CheckInventoryVariantsQuantityCommand) command()         {}
@@ -310,14 +296,15 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) command() {}
 func (q *CreateInventoryVoucherByReferenceCommand) command()      {}
 func (q *UpdateInventoryVariantCostPriceCommand) command()        {}
 func (q *UpdateInventoryVoucherCommand) command()                 {}
-func (q *GetInventoryVariantQuery) query()                        {}
-func (q *GetInventoryVariantsQuery) query()                       {}
-func (q *GetInventoryVariantsByVariantIDsQuery) query()           {}
-func (q *GetInventoryVoucherQuery) query()                        {}
-func (q *GetInventoryVoucherByReferenceQuery) query()             {}
-func (q *GetInventoryVouchersQuery) query()                       {}
-func (q *GetInventoryVouchersByIDsQuery) query()                  {}
-func (q *GetInventoryVouchersByRefIDsQuery) query()               {}
+
+func (q *GetInventoryVariantQuery) query()              {}
+func (q *GetInventoryVariantsQuery) query()             {}
+func (q *GetInventoryVariantsByVariantIDsQuery) query() {}
+func (q *GetInventoryVoucherQuery) query()              {}
+func (q *GetInventoryVoucherByReferenceQuery) query()   {}
+func (q *GetInventoryVouchersQuery) query()             {}
+func (q *GetInventoryVouchersByIDsQuery) query()        {}
+func (q *GetInventoryVouchersByRefIDsQuery) query()     {}
 
 // implement conversion
 

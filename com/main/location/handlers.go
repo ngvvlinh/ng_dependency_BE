@@ -14,7 +14,7 @@ import (
 )
 
 var ll = l.New()
-var _ location.LocationQueryService = &Impl{}
+var _ location.QueryService = &Impl{}
 
 type Impl struct {
 }
@@ -25,7 +25,7 @@ func New() *Impl {
 
 func (im *Impl) MessageBus() location.QueryBus {
 	b := bus.New()
-	return location.NewLocationQueryServiceHandler(im).RegisterHandlers(b)
+	return location.NewQueryServiceHandler(im).RegisterHandlers(b)
 }
 
 func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocationsQueryArgs) (result *location.GetAllLocationsQueryResult, err error) {

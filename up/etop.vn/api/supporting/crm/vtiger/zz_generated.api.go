@@ -13,30 +13,17 @@ import (
 	dot "etop.vn/capi/dot"
 )
 
-type Command interface{ command() }
-type Query interface{ query() }
 type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewCommandBus(bus capi.Bus) CommandBus                          { return CommandBus{bus} }
-func NewQueryBus(bus capi.Bus) QueryBus                              { return QueryBus{bus} }
-func (c CommandBus) Dispatch(ctx context.Context, msg Command) error { return c.bus.Dispatch(ctx, msg) }
-func (c QueryBus) Dispatch(ctx context.Context, msg Query) error     { return c.bus.Dispatch(ctx, msg) }
-func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
+
+func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
-func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
 
 type CreateOrUpdateContactCommand struct {
@@ -244,18 +231,18 @@ func (h QueryServiceHandler) HandleGetTickets(ctx context.Context, msg *GetTicke
 }
 
 // implement interfaces
-
 func (q *CreateOrUpdateContactCommand) command() {}
 func (q *CreateOrUpdateLeadCommand) command()    {}
 func (q *CreateTicketCommand) command()          {}
 func (q *SyncContactCommand) command()           {}
 func (q *UpdateTicketCommand) command()          {}
-func (q *CountTicketByStatusQuery) query()       {}
-func (q *GetCategoriesQuery) query()             {}
-func (q *GetContactsQuery) query()               {}
-func (q *GetRecordLastTimeModifyQuery) query()   {}
-func (q *GetTicketStatusCountQuery) query()      {}
-func (q *GetTicketsQuery) query()                {}
+
+func (q *CountTicketByStatusQuery) query()     {}
+func (q *GetCategoriesQuery) query()           {}
+func (q *GetContactsQuery) query()             {}
+func (q *GetRecordLastTimeModifyQuery) query() {}
+func (q *GetTicketStatusCountQuery) query()    {}
+func (q *GetTicketsQuery) query()              {}
 
 // implement conversion
 

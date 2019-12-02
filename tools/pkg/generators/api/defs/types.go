@@ -13,18 +13,24 @@ const (
 )
 
 type Service struct {
-	Kind    Kind
-	Name    string
-	APIPath string
-	Methods []*Method
+	Kind     Kind
+	Name     string
+	FullName string
+	APIPath  string
+	Methods  []*Method
+
+	Meta map[interface{}]interface{}
 }
 
 type Method struct {
+	Service  *Service
 	Name     string
 	Comment  string
 	Method   *types.Func
 	Request  *Message
 	Response *Message
+
+	Meta map[interface{}]interface{}
 }
 
 type Message struct {

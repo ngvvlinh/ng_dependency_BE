@@ -10,30 +10,12 @@ import (
 	capi "etop.vn/capi"
 )
 
-type Command interface{ command() }
-type Query interface{ query() }
-type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewCommandBus(bus capi.Bus) CommandBus                          { return CommandBus{bus} }
-func NewQueryBus(bus capi.Bus) QueryBus                              { return QueryBus{bus} }
-func (c CommandBus) Dispatch(ctx context.Context, msg Command) error { return c.bus.Dispatch(ctx, msg) }
-func (c QueryBus) Dispatch(ctx context.Context, msg Query) error     { return c.bus.Dispatch(ctx, msg) }
-func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
-	for _, msg := range msgs {
-		if err := c.bus.Dispatch(ctx, msg); err != nil {
-			return err
-		}
-	}
-	return nil
+func NewQueryBus(bus capi.Bus) QueryBus { return QueryBus{bus} }
+
+func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
+	return b.bus.Dispatch(ctx, msg)
 }
 
 type FindLocationQuery struct {
@@ -44,7 +26,7 @@ type FindLocationQuery struct {
 	Result *LocationQueryResult `json:"-"`
 }
 
-func (h LocationQueryServiceHandler) HandleFindLocation(ctx context.Context, msg *FindLocationQuery) (err error) {
+func (h QueryServiceHandler) HandleFindLocation(ctx context.Context, msg *FindLocationQuery) (err error) {
 	msg.Result, err = h.inner.FindLocation(msg.GetArgs(ctx))
 	return err
 }
@@ -60,7 +42,7 @@ type FindOrGetLocationQuery struct {
 	Result *LocationQueryResult `json:"-"`
 }
 
-func (h LocationQueryServiceHandler) HandleFindOrGetLocation(ctx context.Context, msg *FindOrGetLocationQuery) (err error) {
+func (h QueryServiceHandler) HandleFindOrGetLocation(ctx context.Context, msg *FindOrGetLocationQuery) (err error) {
 	msg.Result, err = h.inner.FindOrGetLocation(msg.GetArgs(ctx))
 	return err
 }
@@ -73,7 +55,7 @@ type GetAllLocationsQuery struct {
 	Result *GetAllLocationsQueryResult `json:"-"`
 }
 
-func (h LocationQueryServiceHandler) HandleGetAllLocations(ctx context.Context, msg *GetAllLocationsQuery) (err error) {
+func (h QueryServiceHandler) HandleGetAllLocations(ctx context.Context, msg *GetAllLocationsQuery) (err error) {
 	msg.Result, err = h.inner.GetAllLocations(msg.GetArgs(ctx))
 	return err
 }
@@ -87,13 +69,12 @@ type GetLocationQuery struct {
 	Result *LocationQueryResult `json:"-"`
 }
 
-func (h LocationQueryServiceHandler) HandleGetLocation(ctx context.Context, msg *GetLocationQuery) (err error) {
+func (h QueryServiceHandler) HandleGetLocation(ctx context.Context, msg *GetLocationQuery) (err error) {
 	msg.Result, err = h.inner.GetLocation(msg.GetArgs(ctx))
 	return err
 }
 
 // implement interfaces
-
 func (q *FindLocationQuery) query()      {}
 func (q *FindOrGetLocationQuery) query() {}
 func (q *GetAllLocationsQuery) query()   {}
@@ -171,15 +152,15 @@ func (q *GetLocationQuery) SetGetLocationQueryArgs(args *GetLocationQueryArgs) {
 
 // implement dispatching
 
-type LocationQueryServiceHandler struct {
-	inner LocationQueryService
+type QueryServiceHandler struct {
+	inner QueryService
 }
 
-func NewLocationQueryServiceHandler(service LocationQueryService) LocationQueryServiceHandler {
-	return LocationQueryServiceHandler{service}
+func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
+	return QueryServiceHandler{service}
 }
 
-func (h LocationQueryServiceHandler) RegisterHandlers(b interface {
+func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {

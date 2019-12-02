@@ -56,8 +56,3 @@ func p(w io.Writer, format string, args ...interface{}) {
 	_, err := fmt.Fprintf(w, format, args...)
 	must(err)
 }
-
-func mustWrite(w io.Writer, p []byte) {
-	_, err := w.Write(p)
-	must(err)
-}

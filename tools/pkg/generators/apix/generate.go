@@ -8,8 +8,8 @@ import (
 	"etop.vn/backend/tools/pkg/generators/api/defs"
 )
 
-var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 var currentPrinter generator.Printer
+var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 
 var funcs = map[string]interface{}{
 	"type": renderType,
