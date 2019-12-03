@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"etop.vn/api/main/ledgering"
-	_ "etop.vn/backend/com/main/ledgering/model"
 	cm "etop.vn/backend/pkg/common"
 )
 

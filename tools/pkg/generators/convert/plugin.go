@@ -25,17 +25,31 @@ const ModeUpdate = "convert:update"
 
 func New() generator.Plugin {
 	return &plugin{
-		Filterer:  generator.FilterByCommand(Command),
 		Qualifier: genutil.Qualifier{},
 	}
 }
 
 type plugin struct {
-	generator.Filterer
 	generator.Qualifier
 }
 
 func (p *plugin) Name() string { return "convert" }
+
+func (p *plugin) Filter(ng generator.FilterEngine) error {
+	for _, pkg := range ng.ParsingPackages() {
+		if !generator.FilterByCommand(Command).Include(pkg.Directives) {
+			continue
+		}
+		pkg.Include()
+		apiPkgs, toPkgs, err := parseDirectives(pkg.Directives)
+		if err != nil {
+			return generator.Errorf(err, "parsing %v: %v", pkg.PkgPath, err)
+		}
+		ng.ParsePackages(apiPkgs...)
+		ng.ParsePackages(toPkgs...)
+	}
+	return nil
+}
 
 func (p *plugin) Generate(ng generator.Engine) error {
 	// collect all converting packages
@@ -217,6 +231,21 @@ func (o objName) String() string {
 		return o.name
 	}
 	return o.pkg + "." + o.name
+}
+
+func parseDirectives(ds []generator.Directive) (apiPkgs, toPkgs []string, err error) {
+	for _, d := range ds {
+		if d.Cmd != Command {
+			continue
+		}
+		apiPkgPaths, toPkgPaths, err := parseConvertDirective(d)
+		if err != nil {
+			return nil, nil, err
+		}
+		apiPkgs = append(apiPkgs, apiPkgPaths...)
+		toPkgs = append(toPkgs, toPkgPaths...)
+	}
+	return
 }
 
 func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*generatingPackage, error) {

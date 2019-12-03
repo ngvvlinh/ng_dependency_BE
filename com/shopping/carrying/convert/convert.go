@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"etop.vn/api/shopping/carrying"
-	_ "etop.vn/backend/com/shopping/carrying/model"
 	cm "etop.vn/backend/pkg/common"
 )
 

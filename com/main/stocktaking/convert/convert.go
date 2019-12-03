@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"etop.vn/api/main/stocktaking"
-	_ "etop.vn/backend/com/main/stocktaking/model"
 	cm "etop.vn/backend/pkg/common"
 )
 

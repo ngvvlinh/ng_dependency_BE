@@ -1,6 +1,8 @@
 package generator
 
-import "golang.org/x/tools/go/packages"
+import (
+	"golang.org/x/tools/go/packages"
+)
 
 type FilteringPackage struct {
 	PkgPath    string
@@ -70,7 +72,12 @@ func (ng *filterEngine) ParsePackage(pkgPath string) {
 }
 
 func (ng *filterEngine) ParsePackages(patterns ...string) {
-	*ng.patterns = append(*ng.patterns, patterns...)
+	for _, p := range patterns {
+		if p == "" {
+			continue
+		}
+		*ng.patterns = append(*ng.patterns, p)
+	}
 }
 
 func (ng *filterEngine) ParsingPackages() []*FilteringPackage {

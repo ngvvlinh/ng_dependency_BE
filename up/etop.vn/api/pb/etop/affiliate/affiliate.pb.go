@@ -1,9 +1,7 @@
 package affiliate
 
 import (
-	_ "etop.vn/api/pb/common"
 	etop "etop.vn/api/pb/etop"
-	_ "etop.vn/api/pb/etop/etc/status3"
 	"etop.vn/common/jsonx"
 )
 

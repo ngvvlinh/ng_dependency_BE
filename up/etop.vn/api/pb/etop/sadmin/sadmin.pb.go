@@ -1,7 +1,6 @@
 package sadmin
 
 import (
-	_ "etop.vn/api/pb/common"
 	etop "etop.vn/api/pb/etop"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"

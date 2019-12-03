@@ -11,7 +11,7 @@ import (
 
 	common "etop.vn/api/pb/common"
 	sadmin "etop.vn/api/pb/etop/sadmin"
-	"etop.vn/capi"
+	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 

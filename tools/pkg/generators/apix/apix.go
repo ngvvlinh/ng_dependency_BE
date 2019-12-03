@@ -3,9 +3,8 @@ package apix
 import (
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api/defs"
 	"etop.vn/backend/tools/pkg/generators/api/parse"
 	"etop.vn/common/l"
 )

@@ -8,7 +8,6 @@ import (
 
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/backend/com/main/purchaseorder/model"
-	_ "etop.vn/backend/com/main/purchaseorder/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"

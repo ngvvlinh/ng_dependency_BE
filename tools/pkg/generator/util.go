@@ -23,22 +23,28 @@ const startDirectiveStr = "// +"
 var ll = l.New()
 var reCommand = regexp.MustCompile(`[a-z]([a-z0-9.:-]*[a-z0-9])?`)
 
-func FilterByCommand(command string) Filterer {
-	return filterByCommand(command)
+func FilterByCommand(command string) CommandFilter {
+	return CommandFilter(command)
 }
 
-type filterByCommand string
+type CommandFilter string
 
-func (cmd filterByCommand) Filter(ng FilterEngine) error {
+func (cmd CommandFilter) Filter(ng FilterEngine) error {
 	for _, p := range ng.ParsingPackages() {
-		for _, d := range p.Directives {
-			if d.Cmd == string(cmd) {
-				p.Include()
-				continue
-			}
+		if cmd.Include(p.Directives) {
+			p.Include()
 		}
 	}
 	return nil
+}
+
+func (cmd CommandFilter) Include(ds Directives) bool {
+	for _, d := range ds {
+		if d.Cmd == string(cmd) {
+			return true
+		}
+	}
+	return false
 }
 
 func defaultGeneratedFileName(tpl string) func(GenerateFileNameInput) string {

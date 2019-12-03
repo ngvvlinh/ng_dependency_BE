@@ -12,7 +12,7 @@ import (
 	common "etop.vn/api/pb/common"
 	external "etop.vn/api/pb/external"
 	partner "etop.vn/api/pb/external/partner"
-	"etop.vn/capi"
+	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 

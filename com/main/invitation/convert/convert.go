@@ -7,7 +7,6 @@ import (
 
 	"etop.vn/api/main/invitation"
 	"etop.vn/backend/com/main/invitation/model"
-	_ "etop.vn/backend/com/main/invitation/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )

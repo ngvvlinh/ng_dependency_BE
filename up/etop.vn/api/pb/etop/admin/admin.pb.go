@@ -7,7 +7,6 @@ import (
 	notifier_entity "etop.vn/api/pb/etop/etc/notifier_entity"
 	shipping "etop.vn/api/pb/etop/etc/shipping"
 	status3 "etop.vn/api/pb/etop/etc/status3"
-	_ "etop.vn/api/pb/etop/order"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )

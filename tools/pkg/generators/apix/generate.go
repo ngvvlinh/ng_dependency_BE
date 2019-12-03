@@ -22,6 +22,7 @@ type Opts struct {
 
 func generateServices(printer generator.Printer, opts Opts, services []*defs.Service) error {
 	currentPrinter = printer
+	printer.Import("capi", "etop.vn/capi")
 	printer.Import("context", "context")
 	printer.Import("fmt", "fmt")
 	printer.Import("http", "net/http")

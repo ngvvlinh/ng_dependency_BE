@@ -106,10 +106,10 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		ng.sortedIncludedPackages = sortedIncludedPackages
 	}
 	{
-		pkgPatterns := make([]string, len(ng.includedPatterns)+len(ng.sortedIncludedPackages))
-		copy(pkgPatterns, ng.includedPatterns)
-		for i, pkg := range ng.sortedIncludedPackages {
-			pkgPatterns[i] = pkg.PkgPath
+		pkgPatterns := make([]string, 0, len(ng.includedPatterns)+len(ng.sortedIncludedPackages))
+		pkgPatterns = append(pkgPatterns, ng.includedPatterns...)
+		for _, pkg := range ng.sortedIncludedPackages {
+			pkgPatterns = append(pkgPatterns, pkg.PkgPath)
 		}
 		ll.V(3).Debug("load all syntax from", l.Any("patterns", pkgPatterns))
 		if len(pkgPatterns) == 0 {

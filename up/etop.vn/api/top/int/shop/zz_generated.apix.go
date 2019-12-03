@@ -13,7 +13,7 @@ import (
 	etop "etop.vn/api/pb/etop"
 	order "etop.vn/api/pb/etop/order"
 	shop "etop.vn/api/pb/etop/shop"
-	"etop.vn/capi"
+	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
