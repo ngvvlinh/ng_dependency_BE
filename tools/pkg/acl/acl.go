@@ -74,6 +74,8 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.User/ChangePasswordUsingToken": {Type: Public},
 	"etop.User/ChangePassword":           {Type: CurUsr},
 
+	"etop.User/CheckUserRegistration": {Type: Public, Captcha: "1"},
+
 	"etop.User/SessionInfo":        {Type: CurUsr},
 	"etop.User/SwitchAccount":      {Type: CurUsr},
 	"etop.User/SendSTokenEmail":    {Type: CurUsr},

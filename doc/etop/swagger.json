@@ -744,6 +744,32 @@
         }
       }
     },
+    "/api/etop.User/CheckUserRegistration": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "CheckUserRegistration",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocGetUserByPhoneRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocGetUserByPhoneResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/Login": {
       "post": {
         "tags": [
@@ -1783,6 +1809,25 @@
           "items": {
             "$ref": "#/definitions/ocProvince"
           }
+        }
+      }
+    },
+    "ocGetUserByPhoneRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "recaptcha_token": {
+          "type": "string"
+        }
+      }
+    },
+    "ocGetUserByPhoneResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
         }
       }
     },

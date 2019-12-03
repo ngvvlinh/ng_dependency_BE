@@ -1038,3 +1038,29 @@ type Affiliate struct {
 
 func (m *Affiliate) Reset()         { *m = Affiliate{} }
 func (m *Affiliate) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetUserByPhoneRequest struct {
+	// @required
+	Phone          string `json:"phone"`
+	RecaptchaToken string `json:"recaptcha_token"`
+}
+
+func (m *GetUserByPhoneRequest) Reset()         { *m = GetUserByPhoneRequest{} }
+func (m *GetUserByPhoneRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetUserByPhoneResponse struct {
+	// @required
+	Exists bool `json:"exists"`
+}
+
+func (m *GetUserByPhoneResponse) Reset()         { *m = GetUserByPhoneResponse{} }
+func (m *GetUserByPhoneResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type SendPhoneVerifyRequest struct {
+	// @required
+	Phone          string `json:"phone"`
+	RecaptchaToken string `json:"recaptcha_token"`
+}
+
+func (m *SendPhoneVerifyRequest) Reset()         { *m = SendPhoneVerifyRequest{} }
+func (m *SendPhoneVerifyRequest) String() string { return jsonx.MustMarshalToString(m) }

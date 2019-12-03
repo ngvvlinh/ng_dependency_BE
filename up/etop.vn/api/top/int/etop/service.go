@@ -71,6 +71,8 @@ type UserService interface {
 	UpdateReferenceUser(context.Context, *pbetop.UpdateReferenceUserRequest) (*cm.UpdatedResponse, error)
 
 	UpdateReferenceSale(context.Context, *pbetop.UpdateReferenceSaleRequest) (*cm.UpdatedResponse, error)
+
+	CheckUserRegistration(context.Context, *pbetop.GetUserByPhoneRequest) (*pbetop.GetUserByPhoneResponse, error)
 }
 
 // +apix:path=/etop.Account

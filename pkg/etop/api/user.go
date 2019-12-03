@@ -68,6 +68,7 @@ func init() {
 		userService.VerifyPhoneUsingToken,
 		userService.UpdateReferenceUser,
 		userService.UpdateReferenceSale,
+		userService.CheckUserRegistration,
 	)
 }
 
@@ -302,6 +303,28 @@ func createRegisterResponse(user *model.User) *pbetop.RegisterResponse {
 	return &pbetop.RegisterResponse{
 		User: convertpb.PbUser(user),
 	}
+}
+
+func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserRegistrationEndpoint) error {
+	_, ok := validate.NormalizePhone(q.Phone)
+	if !ok {
+		q.Result = &pbetop.GetUserByPhoneResponse{Exists: false}
+		return nil
+	}
+
+	userByPhoneQuery := &model.GetUserByLoginQuery{
+		PhoneOrEmail: q.Phone,
+	}
+	err := bus.Dispatch(ctx, userByPhoneQuery)
+	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return err
+	}
+	if err != nil && cm.ErrorCode(err) == cm.NotFound {
+		q.Result = &pbetop.GetUserByPhoneResponse{Exists: false}
+		return nil
+	}
+	q.Result = &pbetop.GetUserByPhoneResponse{Exists: true}
+	return nil
 }
 
 func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail model.UserExtended, err error) {
@@ -869,7 +892,6 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	}
 	return r, nil
 }
-
 func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
 	res, err := idempgroup.DoAndWrap(key, 30*time.Second,

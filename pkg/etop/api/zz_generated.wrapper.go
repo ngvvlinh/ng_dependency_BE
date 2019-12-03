@@ -1243,6 +1243,40 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *etop
 	return resp, nil
 }
 
+type CheckUserRegistrationEndpoint struct {
+	*etop.GetUserByPhoneRequest
+	Result  *etop.GetUserByPhoneResponse
+	Context claims.EmptyClaim
+}
+
+func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *etop.GetUserByPhoneRequest) (resp *etop.GetUserByPhoneResponse, err error) {
+	t0 := time.Now()
+	var errs []*cm.Error
+	const rpcName = "etop.User/CheckUserRegistration"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	query := &CheckUserRegistrationEndpoint{GetUserByPhoneRequest: req}
+	// Verify captcha token
+	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
+		return nil, err
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CheckUserRegistration(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type LoginEndpoint struct {
 	*etop.LoginRequest
 	Result  *etop.LoginResponse
