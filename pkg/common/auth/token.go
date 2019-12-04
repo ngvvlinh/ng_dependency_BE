@@ -190,10 +190,7 @@ func (g *generator) SetInfo(tokenStr string, value string) error {
 		return err
 	}
 
-	t := Token{TokenStr: tokenStr}
-	t.ExpiresIn = ttl
-	key := t.ToKey()
-	err = g.redisStore.SetStringWithTTL(key, value, ttl)
+	err = g.redisStore.SetStringWithTTL(tokenStr, value, ttl)
 	if err != nil {
 		return err
 	}

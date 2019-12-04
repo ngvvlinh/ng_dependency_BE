@@ -431,6 +431,7 @@ func main() {
 	sms.Init(smsArg)
 	api.Init(
 		eventBus,
+		smsArg,
 		identityAggr,
 		identityQuery,
 		invitationAggr,

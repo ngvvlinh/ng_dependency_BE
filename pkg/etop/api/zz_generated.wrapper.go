@@ -1484,6 +1484,36 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 	return resp, nil
 }
 
+type InitSessionEndpoint struct {
+	*cm.Empty
+	Result  *api.LoginResponse
+	Context claims.EmptyClaim
+}
+
+func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {
+	t0 := time.Now()
+	var errs []*cm.Error
+	const rpcName = "etop.User/InitSession"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	query := &InitSessionEndpoint{Empty: req}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.InitSession(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type LoginEndpoint struct {
 	*api.LoginRequest
 	Result  *api.LoginResponse
@@ -1522,15 +1552,25 @@ type RegisterEndpoint struct {
 
 func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserRequest) (resp *api.RegisterResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/Register"
 	defer func() {
 		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &RegisterEndpoint{CreateUserRequest: req}
+	query.Context.Claim = session.Claim
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
 	resp = query.Result
@@ -1624,7 +1664,7 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 type SendPhoneVerificationEndpoint struct {
 	*api.SendPhoneVerificationRequest
 	Result  *cm.MessageResponse
-	Context claims.UserClaim
+	Context claims.EmptyClaim
 }
 
 func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.SendPhoneVerificationRequest) (resp *cm.MessageResponse, err error) {
@@ -1641,7 +1681,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:     ctx,
 		RequireAuth: true,
-		RequireUser: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
@@ -1649,12 +1688,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	session = sessionQuery.Result
 	query := &SendPhoneVerificationEndpoint{SendPhoneVerificationRequest: req}
 	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendPhoneVerification(ctx, query)
 	resp = query.Result
@@ -2047,7 +2080,7 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 type VerifyPhoneUsingTokenEndpoint struct {
 	*api.VerifyPhoneUsingTokenRequest
 	Result  *cm.MessageResponse
-	Context claims.UserClaim
+	Context claims.EmptyClaim
 }
 
 func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.VerifyPhoneUsingTokenRequest) (resp *cm.MessageResponse, err error) {
@@ -2064,7 +2097,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:     ctx,
 		RequireAuth: true,
-		RequireUser: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
@@ -2072,12 +2104,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	session = sessionQuery.Result
 	query := &VerifyPhoneUsingTokenEndpoint{VerifyPhoneUsingTokenRequest: req}
 	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyPhoneUsingToken(ctx, query)
 	resp = query.Result

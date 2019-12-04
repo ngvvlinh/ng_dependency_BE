@@ -9,8 +9,8 @@ import (
 
 	"etop.vn/api/top/int/etop"
 
+	apisms "etop.vn/api/etc/logging/smslog"
 	"etop.vn/api/main/authorization"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	pbcm "etop.vn/api/top/types/common"
@@ -45,6 +45,7 @@ var (
 	authStore              auth.Generator
 	enabledEmail           bool
 	enabledSMS             bool
+	smsAggr                apisms.CommandBus
 	cfgEmail               EmailConfig
 	identityAggr           identity.CommandBus
 	identityQS             identity.QueryBus
@@ -55,6 +56,12 @@ var (
 )
 
 const PrefixIdempUser = "IdempUser"
+
+const (
+	keyRequestVerifyCode  string = "request_phone_verification_code"
+	keyRequestVerifyPhone string = "request_phone_verification"
+	IsVerifyPhone         string = "request_phone_verification_verified"
+)
 
 func init() {
 	bus.AddHandlers("api",
@@ -86,6 +93,7 @@ type EmailConfig = config.EmailConfig
 
 func Init(
 	bus capi.EventBus,
+	smsCommandBus apisms.CommandBus,
 	identityCommandBus identity.CommandBus,
 	identityQueryBus identity.QueryBus,
 	invitationAggr invitation.CommandBus,
@@ -99,6 +107,7 @@ func Init(
 	_cfgSMS sms.Config,
 ) {
 	eventBus = bus
+	smsAggr = smsCommandBus
 	identityAggr = identityCommandBus
 	identityQS = identityQueryBus
 	invitationAggregate = invitationAggr
@@ -118,6 +127,8 @@ func Init(
 		}
 	}
 }
+
+type authKey struct{}
 
 // Register
 // 1a. If the user does not exist in the system, create a new user.
@@ -146,6 +157,9 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	if !ok {
 		return cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
+	if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
+		return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
+	}
 	if r.Email != "" {
 		emailNorm, ok = validate.NormalizeEmail(r.Email)
 		if !ok {
@@ -169,13 +183,8 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		}
 	}
 
-	userByPhone, userByEmail, err := s.getUserByPhoneAndByEmail(ctx, phoneNorm.String(), emailNorm.String())
-	if err != nil {
-		return err
-	}
-
 	// If no identifier exists, create new user
-	if userByPhone.User == nil && userByEmail.User == nil {
+	if r.Context.Extra[IsVerifyPhone] != "" && r.Context.UserID == 0 {
 		info := r.CreateUserRequest
 		cmd := &usering.CreateUserCommand{
 			UserInner: model.UserInner{
@@ -202,6 +211,10 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			User: convertpb.PbUser(cmd.Result.User),
 		}
 		return nil
+	}
+	userByPhone, userByEmail, err := s.getUserByPhoneAndByEmail(ctx, phoneNorm.String(), emailNorm.String())
+	if err != nil {
+		return err
 	}
 
 	// If any identifier is activated -> AlreadyExists
@@ -891,7 +904,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 }
 
 func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
-	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.User.ID, r.Phone)
+	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
 	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
 		func() (interface{}, error) {
 			return s.sendPhoneVerification(ctx, r)
@@ -911,8 +924,19 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	if r.Phone == "" {
 		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-	user := r.Context.User.User
+	// update token when user not exists
+	if r.Context.UserID == 0 {
+		return sendPhoneVerificationForRegister(ctx, r)
+	}
+	getUserByID := &model.GetUserByIDQuery{
+		UserID: r.Context.UserID,
+	}
+	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return r, err
+	}
+	user := getUserByID.Result
 	phoneNorm, ok := validate.NormalizePhone(r.Phone)
+
 	if !ok || user.Phone != phoneNorm.String() {
 		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
@@ -992,8 +1016,8 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 }
 
 func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) error {
-	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
+	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.Token, r.VerificationToken)
+	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.verifyPhoneUsingToken(ctx, r)
 		}, "xác nhận số điện thoại")
@@ -1009,8 +1033,23 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	if r.VerificationToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
-
-	user := r.Context.User
+	if r.Context.Extra[keyRequestVerifyCode] != r.Code {
+		r.Result = cmapi.Message("fail", "Mã xác thực không chính xác.")
+		return r, nil
+	}
+	if r.Context.UserID == 0 {
+		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+		return r, nil
+	}
+	getUserByID := &model.GetUserByIDQuery{
+		UserID: r.Context.UserID,
+	}
+	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return r, err
+	}
+	var v map[string]string
+	tok, _ := authStore.Validate(auth.UsagePhoneVerification, r.VerificationToken, &v)
+	user := getUserByID.Result
 	tok, code, v := getToken(auth.UsagePhoneVerification, user.ID)
 	if tok == nil || code == "" || v == nil {
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
@@ -1118,7 +1157,7 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 
 func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) error {
 	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", r.Context.User.ID, r.Email, r.AccountId)
-	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
+	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.sendSTokenEmail(ctx, r)
 		}, "gửi email xác nhận")
@@ -1276,4 +1315,86 @@ func (s *UserService) UpdateReferenceSale(ctx context.Context, r *UpdateReferenc
 		Updated: 1,
 	}
 	return nil
+}
+
+func (s *UserService) InitSession(ctx context.Context, r *InitSessionEndpoint) error {
+	tokenCmd := &tokens.GenerateTokenCommand{
+		ClaimInfo: claims.ClaimInfo{},
+	}
+	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+		return cm.Errorf(cm.Internal, err, "")
+	}
+
+	r.Result = generateShopLoginResponse(
+		tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn,
+	)
+	return nil
+}
+
+func generateShopLoginResponse(accessToken string, expiresIn int) *etop.LoginResponse {
+	resp := &etop.LoginResponse{
+		AccessToken: accessToken,
+		ExpiresIn:   expiresIn,
+	}
+	return resp
+}
+
+func getTokenValid(ctx context.Context, token string) string {
+	if token != "" {
+		return token
+	}
+	return getBearerTokenFromCtx(ctx)
+}
+
+func getBearerTokenFromCtx(ctx context.Context) string {
+	authHeader, ok := ctx.Value(authKey{}).(string)
+	if !ok {
+		return ""
+	}
+	token, _ := auth.FromHeaderString(authHeader)
+	return token
+}
+
+func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificationEndpoint) (*SendPhoneVerificationEndpoint, error) {
+	token := getTokenValid(ctx, r.Context.Token)
+	claim, err := tokens.Store.Validate(token)
+
+	if err != nil {
+		return r, nil
+	}
+	phoneNorm, ok := validate.NormalizePhone(r.Phone)
+
+	if !ok {
+		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+	}
+	_, code, _, err := generateToken(auth.UsagePhoneVerification, 0, true, 2*60*60, r.Phone)
+	if err != nil {
+		return r, err
+	}
+	msg := fmt.Sprintf(smsVerificationTpl, code, r.Phone)
+	phone := r.Phone
+	cmd := &sms.SendSMSCommand{
+		Phone:   phone,
+		Content: msg,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return r, err
+	}
+	if claim.Extra == nil {
+		claim.Extra = map[string]string{}
+	}
+	claim.Extra[keyRequestVerifyPhone] = phoneNorm.String()
+	claim.Extra[keyRequestVerifyCode] = code
+	claim.Extra[IsVerifyPhone] = "1"
+
+	updateSessionCmd := &tokens.UpdateSessionCommand{
+		Token:  r.Context.Claim.Token,
+		Values: claim.Extra,
+	}
+	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+		return r, err
+	}
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
+	return r, nil
 }

@@ -93,7 +93,6 @@ func (s TokenStore) Validate(tokenStr string) (*claims.Claim, error) {
 		ll.Error("Invalid access token", l.Error(err))
 		return nil, err
 	}
-
 	// UpdateInfo LastLoginAt every 1 minute
 	now := time.Now()
 	if now.Sub(v.LastLoginAt) > 1*time.Minute {
@@ -105,7 +104,6 @@ func (s TokenStore) Validate(tokenStr string) (*claims.Claim, error) {
 			ll.Error("Unable to update TTL", l.Error(err))
 		}
 	}
-
 	v.Token = tokenStr
 	v.UserID = tok.UserID
 	return &v, nil

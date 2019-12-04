@@ -848,6 +848,32 @@
         }
       }
     },
+    "/api/etop.User/InitSession": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "InitSession",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baLoginResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/Login": {
       "post": {
         "tags": [
@@ -2926,6 +2952,9 @@
     "baVerifyPhoneUsingTokenRequest": {
       "type": "object",
       "properties": {
+        "code": {
+          "type": "string"
+        },
         "verification_token": {
           "type": "string"
         }

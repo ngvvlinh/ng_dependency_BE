@@ -184,11 +184,13 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"admin.Misc/AdminLoginAsAccount": {Type: EtopAdmin},
 
-	"etop.User/Register":                 {Type: Public},
+	"etop.User/Register":                 {Type: Custom},
 	"etop.User/Login":                    {Type: Public},
 	"etop.User/ResetPassword":            {Type: Public},
 	"etop.User/ChangePasswordUsingToken": {Type: Public},
 	"etop.User/ChangePassword":           {Type: CurUsr},
+
+	"etop.User/InitSession": {Type: Public},
 
 	"etop.User/CheckUserRegistration": {Type: Public, Captcha: "1"},
 
@@ -200,9 +202,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.User/UpdatePermission": {Type: CurUsr},
 
 	"etop.User/SendEmailVerification": {Type: CurUsr},
-	"etop.User/SendPhoneVerification": {Type: CurUsr},
+	"etop.User/SendPhoneVerification": {Type: Custom},
 	"etop.User/VerifyEmailUsingToken": {Type: CurUsr},
-	"etop.User/VerifyPhoneUsingToken": {Type: CurUsr},
+	"etop.User/VerifyPhoneUsingToken": {Type: Custom},
 	"etop.User/UpdateReferenceUser":   {Type: CurUsr},
 	"etop.User/UpdateReferenceSale":   {Type: CurUsr},
 

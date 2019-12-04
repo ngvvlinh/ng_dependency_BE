@@ -32,6 +32,8 @@ type UserService interface {
 	// Return current session info.
 	SessionInfo(context.Context, *cm.Empty) (*LoginResponse, error)
 
+	InitSession(context.Context, *cm.Empty) (*LoginResponse, error)
+
 	// SwitchAccount
 	//
 	// Response error if the user does not have permission to the requested account.

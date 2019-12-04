@@ -15,6 +15,7 @@ const (
 	CurUsr
 	Partner
 	Shop
+
 	Affiliate
 	EtopAdmin
 

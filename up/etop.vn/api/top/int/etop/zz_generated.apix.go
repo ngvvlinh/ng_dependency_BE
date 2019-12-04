@@ -586,6 +586,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 			return s.inner.CheckUserRegistration(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/etop.User/InitSession":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.InitSession(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/etop.User/Login":
 		msg := &LoginRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
