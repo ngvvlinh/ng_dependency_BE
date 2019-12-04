@@ -5791,10 +5791,10 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *sho
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+	if !authorization.Check(query.Context.Roles, "shop/payment:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
-	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
+	query.Context.Actions = strings.Split("shop/payment:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentCheckReturnData(ctx, query)
 	resp = query.Result
@@ -5845,10 +5845,10 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *shop.P
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+	if !authorization.Check(query.Context.Roles, "shop/payment:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
-	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
+	query.Context.Actions = strings.Split("shop/payment:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentTradingOrder(ctx, query)
 	resp = query.Result
@@ -9882,15 +9882,6 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *order.T
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	isTest := 0
-	if query.Context.Shop != nil {
-		isTest = query.Context.Shop.IsTest
-	}
-	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/order:view", isTest) {
-		return nil, common.Error(common.PermissionDenied, "", nil)
-	}
-	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingCreateOrder(ctx, query)
 	resp = query.Result
@@ -9936,15 +9927,6 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	isTest := 0
-	if query.Context.Shop != nil {
-		isTest = query.Context.Shop.IsTest
-	}
-	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
-		return nil, common.Error(common.PermissionDenied, "", nil)
-	}
-	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrder(ctx, query)
 	resp = query.Result
@@ -9990,15 +9972,6 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *shop.GetO
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	isTest := 0
-	if query.Context.Shop != nil {
-		isTest = query.Context.Shop.IsTest
-	}
-	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
-		return nil, common.Error(common.PermissionDenied, "", nil)
-	}
-	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrders(ctx, query)
 	resp = query.Result
@@ -10044,15 +10017,6 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	isTest := 0
-	if query.Context.Shop != nil {
-		isTest = query.Context.Shop.IsTest
-	}
-	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/product:view", isTest) {
-		return nil, common.Error(common.PermissionDenied, "", nil)
-	}
-	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProduct(ctx, query)
 	resp = query.Result
@@ -10098,15 +10062,6 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	isTest := 0
-	if query.Context.Shop != nil {
-		isTest = query.Context.Shop.IsTest
-	}
-	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/trading/product:view", isTest) {
-		return nil, common.Error(common.PermissionDenied, "", nil)
-	}
-	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProducts(ctx, query)
 	resp = query.Result

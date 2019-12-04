@@ -160,11 +160,8 @@ const (
 	ShopSupplierDelete permission.ActionType = "shop/supplier:delete"
 	ShopSupplierView   permission.ActionType = "shop/supplier:view"
 
-	TradingOrderView       permission.ActionType = "trading/order:view"
-	TradingOrderCreate     permission.ActionType = "trading/order:create"
-	ShopTradingProductView permission.ActionType = "shop/trading/product:view"
-	ShopTradingOrderCreate permission.ActionType = "shop/trading/order:create"
-	ShopTradingOrderView   permission.ActionType = "shop/trading/order:view"
+	ShopPaymentCreate permission.ActionType = "shop/payment:create"
+	ShopPaymentView   permission.ActionType = "shop/payment:view"
 )
 
 // ACL declares access control list
@@ -515,14 +512,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Receipt/ConfirmReceipt":          {Type: Shop, Actions: actions(ShopReceiptConfirm)},
 	"shop.Receipt/CancelReceipt":           {Type: Shop, Actions: actions(ShopReceiptCancel)},
 
-	"shop.Trading/TradingGetProduct":  {Type: Shop, Actions: actions(ShopTradingProductView)},
-	"shop.Trading/TradingGetProducts": {Type: Shop, Actions: actions(ShopTradingProductView)},
-	"shop.Trading/TradingCreateOrder": {Type: Shop, Actions: actions(ShopTradingOrderView)},
-	"shop.Trading/TradingGetOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
-	"shop.Trading/TradingGetOrders":   {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Trading/TradingGetProduct":  {Type: Shop},
+	"shop.Trading/TradingGetProducts": {Type: Shop},
+	"shop.Trading/TradingCreateOrder": {Type: Shop},
+	"shop.Trading/TradingGetOrder":    {Type: Shop},
+	"shop.Trading/TradingGetOrders":   {Type: Shop},
 
-	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
-	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopPaymentCreate)},
+	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopPaymentView)},
 
 	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCreate)},
 	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},

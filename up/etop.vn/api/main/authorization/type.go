@@ -27,6 +27,24 @@ var Roles = [8]Role{
 	RoleStaffManagement,
 }
 
+var roleLabels = map[Role]string{
+	RoleAdmin:                "Quản trị viên",
+	RoleShopOwner:            "Chủ sở hữu",
+	RoleStaffManagement:      "Quản lý nhân viên",
+	RoleAnalyst:              "Phân tích",
+	RoleAccountant:           "Kế toán",
+	RoleSalesMan:             "Bán hàng",
+	RoleInventoryManagement:  "Quản lý kho",
+	RolePurchasingManagement: "Thu mua",
+}
+
+func ParseRoleLabels(roles []Role) (result []string) {
+	for _, role := range roles {
+		result = append(result, roleLabels[role])
+	}
+	return
+}
+
 type Authorization struct {
 	UserID    dot.ID
 	FullName  string

@@ -29,13 +29,13 @@ Nếu không phải bạn, hãy bỏ qua email này. Bạn cũng có thể sử 
 `))
 
 var EmailInvitationTpl = template.Must(template.New("email-verification").Parse(`
-Gửi {{.FullName}},<br><br>
+Gửi <b>{{.FullName}}</b>,<br><br>
 
 Bạn được <b>{{.InvitingUsername}}</b> mời tham gia cửa hàng <b>{{.ShopName}}</b> với vai trò <b>{{.ShopRoles}}</b>.<br>
 Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hiệu lực trong 24 giờ)<br><br>
 <a href="{{.URL}}">{{.URL}}</a><br><br>
 
-Nếu bạn không nhận ra shop trên, hãy bỏ qua email này.<br><br>
+Nếu bạn không nhận ra cửa hàng trên, hãy bỏ qua email này.<br><br>
 
 Đội ngũ eTop
 `))

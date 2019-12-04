@@ -69,6 +69,12 @@ func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
 	emailArg := args.Email
+	emailNorm, ok := validate.NormalizeEmail(args.Email)
+	if !ok {
+		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+	}
+	args.Email = emailNorm.String()
+
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
 	}
@@ -93,11 +99,6 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, err
 	}
 
-	emailNorm, ok := validate.NormalizeEmail(args.Email)
-	if !ok {
-		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
-	}
-	args.Email = emailNorm.String()
 	invitation := new(invitation.Invitation)
 	if err := scheme.Convert(args, invitation); err != nil {
 		return nil, err
@@ -147,8 +148,7 @@ func (a *InvitationAggregate) CreateInvitation(
 		if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
 			"FullName":         fullName,
 			"URL":              URL.String(),
-			"Email":            emailArg,
-			"ShopRoles":        strings.Join(convert.ConvertRolesToStrings(invitation.Roles), ", "),
+			"ShopRoles":        strings.Join(authorization.ParseRoleLabels(invitation.Roles), ", "),
 			"ShopName":         getAccountQuery.Result.Name,
 			"InvitingUsername": getUserQuery.Result.FullName,
 		}); err != nil {
@@ -221,9 +221,8 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email 
 
 func (a *InvitationAggregate) havePermissionToInvite(ctx context.Context, args *invitation.CreateInvitationArgs) error {
 	getAccountUserQuery := &etopmodel.GetAccountUserQuery{
-		UserID:          args.InvitedBy,
-		AccountID:       args.AccountID,
-		FindByAccountID: true,
+		UserID:    args.InvitedBy,
+		AccountID: args.AccountID,
 	}
 	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
 		return err

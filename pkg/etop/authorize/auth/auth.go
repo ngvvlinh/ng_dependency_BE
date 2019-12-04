@@ -95,7 +95,7 @@ const (
 	p, shop/receipt:update, admin, owner, accountant
 	p, shop/receipt:confirm, admin, owner, salesman, accountant, purchasing_management
 	p, shop/receipt:cancel, admin, owner, accountant
-	p, shop/receipt:view, admin, owner, salesman, accountant, purchasing_management
+	p, shop/receipt:view, admin, owner, accountant
 	# settings
 	p, shop/settings/shop_info:update, admin, owner
 	p, shop/settings/shop_info:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
@@ -137,12 +137,9 @@ const (
 	p, shop/supplier:update, admin, owner, purchasing_management
 	p, shop/supplier:delete, admin, owner, purchasing_management
 	p, shop/supplier:view, admin, owner, accountant, purchasing_management
-	# trading
-	p, trading/order:view, admin, owner, salesman
-	p, trading/order:create, admin, owner, salesman
-    p, shop/trading/product:view, admin
-    p, shop/trading/order:create, admin
-    p, shop/trading/order:view, admin`
+	# payment
+	p, shop/payment:create , admin, owner
+	p, shop/payment:view , admin, owner`
 )
 
 var (
