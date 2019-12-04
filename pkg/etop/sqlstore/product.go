@@ -107,7 +107,7 @@ func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVarian
 		return err
 	}
 
-	cmd.Result.Removed = int(updated)
+	cmd.Result.Removed = updated
 	return nil
 }
 
@@ -142,7 +142,7 @@ func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProduc
 			return err
 		}
 
-		cmd.Result.Removed = int(productsCount) + int(deletedCount)
+		cmd.Result.Removed = int(productsCount) + deletedCount
 		return nil
 	})
 }

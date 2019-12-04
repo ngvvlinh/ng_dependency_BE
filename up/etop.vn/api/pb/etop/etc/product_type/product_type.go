@@ -6,7 +6,7 @@ func (s *ProductType) ToProductType() catalog.ProductType {
 	if s == nil || *s == 0 {
 		return ""
 	}
-	return catalog.ProductType(ProductType_name[int(*s)])
+	return ProductType_name[int(*s)]
 }
 
 func PbProductType(s string) *ProductType {
@@ -14,6 +14,6 @@ func PbProductType(s string) *ProductType {
 	return &res
 }
 
-func (x ProductType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
+func (s ProductType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + s.String() + `"`), nil
 }

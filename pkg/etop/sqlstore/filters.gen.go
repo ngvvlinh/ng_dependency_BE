@@ -1002,7 +1002,7 @@ func (ft *ShopFilters) ByAutoCreateFFM(AutoCreateFFM bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "auto_create_ffm",
 		Value:  AutoCreateFFM,
-		IsNil:  bool(!AutoCreateFFM),
+		IsNil:  !AutoCreateFFM,
 	}
 }
 
@@ -1012,7 +1012,7 @@ func (ft *ShopFilters) ByAutoCreateFFMPtr(AutoCreateFFM *bool) *sq.ColumnFilterP
 		Column: "auto_create_ffm",
 		Value:  AutoCreateFFM,
 		IsNil:  AutoCreateFFM == nil,
-		IsZero: AutoCreateFFM != nil && bool(!(*AutoCreateFFM)),
+		IsZero: AutoCreateFFM != nil && !(*AutoCreateFFM),
 	}
 }
 
@@ -1410,7 +1410,7 @@ func (ft *PartnerFilters) ByAvailableFromEtop(AvailableFromEtop bool) *sq.Column
 		Prefix: &ft.prefix,
 		Column: "available_from_etop",
 		Value:  AvailableFromEtop,
-		IsNil:  bool(!AvailableFromEtop),
+		IsNil:  !AvailableFromEtop,
 	}
 }
 
@@ -1420,7 +1420,7 @@ func (ft *PartnerFilters) ByAvailableFromEtopPtr(AvailableFromEtop *bool) *sq.Co
 		Column: "available_from_etop",
 		Value:  AvailableFromEtop,
 		IsNil:  AvailableFromEtop == nil,
-		IsZero: AvailableFromEtop != nil && bool(!(*AvailableFromEtop)),
+		IsZero: AvailableFromEtop != nil && !(*AvailableFromEtop),
 	}
 }
 

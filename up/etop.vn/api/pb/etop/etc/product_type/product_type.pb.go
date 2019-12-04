@@ -24,21 +24,21 @@ var ProductType_value = map[string]int{
 	"goods":    2,
 }
 
-func (x ProductType) Enum() *ProductType {
+func (s ProductType) Enum() *ProductType {
 	p := new(ProductType)
-	*p = x
+	*p = s
 	return p
 }
 
-func (x ProductType) String() string {
-	return jsonx.EnumName(ProductType_name, int(x))
+func (s ProductType) String() string {
+	return jsonx.EnumName(ProductType_name, int(s))
 }
 
-func (x *ProductType) UnmarshalJSON(data []byte) error {
+func (s *ProductType) UnmarshalJSON(data []byte) error {
 	value, err := jsonx.UnmarshalJSONEnum(ProductType_value, data, "ProductType")
 	if err != nil {
 		return err
 	}
-	*x = ProductType(value)
+	*s = ProductType(value)
 	return nil
 }

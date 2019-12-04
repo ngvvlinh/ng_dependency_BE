@@ -372,7 +372,7 @@ func ToShippingService(lines []*model.ShippingFeeLine, providerServiceID string,
 	}
 	shippingFeeShop := 0
 	for _, line := range lines {
-		shippingFeeShop += int(line.Cost)
+		shippingFeeShop += line.Cost
 	}
 	return &model.AvailableShippingService{
 		Name:               orderService.Name(),

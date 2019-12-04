@@ -139,7 +139,7 @@ func (c *Carrier) getAvailableServices(ctx context.Context, points []*client.Del
 		if i == 0 {
 			continue
 		}
-		totalCOD += int(point.COD)
+		totalCOD += point.COD
 		if provinceCode == "" {
 			provinceCode = point.ProvinceCode
 			continue

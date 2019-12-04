@@ -73,7 +73,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
 		CategoryID:  in.CategoryID,
-		ProductType: catalog.ProductType(in.ProductType),
+		ProductType: in.ProductType,
 		MetaFields:  metaFields,
 		BrandID:     in.BrandID,
 	}
@@ -149,7 +149,7 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		DeletedAt:   time.Time{},
 		NameNorm:    validate.NormalizeSearch(in.Name),
 		NameNormUa:  validate.NormalizeUnaccent(in.Name),
-		ProductType: string(in.ProductType),
+		ProductType: in.ProductType,
 		MetaFields:  metaFields,
 		BrandID:     in.BrandID,
 	}

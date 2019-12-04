@@ -2,11 +2,11 @@ package payment_provider
 
 import "etop.vn/api/external/payment"
 
-func (s *PaymentProvider) ToPaymentProvider() payment.PaymentProvider {
-	if s == nil || *s == 0 {
+func (x *PaymentProvider) ToPaymentProvider() payment.PaymentProvider {
+	if x == nil || *x == 0 {
 		return ""
 	}
-	return payment.PaymentProvider(PaymentProvider_name[int(*s)])
+	return payment.PaymentProvider(PaymentProvider_name[int(*x)])
 }
 
 func (x PaymentProvider) MarshalJSON() ([]byte, error) {

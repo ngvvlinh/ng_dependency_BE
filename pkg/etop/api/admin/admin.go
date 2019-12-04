@@ -156,7 +156,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }
@@ -187,7 +187,7 @@ func (s *MoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context, q
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -215,7 +215,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx conte
 	}
 	q.Result = &pborder.MoneyTransactionShippingExternalsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
-		Paging:            cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }
@@ -240,7 +240,7 @@ func (s *MoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx con
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int(cmd.Result.Deleted),
+		Removed: cmd.Result.Deleted,
 	}
 	return nil
 }
@@ -254,7 +254,7 @@ func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingExternal(ctx co
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -268,7 +268,7 @@ func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ctx c
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -307,7 +307,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 		return err
 	}
 	q.Result = &pbadmin.GetShopsResponse{
-		Paging: cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Shops:  convertpb.PbShopExtendeds(query.Result.Shops),
 	}
 	return nil
@@ -350,7 +350,7 @@ func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) e
 	}
 	q.Result = &pbetop.CreditsResponse{
 		Credits: convertpb.PbCreditExtendeds(query.Result.Credits),
-		Paging:  cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:  cmapi.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }
@@ -378,7 +378,7 @@ func (s *CreditService) ConfirmCredit(ctx context.Context, q *ConfirmCreditEndpo
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -391,7 +391,7 @@ func (s *CreditService) DeleteCredit(ctx context.Context, q *DeleteCreditEndpoin
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int(cmd.Result.Deleted),
+		Removed: cmd.Result.Deleted,
 	}
 	return nil
 }
@@ -415,14 +415,14 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 		TotalCODAmount:           q.TotalCodAmount,
 		IsPartialDelivery:        q.IsPartialDelivery,
 		AdminNote:                q.AdminNote,
-		ActualCompensationAmount: int(q.ActualCompensationAmount),
+		ActualCompensationAmount: q.ActualCompensationAmount,
 		ShippingState:            convertpb.ShippingStateToModel(q.ShippingState),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -472,7 +472,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.C
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionShippingEtopsResponse{
-		Paging:                        cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:                        cmapi.PbPageInfo(paging, query.Result.Total),
 		MoneyTransactionShippingEtops: convertpb.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
 	}
 	return nil
@@ -514,7 +514,7 @@ func (s *MoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx context
 		return err
 	}
 	q.Result = &pbcm.DeletedResponse{
-		Deleted: int(cmd.Result.Deleted),
+		Deleted: cmd.Result.Deleted,
 	}
 	return nil
 }
@@ -530,7 +530,7 @@ func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx contex
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -550,8 +550,8 @@ func (s *NotificationService) CreateNotifications(ctx context.Context, q *Create
 		return err
 	}
 	q.Result = &pbadmin.CreateNotificationsResponse{
-		Created: int(created),
-		Errored: int(errored),
+		Created: created,
+		Errored: errored,
 	}
 	return nil
 }

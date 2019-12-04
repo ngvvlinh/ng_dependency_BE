@@ -402,7 +402,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
 		CreatedAt:       cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:       cmapi.PbTime(m.UpdatedAt),
-		ProductType:     pbproducttype.PbProductType(string(m.ProductType)),
+		ProductType:     pbproducttype.PbProductType(m.ProductType),
 		MetaFields:      metaFields,
 		BrandId:         m.BrandID,
 	}

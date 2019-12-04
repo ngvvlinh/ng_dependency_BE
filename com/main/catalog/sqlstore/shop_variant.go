@@ -208,7 +208,7 @@ func (s *ShopVariantStore) UpdateStatusShopVariant(status int16) (int, error) {
 	updateStatus, err := query.Table("shop_variant").UpdateMap(map[string]interface{}{
 		"status": status,
 	})
-	return int(updateStatus), err
+	return updateStatus, err
 }
 
 func (s *ShopVariantStore) UpdateImageShopVariant(variant *catalog.ShopVariant) error {

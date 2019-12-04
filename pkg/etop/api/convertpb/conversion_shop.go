@@ -53,7 +53,7 @@ func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.Ext
 		Id:                                in.ID,
 		ShopId:                            in.ShopID,
 		Subdomain:                         in.Subdomain,
-		ExternalCarrierServiceId:          int(in.ExternalCarrierServiceID),
+		ExternalCarrierServiceId:          in.ExternalCarrierServiceID,
 		ExternalConnectedCarrierServiceAt: cmapi.PbTime(in.ExternalConnectedCarrierServiceAt),
 		ExpiresAt:                         cmapi.PbTime(in.ExpiresAt),
 		CreatedAt:                         cmapi.PbTime(in.CreatedAt),
@@ -68,7 +68,7 @@ func Convert_api_ReceiptLine_To_core_ReceiptLine(in *shop.ReceiptLine) *receipti
 	return &receipting.ReceiptLine{
 		RefID:  in.RefId,
 		Title:  in.Title,
-		Amount: int(in.Amount),
+		Amount: in.Amount,
 	}
 }
 

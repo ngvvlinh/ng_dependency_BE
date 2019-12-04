@@ -547,15 +547,15 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	}
 	totalAmount = basketValue - totalDiscount + totalFee
 
-	if basketValue != int(q.BasketValue) {
+	if basketValue != q.BasketValue {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không đúng", nil).
 			WithMetap("expected basket_value (= sum(lines.retail_price))", basketValue)
 	}
-	if totalAmount != int(q.TotalAmount) {
+	if totalAmount != q.TotalAmount {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng số tiền không đúng", nil).
 			WithMetap("expected total_amount (= basket_value + shop_shipping_fee - total_discount)", totalAmount)
 	}
-	if totalItems != int(q.TotalItems) {
+	if totalItems != q.TotalItems {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng số lượng sản phẩm không đúng", nil).
 			WithMetap("expected total_items", totalItems)
 	}
@@ -664,14 +664,14 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		ShippingNote:    cm.Coalesce(q.ShippingNote, fakeOrder.ShippingNote),
 		ShopShippingFee: dot.Int(shopShippingFee),
 		TryOn:           fakeOrder.TryOn,
-		TotalWeight:     cm.CoalesceInt(int(q.TotalWeight), fakeOrder.TotalWeight),
+		TotalWeight:     cm.CoalesceInt(q.TotalWeight, fakeOrder.TotalWeight),
 		ShopShipping:    fakeOrder.ShopShipping,
 		Lines:           lines,
 		FeeLines:        feeLines,
 		TotalFee:        dot.Int(totalFee),
-		BasketValue:     int(q.BasketValue),
-		TotalAmount:     int(q.TotalAmount),
-		TotalItems:      int(q.TotalItems),
+		BasketValue:     q.BasketValue,
+		TotalAmount:     q.TotalAmount,
+		TotalItems:      q.TotalItems,
 		OrderDiscount:   dot.Int(orderDiscount),
 		TotalDiscount:   totalDiscount,
 		ShopCOD:         shopCod,
@@ -749,11 +749,11 @@ func prepareOrderLine(
 	line := &ordermodel.OrderLine{
 		ShopID:          shopID,
 		IsOutsideEtop:   m.VariantId == 0,
-		Quantity:        int(m.Quantity),
-		ListPrice:       int(m.ListPrice),
-		RetailPrice:     int(m.RetailPrice), // will be over-written if a variant is provided
-		PaymentPrice:    int(m.PaymentPrice),
-		LineAmount:      int(m.Quantity) * int(m.RetailPrice),
+		Quantity:        m.Quantity,
+		ListPrice:       m.ListPrice,
+		RetailPrice:     m.RetailPrice, // will be over-written if a variant is provided
+		PaymentPrice:    m.PaymentPrice,
+		LineAmount:      m.Quantity * m.RetailPrice,
 		ImageURL:        m.ImageUrl,
 		ProductName:     productName,
 		Attributes:      convertpb.PbAttributesToModel(m.Attributes),
@@ -769,7 +769,7 @@ func prepareOrderLine(
 		line.ProductID = v.ShopProduct.ProductID
 		line.ProductName = model.CoalesceString2(v.ShopProduct.Name, v.ShopProduct.Name)
 
-		line.ListPrice = int(v.GetListPrice())
+		line.ListPrice = v.GetListPrice()
 
 		if len(v.ShopVariant.ImageURLs) > 0 {
 			line.ImageURL = v.ShopVariant.ImageURLs[0]
@@ -778,7 +778,7 @@ func prepareOrderLine(
 		}
 
 		if v.ShopVariant != nil {
-			line.RetailPrice = int(v.GetRetailPrice())
+			line.RetailPrice = v.GetRetailPrice()
 			originalPrice = v.GetRetailPrice()
 		}
 		line.Attributes = convert.AttributesDB(v.ShopVariant.Attributes)
@@ -788,8 +788,8 @@ func prepareOrderLine(
 			`Giá bán lẻ của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`,
 			m.ProductName)
 	}
-	line.TotalDiscount = int(m.Quantity * (originalPrice - m.PaymentPrice))
-	line.TotalLineAmount = int(m.Quantity) * int(m.PaymentPrice)
+	line.TotalDiscount = m.Quantity * (originalPrice - m.PaymentPrice)
+	line.TotalLineAmount = m.Quantity * m.PaymentPrice
 	return line, nil
 }
 
@@ -819,7 +819,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 	for _, line := range feeLines {
 		totalFee += line.Amount
 	}
-	if m.TotalFee != 0 && int(m.TotalFee) != totalFee {
+	if m.TotalFee != 0 && m.TotalFee != totalFee {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng phí không đúng").
 			WithMetap("expected total_fee (= SUM(fee_lines.amount))", totalFee)
 	}
@@ -834,7 +834,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 			}
 		}
 	}
-	if m.ShopShippingFee != 0 && int(m.ShopShippingFee) != shopShippingFee {
+	if m.ShopShippingFee != 0 && m.ShopShippingFee != shopShippingFee {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phí giao hàng không đúng").
 			WithMetap("expected shop_shipping_cod (= SUM(fee_lines.amount) WHERE (type=shipping))", totalFee)
 	}
@@ -847,32 +847,32 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 			totalItems += line.Quantity
 		}
 	} else {
-		basketValue = int(m.BasketValue)
-		totalItems = int(m.TotalItems)
+		basketValue = m.BasketValue
+		totalItems = m.TotalItems
 	}
 	totalLineDiscount := ordermodelx.SumOrderLineDiscount(lines)
-	orderDiscount := int(m.OrderDiscount)
+	orderDiscount := m.OrderDiscount
 	totalDiscount = totalLineDiscount + orderDiscount
 	if m.TotalDiscount.Apply(totalDiscount) != totalDiscount {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng giá trị giảm không đúng", nil).
 			WithMetap("expected total_discount (= order_discount + sum(lines.total_discount))", totalDiscount)
 	}
-	if len(lines) != 0 && basketValue != int(m.BasketValue) {
+	if len(lines) != 0 && basketValue != m.BasketValue {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không đúng", nil).
 			WithMetap("expected basket_value (= sum(lines.retail_price))", basketValue)
 	}
 
-	basketValue = int(m.BasketValue)
+	basketValue = m.BasketValue
 	totalAmount = basketValue - totalDiscount + totalFee
 
 	// if totalDiscount != int(m.TotalDiscount) {
 	// 	return nil, cm.Error(cm.InvalidArgument, "Invalid TotalDiscount", nil)
 	// }
-	if totalAmount != int(m.TotalAmount) {
+	if totalAmount != m.TotalAmount {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng số tiền không đúng", nil).
 			WithMetap("expected total_amount (= basket_value + total_fee - total_discount)", totalAmount)
 	}
-	if totalItems != int(m.TotalItems) {
+	if totalItems != m.TotalItems {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng số lượng sản phẩm không đúng", nil).
 			WithMetap("expected total_items", totalItems)
 	}
@@ -955,17 +955,17 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 		FulfillmentPaymentStatuses: nil,
 		Lines:                      lines,
 		Discounts:                  convertpb.PbOrderDiscountsToModel(m.Discounts),
-		TotalItems:                 int(m.TotalItems),
-		BasketValue:                int(m.BasketValue),
-		TotalWeight:                int(m.TotalWeight),
+		TotalItems:                 m.TotalItems,
+		BasketValue:                m.BasketValue,
+		TotalWeight:                m.TotalWeight,
 		TotalTax:                   0,
 		OrderDiscount:              orderDiscount,
 		TotalDiscount:              totalDiscount,
 		ShopShippingFee:            shopShippingFee,
 		TotalFee:                   totalFee,
 		FeeLines:                   feeLines,
-		ShopCOD:                    int(m.ShopCod),
-		TotalAmount:                int(m.TotalAmount),
+		ShopCOD:                    m.ShopCod,
+		TotalAmount:                m.TotalAmount,
 		OrderNote:                  m.OrderNote,
 		ShopNote:                   "",
 		ShippingNote:               m.ShippingNote,

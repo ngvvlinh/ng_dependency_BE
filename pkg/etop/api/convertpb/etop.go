@@ -709,7 +709,7 @@ func PbDevice(m *notimodel.Device) *etop.Device {
 		DeviceId:          m.DeviceID,
 		DeviceName:        m.DeviceName,
 		ExternalDeviceId:  m.ExternalDeviceID,
-		ExternalServiceId: int(m.ExternalServiceID),
+		ExternalServiceId: m.ExternalServiceID,
 		CreatedAt:         cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:         cmapi.PbTime(m.UpdatedAt),
 	}

@@ -168,7 +168,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	externalID := strconv.FormatInt(int64(args.ExternalOrderID), 10)
 	externalFulfillmentID := strconv.FormatInt(int64(args.ExternalFulfillmentID), 10)
-	totalValue := int(getOrderValue(args.Items))
+	totalValue := getOrderValue(args.Items)
 	codAmount := int(args.CodAmount)
 	weight := int(args.TotalGrams)
 	carrier := convertpb.PbShippingProviderType(service.Provider)
@@ -249,9 +249,9 @@ func (a *Aggregate) GetOrder(ctx context.Context, args *gateway.GetOrderRequestA
 	ffm := ffmQuery.Result
 	return &gateway.GetOrderResponse{
 		TrackingNumber: ffm.ShippingCode,
-		ShippingFee:    int(ffm.ShippingFeeShop),
+		ShippingFee:    ffm.ShippingFeeShop,
 		TrackingURL:    generateTrackingUrl(ffm.ShopID),
-		CodAmount:      int(ffm.TotalCODAmount),
+		CodAmount:      ffm.TotalCODAmount,
 		Status:         haravanconvert.ToFulfillmentState(ffm.ShippingState).Name(),
 		CodStatus:      haravanconvert.ToCODStatus(ffm.EtopPaymentStatus).Name(),
 	}, nil

@@ -105,7 +105,7 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
 	codeNorm := maxCodeNorm + 1
-	purchaseOrder.Code = convert.GenerateCode(int(codeNorm))
+	purchaseOrder.Code = convert.GenerateCode(codeNorm)
 	purchaseOrder.CodeNorm = codeNorm
 	if err := a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
 		return nil, err

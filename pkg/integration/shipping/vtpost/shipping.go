@@ -168,16 +168,16 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 			SenderAddress:      cm.Coalesce(ffm.AddressFrom.Address1, ffm.AddressFrom.Address2),
 			SenderPhone:        ffm.AddressFrom.Phone,
 			SenderEmail:        ffm.AddressFrom.Email,
-			SenderWard:         int(fromWard.VtpostId),
-			SenderDistrict:     int(fromDistrict.VtpostId),
-			SenderProvince:     int(fromProvince.VtpostId),
+			SenderWard:         fromWard.VtpostId,
+			SenderDistrict:     fromDistrict.VtpostId,
+			SenderProvince:     fromProvince.VtpostId,
 			ReceiverFullname:   ffm.AddressTo.GetFullName(),
 			ReceiverAddress:    cm.Coalesce(ffm.AddressTo.Address1, ffm.AddressTo.Address2),
 			ReceiverPhone:      ffm.AddressTo.Phone,
 			ReceiverEmail:      ffm.AddressTo.Email,
-			ReceiverWard:       int(toWard.VtpostId),
-			ReceiverDistrict:   int(toDistrict.VtpostId),
-			ReceiverProvince:   int(toProvince.VtpostId),
+			ReceiverWard:       toWard.VtpostId,
+			ReceiverDistrict:   toDistrict.VtpostId,
+			ReceiverProvince:   toProvince.VtpostId,
 			ProductPrice:       valueInsurance,
 			ProductWeight:      weight,
 			OrderNote:          note,
@@ -275,10 +275,10 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 		ToProvince:   toProvince,
 		ToDistrict:   toDistrict,
 		Request: &vtpostclient.CalcShippingFeeAllServicesRequest{
-			SenderProvince:   int(fromProvince.VtpostId),
-			SenderDistrict:   int(fromDistrict.VtpostId),
-			ReceiverProvince: int(toProvince.VtpostId),
-			ReceiverDistrict: int(toDistrict.VtpostId),
+			SenderProvince:   fromProvince.VtpostId,
+			SenderDistrict:   fromDistrict.VtpostId,
+			ReceiverProvince: toProvince.VtpostId,
+			ReceiverDistrict: toDistrict.VtpostId,
 			ProductWeight:    args.ChargeableWeight,
 			ProductPrice:     args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 			MoneyCollection:  args.CODAmount,
@@ -295,7 +295,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return c.GetShippingServices(ctx, args)
 }
 
-func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+func (c *Carrier) GetMaxValueFreeInsuranceFee() int {
 	// Follow the policy of provider
 	return 0
 }

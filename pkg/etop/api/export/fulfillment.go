@@ -32,9 +32,9 @@ func ExportFulfillments(
 	makeProgress := func() *pbshop.ExportStatusItem {
 		return &pbshop.ExportStatusItem{
 			Id:            id,
-			ProgressMax:   int(total),
-			ProgressValue: int(count),
-			ProgressError: int(countError),
+			ProgressMax:   total,
+			ProgressValue: count,
+			ProgressError: countError,
 		}
 	}
 	handleError := func(err error) bool {

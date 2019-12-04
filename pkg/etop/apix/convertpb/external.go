@@ -83,9 +83,9 @@ func PbWebhookError(m *sender.WebhookStatesError) *external.WebhookError {
 	}
 	return &external.WebhookError{
 		Error:      m.ErrorMsg,
-		RespStatus: int(m.Status),
+		RespStatus: m.Status,
 		RespBody:   m.Response,
-		Retried:    int(m.Retried),
+		Retried:    m.Retried,
 		SentAt:     cmapi.PbTime(m.SentAt),
 	}
 }
@@ -251,9 +251,9 @@ func PbOrderLine(m *ordermodel.OrderLine) *external.OrderLine {
 		VariantId:    m.VariantID,
 		ProductId:    m.ProductID,
 		ProductName:  m.ProductName,
-		Quantity:     int(m.Quantity),
-		ListPrice:    int(m.ListPrice),
-		RetailPrice:  int(m.RetailPrice),
+		Quantity:     m.Quantity,
+		ListPrice:    m.ListPrice,
+		RetailPrice:  m.RetailPrice,
 		PaymentPrice: cmapi.PbPtrInt(m.PaymentPrice),
 		ImageUrl:     m.ImageURL,
 		Attributes:   convertpb.PbAttributesFromModel(m.Attributes),
@@ -455,7 +455,7 @@ func PbShippingService(m *model.AvailableShippingService) *external.ShippingServ
 	return &external.ShippingService{
 		Code:                m.ProviderServiceID,
 		Name:                m.Name,
-		Fee:                 int(m.ServiceFee),
+		Fee:                 m.ServiceFee,
 		Carrier:             convertpb.PbShippingProviderType(m.Provider),
 		EstimatedPickupAt:   cmapi.PbTime(m.ExpectedPickAt),
 		EstimatedDeliveryAt: cmapi.PbTime(m.ExpectedDeliveryAt),

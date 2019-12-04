@@ -11,10 +11,10 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 var _ = sqlgenFulfillmentExtended(
-	&FulfillmentExtended{}, &shipmodel.Fulfillment{}, sq.AS("f"),
-	sq.JOIN, &model.Shop{}, sq.AS("s"), "s.id = f.shop_id",
-	sq.JOIN, &ordermodel.Order{}, sq.AS("o"), "o.id = f.order_id",
-	sq.LEFT_JOIN, &txmodel.MoneyTransactionShipping{}, sq.AS("m"), "f.money_transaction_id = m.id",
+	&FulfillmentExtended{}, &shipmodel.Fulfillment{}, "f",
+	sq.JOIN, &model.Shop{}, "s", "s.id = f.shop_id",
+	sq.JOIN, &ordermodel.Order{}, "o", "o.id = f.order_id",
+	sq.LEFT_JOIN, &txmodel.MoneyTransactionShipping{}, "m", "f.money_transaction_id = m.id",
 )
 
 type FulfillmentExtended struct {

@@ -93,7 +93,7 @@ func (d *District) GetDistrictIndex(codeType location.LocationCodeType) string {
 		if d.GhnID == 0 {
 			return ""
 		}
-		return strconv.Itoa(int(d.GhnID))
+		return strconv.Itoa(d.GhnID)
 	case location.LocCodeTypeInternal:
 		return d.Code
 	default:

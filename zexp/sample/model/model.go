@@ -29,8 +29,8 @@ type Account struct {
 }
 
 var _ = sqlgenFooWithAccount(
-	&FooWithAccount{}, &Foo{}, sq.AS("foo"),
-	sq.JOIN, &Account{}, sq.AS("a"), "foo.account_id = a.id",
+	&FooWithAccount{}, &Foo{}, "foo",
+	sq.JOIN, &Account{}, "a", "foo.account_id = a.id",
 )
 
 type FooWithAccount struct {

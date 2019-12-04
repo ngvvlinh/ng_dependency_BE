@@ -180,7 +180,7 @@ func GetAccountUserExtendeds(ctx context.Context, query *model.GetAccountUserExt
 		if err != nil {
 			return nil
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -261,6 +261,6 @@ func DeleteAccountUser(ctx context.Context, cmd *model.DeleteAccountUserCommand)
 		return err
 	}
 
-	cmd.Result.Updated = int(updated)
+	cmd.Result.Updated = updated
 	return nil
 }

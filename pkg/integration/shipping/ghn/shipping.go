@@ -55,7 +55,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 	return nil
 }
 
-func (p *Carrier) CreateFulfillment(
+func (c *Carrier) CreateFulfillment(
 	ctx context.Context,
 	order *ordermodel.Order,
 	ffm *shipmodel.Fulfillment,
@@ -72,17 +72,17 @@ func (p *Carrier) CreateFulfillment(
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
-	if err := p.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
 	toDistrict := toQuery.Result.District
-	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	ghnCmd := &RequestCreateOrderCommand{
 		ServiceID: service.ProviderServiceID,
 		Request: &ghnclient.CreateOrderRequest{
-			FromDistrictID:     int(fromQuery.Result.District.GhnId),
-			ToDistrictID:       int(toQuery.Result.District.GhnId),
+			FromDistrictID:     fromQuery.Result.District.GhnId,
+			ToDistrictID:       toQuery.Result.District.GhnId,
 			Note:               note,
 			ExternalCode:       ffm.ID.String(),
 			ClientContactName:  ffm.AddressFrom.GetFullName(),
@@ -103,7 +103,7 @@ func (p *Carrier) CreateFulfillment(
 
 	if ffm.AddressReturn != nil {
 		returnQuery := &location.GetLocationQuery{DistrictCode: ffm.AddressReturn.DistrictCode}
-		if err := p.location.Dispatch(ctx, returnQuery); err != nil {
+		if err := c.location.Dispatch(ctx, returnQuery); err != nil {
 			return nil, cm.Errorf(cm.InvalidArgument, err, "địa chỉ trả hàng không hợp lệ: %v", err)
 		}
 		returnDistrict := returnQuery.Result.District
@@ -111,13 +111,13 @@ func (p *Carrier) CreateFulfillment(
 		ghnCmd.Request.ReturnContactName = ffm.AddressReturn.GetFullName()
 		ghnCmd.Request.ReturnContactPhone = ffm.AddressReturn.Phone
 		ghnCmd.Request.ReturnAddress = ffm.AddressReturn.GetFullAddress()
-		ghnCmd.Request.ReturnDistrictID = int(returnDistrict.GhnId)
+		ghnCmd.Request.ReturnDistrictID = returnDistrict.GhnId
 
 		// ExternalReturnCode is required, we generate a random code here
 		ghnCmd.Request.ExternalReturnCode = cm.IDToDec(cm.NewID())
 	}
 
-	if ghnErr := p.CreateOrder(ctx, ghnCmd); ghnErr != nil {
+	if ghnErr := c.CreateOrder(ctx, ghnCmd); ghnErr != nil {
 		return nil, ghnErr
 	}
 
@@ -157,7 +157,7 @@ func (p *Carrier) CreateFulfillment(
 			OrderCode: r.OrderCode.String(),
 		},
 	}
-	if err := p.GetOrder(ctx, ghnGetOrderCmd); err == nil {
+	if err := c.GetOrder(ctx, ghnGetOrderCmd); err == nil {
 		updateFfm.ProviderShippingFeeLines = ghnclient.CalcAndConvertShippingFeeLines(ghnGetOrderCmd.Result.ShippingOrderCosts)
 	}
 
@@ -165,7 +165,7 @@ func (p *Carrier) CreateFulfillment(
 	return updateFfm, nil
 }
 
-func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
+func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
 	code := ffm.ExternalShippingCode
 	var ghnErr error
 	providerServiceID := ffm.ProviderServiceID
@@ -175,14 +175,14 @@ func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 			ServiceID: providerServiceID,
 			Request:   &ghnclient.OrderCodeRequest{OrderCode: code},
 		}
-		ghnErr = p.CancelOrder(ctx, ghnCmd)
+		ghnErr = c.CancelOrder(ctx, ghnCmd)
 
 	case model.FfmActionReturn:
 		ghnCmd := &RequestReturnOrderCommand{
 			ServiceID: providerServiceID,
 			Request:   &ghnclient.OrderCodeRequest{OrderCode: code},
 		}
-		ghnErr = p.ReturnOrder(ctx, ghnCmd)
+		ghnErr = c.ReturnOrder(ctx, ghnCmd)
 
 	default:
 		panic("expected")
@@ -190,10 +190,10 @@ func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 	return ghnErr
 }
 
-func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
-	if err := p.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
 	fromDistrict, toDistrict := fromQuery.Result.District, toQuery.Result.District
@@ -203,7 +203,7 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 	if toDistrict.GhnId == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "GHN: Địa chỉ nhận hàng %v không được hỗ trợ bởi đơn vị vận chuyển!", toDistrict.Name)
 	}
-	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	cmd := &RequestFindAvailableServicesCommand{
 		FromDistrict: fromDistrict,
@@ -214,12 +214,12 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 			Length:         args.Length,
 			Width:          args.Width,
 			Height:         args.Height,
-			FromDistrictID: int(fromDistrict.GhnId),
-			ToDistrictID:   int(toDistrict.GhnId),
+			FromDistrictID: fromDistrict.GhnId,
+			ToDistrictID:   toDistrict.GhnId,
 			InsuranceFee:   args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 		},
 	}
-	err := p.FindAvailableServices(ctx, cmd)
+	err := c.FindAvailableServices(ctx, cmd)
 	return cmd.Result, err
 }
 
@@ -249,8 +249,8 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 			Length:         args.Length,
 			Width:          args.Width,
 			Height:         args.Height,
-			FromDistrictID: int(fromDistrict.GhnId),
-			ToDistrictID:   int(toDistrict.GhnId),
+			FromDistrictID: fromDistrict.GhnId,
+			ToDistrictID:   toDistrict.GhnId,
 			InsuranceFee:   args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 		},
 	}
@@ -276,7 +276,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return allServices, nil
 }
 
-func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 
@@ -332,6 +332,6 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	return update, nil
 }
 
-func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+func (c *Carrier) GetMaxValueFreeInsuranceFee() int {
 	return 1000000
 }

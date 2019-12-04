@@ -258,7 +258,7 @@ func (c *Carrier) PrepareDeliveryPoints(ctx context.Context, pickupAddress *orde
 func prepareRemarksForDeliveryPoint(point *shipnow.DeliveryPoint) string {
 	var b strings.Builder
 	for _, line := range point.Lines {
-		b.WriteString(line.ProductInfo.ProductName + " x " + strconv.Itoa(int(line.Quantity)))
+		b.WriteString(line.ProductInfo.ProductName + " x " + strconv.Itoa(line.Quantity))
 		b.WriteString("\n")
 	}
 	b.WriteString(point.ShippingNote)

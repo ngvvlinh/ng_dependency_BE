@@ -504,7 +504,7 @@ func (s *ProductService) RemoveVariants(ctx context.Context, q *RemoveVariantsEn
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int(cmd.Result),
+		Removed: cmd.Result,
 	}
 	return nil
 }
@@ -613,7 +613,7 @@ func (s *ProductService) RemoveProducts(ctx context.Context, q *RemoveProductsEn
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int(cmd.Result),
+		Removed: cmd.Result,
 	}
 	return nil
 }
@@ -654,7 +654,7 @@ func (s *ProductService) UpdateProductsStatus(ctx context.Context, q *UpdateProd
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateProductStatusResponse{Updated: int(cmd.Result)}
+	q.Result = &pbshop.UpdateProductStatusResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -668,7 +668,7 @@ func (s *ProductService) UpdateVariantsStatus(ctx context.Context, q *UpdateVari
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateProductStatusResponse{Updated: int(cmd.Result)}
+	q.Result = &pbshop.UpdateProductStatusResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -689,7 +689,7 @@ func (s *ProductService) UpdateProductsTags(ctx context.Context, q *UpdateProduc
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -757,9 +757,9 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 
 		ProductCode:       q.Code,
 		VariantCode:       q.Code,
-		QuantityAvailable: int(q.QuantityAvailable),
-		QuantityOnHand:    int(q.QuantityOnHand),
-		QuantityReserved:  int(q.QuantityReserved),
+		QuantityAvailable: q.QuantityAvailable,
+		QuantityOnHand:    q.QuantityOnHand,
+		QuantityReserved:  q.QuantityReserved,
 
 		Attributes: convertpb.AttributesToModel(q.Attributes),
 		DescHTML:   q.DescHtml,
@@ -797,7 +797,7 @@ func (s *ProductSourceService) UpdateProductsPSCategory(ctx context.Context, q *
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(cmd.Result.Updated),
+		Updated: cmd.Result.Updated,
 	}
 	return nil
 }
@@ -854,7 +854,7 @@ func (s *ProductSourceService) RemoveProductSourceCategory(ctx context.Context, 
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int(cmd.Result.Removed),
+		Removed: cmd.Result.Removed,
 	}
 	return nil
 }
@@ -976,7 +976,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }
@@ -1025,7 +1025,7 @@ func (s *SummaryService) CalcBalanceShop(ctx context.Context, q *CalcBalanceShop
 		return err
 	}
 	q.Result = &pbshop.CalcBalanceShopResponse{
-		Balance: int(query.Result.Amount),
+		Balance: query.Result.Amount,
 	}
 	return nil
 }
@@ -1087,7 +1087,7 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *GetNotifi
 	}
 	q.Result = &pbetop.NotificationsResponse{
 		Notifications: convertpb.PbNotifications(notis),
-		Paging:        cmapi.PbPageInfo(paging, int(total)),
+		Paging:        cmapi.PbPageInfo(paging, total),
 	}
 	return nil
 }
@@ -1101,7 +1101,7 @@ func (s *NotificationService) UpdateNotifications(ctx context.Context, q *Update
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: int(len(q.Ids)),
+		Updated: len(q.Ids),
 	}
 	return nil
 }
@@ -1485,7 +1485,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 		OrderID:           argGenCode.Result,
 		Desc:              q.Desc,
 		ReturnURL:         q.ReturnUrl,
-		TransactionAmount: int(q.Amount),
+		TransactionAmount: q.Amount,
 		Provider:          q.PaymentProvider.ToPaymentProvider(),
 	}
 
@@ -1509,7 +1509,7 @@ func (s *PaymentService) PaymentCheckReturnData(ctx context.Context, q *PaymentC
 		ID:                    q.Id,
 		Code:                  q.Code,
 		PaymentStatus:         q.PaymentStatus,
-		Amount:                int(q.Amount),
+		Amount:                q.Amount,
 		ExternalTransactionID: q.ExternalTransactionId,
 		Provider:              q.PaymentProvider.ToPaymentProvider(),
 	}
@@ -1589,7 +1589,7 @@ func (s *CategoryService) DeleteCategory(ctx context.Context, r *DeleteCategoryE
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
 	return nil
 }
 
@@ -1677,7 +1677,7 @@ func (s *ProductService) AddProductCollection(ctx context.Context, r *AddProduct
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -1690,7 +1690,7 @@ func (s *ProductService) RemoveProductCollection(ctx context.Context, r *RemoveP
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.RemovedResponse{Removed: int(cmd.Result)}
+	r.Result = &pbcm.RemovedResponse{Removed: cmd.Result}
 	return nil
 }
 

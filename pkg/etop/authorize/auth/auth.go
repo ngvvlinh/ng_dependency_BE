@@ -220,7 +220,7 @@ func ListActionsByRoles(roles []string) (actions []string) {
 		}
 	}
 
-	for action, _ := range mapAction {
+	for action := range mapAction {
 		actions = append(actions, action)
 	}
 	return

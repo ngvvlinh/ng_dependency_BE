@@ -221,8 +221,8 @@ func GetWeightInfo(orders []*ordering.Order) shippingtypes.WeightInfo {
 		chargeableWeight += o.Shipping.ChargeableWeight
 	}
 	return shippingtypes.WeightInfo{
-		GrossWeight:      int(grossWeight),
-		ChargeableWeight: int(chargeableWeight),
+		GrossWeight:      grossWeight,
+		ChargeableWeight: chargeableWeight,
 	}
 }
 
@@ -263,7 +263,7 @@ func Feeline(in *model.ShippingFeeLine) (out *shippingtypes.FeeLine) {
 	}
 	return &shippingtypes.FeeLine{
 		ShippingFeeType:     shippingtypes.FeelineTypeFromString(string(in.ShippingFeeType)),
-		Cost:                int(in.Cost),
+		Cost:                in.Cost,
 		ExternalServiceName: in.ExternalServiceName,
 		ExternalServiceType: in.ExternalServiceType,
 	}

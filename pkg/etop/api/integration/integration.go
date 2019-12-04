@@ -219,7 +219,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	action.Msg = fmt.Sprintf("Nhập số điện thoại hoặc email để kết nối với %v", partner.PublicName)
 	resp := &pbintegration.LoginResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   tokenCmd.Result.ExpiresIn,
 		Actions:     []*pbintegration.Action{action},
 		AuthPartner: convertpb.PbPublicAccountInfo(partner),
 		RedirectUrl: info.RedirectURL,
@@ -329,9 +329,9 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		}
 		var extraMessage template.HTML
 		if cm.NotProd() {
-			extraMessage = template.HTML("<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn nhằm mục đích thử nghiệm. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>")
+			extraMessage = "<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn nhằm mục đích thử nghiệm. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>"
 		} else {
-			extraMessage = template.HTML("<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>")
+			extraMessage = "<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>"
 		}
 
 		var b strings.Builder
@@ -529,7 +529,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		}
 		r.Result = &pbintegration.LoginResponse{
 			AccessToken:       tokenCmd.Result.TokenStr,
-			ExpiresIn:         int(tokenCmd.Result.ExpiresIn),
+			ExpiresIn:         tokenCmd.Result.ExpiresIn,
 			User:              nil,
 			Account:           nil,
 			Shop:              nil,
@@ -611,7 +611,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 
 				availAcc.ExternalId = rel.ExternalSubjectID
 				availAcc.AccessToken = tokenCmd.Result.TokenStr
-				availAcc.ExpiresIn = int(tokenCmd.Result.ExpiresIn)
+				availAcc.ExpiresIn = tokenCmd.Result.ExpiresIn
 				break
 			}
 		}
@@ -661,7 +661,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 
 	r.Result = &pbintegration.LoginResponse{
 		AccessToken:       userTokenCmd.Result.TokenStr,
-		ExpiresIn:         int(userTokenCmd.Result.ExpiresIn),
+		ExpiresIn:         userTokenCmd.Result.ExpiresIn,
 		User:              convertpb.PbPartnerUserInfo(userQuery.Result.User),
 		Account:           nil,
 		Shop:              nil,
@@ -798,7 +798,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	r.Result = &pbintegration.RegisterResponse{
 		User:        convertpb.PbUser(user),
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   tokenCmd.Result.ExpiresIn,
 	}
 	return nil
 }
@@ -882,7 +882,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 
 	r.Result = &pbintegration.GrantAccessResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   int(tokenCmd.Result.ExpiresIn),
+		ExpiresIn:   tokenCmd.Result.ExpiresIn,
 	}
 	return nil
 }
@@ -912,7 +912,7 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*pbintegration.Action) *pbintegration.LoginResponse {
 	resp := &pbintegration.LoginResponse{
 		AccessToken:       accessToken,
-		ExpiresIn:         int(expiresIn),
+		ExpiresIn:         expiresIn,
 		Account:           nil,
 		AvailableAccounts: nil,
 		User:              convertpb.PbPartnerUserInfo(user),
@@ -927,7 +927,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 			Name:        shop.Name,
 			Type:        convertpb.PbAccountType(model.TypeShop),
 			AccessToken: accessToken,
-			ExpiresIn:   int(expiresIn),
+			ExpiresIn:   expiresIn,
 			ImageUrl:    shop.ImageURL,
 		}
 		resp.Account = account

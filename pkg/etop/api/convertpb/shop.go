@@ -39,7 +39,7 @@ func PbSummaryColRow(items []model.SummaryColRow) []shop.SummaryColRow {
 			Label:  item.Label,
 			Spec:   item.Spec,
 			Unit:   item.Unit,
-			Indent: int(item.Indent),
+			Indent: item.Indent,
 		}
 	}
 	return res
@@ -50,7 +50,7 @@ func PbSummaryData(data []model.SummaryItem) []shop.SummaryItem {
 	for i, item := range data {
 		res[i] = shop.SummaryItem{
 			Spec:  item.Spec,
-			Value: int(item.Value),
+			Value: item.Value,
 			Unit:  item.Unit,
 		}
 	}
@@ -79,7 +79,7 @@ func PbSummaryColRowNew(items []summary.SummaryColRow) []shop.SummaryColRow {
 			Label:  item.Label,
 			Spec:   item.Spec,
 			Unit:   item.Unit,
-			Indent: int(item.Indent),
+			Indent: item.Indent,
 		}
 	}
 	return res
@@ -90,7 +90,7 @@ func PbSummaryDataNew(data []summary.SummaryItem) []shop.SummaryItem {
 	for i, item := range data {
 		res[i] = shop.SummaryItem{
 			Spec:      item.Spec,
-			Value:     int(item.Value),
+			Value:     item.Value,
 			Unit:      item.Unit,
 			ImageUrls: item.ImageUrls,
 			Label:     item.Label,
@@ -359,7 +359,7 @@ func PbReceiptLine(m *receipting.ReceiptLine) *shop.ReceiptLine {
 	return &shop.ReceiptLine{
 		RefId:  m.RefID,
 		Title:  m.Title,
-		Amount: int(m.Amount),
+		Amount: m.Amount,
 	}
 }
 

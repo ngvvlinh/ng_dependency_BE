@@ -30,12 +30,12 @@ func (q *TraderAgg) MessageBus() tradering.CommandBus {
 	return tradering.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (a *TraderAgg) DeleteTrader(ctx context.Context, id dot.ID, shopID dot.ID,
+func (q *TraderAgg) DeleteTrader(ctx context.Context, id dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
-	_, err := a.store(ctx).ShopID(shopID).ID(id).GetTraderDB()
+	_, err := q.store(ctx).ShopID(shopID).ID(id).GetTraderDB()
 	if err != nil {
 		return 0, err
 	}
-	deleted, err = a.store(ctx).ID(id).SoftDelete()
+	deleted, err = q.store(ctx).ID(id).SoftDelete()
 	return deleted, err
 }

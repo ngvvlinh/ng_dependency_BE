@@ -39,7 +39,7 @@ func mapVtigerToEtop(e interface{}, mappingFieldMap map[string]string, viterValu
 		fieldTag := string(t.Field(i).Tag)
 		fieldName := t.Field(i).Name
 
-		arrayTag := strings.Split(string(fieldTag), " ")
+		arrayTag := strings.Split(fieldTag, " ")
 		tagNameVtiger := strings.Replace(arrayTag[len(arrayTag)-1], `json:"`, "", 1)
 		tagNameVtiger = strings.Replace(tagNameVtiger, `"`, "", 1)
 

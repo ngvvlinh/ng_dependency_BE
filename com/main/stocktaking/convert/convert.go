@@ -13,7 +13,6 @@ import (
 
 const (
 	MaxCodeNorm = 999999
-	codeRegex   = "^PKK([0-9]{6})$"
 	codePrefix  = "PKK"
 )
 

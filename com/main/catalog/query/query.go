@@ -235,7 +235,7 @@ func (s *QueryService) ListShopVariantsWithProductByIDs(
 	}
 	return &catalog.ShopVariantsWithProductResponse{
 		Variants: variants,
-		Count:    int(len(variants)),
+		Count:    len(variants),
 	}, nil
 }
 func (s *QueryService) GetShopCollection(

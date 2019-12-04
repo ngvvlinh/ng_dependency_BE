@@ -135,7 +135,7 @@ type FeeLine struct {
 func TotalFee(lines []*FeeLine) int {
 	res := 0
 	for _, line := range lines {
-		res += int(line.Cost)
+		res += line.Cost
 	}
 	return res
 }

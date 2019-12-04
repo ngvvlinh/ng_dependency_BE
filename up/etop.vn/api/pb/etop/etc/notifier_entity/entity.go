@@ -8,11 +8,11 @@ func PbEntityFromInt(s int) NotifierEntity {
 	return NotifierEntity(s)
 }
 
-func (s *NotifierEntity) ToModel() string {
-	if s == nil {
+func (x *NotifierEntity) ToModel() string {
+	if x == nil {
 		return ""
 	}
-	return NotifierEntity_name[int(*s)]
+	return NotifierEntity_name[int(*x)]
 }
 
 func (x NotifierEntity) MarshalJSON() ([]byte, error) {

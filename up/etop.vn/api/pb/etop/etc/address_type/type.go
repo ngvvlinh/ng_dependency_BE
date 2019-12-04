@@ -8,11 +8,11 @@ func PbTypeFromInt(s int) AddressType {
 	return AddressType(s)
 }
 
-func (s *AddressType) ToModel() string {
-	if s == nil {
+func (x *AddressType) ToModel() string {
+	if x == nil {
 		return ""
 	}
-	return AddressType_name[int(*s)]
+	return AddressType_name[int(*x)]
 }
 
 func (x AddressType) MarshalJSON() ([]byte, error) {

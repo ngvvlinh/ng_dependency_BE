@@ -157,5 +157,5 @@ func (s *ShopCollectionStore) UpdateShopCollection(Collection *model.ShopCollect
 
 func (s *ShopCollectionStore) DeleteShopCollection() (int, error) {
 	n, err := s.query().Where(s.preds).Delete((*model.ShopCollection)(nil))
-	return int(n), err
+	return n, err
 }

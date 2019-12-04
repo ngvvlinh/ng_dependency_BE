@@ -454,11 +454,11 @@ func (m *OrderCustomer) GetFullName() string {
 	return m.FirstName + " " + m.LastName
 }
 
-func (o *OrderCustomer) UpdateCustomer(fullname string) *OrderCustomer {
+func (m *OrderCustomer) UpdateCustomer(fullname string) *OrderCustomer {
 	if fullname != "" {
-		o.FullName = fullname
+		m.FullName = fullname
 	}
-	return o
+	return m
 }
 
 type OrderAddress struct {
@@ -500,11 +500,11 @@ func (o *OrderAddress) UpdateAddress(phone string, fullname string) *OrderAddres
 	return o
 }
 
-func (m *OrderAddress) GetFullName() string {
-	if m.FullName != "" {
-		return m.FullName
+func (o *OrderAddress) GetFullName() string {
+	if o.FullName != "" {
+		return o.FullName
 	}
-	return m.FirstName + " " + m.LastName
+	return o.FirstName + " " + o.LastName
 }
 
 func GetFeeLinesWithFallback(lines []OrderFeeLine, totalFee dot.NullInt, shopShippingFee dot.NullInt) []OrderFeeLine {

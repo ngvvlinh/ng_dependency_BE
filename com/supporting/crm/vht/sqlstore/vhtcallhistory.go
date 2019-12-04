@@ -41,28 +41,28 @@ func (s *VhtCallHistoryStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }
 
-func (v *VhtCallHistoryStore) ByStatus(value string) *VhtCallHistoryStore {
-	v.preds = append(v.preds, v.ft.BySyncStatus(value))
-	return v
+func (s *VhtCallHistoryStore) ByStatus(value string) *VhtCallHistoryStore {
+	s.preds = append(s.preds, s.ft.BySyncStatus(value))
+	return s
 }
 
-func (v *VhtCallHistoryStore) ByCallID(value string) *VhtCallHistoryStore {
-	v.preds = append(v.preds, v.ft.ByCallID(value))
-	return v
+func (s *VhtCallHistoryStore) ByCallID(value string) *VhtCallHistoryStore {
+	s.preds = append(s.preds, s.ft.ByCallID(value))
+	return s
 }
 
-func (v *VhtCallHistoryStore) SortBy(order string) *VhtCallHistoryStore {
-	v.OrderBy = order
-	return v
+func (s *VhtCallHistoryStore) SortBy(order string) *VhtCallHistoryStore {
+	s.OrderBy = order
+	return s
 }
 
-func (v *VhtCallHistoryStore) BySdkCallID(value string) *VhtCallHistoryStore {
-	v.preds = append(v.preds, v.ft.BySdkCallID(value))
-	return v
+func (s *VhtCallHistoryStore) BySdkCallID(value string) *VhtCallHistoryStore {
+	s.preds = append(s.preds, s.ft.BySdkCallID(value))
+	return s
 }
 
-func (v *VhtCallHistoryStore) GetCallHistory() (*model.VhtCallHistory, error) {
-	query := v.query().Where(v.preds)
+func (s *VhtCallHistoryStore) GetCallHistory() (*model.VhtCallHistory, error) {
+	query := s.query().Where(s.preds)
 	var vthCallHistory model.VhtCallHistory
 	err := query.ShouldGet(&vthCallHistory)
 	if err != nil {
@@ -71,12 +71,12 @@ func (v *VhtCallHistoryStore) GetCallHistory() (*model.VhtCallHistory, error) {
 	return &vthCallHistory, nil
 }
 
-func (v *VhtCallHistoryStore) GetCallHistories() ([]*model.VhtCallHistory, error) {
-	query := v.query().Where(v.preds)
-	if v.OrderBy != "" {
-		query.OrderBy(v.OrderBy)
+func (s *VhtCallHistoryStore) GetCallHistories() ([]*model.VhtCallHistory, error) {
+	query := s.query().Where(s.preds)
+	if s.OrderBy != "" {
+		query.OrderBy(s.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &v.paging, SortVhtCallHistories)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortVhtCallHistories)
 	if err != nil {
 		return nil, err
 	}
@@ -85,12 +85,12 @@ func (v *VhtCallHistoryStore) GetCallHistories() ([]*model.VhtCallHistory, error
 	return vthCallHistories, err
 }
 
-func (v *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model.VhtCallHistory, error) {
-	query := v.query().Where(`search_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(value))
-	if v.OrderBy != "" {
-		query.OrderBy(v.OrderBy)
+func (s *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model.VhtCallHistory, error) {
+	query := s.query().Where(`search_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(value))
+	if s.OrderBy != "" {
+		query.OrderBy(s.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &v.paging, SortVhtCallHistories)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortVhtCallHistories)
 	if err != nil {
 		return nil, err
 	}
@@ -99,14 +99,14 @@ func (v *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model.Vht
 	return vthCallHistories, err
 }
 
-func (v *VhtCallHistoryStore) CreateVhtCallHistory(contact *model.VhtCallHistory) error {
-	query := v.query().Where(v.preds)
+func (s *VhtCallHistoryStore) CreateVhtCallHistory(contact *model.VhtCallHistory) error {
+	query := s.query().Where(s.preds)
 	err := query.ShouldInsert(contact)
 	return err
 }
 
-func (v *VhtCallHistoryStore) UpdateVhtCallHistory(contact *model.VhtCallHistory) error {
-	query := v.query().Where(v.preds)
+func (s *VhtCallHistoryStore) UpdateVhtCallHistory(contact *model.VhtCallHistory) error {
+	query := s.query().Where(s.preds)
 	err := query.ShouldUpdate(contact)
 	return err
 }

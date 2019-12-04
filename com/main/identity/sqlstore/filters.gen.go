@@ -124,7 +124,7 @@ func (ft *ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified boo
 		Prefix: &ft.prefix,
 		Column: "external_verified",
 		Value:  ExternalVerified,
-		IsNil:  bool(!ExternalVerified),
+		IsNil:  !ExternalVerified,
 	}
 }
 
@@ -134,7 +134,7 @@ func (ft *ExternalAccountAhamoveFilters) ByExternalVerifiedPtr(ExternalVerified 
 		Column: "external_verified",
 		Value:  ExternalVerified,
 		IsNil:  ExternalVerified == nil,
-		IsZero: ExternalVerified != nil && bool(!(*ExternalVerified)),
+		IsZero: ExternalVerified != nil && !(*ExternalVerified),
 	}
 }
 

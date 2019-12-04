@@ -647,7 +647,7 @@ func (ft *ShopTraderAddressFilters) ByIsDefault(IsDefault bool) *sq.ColumnFilter
 		Prefix: &ft.prefix,
 		Column: "is_default",
 		Value:  IsDefault,
-		IsNil:  bool(!IsDefault),
+		IsNil:  !IsDefault,
 	}
 }
 
@@ -657,7 +657,7 @@ func (ft *ShopTraderAddressFilters) ByIsDefaultPtr(IsDefault *bool) *sq.ColumnFi
 		Column: "is_default",
 		Value:  IsDefault,
 		IsNil:  IsDefault == nil,
-		IsZero: IsDefault != nil && bool(!(*IsDefault)),
+		IsZero: IsDefault != nil && !(*IsDefault),
 	}
 }
 

@@ -27,21 +27,21 @@ var GHNNoteCode_value = map[string]int{
 	"KHONGCHOXEMHANG":    3,
 }
 
-func (x GHNNoteCode) Enum() *GHNNoteCode {
+func (s GHNNoteCode) Enum() *GHNNoteCode {
 	p := new(GHNNoteCode)
-	*p = x
+	*p = s
 	return p
 }
 
-func (x GHNNoteCode) String() string {
-	return jsonx.EnumName(GHNNoteCode_name, int(x))
+func (s GHNNoteCode) String() string {
+	return jsonx.EnumName(GHNNoteCode_name, int(s))
 }
 
-func (x *GHNNoteCode) UnmarshalJSON(data []byte) error {
+func (s *GHNNoteCode) UnmarshalJSON(data []byte) error {
 	value, err := jsonx.UnmarshalJSONEnum(GHNNoteCode_value, data, "GHNNoteCode")
 	if err != nil {
 		return err
 	}
-	*x = GHNNoteCode(value)
+	*s = GHNNoteCode(value)
 	return nil
 }

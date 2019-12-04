@@ -360,8 +360,8 @@ func VerifyOrderSource(s OrderSourceType) bool {
 	return false
 }
 
-func (p ShippingProvider) Label() string {
-	switch p {
+func (s ShippingProvider) Label() string {
+	switch s {
 	case TypeGHN:
 		return "Giao Hàng Nhanh"
 	case TypeGHTK:
@@ -539,9 +539,9 @@ func (s *Shop) GetTryOn() TryOn {
 }
 
 var _ = sqlgenShopExtended(
-	&ShopExtended{}, &Shop{}, sq.AS("s"),
-	sq.LEFT_JOIN, &Address{}, sq.AS("a"), "s.address_id = a.id",
-	sq.LEFT_JOIN, &User{}, sq.AS("u"), "s.owner_id = u.id",
+	&ShopExtended{}, &Shop{}, "s",
+	sq.LEFT_JOIN, &Address{}, "a", "s.address_id = a.id",
+	sq.LEFT_JOIN, &User{}, "u", "s.owner_id = u.id",
 )
 
 type ShopExtended struct {
@@ -644,8 +644,8 @@ func (m *AccountAuth) BeforeInsert() error {
 }
 
 var _ = sqlgenAccountAuthFtPartner(
-	&AccountAuthFtPartner{}, &AccountAuth{}, sq.AS("aa"),
-	sq.JOIN, &Partner{}, sq.AS("p"), `aa.account_id = p.id`,
+	&AccountAuthFtPartner{}, &AccountAuth{}, "aa",
+	sq.JOIN, &Partner{}, "p", `aa.account_id = p.id`,
 )
 
 type AccountAuthFtPartner struct {
@@ -654,8 +654,8 @@ type AccountAuthFtPartner struct {
 }
 
 var _ = sqlgenAccountAuthFtShop(
-	&AccountAuthFtShop{}, &AccountAuth{}, sq.AS("aa"),
-	sq.JOIN, &Shop{}, sq.AS("s"), `aa.account_id = s.id`,
+	&AccountAuthFtShop{}, &AccountAuth{}, "aa",
+	sq.JOIN, &Shop{}, "s", `aa.account_id = s.id`,
 )
 
 type AccountAuthFtShop struct {
@@ -682,9 +682,9 @@ type PartnerRelation struct {
 }
 
 var _ = sqlgenPartnerRelationFtShop(
-	&PartnerRelationFtShop{}, &PartnerRelation{}, sq.AS("pr"),
-	sq.JOIN, &Shop{}, sq.AS("s"), "pr.subject_id = s.id",
-	sq.JOIN, &User{}, sq.AS("u"), "s.owner_id = u.id",
+	&PartnerRelationFtShop{}, &PartnerRelation{}, "pr",
+	sq.JOIN, &Shop{}, "s", "pr.subject_id = s.id",
+	sq.JOIN, &User{}, "u", "s.owner_id = u.id",
 )
 
 type PartnerRelationFtShop struct {
@@ -794,9 +794,9 @@ type AccountUser struct {
 }
 
 var _ = sqlgenAccountUserExtended(
-	&AccountUserExtended{}, &AccountUser{}, sq.AS("au"),
-	sq.JOIN, &Account{}, sq.AS("a"), "au.account_id = a.id",
-	sq.JOIN, &User{}, sq.AS("u"), "au.user_id = u.id",
+	&AccountUserExtended{}, &AccountUser{}, "au",
+	sq.JOIN, &Account{}, "a", "au.account_id = a.id",
+	sq.JOIN, &User{}, "u", "au.user_id = u.id",
 )
 
 type AccountUserExtended struct {
@@ -1116,8 +1116,8 @@ type Credit struct {
 }
 
 var _ = sqlgenCreditExtended(
-	&CreditExtended{}, &Credit{}, sq.AS("c"),
-	sq.LEFT_JOIN, &Shop{}, sq.AS("s"), "s.id = c.shop_id",
+	&CreditExtended{}, &Credit{}, "c",
+	sq.LEFT_JOIN, &Shop{}, "s", "s.id = c.shop_id",
 )
 
 type CreditExtended struct {

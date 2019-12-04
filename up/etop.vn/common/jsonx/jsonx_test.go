@@ -265,7 +265,7 @@ func testValidate(t *testing.T) {
 		t.Run("map", func(t *testing.T) {
 			value := &D{
 				MapC: map[string]*C{
-					"one": &C{},
+					"one": {},
 				},
 			}
 			_, mode, err := validate(value, withRoute)
@@ -276,7 +276,7 @@ func testValidate(t *testing.T) {
 		t.Run("slice", func(t *testing.T) {
 			value := &E{
 				SliceC: []*C{
-					&C{},
+					{},
 				},
 			}
 			_, mode, err := validate(value, withRoute)
@@ -290,9 +290,9 @@ func testValidate(t *testing.T) {
 		t.Run("map", func(t *testing.T) {
 			value := &D{
 				MapC: map[string]*C{
-					"one":   &C{},
-					"two":   &C{Interface: &C{}},
-					"three": &C{Interface: &Invalid{}},
+					"one":   {},
+					"two":   {Interface: &C{}},
+					"three": {Interface: &Invalid{}},
 				},
 			}
 			_, _, err := validate(value, withRoute)
@@ -301,9 +301,9 @@ func testValidate(t *testing.T) {
 		t.Run("slice", func(t *testing.T) {
 			value := &E{
 				SliceC: []*C{
-					&C{},
-					&C{Interface: &C{}},
-					&C{Interface: &Invalid{}},
+					{},
+					{Interface: &C{}},
+					{Interface: &Invalid{}},
 				},
 			}
 			_, _, err := validate(value, withRoute)

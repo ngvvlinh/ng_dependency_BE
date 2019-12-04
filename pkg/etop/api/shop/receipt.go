@@ -100,7 +100,7 @@ func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEn
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 
 	return nil
 }
@@ -114,7 +114,7 @@ func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndp
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 
 	return nil
 }

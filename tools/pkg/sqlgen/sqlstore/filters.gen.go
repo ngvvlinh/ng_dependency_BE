@@ -96,7 +96,7 @@ func (ft *UserFilters) ByBool(Bool bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "bool",
 		Value:  Bool,
-		IsNil:  bool(!Bool),
+		IsNil:  !Bool,
 	}
 }
 
@@ -106,7 +106,7 @@ func (ft *UserFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 		Column: "bool",
 		Value:  Bool,
 		IsNil:  Bool == nil,
-		IsZero: Bool != nil && bool(!(*Bool)),
+		IsZero: Bool != nil && !(*Bool),
 	}
 }
 
@@ -192,7 +192,7 @@ func (ft *UserFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 		Column: "p_bool",
 		Value:  PBool,
 		IsNil:  PBool == nil,
-		IsZero: PBool != nil && bool(!(*PBool)),
+		IsZero: PBool != nil && !(*PBool),
 	}
 }
 
@@ -274,7 +274,7 @@ func (ft *UserSubsetFilters) ByBool(Bool bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "bool",
 		Value:  Bool,
-		IsNil:  bool(!Bool),
+		IsNil:  !Bool,
 	}
 }
 
@@ -284,7 +284,7 @@ func (ft *UserSubsetFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 		Column: "bool",
 		Value:  Bool,
 		IsNil:  Bool == nil,
-		IsZero: Bool != nil && bool(!(*Bool)),
+		IsZero: Bool != nil && !(*Bool),
 	}
 }
 
@@ -370,7 +370,7 @@ func (ft *UserSubsetFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 		Column: "p_bool",
 		Value:  PBool,
 		IsNil:  PBool == nil,
-		IsZero: PBool != nil && bool(!(*PBool)),
+		IsZero: PBool != nil && !(*PBool),
 	}
 }
 
@@ -471,7 +471,7 @@ func (ft *UserInfoFilters) ByBool(Bool bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "bool",
 		Value:  Bool,
-		IsNil:  bool(!Bool),
+		IsNil:  !Bool,
 	}
 }
 
@@ -481,7 +481,7 @@ func (ft *UserInfoFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 		Column: "bool",
 		Value:  Bool,
 		IsNil:  Bool == nil,
-		IsZero: Bool != nil && bool(!(*Bool)),
+		IsZero: Bool != nil && !(*Bool),
 	}
 }
 
@@ -567,7 +567,7 @@ func (ft *UserInfoFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 		Column: "p_bool",
 		Value:  PBool,
 		IsNil:  PBool == nil,
-		IsZero: PBool != nil && bool(!(*PBool)),
+		IsZero: PBool != nil && !(*PBool),
 	}
 }
 
@@ -775,7 +775,7 @@ func (ft *ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool m.AliasPBool) *sq.Colum
 		Column: "alias_p_bool",
 		Value:  AliasPBool,
 		IsNil:  AliasPBool == nil,
-		IsZero: AliasPBool != nil && bool(!(*AliasPBool)),
+		IsZero: AliasPBool != nil && !(*AliasPBool),
 	}
 }
 

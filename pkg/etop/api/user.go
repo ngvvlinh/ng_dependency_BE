@@ -776,7 +776,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 				return nil, nil, err
 			}
 			acc.AccessToken = tokenCmd.Result.TokenStr
-			acc.ExpiresIn = int(tokenCmd.Result.ExpiresIn)
+			acc.ExpiresIn = tokenCmd.Result.ExpiresIn
 		}
 	}
 

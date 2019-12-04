@@ -82,7 +82,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
@@ -163,7 +163,7 @@ func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *UpdateOrdersSt
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result.Updated)}
+	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
 	return nil
 }
 
@@ -360,7 +360,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	}
 	q.Result = &pborder.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
-		Paging:       cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging:       cmapi.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }

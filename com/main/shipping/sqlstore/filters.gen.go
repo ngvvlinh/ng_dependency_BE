@@ -561,7 +561,7 @@ func (ft *FulfillmentFilters) ByEtopPriceRule(EtopPriceRule bool) *sq.ColumnFilt
 		Prefix: &ft.prefix,
 		Column: "etop_price_rule",
 		Value:  EtopPriceRule,
-		IsNil:  bool(!EtopPriceRule),
+		IsNil:  !EtopPriceRule,
 	}
 }
 
@@ -571,7 +571,7 @@ func (ft *FulfillmentFilters) ByEtopPriceRulePtr(EtopPriceRule *bool) *sq.Column
 		Column: "etop_price_rule",
 		Value:  EtopPriceRule,
 		IsNil:  EtopPriceRule == nil,
-		IsZero: EtopPriceRule != nil && bool(!(*EtopPriceRule)),
+		IsZero: EtopPriceRule != nil && !(*EtopPriceRule),
 	}
 }
 
@@ -1112,7 +1112,7 @@ func (ft *FulfillmentFilters) ByIncludeInsurance(IncludeInsurance bool) *sq.Colu
 		Prefix: &ft.prefix,
 		Column: "include_insurance",
 		Value:  IncludeInsurance,
-		IsNil:  bool(!IncludeInsurance),
+		IsNil:  !IncludeInsurance,
 	}
 }
 
@@ -1122,7 +1122,7 @@ func (ft *FulfillmentFilters) ByIncludeInsurancePtr(IncludeInsurance *bool) *sq.
 		Column: "include_insurance",
 		Value:  IncludeInsurance,
 		IsNil:  IncludeInsurance == nil,
-		IsZero: IncludeInsurance != nil && bool(!(*IncludeInsurance)),
+		IsZero: IncludeInsurance != nil && !(*IncludeInsurance),
 	}
 }
 
@@ -1530,7 +1530,7 @@ func (ft *FulfillmentFilters) ByIsPartialDelivery(IsPartialDelivery bool) *sq.Co
 		Prefix: &ft.prefix,
 		Column: "is_partial_delivery",
 		Value:  IsPartialDelivery,
-		IsNil:  bool(!IsPartialDelivery),
+		IsNil:  !IsPartialDelivery,
 	}
 }
 
@@ -1540,6 +1540,6 @@ func (ft *FulfillmentFilters) ByIsPartialDeliveryPtr(IsPartialDelivery *bool) *s
 		Column: "is_partial_delivery",
 		Value:  IsPartialDelivery,
 		IsNil:  IsPartialDelivery == nil,
-		IsZero: IsPartialDelivery != nil && bool(!(*IsPartialDelivery)),
+		IsZero: IsPartialDelivery != nil && !(*IsPartialDelivery),
 	}
 }

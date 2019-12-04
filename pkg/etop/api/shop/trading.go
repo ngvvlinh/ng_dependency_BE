@@ -176,7 +176,7 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrde
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: cmapi.PbPageInfo(paging, int(query.Result.Total)),
+		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil

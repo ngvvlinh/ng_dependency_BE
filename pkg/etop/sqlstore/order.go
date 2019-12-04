@@ -230,7 +230,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 
 	orderIds := make([]dot.ID, len(query.Result.Orders))
@@ -332,7 +332,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 			if err != nil {
 				return err
 			}
-			query.Result.Total = int(total)
+			query.Result.Total = total
 		}
 		{
 			if query.Paging != nil && len(query.Paging.Sort) != 0 {
@@ -370,7 +370,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 
 	return nil
@@ -461,7 +461,7 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 	} else if updated == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	} else {
-		cmd.Result.Updated = int(updated)
+		cmd.Result.Updated = updated
 	}
 	return nil
 }
@@ -803,7 +803,7 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -884,7 +884,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 			if err != nil {
 				return err
 			}
-			query.Result.Total = int(total)
+			query.Result.Total = total
 		}
 		{
 			if query.Paging != nil && len(query.Paging.Sort) != 0 {
@@ -921,7 +921,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }

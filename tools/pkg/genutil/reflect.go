@@ -51,7 +51,7 @@ func ParseStructTags(tag string) (StructTags, error) {
 		if i == 0 || i+1 >= len(tag) || tag[i] != ':' || tag[i+1] != '"' {
 			break
 		}
-		name := string(tag[:i])
+		name := tag[:i]
 		tag = tag[i+1:]
 
 		// Scan quoted string to find value.
@@ -65,7 +65,7 @@ func ParseStructTags(tag string) (StructTags, error) {
 		if i >= len(tag) {
 			break
 		}
-		qvalue := string(tag[:i+1])
+		qvalue := tag[:i+1]
 		tag = tag[i+1:]
 
 		value, err := strconv.Unquote(qvalue)

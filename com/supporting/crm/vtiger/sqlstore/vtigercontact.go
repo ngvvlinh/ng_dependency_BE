@@ -35,13 +35,13 @@ func (v *VtigerContactStore) SortBy(order string) *VtigerContactStore {
 	return v
 }
 
-func (s *VtigerContactStore) Paging(paging meta.Paging) *VtigerContactStore {
-	s.paging = paging
-	return s
+func (v *VtigerContactStore) Paging(paging meta.Paging) *VtigerContactStore {
+	v.paging = paging
+	return v
 }
 
-func (s *VtigerContactStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
+func (v *VtigerContactStore) GetPaging() meta.PageInfo {
+	return meta.FromPaging(v.paging)
 }
 
 func (v *VtigerContactStore) ByEmail(email string) *VtigerContactStore {

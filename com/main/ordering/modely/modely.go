@@ -9,8 +9,8 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 var _ = sqlgenOrderExtended(
-	&OrderExtended{}, &model.Order{}, sq.AS(`"order"`),
-	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, sq.AS("f"), `"order".id = f.order_id`,
+	&OrderExtended{}, &model.Order{}, `"order"`,
+	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, "f", `"order".id = f.order_id`,
 )
 
 type OrderExtended struct {

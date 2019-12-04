@@ -167,7 +167,7 @@ func BuildTopSellTable(args []*sqlstore.TopSellItem) *summary.SummaryTable {
 		Spec:  "sum(quantity)",
 		Label: "Số Lượng Sản Phẩm",
 	})
-	for index, _ := range args {
+	for index := range args {
 		summaryTable.Rows = append(summaryTable.Rows, summary.SummaryColRow{
 			Spec:  "STT-" + strconv.Itoa(index),
 			Label: strconv.Itoa(index),

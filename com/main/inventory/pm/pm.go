@@ -84,7 +84,7 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 	return nil
 }
 
-func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *ordering.OrderConfirmedEvent) error {
+func (m *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *ordering.OrderConfirmedEvent) error {
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
@@ -107,7 +107,7 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 			Type:      inventory.InventoryVoucherTypeOut,
 			OverStock: event.InventoryOverStock,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdCreate)
+		err = m.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 			ID:        inventoryVoucherID,
 			UpdatedBy: event.UpdatedBy,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		err = m.inventoryAgg.Dispatch(ctx, cmdConfirm)
 	}
 	return err
 }
@@ -131,7 +131,7 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 // OrderConfirmingEvent
 // Create InventoryVariant if not exist
 // Validate quantity in case of InventoryVoucherTypeOut
-func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *ordering.OrderConfirmingEvent) error {
+func (m *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *ordering.OrderConfirmingEvent) error {
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
@@ -148,7 +148,7 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 		ShopId:         event.ShopID,
 		ShopVariantIds: variantIDs,
 	}
-	err := p.catalogQ.Dispatch(ctx, &query)
+	err := m.catalogQ.Dispatch(ctx, &query)
 	if err != nil {
 		return err
 	}
@@ -158,14 +158,14 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 		Type:               inventory.InventoryVoucherTypeOut,
 		Lines:              inventoryVoucherLines,
 	}
-	err = p.inventoryAgg.Dispatch(ctx, cmd)
+	err = m.inventoryAgg.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktake.StocktakeConfirmedEvent) error {
+func (m *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktake.StocktakeConfirmedEvent) error {
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
@@ -188,7 +188,7 @@ func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 			Type:      inventory.InventoryVoucherTypeOut,
 			OverStock: event.Overstock,
 		}
-		err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
+		err := m.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
@@ -203,7 +203,7 @@ func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 				ID:        value,
 				UpdatedBy: event.ConfirmedBy,
 			}
-			err := p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+			err := m.inventoryAgg.Dispatch(ctx, cmdConfirm)
 			if err != nil {
 				return err
 			}
@@ -213,7 +213,7 @@ func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 	return nil
 }
 
-func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
+func (m *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
@@ -236,7 +236,7 @@ func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 			Type:      inventory.InventoryVoucherTypeIn,
 			OverStock: false,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdCreate)
+		err = m.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
@@ -252,7 +252,7 @@ func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 			ID:        inventoryVoucherID,
 			UpdatedBy: event.UpdatedBy,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		err = m.inventoryAgg.Dispatch(ctx, cmdConfirm)
 	}
 	return err
 }

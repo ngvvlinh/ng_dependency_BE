@@ -17,17 +17,17 @@ var _ = sqlgenMoneyTransactionShippingExternal(&MoneyTransactionShippingExternal
 var _ = sqlgenMoneyTransactionShippingExternalLine(&MoneyTransactionShippingExternalLine{})
 
 var _ = sqlgenMoneyTransactionShippingExternalLineExtended(
-	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, sq.AS("m"),
-	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, sq.AS("f"), "f.id = m.etop_fulfillment_id",
-	sq.LEFT_JOIN, &model.Shop{}, sq.AS("s"), "s.id = f.shop_id",
-	sq.LEFT_JOIN, &ordermodel.Order{}, sq.AS("o"), "o.id = f.order_id",
+	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, "m",
+	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, "f", "f.id = m.etop_fulfillment_id",
+	sq.LEFT_JOIN, &model.Shop{}, "s", "s.id = f.shop_id",
+	sq.LEFT_JOIN, &ordermodel.Order{}, "o", "o.id = f.order_id",
 )
 
 var _ = sqlgenMoneyTransactionShipping(&MoneyTransactionShipping{})
 
 var _ = sqlgenMoneyTransactionShippingFtShop(
-	&MoneyTransactionShippingFtShop{}, &MoneyTransactionShipping{}, sq.AS("m"),
-	sq.LEFT_JOIN, &model.Shop{}, sq.AS("s"), "s.id = m.shop_id",
+	&MoneyTransactionShippingFtShop{}, &MoneyTransactionShipping{}, "m",
+	sq.LEFT_JOIN, &model.Shop{}, "s", "s.id = m.shop_id",
 )
 
 var _ = sqlgenMoneyTransactionShippingEtop(&MoneyTransactionShippingEtop{})

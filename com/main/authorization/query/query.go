@@ -45,7 +45,7 @@ func (a *AuthorizationQuery) GetAccountAuthorization(
 	ctx context.Context, accountID dot.ID,
 ) (auths []*authorization.Authorization, _ error) {
 	getAccountUsersQuery := &model.GetAccountUserExtendedsQuery{
-		AccountIDs: []dot.ID{dot.ID(accountID)},
+		AccountIDs: []dot.ID{accountID},
 	}
 	if err := bus.Dispatch(ctx, getAccountUsersQuery); err != nil {
 		return nil, err

@@ -49,7 +49,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 	return nil
 }
 
-func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shipping_provider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
+func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shipping_provider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 
 	note := shipping_provider.GetShippingProviderNote(order, ffm)
 	weight := order.TotalWeight
@@ -64,12 +64,12 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	// if order.ShopShipping.IncludeInsurance {
 	// 	valueInsurance = order.BasketValue
 	// }
-	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 	valueInsurance := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
-	if err := p.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
@@ -113,7 +113,7 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	}
 	if ffm.AddressReturn != nil {
 		returnQuery := &location.GetLocationQuery{DistrictCode: ffm.AddressReturn.DistrictCode}
-		if err := p.location.Dispatch(ctx, returnQuery); err != nil {
+		if err := c.location.Dispatch(ctx, returnQuery); err != nil {
 			return nil, cm.Errorf(cm.InvalidArgument, err, "địa chỉ trả hàng không hợp lệ: %v", err)
 		}
 		returnProvince, returnDistrict := returnQuery.Result.Province, returnQuery.Result.District
@@ -133,7 +133,7 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ghtkCmd.Request.Order.ReturnEmail = returnEmail
 	}
 
-	if ghtkErr := p.CreateOrder(ctx, ghtkCmd); ghtkErr != nil {
+	if ghtkErr := c.CreateOrder(ctx, ghtkCmd); ghtkErr != nil {
 		return nil, ghtkErr
 	}
 	r := ghtkCmd.Result
@@ -181,26 +181,26 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	return updateFfm, nil
 }
 
-func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
+func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
 	code := ffm.ExternalShippingCode
 	cmd := &CancelOrderCommand{
 		ServiceID: ffm.ProviderServiceID,
 		LabelID:   code,
 	}
-	err := p.CancelOrder(ctx, cmd)
+	err := c.CancelOrder(ctx, cmd)
 	return err
 }
 
-func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
-	if err := p.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
-	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	cmd := &CalcShippingFeeCommand{
 		ArbitraryID:      args.AccountID,
@@ -215,20 +215,20 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 			District:        toDistrict.Name,
 		},
 	}
-	err := p.CalcShippingFee(ctx, cmd)
+	err := c.CalcShippingFee(ctx, cmd)
 	services := cmd.Result
 	return services, err
 }
 
-func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
-	if err := p.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
-	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	cmd := &CalcShippingFeeCommand{
 		ArbitraryID:      args.AccountID,
@@ -243,7 +243,7 @@ func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 			District:        toDistrict.Name,
 		},
 	}
-	if err := p.CalcShippingFee(ctx, cmd); err != nil {
+	if err := c.CalcShippingFee(ctx, cmd); err != nil {
 		return nil, err
 	}
 	providerServices := cmd.Result
@@ -264,6 +264,6 @@ func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return allServices, nil
 }
 
-func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+func (c *Carrier) GetMaxValueFreeInsuranceFee() int {
 	return 3000000
 }

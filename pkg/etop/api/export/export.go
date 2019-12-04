@@ -219,8 +219,8 @@ func exportAndReportProgress(
 	// store the last status item as export result
 	if statusItem != nil {
 		// progress_max may not always be correct, but still good enough
-		exportResult.NTotal = int(statusItem.ProgressMax)
-		exportResult.NExported = int(statusItem.ProgressValue)
+		exportResult.NTotal = statusItem.ProgressMax
+		exportResult.NExported = statusItem.ProgressValue
 		exportResult.NError = len(errs)
 	}
 	return nil

@@ -14,11 +14,11 @@ func PbGenderPtr(s *string) Gender {
 	return Gender(Gender_value[*s])
 }
 
-func (g Gender) ToModel() string {
-	if g == 0 {
+func (x Gender) ToModel() string {
+	if x == 0 {
 		return ""
 	}
-	return g.String()
+	return x.String()
 }
 
 func (x Gender) MarshalJSON() ([]byte, error) {

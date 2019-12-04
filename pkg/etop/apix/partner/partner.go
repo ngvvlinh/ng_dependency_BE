@@ -183,7 +183,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 					Msg:       msgShopRequest,
 					Type:      "shop_request",
 					AuthToken: token.TokenStr,
-					ExpiresIn: int(token.ExpiresIn),
+					ExpiresIn: token.ExpiresIn,
 				}
 				if q.RedirectUrl != "" {
 					q.Result.AuthUrl = generateAuthURL(authURL, q.Result.AuthToken)
@@ -236,7 +236,7 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		Msg:       msgShopRequest,
 		Type:      "shop_request",
 		AuthToken: token.TokenStr,
-		ExpiresIn: int(token.ExpiresIn),
+		ExpiresIn: token.ExpiresIn,
 	}
 	if q.RedirectUrl != "" {
 		q.Result.AuthUrl = generateAuthURL(authURL, q.Result.AuthToken)

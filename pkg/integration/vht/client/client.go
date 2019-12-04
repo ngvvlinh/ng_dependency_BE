@@ -117,10 +117,10 @@ func (c *Client) MakeQueryVht(queryDTO *VHTHistoryQueryDTO) (string, error) {
 		query.Set("extension", strconv.FormatInt(int64(queryDTO.Extension), 10))
 	}
 	if queryDTO.DateStarted != 0 {
-		query.Set("date_started", strconv.FormatInt(int64(queryDTO.DateStarted), 10))
+		query.Set("date_started", strconv.FormatInt(queryDTO.DateStarted, 10))
 	}
 	if queryDTO.DateEnded != 0 {
-		query.Set("date_ended", strconv.FormatInt(int64(queryDTO.DateEnded), 10))
+		query.Set("date_ended", strconv.FormatInt(queryDTO.DateEnded, 10))
 	}
 	if queryDTO.SortBy != "" {
 		query.Set("sort_by", queryDTO.SortBy)

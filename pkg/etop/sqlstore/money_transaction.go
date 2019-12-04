@@ -319,7 +319,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -1169,7 +1169,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -1265,7 +1265,7 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -1540,7 +1540,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }

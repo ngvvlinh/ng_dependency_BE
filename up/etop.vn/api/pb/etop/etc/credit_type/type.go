@@ -8,11 +8,11 @@ func PbTypeFromInt(s int) CreditType {
 	return CreditType(s)
 }
 
-func (s *CreditType) ToModel() string {
-	if s == nil {
+func (x *CreditType) ToModel() string {
+	if x == nil {
 		return ""
 	}
-	return CreditType_name[int(*s)]
+	return CreditType_name[int(*x)]
 }
 
 func (x CreditType) MarshalJSON() ([]byte, error) {

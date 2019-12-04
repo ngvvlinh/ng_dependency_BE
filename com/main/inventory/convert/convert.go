@@ -17,7 +17,6 @@ import (
 
 const (
 	MaxCodeNorm = 999999
-	codeRegex   = "^PTK([0-9]{6})$"
 	codePrefix  = "PTK"
 )
 

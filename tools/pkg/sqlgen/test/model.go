@@ -76,8 +76,8 @@ type UserInfo struct {
 //
 //    sqlgen...(U, A, join, B, condition)
 var _ = sqlgenUserUnion(
-	&UserUnion{}, &User{}, sq.AS("u"),
-	sq.FULL_JOIN, &UserInfo{}, sq.AS("ui"), `u.id = ui.user_id`,
+	&UserUnion{}, &User{}, "u",
+	sq.FULL_JOIN, &UserInfo{}, "ui", `u.id = ui.user_id`,
 )
 
 // UserUnion ...
@@ -87,9 +87,9 @@ type UserUnion struct {
 }
 
 var _ = sqlgenUserUnionMore(
-	&UserUnionMore{}, &User{}, sq.AS("u"),
-	sq.FULL_JOIN, &UserInfo{}, sq.AS("ui"), `u.id = ui.user_id`,
-	sq.RIGHT_JOIN, &UserSubset{}, sq.AS("us"), `u.id = us.id`,
+	&UserUnionMore{}, &User{}, "u",
+	sq.FULL_JOIN, &UserInfo{}, "ui", `u.id = ui.user_id`,
+	sq.RIGHT_JOIN, &UserSubset{}, "us", `u.id = us.id`,
 )
 
 // UserUnionMore ...

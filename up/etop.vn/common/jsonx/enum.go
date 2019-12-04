@@ -31,5 +31,5 @@ func EnumName(m map[int]string, v int) string {
 	if ok {
 		return s
 	}
-	return strconv.Itoa(int(v))
+	return strconv.Itoa(v)
 }

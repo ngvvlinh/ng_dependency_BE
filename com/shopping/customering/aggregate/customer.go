@@ -47,8 +47,7 @@ func (a *CustomerAggregate) MessageBus() customering.CommandBus {
 }
 
 const (
-	codeRegex  = "^KH[0-9]{6}$"
-	codePrefix = "KH"
+	codeRegex = "^KH[0-9]{6}$"
 )
 
 var reCode = regexp.MustCompile(codeRegex)

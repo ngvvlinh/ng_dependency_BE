@@ -96,7 +96,7 @@ func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerE
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
 	return nil
 }
 
@@ -214,7 +214,7 @@ func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustome
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -226,7 +226,7 @@ func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *Remov
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.RemovedResponse{Removed: int(cmd.Result)}
+	r.Result = &pbcm.RemovedResponse{Removed: cmd.Result}
 	return nil
 }
 
@@ -271,7 +271,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 
 	for _, customer := range customers {
 		customer.Liability = &pbshop.CustomerLiability{
-			TotalOrders:    int(mapCustomerIDAndNumberOfOrders[customer.Id]),
+			TotalOrders:    mapCustomerIDAndNumberOfOrders[customer.Id],
 			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
 			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],
 			Liability:      mapCustomerIDAndTotalAmountOrders[customer.Id] - mapCustomerIDAndTotalAmountReceipts[customer.Id],

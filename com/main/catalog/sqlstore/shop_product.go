@@ -253,7 +253,7 @@ func (s *ShopProductStore) UpdateShopProduct(product *model.ShopProduct) error {
 
 func (s *ShopProductStore) UpdateShopProductCategory(product *model.ShopProduct) error {
 	sqlstore.MustNoPreds(s.preds)
-	_, err := s.query().Where(s.FtShopProduct.ByProductID((product.ProductID))).Update(product)
+	_, err := s.query().Where(s.FtShopProduct.ByProductID(product.ProductID)).Update(product)
 	return err
 }
 

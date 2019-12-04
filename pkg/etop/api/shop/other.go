@@ -71,7 +71,7 @@ func (s *AccountService) GetBalanceShop(ctx context.Context, q *GetBalanceShopEn
 		return err
 	}
 	q.Result = &pbshop.GetBalanceShopResponse{
-		Amount: int(cmd.Result.Amount),
+		Amount: cmd.Result.Amount,
 	}
 	return nil
 }

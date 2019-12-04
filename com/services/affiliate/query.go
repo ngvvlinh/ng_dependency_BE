@@ -77,14 +77,14 @@ func (a *QueryService) GetReferralsByReferralID(ctx context.Context, args *affil
 	return a.userReferral(ctx).ReferralID(args.ID).GetUserReferrals()
 }
 
-func (q *QueryService) GetAffiliateAccountReferralByCode(ctx context.Context, args *affiliate.GetAffiliateAccountReferralByCodeArgs) (*affiliate.AffiliateReferralCode, error) {
-	return q.affiliateReferralCode(ctx).Code(args.Code).GetAffiliateReferralCode()
+func (a *QueryService) GetAffiliateAccountReferralByCode(ctx context.Context, args *affiliate.GetAffiliateAccountReferralByCodeArgs) (*affiliate.AffiliateReferralCode, error) {
+	return a.affiliateReferralCode(ctx).Code(args.Code).GetAffiliateReferralCode()
 }
 
-func (q *QueryService) GetSupplyCommissionSettingsByProductIDs(ctx context.Context, args *affiliate.GetSupplyCommissionSettingsByProductIDsArgs) ([]*affiliate.SupplyCommissionSetting, error) {
-	return q.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductIDs(args.ProductIDs...).GetSupplyCommissionSettings()
+func (a *QueryService) GetSupplyCommissionSettingsByProductIDs(ctx context.Context, args *affiliate.GetSupplyCommissionSettingsByProductIDsArgs) ([]*affiliate.SupplyCommissionSetting, error) {
+	return a.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductIDs(args.ProductIDs...).GetSupplyCommissionSettings()
 }
 
-func (q *QueryService) GetSellerCommissions(ctx context.Context, args *affiliate.GetSellerCommissionsArgs) ([]*affiliate.SellerCommission, error) {
-	return q.sellerCommission(ctx).SellerID(args.SellerID).Paging(args.Paging).Filters(args.Filters).GetAffiliateCommissions()
+func (a *QueryService) GetSellerCommissions(ctx context.Context, args *affiliate.GetSellerCommissionsArgs) ([]*affiliate.SellerCommission, error) {
+	return a.sellerCommission(ctx).SellerID(args.SellerID).Paging(args.Paging).Filters(args.Filters).GetAffiliateCommissions()
 }

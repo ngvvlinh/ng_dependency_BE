@@ -230,7 +230,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 	for _, receipt := range receipts {
 		for _, line := range receipt.Lines {
 			if _, ok := mapPurchaseOrderIDAndPaidAmount[line.RefID]; ok {
-				mapPurchaseOrderIDAndPaidAmount[line.RefID] += int(line.Amount)
+				mapPurchaseOrderIDAndPaidAmount[line.RefID] += line.Amount
 			}
 		}
 	}

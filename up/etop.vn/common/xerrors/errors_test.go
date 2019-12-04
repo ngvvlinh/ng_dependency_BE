@@ -77,7 +77,7 @@ func TestErrorJSON(t *testing.T) {
 		assert.Equal(t, &jsonError{
 			Code: "not_found",
 			Msg:  "Foo",
-			Logs: json.RawMessage([]byte(`[]`)),
+			Logs: []byte(`[]`),
 		}, v)
 	})
 
@@ -88,7 +88,7 @@ func TestErrorJSON(t *testing.T) {
 		assert.Equal(t, &jsonError{
 			Code:  "not_found",
 			Msg:   "Foo",
-			Logs:  json.RawMessage([]byte(`[]`)),
+			Logs:  []byte(`[]`),
 			Stack: v.Stack,
 		}, v)
 		assert.Equal(t, 0, strings.Index(v.Stack,

@@ -471,8 +471,8 @@ func (p *Permission) GetPermissions() []string {
 	return nil
 }
 
-func (m *Permission) Reset()         { *m = Permission{} }
-func (m *Permission) String() string { return jsonx.MustMarshalToString(m) }
+func (p *Permission) Reset()         { *p = Permission{} }
+func (p *Permission) String() string { return jsonx.MustMarshalToString(p) }
 
 type LoginRequest struct {
 	// @required Phone or email

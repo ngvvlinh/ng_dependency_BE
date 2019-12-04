@@ -143,7 +143,7 @@ func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *Conf
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -156,6 +156,6 @@ func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *Cance
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }

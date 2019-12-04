@@ -470,7 +470,7 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	supplyCommissionSetting := &model.SupplyCommissionSetting{
 		ShopID:                   args.ShopID,
 		ProductID:                args.ProductID,
-		Level1DirectCommission:   int(args.Level1DirectCommission),
+		Level1DirectCommission:   args.Level1DirectCommission,
 		Level1IndirectCommission: args.Level1IndirectCommission,
 		Level2DirectCommission:   args.Level2DirectCommission,
 		Level2IndirectCommission: args.Level2IndirectCommission,
@@ -478,12 +478,12 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		Level1LimitCount:         args.Level1LimitCount,
 		Level1LimitDuration:      level1LimitDuration,
 		MLevel1LimitDuration: &model.DurationJSON{
-			Duration: int(args.Level1LimitDuration),
+			Duration: args.Level1LimitDuration,
 			Type:     args.Level1LimitDurationType,
 		},
 		LifetimeDuration: lifetimeDuration,
 		MLifetimeDuration: &model.DurationJSON{
-			Duration: int(args.LifetimeDuration),
+			Duration: args.LifetimeDuration,
 			Type:     args.LifetimeDurationType,
 		},
 		CustomerPolicyGroupID: customerPolicyGroupID,

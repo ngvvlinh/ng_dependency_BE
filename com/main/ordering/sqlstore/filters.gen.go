@@ -809,7 +809,7 @@ func (ft *OrderFilters) ByIsOutsideEtop(IsOutsideEtop bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
-		IsNil:  bool(!IsOutsideEtop),
+		IsNil:  !IsOutsideEtop,
 	}
 }
 
@@ -819,7 +819,7 @@ func (ft *OrderFilters) ByIsOutsideEtopPtr(IsOutsideEtop *bool) *sq.ColumnFilter
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
 		IsNil:  IsOutsideEtop == nil,
-		IsZero: IsOutsideEtop != nil && bool(!(*IsOutsideEtop)),
+		IsZero: IsOutsideEtop != nil && !(*IsOutsideEtop),
 	}
 }
 
@@ -1279,7 +1279,7 @@ func (ft *OrderLineFilters) ByIsOutsideEtop(IsOutsideEtop bool) *sq.ColumnFilter
 		Prefix: &ft.prefix,
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
-		IsNil:  bool(!IsOutsideEtop),
+		IsNil:  !IsOutsideEtop,
 	}
 }
 
@@ -1289,7 +1289,7 @@ func (ft *OrderLineFilters) ByIsOutsideEtopPtr(IsOutsideEtop *bool) *sq.ColumnFi
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
 		IsNil:  IsOutsideEtop == nil,
-		IsZero: IsOutsideEtop != nil && bool(!(*IsOutsideEtop)),
+		IsZero: IsOutsideEtop != nil && !(*IsOutsideEtop),
 	}
 }
 

@@ -93,6 +93,6 @@ func (s LedgerService) DeleteLedger(ctx context.Context, r *DeleteLedgerEndpoint
 		return err
 	}
 
-	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
 	return nil
 }

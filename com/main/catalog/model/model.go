@@ -51,8 +51,8 @@ func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string
 }
 
 var _ = sqlgenShopVariantWithProduct(
-	&ShopVariantWithProduct{}, &ShopProduct{}, sq.AS("sp"),
-	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sp.product_id = sv.product_id",
+	&ShopVariantWithProduct{}, &ShopProduct{}, "sp",
+	sq.LEFT_JOIN, &ShopVariant{}, "sv", "sp.product_id = sv.product_id",
 )
 
 type ShopVariantWithProduct struct {

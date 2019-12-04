@@ -65,30 +65,30 @@ func PID(i *ID) NullID {
 	return NullID{ID: *i, Valid: true}
 }
 
-func (ns NullString) Apply(s string) string {
-	if ns.Valid {
-		return ns.String
+func (n NullString) Apply(s string) string {
+	if n.Valid {
+		return n.String
 	}
 	return s
 }
 
-func (nb NullBool) Apply(b bool) bool {
-	if nb.Valid {
-		return nb.Bool
+func (n NullBool) Apply(b bool) bool {
+	if n.Valid {
+		return n.Bool
 	}
 	return b
 }
 
-func (ni NullInt64) Apply(i int64) int64 {
-	if ni.Valid {
-		return ni.Int64
+func (n NullInt64) Apply(i int64) int64 {
+	if n.Valid {
+		return n.Int64
 	}
 	return i
 }
 
-func (ni NullInt32) Apply(i int32) int32 {
-	if ni.Valid {
-		return ni.Int32
+func (n NullInt32) Apply(i int32) int32 {
+	if n.Valid {
+		return n.Int32
 	}
 	return i
 }
@@ -100,9 +100,9 @@ func (n NullInt) Apply(i int) int {
 	return i
 }
 
-func (ni NullID) Apply(i ID) ID {
-	if ni.Valid {
-		return ni.ID
+func (id NullID) Apply(i ID) ID {
+	if id.Valid {
+		return id.ID
 	}
 	return i
 }

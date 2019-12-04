@@ -121,7 +121,7 @@ func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	var status etop.Status4 = etop.S4Negative
+	var status = etop.S4Negative
 	if len(result) == 0 {
 		status = etop.S4Zero
 	} else {

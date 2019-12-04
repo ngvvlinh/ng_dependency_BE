@@ -64,7 +64,7 @@ func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *DeleteCu
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: int(cmd.Result)}
+	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
 	return nil
 }
 

@@ -261,7 +261,7 @@ func (s *UserRelationshipService) AcceptInvitation(ctx context.Context, q *UserR
 		return err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -274,7 +274,7 @@ func (s *UserRelationshipService) RejectInvitation(ctx context.Context, q *UserR
 		return err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: int(cmd.Result)}
+	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 

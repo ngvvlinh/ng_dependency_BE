@@ -50,7 +50,7 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtend
 		if err != nil {
 			return err
 		}
-		query.Result.Total = int(total)
+		query.Result.Total = total
 	}
 	return nil
 }
@@ -259,7 +259,7 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProd
 	} else if updated == 0 {
 		return cm.Error(cm.NotFound, "No product updated", nil)
 	} else {
-		cmd.Result.Updated = int(updated)
+		cmd.Result.Updated = updated
 	}
 	return nil
 }

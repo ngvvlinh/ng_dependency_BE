@@ -161,7 +161,7 @@ func (ft *EtopAcountFilters) ByIsOperator(IsOperator bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "is_operator",
 		Value:  IsOperator,
-		IsNil:  bool(!IsOperator),
+		IsNil:  !IsOperator,
 	}
 }
 
@@ -171,7 +171,7 @@ func (ft *EtopAcountFilters) ByIsOperatorPtr(IsOperator *bool) *sq.ColumnFilterP
 		Column: "is_operator",
 		Value:  IsOperator,
 		IsNil:  IsOperator == nil,
-		IsZero: IsOperator != nil && bool(!(*IsOperator)),
+		IsZero: IsOperator != nil && !(*IsOperator),
 	}
 }
 
