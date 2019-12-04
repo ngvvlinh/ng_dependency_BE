@@ -86,7 +86,8 @@ func (n NullString) MarshalJSON() ([]byte, error) {
 	if !n.Valid {
 		return jsonNull, nil
 	}
-	return []byte(`"` + n.String + `"`), nil
+	dst := make([]byte, 0, len(n.String)+2+len(n.String)/4)
+	return strconv.AppendQuote(dst, n.String), nil
 }
 
 func (n *NullString) UnmarshalJSON(data []byte) error {
