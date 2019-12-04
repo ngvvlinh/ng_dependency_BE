@@ -55,6 +55,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}
 	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
@@ -104,6 +105,7 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *sadmin.SAdminCreat
 	}
 	session = sessionQuery.Result
 	query := &CreateUserEndpoint{SAdminCreateUserRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateUser(ctx, query)
@@ -145,6 +147,7 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *sadmin.LoginAs
 	}
 	session = sessionQuery.Result
 	query := &LoginAsAccountEndpoint{LoginAsAccountRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginAsAccount(ctx, query)
@@ -186,6 +189,7 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *sadmin.SAdminRe
 	}
 	session = sessionQuery.Result
 	query := &ResetPasswordEndpoint{SAdminResetPasswordRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ResetPassword(ctx, query)

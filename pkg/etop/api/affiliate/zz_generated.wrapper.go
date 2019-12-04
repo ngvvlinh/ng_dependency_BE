@@ -55,7 +55,11 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &DeleteAffiliateEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteAffiliate(ctx, query)
 	resp = query.Result
@@ -143,7 +147,11 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *affiliate.
 	}
 	session = sessionQuery.Result
 	query := &UpdateAffiliateEndpoint{UpdateAffiliateRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliate(ctx, query)
 	resp = query.Result
@@ -184,7 +192,11 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &UpdateAffiliateBankAccountEndpoint{UpdateAffiliateBankAccountRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliateBankAccount(ctx, query)
 	resp = query.Result

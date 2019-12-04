@@ -107,6 +107,9 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 
 // StartSession ...
 func StartSession(ctx context.Context, q *StartSessionQuery) error {
+
+	// TODO: check UserID, ShopID, etc. correctly. Because InitSession now
+	// responses token without any credential.
 	if !q.RequireAuth {
 		return nil
 	}

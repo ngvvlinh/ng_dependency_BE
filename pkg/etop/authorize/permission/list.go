@@ -15,8 +15,8 @@ const (
 	CurUsr
 	Partner
 	Shop
-	EtopAdmin
 	Affiliate
+	EtopAdmin
 
 	SuperAdmin PermType = 100
 	Custom     PermType = -1

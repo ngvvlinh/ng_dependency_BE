@@ -55,7 +55,11 @@ func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &AffiliateGetProductsEndpoint{CommonListRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AffiliateGetProducts(ctx, query)
 	resp = query.Result
@@ -96,7 +100,11 @@ func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx conte
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateAffiliateCommissionSettingEndpoint{CreateOrUpdateCommissionSettingRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateAffiliateCommissionSetting(ctx, query)
 	resp = query.Result
@@ -137,7 +145,11 @@ func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *affil
 	}
 	session = sessionQuery.Result
 	query := &CreateReferralCodeEndpoint{CreateReferralCodeRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateReferralCode(ctx, query)
 	resp = query.Result
@@ -178,7 +190,11 @@ func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.Common
 	}
 	session = sessionQuery.Result
 	query := &GetCommissionsEndpoint{CommonListRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCommissions(ctx, query)
 	resp = query.Result
@@ -219,7 +235,11 @@ func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &GetProductPromotionByProductIDEndpoint{GetProductPromotionByProductIDRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductPromotionByProductID(ctx, query)
 	resp = query.Result
@@ -260,7 +280,11 @@ func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.Comm
 	}
 	session = sessionQuery.Result
 	query := &GetReferralCodesEndpoint{CommonListRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReferralCodes(ctx, query)
 	resp = query.Result
@@ -301,7 +325,11 @@ func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonLi
 	}
 	session = sessionQuery.Result
 	query := &GetReferralsEndpoint{CommonListRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReferrals(ctx, query)
 	resp = query.Result
@@ -342,7 +370,11 @@ func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.Commo
 	}
 	session = sessionQuery.Result
 	query := &GetTransactionsEndpoint{CommonListRequest: req}
+	query.Context.Claim = session.Claim
 	query.Context.Affiliate = session.Affiliate
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTransactions(ctx, query)
 	resp = query.Result

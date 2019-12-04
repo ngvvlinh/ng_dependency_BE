@@ -85,7 +85,7 @@ func methodName(m *Method) string {
 
 func requireAuth(m *Method) bool {
 	p := getPermission(m)
-	return p.Type >= permission.Protected
+	return p.Type >= permission.Protected || p.Type == permission.Custom
 }
 
 func requireLogin(m *Method) bool {
@@ -254,7 +254,7 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	session = sessionQuery.Result
 {{- end}}
 	query := &{{$s.EndpointPrefix}}{{$m|methodName}}Endpoint{ {{$m.Req|baseName}}: req }
-	{{if requireLogin $m -}}
+	{{if requireAuth $m -}}
 	query.Context.Claim = session.Claim
 	{{end -}}
 	{{if requireUser $m -}}
