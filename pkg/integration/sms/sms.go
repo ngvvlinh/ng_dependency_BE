@@ -81,28 +81,27 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ có thể gửi tin nhắn đến địa chỉ test trên dev!")
 	}
 
-	var smsError error
+	resp, err := c.inner.SendSMS(ctx, phone, cmd.Content)
 	defer func() {
 		createSms := &smsing.CreateSmsLogCommand{
-			Content:  cmd.Content,
-			Phone:    cmd.Phone,
-			Status:   status3.Status_P,
-			Provider: "Vietguys",
+			Content:    cmd.Content,
+			Phone:      cmd.Phone,
+			Status:     status3.Status_P,
+			Provider:   "Vietguys",
+			ExternalID: resp,
 		}
-		if smsError != nil {
+		if err != nil {
 			createSms.Status = status3.Status_Z
-			createSms.Error = smsError.Error()
+			createSms.Error = err.Error()
 		}
-		if err := smsAggr.Dispatch(ctx, createSms); err != nil {
+		if logErr := smsAggr.Dispatch(ctx, createSms); logErr != nil {
 			if _err == nil {
-				_err = err
+				_err = logErr
 			}
 		}
 	}()
 
-	resp, err := c.inner.SendSMS(ctx, phone, cmd.Content)
 	if err != nil {
-		smsError = err
 		c.bot.SendMessage(fmt.Sprintf("Vietguys: %v", err))
 		return cm.Errorf(cm.ExternalServiceError, nil, "Không thể gửi tin nhắn")
 	}
