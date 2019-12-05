@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
-	pbcm "etop.vn/api/pb/common"
-	pborder "etop.vn/api/pb/etop/order"
-	pbsource "etop.vn/api/pb/etop/order/source"
-	"etop.vn/api/pb/etop/shop"
-	pbexternal "etop.vn/api/pb/external"
+	exttypes "etop.vn/api/top/external/types"
+	apishop "etop.vn/api/top/int/shop"
+	"etop.vn/api/top/int/types"
+	pbcm "etop.vn/api/top/types/common"
+	pbsource "etop.vn/api/top/types/etc/source"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -27,7 +27,7 @@ import (
 
 var ll = l.New()
 
-func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *claims.ShopClaim, r *pbexternal.CreateOrderRequest) (_ *pbexternal.OrderAndFulfillments, _err error) {
+func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
 	shipping := r.Shipping
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
@@ -65,7 +65,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã đơn hàng external_code không hợp lệ")
 	}
 
-	req := &pborder.CreateOrderRequest{
+	req := &types.CreateOrderRequest{
 		Source:          pbsource.Source_api,
 		ExternalId:      r.ExternalId,
 		ExternalCode:    externalCode,
@@ -94,7 +94,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		ShopCod:         shipping.CodAmount.Apply(0),
 		ReferenceUrl:    "",
 		ShopShipping:    nil, // deprecated
-		Shipping: &pborder.OrderShipping{
+		Shipping: &types.OrderShipping{
 			ExportedFields:      nil,
 			ShAddress:           nil,
 			XServiceId:          "",
@@ -146,7 +146,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	}()
 
 	cfmResp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, shopClaim.Shop, shopClaim.AuthPartnerID,
-		&shop.OrderIDRequest{
+		&apishop.OrderIDRequest{
 			OrderId: orderID,
 		})
 	if err != nil {
@@ -176,7 +176,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func CancelOrder(ctx context.Context, shopID dot.ID, r *pbexternal.CancelOrderRequest) (*pbexternal.OrderAndFulfillments, error) {
+func CancelOrder(ctx context.Context, shopID dot.ID, r *exttypes.CancelOrderRequest) (*exttypes.OrderAndFulfillments, error) {
 	var orderID dot.ID
 	var sqlQuery *ordersqlstore.OrderStore
 
@@ -220,7 +220,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, r *pbexternal.CancelOrderRe
 	return resp2, nil
 }
 
-func GetOrder(ctx context.Context, shopID dot.ID, r *pbexternal.OrderIDRequest) (*pbexternal.OrderAndFulfillments, error) {
+func GetOrder(ctx context.Context, shopID dot.ID, r *exttypes.OrderIDRequest) (*exttypes.OrderAndFulfillments, error) {
 	orderQuery := &modelx.GetOrderQuery{
 		ShopID:             shopID,
 		OrderID:            r.Id,
@@ -234,7 +234,7 @@ func GetOrder(ctx context.Context, shopID dot.ID, r *pbexternal.OrderIDRequest) 
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func GetFulfillment(ctx context.Context, shopID dot.ID, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
+func GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentIDRequest) (*exttypes.Fulfillment, error) {
 	s := fulfillmentStore(ctx).ShopID(shopID)
 	if r.Id != 0 {
 		s = s.ID(r.Id)
@@ -248,7 +248,7 @@ func GetFulfillment(ctx context.Context, shopID dot.ID, r *pbexternal.Fulfillmen
 	return convertpb.PbFulfillment(ffm), nil
 }
 
-func validateAddress(address *pborder.OrderAddress, shippingProvider model.ShippingProvider) error {
+func validateAddress(address *types.OrderAddress, shippingProvider model.ShippingProvider) error {
 	if address == nil {
 		return errors.New("Thiếu thông tin địa chỉ")
 	}

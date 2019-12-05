@@ -6,9 +6,10 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/external/types"
+
 	"github.com/Shopify/sarama"
 
-	pbexternal "etop.vn/api/pb/external"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
@@ -203,10 +204,10 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 
 	convertpb.PbOrderHistory(history)
 	change := pbChange(event)
-	change.Latest = &pbexternal.LatestOneOf{
+	change.Latest = &types.LatestOneOf{
 		Order: convertpb.PbOrder(&order),
 	}
-	change.Changed = &pbexternal.ChangeOneOf{
+	change.Changed = &types.ChangeOneOf{
 		Order: changed,
 	}
 	accountIDs := []dot.ID{order.ShopID, order.PartnerID}
@@ -240,18 +241,18 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 
 	convertpb.PbFulfillmentHistory(history)
 	change := pbChange(event)
-	change.Latest = &pbexternal.LatestOneOf{
+	change.Latest = &types.LatestOneOf{
 		Fulfillment: convertpb.PbFulfillment(&ffm),
 	}
-	change.Changed = &pbexternal.ChangeOneOf{
+	change.Changed = &types.ChangeOneOf{
 		Fulfillment: changed,
 	}
 	accountIDs := []dot.ID{ffm.ShopID, ffm.PartnerID}
 	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
 }
 
-func pbChange(event *pgevent.PgEvent) *pbexternal.Change {
-	return &pbexternal.Change{
+func pbChange(event *pgevent.PgEvent) *types.Change {
+	return &types.Change{
 		Time:       cmapi.PbTime(time.Unix(event.Timestamp, 0)),
 		ChangeType: pbChangeType(event.Op),
 		Entity:     event.Table,

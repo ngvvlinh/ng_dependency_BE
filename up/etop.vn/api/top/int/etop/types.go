@@ -1,11 +1,11 @@
 package etop
 
 import (
-	common "etop.vn/api/pb/common"
-	address_type "etop.vn/api/pb/etop/etc/address_type"
-	status3 "etop.vn/api/pb/etop/etc/status3"
-	try_on "etop.vn/api/pb/etop/etc/try_on"
-	user_source "etop.vn/api/pb/etop/etc/user_source"
+	common "etop.vn/api/top/types/common"
+	address_type "etop.vn/api/top/types/etc/address_type"
+	status3 "etop.vn/api/top/types/etc/status3"
+	try_on "etop.vn/api/top/types/etc/try_on"
+	user_source "etop.vn/api/top/types/etc/user_source"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -1199,3 +1199,46 @@ type SendPhoneVerifyRequest struct {
 
 func (m *SendPhoneVerifyRequest) Reset()         { *m = SendPhoneVerifyRequest{} }
 func (m *SendPhoneVerifyRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (x AccountType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}
+
+func (m *CreateUserRequest) Censor() {
+	if m.Password != "" {
+		m.Password = "..."
+	}
+	if m.RegisterToken != "" {
+		m.RegisterToken = "..."
+	}
+}
+
+func (m *LoginRequest) Censor() {
+	if m.Password != "" {
+		m.Password = "..."
+	}
+}
+
+func (m *ChangePasswordRequest) Censor() {
+	if m.CurrentPassword != "" {
+		m.CurrentPassword = "..."
+	}
+	if m.NewPassword != "" {
+		m.NewPassword = "..."
+	}
+	if m.ConfirmPassword != "" {
+		m.ConfirmPassword = "..."
+	}
+}
+
+func (m *ChangePasswordUsingTokenRequest) Censor() {
+	if m.ResetPasswordToken != "" {
+		m.ResetPasswordToken = "..."
+	}
+	if m.NewPassword != "" {
+		m.NewPassword = "..."
+	}
+	if m.ConfirmPassword != "" {
+		m.ConfirmPassword = "..."
+	}
+}

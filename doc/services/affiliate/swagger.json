@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcAffiliateGetProductsResponse"
+              "$ref": "#/definitions/hkAffiliateGetProductsResponse"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCreateOrUpdateCommissionSettingRequest"
+              "$ref": "#/definitions/hkCreateOrUpdateCommissionSettingRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcCommissionSetting"
+              "$ref": "#/definitions/hkCommissionSetting"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCreateReferralCodeRequest"
+              "$ref": "#/definitions/hkCreateReferralCodeRequest"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcReferralCode"
+              "$ref": "#/definitions/hkReferralCode"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetCommissionsResponse"
+              "$ref": "#/definitions/hkGetCommissionsResponse"
             }
           }
         }
@@ -131,7 +131,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionByProductIDRequest"
+              "$ref": "#/definitions/hkGetProductPromotionByProductIDRequest"
             }
           }
         ],
@@ -139,7 +139,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionByProductIDResponse"
+              "$ref": "#/definitions/hkGetProductPromotionByProductIDResponse"
             }
           }
         }
@@ -157,7 +157,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -165,7 +165,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetReferralCodesResponse"
+              "$ref": "#/definitions/hkGetReferralCodesResponse"
             }
           }
         }
@@ -183,7 +183,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -191,7 +191,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetReferralsResponse"
+              "$ref": "#/definitions/hkGetReferralsResponse"
             }
           }
         }
@@ -209,7 +209,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -217,7 +217,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetTransactionsResponse"
+              "$ref": "#/definitions/hkGetTransactionsResponse"
             }
           }
         }
@@ -235,7 +235,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcNotifyNewShopPurchaseRequest"
+              "$ref": "#/definitions/hkNotifyNewShopPurchaseRequest"
             }
           }
         ],
@@ -243,7 +243,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcNotifyNewShopPurchaseResponse"
+              "$ref": "#/definitions/hkNotifyNewShopPurchaseResponse"
             }
           }
         }
@@ -261,7 +261,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCheckReferralCodeValidRequest"
+              "$ref": "#/definitions/hkCheckReferralCodeValidRequest"
             }
           }
         ],
@@ -269,7 +269,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionResponse"
+              "$ref": "#/definitions/hkGetProductPromotionResponse"
             }
           }
         }
@@ -287,7 +287,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionRequest"
+              "$ref": "#/definitions/hkGetProductPromotionRequest"
             }
           }
         ],
@@ -295,7 +295,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionResponse"
+              "$ref": "#/definitions/hkGetProductPromotionResponse"
             }
           }
         }
@@ -313,7 +313,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -321,7 +321,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcShopGetProductsResponse"
+              "$ref": "#/definitions/hkShopGetProductsResponse"
             }
           }
         }
@@ -339,7 +339,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCreateOrUpdateTradingCommissionSettingRequest"
+              "$ref": "#/definitions/hkCreateOrUpdateTradingCommissionSettingRequest"
             }
           }
         ],
@@ -347,7 +347,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcSupplyCommissionSetting"
+              "$ref": "#/definitions/hkSupplyCommissionSetting"
             }
           }
         }
@@ -365,7 +365,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCreateOrUpdateProductPromotionRequest"
+              "$ref": "#/definitions/hkCreateOrUpdateProductPromotionRequest"
             }
           }
         ],
@@ -373,7 +373,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcProductPromotion"
+              "$ref": "#/definitions/hkProductPromotion"
             }
           }
         }
@@ -391,7 +391,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcGetTradingProductPromotionByIDsRequest"
+              "$ref": "#/definitions/hkGetTradingProductPromotionByIDsRequest"
             }
           }
         ],
@@ -399,7 +399,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetTradingProductPromotionByIDsResponse"
+              "$ref": "#/definitions/hkGetTradingProductPromotionByIDsResponse"
             }
           }
         }
@@ -417,7 +417,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -425,7 +425,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcGetProductPromotionsResponse"
+              "$ref": "#/definitions/hkGetProductPromotionsResponse"
             }
           }
         }
@@ -443,7 +443,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maCommonListRequest"
+              "$ref": "#/definitions/ktCommonListRequest"
             }
           }
         ],
@@ -451,7 +451,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcSupplyGetProductsResponse"
+              "$ref": "#/definitions/hkSupplyGetProductsResponse"
             }
           }
         }
@@ -469,7 +469,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcCreateOrUpdateProductPromotionRequest"
+              "$ref": "#/definitions/hkCreateOrUpdateProductPromotionRequest"
             }
           }
         ],
@@ -477,7 +477,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcProductPromotion"
+              "$ref": "#/definitions/hkProductPromotion"
             }
           }
         }
@@ -495,7 +495,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/vcUpdateReferralRequest"
+              "$ref": "#/definitions/hkUpdateReferralRequest"
             }
           }
         ],
@@ -503,7 +503,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vcUserReferral"
+              "$ref": "#/definitions/hkUserReferral"
             }
           }
         }
@@ -511,152 +511,7 @@
     }
   },
   "definitions": {
-    "euAddressType": {
-      "type": "string",
-      "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
-        "unknown",
-        "warehouse"
-      ]
-    },
-    "gjSource": {
-      "type": "string",
-      "enum": [
-        "api",
-        "etop_cmx",
-        "etop_pos",
-        "etop_pxs",
-        "import",
-        "self",
-        "ts_app",
-        "unknown"
-      ]
-    },
-    "juFeeType": {
-      "type": "string",
-      "enum": [
-        "other",
-        "shipping",
-        "tax"
-      ]
-    },
-    "khGender": {
-      "type": "string",
-      "enum": [
-        "female",
-        "male",
-        "other",
-        "unknown"
-      ]
-    },
-    "maCommonListRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        }
-      }
-    },
-    "maError": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "meta": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "msg": {
-          "type": "string"
-        }
-      }
-    },
-    "maFilter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "op": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "maMetaField": {
-      "type": "object",
-      "properties": {
-        "key": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "maPageInfo": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "total": {
-          "type": "integer"
-        }
-      }
-    },
-    "maPaging": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "offset": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "string"
-        }
-      }
-    },
-    "nqState": {
-      "type": "string",
-      "enum": [
-        "cancelled",
-        "confirmed",
-        "created",
-        "default",
-        "delivered",
-        "delivering",
-        "holding",
-        "picking",
-        "processing",
-        "returned",
-        "returning",
-        "undeliverable",
-        "unknown"
-      ]
-    },
-    "ocAddress": {
+    "baAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -666,7 +521,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -700,7 +555,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -715,7 +570,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -728,7 +583,7 @@
         }
       }
     },
-    "ocAddressNote": {
+    "baAddressNote": {
       "type": "object",
       "properties": {
         "lunch_break": {
@@ -745,11 +600,11 @@
         }
       }
     },
-    "ocAffiliate": {
+    "baAffiliate": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "email": {
           "type": "string"
@@ -768,11 +623,11 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocBankAccount": {
+    "baBankAccount": {
       "type": "object",
       "properties": {
         "account_name": {
@@ -792,14 +647,14 @@
         }
       }
     },
-    "ocCompanyInfo": {
+    "baCompanyInfo": {
       "type": "object",
       "properties": {
         "address": {
           "type": "string"
         },
         "legal_representative": {
-          "$ref": "#/definitions/ocContactPerson"
+          "$ref": "#/definitions/baContactPerson"
         },
         "name": {
           "type": "string"
@@ -812,7 +667,7 @@
         }
       }
     },
-    "ocContactPerson": {
+    "baContactPerson": {
       "type": "object",
       "properties": {
         "email": {
@@ -829,7 +684,7 @@
         }
       }
     },
-    "ocCoordinates": {
+    "baCoordinates": {
       "type": "object",
       "properties": {
         "latitude": {
@@ -842,7 +697,7 @@
         }
       }
     },
-    "ocShippingServiceSelectStrategyItem": {
+    "baShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
         "key": {
@@ -853,23 +708,23 @@
         }
       }
     },
-    "ocShop": {
+    "baShop": {
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "auto_create_ffm": {
           "type": "boolean"
         },
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
         },
         "company_info": {
-          "$ref": "#/definitions/ocCompanyInfo"
+          "$ref": "#/definitions/baCompanyInfo"
         },
         "email": {
           "type": "string"
@@ -924,30 +779,30 @@
         "shipping_service_select_strategy": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+            "$ref": "#/definitions/baShippingServiceSelectStrategyItem"
           }
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "survey_info": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocSurveyInfo"
+            "$ref": "#/definitions/baSurveyInfo"
           }
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         },
         "website_url": {
           "type": "string"
         }
       }
     },
-    "ocSurveyInfo": {
+    "baSurveyInfo": {
       "type": "object",
       "properties": {
         "answer": {
@@ -961,7 +816,7 @@
         }
       }
     },
-    "ocUser": {
+    "baUser": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1001,7 +856,7 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         },
         "updated_at": {
           "type": "string",
@@ -1009,46 +864,111 @@
         }
       }
     },
-    "tuProductType": {
+    "bjSource": {
       "type": "string",
       "enum": [
-        "goods",
-        "services",
+        "api",
+        "etop_cmx",
+        "etop_pos",
+        "etop_pxs",
+        "import",
+        "self",
+        "ts_app",
         "unknown"
       ]
     },
-    "vcAffiliateGetProductsResponse": {
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "bmStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "bnStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "NS",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "bwShippingProvider": {
+      "type": "string",
+      "enum": [
+        "all",
+        "ghn",
+        "ghtk",
+        "manual",
+        "unknown",
+        "vtpost"
+      ]
+    },
+    "csTryOnCode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "open",
+        "try",
+        "unknown"
+      ]
+    },
+    "djUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    },
+    "hkAffiliateGetProductsResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "products": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcAffiliateProductResponse"
+            "$ref": "#/definitions/hkAffiliateProductResponse"
           }
         }
       }
     },
-    "vcAffiliateProductResponse": {
+    "hkAffiliateProductResponse": {
       "type": "object",
       "properties": {
         "affiliate_commission_setting": {
-          "$ref": "#/definitions/vcCommissionSetting"
+          "$ref": "#/definitions/hkCommissionSetting"
         },
         "product": {
-          "$ref": "#/definitions/zkShopProduct"
+          "$ref": "#/definitions/paShopProduct"
         },
         "promotion": {
-          "$ref": "#/definitions/vcProductPromotion"
+          "$ref": "#/definitions/hkProductPromotion"
         },
         "shop_commission_setting": {
-          "$ref": "#/definitions/vcCommissionSetting"
+          "$ref": "#/definitions/hkCommissionSetting"
         }
       }
     },
-    "vcCheckReferralCodeValidRequest": {
+    "hkCheckReferralCodeValidRequest": {
       "type": "object",
       "properties": {
         "product_id": {
@@ -1060,7 +980,7 @@
         }
       }
     },
-    "vcCommissionSetting": {
+    "hkCommissionSetting": {
       "type": "object",
       "properties": {
         "amount": {
@@ -1083,7 +1003,7 @@
         }
       }
     },
-    "vcCreateOrUpdateCommissionSettingRequest": {
+    "hkCreateOrUpdateCommissionSettingRequest": {
       "type": "object",
       "properties": {
         "amount": {
@@ -1098,7 +1018,7 @@
         }
       }
     },
-    "vcCreateOrUpdateProductPromotionRequest": {
+    "hkCreateOrUpdateProductPromotionRequest": {
       "type": "object",
       "properties": {
         "amount": {
@@ -1129,7 +1049,7 @@
         }
       }
     },
-    "vcCreateOrUpdateTradingCommissionSettingRequest": {
+    "hkCreateOrUpdateTradingCommissionSettingRequest": {
       "type": "object",
       "properties": {
         "depend_on": {
@@ -1171,7 +1091,7 @@
         }
       }
     },
-    "vcCreateReferralCodeRequest": {
+    "hkCreateReferralCodeRequest": {
       "type": "object",
       "properties": {
         "code": {
@@ -1179,24 +1099,24 @@
         }
       }
     },
-    "vcGetCommissionsResponse": {
+    "hkGetCommissionsResponse": {
       "type": "object",
       "properties": {
         "commissions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcSellerCommission"
+            "$ref": "#/definitions/hkSellerCommission"
           }
         }
       }
     },
-    "vcGetProductPromotionByProductIDRequest": {
+    "hkGetProductPromotionByProductIDRequest": {
       "type": "object"
     },
-    "vcGetProductPromotionByProductIDResponse": {
+    "hkGetProductPromotionByProductIDResponse": {
       "type": "object"
     },
-    "vcGetProductPromotionRequest": {
+    "hkGetProductPromotionRequest": {
       "type": "object",
       "properties": {
         "product_id": {
@@ -1208,54 +1128,54 @@
         }
       }
     },
-    "vcGetProductPromotionResponse": {
+    "hkGetProductPromotionResponse": {
       "type": "object",
       "properties": {
         "promotion": {
-          "$ref": "#/definitions/vcProductPromotion"
+          "$ref": "#/definitions/hkProductPromotion"
         },
         "referral_discount": {
-          "$ref": "#/definitions/vcCommissionSetting"
+          "$ref": "#/definitions/hkCommissionSetting"
         }
       }
     },
-    "vcGetProductPromotionsResponse": {
+    "hkGetProductPromotionsResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "promotions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcProductPromotion"
+            "$ref": "#/definitions/hkProductPromotion"
           }
         }
       }
     },
-    "vcGetReferralCodesResponse": {
+    "hkGetReferralCodesResponse": {
       "type": "object",
       "properties": {
         "referral_codes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcReferralCode"
+            "$ref": "#/definitions/hkReferralCode"
           }
         }
       }
     },
-    "vcGetReferralsResponse": {
+    "hkGetReferralsResponse": {
       "type": "object",
       "properties": {
         "referrals": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcReferral"
+            "$ref": "#/definitions/hkReferral"
           }
         }
       }
     },
-    "vcGetTradingProductPromotionByIDsRequest": {
+    "hkGetTradingProductPromotionByIDsRequest": {
       "type": "object",
       "properties": {
         "product_ids": {
@@ -1267,29 +1187,29 @@
         }
       }
     },
-    "vcGetTradingProductPromotionByIDsResponse": {
+    "hkGetTradingProductPromotionByIDsResponse": {
       "type": "object",
       "properties": {
         "promotions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcProductPromotion"
+            "$ref": "#/definitions/hkProductPromotion"
           }
         }
       }
     },
-    "vcGetTransactionsResponse": {
+    "hkGetTransactionsResponse": {
       "type": "object",
       "properties": {
         "transactions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcTransaction"
+            "$ref": "#/definitions/hkTransaction"
           }
         }
       }
     },
-    "vcNotifyNewShopPurchaseRequest": {
+    "hkNotifyNewShopPurchaseRequest": {
       "type": "object",
       "properties": {
         "order_id": {
@@ -1298,7 +1218,7 @@
         }
       }
     },
-    "vcNotifyNewShopPurchaseResponse": {
+    "hkNotifyNewShopPurchaseResponse": {
       "type": "object",
       "properties": {
         "message": {
@@ -1306,7 +1226,7 @@
         }
       }
     },
-    "vcProductPromotion": {
+    "hkProductPromotion": {
       "type": "object",
       "properties": {
         "amount": {
@@ -1317,7 +1237,7 @@
           "format": "int64"
         },
         "product": {
-          "$ref": "#/definitions/zkShopProduct"
+          "$ref": "#/definitions/paShopProduct"
         },
         "product_id": {
           "type": "string",
@@ -1331,7 +1251,7 @@
         }
       }
     },
-    "vcReferral": {
+    "hkReferral": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1358,7 +1278,7 @@
         }
       }
     },
-    "vcReferralCode": {
+    "hkReferralCode": {
       "type": "object",
       "properties": {
         "code": {
@@ -1366,7 +1286,7 @@
         }
       }
     },
-    "vcSellerCommission": {
+    "hkSellerCommission": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1377,7 +1297,7 @@
           "type": "string"
         },
         "from_seller": {
-          "$ref": "#/definitions/ocAffiliate"
+          "$ref": "#/definitions/baAffiliate"
         },
         "id": {
           "type": "string",
@@ -1393,13 +1313,13 @@
           "type": "integer"
         },
         "order": {
-          "$ref": "#/definitions/vmOrder"
+          "$ref": "#/definitions/qdOrder"
         },
         "product": {
-          "$ref": "#/definitions/zkShopProduct"
+          "$ref": "#/definitions/paShopProduct"
         },
         "status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "type": {
           "type": "string"
@@ -1417,32 +1337,32 @@
         }
       }
     },
-    "vcShopGetProductsResponse": {
+    "hkShopGetProductsResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "products": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcShopProductResponse"
+            "$ref": "#/definitions/hkShopProductResponse"
           }
         }
       }
     },
-    "vcShopProductResponse": {
+    "hkShopProductResponse": {
       "type": "object",
       "properties": {
         "product": {
-          "$ref": "#/definitions/zkShopProduct"
+          "$ref": "#/definitions/paShopProduct"
         },
         "promotion": {
-          "$ref": "#/definitions/vcProductPromotion"
+          "$ref": "#/definitions/hkProductPromotion"
         }
       }
     },
-    "vcSupplyCommissionSetting": {
+    "hkSupplyCommissionSetting": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1471,10 +1391,10 @@
           "type": "integer"
         },
         "m_level1_limit_duration": {
-          "$ref": "#/definitions/vcSupplyCommissionSettingDurationObject"
+          "$ref": "#/definitions/hkSupplyCommissionSettingDurationObject"
         },
         "m_lifetime_duration": {
-          "$ref": "#/definitions/vcSupplyCommissionSettingDurationObject"
+          "$ref": "#/definitions/hkSupplyCommissionSettingDurationObject"
         },
         "product_id": {
           "type": "string",
@@ -1486,7 +1406,7 @@
         }
       }
     },
-    "vcSupplyCommissionSettingDurationObject": {
+    "hkSupplyCommissionSettingDurationObject": {
       "type": "object",
       "properties": {
         "duration": {
@@ -1497,38 +1417,38 @@
         }
       }
     },
-    "vcSupplyGetProductsResponse": {
+    "hkSupplyGetProductsResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "products": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vcSupplyProductResponse"
+            "$ref": "#/definitions/hkSupplyProductResponse"
           }
         }
       }
     },
-    "vcSupplyProductResponse": {
+    "hkSupplyProductResponse": {
       "type": "object",
       "properties": {
         "product": {
-          "$ref": "#/definitions/zkShopProduct"
+          "$ref": "#/definitions/paShopProduct"
         },
         "promotion": {
-          "$ref": "#/definitions/vcProductPromotion"
+          "$ref": "#/definitions/hkProductPromotion"
         },
         "supply_commission_setting": {
-          "$ref": "#/definitions/vcSupplyCommissionSetting"
+          "$ref": "#/definitions/hkSupplyCommissionSetting"
         }
       }
     },
-    "vcTransaction": {
+    "hkTransaction": {
       "type": "object"
     },
-    "vcUpdateReferralRequest": {
+    "hkUpdateReferralRequest": {
       "type": "object",
       "properties": {
         "referral_code": {
@@ -1539,7 +1459,7 @@
         }
       }
     },
-    "vcUserReferral": {
+    "hkUserReferral": {
       "type": "object",
       "properties": {
         "referral_code": {
@@ -1554,7 +1474,112 @@
         }
       }
     },
-    "vmAttribute": {
+    "jjAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "ktCommonListRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "ktError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktPageInfo": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ojFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ]
+    },
+    "paAttribute": {
       "type": "object",
       "properties": {
         "name": {
@@ -1565,13 +1590,355 @@
         }
       }
     },
-    "vmDeliveryPoint": {
+    "paEtopProduct": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_source_category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "paEtopVariant": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "paInventoryVariantShopVariant": {
+      "type": "object",
+      "properties": {
+        "cost_price": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quantity_on_hand": {
+          "type": "integer"
+        },
+        "quantity_picked": {
+          "type": "integer"
+        }
+      }
+    },
+    "paShopProduct": {
+      "type": "object",
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "info": {
+          "$ref": "#/definitions/paEtopProduct"
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktMetaField"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_type": {
+          "$ref": "#/definitions/yjProductType"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paTag"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopVariant"
+          }
+        }
+      }
+    },
+    "paShopShortProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "paShopVariant": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "info": {
+          "$ref": "#/definitions/paEtopVariant"
+        },
+        "inventory_variant": {
+          "$ref": "#/definitions/paInventoryVariantShopVariant"
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product": {
+          "$ref": "#/definitions/paShopShortProduct"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quantity_on_hand": {
+          "type": "integer"
+        },
+        "quantity_picked": {
+          "type": "integer"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paTag"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "female",
+        "male",
+        "other",
+        "unknown"
+      ]
+    },
+    "qdAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "qdDeliveryPoint": {
       "type": "object",
       "properties": {
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "order_id": {
@@ -1579,23 +1946,23 @@
           "format": "int64"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "value_info": {
-          "$ref": "#/definitions/vmValueInfo"
+          "$ref": "#/definitions/qdValueInfo"
         },
         "weight_info": {
-          "$ref": "#/definitions/vmWeightInfo"
+          "$ref": "#/definitions/qdWeightInfo"
         }
       }
     },
-    "vmExternalShippingLog": {
+    "qdExternalShippingLog": {
       "type": "object",
       "properties": {
         "message": {
@@ -1609,17 +1976,17 @@
         }
       }
     },
-    "vmFulfillment": {
+    "qdFulfillment": {
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
           "type": "integer"
         },
         "address_from": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "address_to": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
           "type": "integer"
@@ -1632,7 +1999,7 @@
           "format": "date-time"
         },
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -1667,7 +2034,7 @@
           "type": "integer"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
           "type": "string",
@@ -1693,7 +2060,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "money_transaction_shipping_external_id": {
@@ -1705,7 +2072,7 @@
           "format": "int64"
         },
         "order": {
-          "$ref": "#/definitions/vmOrder"
+          "$ref": "#/definitions/qdOrder"
         },
         "order_id": {
           "type": "string",
@@ -1716,25 +2083,25 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "self_url": {
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_code": {
           "type": "string"
@@ -1748,7 +2115,7 @@
         "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "shipping_fee_shop_transfered_at": {
@@ -1771,20 +2138,20 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/nqState"
+          "$ref": "#/definitions/sfState"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -1799,7 +2166,7 @@
           "type": "integer"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "updated_at": {
           "type": "string",
@@ -1829,7 +2196,7 @@
         "x_shipping_logs": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmExternalShippingLog"
+            "$ref": "#/definitions/qdExternalShippingLog"
           }
         },
         "x_shipping_note": {
@@ -1843,7 +2210,7 @@
           "type": "string"
         },
         "x_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "x_shipping_sub_state": {
           "type": "string"
@@ -1853,18 +2220,18 @@
           "format": "date-time"
         },
         "x_sync_states": {
-          "$ref": "#/definitions/vmFulfillmentSyncStates"
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
         },
         "x_sync_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         }
       }
     },
-    "vmFulfillmentSyncStates": {
+    "qdFulfillmentSyncStates": {
       "type": "object",
       "properties": {
         "error": {
-          "$ref": "#/definitions/maError"
+          "$ref": "#/definitions/ktError"
         },
         "next_shipping_state": {
           "type": "string"
@@ -1875,14 +2242,14 @@
         }
       }
     },
-    "vmOrder": {
+    "qdOrder": {
       "type": "object",
       "properties": {
         "basket_value": {
           "type": "integer"
         },
         "billing_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "cancel_reason": {
           "type": "string"
@@ -1899,10 +2266,10 @@
           "type": "string"
         },
         "confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "confirm_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "confirmed_at": {
           "type": "string",
@@ -1913,29 +2280,29 @@
           "format": "date-time"
         },
         "customer": {
-          "$ref": "#/definitions/vmOrderCustomer"
+          "$ref": "#/definitions/qdOrderCustomer"
         },
         "customer_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "customer_id": {
           "type": "string",
           "format": "int64"
         },
         "customer_payment_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "discounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderDiscount"
+            "$ref": "#/definitions/qdOrderDiscount"
           }
         },
         "ed_code": {
           "type": "string"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "exported_fields": {
           "type": "array",
@@ -1955,7 +2322,7 @@
         "fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderFeeLine"
+            "$ref": "#/definitions/qdOrderFeeLine"
           }
         },
         "fulfillment_ids": {
@@ -1966,10 +2333,10 @@
           }
         },
         "fulfillment_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_type": {
           "type": "string"
@@ -1977,7 +2344,7 @@
         "fulfillments": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmXFulfillment"
+            "$ref": "#/definitions/qdXFulfillment"
           }
         },
         "ghn_note_code": {
@@ -1990,7 +2357,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "order_discount": {
@@ -2007,7 +2374,7 @@
           "type": "string"
         },
         "payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "processed_at": {
           "type": "string",
@@ -2023,13 +2390,13 @@
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipping": {
-          "$ref": "#/definitions/vmOrderShipping"
+          "$ref": "#/definitions/qdOrderShipping"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_fee": {
           "type": "integer"
@@ -2048,16 +2415,16 @@
           "type": "string"
         },
         "shop_shipping": {
-          "$ref": "#/definitions/vmOrderShipping"
+          "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
           "type": "integer"
         },
         "source": {
-          "$ref": "#/definitions/gjSource"
+          "$ref": "#/definitions/bjSource"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -2080,7 +2447,7 @@
         }
       }
     },
-    "vmOrderAddress": {
+    "qdOrderAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -2096,7 +2463,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -2145,7 +2512,7 @@
         }
       }
     },
-    "vmOrderCustomer": {
+    "qdOrderCustomer": {
       "type": "object",
       "properties": {
         "email": {
@@ -2164,7 +2531,7 @@
           "type": "string"
         },
         "gender": {
-          "$ref": "#/definitions/khGender"
+          "$ref": "#/definitions/pwGender"
         },
         "last_name": {
           "type": "string"
@@ -2177,7 +2544,7 @@
         }
       }
     },
-    "vmOrderDiscount": {
+    "qdOrderDiscount": {
       "type": "object",
       "properties": {
         "amount": {
@@ -2191,7 +2558,7 @@
         }
       }
     },
-    "vmOrderFeeLine": {
+    "qdOrderFeeLine": {
       "type": "object",
       "properties": {
         "amount": {
@@ -2207,17 +2574,17 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/juFeeType"
+          "$ref": "#/definitions/ojFeeType"
         }
       }
     },
-    "vmOrderLine": {
+    "qdOrderLine": {
       "type": "object",
       "properties": {
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmAttribute"
+            "$ref": "#/definitions/qdAttribute"
           }
         },
         "exported_fields": {
@@ -2238,7 +2605,7 @@
         "meta_fields": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLineMetaField"
+            "$ref": "#/definitions/qdOrderLineMetaField"
           }
         },
         "order_id": {
@@ -2270,7 +2637,7 @@
         }
       }
     },
-    "vmOrderLineMetaField": {
+    "qdOrderLineMetaField": {
       "type": "object",
       "properties": {
         "key": {
@@ -2284,11 +2651,11 @@
         }
       }
     },
-    "vmOrderShipping": {
+    "qdOrderShipping": {
       "type": "object",
       "properties": {
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -2315,19 +2682,19 @@
           "type": "integer"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "sh_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "shipping_provider": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
           "type": "string"
@@ -2339,7 +2706,7 @@
           "type": "string"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "weight": {
           "type": "integer"
@@ -2358,7 +2725,7 @@
         }
       }
     },
-    "vmShipnowFulfillment": {
+    "qdShipnowFulfillment": {
       "type": "object",
       "properties": {
         "cancel_reason": {
@@ -2372,7 +2739,7 @@
           "format": "date-time"
         },
         "confirm_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "created_at": {
           "type": "string",
@@ -2381,11 +2748,11 @@
         "delivery_points": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmDeliveryPoint"
+            "$ref": "#/definitions/qdDeliveryPoint"
           }
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "id": {
           "type": "string",
@@ -2403,7 +2770,7 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "request_pickup_at": {
           "type": "string",
@@ -2454,28 +2821,28 @@
           "type": "string"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "updated_at": {
           "type": "string",
           "format": "date-time"
         },
         "value_info": {
-          "$ref": "#/definitions/vmValueInfo"
+          "$ref": "#/definitions/qdValueInfo"
         },
         "weight_info": {
-          "$ref": "#/definitions/vmWeightInfo"
+          "$ref": "#/definitions/qdWeightInfo"
         }
       }
     },
-    "vmShippingFeeLine": {
+    "qdShippingFeeLine": {
       "type": "object",
       "properties": {
         "cost": {
@@ -2497,11 +2864,11 @@
           "type": "string"
         },
         "shipping_fee_type": {
-          "$ref": "#/definitions/wuShippingFeeType"
+          "$ref": "#/definitions/sdShippingFeeType"
         }
       }
     },
-    "vmValueInfo": {
+    "qdValueInfo": {
       "type": "object",
       "properties": {
         "basket_value": {
@@ -2515,7 +2882,7 @@
         }
       }
     },
-    "vmWeightInfo": {
+    "qdWeightInfo": {
       "type": "object",
       "properties": {
         "chargeable_weight": {
@@ -2535,17 +2902,17 @@
         }
       }
     },
-    "vmXFulfillment": {
+    "qdXFulfillment": {
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
           "type": "integer"
         },
         "address_from": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "address_to": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
           "type": "integer"
@@ -2558,7 +2925,7 @@
           "format": "date-time"
         },
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -2593,7 +2960,7 @@
           "type": "integer"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
           "type": "string",
@@ -2613,7 +2980,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "money_transaction_shipping_external_id": {
@@ -2625,7 +2992,7 @@
           "format": "int64"
         },
         "order": {
-          "$ref": "#/definitions/vmOrder"
+          "$ref": "#/definitions/qdOrder"
         },
         "order_id": {
           "type": "string",
@@ -2636,31 +3003,31 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "self_url": {
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipment": {
-          "$ref": "#/definitions/vmFulfillment"
+          "$ref": "#/definitions/qdFulfillment"
         },
         "shipnow": {
-          "$ref": "#/definitions/vmShipnowFulfillment"
+          "$ref": "#/definitions/qdShipnowFulfillment"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_code": {
           "type": "string"
@@ -2674,7 +3041,7 @@
         "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "shipping_fee_shop_transfered_at": {
@@ -2697,20 +3064,20 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/nqState"
+          "$ref": "#/definitions/sfState"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -2725,7 +3092,7 @@
           "type": "integer"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "updated_at": {
           "type": "string",
@@ -2755,7 +3122,7 @@
         "x_shipping_logs": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmExternalShippingLog"
+            "$ref": "#/definitions/qdExternalShippingLog"
           }
         },
         "x_shipping_note": {
@@ -2769,7 +3136,7 @@
           "type": "string"
         },
         "x_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "x_shipping_sub_state": {
           "type": "string"
@@ -2779,25 +3146,14 @@
           "format": "date-time"
         },
         "x_sync_states": {
-          "$ref": "#/definitions/vmFulfillmentSyncStates"
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
         },
         "x_sync_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         }
       }
     },
-    "whShippingProvider": {
-      "type": "string",
-      "enum": [
-        "all",
-        "ghn",
-        "ghtk",
-        "manual",
-        "unknown",
-        "vtpost"
-      ]
-    },
-    "wuShippingFeeType": {
+    "sdShippingFeeType": {
       "type": "string",
       "enum": [
         "address_change",
@@ -2812,387 +3168,31 @@
         "unknown"
       ]
     },
-    "wwStatus": {
+    "sfState": {
       "type": "string",
       "enum": [
-        "N",
-        "P",
-        "Z"
-      ]
-    },
-    "wxStatus": {
-      "type": "string",
-      "enum": [
-        "N",
-        "P",
-        "S",
-        "Z"
-      ]
-    },
-    "wyStatus": {
-      "type": "string",
-      "enum": [
-        "N",
-        "NS",
-        "P",
-        "S",
-        "Z"
-      ]
-    },
-    "xdTryOnCode": {
-      "type": "string",
-      "enum": [
-        "none",
-        "open",
-        "try",
+        "cancelled",
+        "confirmed",
+        "created",
+        "default",
+        "delivered",
+        "delivering",
+        "holding",
+        "picking",
+        "processing",
+        "returned",
+        "returning",
+        "undeliverable",
         "unknown"
       ]
     },
-    "yuUserSource": {
+    "yjProductType": {
       "type": "string",
       "enum": [
-        "etop",
-        "partner",
-        "psx",
-        "topship",
-        "ts_app_android",
-        "ts_app_ios",
-        "ts_app_web",
+        "goods",
+        "services",
         "unknown"
       ]
-    },
-    "zkAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "zkEtopProduct": {
-      "type": "object",
-      "properties": {
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "code": {
-          "type": "string"
-        },
-        "cost_price": {
-          "type": "integer"
-        },
-        "desc_html": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "list_price": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "product_source_category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "unit": {
-          "type": "string"
-        }
-      }
-    },
-    "zkEtopVariant": {
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/zkAttribute"
-          }
-        },
-        "code": {
-          "type": "string"
-        },
-        "cost_price": {
-          "type": "integer"
-        },
-        "desc_html": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "list_price": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        }
-      }
-    },
-    "zkInventoryVariantShopVariant": {
-      "type": "object",
-      "properties": {
-        "cost_price": {
-          "type": "integer"
-        },
-        "quantity": {
-          "type": "integer"
-        },
-        "quantity_on_hand": {
-          "type": "integer"
-        },
-        "quantity_picked": {
-          "type": "integer"
-        }
-      }
-    },
-    "zkShopProduct": {
-      "type": "object",
-      "properties": {
-        "brand_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "code": {
-          "type": "string"
-        },
-        "collection_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "desc_html": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "ed_code": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "info": {
-          "$ref": "#/definitions/zkEtopProduct"
-        },
-        "is_available": {
-          "type": "boolean"
-        },
-        "list_price": {
-          "type": "integer"
-        },
-        "meta_fields": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maMetaField"
-          }
-        },
-        "name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "product_source_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_type": {
-          "$ref": "#/definitions/tuProductType"
-        },
-        "retail_price": {
-          "type": "integer"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "stags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/zkTag"
-          }
-        },
-        "status": {
-          "$ref": "#/definitions/wwStatus"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/zkShopVariant"
-          }
-        }
-      }
-    },
-    "zkShopShortProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "zkShopVariant": {
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/zkAttribute"
-          }
-        },
-        "code": {
-          "type": "string"
-        },
-        "cost_price": {
-          "type": "integer"
-        },
-        "desc_html": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "ed_code": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "info": {
-          "$ref": "#/definitions/zkEtopVariant"
-        },
-        "inventory_variant": {
-          "$ref": "#/definitions/zkInventoryVariantShopVariant"
-        },
-        "is_available": {
-          "type": "boolean"
-        },
-        "list_price": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "product": {
-          "$ref": "#/definitions/zkShopShortProduct"
-        },
-        "quantity": {
-          "type": "integer"
-        },
-        "quantity_on_hand": {
-          "type": "integer"
-        },
-        "quantity_picked": {
-          "type": "integer"
-        },
-        "retail_price": {
-          "type": "integer"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "stags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/zkTag"
-          }
-        },
-        "status": {
-          "$ref": "#/definitions/wwStatus"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "zkTag": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "label": {
-          "type": "string"
-        }
-      }
     }
   },
   "tags": [

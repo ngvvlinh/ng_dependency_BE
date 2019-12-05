@@ -1,9 +1,9 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/etc/gender"
-	"etop.vn/api/pb/etop/order"
-	"etop.vn/api/pb/external"
+	exttypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -21,8 +21,8 @@ func PNonZeroString(s string) dot.NullString {
 	return dot.String(s)
 }
 
-func PbPartner(m *model.Partner) *external.Partner {
-	return &external.Partner{
+func PbPartner(m *model.Partner) *exttypes.Partner {
+	return &exttypes.Partner{
 		Id:              m.ID,
 		Name:            m.Name,
 		PublicName:      m.PublicName,
@@ -37,7 +37,7 @@ func PbPartner(m *model.Partner) *external.Partner {
 	}
 }
 
-func CreateWebhookRequestToModel(m *external.CreateWebhookRequest, accountID dot.ID) *model.Webhook {
+func CreateWebhookRequestToModel(m *exttypes.CreateWebhookRequest, accountID dot.ID) *model.Webhook {
 	if m == nil {
 		return nil
 	}
@@ -50,26 +50,26 @@ func CreateWebhookRequestToModel(m *external.CreateWebhookRequest, accountID dot
 	}
 }
 
-func PbWebhooks(items []*model.Webhook, states []sender.WebhookStates) []*external.Webhook {
-	res := make([]*external.Webhook, len(items))
+func PbWebhooks(items []*model.Webhook, states []sender.WebhookStates) []*exttypes.Webhook {
+	res := make([]*exttypes.Webhook, len(items))
 	for i, item := range items {
 		res[i] = PbWebhook(item, states[i])
 	}
 	return res
 }
 
-func PbWebhook(m *model.Webhook, s sender.WebhookStates) *external.Webhook {
+func PbWebhook(m *model.Webhook, s sender.WebhookStates) *exttypes.Webhook {
 	if m == nil {
 		return nil
 	}
-	return &external.Webhook{
+	return &exttypes.Webhook{
 		Id:        m.ID,
 		Entities:  m.Entities,
 		Fields:    m.Fields,
 		Url:       m.URL,
 		Metadata:  m.Metadata,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
-		States: &external.WebhookStates{
+		States: &exttypes.WebhookStates{
 			State:      string(s.State),
 			LastSentAt: cmapi.PbTime(s.LastSentAt),
 			LastError:  PbWebhookError(s.LastError),
@@ -77,11 +77,11 @@ func PbWebhook(m *model.Webhook, s sender.WebhookStates) *external.Webhook {
 	}
 }
 
-func PbWebhookError(m *sender.WebhookStatesError) *external.WebhookError {
+func PbWebhookError(m *sender.WebhookStatesError) *exttypes.WebhookError {
 	if m == nil {
 		return nil
 	}
-	return &external.WebhookError{
+	return &exttypes.WebhookError{
 		Error:      m.ErrorMsg,
 		RespStatus: m.Status,
 		RespBody:   m.Response,
@@ -90,16 +90,16 @@ func PbWebhookError(m *sender.WebhookStatesError) *external.WebhookError {
 	}
 }
 
-func PbOrders(items []*ordermodel.Order) []*external.Order {
-	res := make([]*external.Order, len(items))
+func PbOrders(items []*ordermodel.Order) []*exttypes.Order {
+	res := make([]*exttypes.Order, len(items))
 	for i, item := range items {
 		res[i] = PbOrder(item)
 	}
 	return res
 }
 
-func PbOrder(m *ordermodel.Order) *external.Order {
-	res := &external.Order{
+func PbOrder(m *ordermodel.Order) *exttypes.Order {
+	res := &exttypes.Order{
 		Id:                        m.ID,
 		ShopId:                    m.ShopID,
 		Code:                      dot.String(m.Code),
@@ -134,12 +134,12 @@ func PbOrder(m *ordermodel.Order) *external.Order {
 	return res
 }
 
-func PbOrderShipping(m *ordermodel.Order) *external.OrderShipping {
+func PbOrderShipping(m *ordermodel.Order) *exttypes.OrderShipping {
 	shipping := m.ShopShipping
 	if shipping == nil {
 		shipping = &ordermodel.OrderShipping{}
 	}
-	return &external.OrderShipping{
+	return &exttypes.OrderShipping{
 		PickupAddress:       PbOrderAddress(shipping.GetPickupAddress()),
 		ReturnAddress:       PbOrderAddress(shipping.ReturnAddress),
 		ShippingServiceName: dot.String(shipping.ExternalServiceName),
@@ -158,15 +158,15 @@ func PbOrderShipping(m *ordermodel.Order) *external.OrderShipping {
 	}
 }
 
-func PbOrderHistories(items []ordermodel.OrderHistory) []*external.Order {
-	res := make([]*external.Order, len(items))
+func PbOrderHistories(items []ordermodel.OrderHistory) []*exttypes.Order {
+	res := make([]*exttypes.Order, len(items))
 	for i, item := range items {
 		res[i] = PbOrderHistory(item)
 	}
 	return res
 }
 
-func PbOrderHistory(order ordermodel.OrderHistory) *external.Order {
+func PbOrderHistory(order ordermodel.OrderHistory) *exttypes.Order {
 	var customer *ordermodel.OrderCustomer
 	_ = order.Customer().Unmarshal(&customer)
 	var customerAddress, shippingAddress *ordermodel.OrderAddress
@@ -179,7 +179,7 @@ func PbOrderHistory(order ordermodel.OrderHistory) *external.Order {
 	var feeLines []ordermodel.OrderFeeLine
 	_ = order.FeeLines().Unmarshal(&feeLines)
 
-	res := &external.Order{
+	res := &exttypes.Order{
 		Id:                        order.ID().ID().Apply(0),
 		ShopId:                    order.ID().ID().Apply(0),
 		Code:                      order.Code().String(),
@@ -217,11 +217,11 @@ func PbOrderHistory(order ordermodel.OrderHistory) *external.Order {
 	return res
 }
 
-func PbOrderShippingHistory(order ordermodel.OrderHistory, shipping *ordermodel.OrderShipping) *external.OrderShipping {
+func PbOrderShippingHistory(order ordermodel.OrderHistory, shipping *ordermodel.OrderShipping) *exttypes.OrderShipping {
 	if shipping == nil {
 		shipping = &ordermodel.OrderShipping{}
 	}
-	res := &external.OrderShipping{
+	res := &exttypes.OrderShipping{
 		GrossWeight:      order.TotalWeight().Int(),
 		Length:           cmapi.PbPtrInt(shipping.Length),
 		Width:            cmapi.PbPtrInt(shipping.Width),
@@ -231,23 +231,23 @@ func PbOrderShippingHistory(order ordermodel.OrderHistory, shipping *ordermodel.
 	return res
 }
 
-func PbOrderLines(items []*ordermodel.OrderLine) []*external.OrderLine {
+func PbOrderLines(items []*ordermodel.OrderLine) []*exttypes.OrderLine {
 	// send changes as empty instead of "[]"
 	if len(items) == 0 {
 		return nil
 	}
-	res := make([]*external.OrderLine, len(items))
+	res := make([]*exttypes.OrderLine, len(items))
 	for i, item := range items {
 		res[i] = PbOrderLine(item)
 	}
 	return res
 }
 
-func PbOrderLine(m *ordermodel.OrderLine) *external.OrderLine {
+func PbOrderLine(m *ordermodel.OrderLine) *exttypes.OrderLine {
 	if m == nil {
 		return nil
 	}
-	return &external.OrderLine{
+	return &exttypes.OrderLine{
 		VariantId:    m.VariantID,
 		ProductId:    m.ProductID,
 		ProductName:  m.ProductName,
@@ -260,11 +260,11 @@ func PbOrderLine(m *ordermodel.OrderLine) *external.OrderLine {
 	}
 }
 
-func PbOrderAddress(m *ordermodel.OrderAddress) *external.OrderAddress {
+func PbOrderAddress(m *ordermodel.OrderAddress) *exttypes.OrderAddress {
 	if m == nil {
 		return nil
 	}
-	return &external.OrderAddress{
+	return &exttypes.OrderAddress{
 		FullName: m.GetFullName(),
 		Phone:    m.Phone,
 		Province: m.Province,
@@ -276,11 +276,11 @@ func PbOrderAddress(m *ordermodel.OrderAddress) *external.OrderAddress {
 	}
 }
 
-func OrderAddressToPbCustomer(m *external.OrderAddress) *order.OrderCustomer {
+func OrderAddressToPbCustomer(m *exttypes.OrderAddress) *types.OrderCustomer {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderCustomer{
+	return &types.OrderCustomer{
 		FirstName: "",
 		LastName:  "",
 		FullName:  m.FullName,
@@ -290,11 +290,11 @@ func OrderAddressToPbCustomer(m *external.OrderAddress) *order.OrderCustomer {
 	}
 }
 
-func OrderAddressToPbOrder(m *external.OrderAddress) *order.OrderAddress {
+func OrderAddressToPbOrder(m *exttypes.OrderAddress) *types.OrderAddress {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderAddress{
+	return &types.OrderAddress{
 		FullName: m.FullName,
 		Phone:    m.Phone,
 		Province: m.Province,
@@ -305,11 +305,11 @@ func OrderAddressToPbOrder(m *external.OrderAddress) *order.OrderAddress {
 	}
 }
 
-func PbOrderAddressFromAddress(m *model.Address) *external.OrderAddress {
+func PbOrderAddressFromAddress(m *model.Address) *exttypes.OrderAddress {
 	if m == nil {
 		return nil
 	}
-	return &external.OrderAddress{
+	return &exttypes.OrderAddress{
 		FullName: m.GetFullName(),
 		Phone:    m.Phone,
 		Province: m.Province,
@@ -321,11 +321,11 @@ func PbOrderAddressFromAddress(m *model.Address) *external.OrderAddress {
 	}
 }
 
-func PbOrderCustomer(m *ordermodel.OrderCustomer) *external.OrderCustomer {
+func PbOrderCustomer(m *ordermodel.OrderCustomer) *exttypes.OrderCustomer {
 	if m == nil {
 		return nil
 	}
-	return &external.OrderCustomer{
+	return &exttypes.OrderCustomer{
 		FullName: m.GetFullName(),
 		Email:    m.Email,
 		Phone:    m.Phone,
@@ -333,11 +333,11 @@ func PbOrderCustomer(m *ordermodel.OrderCustomer) *external.OrderCustomer {
 	}
 }
 
-func OrderCustomerToPbOrder(m *external.OrderCustomer) *order.OrderCustomer {
+func OrderCustomerToPbOrder(m *exttypes.OrderCustomer) *types.OrderCustomer {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderCustomer{
+	return &types.OrderCustomer{
 		FirstName: "",
 		LastName:  "",
 		FullName:  m.FullName,
@@ -347,16 +347,16 @@ func OrderCustomerToPbOrder(m *external.OrderCustomer) *order.OrderCustomer {
 	}
 }
 
-func PbFulfillments(items []*shipmodel.Fulfillment) []*external.Fulfillment {
-	res := make([]*external.Fulfillment, len(items))
+func PbFulfillments(items []*shipmodel.Fulfillment) []*exttypes.Fulfillment {
+	res := make([]*exttypes.Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillment(item)
 	}
 	return res
 }
 
-func PbFulfillment(m *shipmodel.Fulfillment) *external.Fulfillment {
-	return &external.Fulfillment{
+func PbFulfillment(m *shipmodel.Fulfillment) *exttypes.Fulfillment {
+	return &exttypes.Fulfillment{
 		Id:                       m.ID,
 		OrderId:                  m.OrderID,
 		ShopId:                   m.ShopID,
@@ -393,21 +393,21 @@ func PbFulfillment(m *shipmodel.Fulfillment) *external.Fulfillment {
 	}
 }
 
-func PbFulfillmentHistories(items []shipmodel.FulfillmentHistory) []*external.Fulfillment {
-	res := make([]*external.Fulfillment, len(items))
+func PbFulfillmentHistories(items []shipmodel.FulfillmentHistory) []*exttypes.Fulfillment {
+	res := make([]*exttypes.Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillmentHistory(item)
 	}
 	return res
 }
 
-func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *external.Fulfillment {
+func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *exttypes.Fulfillment {
 	var addressTo, addressFrom, addressReturn *ordermodel.OrderAddress
 	_ = m.AddressTo().Unmarshal(&addressTo)
 	_ = m.AddressFrom().Unmarshal(&addressFrom)
 	_ = m.AddressReturn().Unmarshal(&addressReturn)
 
-	return &external.Fulfillment{
+	return &exttypes.Fulfillment{
 		Id:                       m.ID().ID().Apply(0),
 		OrderId:                  m.OrderID().ID().Apply(0),
 		ShopId:                   m.ShopID().ID().Apply(0),
@@ -443,16 +443,16 @@ func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *external.Fulfillment 
 	}
 }
 
-func PbShippingServices(items []*model.AvailableShippingService) []*external.ShippingService {
-	res := make([]*external.ShippingService, len(items))
+func PbShippingServices(items []*model.AvailableShippingService) []*exttypes.ShippingService {
+	res := make([]*exttypes.ShippingService, len(items))
 	for i, item := range items {
 		res[i] = PbShippingService(item)
 	}
 	return res
 }
 
-func PbShippingService(m *model.AvailableShippingService) *external.ShippingService {
-	return &external.ShippingService{
+func PbShippingService(m *model.AvailableShippingService) *exttypes.ShippingService {
+	return &exttypes.ShippingService{
 		Code:                m.ProviderServiceID,
 		Name:                m.Name,
 		Fee:                 m.ServiceFee,
@@ -462,8 +462,8 @@ func PbShippingService(m *model.AvailableShippingService) *external.ShippingServ
 	}
 }
 
-func OrderLinesToCreateOrderLines(items []*external.OrderLine) (_ []*order.CreateOrderLine, err error) {
-	res := make([]*order.CreateOrderLine, len(items))
+func OrderLinesToCreateOrderLines(items []*exttypes.OrderLine) (_ []*types.CreateOrderLine, err error) {
+	res := make([]*types.CreateOrderLine, len(items))
 	for i, item := range items {
 		res[i], err = OrderLineToCreateOrderLine(item)
 		if err != nil {
@@ -473,7 +473,7 @@ func OrderLinesToCreateOrderLines(items []*external.OrderLine) (_ []*order.Creat
 	return res, nil
 }
 
-func OrderLineToCreateOrderLine(m *external.OrderLine) (*order.CreateOrderLine, error) {
+func OrderLineToCreateOrderLine(m *exttypes.OrderLine) (*types.CreateOrderLine, error) {
 	if m == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "order_line must not be null")
 	}
@@ -481,7 +481,7 @@ func OrderLineToCreateOrderLine(m *external.OrderLine) (*order.CreateOrderLine, 
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp payment_price")
 	}
 
-	return &order.CreateOrderLine{
+	return &types.CreateOrderLine{
 		VariantId:    m.VariantId,
 		ProductName:  m.ProductName,
 		Quantity:     m.Quantity,
@@ -493,8 +493,8 @@ func OrderLineToCreateOrderLine(m *external.OrderLine) (*order.CreateOrderLine, 
 	}, nil
 }
 
-func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) *external.OrderAndFulfillments {
-	return &external.OrderAndFulfillments{
+func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) *exttypes.OrderAndFulfillments {
+	return &exttypes.OrderAndFulfillments{
 		Order:        PbOrder(order),
 		Fulfillments: PbFulfillments(fulfillments),
 	}

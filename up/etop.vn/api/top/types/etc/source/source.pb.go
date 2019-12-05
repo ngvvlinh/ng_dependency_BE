@@ -57,3 +57,7 @@ func (x *Source) UnmarshalJSON(data []byte) error {
 	*x = Source(value)
 	return nil
 }
+
+func (x Source) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

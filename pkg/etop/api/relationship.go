@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	pbetop "etop.vn/api/pb/etop"
+	"etop.vn/api/top/int/etop"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -127,7 +128,7 @@ func (s *RelationshipService) GetUsersInCurrentAccounts(ctx context.Context, r *
 		return err
 	}
 
-	r.Result = &pbetop.ProtectedUsersResponse{
+	r.Result = &etop.ProtectedUsersResponse{
 		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Users:  convertpb.PbUserAccounts(query.Result.AccountUsers),
 	}

@@ -3,10 +3,9 @@ package partner_proto
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	"etop.vn/api/pb/etop"
-	"etop.vn/api/pb/external"
-	partner "etop.vn/api/pb/external/partner"
+	"etop.vn/api/top/external/types"
+	etop "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -16,33 +15,33 @@ import (
 // +apix:path=/partner.Misc
 type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
-	CurrentAccount(context.Context, *cm.Empty) (*external.Partner, error)
-	GetLocationList(context.Context, *cm.Empty) (*external.LocationResponse, error)
+	CurrentAccount(context.Context, *cm.Empty) (*types.Partner, error)
+	GetLocationList(context.Context, *cm.Empty) (*types.LocationResponse, error)
 }
 
 // +apix:path=/partner.Shop
 type ShopService interface {
-	AuthorizeShop(context.Context, *partner.AuthorizeShopRequest) (*partner.AuthorizeShopResponse, error)
+	AuthorizeShop(context.Context, *AuthorizeShopRequest) (*AuthorizeShopResponse, error)
 	CurrentShop(context.Context, *cm.Empty) (*etop.PublicAccountInfo, error)
 }
 
 // +apix:path=/partner.Webhook
 type WebhookService interface {
-	CreateWebhook(context.Context, *external.CreateWebhookRequest) (*external.Webhook, error)
-	GetWebhooks(context.Context, *cm.Empty) (*external.WebhooksResponse, error)
-	DeleteWebhook(context.Context, *external.DeleteWebhookRequest) (*external.WebhooksResponse, error)
+	CreateWebhook(context.Context, *types.CreateWebhookRequest) (*types.Webhook, error)
+	GetWebhooks(context.Context, *cm.Empty) (*types.WebhooksResponse, error)
+	DeleteWebhook(context.Context, *types.DeleteWebhookRequest) (*types.WebhooksResponse, error)
 }
 
 // +apix:path=/partner.History
 type HistoryService interface {
-	GetChanges(context.Context, *external.GetChangesRequest) (*external.Callback, error)
+	GetChanges(context.Context, *types.GetChangesRequest) (*types.Callback, error)
 }
 
 // +apix:path=/partner.Shipping
 type ShippingService interface {
-	GetShippingServices(context.Context, *external.GetShippingServicesRequest) (*external.GetShippingServicesResponse, error)
-	CreateAndConfirmOrder(context.Context, *external.CreateOrderRequest) (*external.OrderAndFulfillments, error)
-	CancelOrder(context.Context, *external.CancelOrderRequest) (*external.OrderAndFulfillments, error)
-	GetOrder(context.Context, *external.OrderIDRequest) (*external.OrderAndFulfillments, error)
-	GetFulfillment(context.Context, *external.FulfillmentIDRequest) (*external.Fulfillment, error)
+	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
+	CreateAndConfirmOrder(context.Context, *types.CreateOrderRequest) (*types.OrderAndFulfillments, error)
+	CancelOrder(context.Context, *types.CancelOrderRequest) (*types.OrderAndFulfillments, error)
+	GetOrder(context.Context, *types.OrderIDRequest) (*types.OrderAndFulfillments, error)
+	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)
 }

@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hzRegisterAffiliateRequest"
+              "$ref": "#/definitions/xlRegisterAffiliateRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAffiliate"
+              "$ref": "#/definitions/baAffiliate"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hzUpdateAffiliateRequest"
+              "$ref": "#/definitions/xlUpdateAffiliateRequest"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAffiliate"
+              "$ref": "#/definitions/baAffiliate"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hzUpdateAffiliateBankAccountRequest"
+              "$ref": "#/definitions/xlUpdateAffiliateBankAccountRequest"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAffiliate"
+              "$ref": "#/definitions/baAffiliate"
             }
           }
         }
@@ -131,7 +131,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -139,7 +139,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -147,77 +147,11 @@
     }
   },
   "definitions": {
-    "hzRegisterAffiliateRequest": {
+    "baAffiliate": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
-        },
-        "email": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        }
-      }
-    },
-    "hzUpdateAffiliateBankAccountRequest": {
-      "type": "object",
-      "properties": {
-        "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
-        }
-      }
-    },
-    "hzUpdateAffiliateRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        }
-      }
-    },
-    "maEmpty": {
-      "type": "object"
-    },
-    "maIDRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "ocAffiliate": {
-      "type": "object",
-      "properties": {
-        "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "email": {
           "type": "string"
@@ -236,11 +170,11 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocBankAccount": {
+    "baBankAccount": {
       "type": "object",
       "properties": {
         "account_name": {
@@ -260,13 +194,79 @@
         }
       }
     },
-    "wwStatus": {
+    "blStatus": {
       "type": "string",
       "enum": [
         "N",
         "P",
         "Z"
       ]
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "xlRegisterAffiliateRequest": {
+      "type": "object",
+      "properties": {
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "xlUpdateAffiliateBankAccountRequest": {
+      "type": "object",
+      "properties": {
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        }
+      }
+    },
+    "xlUpdateAffiliateRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

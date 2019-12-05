@@ -3,7 +3,7 @@ package xshop
 import (
 	"context"
 
-	pbcm "etop.vn/api/pb/common"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"

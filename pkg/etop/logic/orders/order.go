@@ -7,13 +7,14 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/int/types"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
-	"etop.vn/api/pb/etop/etc/gender"
-	pborder "etop.vn/api/pb/etop/order"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
@@ -35,14 +36,14 @@ var ll = l.New()
 
 func CreateOrder(
 	ctx context.Context, claim *claims.ShopClaim,
-	authPartner *model.Partner, r *pborder.CreateOrderRequest,
-	tradingShopID *dot.ID) (*pborder.Order, error) {
+	authPartner *model.Partner, r *types.CreateOrderRequest,
+	tradingShopID *dot.ID) (*types.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
 	}
 	if shipping == nil {
-		shipping = &pborder.OrderShipping{}
+		shipping = &types.OrderShipping{}
 	}
 
 	if shipping.Carrier == 0 {
@@ -83,7 +84,7 @@ func CreateOrder(
 		if err := customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
 			return nil, err
 		}
-		r.Customer = &pborder.OrderCustomer{
+		r.Customer = &types.OrderCustomer{
 			FullName: getCustomerQuery.Result.FullName,
 			Email:    getCustomerQuery.Result.Email,
 			Phone:    getCustomerQuery.Result.Phone,
@@ -108,7 +109,7 @@ func CreateOrder(
 			if err != nil {
 				return nil, err
 			}
-			r.CustomerAddress = &pborder.OrderAddress{
+			r.CustomerAddress = &types.OrderAddress{
 				FullName:     customerAddress.FullName,
 				Phone:        customerAddress.Phone,
 				Email:        customerAddress.Email,
@@ -212,7 +213,7 @@ func CreateOrder(
 		err := customerQuery.Dispatch(ctx, q)
 		if err == nil {
 			r.CustomerId = q.Result.ID
-			r.Customer = &pborder.OrderCustomer{
+			r.Customer = &types.OrderCustomer{
 				FullName: q.Result.FullName,
 				Type:     string(customering.CustomerTypeIndependent),
 			}
@@ -293,7 +294,7 @@ func CreateOrder(
 	return result, nil
 }
 
-func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *pborder.OrderCustomer {
+func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.OrderCustomer {
 	getCustomer := &customering.GetCustomerByIDQuery{
 		ID:     customerID,
 		ShopID: shopID,
@@ -302,7 +303,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *pborder.Or
 	if err != nil {
 		return nil
 	}
-	customer := &pborder.OrderCustomer{
+	customer := &types.OrderCustomer{
 		FullName: getCustomer.Result.FullName,
 		Email:    getCustomer.Result.Email,
 		Phone:    getCustomer.Result.Phone,
@@ -322,7 +323,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *pborder.Or
 	return customer
 }
 
-func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.ID, orderAddress *pborder.OrderAddress) error {
+func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.ID, orderAddress *types.OrderAddress) error {
 	address, err := convertpb.OrderAddressToModel(orderAddress)
 	if err != nil {
 		return err
@@ -383,7 +384,7 @@ func createCustomerAddress(
 func PrepareOrderLines(
 	ctx context.Context,
 	shopID dot.ID,
-	lines []*pborder.CreateOrderLine,
+	lines []*types.CreateOrderLine,
 ) ([]*ordermodel.OrderLine, error) {
 	variantIDs := make([]dot.ID, 0, len(lines))
 	if len(lines) > 40 {
@@ -481,7 +482,7 @@ func PrepareOrderLines(
 	return res, nil
 }
 
-func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, q *pborder.UpdateOrderRequest) (*pborder.Order, error) {
+func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID: q.Id,
 		ShopID:  claim.Shop.ID,
@@ -603,7 +604,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 				Throw()
 		}
 
-		q.Customer = &pborder.OrderCustomer{
+		q.Customer = &types.OrderCustomer{
 			FullName: query.Result.FullName,
 			Email:    query.Result.Email,
 			Phone:    query.Result.Phone,
@@ -629,7 +630,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			if err != nil {
 				return nil, err
 			}
-			q.CustomerAddress = &pborder.OrderAddress{
+			q.CustomerAddress = &types.OrderAddress{
 				FullName:     customerAddressResult.FullName,
 				Phone:        customerAddressResult.Phone,
 				Email:        customerAddressResult.Email,
@@ -697,7 +698,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 func PrepareOrderLine(
 	shopID dot.ID,
-	m *pborder.CreateOrderLine,
+	m *types.CreateOrderLine,
 	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
 	retailPrice := v.GetRetailPrice()
@@ -715,7 +716,7 @@ func PrepareOrderLine(
 }
 
 func prepareOrderLine(
-	m *pborder.CreateOrderLine,
+	m *types.CreateOrderLine,
 	shopID dot.ID,
 	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
@@ -793,7 +794,7 @@ func prepareOrderLine(
 	return line, nil
 }
 
-func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
+func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -1008,7 +1009,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequ
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher string) (*pborder.OrderWithErrorsResponse, error) {
+func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher string) (*types.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1070,7 +1071,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 		return nil, err
 	}
 
-	resp := &pborder.OrderWithErrorsResponse{
+	resp := &types.OrderWithErrorsResponse{
 		Order:  convertpb.PbOrder(getOrderQuery.Result.Order, getOrderQuery.Result.Fulfillments, model.TagShop),
 		Errors: cmapi.PbErrors(errs),
 

@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -54,43 +53,43 @@ func (s *AccountRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, r
 func (s *AccountRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.AccountRelationship/CreateInvitation":
-		msg := &etop.CreateInvitationRequest{}
+		msg := &CreateInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/DeleteInvitation":
-		msg := &etop.DeleteInvitationRequest{}
+		msg := &DeleteInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetInvitations":
-		msg := &etop.GetInvitationsRequest{}
+		msg := &GetInvitationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInvitations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetRelationships":
-		msg := &etop.GetRelationshipsRequest{}
+		msg := &GetRelationshipsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetRelationships(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/RemoveUser":
-		msg := &etop.RemoveUserRequest{}
+		msg := &RemoveUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdatePermission":
-		msg := &etop.UpdateAccountUserPermissionRequest{}
+		msg := &UpdateAccountUserPermissionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdatePermission(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdateRelationship":
-		msg := &etop.UpdateRelationshipRequest{}
+		msg := &UpdateRelationshipRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateRelationship(ctx, msg)
 		}
@@ -147,7 +146,7 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/etop.Account/UpdateURLSlug":
-		msg := &etop.UpdateURLSlugRequest{}
+		msg := &UpdateURLSlugRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateURLSlug(ctx, msg)
 		}
@@ -192,7 +191,7 @@ func (s *AddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *AddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Address/CreateAddress":
-		msg := &etop.CreateAddressRequest{}
+		msg := &CreateAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateAddress(ctx, msg)
 		}
@@ -210,7 +209,7 @@ func (s *AddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/etop.Address/UpdateAddress":
-		msg := &etop.UpdateAddressRequest{}
+		msg := &UpdateAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateAddress(ctx, msg)
 		}
@@ -261,13 +260,13 @@ func (s *BankServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetBranchesByBankProvince":
-		msg := &etop.GetBranchesByBankProvinceResquest{}
+		msg := &GetBranchesByBankProvinceResquest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetBranchesByBankProvince(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetProvincesByBank":
-		msg := &etop.GetProvincesByBankResquest{}
+		msg := &GetProvincesByBankResquest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProvincesByBank(ctx, msg)
 		}
@@ -318,7 +317,7 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetDistrictsByProvince":
-		msg := &etop.GetDistrictsByProvinceRequest{}
+		msg := &GetDistrictsByProvinceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetDistrictsByProvince(ctx, msg)
 		}
@@ -336,13 +335,13 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWardsByDistrict":
-		msg := &etop.GetWardsByDistrictRequest{}
+		msg := &GetWardsByDistrictRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetWardsByDistrict(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/ParseLocation":
-		msg := &etop.ParseLocationRequest{}
+		msg := &ParseLocationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ParseLocation(ctx, msg)
 		}
@@ -432,31 +431,31 @@ func (s *RelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 func (s *RelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Relationship/AnswerInvitation":
-		msg := &etop.AnswerInvitationRequest{}
+		msg := &AnswerInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AnswerInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/GetUsersInCurrentAccounts":
-		msg := &etop.GetUsersInCurrentAccountsRequest{}
+		msg := &GetUsersInCurrentAccountsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetUsersInCurrentAccounts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/InviteUserToAccount":
-		msg := &etop.InviteUserToAccountRequest{}
+		msg := &InviteUserToAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.InviteUserToAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/LeaveAccount":
-		msg := &etop.LeaveAccountRequest{}
+		msg := &LeaveAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LeaveAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/RemoveUserFromCurrentAccount":
-		msg := &etop.RemoveUserFromCurrentAccountRequest{}
+		msg := &RemoveUserFromCurrentAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveUserFromCurrentAccount(ctx, msg)
 		}
@@ -501,31 +500,31 @@ func (s *UserRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req 
 func (s *UserRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.UserRelationship/AcceptInvitation":
-		msg := &etop.AcceptInvitationRequest{}
+		msg := &AcceptInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AcceptInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitationByToken":
-		msg := &etop.GetInvitationByTokenRequest{}
+		msg := &GetInvitationByTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInvitationByToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitations":
-		msg := &etop.GetInvitationsRequest{}
+		msg := &GetInvitationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInvitations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/LeaveAccount":
-		msg := &etop.UserRelationshipLeaveAccountRequest{}
+		msg := &UserRelationshipLeaveAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LeaveAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/RejectInvitation":
-		msg := &etop.RejectInvitationRequest{}
+		msg := &RejectInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RejectInvitation(ctx, msg)
 		}
@@ -570,55 +569,55 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.User/ChangePassword":
-		msg := &etop.ChangePasswordRequest{}
+		msg := &ChangePasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ChangePassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ChangePasswordUsingToken":
-		msg := &etop.ChangePasswordUsingTokenRequest{}
+		msg := &ChangePasswordUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ChangePasswordUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/CheckUserRegistration":
-		msg := &etop.GetUserByPhoneRequest{}
+		msg := &GetUserByPhoneRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CheckUserRegistration(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Login":
-		msg := &etop.LoginRequest{}
+		msg := &LoginRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Login(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Register":
-		msg := &etop.CreateUserRequest{}
+		msg := &CreateUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ResetPassword":
-		msg := &etop.ResetPasswordRequest{}
+		msg := &ResetPasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ResetPassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerification":
-		msg := &etop.SendEmailVerificationRequest{}
+		msg := &SendEmailVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SendEmailVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendPhoneVerification":
-		msg := &etop.SendPhoneVerificationRequest{}
+		msg := &SendPhoneVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SendPhoneVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendSTokenEmail":
-		msg := &etop.SendSTokenEmailRequest{}
+		msg := &SendSTokenEmailRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SendSTokenEmail(ctx, msg)
 		}
@@ -630,43 +629,43 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		}
 		return msg, fn, nil
 	case "/etop.User/SwitchAccount":
-		msg := &etop.SwitchAccountRequest{}
+		msg := &SwitchAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SwitchAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdatePermission":
-		msg := &etop.UpdatePermissionRequest{}
+		msg := &UpdatePermissionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdatePermission(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceSale":
-		msg := &etop.UpdateReferenceSaleRequest{}
+		msg := &UpdateReferenceSaleRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateReferenceSale(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceUser":
-		msg := &etop.UpdateReferenceUserRequest{}
+		msg := &UpdateReferenceUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateReferenceUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpgradeAccessToken":
-		msg := &etop.UpgradeAccessTokenRequest{}
+		msg := &UpgradeAccessTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpgradeAccessToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingToken":
-		msg := &etop.VerifyEmailUsingTokenRequest{}
+		msg := &VerifyEmailUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VerifyEmailUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneUsingToken":
-		msg := &etop.VerifyPhoneUsingTokenRequest{}
+		msg := &VerifyPhoneUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VerifyPhoneUsingToken(ctx, msg)
 		}

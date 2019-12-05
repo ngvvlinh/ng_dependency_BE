@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	model2 "etop.vn/backend/com/supporting/crm/vht/model"
+	model "etop.vn/backend/com/supporting/crm/vht/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/common/jsonx"
 )
@@ -72,8 +72,8 @@ func (c *Client) Request(baseUrl string, method string, query string, vhtResp in
 	return nil
 }
 
-func ConvertToModel(callHistory *VhtCallHistory) *model2.VhtCallHistory {
-	return &model2.VhtCallHistory{
+func ConvertToModel(callHistory *VhtCallHistory) *model.VhtCallHistory {
+	return &model.VhtCallHistory{
 		CdrID:           callHistory.CdrID,
 		CallID:          callHistory.CallID,
 		SipCallID:       callHistory.SipCallID,

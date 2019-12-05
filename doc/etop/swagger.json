@@ -28,7 +28,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -36,7 +36,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocPublicAccountInfo"
+              "$ref": "#/definitions/baPublicAccountInfo"
             }
           }
         }
@@ -54,7 +54,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDsRequest"
+              "$ref": "#/definitions/ktIDsRequest"
             }
           }
         ],
@@ -62,7 +62,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocPublicAccountsResponse"
+              "$ref": "#/definitions/baPublicAccountsResponse"
             }
           }
         }
@@ -80,7 +80,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateURLSlugRequest"
+              "$ref": "#/definitions/baUpdateURLSlugRequest"
             }
           }
         ],
@@ -88,7 +88,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -106,7 +106,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocCreateInvitationRequest"
+              "$ref": "#/definitions/baCreateInvitationRequest"
             }
           }
         ],
@@ -114,7 +114,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocInvitation"
+              "$ref": "#/definitions/baInvitation"
             }
           }
         }
@@ -132,7 +132,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocDeleteInvitationRequest"
+              "$ref": "#/definitions/baDeleteInvitationRequest"
             }
           }
         ],
@@ -140,7 +140,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -158,7 +158,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetInvitationsRequest"
+              "$ref": "#/definitions/baGetInvitationsRequest"
             }
           }
         ],
@@ -166,7 +166,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocInvitationsResponse"
+              "$ref": "#/definitions/baInvitationsResponse"
             }
           }
         }
@@ -184,7 +184,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetRelationshipsRequest"
+              "$ref": "#/definitions/baGetRelationshipsRequest"
             }
           }
         ],
@@ -192,7 +192,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocRelationshipsResponse"
+              "$ref": "#/definitions/baRelationshipsResponse"
             }
           }
         }
@@ -210,7 +210,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocRemoveUserRequest"
+              "$ref": "#/definitions/baRemoveUserRequest"
             }
           }
         ],
@@ -218,7 +218,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -236,7 +236,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateAccountUserPermissionRequest"
+              "$ref": "#/definitions/baUpdateAccountUserPermissionRequest"
             }
           }
         ],
@@ -244,7 +244,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocRelationship"
+              "$ref": "#/definitions/baRelationship"
             }
           }
         }
@@ -262,7 +262,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateRelationshipRequest"
+              "$ref": "#/definitions/baUpdateRelationshipRequest"
             }
           }
         ],
@@ -270,7 +270,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocRelationship"
+              "$ref": "#/definitions/baRelationship"
             }
           }
         }
@@ -288,7 +288,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocCreateAddressRequest"
+              "$ref": "#/definitions/baCreateAddressRequest"
             }
           }
         ],
@@ -296,7 +296,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAddress"
+              "$ref": "#/definitions/baAddress"
             }
           }
         }
@@ -314,7 +314,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -322,7 +322,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetAddressResponse"
+              "$ref": "#/definitions/baGetAddressResponse"
             }
           }
         }
@@ -340,7 +340,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -348,7 +348,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -366,7 +366,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateAddressRequest"
+              "$ref": "#/definitions/baUpdateAddressRequest"
             }
           }
         ],
@@ -374,7 +374,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAddress"
+              "$ref": "#/definitions/baAddress"
             }
           }
         }
@@ -392,7 +392,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -400,7 +400,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetBanksResponse"
+              "$ref": "#/definitions/baGetBanksResponse"
             }
           }
         }
@@ -418,7 +418,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetBranchesByBankProvinceResquest"
+              "$ref": "#/definitions/baGetBranchesByBankProvinceResquest"
             }
           }
         ],
@@ -426,7 +426,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetBranchesByBankProvinceResponse"
+              "$ref": "#/definitions/baGetBranchesByBankProvinceResponse"
             }
           }
         }
@@ -444,7 +444,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetProvincesByBankResquest"
+              "$ref": "#/definitions/baGetProvincesByBankResquest"
             }
           }
         ],
@@ -452,7 +452,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetBankProvincesResponse"
+              "$ref": "#/definitions/baGetBankProvincesResponse"
             }
           }
         }
@@ -470,7 +470,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -478,7 +478,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetDistrictsResponse"
+              "$ref": "#/definitions/baGetDistrictsResponse"
             }
           }
         }
@@ -496,7 +496,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetDistrictsByProvinceRequest"
+              "$ref": "#/definitions/baGetDistrictsByProvinceRequest"
             }
           }
         ],
@@ -504,7 +504,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetDistrictsResponse"
+              "$ref": "#/definitions/baGetDistrictsResponse"
             }
           }
         }
@@ -522,7 +522,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -530,7 +530,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetProvincesResponse"
+              "$ref": "#/definitions/baGetProvincesResponse"
             }
           }
         }
@@ -548,7 +548,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -556,7 +556,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetWardsResponse"
+              "$ref": "#/definitions/baGetWardsResponse"
             }
           }
         }
@@ -574,7 +574,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetWardsByDistrictRequest"
+              "$ref": "#/definitions/baGetWardsByDistrictRequest"
             }
           }
         ],
@@ -582,7 +582,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetWardsResponse"
+              "$ref": "#/definitions/baGetWardsResponse"
             }
           }
         }
@@ -600,7 +600,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocParseLocationRequest"
+              "$ref": "#/definitions/baParseLocationRequest"
             }
           }
         ],
@@ -608,7 +608,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocParseLocationResponse"
+              "$ref": "#/definitions/baParseLocationResponse"
             }
           }
         }
@@ -626,7 +626,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -634,7 +634,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -652,7 +652,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocAnswerInvitationRequest"
+              "$ref": "#/definitions/baAnswerInvitationRequest"
             }
           }
         ],
@@ -660,7 +660,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocUserAccountInfo"
+              "$ref": "#/definitions/baUserAccountInfo"
             }
           }
         }
@@ -678,7 +678,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetUsersInCurrentAccountsRequest"
+              "$ref": "#/definitions/baGetUsersInCurrentAccountsRequest"
             }
           }
         ],
@@ -686,7 +686,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocProtectedUsersResponse"
+              "$ref": "#/definitions/baProtectedUsersResponse"
             }
           }
         }
@@ -704,7 +704,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocInviteUserToAccountRequest"
+              "$ref": "#/definitions/baInviteUserToAccountRequest"
             }
           }
         ],
@@ -712,7 +712,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocUserAccountInfo"
+              "$ref": "#/definitions/baUserAccountInfo"
             }
           }
         }
@@ -730,7 +730,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocLeaveAccountRequest"
+              "$ref": "#/definitions/baLeaveAccountRequest"
             }
           }
         ],
@@ -738,7 +738,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -756,7 +756,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocRemoveUserFromCurrentAccountRequest"
+              "$ref": "#/definitions/baRemoveUserFromCurrentAccountRequest"
             }
           }
         ],
@@ -764,7 +764,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -782,7 +782,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocChangePasswordRequest"
+              "$ref": "#/definitions/baChangePasswordRequest"
             }
           }
         ],
@@ -790,7 +790,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -808,7 +808,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocChangePasswordUsingTokenRequest"
+              "$ref": "#/definitions/baChangePasswordUsingTokenRequest"
             }
           }
         ],
@@ -816,7 +816,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -834,7 +834,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetUserByPhoneRequest"
+              "$ref": "#/definitions/baGetUserByPhoneRequest"
             }
           }
         ],
@@ -842,7 +842,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocGetUserByPhoneResponse"
+              "$ref": "#/definitions/baGetUserByPhoneResponse"
             }
           }
         }
@@ -860,7 +860,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocLoginRequest"
+              "$ref": "#/definitions/baLoginRequest"
             }
           }
         ],
@@ -868,7 +868,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocLoginResponse"
+              "$ref": "#/definitions/baLoginResponse"
             }
           }
         }
@@ -886,7 +886,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocCreateUserRequest"
+              "$ref": "#/definitions/baCreateUserRequest"
             }
           }
         ],
@@ -894,7 +894,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocRegisterResponse"
+              "$ref": "#/definitions/baRegisterResponse"
             }
           }
         }
@@ -912,7 +912,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocResetPasswordRequest"
+              "$ref": "#/definitions/baResetPasswordRequest"
             }
           }
         ],
@@ -920,7 +920,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -938,7 +938,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocSendEmailVerificationRequest"
+              "$ref": "#/definitions/baSendEmailVerificationRequest"
             }
           }
         ],
@@ -946,7 +946,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -964,7 +964,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocSendPhoneVerificationRequest"
+              "$ref": "#/definitions/baSendPhoneVerificationRequest"
             }
           }
         ],
@@ -972,7 +972,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -990,7 +990,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocSendSTokenEmailRequest"
+              "$ref": "#/definitions/baSendSTokenEmailRequest"
             }
           }
         ],
@@ -998,7 +998,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -1016,7 +1016,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -1024,7 +1024,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocLoginResponse"
+              "$ref": "#/definitions/baLoginResponse"
             }
           }
         }
@@ -1042,7 +1042,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocSwitchAccountRequest"
+              "$ref": "#/definitions/baSwitchAccountRequest"
             }
           }
         ],
@@ -1050,7 +1050,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAccessTokenResponse"
+              "$ref": "#/definitions/baAccessTokenResponse"
             }
           }
         }
@@ -1068,7 +1068,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdatePermissionRequest"
+              "$ref": "#/definitions/baUpdatePermissionRequest"
             }
           }
         ],
@@ -1076,7 +1076,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocUpdatePermissionResponse"
+              "$ref": "#/definitions/baUpdatePermissionResponse"
             }
           }
         }
@@ -1094,7 +1094,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateReferenceSaleRequest"
+              "$ref": "#/definitions/baUpdateReferenceSaleRequest"
             }
           }
         ],
@@ -1102,7 +1102,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1120,7 +1120,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpdateReferenceUserRequest"
+              "$ref": "#/definitions/baUpdateReferenceUserRequest"
             }
           }
         ],
@@ -1128,7 +1128,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1146,7 +1146,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUpgradeAccessTokenRequest"
+              "$ref": "#/definitions/baUpgradeAccessTokenRequest"
             }
           }
         ],
@@ -1154,7 +1154,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocAccessTokenResponse"
+              "$ref": "#/definitions/baAccessTokenResponse"
             }
           }
         }
@@ -1172,7 +1172,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocVerifyEmailUsingTokenRequest"
+              "$ref": "#/definitions/baVerifyEmailUsingTokenRequest"
             }
           }
         ],
@@ -1180,7 +1180,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -1198,7 +1198,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocVerifyPhoneUsingTokenRequest"
+              "$ref": "#/definitions/baVerifyPhoneUsingTokenRequest"
             }
           }
         ],
@@ -1206,7 +1206,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -1224,7 +1224,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocAcceptInvitationRequest"
+              "$ref": "#/definitions/baAcceptInvitationRequest"
             }
           }
         ],
@@ -1232,7 +1232,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1250,7 +1250,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetInvitationByTokenRequest"
+              "$ref": "#/definitions/baGetInvitationByTokenRequest"
             }
           }
         ],
@@ -1258,7 +1258,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocInvitation"
+              "$ref": "#/definitions/baInvitation"
             }
           }
         }
@@ -1276,7 +1276,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocGetInvitationsRequest"
+              "$ref": "#/definitions/baGetInvitationsRequest"
             }
           }
         ],
@@ -1284,7 +1284,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocInvitationsResponse"
+              "$ref": "#/definitions/baInvitationsResponse"
             }
           }
         }
@@ -1302,7 +1302,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocUserRelationshipLeaveAccountRequest"
+              "$ref": "#/definitions/baUserRelationshipLeaveAccountRequest"
             }
           }
         ],
@@ -1310,7 +1310,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1328,7 +1328,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ocRejectInvitationRequest"
+              "$ref": "#/definitions/baRejectInvitationRequest"
             }
           }
         ],
@@ -1336,7 +1336,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1344,120 +1344,7 @@
     }
   },
   "definitions": {
-    "euAddressType": {
-      "type": "string",
-      "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
-        "unknown",
-        "warehouse"
-      ]
-    },
-    "maEmpty": {
-      "type": "object"
-    },
-    "maFilter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "op": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "maIDRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "maIDsRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
-    "maMessageResponse": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        }
-      }
-    },
-    "maPageInfo": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "total": {
-          "type": "integer"
-        }
-      }
-    },
-    "maPaging": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "offset": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "string"
-        }
-      }
-    },
-    "maUpdatedResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer"
-        }
-      }
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "ocAcceptInvitationRequest": {
+    "baAcceptInvitationRequest": {
       "type": "object",
       "properties": {
         "token": {
@@ -1465,23 +1352,23 @@
         }
       }
     },
-    "ocAccessTokenResponse": {
+    "baAccessTokenResponse": {
       "type": "object",
       "properties": {
         "access_token": {
           "type": "string"
         },
         "account": {
-          "$ref": "#/definitions/ocLoginAccount"
+          "$ref": "#/definitions/baLoginAccount"
         },
         "affiliate": {
-          "$ref": "#/definitions/ocAffiliate"
+          "$ref": "#/definitions/baAffiliate"
         },
         "expires_in": {
           "type": "integer"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "stoken": {
           "type": "boolean"
@@ -1491,11 +1378,11 @@
           "format": "date-time"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocAccountType": {
+    "baAccountType": {
       "type": "string",
       "enum": [
         "affiliate",
@@ -1505,7 +1392,7 @@
         "unknown"
       ]
     },
-    "ocAddress": {
+    "baAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -1515,7 +1402,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -1549,7 +1436,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -1564,7 +1451,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -1577,7 +1464,7 @@
         }
       }
     },
-    "ocAddressNote": {
+    "baAddressNote": {
       "type": "object",
       "properties": {
         "lunch_break": {
@@ -1594,11 +1481,11 @@
         }
       }
     },
-    "ocAffiliate": {
+    "baAffiliate": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "email": {
           "type": "string"
@@ -1617,11 +1504,11 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocAnswerInvitationRequest": {
+    "baAnswerInvitationRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -1629,11 +1516,11 @@
           "format": "int64"
         },
         "response": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocBank": {
+    "baBank": {
       "type": "object",
       "properties": {
         "code": {
@@ -1647,7 +1534,7 @@
         }
       }
     },
-    "ocBankAccount": {
+    "baBankAccount": {
       "type": "object",
       "properties": {
         "account_name": {
@@ -1667,7 +1554,7 @@
         }
       }
     },
-    "ocBankBranch": {
+    "baBankBranch": {
       "type": "object",
       "properties": {
         "bank_code": {
@@ -1684,7 +1571,7 @@
         }
       }
     },
-    "ocBankProvince": {
+    "baBankProvince": {
       "type": "object",
       "properties": {
         "bank_code": {
@@ -1698,7 +1585,7 @@
         }
       }
     },
-    "ocChangePasswordRequest": {
+    "baChangePasswordRequest": {
       "type": "object",
       "properties": {
         "confirm_password": {
@@ -1712,7 +1599,7 @@
         }
       }
     },
-    "ocChangePasswordUsingTokenRequest": {
+    "baChangePasswordUsingTokenRequest": {
       "type": "object",
       "properties": {
         "confirm_password": {
@@ -1732,14 +1619,14 @@
         }
       }
     },
-    "ocCompanyInfo": {
+    "baCompanyInfo": {
       "type": "object",
       "properties": {
         "address": {
           "type": "string"
         },
         "legal_representative": {
-          "$ref": "#/definitions/ocContactPerson"
+          "$ref": "#/definitions/baContactPerson"
         },
         "name": {
           "type": "string"
@@ -1752,7 +1639,7 @@
         }
       }
     },
-    "ocContactPerson": {
+    "baContactPerson": {
       "type": "object",
       "properties": {
         "email": {
@@ -1769,7 +1656,7 @@
         }
       }
     },
-    "ocCoordinates": {
+    "baCoordinates": {
       "type": "object",
       "properties": {
         "latitude": {
@@ -1782,7 +1669,7 @@
         }
       }
     },
-    "ocCreateAddressRequest": {
+    "baCreateAddressRequest": {
       "type": "object",
       "properties": {
         "address1": {
@@ -1792,7 +1679,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -1816,7 +1703,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -1831,7 +1718,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -1844,7 +1731,7 @@
         }
       }
     },
-    "ocCreateInvitationRequest": {
+    "baCreateInvitationRequest": {
       "type": "object",
       "properties": {
         "email": {
@@ -1867,7 +1754,7 @@
         }
       }
     },
-    "ocCreateUserRequest": {
+    "baCreateUserRequest": {
       "type": "object",
       "properties": {
         "agree_email_info": {
@@ -1898,11 +1785,11 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         }
       }
     },
-    "ocDeleteInvitationRequest": {
+    "baDeleteInvitationRequest": {
       "type": "object",
       "properties": {
         "token": {
@@ -1910,7 +1797,7 @@
         }
       }
     },
-    "ocDistrict": {
+    "baDistrict": {
       "type": "object",
       "properties": {
         "code": {
@@ -1927,51 +1814,51 @@
         }
       }
     },
-    "ocGetAddressResponse": {
+    "baGetAddressResponse": {
       "type": "object",
       "properties": {
         "addresses": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocAddress"
+            "$ref": "#/definitions/baAddress"
           }
         }
       }
     },
-    "ocGetBankProvincesResponse": {
+    "baGetBankProvincesResponse": {
       "type": "object",
       "properties": {
         "provinces": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocBankProvince"
+            "$ref": "#/definitions/baBankProvince"
           }
         }
       }
     },
-    "ocGetBanksResponse": {
+    "baGetBanksResponse": {
       "type": "object",
       "properties": {
         "banks": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocBank"
+            "$ref": "#/definitions/baBank"
           }
         }
       }
     },
-    "ocGetBranchesByBankProvinceResponse": {
+    "baGetBranchesByBankProvinceResponse": {
       "type": "object",
       "properties": {
         "branches": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocBankBranch"
+            "$ref": "#/definitions/baBankBranch"
           }
         }
       }
     },
-    "ocGetBranchesByBankProvinceResquest": {
+    "baGetBranchesByBankProvinceResquest": {
       "type": "object",
       "properties": {
         "bank_code": {
@@ -1988,7 +1875,7 @@
         }
       }
     },
-    "ocGetDistrictsByProvinceRequest": {
+    "baGetDistrictsByProvinceRequest": {
       "type": "object",
       "properties": {
         "province_code": {
@@ -1999,18 +1886,18 @@
         }
       }
     },
-    "ocGetDistrictsResponse": {
+    "baGetDistrictsResponse": {
       "type": "object",
       "properties": {
         "districts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocDistrict"
+            "$ref": "#/definitions/baDistrict"
           }
         }
       }
     },
-    "ocGetInvitationByTokenRequest": {
+    "baGetInvitationByTokenRequest": {
       "type": "object",
       "properties": {
         "token": {
@@ -2018,21 +1905,21 @@
         }
       }
     },
-    "ocGetInvitationsRequest": {
+    "baGetInvitationsRequest": {
       "type": "object",
       "properties": {
         "filters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/maFilter"
+            "$ref": "#/definitions/ktFilter"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         }
       }
     },
-    "ocGetProvincesByBankResquest": {
+    "baGetProvincesByBankResquest": {
       "type": "object",
       "properties": {
         "bank_code": {
@@ -2043,32 +1930,32 @@
         }
       }
     },
-    "ocGetProvincesResponse": {
+    "baGetProvincesResponse": {
       "type": "object",
       "properties": {
         "provinces": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocProvince"
+            "$ref": "#/definitions/baProvince"
           }
         }
       }
     },
-    "ocGetRelationshipsRequest": {
+    "baGetRelationshipsRequest": {
       "type": "object",
       "properties": {
         "filters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/maFilter"
+            "$ref": "#/definitions/ktFilter"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         }
       }
     },
-    "ocGetUserByPhoneRequest": {
+    "baGetUserByPhoneRequest": {
       "type": "object",
       "properties": {
         "phone": {
@@ -2079,7 +1966,7 @@
         }
       }
     },
-    "ocGetUserByPhoneResponse": {
+    "baGetUserByPhoneResponse": {
       "type": "object",
       "properties": {
         "exists": {
@@ -2087,24 +1974,24 @@
         }
       }
     },
-    "ocGetUsersInCurrentAccountsRequest": {
+    "baGetUsersInCurrentAccountsRequest": {
       "type": "object",
       "properties": {
         "filters": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/maFilter"
+            "$ref": "#/definitions/ktFilter"
           }
         },
         "mixed": {
-          "$ref": "#/definitions/ocMixedAccount"
+          "$ref": "#/definitions/baMixedAccount"
         },
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         }
       }
     },
-    "ocGetWardsByDistrictRequest": {
+    "baGetWardsByDistrictRequest": {
       "type": "object",
       "properties": {
         "district_code": {
@@ -2115,18 +2002,18 @@
         }
       }
     },
-    "ocGetWardsResponse": {
+    "baGetWardsResponse": {
       "type": "object",
       "properties": {
         "wards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocWard"
+            "$ref": "#/definitions/baWard"
           }
         }
       }
     },
-    "ocInvitation": {
+    "baInvitation": {
       "type": "object",
       "properties": {
         "accepted_at": {
@@ -2169,7 +2056,7 @@
           }
         },
         "shop": {
-          "$ref": "#/definitions/ocShopShort"
+          "$ref": "#/definitions/baShopShort"
         },
         "shop_id": {
           "type": "string",
@@ -2179,7 +2066,7 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "token": {
           "type": "string"
@@ -2194,21 +2081,21 @@
         }
       }
     },
-    "ocInvitationsResponse": {
+    "baInvitationsResponse": {
       "type": "object",
       "properties": {
         "invitations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocInvitation"
+            "$ref": "#/definitions/baInvitation"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "ocInviteUserToAccountRequest": {
+    "baInviteUserToAccountRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2219,14 +2106,14 @@
           "type": "string"
         },
         "permission": {
-          "$ref": "#/definitions/ocPermission"
+          "$ref": "#/definitions/baPermission"
         }
       }
     },
-    "ocLeaveAccountRequest": {
+    "baLeaveAccountRequest": {
       "type": "object"
     },
-    "ocLoginAccount": {
+    "baLoginAccount": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -2252,17 +2139,17 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "url_slug": {
           "type": "string"
         },
         "user_account": {
-          "$ref": "#/definitions/ocUserAccountInfo"
+          "$ref": "#/definitions/baUserAccountInfo"
         }
       }
     },
-    "ocLoginRequest": {
+    "baLoginRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2273,7 +2160,7 @@
           "type": "string"
         },
         "account_type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "login": {
           "type": "string"
@@ -2283,22 +2170,22 @@
         }
       }
     },
-    "ocLoginResponse": {
+    "baLoginResponse": {
       "type": "object",
       "properties": {
         "access_token": {
           "type": "string"
         },
         "account": {
-          "$ref": "#/definitions/ocLoginAccount"
+          "$ref": "#/definitions/baLoginAccount"
         },
         "affiliate": {
-          "$ref": "#/definitions/ocAffiliate"
+          "$ref": "#/definitions/baAffiliate"
         },
         "available_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocLoginAccount"
+            "$ref": "#/definitions/baLoginAccount"
           }
         },
         "expires_in": {
@@ -2307,11 +2194,11 @@
         "invitation_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocUserAccountInfo"
+            "$ref": "#/definitions/baUserAccountInfo"
           }
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "stoken": {
           "type": "boolean"
@@ -2321,11 +2208,11 @@
           "format": "date-time"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocMixedAccount": {
+    "baMixedAccount": {
       "type": "object",
       "properties": {
         "all": {
@@ -2343,7 +2230,7 @@
         }
       }
     },
-    "ocParseLocationRequest": {
+    "baParseLocationRequest": {
       "type": "object",
       "properties": {
         "district_name": {
@@ -2357,21 +2244,21 @@
         }
       }
     },
-    "ocParseLocationResponse": {
+    "baParseLocationResponse": {
       "type": "object",
       "properties": {
         "district": {
-          "$ref": "#/definitions/ocDistrict"
+          "$ref": "#/definitions/baDistrict"
         },
         "province": {
-          "$ref": "#/definitions/ocProvince"
+          "$ref": "#/definitions/baProvince"
         },
         "ward": {
-          "$ref": "#/definitions/ocWard"
+          "$ref": "#/definitions/baWard"
         }
       }
     },
-    "ocPermission": {
+    "baPermission": {
       "type": "object",
       "properties": {
         "permissions": {
@@ -2388,21 +2275,21 @@
         }
       }
     },
-    "ocProtectedUsersResponse": {
+    "baProtectedUsersResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "users": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocUserAccountInfo"
+            "$ref": "#/definitions/baUserAccountInfo"
           }
         }
       }
     },
-    "ocProvince": {
+    "baProvince": {
       "type": "object",
       "properties": {
         "code": {
@@ -2416,7 +2303,7 @@
         }
       }
     },
-    "ocPublicAccountInfo": {
+    "baPublicAccountInfo": {
       "type": "object",
       "properties": {
         "id": {
@@ -2430,33 +2317,33 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "website": {
           "type": "string"
         }
       }
     },
-    "ocPublicAccountsResponse": {
+    "baPublicAccountsResponse": {
       "type": "object",
       "properties": {
         "accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocPublicAccountInfo"
+            "$ref": "#/definitions/baPublicAccountInfo"
           }
         }
       }
     },
-    "ocRegisterResponse": {
+    "baRegisterResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocRejectInvitationRequest": {
+    "baRejectInvitationRequest": {
       "type": "object",
       "properties": {
         "token": {
@@ -2464,7 +2351,7 @@
         }
       }
     },
-    "ocRelationship": {
+    "baRelationship": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2504,24 +2391,24 @@
         }
       }
     },
-    "ocRelationshipsResponse": {
+    "baRelationshipsResponse": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         },
         "relationships": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocRelationship"
+            "$ref": "#/definitions/baRelationship"
           }
         }
       }
     },
-    "ocRemoveUserFromCurrentAccountRequest": {
+    "baRemoveUserFromCurrentAccountRequest": {
       "type": "object"
     },
-    "ocRemoveUserRequest": {
+    "baRemoveUserRequest": {
       "type": "object",
       "properties": {
         "user_id": {
@@ -2530,7 +2417,7 @@
         }
       }
     },
-    "ocResetPasswordRequest": {
+    "baResetPasswordRequest": {
       "type": "object",
       "properties": {
         "email": {
@@ -2541,7 +2428,7 @@
         }
       }
     },
-    "ocSendEmailVerificationRequest": {
+    "baSendEmailVerificationRequest": {
       "type": "object",
       "properties": {
         "email": {
@@ -2549,7 +2436,7 @@
         }
       }
     },
-    "ocSendPhoneVerificationRequest": {
+    "baSendPhoneVerificationRequest": {
       "type": "object",
       "properties": {
         "phone": {
@@ -2557,7 +2444,7 @@
         }
       }
     },
-    "ocSendSTokenEmailRequest": {
+    "baSendSTokenEmailRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2569,7 +2456,7 @@
         }
       }
     },
-    "ocShippingServiceSelectStrategyItem": {
+    "baShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
         "key": {
@@ -2580,23 +2467,23 @@
         }
       }
     },
-    "ocShop": {
+    "baShop": {
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "auto_create_ffm": {
           "type": "boolean"
         },
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
         },
         "company_info": {
-          "$ref": "#/definitions/ocCompanyInfo"
+          "$ref": "#/definitions/baCompanyInfo"
         },
         "email": {
           "type": "string"
@@ -2651,30 +2538,30 @@
         "shipping_service_select_strategy": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+            "$ref": "#/definitions/baShippingServiceSelectStrategyItem"
           }
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "survey_info": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocSurveyInfo"
+            "$ref": "#/definitions/baSurveyInfo"
           }
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         },
         "website_url": {
           "type": "string"
         }
       }
     },
-    "ocShopShort": {
+    "baShopShort": {
       "type": "object",
       "properties": {
         "code": {
@@ -2692,7 +2579,7 @@
         }
       }
     },
-    "ocSurveyInfo": {
+    "baSurveyInfo": {
       "type": "object",
       "properties": {
         "answer": {
@@ -2706,7 +2593,7 @@
         }
       }
     },
-    "ocSwitchAccountRequest": {
+    "baSwitchAccountRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2718,7 +2605,7 @@
         }
       }
     },
-    "ocUpdateAccountUserPermissionRequest": {
+    "baUpdateAccountUserPermissionRequest": {
       "type": "object",
       "properties": {
         "roles": {
@@ -2733,7 +2620,7 @@
         }
       }
     },
-    "ocUpdateAddressRequest": {
+    "baUpdateAddressRequest": {
       "type": "object",
       "properties": {
         "address1": {
@@ -2743,7 +2630,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -2771,7 +2658,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -2786,7 +2673,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -2799,7 +2686,7 @@
         }
       }
     },
-    "ocUpdatePermissionItem": {
+    "baUpdatePermissionItem": {
       "type": "object",
       "properties": {
         "grants": {
@@ -2831,18 +2718,18 @@
         }
       }
     },
-    "ocUpdatePermissionRequest": {
+    "baUpdatePermissionRequest": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocUpdatePermissionItem"
+            "$ref": "#/definitions/baUpdatePermissionItem"
           }
         }
       }
     },
-    "ocUpdatePermissionResponse": {
+    "baUpdatePermissionResponse": {
       "type": "object",
       "properties": {
         "msg": {
@@ -2850,7 +2737,7 @@
         }
       }
     },
-    "ocUpdateReferenceSaleRequest": {
+    "baUpdateReferenceSaleRequest": {
       "type": "object",
       "properties": {
         "phone": {
@@ -2858,7 +2745,7 @@
         }
       }
     },
-    "ocUpdateReferenceUserRequest": {
+    "baUpdateReferenceUserRequest": {
       "type": "object",
       "properties": {
         "phone": {
@@ -2866,7 +2753,7 @@
         }
       }
     },
-    "ocUpdateRelationshipRequest": {
+    "baUpdateRelationshipRequest": {
       "type": "object",
       "properties": {
         "full_name": {
@@ -2884,7 +2771,7 @@
         }
       }
     },
-    "ocUpdateURLSlugRequest": {
+    "baUpdateURLSlugRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2896,7 +2783,7 @@
         }
       }
     },
-    "ocUpgradeAccessTokenRequest": {
+    "baUpgradeAccessTokenRequest": {
       "type": "object",
       "properties": {
         "password": {
@@ -2907,7 +2794,7 @@
         }
       }
     },
-    "ocUser": {
+    "baUser": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -2947,7 +2834,7 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         },
         "updated_at": {
           "type": "string",
@@ -2955,7 +2842,7 @@
         }
       }
     },
-    "ocUserAccountInfo": {
+    "baUserAccountInfo": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2966,7 +2853,7 @@
           "type": "string"
         },
         "account_type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "disable_reason": {
           "type": "string"
@@ -2996,16 +2883,16 @@
           "format": "int64"
         },
         "permission": {
-          "$ref": "#/definitions/ocPermission"
+          "$ref": "#/definitions/baPermission"
         },
         "position": {
           "type": "string"
         },
         "response_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "user_full_name": {
           "type": "string"
@@ -3019,7 +2906,7 @@
         }
       }
     },
-    "ocUserRelationshipLeaveAccountRequest": {
+    "baUserRelationshipLeaveAccountRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -3028,7 +2915,7 @@
         }
       }
     },
-    "ocVerifyEmailUsingTokenRequest": {
+    "baVerifyEmailUsingTokenRequest": {
       "type": "object",
       "properties": {
         "verification_token": {
@@ -3036,7 +2923,7 @@
         }
       }
     },
-    "ocVerifyPhoneUsingTokenRequest": {
+    "baVerifyPhoneUsingTokenRequest": {
       "type": "object",
       "properties": {
         "verification_token": {
@@ -3044,7 +2931,7 @@
         }
       }
     },
-    "ocWard": {
+    "baWard": {
       "type": "object",
       "properties": {
         "code": {
@@ -3058,7 +2945,7 @@
         }
       }
     },
-    "wwStatus": {
+    "blStatus": {
       "type": "string",
       "enum": [
         "N",
@@ -3066,7 +2953,7 @@
         "Z"
       ]
     },
-    "xdTryOnCode": {
+    "csTryOnCode": {
       "type": "string",
       "enum": [
         "none",
@@ -3075,7 +2962,7 @@
         "unknown"
       ]
     },
-    "yuUserSource": {
+    "djUserSource": {
       "type": "string",
       "enum": [
         "etop",
@@ -3087,6 +2974,119 @@
         "ts_app_web",
         "unknown"
       ]
+    },
+    "jjAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ktIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "ktMessageResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "ktPageInfo": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	smsing "etop.vn/api/etc/logging/smslog"
-	"etop.vn/api/pb/etop/etc/status3"
+	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"

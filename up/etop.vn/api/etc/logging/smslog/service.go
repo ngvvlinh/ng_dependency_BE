@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-	"etop.vn/api/pb/etop/etc/status3"
+	"etop.vn/api/top/types/etc/status3"
 )
 
 // +gen:api

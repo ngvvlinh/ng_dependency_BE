@@ -9,7 +9,7 @@ import (
 
 	"github.com/lib/pq"
 
-	pbcm "etop.vn/api/pb/common"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

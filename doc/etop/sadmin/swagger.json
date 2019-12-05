@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ziSAdminCreateUserRequest"
+              "$ref": "#/definitions/puSAdminCreateUserRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocRegisterResponse"
+              "$ref": "#/definitions/baRegisterResponse"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ziLoginAsAccountRequest"
+              "$ref": "#/definitions/puLoginAsAccountRequest"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocLoginResponse"
+              "$ref": "#/definitions/baLoginResponse"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ziSAdminResetPasswordRequest"
+              "$ref": "#/definitions/puSAdminResetPasswordRequest"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -121,35 +121,7 @@
     }
   },
   "definitions": {
-    "euAddressType": {
-      "type": "string",
-      "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
-        "unknown",
-        "warehouse"
-      ]
-    },
-    "maEmpty": {
-      "type": "object"
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "ocAccountType": {
+    "baAccountType": {
       "type": "string",
       "enum": [
         "affiliate",
@@ -159,7 +131,7 @@
         "unknown"
       ]
     },
-    "ocAddress": {
+    "baAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -169,7 +141,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -203,7 +175,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -218,7 +190,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -231,7 +203,7 @@
         }
       }
     },
-    "ocAddressNote": {
+    "baAddressNote": {
       "type": "object",
       "properties": {
         "lunch_break": {
@@ -248,11 +220,11 @@
         }
       }
     },
-    "ocAffiliate": {
+    "baAffiliate": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "email": {
           "type": "string"
@@ -271,11 +243,11 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocBankAccount": {
+    "baBankAccount": {
       "type": "object",
       "properties": {
         "account_name": {
@@ -295,14 +267,14 @@
         }
       }
     },
-    "ocCompanyInfo": {
+    "baCompanyInfo": {
       "type": "object",
       "properties": {
         "address": {
           "type": "string"
         },
         "legal_representative": {
-          "$ref": "#/definitions/ocContactPerson"
+          "$ref": "#/definitions/baContactPerson"
         },
         "name": {
           "type": "string"
@@ -315,7 +287,7 @@
         }
       }
     },
-    "ocContactPerson": {
+    "baContactPerson": {
       "type": "object",
       "properties": {
         "email": {
@@ -332,7 +304,7 @@
         }
       }
     },
-    "ocCoordinates": {
+    "baCoordinates": {
       "type": "object",
       "properties": {
         "latitude": {
@@ -345,7 +317,7 @@
         }
       }
     },
-    "ocCreateUserRequest": {
+    "baCreateUserRequest": {
       "type": "object",
       "properties": {
         "agree_email_info": {
@@ -376,11 +348,11 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         }
       }
     },
-    "ocLoginAccount": {
+    "baLoginAccount": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -406,32 +378,32 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "url_slug": {
           "type": "string"
         },
         "user_account": {
-          "$ref": "#/definitions/ocUserAccountInfo"
+          "$ref": "#/definitions/baUserAccountInfo"
         }
       }
     },
-    "ocLoginResponse": {
+    "baLoginResponse": {
       "type": "object",
       "properties": {
         "access_token": {
           "type": "string"
         },
         "account": {
-          "$ref": "#/definitions/ocLoginAccount"
+          "$ref": "#/definitions/baLoginAccount"
         },
         "affiliate": {
-          "$ref": "#/definitions/ocAffiliate"
+          "$ref": "#/definitions/baAffiliate"
         },
         "available_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocLoginAccount"
+            "$ref": "#/definitions/baLoginAccount"
           }
         },
         "expires_in": {
@@ -440,11 +412,11 @@
         "invitation_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocUserAccountInfo"
+            "$ref": "#/definitions/baUserAccountInfo"
           }
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "stoken": {
           "type": "boolean"
@@ -454,11 +426,11 @@
           "format": "date-time"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocPermission": {
+    "baPermission": {
       "type": "object",
       "properties": {
         "permissions": {
@@ -475,15 +447,15 @@
         }
       }
     },
-    "ocRegisterResponse": {
+    "baRegisterResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocShippingServiceSelectStrategyItem": {
+    "baShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
         "key": {
@@ -494,23 +466,23 @@
         }
       }
     },
-    "ocShop": {
+    "baShop": {
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "auto_create_ffm": {
           "type": "boolean"
         },
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
         },
         "company_info": {
-          "$ref": "#/definitions/ocCompanyInfo"
+          "$ref": "#/definitions/baCompanyInfo"
         },
         "email": {
           "type": "string"
@@ -565,30 +537,30 @@
         "shipping_service_select_strategy": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+            "$ref": "#/definitions/baShippingServiceSelectStrategyItem"
           }
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "survey_info": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocSurveyInfo"
+            "$ref": "#/definitions/baSurveyInfo"
           }
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         },
         "website_url": {
           "type": "string"
         }
       }
     },
-    "ocSurveyInfo": {
+    "baSurveyInfo": {
       "type": "object",
       "properties": {
         "answer": {
@@ -602,7 +574,7 @@
         }
       }
     },
-    "ocUser": {
+    "baUser": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -642,7 +614,7 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         },
         "updated_at": {
           "type": "string",
@@ -650,7 +622,7 @@
         }
       }
     },
-    "ocUserAccountInfo": {
+    "baUserAccountInfo": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -661,7 +633,7 @@
           "type": "string"
         },
         "account_type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "disable_reason": {
           "type": "string"
@@ -691,16 +663,16 @@
           "format": "int64"
         },
         "permission": {
-          "$ref": "#/definitions/ocPermission"
+          "$ref": "#/definitions/baPermission"
         },
         "position": {
           "type": "string"
         },
         "response_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "user_full_name": {
           "type": "string"
@@ -714,7 +686,7 @@
         }
       }
     },
-    "wwStatus": {
+    "blStatus": {
       "type": "string",
       "enum": [
         "N",
@@ -722,7 +694,7 @@
         "Z"
       ]
     },
-    "xdTryOnCode": {
+    "csTryOnCode": {
       "type": "string",
       "enum": [
         "none",
@@ -731,7 +703,7 @@
         "unknown"
       ]
     },
-    "yuUserSource": {
+    "djUserSource": {
       "type": "string",
       "enum": [
         "etop",
@@ -744,7 +716,35 @@
         "unknown"
       ]
     },
-    "ziLoginAsAccountRequest": {
+    "jjAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "puLoginAsAccountRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -757,21 +757,21 @@
         }
       }
     },
-    "ziSAdminCreateUserRequest": {
+    "puSAdminCreateUserRequest": {
       "type": "object",
       "properties": {
         "info": {
-          "$ref": "#/definitions/ocCreateUserRequest"
+          "$ref": "#/definitions/baCreateUserRequest"
         },
         "is_etop_admin": {
           "type": "boolean"
         },
         "permission": {
-          "$ref": "#/definitions/ocPermission"
+          "$ref": "#/definitions/baPermission"
         }
       }
     },
-    "ziSAdminResetPasswordRequest": {
+    "puSAdminResetPasswordRequest": {
       "type": "object",
       "properties": {
         "confirm": {

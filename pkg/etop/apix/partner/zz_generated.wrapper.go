@@ -8,11 +8,10 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	external "etop.vn/api/pb/external"
-	partner "etop.vn/api/pb/external/partner"
 	api "etop.vn/api/top/external/partner"
+	externaltypes "etop.vn/api/top/external/types"
+	etop "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -30,12 +29,12 @@ type wrapHistoryService struct {
 }
 
 type GetChangesEndpoint struct {
-	*external.GetChangesRequest
-	Result  *external.Callback
+	*externaltypes.GetChangesRequest
+	Result  *externaltypes.Callback
 	Context claims.PartnerClaim
 }
 
-func (s wrapHistoryService) GetChanges(ctx context.Context, req *external.GetChangesRequest) (resp *external.Callback, err error) {
+func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.GetChangesRequest) (resp *externaltypes.Callback, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -85,11 +84,11 @@ type wrapMiscService struct {
 
 type CurrentAccountEndpoint struct {
 	*cm.Empty
-	Result  *external.Partner
+	Result  *externaltypes.Partner
 	Context claims.PartnerClaim
 }
 
-func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (resp *external.Partner, err error) {
+func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (resp *externaltypes.Partner, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -131,11 +130,11 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 
 type GetLocationListEndpoint struct {
 	*cm.Empty
-	Result  *external.LocationResponse
+	Result  *externaltypes.LocationResponse
 	Context claims.PartnerClaim
 }
 
-func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (resp *external.LocationResponse, err error) {
+func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (resp *externaltypes.LocationResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -214,12 +213,12 @@ type wrapShippingService struct {
 }
 
 type CancelOrderEndpoint struct {
-	*external.CancelOrderRequest
-	Result  *external.OrderAndFulfillments
+	*externaltypes.CancelOrderRequest
+	Result  *externaltypes.OrderAndFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) CancelOrder(ctx context.Context, req *external.CancelOrderRequest) (resp *external.OrderAndFulfillments, err error) {
+func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes.CancelOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -260,12 +259,12 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *external.Canc
 }
 
 type CreateAndConfirmOrderEndpoint struct {
-	*external.CreateOrderRequest
-	Result  *external.OrderAndFulfillments
+	*externaltypes.CreateOrderRequest
+	Result  *externaltypes.OrderAndFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *external.CreateOrderRequest) (resp *external.OrderAndFulfillments, err error) {
+func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *externaltypes.CreateOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -306,12 +305,12 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 }
 
 type GetFulfillmentEndpoint struct {
-	*external.FulfillmentIDRequest
-	Result  *external.Fulfillment
+	*externaltypes.FulfillmentIDRequest
+	Result  *externaltypes.Fulfillment
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) GetFulfillment(ctx context.Context, req *external.FulfillmentIDRequest) (resp *external.Fulfillment, err error) {
+func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externaltypes.FulfillmentIDRequest) (resp *externaltypes.Fulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -352,12 +351,12 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *external.F
 }
 
 type GetOrderEndpoint struct {
-	*external.OrderIDRequest
-	Result  *external.OrderAndFulfillments
+	*externaltypes.OrderIDRequest
+	Result  *externaltypes.OrderAndFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) GetOrder(ctx context.Context, req *external.OrderIDRequest) (resp *external.OrderAndFulfillments, err error) {
+func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.OrderIDRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -398,12 +397,12 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *external.OrderID
 }
 
 type GetShippingServicesEndpoint struct {
-	*external.GetShippingServicesRequest
-	Result  *external.GetShippingServicesResponse
+	*externaltypes.GetShippingServicesRequest
+	Result  *externaltypes.GetShippingServicesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) GetShippingServices(ctx context.Context, req *external.GetShippingServicesRequest) (resp *external.GetShippingServicesResponse, err error) {
+func (s wrapShippingService) GetShippingServices(ctx context.Context, req *externaltypes.GetShippingServicesRequest) (resp *externaltypes.GetShippingServicesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -452,12 +451,12 @@ type wrapShopService struct {
 }
 
 type AuthorizeShopEndpoint struct {
-	*partner.AuthorizeShopRequest
-	Result  *partner.AuthorizeShopResponse
+	*api.AuthorizeShopRequest
+	Result  *api.AuthorizeShopResponse
 	Context claims.PartnerClaim
 }
 
-func (s wrapShopService) AuthorizeShop(ctx context.Context, req *partner.AuthorizeShopRequest) (resp *partner.AuthorizeShopResponse, err error) {
+func (s wrapShopService) AuthorizeShop(ctx context.Context, req *api.AuthorizeShopRequest) (resp *api.AuthorizeShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -552,12 +551,12 @@ type wrapWebhookService struct {
 }
 
 type CreateWebhookEndpoint struct {
-	*external.CreateWebhookRequest
-	Result  *external.Webhook
+	*externaltypes.CreateWebhookRequest
+	Result  *externaltypes.Webhook
 	Context claims.PartnerClaim
 }
 
-func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *external.CreateWebhookRequest) (resp *external.Webhook, err error) {
+func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltypes.CreateWebhookRequest) (resp *externaltypes.Webhook, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -598,12 +597,12 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *external.Cre
 }
 
 type DeleteWebhookEndpoint struct {
-	*external.DeleteWebhookRequest
-	Result  *external.WebhooksResponse
+	*externaltypes.DeleteWebhookRequest
+	Result  *externaltypes.WebhooksResponse
 	Context claims.PartnerClaim
 }
 
-func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *external.DeleteWebhookRequest) (resp *external.WebhooksResponse, err error) {
+func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltypes.DeleteWebhookRequest) (resp *externaltypes.WebhooksResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -645,11 +644,11 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *external.Del
 
 type GetWebhooksEndpoint struct {
 	*cm.Empty
-	Result  *external.WebhooksResponse
+	Result  *externaltypes.WebhooksResponse
 	Context claims.PartnerClaim
 }
 
-func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (resp *external.WebhooksResponse, err error) {
+func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (resp *externaltypes.WebhooksResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

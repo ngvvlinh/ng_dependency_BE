@@ -1,17 +1,17 @@
 package shop
 
 import (
-	common "etop.vn/api/pb/common"
-	spreadsheet "etop.vn/api/pb/common/spreadsheet"
-	etop "etop.vn/api/pb/etop"
-	ghn_note_code "etop.vn/api/pb/etop/etc/ghn_note_code"
-	payment_provider "etop.vn/api/pb/etop/etc/payment_provider"
-	product_type "etop.vn/api/pb/etop/etc/product_type"
-	shipping "etop.vn/api/pb/etop/etc/shipping"
-	status3 "etop.vn/api/pb/etop/etc/status3"
-	status4 "etop.vn/api/pb/etop/etc/status4"
-	try_on "etop.vn/api/pb/etop/etc/try_on"
-	order "etop.vn/api/pb/etop/order"
+	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
+	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
+	common "etop.vn/api/top/types/common"
+	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	payment_provider "etop.vn/api/top/types/etc/payment_provider"
+	product_type "etop.vn/api/top/types/etc/product_type"
+	shipping "etop.vn/api/top/types/etc/shipping"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -2044,8 +2044,8 @@ func (m *GetInventoryVouchersByReferenceResponse) String() string { return jsonx
 
 type UpdateOrderShippingInfoRequest struct {
 	OrderId         dot.ID               `json:"order_id"`
-	Shipping        *order.OrderShipping `json:"shipping"`
-	ShippingAddress *order.OrderAddress  `json:"shipping_address"`
+	Shipping        *types.OrderShipping `json:"shipping"`
+	ShippingAddress *types.OrderAddress  `json:"shipping_address"`
 }
 
 func (m *UpdateOrderShippingInfoRequest) Reset()         { *m = UpdateOrderShippingInfoRequest{} }
@@ -2179,3 +2179,56 @@ func (m *UpdateInventoryVariantCostPriceRequest) Reset() {
 	*m = UpdateInventoryVariantCostPriceRequest{}
 }
 func (m *UpdateInventoryVariantCostPriceRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type SummaryTableJSON struct {
+	Label   string          `json:"label"`
+	Tags    []string        `json:"tags"`
+	Columns []SummaryColRow `json:"columns"`
+	Rows    []SummaryColRow `json:"rows"`
+	Data    [][]SummaryItem `json:"data"`
+}
+
+// MarshalJSON implements JSONMarshaler
+func (m *SummaryTable) MarshalJSON() ([]byte, error) {
+	ncol := len(m.Columns)
+	data := make([][]SummaryItem, len(m.Rows))
+	for r := range m.Rows {
+		data[r] = m.Data[r*ncol : (r+1)*ncol]
+	}
+	res := SummaryTableJSON{
+		Label:   m.Label,
+		Tags:    m.Tags,
+		Columns: m.Columns,
+		Rows:    m.Rows,
+		Data:    data,
+	}
+	return jsonx.Marshal(res)
+}
+
+// UnmarshalJSON implements JSONUnmarshaler
+func (m *SummaryTable) UnmarshalJSON(data []byte) error {
+	var tmp SummaryTableJSON
+	if err := jsonx.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+	ncol := len(tmp.Columns)
+	mdata := make([]SummaryItem, len(tmp.Rows)*ncol)
+	for r := range tmp.Rows {
+		copy(mdata[r*ncol:], tmp.Data[r])
+	}
+	*m = SummaryTable{
+		Label:   tmp.Label,
+		Tags:    tmp.Tags,
+		Columns: tmp.Columns,
+		Rows:    tmp.Rows,
+		Data:    mdata,
+	}
+	return nil
+}
+
+func (m *ImportProductsResponse) HasErrors() []*common.Error {
+	if len(m.CellErrors) > 0 {
+		return m.CellErrors
+	}
+	return m.ImportErrors
+}

@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

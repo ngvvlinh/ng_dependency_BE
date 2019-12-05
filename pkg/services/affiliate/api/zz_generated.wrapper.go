@@ -8,9 +8,8 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	affiliate "etop.vn/api/pb/services/affiliate"
 	api "etop.vn/api/top/services/affiliate"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -30,11 +29,11 @@ type wrapAffiliateService struct {
 
 type AffiliateGetProductsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.AffiliateGetProductsResponse
+	Result  *api.AffiliateGetProductsResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.AffiliateGetProductsResponse, err error) {
+func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *api.AffiliateGetProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -74,12 +73,12 @@ func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.
 }
 
 type CreateOrUpdateAffiliateCommissionSettingEndpoint struct {
-	*affiliate.CreateOrUpdateCommissionSettingRequest
-	Result  *affiliate.CommissionSetting
+	*api.CreateOrUpdateCommissionSettingRequest
+	Result  *api.CommissionSetting
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, req *affiliate.CreateOrUpdateCommissionSettingRequest) (resp *affiliate.CommissionSetting, err error) {
+func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, req *api.CreateOrUpdateCommissionSettingRequest) (resp *api.CommissionSetting, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -119,12 +118,12 @@ func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx conte
 }
 
 type CreateReferralCodeEndpoint struct {
-	*affiliate.CreateReferralCodeRequest
-	Result  *affiliate.ReferralCode
+	*api.CreateReferralCodeRequest
+	Result  *api.ReferralCode
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *affiliate.CreateReferralCodeRequest) (resp *affiliate.ReferralCode, err error) {
+func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *api.CreateReferralCodeRequest) (resp *api.ReferralCode, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -165,11 +164,11 @@ func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *affil
 
 type GetCommissionsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.GetCommissionsResponse
+	Result  *api.GetCommissionsResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetCommissionsResponse, err error) {
+func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.CommonListRequest) (resp *api.GetCommissionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -209,12 +208,12 @@ func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.Common
 }
 
 type GetProductPromotionByProductIDEndpoint struct {
-	*affiliate.GetProductPromotionByProductIDRequest
-	Result  *affiliate.GetProductPromotionByProductIDResponse
+	*api.GetProductPromotionByProductIDRequest
+	Result  *api.GetProductPromotionByProductIDResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context, req *affiliate.GetProductPromotionByProductIDRequest) (resp *affiliate.GetProductPromotionByProductIDResponse, err error) {
+func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context, req *api.GetProductPromotionByProductIDRequest) (resp *api.GetProductPromotionByProductIDResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -255,11 +254,11 @@ func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context
 
 type GetReferralCodesEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.GetReferralCodesResponse
+	Result  *api.GetReferralCodesResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetReferralCodesResponse, err error) {
+func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.CommonListRequest) (resp *api.GetReferralCodesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -300,11 +299,11 @@ func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.Comm
 
 type GetReferralsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.GetReferralsResponse
+	Result  *api.GetReferralsResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetReferralsResponse, err error) {
+func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonListRequest) (resp *api.GetReferralsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -345,11 +344,11 @@ func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonLi
 
 type GetTransactionsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.GetTransactionsResponse
+	Result  *api.GetTransactionsResponse
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetTransactionsResponse, err error) {
+func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.CommonListRequest) (resp *api.GetTransactionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -389,12 +388,12 @@ func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.Commo
 }
 
 type NotifyNewShopPurchaseEndpoint struct {
-	*affiliate.NotifyNewShopPurchaseRequest
-	Result  *affiliate.NotifyNewShopPurchaseResponse
+	*api.NotifyNewShopPurchaseRequest
+	Result  *api.NotifyNewShopPurchaseResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *affiliate.NotifyNewShopPurchaseRequest) (resp *affiliate.NotifyNewShopPurchaseResponse, err error) {
+func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *api.NotifyNewShopPurchaseRequest) (resp *api.NotifyNewShopPurchaseResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "affiliate.Affiliate/NotifyNewShopPurchase"
@@ -432,12 +431,12 @@ type wrapShopService struct {
 }
 
 type CheckReferralCodeValidEndpoint struct {
-	*affiliate.CheckReferralCodeValidRequest
-	Result  *affiliate.GetProductPromotionResponse
+	*api.CheckReferralCodeValidRequest
+	Result  *api.GetProductPromotionResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *affiliate.CheckReferralCodeValidRequest) (resp *affiliate.GetProductPromotionResponse, err error) {
+func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *api.CheckReferralCodeValidRequest) (resp *api.GetProductPromotionResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -477,12 +476,12 @@ func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *affili
 }
 
 type GetProductPromotionEndpoint struct {
-	*affiliate.GetProductPromotionRequest
-	Result  *affiliate.GetProductPromotionResponse
+	*api.GetProductPromotionRequest
+	Result  *api.GetProductPromotionResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShopService) GetProductPromotion(ctx context.Context, req *affiliate.GetProductPromotionRequest) (resp *affiliate.GetProductPromotionResponse, err error) {
+func (s wrapShopService) GetProductPromotion(ctx context.Context, req *api.GetProductPromotionRequest) (resp *api.GetProductPromotionResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -523,11 +522,11 @@ func (s wrapShopService) GetProductPromotion(ctx context.Context, req *affiliate
 
 type ShopGetProductsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.ShopGetProductsResponse
+	Result  *api.ShopGetProductsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.ShopGetProductsResponse, err error) {
+func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *api.ShopGetProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -575,12 +574,12 @@ type wrapTradingService struct {
 }
 
 type CreateOrUpdateTradingCommissionSettingEndpoint struct {
-	*affiliate.CreateOrUpdateTradingCommissionSettingRequest
-	Result  *affiliate.SupplyCommissionSetting
+	*api.CreateOrUpdateTradingCommissionSettingRequest
+	Result  *api.SupplyCommissionSetting
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, req *affiliate.CreateOrUpdateTradingCommissionSettingRequest) (resp *affiliate.SupplyCommissionSetting, err error) {
+func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, req *api.CreateOrUpdateTradingCommissionSettingRequest) (resp *api.SupplyCommissionSetting, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -620,12 +619,12 @@ func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.C
 }
 
 type CreateTradingProductPromotionEndpoint struct {
-	*affiliate.CreateOrUpdateProductPromotionRequest
-	Result  *affiliate.ProductPromotion
+	*api.CreateOrUpdateProductPromotionRequest
+	Result  *api.ProductPromotion
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
+func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, req *api.CreateOrUpdateProductPromotionRequest) (resp *api.ProductPromotion, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -665,12 +664,12 @@ func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, r
 }
 
 type GetTradingProductPromotionByProductIDsEndpoint struct {
-	*affiliate.GetTradingProductPromotionByIDsRequest
-	Result  *affiliate.GetTradingProductPromotionByIDsResponse
+	*api.GetTradingProductPromotionByIDsRequest
+	Result  *api.GetTradingProductPromotionByIDsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.Context, req *affiliate.GetTradingProductPromotionByIDsRequest) (resp *affiliate.GetTradingProductPromotionByIDsResponse, err error) {
+func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.Context, req *api.GetTradingProductPromotionByIDsRequest) (resp *api.GetTradingProductPromotionByIDsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -711,11 +710,11 @@ func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.C
 
 type GetTradingProductPromotionsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.GetProductPromotionsResponse
+	Result  *api.GetProductPromotionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetProductPromotionsResponse, err error) {
+func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req *cm.CommonListRequest) (resp *api.GetProductPromotionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -756,11 +755,11 @@ func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req
 
 type TradingGetProductsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.SupplyGetProductsResponse
+	Result  *api.SupplyGetProductsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.SupplyGetProductsResponse, err error) {
+func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *api.SupplyGetProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -800,12 +799,12 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 }
 
 type UpdateTradingProductPromotionEndpoint struct {
-	*affiliate.CreateOrUpdateProductPromotionRequest
-	Result  *affiliate.ProductPromotion
+	*api.CreateOrUpdateProductPromotionRequest
+	Result  *api.ProductPromotion
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
+func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, req *api.CreateOrUpdateProductPromotionRequest) (resp *api.ProductPromotion, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -853,12 +852,12 @@ type wrapUserService struct {
 }
 
 type UpdateReferralEndpoint struct {
-	*affiliate.UpdateReferralRequest
-	Result  *affiliate.UserReferral
+	*api.UpdateReferralRequest
+	Result  *api.UserReferral
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) UpdateReferral(ctx context.Context, req *affiliate.UpdateReferralRequest) (resp *affiliate.UserReferral, err error) {
+func (s wrapUserService) UpdateReferral(ctx context.Context, req *api.UpdateReferralRequest) (resp *api.UserReferral, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

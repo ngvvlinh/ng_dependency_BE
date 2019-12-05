@@ -1,14 +1,14 @@
 package api
 
 import (
-	pbetop "etop.vn/api/pb/etop"
+	"etop.vn/api/top/int/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]dot.ID, error) {
+func MixAccount(claim *claims.Claim, m *etop.MixedAccount) ([]dot.ID, error) {
 	switch {
 	case m == nil:
 		// The same as default.

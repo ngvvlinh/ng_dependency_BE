@@ -8,7 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/api/top/int/shop"
+
 	orderingmodely "etop.vn/backend/com/main/ordering/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -20,7 +21,7 @@ const exportOrderLines = false
 
 func ExportOrders(
 	ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
-	result chan<- *pbshop.ExportStatusItem,
+	result chan<- *shop.ExportStatusItem,
 	total int, rows *sql.Rows, opts core.Opts,
 ) (_err error) {
 	var count, countError, line int
@@ -29,8 +30,8 @@ func ExportOrders(
 		maxErrors = BaseRowsErrors
 	}
 
-	makeProgress := func() *pbshop.ExportStatusItem {
-		return &pbshop.ExportStatusItem{
+	makeProgress := func() *shop.ExportStatusItem {
+		return &shop.ExportStatusItem{
 			Id:            id,
 			ProgressMax:   total,
 			ProgressValue: count,

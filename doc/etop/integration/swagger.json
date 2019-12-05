@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/piGrantAccessRequest"
+              "$ref": "#/definitions/fuGrantAccessRequest"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piGrantAccessResponse"
+              "$ref": "#/definitions/fuGrantAccessResponse"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/piInitRequest"
+              "$ref": "#/definitions/fuInitRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piLoginResponse"
+              "$ref": "#/definitions/fuLoginResponse"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/piLoginUsingTokenRequest"
+              "$ref": "#/definitions/fuLoginUsingTokenRequest"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piLoginResponse"
+              "$ref": "#/definitions/fuLoginResponse"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/piRegisterRequest"
+              "$ref": "#/definitions/fuRegisterRequest"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piRegisterResponse"
+              "$ref": "#/definitions/fuRegisterResponse"
             }
           }
         }
@@ -131,7 +131,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/piRequestLoginRequest"
+              "$ref": "#/definitions/fuRequestLoginRequest"
             }
           }
         ],
@@ -139,7 +139,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piRequestLoginResponse"
+              "$ref": "#/definitions/fuRequestLoginResponse"
             }
           }
         }
@@ -157,7 +157,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -165,7 +165,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/piLoginResponse"
+              "$ref": "#/definitions/fuLoginResponse"
             }
           }
         }
@@ -183,7 +183,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -191,7 +191,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -199,35 +199,7 @@
     }
   },
   "definitions": {
-    "euAddressType": {
-      "type": "string",
-      "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
-        "unknown",
-        "warehouse"
-      ]
-    },
-    "maEmpty": {
-      "type": "object"
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "ocAccountType": {
+    "baAccountType": {
       "type": "string",
       "enum": [
         "affiliate",
@@ -237,7 +209,7 @@
         "unknown"
       ]
     },
-    "ocAddress": {
+    "baAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -247,7 +219,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -281,7 +253,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -296,7 +268,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -309,7 +281,7 @@
         }
       }
     },
-    "ocAddressNote": {
+    "baAddressNote": {
       "type": "object",
       "properties": {
         "lunch_break": {
@@ -326,7 +298,7 @@
         }
       }
     },
-    "ocCoordinates": {
+    "baCoordinates": {
       "type": "object",
       "properties": {
         "latitude": {
@@ -339,7 +311,7 @@
         }
       }
     },
-    "ocPublicAccountInfo": {
+    "baPublicAccountInfo": {
       "type": "object",
       "properties": {
         "id": {
@@ -353,14 +325,14 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "website": {
           "type": "string"
         }
       }
     },
-    "ocUser": {
+    "baUser": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -400,7 +372,7 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         },
         "updated_at": {
           "type": "string",
@@ -408,7 +380,28 @@
         }
       }
     },
-    "piAction": {
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "djUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    },
+    "fuAction": {
       "type": "object",
       "properties": {
         "label": {
@@ -428,7 +421,7 @@
         }
       }
     },
-    "piGrantAccessRequest": {
+    "fuGrantAccessRequest": {
       "type": "object",
       "properties": {
         "shop_id": {
@@ -437,7 +430,7 @@
         }
       }
     },
-    "piGrantAccessResponse": {
+    "fuGrantAccessResponse": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -448,7 +441,7 @@
         }
       }
     },
-    "piInitRequest": {
+    "fuInitRequest": {
       "type": "object",
       "properties": {
         "auth_token": {
@@ -456,28 +449,28 @@
         }
       }
     },
-    "piLoginResponse": {
+    "fuLoginResponse": {
       "type": "object",
       "properties": {
         "access_token": {
           "type": "string"
         },
         "account": {
-          "$ref": "#/definitions/piPartnerShopLoginAccount"
+          "$ref": "#/definitions/fuPartnerShopLoginAccount"
         },
         "actions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/piAction"
+            "$ref": "#/definitions/fuAction"
           }
         },
         "auth_partner": {
-          "$ref": "#/definitions/ocPublicAccountInfo"
+          "$ref": "#/definitions/baPublicAccountInfo"
         },
         "available_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/piPartnerShopLoginAccount"
+            "$ref": "#/definitions/fuPartnerShopLoginAccount"
           }
         },
         "expires_in": {
@@ -487,14 +480,14 @@
           "type": "string"
         },
         "shop": {
-          "$ref": "#/definitions/piPartnerShopInfo"
+          "$ref": "#/definitions/fuPartnerShopInfo"
         },
         "user": {
-          "$ref": "#/definitions/piPartnerUserLogin"
+          "$ref": "#/definitions/fuPartnerUserLogin"
         }
       }
     },
-    "piLoginUsingTokenRequest": {
+    "fuLoginUsingTokenRequest": {
       "type": "object",
       "properties": {
         "login": {
@@ -505,11 +498,11 @@
         }
       }
     },
-    "piPartnerShopInfo": {
+    "fuPartnerShopInfo": {
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "email": {
           "type": "string"
@@ -535,11 +528,11 @@
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "piPartnerShopLoginAccount": {
+    "fuPartnerShopLoginAccount": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -562,11 +555,11 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         }
       }
     },
-    "piPartnerUserLogin": {
+    "fuPartnerUserLogin": {
       "type": "object",
       "properties": {
         "email": {
@@ -587,7 +580,7 @@
         }
       }
     },
-    "piRegisterRequest": {
+    "fuRegisterRequest": {
       "type": "object",
       "properties": {
         "agree_email_info": {
@@ -607,7 +600,7 @@
         }
       }
     },
-    "piRegisterResponse": {
+    "fuRegisterResponse": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -617,11 +610,11 @@
           "type": "integer"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "piRequestLoginRequest": {
+    "fuRequestLoginRequest": {
       "type": "object",
       "properties": {
         "login": {
@@ -632,13 +625,13 @@
         }
       }
     },
-    "piRequestLoginResponse": {
+    "fuRequestLoginResponse": {
       "type": "object",
       "properties": {
         "actions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/piAction"
+            "$ref": "#/definitions/fuAction"
           }
         },
         "code": {
@@ -649,26 +642,33 @@
         }
       }
     },
-    "wwStatus": {
+    "jjAddressType": {
       "type": "string",
       "enum": [
-        "N",
-        "P",
-        "Z"
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
       ]
     },
-    "yuUserSource": {
-      "type": "string",
-      "enum": [
-        "etop",
-        "partner",
-        "psx",
-        "topship",
-        "ts_app_android",
-        "ts_app_ios",
-        "ts_app_web",
-        "unknown"
-      ]
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

@@ -3,8 +3,9 @@ package api
 import (
 	"context"
 
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
+	"etop.vn/api/top/int/etop"
+
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -81,7 +82,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 		if err != nil {
 			return err
 		}
-		q.Result = &pbetop.PublicAccountsResponse{
+		q.Result = &etop.PublicAccountsResponse{
 			Accounts: convertpb.PbPublicPartners(partners),
 		}
 		return nil
@@ -93,7 +94,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 		if err != nil {
 			return err
 		}
-		q.Result = &pbetop.PublicAccountsResponse{
+		q.Result = &etop.PublicAccountsResponse{
 			Accounts: convertpb.PbPublicPartners(partners),
 		}
 		return nil
@@ -109,7 +110,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.PublicAccountsResponse{
+	q.Result = &etop.PublicAccountsResponse{
 		Accounts: convertpb.PbPublicPartners(query.Result.Partners),
 	}
 	return nil

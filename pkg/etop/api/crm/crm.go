@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	pbcm "etop.vn/api/pb/common"
-	crmservice "etop.vn/api/pb/services/crm"
+	"etop.vn/api/top/services/crm"
+
 	"etop.vn/api/supporting/crm/vht"
 	"etop.vn/api/supporting/crm/vtiger"
+	pbcm "etop.vn/api/top/types/common"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modelx"
@@ -177,7 +178,7 @@ func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoin
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &crmservice.Ticket{
+	r.Result = &crm.Ticket{
 		TicketNo:         cmd.Result.TicketNo,
 		AssignedUserId:   cmd.Result.AssignedUserId,
 		ParentId:         cmd.Result.ParentID,
@@ -246,7 +247,7 @@ func (s *VtigerService) UpdateTicket(ctx context.Context, r *UpdateTicketEndpoin
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &crmservice.Ticket{
+	r.Result = &crm.Ticket{
 		TicketNo:         cmd.Result.TicketNo,
 		AssignedUserId:   cmd.Result.AssignedUserId,
 		ParentId:         cmd.Result.ParentID,
@@ -319,7 +320,7 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUp
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &crmservice.ContactResponse{
+	r.Result = &crm.ContactResponse{
 		ContactNo:            cmd.Result.ContactNo,
 		Phone:                cmd.Result.Phone,
 		Lastname:             cmd.Result.Lastname,
@@ -375,7 +376,7 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdat
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &crmservice.LeadResponse{
+	r.Result = &crm.LeadResponse{
 		ContactNo:            cmd.Result.ContactNo,
 		Phone:                cmd.Result.Phone,
 		Lastname:             cmd.Result.Lastname,
@@ -468,9 +469,9 @@ func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEn
 	if err := vhtQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	var vhtCallLog []*crmservice.VHTCallLog
+	var vhtCallLog []*crm.VHTCallLog
 	for _, value := range query.Result.VhtCallLog {
-		vhtCallLog = append(vhtCallLog, &crmservice.VHTCallLog{
+		vhtCallLog = append(vhtCallLog, &crm.VHTCallLog{
 			CdrId:           value.CdrID,
 			CallId:          value.CallID,
 			SipCallId:       value.SipCallID,
@@ -493,7 +494,7 @@ func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEn
 			VtigerAccountId: value.VtigerAccountID,
 		})
 	}
-	r.Result = &crmservice.GetCallHistoriesResponse{
+	r.Result = &crm.GetCallHistoriesResponse{
 		VhtCallLog: vhtCallLog,
 	}
 	return nil
@@ -507,9 +508,9 @@ func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint)
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	var arrContact []*crmservice.ContactResponse
+	var arrContact []*crm.ContactResponse
 	for _, value := range query.Result.Contacts {
-		arrContact = append(arrContact, &crmservice.ContactResponse{
+		arrContact = append(arrContact, &crm.ContactResponse{
 			ContactNo:            value.ContactNo,
 			Phone:                value.Phone,
 			Lastname:             value.Lastname,
@@ -536,7 +537,7 @@ func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint)
 			AssignedUserId:       value.AssignedUserID,
 		})
 	}
-	r.Result = &crmservice.GetContactsResponse{
+	r.Result = &crm.GetContactsResponse{
 		Contacts: arrContact,
 	}
 
@@ -575,9 +576,9 @@ func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) e
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	var arrTicket []*crmservice.Ticket
+	var arrTicket []*crm.Ticket
 	for _, value := range query.Result.Tickets {
-		arrTicket = append(arrTicket, &crmservice.Ticket{
+		arrTicket = append(arrTicket, &crm.Ticket{
 			TicketNo:         value.TicketNo,
 			AssignedUserId:   value.AssignedUserId,
 			ParentId:         value.ParentID,
@@ -620,7 +621,7 @@ func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) e
 			Id:               value.ID,
 		})
 	}
-	r.Result = &crmservice.GetTicketsResponse{
+	r.Result = &crm.GetTicketsResponse{
 		Tickets: arrTicket,
 	}
 	return nil
@@ -631,14 +632,14 @@ func (s *VtigerService) GetCategories(ctx context.Context, r *GetCategoriesEndpo
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	var arrCategory []*crmservice.Category
+	var arrCategory []*crm.Category
 	for _, value := range query.Result.Categories {
-		arrCategory = append(arrCategory, &crmservice.Category{
+		arrCategory = append(arrCategory, &crm.Category{
 			Code:  value.Code,
 			Label: value.Label,
 		})
 	}
-	r.Result = &crmservice.GetCategoriesResponse{
+	r.Result = &crm.GetCategoriesResponse{
 		Categories: arrCategory,
 	}
 	return nil
@@ -649,14 +650,14 @@ func (s *VtigerService) GetTicketStatusCount(ctx context.Context, r *GetTicketSt
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	var arrStatus []*crmservice.CountTicketByStatusResponse
+	var arrStatus []*crm.CountTicketByStatusResponse
 	for _, value := range query.Result.StatusCount {
-		arrStatus = append(arrStatus, &crmservice.CountTicketByStatusResponse{
+		arrStatus = append(arrStatus, &crm.CountTicketByStatusResponse{
 			Code:  value.Code,
 			Count: value.Count,
 		})
 	}
-	r.Result = &crmservice.GetTicketStatusCountResponse{
+	r.Result = &crm.GetTicketStatusCountResponse{
 		StatusCount: arrStatus,
 	}
 	return nil

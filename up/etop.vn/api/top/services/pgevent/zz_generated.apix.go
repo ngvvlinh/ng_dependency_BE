@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	pgevent "etop.vn/api/pb/services/pgevent"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -54,7 +53,7 @@ func (s *EventServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 func (s *EventServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/pgevent.Event/GenerateEvents":
-		msg := &pgevent.GenerateEventsRequest{}
+		msg := &GenerateEventsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GenerateEvents(ctx, msg)
 		}

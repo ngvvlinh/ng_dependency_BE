@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"regexp"
 
-	pbcm "etop.vn/api/pb/common"
-	pbpartner "etop.vn/api/pb/external/partner"
+	extpartner "etop.vn/api/top/external/partner"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -14,7 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/redis"
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
-	convertpb2 "etop.vn/backend/pkg/etop/api/convertpb"
+	apiconvertpb "etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
@@ -90,7 +90,7 @@ func (s *ShopService) CurrentShop(ctx context.Context, q *CurrentShopEndpoint) e
 	if q.Context.Shop == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
-	q.Result = convertpb2.PbPublicAccountInfo(q.Context.Shop)
+	q.Result = apiconvertpb.PbPublicAccountInfo(q.Context.Shop)
 	return nil
 }
 
@@ -147,7 +147,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			if rel.Status == model.S3Positive && rel.DeletedAt.IsZero() &&
 				shop.Status == model.S3Positive && shop.DeletedAt.IsZero() &&
 				user.Status == model.S3Positive {
-				q.Result = &pbpartner.AuthorizeShopResponse{
+				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopKey,
 					Type:      "shop_key",
@@ -178,7 +178,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				if err != nil {
 					return err
 				}
-				q.Result = &pbpartner.AuthorizeShopResponse{
+				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopRequest,
 					Type:      "shop_request",
@@ -231,7 +231,7 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		return err
 	}
 
-	q.Result = &pbpartner.AuthorizeShopResponse{
+	q.Result = &extpartner.AuthorizeShopResponse{
 		Code:      "ok",
 		Msg:       msgShopRequest,
 		Type:      "shop_request",

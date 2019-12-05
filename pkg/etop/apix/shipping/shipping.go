@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
-	pborder "etop.vn/api/pb/etop/order"
-	pbexternal "etop.vn/api/pb/external"
+	exttypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/int/types"
 	servicelocation "etop.vn/backend/com/main/location"
 	locationlist "etop.vn/backend/com/main/location/list"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
@@ -30,15 +30,15 @@ func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersql
 }
 
 // TODO: should not import location/list
-func buildLocationList() *pbexternal.LocationResponse {
-	provinces := make([]pbexternal.Province, len(locationlist.Provinces))
+func buildLocationList() *exttypes.LocationResponse {
+	provinces := make([]exttypes.Province, len(locationlist.Provinces))
 	for i, p := range locationlist.Provinces {
 		districtsQuery := &location.GetAllLocationsQuery{ProvinceCode: p.Code}
 		if err := locationBus.Dispatch(context.Background(), districtsQuery); err != nil {
 			ll.Panic("unexpected", l.Error(err))
 		}
 		ds := districtsQuery.Result.Districts
-		districts := make([]pbexternal.District, len(ds))
+		districts := make([]exttypes.District, len(ds))
 
 		for i, d := range ds {
 			wardsQuery := &location.GetAllLocationsQuery{DistrictCode: d.Code}
@@ -46,31 +46,31 @@ func buildLocationList() *pbexternal.LocationResponse {
 				ll.Panic("unexpected", l.Error(err))
 			}
 			ws := wardsQuery.Result.Wards
-			wards := make([]pbexternal.Ward, len(ws))
+			wards := make([]exttypes.Ward, len(ws))
 			for i, w := range ws {
-				wards[i] = pbexternal.Ward{Name: w.Name}
+				wards[i] = exttypes.Ward{Name: w.Name}
 			}
-			districts[i] = pbexternal.District{
+			districts[i] = exttypes.District{
 				Name:  d.Name,
 				Wards: wards,
 			}
 		}
 
-		provinces[i] = pbexternal.Province{
+		provinces[i] = exttypes.Province{
 			Name:      p.Name,
 			Districts: districts,
 		}
 	}
-	return &pbexternal.LocationResponse{
+	return &exttypes.LocationResponse{
 		Provinces: provinces,
 	}
 }
 
-func GetLocationList(ctx context.Context) (*pbexternal.LocationResponse, error) {
+func GetLocationList(ctx context.Context) (*exttypes.LocationResponse, error) {
 	return locationList, nil
 }
 
-func GetShippingServices(ctx context.Context, accountID dot.ID, r *pbexternal.GetShippingServicesRequest) (*pbexternal.GetShippingServicesResponse, error) {
+func GetShippingServices(ctx context.Context, accountID dot.ID, r *exttypes.GetShippingServicesRequest) (*exttypes.GetShippingServicesResponse, error) {
 	if r.PickupAddress == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ lấy hàng")
 	}
@@ -78,7 +78,7 @@ func GetShippingServices(ctx context.Context, accountID dot.ID, r *pbexternal.Ge
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ giao hàng")
 	}
 
-	req := &pborder.GetExternalShippingServicesRequest{
+	req := &types.GetExternalShippingServicesRequest{
 		Provider:         0,
 		Carrier:          0,
 		FromDistrictCode: "",
@@ -105,7 +105,7 @@ func GetShippingServices(ctx context.Context, accountID dot.ID, r *pbexternal.Ge
 	if err != nil {
 		return nil, err
 	}
-	return &pbexternal.GetShippingServicesResponse{
+	return &exttypes.GetShippingServicesResponse{
 		Services: convertpb.PbShippingServices(services),
 	}, nil
 }

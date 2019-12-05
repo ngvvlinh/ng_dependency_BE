@@ -7,7 +7,7 @@ package shipping
 import (
 	context "context"
 
-	types "etop.vn/api/main/shipping/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -54,7 +54,7 @@ type CreateFulfillmentCommand struct {
 	ShippingServiceFee  string
 	WeightInfo          WeightInfo
 	ValueInfo           ValueInfo
-	TryOn               types.TryOn
+	TryOn               shippingtypes.TryOn
 	ShippingNote        string
 
 	Result *meta.Empty `json:"-"`

@@ -8,9 +8,8 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	pgevent "etop.vn/api/pb/services/pgevent"
 	api "etop.vn/api/top/services/pgevent"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -29,12 +28,12 @@ type wrapEventService struct {
 }
 
 type GenerateEventsEndpoint struct {
-	*pgevent.GenerateEventsRequest
+	*api.GenerateEventsRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapEventService) GenerateEvents(ctx context.Context, req *pgevent.GenerateEventsRequest) (resp *cm.Empty, err error) {
+func (s wrapEventService) GenerateEvents(ctx context.Context, req *api.GenerateEventsRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "pgevent.Event/GenerateEvents"

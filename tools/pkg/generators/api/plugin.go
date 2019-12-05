@@ -6,16 +6,19 @@ import (
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
 	"etop.vn/backend/tools/pkg/generators/api/parse"
+	"etop.vn/backend/tools/pkg/genutil"
 )
 
 func New() generator.Plugin {
 	return &gen{
-		Filterer: generator.FilterByCommand("gen:api"),
+		Filterer:  generator.FilterByCommand("gen:api"),
+		Qualifier: genutil.Qualifier{},
 	}
 }
 
 type gen struct {
 	generator.Filterer
+	generator.Qualifier
 }
 
 func (g *gen) Name() string { return "api" }

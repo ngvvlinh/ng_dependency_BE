@@ -3,7 +3,7 @@ package smslog
 import (
 	"time"
 
-	"etop.vn/api/pb/etop/etc/status3"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 

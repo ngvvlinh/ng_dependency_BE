@@ -8,9 +8,8 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	handler "etop.vn/api/pb/services/handler"
 	api "etop.vn/api/top/services/handler"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -73,12 +72,12 @@ type wrapWebhookService struct {
 }
 
 type ResetStateEndpoint struct {
-	*handler.ResetStateRequest
+	*api.ResetStateRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapWebhookService) ResetState(ctx context.Context, req *handler.ResetStateRequest) (resp *cm.Empty, err error) {
+func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "handler.Webhook/ResetState"

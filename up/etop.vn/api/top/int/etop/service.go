@@ -3,8 +3,7 @@ package etop
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -21,111 +20,111 @@ type UserService interface {
 	// Register
 	//
 	// Register a new user or after a user has login using generated password.
-	Register(context.Context, *pbetop.CreateUserRequest) (*pbetop.RegisterResponse, error)
+	Register(context.Context, *CreateUserRequest) (*RegisterResponse, error)
 
 	// Login
 	//
 	// Log the user in and generate access token.
-	Login(context.Context, *pbetop.LoginRequest) (*pbetop.LoginResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 
 	// SessionInfo
 	//
 	// Return current session info.
-	SessionInfo(context.Context, *cm.Empty) (*pbetop.LoginResponse, error)
+	SessionInfo(context.Context, *cm.Empty) (*LoginResponse, error)
 
 	// SwitchAccount
 	//
 	// Response error if the user does not have permission to the requested account.
-	SwitchAccount(context.Context, *pbetop.SwitchAccountRequest) (*pbetop.AccessTokenResponse, error)
+	SwitchAccount(context.Context, *SwitchAccountRequest) (*AccessTokenResponse, error)
 
-	SendSTokenEmail(context.Context, *pbetop.SendSTokenEmailRequest) (*cm.MessageResponse, error)
+	SendSTokenEmail(context.Context, *SendSTokenEmailRequest) (*cm.MessageResponse, error)
 
-	UpgradeAccessToken(context.Context, *pbetop.UpgradeAccessTokenRequest) (*pbetop.AccessTokenResponse, error)
+	UpgradeAccessToken(context.Context, *UpgradeAccessTokenRequest) (*AccessTokenResponse, error)
 
 	// ResetPassword
 	//
 	// Send email or sms to allow the user reset their password.
-	ResetPassword(context.Context, *pbetop.ResetPasswordRequest) (*cm.MessageResponse, error)
+	ResetPassword(context.Context, *ResetPasswordRequest) (*cm.MessageResponse, error)
 
 	// ChangePassword
 	//
 	// Change the user password
-	ChangePassword(context.Context, *pbetop.ChangePasswordRequest) (*cm.Empty, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*cm.Empty, error)
 
 	// ChangePasswordUsingToken
 	//
 	// Reset password by providing the token sent to email or phone
-	ChangePasswordUsingToken(context.Context, *pbetop.ChangePasswordUsingTokenRequest) (*cm.Empty, error)
+	ChangePasswordUsingToken(context.Context, *ChangePasswordUsingTokenRequest) (*cm.Empty, error)
 
-	SendEmailVerification(context.Context, *pbetop.SendEmailVerificationRequest) (*cm.MessageResponse, error)
+	SendEmailVerification(context.Context, *SendEmailVerificationRequest) (*cm.MessageResponse, error)
 
-	SendPhoneVerification(context.Context, *pbetop.SendPhoneVerificationRequest) (*cm.MessageResponse, error)
+	SendPhoneVerification(context.Context, *SendPhoneVerificationRequest) (*cm.MessageResponse, error)
 
-	VerifyEmailUsingToken(context.Context, *pbetop.VerifyEmailUsingTokenRequest) (*cm.MessageResponse, error)
+	VerifyEmailUsingToken(context.Context, *VerifyEmailUsingTokenRequest) (*cm.MessageResponse, error)
 
-	VerifyPhoneUsingToken(context.Context, *pbetop.VerifyPhoneUsingTokenRequest) (*cm.MessageResponse, error)
+	VerifyPhoneUsingToken(context.Context, *VerifyPhoneUsingTokenRequest) (*cm.MessageResponse, error)
 
-	UpdatePermission(context.Context, *pbetop.UpdatePermissionRequest) (*pbetop.UpdatePermissionResponse, error)
+	UpdatePermission(context.Context, *UpdatePermissionRequest) (*UpdatePermissionResponse, error)
 
-	UpdateReferenceUser(context.Context, *pbetop.UpdateReferenceUserRequest) (*cm.UpdatedResponse, error)
+	UpdateReferenceUser(context.Context, *UpdateReferenceUserRequest) (*cm.UpdatedResponse, error)
 
-	UpdateReferenceSale(context.Context, *pbetop.UpdateReferenceSaleRequest) (*cm.UpdatedResponse, error)
+	UpdateReferenceSale(context.Context, *UpdateReferenceSaleRequest) (*cm.UpdatedResponse, error)
 
-	CheckUserRegistration(context.Context, *pbetop.GetUserByPhoneRequest) (*pbetop.GetUserByPhoneResponse, error)
+	CheckUserRegistration(context.Context, *GetUserByPhoneRequest) (*GetUserByPhoneResponse, error)
 }
 
 // +apix:path=/etop.Account
 type AccountService interface {
-	UpdateURLSlug(context.Context, *pbetop.UpdateURLSlugRequest) (*cm.Empty, error)
-	GetPublicPartnerInfo(context.Context, *cm.IDRequest) (*pbetop.PublicAccountInfo, error)
+	UpdateURLSlug(context.Context, *UpdateURLSlugRequest) (*cm.Empty, error)
+	GetPublicPartnerInfo(context.Context, *cm.IDRequest) (*PublicAccountInfo, error)
 
 	// leave ids empty to get all connected partners
-	GetPublicPartners(context.Context, *cm.IDsRequest) (*pbetop.PublicAccountsResponse, error)
+	GetPublicPartners(context.Context, *cm.IDsRequest) (*PublicAccountsResponse, error)
 }
 
 // +apix:path=/etop.Relationship
 type RelationshipService interface {
-	InviteUserToAccount(context.Context, *pbetop.InviteUserToAccountRequest) (*pbetop.UserAccountInfo, error)
-	AnswerInvitation(context.Context, *pbetop.AnswerInvitationRequest) (*pbetop.UserAccountInfo, error)
+	InviteUserToAccount(context.Context, *InviteUserToAccountRequest) (*UserAccountInfo, error)
+	AnswerInvitation(context.Context, *AnswerInvitationRequest) (*UserAccountInfo, error)
 
-	GetUsersInCurrentAccounts(context.Context, *pbetop.GetUsersInCurrentAccountsRequest) (*pbetop.ProtectedUsersResponse, error)
+	GetUsersInCurrentAccounts(context.Context, *GetUsersInCurrentAccountsRequest) (*ProtectedUsersResponse, error)
 
-	LeaveAccount(context.Context, *pbetop.LeaveAccountRequest) (*cm.Empty, error)
+	LeaveAccount(context.Context, *LeaveAccountRequest) (*cm.Empty, error)
 
-	RemoveUserFromCurrentAccount(context.Context, *pbetop.RemoveUserFromCurrentAccountRequest) (*cm.Empty, error)
+	RemoveUserFromCurrentAccount(context.Context, *RemoveUserFromCurrentAccountRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/etop.Location
 type LocationService interface {
-	GetProvinces(context.Context, *cm.Empty) (*pbetop.GetProvincesResponse, error)
+	GetProvinces(context.Context, *cm.Empty) (*GetProvincesResponse, error)
 
-	GetDistricts(context.Context, *cm.Empty) (*pbetop.GetDistrictsResponse, error)
+	GetDistricts(context.Context, *cm.Empty) (*GetDistrictsResponse, error)
 
-	GetDistrictsByProvince(context.Context, *pbetop.GetDistrictsByProvinceRequest) (*pbetop.GetDistrictsResponse, error)
+	GetDistrictsByProvince(context.Context, *GetDistrictsByProvinceRequest) (*GetDistrictsResponse, error)
 
-	GetWards(context.Context, *cm.Empty) (*pbetop.GetWardsResponse, error)
+	GetWards(context.Context, *cm.Empty) (*GetWardsResponse, error)
 
-	GetWardsByDistrict(context.Context, *pbetop.GetWardsByDistrictRequest) (*pbetop.GetWardsResponse, error)
+	GetWardsByDistrict(context.Context, *GetWardsByDistrictRequest) (*GetWardsResponse, error)
 
-	ParseLocation(context.Context, *pbetop.ParseLocationRequest) (*pbetop.ParseLocationResponse, error)
+	ParseLocation(context.Context, *ParseLocationRequest) (*ParseLocationResponse, error)
 }
 
 // +apix:path=/etop.Bank
 type BankService interface {
-	GetBanks(context.Context, *cm.Empty) (*pbetop.GetBanksResponse, error)
+	GetBanks(context.Context, *cm.Empty) (*GetBanksResponse, error)
 
-	GetProvincesByBank(context.Context, *pbetop.GetProvincesByBankResquest) (*pbetop.GetBankProvincesResponse, error)
+	GetProvincesByBank(context.Context, *GetProvincesByBankResquest) (*GetBankProvincesResponse, error)
 
-	GetBranchesByBankProvince(context.Context, *pbetop.GetBranchesByBankProvinceResquest) (*pbetop.GetBranchesByBankProvinceResponse, error)
+	GetBranchesByBankProvince(context.Context, *GetBranchesByBankProvinceResquest) (*GetBranchesByBankProvinceResponse, error)
 }
 
 // +apix:path=/etop.Address
 type AddressService interface {
-	CreateAddress(context.Context, *pbetop.CreateAddressRequest) (*pbetop.Address, error)
+	CreateAddress(context.Context, *CreateAddressRequest) (*Address, error)
 
-	GetAddresses(context.Context, *cm.Empty) (*pbetop.GetAddressResponse, error)
+	GetAddresses(context.Context, *cm.Empty) (*GetAddressResponse, error)
 
-	UpdateAddress(context.Context, *pbetop.UpdateAddressRequest) (*pbetop.Address, error)
+	UpdateAddress(context.Context, *UpdateAddressRequest) (*Address, error)
 
 	RemoveAddress(context.Context, *cm.IDRequest) (*cm.Empty, error)
 }
@@ -133,21 +132,21 @@ type AddressService interface {
 // +apix:path=/etop.UserRelationship
 // +wrapper:endpoint-prefix=UserRelationship
 type UserRelationshipService interface {
-	AcceptInvitation(context.Context, *pbetop.AcceptInvitationRequest) (*cm.UpdatedResponse, error)
-	RejectInvitation(context.Context, *pbetop.RejectInvitationRequest) (*cm.UpdatedResponse, error)
-	GetInvitationByToken(context.Context, *pbetop.GetInvitationByTokenRequest) (*pbetop.Invitation, error)
-	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*pbetop.InvitationsResponse, error)
-	LeaveAccount(context.Context, *pbetop.UserRelationshipLeaveAccountRequest) (*cm.UpdatedResponse, error)
+	AcceptInvitation(context.Context, *AcceptInvitationRequest) (*cm.UpdatedResponse, error)
+	RejectInvitation(context.Context, *RejectInvitationRequest) (*cm.UpdatedResponse, error)
+	GetInvitationByToken(context.Context, *GetInvitationByTokenRequest) (*Invitation, error)
+	GetInvitations(context.Context, *GetInvitationsRequest) (*InvitationsResponse, error)
+	LeaveAccount(context.Context, *UserRelationshipLeaveAccountRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/etop.AccountRelationship
 // +wrapper:endpoint-prefix=AccountRelationship
 type AccountRelationshipService interface {
-	CreateInvitation(context.Context, *pbetop.CreateInvitationRequest) (*pbetop.Invitation, error)
-	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*pbetop.InvitationsResponse, error)
-	DeleteInvitation(context.Context, *pbetop.DeleteInvitationRequest) (*cm.UpdatedResponse, error)
-	UpdatePermission(context.Context, *pbetop.UpdateAccountUserPermissionRequest) (*pbetop.Relationship, error)
-	UpdateRelationship(context.Context, *pbetop.UpdateRelationshipRequest) (*pbetop.Relationship, error)
-	GetRelationships(context.Context, *pbetop.GetRelationshipsRequest) (*pbetop.RelationshipsResponse, error)
-	RemoveUser(context.Context, *pbetop.RemoveUserRequest) (*cm.UpdatedResponse, error)
+	CreateInvitation(context.Context, *CreateInvitationRequest) (*Invitation, error)
+	GetInvitations(context.Context, *GetInvitationsRequest) (*InvitationsResponse, error)
+	DeleteInvitation(context.Context, *DeleteInvitationRequest) (*cm.UpdatedResponse, error)
+	UpdatePermission(context.Context, *UpdateAccountUserPermissionRequest) (*Relationship, error)
+	UpdateRelationship(context.Context, *UpdateRelationshipRequest) (*Relationship, error)
+	GetRelationships(context.Context, *GetRelationshipsRequest) (*RelationshipsResponse, error)
+	RemoveUser(context.Context, *RemoveUserRequest) (*cm.UpdatedResponse, error)
 }

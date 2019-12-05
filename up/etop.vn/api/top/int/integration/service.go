@@ -3,8 +3,7 @@ package integration
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	inte "etop.vn/api/pb/etop/integration"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -17,17 +16,17 @@ type MiscService interface {
 
 // +apix:path=/integration.Integration
 type IntegrationService interface {
-	Init(context.Context, *inte.InitRequest) (*inte.LoginResponse, error)
+	Init(context.Context, *InitRequest) (*LoginResponse, error)
 	// RequestLogin
 	//
 	// Check if the requested phone or email exists and take corresponding action.
-	RequestLogin(context.Context, *inte.RequestLoginRequest) (*inte.RequestLoginResponse, error)
+	RequestLogin(context.Context, *RequestLoginRequest) (*RequestLoginResponse, error)
 
-	LoginUsingToken(context.Context, *inte.LoginUsingTokenRequest) (*inte.LoginResponse, error)
+	LoginUsingToken(context.Context, *LoginUsingTokenRequest) (*LoginResponse, error)
 
-	Register(context.Context, *inte.RegisterRequest) (*inte.RegisterResponse, error)
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 
-	GrantAccess(context.Context, *inte.GrantAccessRequest) (*inte.GrantAccessResponse, error)
+	GrantAccess(context.Context, *GrantAccessRequest) (*GrantAccessResponse, error)
 
-	SessionInfo(context.Context, *cm.Empty) (*inte.LoginResponse, error)
+	SessionInfo(context.Context, *cm.Empty) (*LoginResponse, error)
 }

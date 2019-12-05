@@ -3,9 +3,8 @@ package affiliate
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	"etop.vn/api/pb/etop"
-	aff "etop.vn/api/pb/etop/affiliate"
+	etop "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -18,8 +17,8 @@ type MiscService interface {
 
 // +apix:path=/affiliate.Account
 type AccountService interface {
-	RegisterAffiliate(context.Context, *aff.RegisterAffiliateRequest) (*etop.Affiliate, error)
-	UpdateAffiliate(context.Context, *aff.UpdateAffiliateRequest) (*etop.Affiliate, error)
-	UpdateAffiliateBankAccount(context.Context, *aff.UpdateAffiliateBankAccountRequest) (*etop.Affiliate, error)
+	RegisterAffiliate(context.Context, *RegisterAffiliateRequest) (*etop.Affiliate, error)
+	UpdateAffiliate(context.Context, *UpdateAffiliateRequest) (*etop.Affiliate, error)
+	UpdateAffiliateBankAccount(context.Context, *UpdateAffiliateBankAccountRequest) (*etop.Affiliate, error)
 	DeleteAffiliate(context.Context, *cm.IDRequest) (*cm.Empty, error)
 }

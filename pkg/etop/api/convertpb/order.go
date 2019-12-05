@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
-	"etop.vn/api/pb/etop"
-	"etop.vn/api/pb/etop/etc/gender"
-	"etop.vn/api/pb/etop/order"
+	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/gender"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
@@ -25,8 +25,8 @@ import (
 
 var locationBus = servicelocation.New().MessageBus()
 
-func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*model.Shop) []*order.Order {
-	res := make([]*order.Order, len(items))
+func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*model.Shop) []*types.Order {
+	res := make([]*types.Order, len(items))
 	shopsMap := make(map[dot.ID]*model.Shop)
 	for _, shop := range shops {
 		shopsMap[shop.ID] = shop
@@ -38,8 +38,8 @@ func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType
 	return res
 }
 
-func PbOrders(items []*ordermodel.Order, accType int) []*order.Order {
-	res := make([]*order.Order, len(items))
+func PbOrders(items []*ordermodel.Order, accType int) []*types.Order {
+	res := make([]*types.Order, len(items))
 	for i, order := range items {
 		res[i] = PbOrder(order, nil, accType)
 	}
@@ -55,7 +55,7 @@ var exportedOrder = cm.SortStrings([]string{
 	"basket_value", "order_discount", "total_discount", "total_fee",
 })
 
-func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType int) *order.Order {
+func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType int) *types.Order {
 	ffms := make([]*ordermodelx.Fulfillment, len(fulfillments))
 	for i, ffm := range fulfillments {
 		ffms[i] = &ordermodelx.Fulfillment{
@@ -63,7 +63,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		}
 	}
 
-	order := &order.Order{
+	order := &types.Order{
 		ExportedFields: exportedOrder,
 
 		Id:                        m.ID,
@@ -127,8 +127,8 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 	return order
 }
 
-func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accType int) *order.Order {
-	order := &order.Order{
+func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accType int) *types.Order {
+	order := &types.Order{
 		ExportedFields: exportedOrder,
 
 		Id:                        m.ID,
@@ -199,7 +199,7 @@ var exportedOrderShipping = cm.SortStrings([]string{
 	"weight", "gross_weight", "length", "width", "height", "chargeable_weight",
 })
 
-func PbOrderShipping(m *ordermodel.Order) *order.OrderShipping {
+func PbOrderShipping(m *ordermodel.Order) *types.OrderShipping {
 	if m == nil {
 		return nil
 	}
@@ -207,7 +207,7 @@ func PbOrderShipping(m *ordermodel.Order) *order.OrderShipping {
 	if item == nil {
 		item = &ordermodel.OrderShipping{}
 	}
-	return &order.OrderShipping{
+	return &types.OrderShipping{
 		ExportedFields: exportedOrderShipping,
 		// @deprecated fields
 		ShAddress:    PbOrderAddress(item.ShopAddress),
@@ -238,11 +238,11 @@ var exportedOrderCustomer = cm.SortStrings([]string{
 	"full_name", "email", "phone", "gender",
 })
 
-func PbOrderCustomer(m *ordermodel.OrderCustomer) *order.OrderCustomer {
+func PbOrderCustomer(m *ordermodel.OrderCustomer) *types.OrderCustomer {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderCustomer{
+	return &types.OrderCustomer{
 		ExportedFields: exportedOrderCustomer,
 
 		FirstName: m.FirstName,
@@ -254,7 +254,7 @@ func PbOrderCustomer(m *ordermodel.OrderCustomer) *order.OrderCustomer {
 	}
 }
 
-func OrderCustomerToModel(m *order.OrderCustomer) *ordermodel.OrderCustomer {
+func OrderCustomerToModel(m *types.OrderCustomer) *ordermodel.OrderCustomer {
 	if m == nil {
 		return nil
 	}
@@ -273,11 +273,11 @@ var exportedOrderAddress = cm.SortStrings([]string{
 	"ward", "company", "address1", "address2",
 })
 
-func PbOrderAddress(m *ordermodel.OrderAddress) *order.OrderAddress {
+func PbOrderAddress(m *ordermodel.OrderAddress) *types.OrderAddress {
 	if m == nil {
 		return nil
 	}
-	res := &order.OrderAddress{
+	res := &types.OrderAddress{
 		ExportedFields: exportedOrderAddress,
 		FullName:       m.GetFullName(),
 		FirstName:      m.FirstName,
@@ -307,7 +307,7 @@ func PbOrderAddress(m *ordermodel.OrderAddress) *order.OrderAddress {
 	return res
 }
 
-func OrderAddressToModel(m *order.OrderAddress) (*ordermodel.OrderAddress, error) {
+func OrderAddressToModel(m *types.OrderAddress) (*ordermodel.OrderAddress, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -363,7 +363,7 @@ func OrderAddressToModel(m *order.OrderAddress) (*ordermodel.OrderAddress, error
 	return res, nil
 }
 
-func OrderAddressFulfilled(m *order.OrderAddress) (*order.OrderAddress, error) {
+func OrderAddressFulfilled(m *types.OrderAddress) (*types.OrderAddress, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -394,11 +394,11 @@ func OrderAddressFulfilled(m *order.OrderAddress) (*order.OrderAddress, error) {
 	return m, nil
 }
 
-func PbOrderAddressFromAddress(m *model.Address) *order.OrderAddress {
+func PbOrderAddressFromAddress(m *model.Address) *types.OrderAddress {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderAddress{
+	return &types.OrderAddress{
 		ExportedFields: exportedOrderAddress,
 
 		FullName:     m.FullName,
@@ -420,12 +420,12 @@ func PbOrderAddressFromAddress(m *model.Address) *order.OrderAddress {
 	}
 }
 
-func OrderShippingToModel(m *order.OrderShipping, mo *ordermodel.Order) error {
+func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 	if m == nil {
 		return nil
 	}
 
-	var pickupAddress *order.OrderAddress
+	var pickupAddress *types.OrderAddress
 	if m.ShAddress != nil {
 		pickupAddress = m.ShAddress
 	} else {
@@ -505,23 +505,23 @@ func OrderShippingToModel(m *order.OrderShipping, mo *ordermodel.Order) error {
 	return nil
 }
 
-func PbDiscounts(items []*ordermodel.OrderDiscount) []*order.OrderDiscount {
-	res := make([]*order.OrderDiscount, len(items))
+func PbDiscounts(items []*ordermodel.OrderDiscount) []*types.OrderDiscount {
+	res := make([]*types.OrderDiscount, len(items))
 	for i, item := range items {
 		res[i] = PbDiscount(item)
 	}
 	return res
 }
 
-func PbDiscount(m *ordermodel.OrderDiscount) *order.OrderDiscount {
-	return &order.OrderDiscount{
+func PbDiscount(m *ordermodel.OrderDiscount) *types.OrderDiscount {
+	return &types.OrderDiscount{
 		Code:   m.Code,
 		Type:   m.Type,
 		Amount: m.Amount,
 	}
 }
 
-func OrderDiscountToModel(m *order.OrderDiscount) *ordermodel.OrderDiscount {
+func OrderDiscountToModel(m *types.OrderDiscount) *ordermodel.OrderDiscount {
 	return &ordermodel.OrderDiscount{
 		Code:   m.Code,
 		Type:   m.Type,
@@ -529,7 +529,7 @@ func OrderDiscountToModel(m *order.OrderDiscount) *ordermodel.OrderDiscount {
 	}
 }
 
-func PbOrderDiscountsToModel(discounts []*order.OrderDiscount) []*ordermodel.OrderDiscount {
+func PbOrderDiscountsToModel(discounts []*types.OrderDiscount) []*ordermodel.OrderDiscount {
 	res := make([]*ordermodel.OrderDiscount, len(discounts))
 	for i, d := range discounts {
 		res[i] = OrderDiscountToModel(d)
@@ -537,7 +537,7 @@ func PbOrderDiscountsToModel(discounts []*order.OrderDiscount) []*ordermodel.Ord
 	return res
 }
 
-func PbOrderFeeLinesToModel(items []*order.OrderFeeLine) []ordermodel.OrderFeeLine {
+func PbOrderFeeLinesToModel(items []*types.OrderFeeLine) []ordermodel.OrderFeeLine {
 	res := make([]ordermodel.OrderFeeLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
@@ -554,10 +554,10 @@ func PbOrderFeeLinesToModel(items []*order.OrderFeeLine) []ordermodel.OrderFeeLi
 	return res
 }
 
-func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*order.OrderFeeLine {
-	res := make([]*order.OrderFeeLine, len(items))
+func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*types.OrderFeeLine {
+	res := make([]*types.OrderFeeLine, len(items))
 	for i, item := range items {
-		res[i] = &order.OrderFeeLine{
+		res[i] = &types.OrderFeeLine{
 			Type:   Pb(item.Type),
 			Name:   item.Name,
 			Code:   item.Code,
@@ -568,8 +568,8 @@ func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*order.OrderFeeLine {
 	return res
 }
 
-func PbOrderLines(items []*ordermodel.OrderLine) []*order.OrderLine {
-	res := make([]*order.OrderLine, 0, len(items))
+func PbOrderLines(items []*ordermodel.OrderLine) []*types.OrderLine {
+	res := make([]*types.OrderLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
 			continue
@@ -585,10 +585,10 @@ var exportedOrderLine = cm.SortStrings([]string{
 	"quantity", "list_price", "retail_price", "payment_price",
 })
 
-func PbOrderLine(m *ordermodel.OrderLine) *order.OrderLine {
-	metaFields := []*order.OrderLineMetaField{}
+func PbOrderLine(m *ordermodel.OrderLine) *types.OrderLine {
+	metaFields := []*types.OrderLineMetaField{}
 	for _, metaField := range m.MetaFields {
-		metaFields = append(metaFields, &order.OrderLineMetaField{
+		metaFields = append(metaFields, &types.OrderLineMetaField{
 			Key:   metaField.Key,
 			Value: metaField.Value,
 			Name:  metaField.Name,
@@ -597,7 +597,7 @@ func PbOrderLine(m *ordermodel.OrderLine) *order.OrderLine {
 	if m == nil {
 		return nil
 	}
-	return &order.OrderLine{
+	return &types.OrderLine{
 		ExportedFields: exportedOrderLine,
 
 		OrderId:       m.OrderID,
@@ -616,7 +616,7 @@ func PbOrderLine(m *ordermodel.OrderLine) *order.OrderLine {
 	}
 }
 
-func PbAttributesToModel(items []*order.Attribute) []*catalogmodel.ProductAttribute {
+func PbAttributesToModel(items []*types.Attribute) []*catalogmodel.ProductAttribute {
 	if len(items) == 0 {
 		return nil
 	}
@@ -630,17 +630,17 @@ func PbAttributesToModel(items []*order.Attribute) []*catalogmodel.ProductAttrib
 	return res
 }
 
-func AttributeToModel(m *order.Attribute) *catalogmodel.ProductAttribute {
+func AttributeToModel(m *types.Attribute) *catalogmodel.ProductAttribute {
 	return &catalogmodel.ProductAttribute{
 		Name:  m.Name,
 		Value: m.Value,
 	}
 }
 
-func PbAttributesFromModel(as []*catalogmodel.ProductAttribute) []*order.Attribute {
-	attrs := make([]*order.Attribute, len(as))
+func PbAttributesFromModel(as []*catalogmodel.ProductAttribute) []*types.Attribute {
+	attrs := make([]*types.Attribute, len(as))
 	for i, a := range as {
-		attrs[i] = &order.Attribute{
+		attrs[i] = &types.Attribute{
 			Name:  a.Name,
 			Value: a.Value,
 		}
@@ -648,22 +648,22 @@ func PbAttributesFromModel(as []*catalogmodel.ProductAttribute) []*order.Attribu
 	return attrs
 }
 
-func PbFulfillments(items []*shipmodel.Fulfillment, accType int) []*order.Fulfillment {
+func PbFulfillments(items []*shipmodel.Fulfillment, accType int) []*types.Fulfillment {
 	if items == nil {
 		return nil
 	}
-	res := make([]*order.Fulfillment, len(items))
+	res := make([]*types.Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillment(item, accType, nil, nil)
 	}
 	return res
 }
 
-func PbFulfillmentExtendeds(items []*shipmodely.FulfillmentExtended, accType int) []*order.Fulfillment {
+func PbFulfillmentExtendeds(items []*shipmodely.FulfillmentExtended, accType int) []*types.Fulfillment {
 	if items == nil {
 		return nil
 	}
-	res := make([]*order.Fulfillment, len(items))
+	res := make([]*types.Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillment(item.Fulfillment, accType, item.Shop, item.Order)
 	}
@@ -681,11 +681,11 @@ var exportedFulfillment = cm.SortStrings([]string{
 	"estimated_delivery_at", "estimated_pickup_at",
 })
 
-func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *order.Fulfillment {
+func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *types.Fulfillment {
 	if m == nil {
 		return nil
 	}
-	ff := &order.Fulfillment{
+	ff := &types.Fulfillment{
 		ExportedFields: exportedFulfillment,
 
 		Id:                                 m.ID,
@@ -766,22 +766,22 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *
 	return ff
 }
 
-func XPbFulfillments(items []*ordermodelx.Fulfillment, accType int) []*order.XFulfillment {
+func XPbFulfillments(items []*ordermodelx.Fulfillment, accType int) []*types.XFulfillment {
 	if items == nil {
 		return nil
 	}
-	res := make([]*order.XFulfillment, len(items))
+	res := make([]*types.XFulfillment, len(items))
 	for i, item := range items {
 		res[i] = XPbFulfillment(item, accType, nil, nil)
 	}
 	return res
 }
 
-func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *order.XFulfillment {
-	res := &order.XFulfillment{}
+func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *types.XFulfillment {
+	res := &types.XFulfillment{}
 	shipment := PbFulfillment(m.Shipment, accType, shop, mo)
 	if shipment != nil {
-		res = &order.XFulfillment{
+		res = &types.XFulfillment{
 			Shipment:                           shipment,
 			Id:                                 shipment.Id,
 			OrderId:                            shipment.OrderId,
@@ -861,8 +861,8 @@ func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, m
 	return res
 }
 
-func PbAvailableShippingServices(items []*model.AvailableShippingService) []*order.ExternalShippingService {
-	res := make([]*order.ExternalShippingService, len(items))
+func PbAvailableShippingServices(items []*model.AvailableShippingService) []*types.ExternalShippingService {
+	res := make([]*types.ExternalShippingService, len(items))
 	for i, item := range items {
 		res[i] = PbAvailableShippingService(item)
 	}
@@ -873,8 +873,8 @@ var exportedShippingService = cm.SortStrings([]string{
 	"name", "code", "fee", "carrier", "estimated_pickup_at", "estimated_delivery_at",
 })
 
-func PbAvailableShippingService(s *model.AvailableShippingService) *order.ExternalShippingService {
-	return &order.ExternalShippingService{
+func PbAvailableShippingService(s *model.AvailableShippingService) *types.ExternalShippingService {
+	return &types.ExternalShippingService{
 		ExportedFields: exportedShippingService,
 
 		ExternalId:          s.ProviderServiceID,
@@ -891,16 +891,16 @@ func PbAvailableShippingService(s *model.AvailableShippingService) *order.Extern
 	}
 }
 
-func PbShippingFeeLines(items []*model.ShippingFeeLine) []*order.ShippingFeeLine {
-	result := make([]*order.ShippingFeeLine, len(items))
+func PbShippingFeeLines(items []*model.ShippingFeeLine) []*types.ShippingFeeLine {
+	result := make([]*types.ShippingFeeLine, len(items))
 	for i, item := range items {
 		result[i] = PbShippingFeeLine(item)
 	}
 	return result
 }
 
-func PbShippingFeeLine(line *model.ShippingFeeLine) *order.ShippingFeeLine {
-	return &order.ShippingFeeLine{
+func PbShippingFeeLine(line *model.ShippingFeeLine) *types.ShippingFeeLine {
+	return &types.ShippingFeeLine{
 		ShippingFeeType:          PbShippingFeeType(line.ShippingFeeType),
 		Cost:                     line.Cost,
 		ExternalServiceId:        line.ExternalServiceID,
@@ -911,22 +911,22 @@ func PbShippingFeeLine(line *model.ShippingFeeLine) *order.ShippingFeeLine {
 	}
 }
 
-func PbFulfillmentSyncStates(m *model.FulfillmentSyncStates) *order.FulfillmentSyncStates {
+func PbFulfillmentSyncStates(m *model.FulfillmentSyncStates) *types.FulfillmentSyncStates {
 	if m == nil {
 		return nil
 	}
-	return &order.FulfillmentSyncStates{
+	return &types.FulfillmentSyncStates{
 		SyncAt:            cmapi.PbTime(m.SyncAt),
 		NextShippingState: string(m.NextShippingState),
 		Error:             cmapi.PbError(m.Error),
 	}
 }
 
-func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *order.MoneyTransaction {
+func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *types.MoneyTransaction {
 	if m == nil {
 		return nil
 	}
-	return &order.MoneyTransaction{
+	return &types.MoneyTransaction{
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
 		Status:                             Pb3(m.Status),
@@ -946,11 +946,11 @@ func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *order.Mon
 	}
 }
 
-func PbMoneyTransaction(m *txmodel.MoneyTransactionShipping) *order.MoneyTransaction {
+func PbMoneyTransaction(m *txmodel.MoneyTransactionShipping) *types.MoneyTransaction {
 	if m == nil {
 		return nil
 	}
-	return &order.MoneyTransaction{
+	return &types.MoneyTransaction{
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
 		Status:                             Pb3(m.Status),
@@ -967,19 +967,19 @@ func PbMoneyTransaction(m *txmodel.MoneyTransactionShipping) *order.MoneyTransac
 	}
 }
 
-func PbMoneyTransactionExtendeds(items []*txmodely.MoneyTransactionExtended) []*order.MoneyTransaction {
-	result := make([]*order.MoneyTransaction, len(items))
+func PbMoneyTransactionExtendeds(items []*txmodely.MoneyTransactionExtended) []*types.MoneyTransaction {
+	result := make([]*types.MoneyTransaction, len(items))
 	for i, item := range items {
 		result[i] = PbMoneyTransactionExtended(item)
 	}
 	return result
 }
 
-func PbMoneyTransactionShippingExternalExtended(m *txmodel.MoneyTransactionShippingExternalExtended) *order.MoneyTransactionShippingExternal {
+func PbMoneyTransactionShippingExternalExtended(m *txmodel.MoneyTransactionShippingExternalExtended) *types.MoneyTransactionShippingExternal {
 	if m == nil {
 		return nil
 	}
-	res := &order.MoneyTransactionShippingExternal{
+	res := &types.MoneyTransactionShippingExternal{
 		Id:             m.ID,
 		Code:           m.Code,
 		TotalCod:       m.TotalCOD,
@@ -998,19 +998,19 @@ func PbMoneyTransactionShippingExternalExtended(m *txmodel.MoneyTransactionShipp
 	return res
 }
 
-func PbMoneyTransactionShippingExternalExtendeds(items []*txmodel.MoneyTransactionShippingExternalExtended) []*order.MoneyTransactionShippingExternal {
-	result := make([]*order.MoneyTransactionShippingExternal, len(items))
+func PbMoneyTransactionShippingExternalExtendeds(items []*txmodel.MoneyTransactionShippingExternalExtended) []*types.MoneyTransactionShippingExternal {
+	result := make([]*types.MoneyTransactionShippingExternal, len(items))
 	for i, item := range items {
 		result[i] = PbMoneyTransactionShippingExternalExtended(item)
 	}
 	return result
 }
 
-func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionShippingExternalLineExtended) *order.MoneyTransactionShippingExternalLine {
+func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionShippingExternalLineExtended) *types.MoneyTransactionShippingExternalLine {
 	if m == nil {
 		return nil
 	}
-	res := &order.MoneyTransactionShippingExternalLine{
+	res := &types.MoneyTransactionShippingExternalLine{
 		Id:                                 m.ID,
 		ExternalCode:                       m.ExternalCode,
 		ExternalCustomer:                   m.ExternalCustomer,
@@ -1033,15 +1033,15 @@ func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionS
 	return res
 }
 
-func PbMoneyTransactionShippingExternalLineExtendeds(items []*txmodel.MoneyTransactionShippingExternalLineExtended) []*order.MoneyTransactionShippingExternalLine {
-	result := make([]*order.MoneyTransactionShippingExternalLine, len(items))
+func PbMoneyTransactionShippingExternalLineExtendeds(items []*txmodel.MoneyTransactionShippingExternalLineExtended) []*types.MoneyTransactionShippingExternalLine {
+	result := make([]*types.MoneyTransactionShippingExternalLine, len(items))
 	for i, item := range items {
 		result[i] = PbMoneyTransactionShippingExternalLineExtended(item)
 	}
 	return result
 }
 
-func PbPublicFulfillment(item *shipmodel.Fulfillment) *order.PublicFulfillment {
+func PbPublicFulfillment(item *shipmodel.Fulfillment) *types.PublicFulfillment {
 	timeLayout := "15:04 02/01/2006"
 
 	// use for manychat
@@ -1053,7 +1053,7 @@ func PbPublicFulfillment(item *shipmodel.Fulfillment) *order.PublicFulfillment {
 		deliveredAtText += " (dự kiến)"
 	}
 
-	return &order.PublicFulfillment{
+	return &types.PublicFulfillment{
 		Id:                 item.ID,
 		ShippingState:      PbShippingState(item.ShippingState),
 		Status:             Pb5(item.Status),
@@ -1066,27 +1066,27 @@ func PbPublicFulfillment(item *shipmodel.Fulfillment) *order.PublicFulfillment {
 	}
 }
 
-func PbExternalShippingLogs(items []*model.ExternalShippingLog) []*order.ExternalShippingLog {
-	result := make([]*order.ExternalShippingLog, len(items))
+func PbExternalShippingLogs(items []*model.ExternalShippingLog) []*types.ExternalShippingLog {
+	result := make([]*types.ExternalShippingLog, len(items))
 	for i, item := range items {
 		result[i] = PbExternalShippingLog(item)
 	}
 	return result
 }
 
-func PbExternalShippingLog(l *model.ExternalShippingLog) *order.ExternalShippingLog {
-	return &order.ExternalShippingLog{
+func PbExternalShippingLog(l *model.ExternalShippingLog) *types.ExternalShippingLog {
+	return &types.ExternalShippingLog{
 		StateText: l.StateText,
 		Time:      l.Time,
 		Message:   l.Message,
 	}
 }
 
-func PbMoneyTransactionShippingEtopExtended(m *txmodely.MoneyTransactionShippingEtopExtended) *order.MoneyTransactionShippingEtop {
+func PbMoneyTransactionShippingEtopExtended(m *txmodely.MoneyTransactionShippingEtopExtended) *types.MoneyTransactionShippingEtop {
 	if m == nil {
 		return nil
 	}
-	return &order.MoneyTransactionShippingEtop{
+	return &types.MoneyTransactionShippingEtop{
 		Id:                m.ID,
 		Code:              m.Code,
 		TotalCod:          m.TotalCOD,
@@ -1104,8 +1104,8 @@ func PbMoneyTransactionShippingEtopExtended(m *txmodely.MoneyTransactionShipping
 	}
 }
 
-func PbMoneyTransactionShippingEtopExtendeds(items []*txmodely.MoneyTransactionShippingEtopExtended) []*order.MoneyTransactionShippingEtop {
-	result := make([]*order.MoneyTransactionShippingEtop, len(items))
+func PbMoneyTransactionShippingEtopExtendeds(items []*txmodely.MoneyTransactionShippingEtopExtended) []*types.MoneyTransactionShippingEtop {
+	result := make([]*types.MoneyTransactionShippingEtop, len(items))
 	for i, item := range items {
 		result[i] = PbMoneyTransactionShippingEtopExtended(item)
 	}

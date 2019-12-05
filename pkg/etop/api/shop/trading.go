@@ -4,14 +4,16 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/top/int/shop"
+
+	"etop.vn/api/top/int/types"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/meta"
-	pborder "etop.vn/api/pb/etop/order"
-	pbsource "etop.vn/api/pb/etop/order/source"
-	pbshop "etop.vn/api/pb/etop/shop"
+	pbsource "etop.vn/api/top/types/etc/source"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/pkg/common/bus"
@@ -57,7 +59,7 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		return err
 	}
 
-	q.Result = &pbshop.ShopProductsResponse{
+	q.Result = &shop.ShopProductsResponse{
 		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
@@ -81,7 +83,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 			}
 		}
 	}()
-	req := &pborder.CreateOrderRequest{
+	req := &types.CreateOrderRequest{
 		PaymentMethod:   r.PaymentMethod,
 		Source:          pbsource.Source_etop_pos,
 		Customer:        r.Customer,
@@ -175,7 +177,7 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrde
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.OrdersResponse{
+	q.Result = &types.OrdersResponse{
 		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
-	pbcm "etop.vn/api/pb/common"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 )

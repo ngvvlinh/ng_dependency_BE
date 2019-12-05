@@ -8,7 +8,7 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
-	pbshop "etop.vn/api/pb/etop/shop"
+	topintshop "etop.vn/api/top/int/shop"
 	"etop.vn/backend/com/main/catalog/convert"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
@@ -212,13 +212,13 @@ func loadAndCreateProducts(
 	now := time.Now()
 	// Create new products/variants and add them to corresponding categories/collection
 	var createStocktakeCmd = &apishop.CreateStocktakeEndpoint{
-		CreateStocktakeRequest: &pbshop.CreateStocktakeRequest{
+		CreateStocktakeRequest: &topintshop.CreateStocktakeRequest{
 			Note: "Tạo phiếu quản lý tồn kho theo file import",
 		},
 	}
 	createStocktakeCmd.Context.Shop = shop
 	createStocktakeCmd.Context.User = user
-	var stocktakeLines []*pbshop.StocktakeLine
+	var stocktakeLines []*topintshop.StocktakeLine
 	for _, rowProduct := range rowProducts {
 		if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
 			_errs = append(_errs, imcsv.CellErrorWithCode(idx.indexer, cm.Internal, errors.New("random error"), rowProduct.RowIndex, -1, "Random error for development"))
@@ -261,7 +261,7 @@ func loadAndCreateProducts(
 		}
 		if rowProduct.CostPrice > 0 {
 			updatePriceCmd := &apishop.UpdateInventoryVariantCostPriceEndpoint{
-				UpdateInventoryVariantCostPriceRequest: &pbshop.UpdateInventoryVariantCostPriceRequest{
+				UpdateInventoryVariantCostPriceRequest: &topintshop.UpdateInventoryVariantCostPriceRequest{
 					VariantId: createVariantCmd.Result.Id,
 					CostPrice: rowProduct.CostPrice,
 				},
@@ -280,7 +280,7 @@ func loadAndCreateProducts(
 		if rowProduct.QuantityAvail != 0 {
 			createStocktakeCmd.TotalQuantity += rowProduct.QuantityAvail
 			// Prepare create stocktake
-			var stocktakeLine = &pbshop.StocktakeLine{
+			var stocktakeLine = &topintshop.StocktakeLine{
 				ProductId:   createVariantCmd.CreateVariantRequest.ProductId,
 				ProductName: rowProduct.ProductName,
 				VariantName: createVariantCmd.CreateVariantRequest.Name,

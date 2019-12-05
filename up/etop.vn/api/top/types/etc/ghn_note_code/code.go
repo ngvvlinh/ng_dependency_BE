@@ -1,7 +1,7 @@
 package ghn_note_code
 
 import (
-	try_on2 "etop.vn/api/pb/etop/etc/try_on"
+	"etop.vn/api/top/types/etc/try_on"
 )
 
 func PbGHNNoteCode(s string) GHNNoteCode {
@@ -19,26 +19,26 @@ func (s *GHNNoteCode) ToModel() string {
 	return GHNNoteCode_name[int(*s)]
 }
 
-func (s GHNNoteCode) ToTryOn() try_on2.TryOnCode {
+func (s GHNNoteCode) ToTryOn() try_on.TryOnCode {
 	switch s {
 	case GHNNoteCode_KHONGCHOXEMHANG:
-		return try_on2.TryOnCode_none
+		return try_on.TryOnCode_none
 	case GHNNoteCode_CHOXEMHANGKHONGTHU:
-		return try_on2.TryOnCode_open
+		return try_on.TryOnCode_open
 	case GHNNoteCode_CHOTHUHANG:
-		return try_on2.TryOnCode_try
+		return try_on.TryOnCode_try
 	default:
 		return 0
 	}
 }
 
-func FromTryOn(code try_on2.TryOnCode) GHNNoteCode {
+func FromTryOn(code try_on.TryOnCode) GHNNoteCode {
 	switch code {
-	case try_on2.TryOnCode_none:
+	case try_on.TryOnCode_none:
 		return GHNNoteCode_KHONGCHOXEMHANG
-	case try_on2.TryOnCode_open:
+	case try_on.TryOnCode_open:
 		return GHNNoteCode_CHOXEMHANGKHONGTHU
-	case try_on2.TryOnCode_try:
+	case try_on.TryOnCode_try:
 		return GHNNoteCode_CHOTHUHANG
 	default:
 		return 0

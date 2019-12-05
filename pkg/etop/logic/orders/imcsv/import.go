@@ -11,11 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/int/types"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
-	"etop.vn/api/pb/etop/etc/ghn_note_code"
-	pborder "etop.vn/api/pb/etop/order"
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -45,7 +46,7 @@ func HandleImportOrders(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*pborder.ImportOrdersResponse)
+	respMsg := resp.(*types.ImportOrdersResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -54,7 +55,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	return nil
 }
 
-func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pborder.ImportOrdersResponse, _err error) {
+func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
 	if cm.NotProd() {
 		var err error
@@ -265,7 +266,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ hotro@etop.vn.")
 	}
 
-	resp := &pborder.ImportOrdersResponse{
+	resp := &types.ImportOrdersResponse{
 		Data:         imp.toSpreadsheetData(idx),
 		Orders:       convertpb.PbOrders(orders, model.TagShop),
 		ImportErrors: cmapi.PbErrors(_errs),

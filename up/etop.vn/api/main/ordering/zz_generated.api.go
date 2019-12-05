@@ -9,7 +9,7 @@ import (
 	time "time"
 
 	etop "etop.vn/api/main/etop"
-	types "etop.vn/api/main/ordering/types"
+	orderingtypes "etop.vn/api/main/ordering/types"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -40,7 +40,7 @@ func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, msg *Re
 
 type ReserveOrdersForFfmCommand struct {
 	OrderIDs   []dot.ID
-	Fulfill    types.Fulfill
+	Fulfill    orderingtypes.Fulfill
 	FulfillIDs []dot.ID
 
 	Result *ReserveOrdersForFfmResponse `json:"-"`

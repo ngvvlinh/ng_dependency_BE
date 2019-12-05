@@ -3,11 +3,12 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
-	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/capi/dot"
@@ -225,7 +226,7 @@ func (s *StocktakeService) GetStocktakesByIDs(ctx context.Context, q *GetStockta
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetStocktakesByIDsResponse{
+	q.Result = &shop.GetStocktakesByIDsResponse{
 		Stocktakes: PbStocktakes(query.Result),
 	}
 	return nil
@@ -251,7 +252,7 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetStocktakesResponse{
+	q.Result = &shop.GetStocktakesResponse{
 		Stocktakes: PbStocktakes(query.Result.Stocktakes),
 		Paging:     cmapi.PbPaging(query.Page, query.Result.Total),
 	}

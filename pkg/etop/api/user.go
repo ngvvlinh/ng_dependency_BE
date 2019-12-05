@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/int/etop"
+
 	"etop.vn/api/main/authorization"
 
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -197,7 +198,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			return err
 		}
 
-		r.Result = &pbetop.RegisterResponse{
+		r.Result = &etop.RegisterResponse{
 			User: convertpb.PbUser(cmd.Result.User),
 		}
 		return nil
@@ -342,8 +343,8 @@ func (s *UserService) publishUserCreatedEvent(
 	return nil
 }
 
-func createRegisterResponse(user *model.User) *pbetop.RegisterResponse {
-	return &pbetop.RegisterResponse{
+func createRegisterResponse(user *model.User) *etop.RegisterResponse {
+	return &etop.RegisterResponse{
 		User: convertpb.PbUser(user),
 	}
 }
@@ -351,7 +352,7 @@ func createRegisterResponse(user *model.User) *pbetop.RegisterResponse {
 func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserRegistrationEndpoint) error {
 	_, ok := validate.NormalizePhone(q.Phone)
 	if !ok {
-		q.Result = &pbetop.GetUserByPhoneResponse{Exists: false}
+		q.Result = &etop.GetUserByPhoneResponse{Exists: false}
 		return nil
 	}
 
@@ -363,10 +364,10 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserReg
 		return err
 	}
 	if err != nil && cm.ErrorCode(err) == cm.NotFound {
-		q.Result = &pbetop.GetUserByPhoneResponse{Exists: false}
+		q.Result = &etop.GetUserByPhoneResponse{Exists: false}
 		return nil
 	}
-	q.Result = &pbetop.GetUserByPhoneResponse{Exists: true}
+	q.Result = &etop.GetUserByPhoneResponse{Exists: true}
 	return nil
 }
 
@@ -393,7 +394,7 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 	return
 }
 
-func (s *UserService) mergeUserByPhoneAndEmail(ctx context.Context, userByPhone, userByEmail model.UserExtended) (*pbetop.RegisterResponse, error) {
+func (s *UserService) mergeUserByPhoneAndEmail(ctx context.Context, userByPhone, userByEmail model.UserExtended) (*etop.RegisterResponse, error) {
 	return nil, cm.ErrTODO
 }
 
@@ -635,12 +636,12 @@ func (s *UserService) SwitchAccount(ctx context.Context, r *SwitchAccountEndpoin
 	return err
 }
 
-func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*pbetop.AccessTokenResponse, error) {
+func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*etop.AccessTokenResponse, error) {
 	resp, err := s.CreateLoginResponse(ctx, claim, token, userID, user, preferAccountID, preferAccountType, false, adminID)
 	if err != nil {
 		return nil, err
 	}
-	return &pbetop.AccessTokenResponse{
+	return &etop.AccessTokenResponse{
 		AccessToken:     resp.AccessToken,
 		ExpiresIn:       resp.ExpiresIn,
 		User:            resp.User,
@@ -652,12 +653,12 @@ func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.C
 	}, nil
 }
 
-func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*pbetop.LoginResponse, error) {
+func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*etop.LoginResponse, error) {
 	resp, _, err := s.CreateLoginResponse2(ctx, claim, token, userID, user, preferAccountID, preferAccountType, generateAllTokens, adminID)
 	return resp, err
 }
 
-func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (_ *pbetop.LoginResponse, respShop *model.Shop, _ error) {
+func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (_ *etop.LoginResponse, respShop *model.Shop, _ error) {
 
 	// Retrieve user info
 	if user != nil && user.ID != userID {
@@ -681,9 +682,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		return nil, nil, cm.Error(cm.InvalidArgument, "Can not set both account_id and account_type", nil)
 	}
 
-	var currentAccount *pbetop.LoginAccount
+	var currentAccount *etop.LoginAccount
 	var currentAccountID dot.ID
-	availableAccounts := make([]*pbetop.LoginAccount, len(accQuery.Result))
+	availableAccounts := make([]*etop.LoginAccount, len(accQuery.Result))
 	for i, accUserX := range accQuery.Result {
 		availableAccounts[i] = convertpb.PbLoginAccount(accUserX)
 		account := accUserX.Account
@@ -697,7 +698,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		}
 	}
 
-	resp := &pbetop.LoginResponse{
+	resp := &etop.LoginResponse{
 		User:              convertpb.PbUser(user),
 		Account:           currentAccount,
 		AvailableAccounts: availableAccounts,

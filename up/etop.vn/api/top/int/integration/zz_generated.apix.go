@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	integration "etop.vn/api/pb/etop/integration"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -54,31 +53,31 @@ func (s *IntegrationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/integration.Integration/GrantAccess":
-		msg := &integration.GrantAccessRequest{}
+		msg := &GrantAccessRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Init":
-		msg := &integration.InitRequest{}
+		msg := &InitRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Init(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingToken":
-		msg := &integration.LoginUsingTokenRequest{}
+		msg := &LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Register":
-		msg := &integration.RegisterRequest{}
+		msg := &RegisterRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/RequestLogin":
-		msg := &integration.RequestLoginRequest{}
+		msg := &RequestLoginRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RequestLogin(ctx, msg)
 		}

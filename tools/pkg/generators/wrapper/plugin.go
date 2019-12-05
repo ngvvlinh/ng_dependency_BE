@@ -9,6 +9,7 @@ import (
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
@@ -18,10 +19,11 @@ var _ generator.Plugin = &plugin{}
 const SuffixService = "Service"
 
 type plugin struct {
+	generator.Qualifier
 }
 
 func New() generator.Plugin {
-	return &plugin{}
+	return &plugin{Qualifier: genutil.Qualifier{}}
 }
 
 func (p *plugin) Name() string { return "wrapper" }

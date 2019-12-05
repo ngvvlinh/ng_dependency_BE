@@ -8,11 +8,10 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	admin "etop.vn/api/pb/etop/admin"
-	order "etop.vn/api/pb/etop/order"
 	api "etop.vn/api/top/int/admin"
+	etop "etop.vn/api/top/int/etop"
+	inttypes "etop.vn/api/top/int/types"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -30,12 +29,12 @@ type wrapAccountService struct {
 }
 
 type CreatePartnerEndpoint struct {
-	*admin.CreatePartnerRequest
+	*api.CreatePartnerRequest
 	Result  *etop.Partner
 	Context claims.AdminClaim
 }
 
-func (s wrapAccountService) CreatePartner(ctx context.Context, req *admin.CreatePartnerRequest) (resp *etop.Partner, err error) {
+func (s wrapAccountService) CreatePartner(ctx context.Context, req *api.CreatePartnerRequest) (resp *etop.Partner, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -75,12 +74,12 @@ func (s wrapAccountService) CreatePartner(ctx context.Context, req *admin.Create
 }
 
 type GenerateAPIKeyEndpoint struct {
-	*admin.GenerateAPIKeyRequest
-	Result  *admin.GenerateAPIKeyResponse
+	*api.GenerateAPIKeyRequest
+	Result  *api.GenerateAPIKeyResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *admin.GenerateAPIKeyRequest) (resp *admin.GenerateAPIKeyResponse, err error) {
+func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.GenerateAPIKeyRequest) (resp *api.GenerateAPIKeyResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -128,12 +127,12 @@ type wrapCreditService struct {
 }
 
 type ConfirmCreditEndpoint struct {
-	*admin.ConfirmCreditRequest
+	*api.ConfirmCreditRequest
 	Result  *cm.UpdatedResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *admin.ConfirmCreditRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *api.ConfirmCreditRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -173,12 +172,12 @@ func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *admin.Confirm
 }
 
 type CreateCreditEndpoint struct {
-	*admin.CreateCreditRequest
+	*api.CreateCreditRequest
 	Result  *etop.Credit
 	Context claims.AdminClaim
 }
 
-func (s wrapCreditService) CreateCredit(ctx context.Context, req *admin.CreateCreditRequest) (resp *etop.Credit, err error) {
+func (s wrapCreditService) CreateCredit(ctx context.Context, req *api.CreateCreditRequest) (resp *etop.Credit, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -263,12 +262,12 @@ func (s wrapCreditService) DeleteCredit(ctx context.Context, req *cm.IDRequest) 
 }
 
 type GetCreditEndpoint struct {
-	*admin.GetCreditRequest
+	*api.GetCreditRequest
 	Result  *etop.Credit
 	Context claims.AdminClaim
 }
 
-func (s wrapCreditService) GetCredit(ctx context.Context, req *admin.GetCreditRequest) (resp *etop.Credit, err error) {
+func (s wrapCreditService) GetCredit(ctx context.Context, req *api.GetCreditRequest) (resp *etop.Credit, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -308,12 +307,12 @@ func (s wrapCreditService) GetCredit(ctx context.Context, req *admin.GetCreditRe
 }
 
 type GetCreditsEndpoint struct {
-	*admin.GetCreditsRequest
+	*api.GetCreditsRequest
 	Result  *etop.CreditsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapCreditService) GetCredits(ctx context.Context, req *admin.GetCreditsRequest) (resp *etop.CreditsResponse, err error) {
+func (s wrapCreditService) GetCredits(ctx context.Context, req *api.GetCreditsRequest) (resp *etop.CreditsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -353,12 +352,12 @@ func (s wrapCreditService) GetCredits(ctx context.Context, req *admin.GetCredits
 }
 
 type UpdateCreditEndpoint struct {
-	*admin.UpdateCreditRequest
+	*api.UpdateCreditRequest
 	Result  *etop.Credit
 	Context claims.AdminClaim
 }
 
-func (s wrapCreditService) UpdateCredit(ctx context.Context, req *admin.UpdateCreditRequest) (resp *etop.Credit, err error) {
+func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCreditRequest) (resp *etop.Credit, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -407,11 +406,11 @@ type wrapFulfillmentService struct {
 
 type GetFulfillmentEndpoint struct {
 	*cm.IDRequest
-	Result  *order.Fulfillment
+	Result  *inttypes.Fulfillment
 	Context claims.AdminClaim
 }
 
-func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.Fulfillment, err error) {
+func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Fulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -451,12 +450,12 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 }
 
 type GetFulfillmentsEndpoint struct {
-	*admin.GetFulfillmentsRequest
-	Result  *order.FulfillmentsResponse
+	*api.GetFulfillmentsRequest
+	Result  *inttypes.FulfillmentsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *admin.GetFulfillmentsRequest) (resp *order.FulfillmentsResponse, err error) {
+func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.GetFulfillmentsRequest) (resp *inttypes.FulfillmentsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -496,12 +495,12 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *admin.
 }
 
 type UpdateFulfillmentEndpoint struct {
-	*admin.UpdateFulfillmentRequest
+	*api.UpdateFulfillmentRequest
 	Result  *cm.UpdatedResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *admin.UpdateFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.UpdateFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -549,12 +548,12 @@ type wrapMiscService struct {
 }
 
 type AdminLoginAsAccountEndpoint struct {
-	*admin.LoginAsAccountRequest
+	*api.LoginAsAccountRequest
 	Result  *etop.LoginResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMiscService) AdminLoginAsAccount(ctx context.Context, req *admin.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
+func (s wrapMiscService) AdminLoginAsAccount(ctx context.Context, req *api.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -632,12 +631,12 @@ type wrapMoneyTransactionService struct {
 }
 
 type ConfirmMoneyTransactionEndpoint struct {
-	*admin.ConfirmMoneyTransactionRequest
+	*api.ConfirmMoneyTransactionRequest
 	Result  *cm.UpdatedResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context, req *admin.ConfirmMoneyTransactionRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context, req *api.ConfirmMoneyTransactionRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -677,12 +676,12 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context
 }
 
 type ConfirmMoneyTransactionShippingEtopEndpoint struct {
-	*admin.ConfirmMoneyTransactionShippingEtopRequest
+	*api.ConfirmMoneyTransactionShippingEtopRequest
 	Result  *cm.UpdatedResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx context.Context, req *admin.ConfirmMoneyTransactionShippingEtopRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx context.Context, req *api.ConfirmMoneyTransactionShippingEtopRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -813,11 +812,11 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ct
 
 type CreateMoneyTransactionShippingEtopEndpoint struct {
 	*cm.IDsRequest
-	Result  *order.MoneyTransactionShippingEtop
+	Result  *inttypes.MoneyTransactionShippingEtop
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx context.Context, req *cm.IDsRequest) (resp *order.MoneyTransactionShippingEtop, err error) {
+func (s wrapMoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx context.Context, req *cm.IDsRequest) (resp *inttypes.MoneyTransactionShippingEtop, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -948,11 +947,11 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx 
 
 type GetMoneyTransactionEndpoint struct {
 	*cm.IDRequest
-	Result  *order.MoneyTransaction
+	Result  *inttypes.MoneyTransaction
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, req *cm.IDRequest) (resp *order.MoneyTransaction, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, req *cm.IDRequest) (resp *inttypes.MoneyTransaction, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -993,11 +992,11 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 
 type GetMoneyTransactionShippingEtopEndpoint struct {
 	*cm.IDRequest
-	Result  *order.MoneyTransactionShippingEtop
+	Result  *inttypes.MoneyTransactionShippingEtop
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Context, req *cm.IDRequest) (resp *order.MoneyTransactionShippingEtop, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Context, req *cm.IDRequest) (resp *inttypes.MoneyTransactionShippingEtop, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1037,12 +1036,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context
 }
 
 type GetMoneyTransactionShippingEtopsEndpoint struct {
-	*admin.GetMoneyTransactionShippingEtopsRequest
-	Result  *order.MoneyTransactionShippingEtopsResponse
+	*api.GetMoneyTransactionShippingEtopsRequest
+	Result  *inttypes.MoneyTransactionShippingEtopsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.Context, req *admin.GetMoneyTransactionShippingEtopsRequest) (resp *order.MoneyTransactionShippingEtopsResponse, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.Context, req *api.GetMoneyTransactionShippingEtopsRequest) (resp *inttypes.MoneyTransactionShippingEtopsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1083,11 +1082,11 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx contex
 
 type GetMoneyTransactionShippingExternalEndpoint struct {
 	*cm.IDRequest
-	Result  *order.MoneyTransactionShippingExternal
+	Result  *inttypes.MoneyTransactionShippingExternal
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx context.Context, req *cm.IDRequest) (resp *order.MoneyTransactionShippingExternal, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx context.Context, req *cm.IDRequest) (resp *inttypes.MoneyTransactionShippingExternal, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1127,12 +1126,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx con
 }
 
 type GetMoneyTransactionShippingExternalsEndpoint struct {
-	*admin.GetMoneyTransactionShippingExternalsRequest
-	Result  *order.MoneyTransactionShippingExternalsResponse
+	*api.GetMoneyTransactionShippingExternalsRequest
+	Result  *inttypes.MoneyTransactionShippingExternalsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx context.Context, req *admin.GetMoneyTransactionShippingExternalsRequest) (resp *order.MoneyTransactionShippingExternalsResponse, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx context.Context, req *api.GetMoneyTransactionShippingExternalsRequest) (resp *inttypes.MoneyTransactionShippingExternalsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1172,12 +1171,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx co
 }
 
 type GetMoneyTransactionsEndpoint struct {
-	*admin.GetMoneyTransactionsRequest
-	Result  *order.MoneyTransactionsResponse
+	*api.GetMoneyTransactionsRequest
+	Result  *inttypes.MoneyTransactionsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, req *admin.GetMoneyTransactionsRequest) (resp *order.MoneyTransactionsResponse, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, req *api.GetMoneyTransactionsRequest) (resp *inttypes.MoneyTransactionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1217,12 +1216,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 }
 
 type RemoveMoneyTransactionShippingExternalLinesEndpoint struct {
-	*admin.RemoveMoneyTransactionShippingExternalLinesRequest
-	Result  *order.MoneyTransactionShippingExternal
+	*api.RemoveMoneyTransactionShippingExternalLinesRequest
+	Result  *inttypes.MoneyTransactionShippingExternal
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines(ctx context.Context, req *admin.RemoveMoneyTransactionShippingExternalLinesRequest) (resp *order.MoneyTransactionShippingExternal, err error) {
+func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines(ctx context.Context, req *api.RemoveMoneyTransactionShippingExternalLinesRequest) (resp *inttypes.MoneyTransactionShippingExternal, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1262,12 +1261,12 @@ func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines
 }
 
 type UpdateMoneyTransactionEndpoint struct {
-	*admin.UpdateMoneyTransactionRequest
-	Result  *order.MoneyTransaction
+	*api.UpdateMoneyTransactionRequest
+	Result  *inttypes.MoneyTransaction
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context, req *admin.UpdateMoneyTransactionRequest) (resp *order.MoneyTransaction, err error) {
+func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context, req *api.UpdateMoneyTransactionRequest) (resp *inttypes.MoneyTransaction, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1307,12 +1306,12 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context,
 }
 
 type UpdateMoneyTransactionShippingEtopEndpoint struct {
-	*admin.UpdateMoneyTransactionShippingEtopRequest
-	Result  *order.MoneyTransactionShippingEtop
+	*api.UpdateMoneyTransactionShippingEtopRequest
+	Result  *inttypes.MoneyTransactionShippingEtop
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx context.Context, req *admin.UpdateMoneyTransactionShippingEtopRequest) (resp *order.MoneyTransactionShippingEtop, err error) {
+func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx context.Context, req *api.UpdateMoneyTransactionShippingEtopRequest) (resp *inttypes.MoneyTransactionShippingEtop, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1352,12 +1351,12 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx cont
 }
 
 type UpdateMoneyTransactionShippingExternalEndpoint struct {
-	*admin.UpdateMoneyTransactionShippingExternalRequest
-	Result  *order.MoneyTransactionShippingExternal
+	*api.UpdateMoneyTransactionShippingExternalRequest
+	Result  *inttypes.MoneyTransactionShippingExternal
 	Context claims.AdminClaim
 }
 
-func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx context.Context, req *admin.UpdateMoneyTransactionShippingExternalRequest) (resp *order.MoneyTransactionShippingExternal, err error) {
+func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx context.Context, req *api.UpdateMoneyTransactionShippingExternalRequest) (resp *inttypes.MoneyTransactionShippingExternal, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1405,12 +1404,12 @@ type wrapNotificationService struct {
 }
 
 type CreateNotificationsEndpoint struct {
-	*admin.CreateNotificationsRequest
-	Result  *admin.CreateNotificationsResponse
+	*api.CreateNotificationsRequest
+	Result  *api.CreateNotificationsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *admin.CreateNotificationsRequest) (resp *admin.CreateNotificationsResponse, err error) {
+func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *api.CreateNotificationsRequest) (resp *api.CreateNotificationsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1459,11 +1458,11 @@ type wrapOrderService struct {
 
 type GetOrderEndpoint struct {
 	*cm.IDRequest
-	Result  *order.Order
+	Result  *inttypes.Order
 	Context claims.AdminClaim
 }
 
-func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *order.Order, err error) {
+func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1503,12 +1502,12 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 }
 
 type GetOrdersEndpoint struct {
-	*admin.GetOrdersRequest
-	Result  *order.OrdersResponse
+	*api.GetOrdersRequest
+	Result  *inttypes.OrdersResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapOrderService) GetOrders(ctx context.Context, req *admin.GetOrdersRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1549,11 +1548,11 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *admin.GetOrdersReq
 
 type GetOrdersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *order.OrdersResponse
+	Result  *inttypes.OrdersResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1646,12 +1645,12 @@ func (s wrapShopService) GetShop(ctx context.Context, req *cm.IDRequest) (resp *
 }
 
 type GetShopsEndpoint struct {
-	*admin.GetShopsRequest
-	Result  *admin.GetShopsResponse
+	*api.GetShopsRequest
+	Result  *api.GetShopsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapShopService) GetShops(ctx context.Context, req *admin.GetShopsRequest) (resp *admin.GetShopsResponse, err error) {
+func (s wrapShopService) GetShops(ctx context.Context, req *api.GetShopsRequest) (resp *api.GetShopsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

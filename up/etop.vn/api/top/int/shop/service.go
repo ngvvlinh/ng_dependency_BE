@@ -3,10 +3,9 @@ package shop
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	"etop.vn/api/pb/etop"
-	"etop.vn/api/pb/etop/order"
-	shop "etop.vn/api/pb/etop/shop"
+	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -19,98 +18,98 @@ type MiscService interface {
 
 // +apix:path=/shop.Brand
 type BrandService interface {
-	CreateBrand(context.Context, *shop.CreateBrandRequest) (*shop.Brand, error)
-	UpdateBrandInfo(context.Context, *shop.UpdateBrandRequest) (*shop.Brand, error)
-	DeleteBrand(context.Context, *cm.IDsRequest) (*shop.DeleteBrandResponse, error)
+	CreateBrand(context.Context, *CreateBrandRequest) (*Brand, error)
+	UpdateBrandInfo(context.Context, *UpdateBrandRequest) (*Brand, error)
+	DeleteBrand(context.Context, *cm.IDsRequest) (*DeleteBrandResponse, error)
 
-	GetBrandByID(context.Context, *cm.IDRequest) (*shop.Brand, error)
-	GetBrandsByIDs(context.Context, *cm.IDsRequest) (*shop.GetBrandsByIDsResponse, error)
-	GetBrands(context.Context, *shop.GetBrandsRequest) (*shop.GetBrandsResponse, error)
+	GetBrandByID(context.Context, *cm.IDRequest) (*Brand, error)
+	GetBrandsByIDs(context.Context, *cm.IDsRequest) (*GetBrandsByIDsResponse, error)
+	GetBrands(context.Context, *GetBrandsRequest) (*GetBrandsResponse, error)
 }
 
 // +apix:path=/shop.Inventory
 type InventoryService interface {
-	CreateInventoryVoucher(context.Context, *shop.CreateInventoryVoucherRequest) (*shop.CreateInventoryVoucherResponse, error)
-	ConfirmInventoryVoucher(context.Context, *shop.ConfirmInventoryVoucherRequest) (*shop.ConfirmInventoryVoucherResponse, error)
-	CancelInventoryVoucher(context.Context, *shop.CancelInventoryVoucherRequest) (*shop.CancelInventoryVoucherResponse, error)
-	UpdateInventoryVoucher(context.Context, *shop.UpdateInventoryVoucherRequest) (*shop.UpdateInventoryVoucherResponse, error)
-	AdjustInventoryQuantity(context.Context, *shop.AdjustInventoryQuantityRequest) (*shop.AdjustInventoryQuantityResponse, error)
-	UpdateInventoryVariantCostPrice(context.Context, *shop.UpdateInventoryVariantCostPriceRequest) (*shop.UpdateInventoryVariantCostPriceResponse, error)
+	CreateInventoryVoucher(context.Context, *CreateInventoryVoucherRequest) (*CreateInventoryVoucherResponse, error)
+	ConfirmInventoryVoucher(context.Context, *ConfirmInventoryVoucherRequest) (*ConfirmInventoryVoucherResponse, error)
+	CancelInventoryVoucher(context.Context, *CancelInventoryVoucherRequest) (*CancelInventoryVoucherResponse, error)
+	UpdateInventoryVoucher(context.Context, *UpdateInventoryVoucherRequest) (*UpdateInventoryVoucherResponse, error)
+	AdjustInventoryQuantity(context.Context, *AdjustInventoryQuantityRequest) (*AdjustInventoryQuantityResponse, error)
+	UpdateInventoryVariantCostPrice(context.Context, *UpdateInventoryVariantCostPriceRequest) (*UpdateInventoryVariantCostPriceResponse, error)
 
-	GetInventoryVariant(context.Context, *shop.GetInventoryVariantRequest) (*shop.InventoryVariant, error)
-	GetInventoryVariants(context.Context, *shop.GetInventoryVariantsRequest) (*shop.GetInventoryVariantsResponse, error)
-	GetInventoryVariantsByVariantIDs(context.Context, *shop.GetInventoryVariantsByVariantIDsRequest) (*shop.GetInventoryVariantsResponse, error)
-	GetInventoryVouchersByReference(context.Context, *shop.GetInventoryVouchersByReferenceRequest) (*shop.GetInventoryVouchersByReferenceResponse, error)
-	GetInventoryVoucher(context.Context, *cm.IDRequest) (*shop.InventoryVoucher, error)
-	GetInventoryVouchers(context.Context, *shop.GetInventoryVouchersRequest) (*shop.GetInventoryVouchersResponse, error)
-	GetInventoryVouchersByIDs(context.Context, *shop.GetInventoryVouchersByIDsRequest) (*shop.GetInventoryVouchersResponse, error)
+	GetInventoryVariant(context.Context, *GetInventoryVariantRequest) (*InventoryVariant, error)
+	GetInventoryVariants(context.Context, *GetInventoryVariantsRequest) (*GetInventoryVariantsResponse, error)
+	GetInventoryVariantsByVariantIDs(context.Context, *GetInventoryVariantsByVariantIDsRequest) (*GetInventoryVariantsResponse, error)
+	GetInventoryVouchersByReference(context.Context, *GetInventoryVouchersByReferenceRequest) (*GetInventoryVouchersByReferenceResponse, error)
+	GetInventoryVoucher(context.Context, *cm.IDRequest) (*InventoryVoucher, error)
+	GetInventoryVouchers(context.Context, *GetInventoryVouchersRequest) (*GetInventoryVouchersResponse, error)
+	GetInventoryVouchersByIDs(context.Context, *GetInventoryVouchersByIDsRequest) (*GetInventoryVouchersResponse, error)
 }
 
 // +apix:path=/shop.Account
 type AccountService interface {
-	RegisterShop(context.Context, *shop.RegisterShopRequest) (*shop.RegisterShopResponse, error)
-	UpdateShop(context.Context, *shop.UpdateShopRequest) (*shop.UpdateShopResponse, error)
+	RegisterShop(context.Context, *RegisterShopRequest) (*RegisterShopResponse, error)
+	UpdateShop(context.Context, *UpdateShopRequest) (*UpdateShopResponse, error)
 	DeleteShop(context.Context, *cm.IDRequest) (*cm.Empty, error)
 	SetDefaultAddress(context.Context, *etop.SetDefaultAddressRequest) (*cm.UpdatedResponse, error)
-	GetBalanceShop(context.Context, *cm.Empty) (*shop.GetBalanceShopResponse, error)
+	GetBalanceShop(context.Context, *cm.Empty) (*GetBalanceShopResponse, error)
 
-	CreateExternalAccountAhamove(context.Context, *cm.Empty) (*shop.ExternalAccountAhamove, error)
-	GetExternalAccountAhamove(context.Context, *cm.Empty) (*shop.ExternalAccountAhamove, error)
+	CreateExternalAccountAhamove(context.Context, *cm.Empty) (*ExternalAccountAhamove, error)
+	GetExternalAccountAhamove(context.Context, *cm.Empty) (*ExternalAccountAhamove, error)
 	RequestVerifyExternalAccountAhamove(context.Context, *cm.Empty) (*cm.UpdatedResponse, error)
-	UpdateExternalAccountAhamoveVerification(context.Context, *shop.UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
+	UpdateExternalAccountAhamoveVerification(context.Context, *UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
 
 	// deprecated: backward-compatible, will be removed later
-	UpdateExternalAccountAhamoveVerificationImages(context.Context, *shop.UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
+	UpdateExternalAccountAhamoveVerificationImages(context.Context, *UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.ExternalAccount
 type ExternalAccountService interface {
-	GetExternalAccountHaravan(context.Context, *cm.Empty) (*shop.ExternalAccountHaravan, error)
-	CreateExternalAccountHaravan(context.Context, *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error)
-	UpdateExternalAccountHaravanToken(context.Context, *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error)
+	GetExternalAccountHaravan(context.Context, *cm.Empty) (*ExternalAccountHaravan, error)
+	CreateExternalAccountHaravan(context.Context, *ExternalAccountHaravanRequest) (*ExternalAccountHaravan, error)
+	UpdateExternalAccountHaravanToken(context.Context, *ExternalAccountHaravanRequest) (*ExternalAccountHaravan, error)
 	ConnectCarrierServiceExternalAccountHaravan(context.Context, *cm.Empty) (*cm.UpdatedResponse, error)
 	DeleteConnectedCarrierServiceExternalAccountHaravan(context.Context, *cm.Empty) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.Collection
 type CollectionService interface {
-	CreateCollection(context.Context, *shop.CreateCollectionRequest) (*shop.ShopCollection, error)
-	GetCollection(context.Context, *cm.IDRequest) (*shop.ShopCollection, error)
-	GetCollections(context.Context, *shop.GetCollectionsRequest) (*shop.ShopCollectionsResponse, error)
-	UpdateCollection(context.Context, *shop.UpdateCollectionRequest) (*shop.ShopCollection, error)
-	GetCollectionsByProductID(context.Context, *shop.GetShopCollectionsByProductIDRequest) (*shop.CollectionsResponse, error)
+	CreateCollection(context.Context, *CreateCollectionRequest) (*ShopCollection, error)
+	GetCollection(context.Context, *cm.IDRequest) (*ShopCollection, error)
+	GetCollections(context.Context, *GetCollectionsRequest) (*ShopCollectionsResponse, error)
+	UpdateCollection(context.Context, *UpdateCollectionRequest) (*ShopCollection, error)
+	GetCollectionsByProductID(context.Context, *GetShopCollectionsByProductIDRequest) (*CollectionsResponse, error)
 }
 
 // +apix:path=/shop.Customer
 type CustomerService interface {
-	CreateCustomer(context.Context, *shop.CreateCustomerRequest) (*shop.Customer, error)
-	UpdateCustomer(context.Context, *shop.UpdateCustomerRequest) (*shop.Customer, error)
+	CreateCustomer(context.Context, *CreateCustomerRequest) (*Customer, error)
+	UpdateCustomer(context.Context, *UpdateCustomerRequest) (*Customer, error)
 	DeleteCustomer(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
-	GetCustomer(context.Context, *cm.IDRequest) (*shop.Customer, error)
-	GetCustomerDetails(context.Context, *cm.IDRequest) (*shop.CustomerDetailsResponse, error)
-	GetCustomers(context.Context, *shop.GetCustomersRequest) (*shop.CustomersResponse, error)
-	GetCustomersByIDs(context.Context, *cm.IDsRequest) (*shop.CustomersResponse, error)
-	BatchSetCustomersStatus(context.Context, *shop.SetCustomersStatusRequest) (*cm.UpdatedResponse, error)
+	GetCustomer(context.Context, *cm.IDRequest) (*Customer, error)
+	GetCustomerDetails(context.Context, *cm.IDRequest) (*CustomerDetailsResponse, error)
+	GetCustomers(context.Context, *GetCustomersRequest) (*CustomersResponse, error)
+	GetCustomersByIDs(context.Context, *cm.IDsRequest) (*CustomersResponse, error)
+	BatchSetCustomersStatus(context.Context, *SetCustomersStatusRequest) (*cm.UpdatedResponse, error)
 
 	//-- address --//
 
-	GetCustomerAddresses(context.Context, *shop.GetCustomerAddressesRequest) (*shop.CustomerAddressesResponse, error)
-	CreateCustomerAddress(context.Context, *shop.CreateCustomerAddressRequest) (*shop.CustomerAddress, error)
-	UpdateCustomerAddress(context.Context, *shop.UpdateCustomerAddressRequest) (*shop.CustomerAddress, error)
+	GetCustomerAddresses(context.Context, *GetCustomerAddressesRequest) (*CustomerAddressesResponse, error)
+	CreateCustomerAddress(context.Context, *CreateCustomerAddressRequest) (*CustomerAddress, error)
+	UpdateCustomerAddress(context.Context, *UpdateCustomerAddressRequest) (*CustomerAddress, error)
 	SetDefaultCustomerAddress(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	DeleteCustomerAddress(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 
 	//-- group --//
-	AddCustomersToGroup(context.Context, *shop.AddCustomerToGroupRequest) (*cm.UpdatedResponse, error)
-	RemoveCustomersFromGroup(context.Context, *shop.RemoveCustomerOutOfGroupRequest) (*cm.RemovedResponse, error)
+	AddCustomersToGroup(context.Context, *AddCustomerToGroupRequest) (*cm.UpdatedResponse, error)
+	RemoveCustomersFromGroup(context.Context, *RemoveCustomerOutOfGroupRequest) (*cm.RemovedResponse, error)
 }
 
 // +apix:path=/shop.CustomerGroup
 type CustomerGroupService interface {
-	CreateCustomerGroup(context.Context, *shop.CreateCustomerGroupRequest) (*shop.CustomerGroup, error)
-	GetCustomerGroup(context.Context, *cm.IDRequest) (*shop.CustomerGroup, error)
-	GetCustomerGroups(context.Context, *shop.GetCustomerGroupsRequest) (*shop.CustomerGroupsResponse, error)
-	UpdateCustomerGroup(context.Context, *shop.UpdateCustomerGroupRequest) (*shop.CustomerGroup, error)
+	CreateCustomerGroup(context.Context, *CreateCustomerGroupRequest) (*CustomerGroup, error)
+	GetCustomerGroup(context.Context, *cm.IDRequest) (*CustomerGroup, error)
+	GetCustomerGroups(context.Context, *GetCustomerGroupsRequest) (*CustomerGroupsResponse, error)
+	UpdateCustomerGroup(context.Context, *UpdateCustomerGroupRequest) (*CustomerGroup, error)
 }
 
 // +apix:path=/shop.Product
@@ -118,127 +117,127 @@ type ProductService interface {
 
 	//-- product --//
 
-	GetProduct(context.Context, *cm.IDRequest) (*shop.ShopProduct, error)
-	GetProducts(context.Context, *shop.GetVariantsRequest) (*shop.ShopProductsResponse, error)
-	GetProductsByIDs(context.Context, *cm.IDsRequest) (*shop.ShopProductsResponse, error)
+	GetProduct(context.Context, *cm.IDRequest) (*ShopProduct, error)
+	GetProducts(context.Context, *GetVariantsRequest) (*ShopProductsResponse, error)
+	GetProductsByIDs(context.Context, *cm.IDsRequest) (*ShopProductsResponse, error)
 
-	CreateProduct(context.Context, *shop.CreateProductRequest) (*shop.ShopProduct, error)
-	UpdateProduct(context.Context, *shop.UpdateProductRequest) (*shop.ShopProduct, error)
-	UpdateProductsStatus(context.Context, *shop.UpdateProductStatusRequest) (*shop.UpdateProductStatusResponse, error)
-	UpdateProductsTags(context.Context, *shop.UpdateProductsTagsRequest) (*cm.UpdatedResponse, error)
-	UpdateProductImages(context.Context, *shop.UpdateVariantImagesRequest) (*shop.ShopProduct, error)
-	UpdateProductMetaFields(context.Context, *shop.UpdateProductMetaFieldsRequest) (*shop.ShopProduct, error)
-	RemoveProducts(context.Context, *shop.RemoveVariantsRequest) (*cm.RemovedResponse, error)
+	CreateProduct(context.Context, *CreateProductRequest) (*ShopProduct, error)
+	UpdateProduct(context.Context, *UpdateProductRequest) (*ShopProduct, error)
+	UpdateProductsStatus(context.Context, *UpdateProductStatusRequest) (*UpdateProductStatusResponse, error)
+	UpdateProductsTags(context.Context, *UpdateProductsTagsRequest) (*cm.UpdatedResponse, error)
+	UpdateProductImages(context.Context, *UpdateVariantImagesRequest) (*ShopProduct, error)
+	UpdateProductMetaFields(context.Context, *UpdateProductMetaFieldsRequest) (*ShopProduct, error)
+	RemoveProducts(context.Context, *RemoveVariantsRequest) (*cm.RemovedResponse, error)
 	//-- variant --//
 
-	GetVariant(context.Context, *cm.IDRequest) (*shop.ShopVariant, error)
-	GetVariantsByIDs(context.Context, *cm.IDsRequest) (*shop.ShopVariantsResponse, error)
+	GetVariant(context.Context, *cm.IDRequest) (*ShopVariant, error)
+	GetVariantsByIDs(context.Context, *cm.IDsRequest) (*ShopVariantsResponse, error)
 
-	CreateVariant(context.Context, *shop.CreateVariantRequest) (*shop.ShopVariant, error)
-	UpdateVariant(context.Context, *shop.UpdateVariantRequest) (*shop.ShopVariant, error)
-	UpdateVariantImages(context.Context, *shop.UpdateVariantImagesRequest) (*shop.ShopVariant, error)
-	UpdateVariantsStatus(context.Context, *shop.UpdateProductStatusRequest) (*shop.UpdateProductStatusResponse, error)
-	UpdateVariantAttributes(context.Context, *shop.UpdateVariantAttributesRequest) (*shop.ShopVariant, error)
-	RemoveVariants(context.Context, *shop.RemoveVariantsRequest) (*cm.RemovedResponse, error)
-	GetVariantsBySupplierID(context.Context, *shop.GetVariantsBySupplierIDRequest) (*shop.ShopVariantsResponse, error)
+	CreateVariant(context.Context, *CreateVariantRequest) (*ShopVariant, error)
+	UpdateVariant(context.Context, *UpdateVariantRequest) (*ShopVariant, error)
+	UpdateVariantImages(context.Context, *UpdateVariantImagesRequest) (*ShopVariant, error)
+	UpdateVariantsStatus(context.Context, *UpdateProductStatusRequest) (*UpdateProductStatusResponse, error)
+	UpdateVariantAttributes(context.Context, *UpdateVariantAttributesRequest) (*ShopVariant, error)
+	RemoveVariants(context.Context, *RemoveVariantsRequest) (*cm.RemovedResponse, error)
+	GetVariantsBySupplierID(context.Context, *GetVariantsBySupplierIDRequest) (*ShopVariantsResponse, error)
 	//-- category --//
-	UpdateProductCategory(context.Context, *shop.UpdateProductCategoryRequest) (*shop.ShopProduct, error)
-	RemoveProductCategory(context.Context, *cm.IDRequest) (*shop.ShopProduct, error)
+	UpdateProductCategory(context.Context, *UpdateProductCategoryRequest) (*ShopProduct, error)
+	RemoveProductCategory(context.Context, *cm.IDRequest) (*ShopProduct, error)
 
 	//-- collection --//
-	AddProductCollection(context.Context, *shop.AddShopProductCollectionRequest) (*cm.UpdatedResponse, error)
-	RemoveProductCollection(context.Context, *shop.RemoveShopProductCollectionRequest) (*cm.RemovedResponse, error)
+	AddProductCollection(context.Context, *AddShopProductCollectionRequest) (*cm.UpdatedResponse, error)
+	RemoveProductCollection(context.Context, *RemoveShopProductCollectionRequest) (*cm.RemovedResponse, error)
 }
 
 // +apix:path=/shop.Category
 type CategoryService interface {
-	CreateCategory(context.Context, *shop.CreateCategoryRequest) (*shop.ShopCategory, error)
-	GetCategory(context.Context, *cm.IDRequest) (*shop.ShopCategory, error)
-	GetCategories(context.Context, *shop.GetCategoriesRequest) (*shop.ShopCategoriesResponse, error)
-	UpdateCategory(context.Context, *shop.UpdateCategoryRequest) (*shop.ShopCategory, error)
+	CreateCategory(context.Context, *CreateCategoryRequest) (*ShopCategory, error)
+	GetCategory(context.Context, *cm.IDRequest) (*ShopCategory, error)
+	GetCategories(context.Context, *GetCategoriesRequest) (*ShopCategoriesResponse, error)
+	UpdateCategory(context.Context, *UpdateCategoryRequest) (*ShopCategory, error)
 	DeleteCategory(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.ProductSource
 // deprecated: 2018.07.31+14
 type ProductSourceService interface {
-	CreateProductSource(context.Context, *shop.CreateProductSourceRequest) (*shop.ProductSource, error)
-	GetShopProductSources(context.Context, *cm.Empty) (*shop.ProductSourcesResponse, error)
+	CreateProductSource(context.Context, *CreateProductSourceRequest) (*ProductSource, error)
+	GetShopProductSources(context.Context, *cm.Empty) (*ProductSourcesResponse, error)
 	// deprecated: use shop.Product/CreateVariant instead
-	CreateVariant(context.Context, *shop.DeprecatedCreateVariantRequest) (*shop.ShopProduct, error)
-	CreateProductSourceCategory(context.Context, *shop.CreatePSCategoryRequest) (*shop.Category, error)
-	UpdateProductsPSCategory(context.Context, *shop.UpdateProductsPSCategoryRequest) (*cm.UpdatedResponse, error)
-	GetProductSourceCategory(context.Context, *cm.IDRequest) (*shop.Category, error)
-	GetProductSourceCategories(context.Context, *shop.GetProductSourceCategoriesRequest) (*shop.CategoriesResponse, error)
-	UpdateProductSourceCategory(context.Context, *shop.UpdateProductSourceCategoryRequest) (*shop.Category, error)
+	CreateVariant(context.Context, *DeprecatedCreateVariantRequest) (*ShopProduct, error)
+	CreateProductSourceCategory(context.Context, *CreatePSCategoryRequest) (*Category, error)
+	UpdateProductsPSCategory(context.Context, *UpdateProductsPSCategoryRequest) (*cm.UpdatedResponse, error)
+	GetProductSourceCategory(context.Context, *cm.IDRequest) (*Category, error)
+	GetProductSourceCategories(context.Context, *GetProductSourceCategoriesRequest) (*CategoriesResponse, error)
+	UpdateProductSourceCategory(context.Context, *UpdateProductSourceCategoryRequest) (*Category, error)
 	RemoveProductSourceCategory(context.Context, *cm.IDRequest) (*cm.RemovedResponse, error)
 }
 
 // +apix:path=/shop.Order
 type OrderService interface {
-	CreateOrder(context.Context, *order.CreateOrderRequest) (*order.Order, error)
-	GetOrder(context.Context, *cm.IDRequest) (*order.Order, error)
-	GetOrders(context.Context, *shop.GetOrdersRequest) (*order.OrdersResponse, error)
-	GetOrdersByIDs(context.Context, *etop.IDsRequest) (*order.OrdersResponse, error)
-	GetOrdersByReceiptID(context.Context, *shop.GetOrdersByReceiptIDRequest) (*order.OrdersResponse, error)
-	UpdateOrder(context.Context, *order.UpdateOrderRequest) (*order.Order, error)
+	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.Order, error)
+	GetOrder(context.Context, *cm.IDRequest) (*types.Order, error)
+	GetOrders(context.Context, *GetOrdersRequest) (*types.OrdersResponse, error)
+	GetOrdersByIDs(context.Context, *etop.IDsRequest) (*types.OrdersResponse, error)
+	GetOrdersByReceiptID(context.Context, *GetOrdersByReceiptIDRequest) (*types.OrdersResponse, error)
+	UpdateOrder(context.Context, *types.UpdateOrderRequest) (*types.Order, error)
 
 	// @deprecated
-	UpdateOrdersStatus(context.Context, *shop.UpdateOrdersStatusRequest) (*cm.UpdatedResponse, error)
+	UpdateOrdersStatus(context.Context, *UpdateOrdersStatusRequest) (*cm.UpdatedResponse, error)
 
-	ConfirmOrder(context.Context, *shop.ConfirmOrderRequest) (*order.Order, error)
-	ConfirmOrderAndCreateFulfillments(context.Context, *shop.OrderIDRequest) (*order.OrderWithErrorsResponse, error)
-	CancelOrder(context.Context, *shop.CancelOrderRequest) (*order.OrderWithErrorsResponse, error)
-	UpdateOrderPaymentStatus(context.Context, *shop.UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error)
-	UpdateOrderShippingInfo(context.Context, *shop.UpdateOrderShippingInfoRequest) (*cm.UpdatedResponse, error)
+	ConfirmOrder(context.Context, *ConfirmOrderRequest) (*types.Order, error)
+	ConfirmOrderAndCreateFulfillments(context.Context, *OrderIDRequest) (*types.OrderWithErrorsResponse, error)
+	CancelOrder(context.Context, *CancelOrderRequest) (*types.OrderWithErrorsResponse, error)
+	UpdateOrderPaymentStatus(context.Context, *UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error)
+	UpdateOrderShippingInfo(context.Context, *UpdateOrderShippingInfoRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Fulfillment
 type FulfillmentService interface {
-	GetFulfillment(context.Context, *cm.IDRequest) (*order.Fulfillment, error)
-	GetFulfillments(context.Context, *shop.GetFulfillmentsRequest) (*order.FulfillmentsResponse, error)
+	GetFulfillment(context.Context, *cm.IDRequest) (*types.Fulfillment, error)
+	GetFulfillments(context.Context, *GetFulfillmentsRequest) (*types.FulfillmentsResponse, error)
 
-	GetPublicExternalShippingServices(context.Context, *order.GetExternalShippingServicesRequest) (*order.GetExternalShippingServicesResponse, error)
-	GetExternalShippingServices(context.Context, *order.GetExternalShippingServicesRequest) (*order.GetExternalShippingServicesResponse, error)
-	GetPublicFulfillment(context.Context, *shop.GetPublicFulfillmentRequest) (*order.PublicFulfillment, error)
-	UpdateFulfillmentsShippingState(context.Context, *shop.UpdateFulfillmentsShippingStateRequest) (*cm.UpdatedResponse, error)
+	GetPublicExternalShippingServices(context.Context, *types.GetExternalShippingServicesRequest) (*types.GetExternalShippingServicesResponse, error)
+	GetExternalShippingServices(context.Context, *types.GetExternalShippingServicesRequest) (*types.GetExternalShippingServicesResponse, error)
+	GetPublicFulfillment(context.Context, *GetPublicFulfillmentRequest) (*types.PublicFulfillment, error)
+	UpdateFulfillmentsShippingState(context.Context, *UpdateFulfillmentsShippingStateRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Shipnow
 type ShipnowService interface {
-	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*order.ShipnowFulfillment, error)
-	GetShipnowFulfillments(context.Context, *order.GetShipnowFulfillmentsRequest) (*order.ShipnowFulfillments, error)
+	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*types.ShipnowFulfillment, error)
+	GetShipnowFulfillments(context.Context, *types.GetShipnowFulfillmentsRequest) (*types.ShipnowFulfillments, error)
 
-	CreateShipnowFulfillment(context.Context, *order.CreateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error)
-	ConfirmShipnowFulfillment(context.Context, *cm.IDRequest) (*order.ShipnowFulfillment, error)
-	UpdateShipnowFulfillment(context.Context, *order.UpdateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error)
-	CancelShipnowFulfillment(context.Context, *order.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)
+	CreateShipnowFulfillment(context.Context, *types.CreateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
+	ConfirmShipnowFulfillment(context.Context, *cm.IDRequest) (*types.ShipnowFulfillment, error)
+	UpdateShipnowFulfillment(context.Context, *types.UpdateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
+	CancelShipnowFulfillment(context.Context, *types.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)
 
-	GetShipnowServices(context.Context, *order.GetShipnowServicesRequest) (*order.GetShipnowServicesResponse, error)
+	GetShipnowServices(context.Context, *types.GetShipnowServicesRequest) (*types.GetShipnowServicesResponse, error)
 }
 
 // +apix:path=/shop.History
 type HistoryService interface {
-	GetFulfillmentHistory(context.Context, *shop.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error)
+	GetFulfillmentHistory(context.Context, *GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error)
 }
 
 // +apix:path=/shop.MoneyTransaction
 type MoneyTransactionService interface {
-	GetMoneyTransaction(context.Context, *cm.IDRequest) (*order.MoneyTransaction, error)
-	GetMoneyTransactions(context.Context, *shop.GetMoneyTransactionsRequest) (*order.MoneyTransactionsResponse, error)
+	GetMoneyTransaction(context.Context, *cm.IDRequest) (*types.MoneyTransaction, error)
+	GetMoneyTransactions(context.Context, *GetMoneyTransactionsRequest) (*types.MoneyTransactionsResponse, error)
 }
 
 // +apix:path=/shop.Summary
 type SummaryService interface {
-	SummarizeFulfillments(context.Context, *shop.SummarizeFulfillmentsRequest) (*shop.SummarizeFulfillmentsResponse, error)
-	SummarizePOS(context.Context, *shop.SummarizePOSRequest) (*shop.SummarizePOSResponse, error)
-	CalcBalanceShop(context.Context, *cm.Empty) (*shop.CalcBalanceShopResponse, error)
+	SummarizeFulfillments(context.Context, *SummarizeFulfillmentsRequest) (*SummarizeFulfillmentsResponse, error)
+	SummarizePOS(context.Context, *SummarizePOSRequest) (*SummarizePOSResponse, error)
+	CalcBalanceShop(context.Context, *cm.Empty) (*CalcBalanceShopResponse, error)
 }
 
 // +apix:path=/shop.Export
 type ExportService interface {
-	GetExports(context.Context, *shop.GetExportsRequest) (*shop.GetExportsResponse, error)
-	RequestExport(context.Context, *shop.RequestExportRequest) (*shop.RequestExportResponse, error)
+	GetExports(context.Context, *GetExportsRequest) (*GetExportsResponse, error)
+	RequestExport(context.Context, *RequestExportRequest) (*RequestExportResponse, error)
 }
 
 // +apix:path=/shop.Notification
@@ -253,89 +252,89 @@ type NotificationService interface {
 
 // +apix:path=/shop.Authorize
 type AuthorizeService interface {
-	GetAuthorizedPartners(context.Context, *cm.Empty) (*shop.GetAuthorizedPartnersResponse, error)
-	GetAvailablePartners(context.Context, *cm.Empty) (*shop.GetPartnersResponse, error)
-	AuthorizePartner(context.Context, *shop.AuthorizePartnerRequest) (*shop.AuthorizedPartnerResponse, error)
+	GetAuthorizedPartners(context.Context, *cm.Empty) (*GetAuthorizedPartnersResponse, error)
+	GetAvailablePartners(context.Context, *cm.Empty) (*GetPartnersResponse, error)
+	AuthorizePartner(context.Context, *AuthorizePartnerRequest) (*AuthorizedPartnerResponse, error)
 }
 
 // +apix:path=/shop.Trading
 type TradingService interface {
-	TradingGetProduct(context.Context, *cm.IDRequest) (*shop.ShopProduct, error)
-	TradingGetProducts(context.Context, *cm.CommonListRequest) (*shop.ShopProductsResponse, error)
+	TradingGetProduct(context.Context, *cm.IDRequest) (*ShopProduct, error)
+	TradingGetProducts(context.Context, *cm.CommonListRequest) (*ShopProductsResponse, error)
 
-	TradingCreateOrder(context.Context, *order.TradingCreateOrderRequest) (*order.Order, error)
-	TradingGetOrder(context.Context, *cm.IDRequest) (*order.Order, error)
-	TradingGetOrders(context.Context, *shop.GetOrdersRequest) (*order.OrdersResponse, error)
+	TradingCreateOrder(context.Context, *types.TradingCreateOrderRequest) (*types.Order, error)
+	TradingGetOrder(context.Context, *cm.IDRequest) (*types.Order, error)
+	TradingGetOrders(context.Context, *GetOrdersRequest) (*types.OrdersResponse, error)
 }
 
 // +apix:path=/shop.Payment
 type PaymentService interface {
-	PaymentTradingOrder(context.Context, *shop.PaymentTradingOrderRequest) (*shop.PaymentTradingOrderResponse, error)
-	PaymentCheckReturnData(context.Context, *shop.PaymentCheckReturnDataRequest) (*cm.MessageResponse, error)
+	PaymentTradingOrder(context.Context, *PaymentTradingOrderRequest) (*PaymentTradingOrderResponse, error)
+	PaymentCheckReturnData(context.Context, *PaymentCheckReturnDataRequest) (*cm.MessageResponse, error)
 }
 
 // +apix:path=/shop.Receipt
 type ReceiptService interface {
-	CreateReceipt(context.Context, *shop.CreateReceiptRequest) (*shop.Receipt, error)
-	UpdateReceipt(context.Context, *shop.UpdateReceiptRequest) (*shop.Receipt, error)
-	GetReceipt(context.Context, *cm.IDRequest) (*shop.Receipt, error)
-	GetReceipts(context.Context, *shop.GetReceiptsRequest) (*shop.ReceiptsResponse, error)
-	GetReceiptsByLedgerType(context.Context, *shop.GetReceiptsByLedgerTypeRequest) (*shop.ReceiptsResponse, error)
+	CreateReceipt(context.Context, *CreateReceiptRequest) (*Receipt, error)
+	UpdateReceipt(context.Context, *UpdateReceiptRequest) (*Receipt, error)
+	GetReceipt(context.Context, *cm.IDRequest) (*Receipt, error)
+	GetReceipts(context.Context, *GetReceiptsRequest) (*ReceiptsResponse, error)
+	GetReceiptsByLedgerType(context.Context, *GetReceiptsByLedgerTypeRequest) (*ReceiptsResponse, error)
 	ConfirmReceipt(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
-	CancelReceipt(context.Context, *shop.CancelReceiptRequest) (*cm.UpdatedResponse, error)
+	CancelReceipt(context.Context, *CancelReceiptRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Supplier
 type SupplierService interface {
-	GetSupplier(context.Context, *cm.IDRequest) (*shop.Supplier, error)
-	GetSuppliers(context.Context, *shop.GetSuppliersRequest) (*shop.SuppliersResponse, error)
-	GetSuppliersByIDs(context.Context, *cm.IDsRequest) (*shop.SuppliersResponse, error)
-	CreateSupplier(context.Context, *shop.CreateSupplierRequest) (*shop.Supplier, error)
-	UpdateSupplier(context.Context, *shop.UpdateSupplierRequest) (*shop.Supplier, error)
+	GetSupplier(context.Context, *cm.IDRequest) (*Supplier, error)
+	GetSuppliers(context.Context, *GetSuppliersRequest) (*SuppliersResponse, error)
+	GetSuppliersByIDs(context.Context, *cm.IDsRequest) (*SuppliersResponse, error)
+	CreateSupplier(context.Context, *CreateSupplierRequest) (*Supplier, error)
+	UpdateSupplier(context.Context, *UpdateSupplierRequest) (*Supplier, error)
 	DeleteSupplier(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
-	GetSuppliersByVariantID(context.Context, *shop.GetSuppliersByVariantIDRequest) (*shop.SuppliersResponse, error)
+	GetSuppliersByVariantID(context.Context, *GetSuppliersByVariantIDRequest) (*SuppliersResponse, error)
 }
 
 // +apix:path=/shop.Carrier
 type CarrierService interface {
-	GetCarrier(context.Context, *cm.IDRequest) (*shop.Carrier, error)
-	GetCarriers(context.Context, *shop.GetCarriersRequest) (*shop.CarriersResponse, error)
-	GetCarriersByIDs(context.Context, *cm.IDsRequest) (*shop.CarriersResponse, error)
-	CreateCarrier(context.Context, *shop.CreateCarrierRequest) (*shop.Carrier, error)
-	UpdateCarrier(context.Context, *shop.UpdateCarrierRequest) (*shop.Carrier, error)
+	GetCarrier(context.Context, *cm.IDRequest) (*Carrier, error)
+	GetCarriers(context.Context, *GetCarriersRequest) (*CarriersResponse, error)
+	GetCarriersByIDs(context.Context, *cm.IDsRequest) (*CarriersResponse, error)
+	CreateCarrier(context.Context, *CreateCarrierRequest) (*Carrier, error)
+	UpdateCarrier(context.Context, *UpdateCarrierRequest) (*Carrier, error)
 	DeleteCarrier(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.Ledger
 type LedgerService interface {
-	GetLedger(context.Context, *cm.IDRequest) (*shop.Ledger, error)
-	GetLedgers(context.Context, *shop.GetLedgersRequest) (*shop.LedgersResponse, error)
-	CreateLedger(context.Context, *shop.CreateLedgerRequest) (*shop.Ledger, error)
-	UpdateLedger(context.Context, *shop.UpdateLedgerRequest) (*shop.Ledger, error)
+	GetLedger(context.Context, *cm.IDRequest) (*Ledger, error)
+	GetLedgers(context.Context, *GetLedgersRequest) (*LedgersResponse, error)
+	CreateLedger(context.Context, *CreateLedgerRequest) (*Ledger, error)
+	UpdateLedger(context.Context, *UpdateLedgerRequest) (*Ledger, error)
 	DeleteLedger(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.PurchaseOrder
 type PurchaseOrderService interface {
-	GetPurchaseOrder(context.Context, *cm.IDRequest) (*shop.PurchaseOrder, error)
-	GetPurchaseOrders(context.Context, *shop.GetPurchaseOrdersRequest) (*shop.PurchaseOrdersResponse, error)
-	GetPurchaseOrdersByIDs(context.Context, *cm.IDsRequest) (*shop.PurchaseOrdersResponse, error)
-	GetPurchaseOrdersByReceiptID(context.Context, *cm.IDRequest) (*shop.PurchaseOrdersResponse, error)
-	CreatePurchaseOrder(context.Context, *shop.CreatePurchaseOrderRequest) (*shop.PurchaseOrder, error)
-	UpdatePurchaseOrder(context.Context, *shop.UpdatePurchaseOrderRequest) (*shop.PurchaseOrder, error)
+	GetPurchaseOrder(context.Context, *cm.IDRequest) (*PurchaseOrder, error)
+	GetPurchaseOrders(context.Context, *GetPurchaseOrdersRequest) (*PurchaseOrdersResponse, error)
+	GetPurchaseOrdersByIDs(context.Context, *cm.IDsRequest) (*PurchaseOrdersResponse, error)
+	GetPurchaseOrdersByReceiptID(context.Context, *cm.IDRequest) (*PurchaseOrdersResponse, error)
+	CreatePurchaseOrder(context.Context, *CreatePurchaseOrderRequest) (*PurchaseOrder, error)
+	UpdatePurchaseOrder(context.Context, *UpdatePurchaseOrderRequest) (*PurchaseOrder, error)
 	DeletePurchaseOrder(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
-	ConfirmPurchaseOrder(context.Context, *shop.ConfirmPurchaseOrderRequest) (*cm.UpdatedResponse, error)
-	CancelPurchaseOrder(context.Context, *shop.CancelPurchaseOrderRequest) (*cm.UpdatedResponse, error)
+	ConfirmPurchaseOrder(context.Context, *ConfirmPurchaseOrderRequest) (*cm.UpdatedResponse, error)
+	CancelPurchaseOrder(context.Context, *CancelPurchaseOrderRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Stocktake
 type StocktakeService interface {
-	CreateStocktake(context.Context, *shop.CreateStocktakeRequest) (*shop.Stocktake, error)
-	UpdateStocktake(context.Context, *shop.UpdateStocktakeRequest) (*shop.Stocktake, error)
-	ConfirmStocktake(context.Context, *shop.ConfirmStocktakeRequest) (*shop.Stocktake, error)
-	CancelStocktake(context.Context, *shop.CancelStocktakeRequest) (*shop.Stocktake, error)
+	CreateStocktake(context.Context, *CreateStocktakeRequest) (*Stocktake, error)
+	UpdateStocktake(context.Context, *UpdateStocktakeRequest) (*Stocktake, error)
+	ConfirmStocktake(context.Context, *ConfirmStocktakeRequest) (*Stocktake, error)
+	CancelStocktake(context.Context, *CancelStocktakeRequest) (*Stocktake, error)
 
-	GetStocktake(context.Context, *cm.IDRequest) (*shop.Stocktake, error)
-	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*shop.GetStocktakesByIDsResponse, error)
-	GetStocktakes(context.Context, *shop.GetStocktakesRequest) (*shop.GetStocktakesResponse, error)
+	GetStocktake(context.Context, *cm.IDRequest) (*Stocktake, error)
+	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*GetStocktakesByIDsResponse, error)
+	GetStocktakes(context.Context, *GetStocktakesRequest) (*GetStocktakesResponse, error)
 }

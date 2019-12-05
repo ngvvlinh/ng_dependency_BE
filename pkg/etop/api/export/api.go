@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	pbshop "etop.vn/api/pb/etop/shop"
+	apishop "etop.vn/api/top/int/shop"
 	ordering "etop.vn/backend/com/main/ordering/modelx"
 	shipping "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -25,7 +25,7 @@ var ServiceImpl = &Service{}
 
 type Service struct{}
 
-func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID dot.ID, r *pbshop.RequestExportRequest) (_ *pbshop.RequestExportResponse, _err error) {
+func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
 	if userID == 0 {
 		return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 	}
@@ -101,7 +101,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		MimeType:     "text/csv",
 		Status:       model.S4Zero,
 	}
-	resp := &pbshop.RequestExportResponse{
+	resp := &apishop.RequestExportResponse{
 		Id:         exportID,
 		Filename:   zipFileName,
 		ExportType: r.ExportType,
@@ -176,9 +176,9 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 	return resp, nil
 }
 
-func (s *Service) GetExports(ctx context.Context, shopID dot.ID, r *pbshop.GetExportsRequest) (*pbshop.GetExportsResponse, error) {
+func (s *Service) GetExports(ctx context.Context, shopID dot.ID, r *apishop.GetExportsRequest) (*apishop.GetExportsResponse, error) {
 	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
-	return &pbshop.GetExportsResponse{
+	return &apishop.GetExportsResponse{
 		ExportItems: convertpb.PbExportAttempts(exportAttempts),
 	}, err
 }

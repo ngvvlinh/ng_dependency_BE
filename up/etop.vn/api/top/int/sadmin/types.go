@@ -1,7 +1,7 @@
 package sadmin
 
 import (
-	etop "etop.vn/api/pb/etop"
+	etop "etop.vn/api/top/int/etop"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -31,3 +31,18 @@ type LoginAsAccountRequest struct {
 
 func (m *LoginAsAccountRequest) Reset()         { *m = LoginAsAccountRequest{} }
 func (m *LoginAsAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *SAdminCreateUserRequest) Censor() {
+	if m.Info != nil && m.Info.Password != "" {
+		m.Info.Password = "..."
+	}
+}
+
+func (m *SAdminResetPasswordRequest) Censor() {
+	if m.Password != "" {
+		m.Password = "..."
+	}
+	if m.Confirm != "" {
+		m.Confirm = "..."
+	}
+}

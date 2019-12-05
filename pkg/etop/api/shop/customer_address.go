@@ -3,10 +3,11 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/location"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -80,7 +81,7 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustom
 	if err != nil {
 		return err
 	}
-	r.Result = &pbshop.CustomerAddressesResponse{Addresses: addrs}
+	r.Result = &shop.CustomerAddressesResponse{Addresses: addrs}
 	return nil
 }
 

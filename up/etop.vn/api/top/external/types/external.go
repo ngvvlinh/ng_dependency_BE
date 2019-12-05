@@ -1,16 +1,16 @@
-package external
+package types
 
 import (
-	common "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	gender "etop.vn/api/pb/etop/etc/gender"
-	shipping "etop.vn/api/pb/etop/etc/shipping"
-	shipping_provider "etop.vn/api/pb/etop/etc/shipping_provider"
-	status3 "etop.vn/api/pb/etop/etc/status3"
-	status4 "etop.vn/api/pb/etop/etc/status4"
-	status5 "etop.vn/api/pb/etop/etc/status5"
-	try_on "etop.vn/api/pb/etop/etc/try_on"
-	order "etop.vn/api/pb/etop/order"
+	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
+	common "etop.vn/api/top/types/common"
+	gender "etop.vn/api/top/types/etc/gender"
+	shipping "etop.vn/api/top/types/etc/shipping"
+	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	status5 "etop.vn/api/top/types/etc/status5"
+	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -210,7 +210,7 @@ type Order struct {
 	OrderDiscount             dot.NullInt           `json:"order_discount"`
 	TotalDiscount             dot.NullInt           `json:"total_discount"`
 	TotalFee                  dot.NullInt           `json:"total_fee"`
-	FeeLines                  []*order.OrderFeeLine `json:"fee_lines"`
+	FeeLines                  []*types.OrderFeeLine `json:"fee_lines"`
 	TotalAmount               dot.NullInt           `json:"total_amount"`
 	OrderNote                 dot.NullString        `json:"order_note"`
 	Shipping                  *OrderShipping        `json:"shipping"`
@@ -253,7 +253,7 @@ type CreateOrderRequest struct {
 	OrderDiscount int                   `json:"order_discount"`
 	TotalDiscount int                   `json:"total_discount"`
 	TotalFee      dot.NullInt           `json:"total_fee"`
-	FeeLines      []*order.OrderFeeLine `json:"fee_lines"`
+	FeeLines      []*types.OrderFeeLine `json:"fee_lines"`
 	TotalAmount   int                   `json:"total_amount"`
 	OrderNote     string                `json:"order_note"`
 	Shipping      *OrderShipping        `json:"shipping"`
@@ -273,7 +273,7 @@ type OrderLine struct {
 	// payment_price = retail_price - discount_per_item
 	PaymentPrice dot.NullInt        `json:"payment_price"`
 	ImageUrl     string             `json:"image_url"`
-	Attributes   []*order.Attribute `json:"attributes"`
+	Attributes   []*types.Attribute `json:"attributes"`
 }
 
 func (m *OrderLine) Reset()         { *m = OrderLine{} }
@@ -420,3 +420,25 @@ type OrderAddress struct {
 
 func (m *OrderAddress) Reset()         { *m = OrderAddress{} }
 func (m *OrderAddress) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *Order) HasChanged() bool {
+	return m.Status != nil ||
+		m.ConfirmStatus != nil ||
+		m.FulfillmentShippingStatus != nil ||
+		m.EtopPaymentStatus != nil ||
+		m.BasketValue.Valid ||
+		m.TotalAmount.Valid ||
+		m.Shipping != nil ||
+		m.CustomerAddress != nil || m.ShippingAddress != nil
+}
+
+func (m *Fulfillment) HasChanged() bool {
+	return m.Status != nil ||
+		m.ShippingState != nil ||
+		m.EtopPaymentStatus != nil ||
+		m.ActualShippingServiceFee.Valid ||
+		m.CodAmount.Valid ||
+		m.ActualCodAmount.Valid ||
+		m.ShippingNote.Valid ||
+		m.ChargeableWeight.Valid
+}

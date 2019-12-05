@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	affiliate "etop.vn/api/pb/etop/affiliate"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -60,19 +59,19 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/RegisterAffiliate":
-		msg := &affiliate.RegisterAffiliateRequest{}
+		msg := &RegisterAffiliateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RegisterAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliate":
-		msg := &affiliate.UpdateAffiliateRequest{}
+		msg := &UpdateAffiliateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliateBankAccount":
-		msg := &affiliate.UpdateAffiliateBankAccountRequest{}
+		msg := &UpdateAffiliateBankAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateAffiliateBankAccount(ctx, msg)
 		}

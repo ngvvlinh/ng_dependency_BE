@@ -3,12 +3,13 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/customering"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -109,7 +110,7 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 		return err
 	}
 	r.Result = convertpb.PbCustomer(query.Result)
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*pbshop.Customer{r.Result}); err != nil {
+	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*shop.Customer{r.Result}); err != nil {
 		return err
 	}
 	return nil
@@ -125,7 +126,7 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.CustomersResponse{
+	r.Result = &shop.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
 		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -143,7 +144,7 @@ func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *GetCustomers
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.CustomersResponse{
+	r.Result = &shop.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
 	}
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
@@ -187,7 +188,7 @@ func (s *CustomerGroupService) GetCustomerGroups(ctx context.Context, q *GetCust
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.CustomerGroupsResponse{
+	q.Result = &shop.CustomerGroupsResponse{
 		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
 		CustomerGroups: convertpb.PbCustomerGroups(query.Result.CustomerGroups),
 	}
@@ -230,7 +231,7 @@ func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *Remov
 	return nil
 }
 
-func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, customers []*pbshop.Customer) error {
+func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, customers []*shop.Customer) error {
 	var customerIDs []dot.ID
 	mapCustomerIDAndNumberOfOrders := make(map[dot.ID]int)
 	mapCustomerIDAndTotalAmountOrders := make(map[dot.ID]int)
@@ -270,7 +271,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 	}
 
 	for _, customer := range customers {
-		customer.Liability = &pbshop.CustomerLiability{
+		customer.Liability = &shop.CustomerLiability{
 			TotalOrders:    mapCustomerIDAndNumberOfOrders[customer.Id],
 			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
 			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],

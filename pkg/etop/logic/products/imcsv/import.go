@@ -12,8 +12,8 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	apishop "etop.vn/api/top/int/shop"
+	pbcm "etop.vn/api/top/types/common"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -40,7 +40,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*pbshop.ImportProductsResponse)
+	respMsg := resp.(*apishop.ImportProductsResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -49,7 +49,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	// check if shop already imports sample data
 	s := shopProductStore(ctx).
 		ShopID(shop.ID).
@@ -60,7 +60,7 @@ func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop 
 	}
 
 	if len(products) != 0 {
-		_resp = &pbshop.ImportProductsResponse{
+		_resp = &apishop.ImportProductsResponse{
 			ImportErrors: []*pbcm.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
 		}
 		return
@@ -85,7 +85,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*pbshop.ImportProductsResponse)
+	respMsg := resp.(*apishop.ImportProductsResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -94,7 +94,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model
 	return handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cm.NotProd() {
@@ -253,7 +253,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		return imp.generateErrorResponse(_cellErrs)
 	}
 
-	resp := &pbshop.ImportProductsResponse{
+	resp := &apishop.ImportProductsResponse{
 		Data: imp.toSpreadsheetData(idx.indexer),
 	}
 	importErrors := make([]*pbcm.Error, 0, len(msgs)+len(_errs))
@@ -548,8 +548,8 @@ func split(v string) []string {
 	return strings.Split(v, ",")
 }
 
-func rowToCreateVariant(row *RowProduct, now time.Time) *pbshop.CreateVariantRequest {
-	return &pbshop.CreateVariantRequest{
+func rowToCreateVariant(row *RowProduct, now time.Time) *apishop.CreateVariantRequest {
+	return &apishop.CreateVariantRequest{
 		Code:        row.VariantCode,
 		Name:        variantNameFromAttributes(row.Attributes),
 		ProductId:   0, // will be filled later
@@ -564,8 +564,8 @@ func rowToCreateVariant(row *RowProduct, now time.Time) *pbshop.CreateVariantReq
 	}
 }
 
-func rowToCreateProduct(row *RowProduct, now time.Time) *pbshop.CreateProductRequest {
-	return &pbshop.CreateProductRequest{
+func rowToCreateProduct(row *RowProduct, now time.Time) *apishop.CreateProductRequest {
+	return &apishop.CreateProductRequest{
 		Code:        row.ProductCode,
 		Name:        row.ProductName,
 		Unit:        row.Unit,

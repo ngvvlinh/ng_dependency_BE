@@ -4,16 +4,13 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/authorization"
-
-	"etop.vn/backend/pkg/common/cmapi"
-
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/address"
+	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/inventory"
@@ -27,21 +24,22 @@ import (
 	"etop.vn/api/main/shipping/types"
 	st "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
-	pborder "etop.vn/api/pb/etop/order"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/summary"
+	"etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/shop"
+	apitypes "etop.vn/api/top/int/types"
+	pbcm "etop.vn/api/top/types/common"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
@@ -380,7 +378,7 @@ func (s *BrandService) GetBrandsByIDs(ctx context.Context, q *GetBrandsByIDsEndp
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetBrandsByIDsResponse{
+	q.Result = &shop.GetBrandsByIDsResponse{
 		Brands: PbBrands(query.Result),
 	}
 	return nil
@@ -398,7 +396,7 @@ func (s *BrandService) GetBrands(ctx context.Context, q *GetBrandsEndpoint) erro
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetBrandsResponse{
+	q.Result = &shop.GetBrandsResponse{
 		Brands: PbBrands(query.Result.ShopBrands),
 		Paging: cmapi.PbPaging(query.Paging, query.Result.Total),
 	}
@@ -443,7 +441,7 @@ func (s *BrandService) DeleteBrand(ctx context.Context, q *DeleteBrandEndpoint) 
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.DeleteBrandResponse{
+	q.Result = &shop.DeleteBrandResponse{
 		Count: cmd.Result,
 	}
 	return nil
@@ -539,7 +537,7 @@ func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByI
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.ShopProductsResponse{
+	q.Result = &shop.ShopProductsResponse{
 		Products: products,
 	}
 	return nil
@@ -560,7 +558,7 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.ShopProductsResponse{
+	q.Result = &shop.ShopProductsResponse{
 		Paging:   cmapi.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
 		Products: products,
 	}
@@ -654,7 +652,7 @@ func (s *ProductService) UpdateProductsStatus(ctx context.Context, q *UpdateProd
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateProductStatusResponse{Updated: cmd.Result}
+	q.Result = &shop.UpdateProductStatusResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -668,7 +666,7 @@ func (s *ProductService) UpdateVariantsStatus(ctx context.Context, q *UpdateVari
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateProductStatusResponse{Updated: cmd.Result}
+	q.Result = &shop.UpdateProductStatusResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -707,7 +705,7 @@ func (s *ProductService) GetVariantsByIDs(ctx context.Context, q *GetVariantsByI
 		return err
 	}
 
-	q.Result = &pbshop.ShopVariantsResponse{Variants: PbShopVariantsWithProducts(query.Result.Variants)}
+	q.Result = &shop.ShopVariantsResponse{Variants: PbShopVariantsWithProducts(query.Result.Variants)}
 
 	return nil
 }
@@ -825,7 +823,7 @@ func (s *ProductSourceService) GetProductSourceCategories(ctx context.Context, q
 		return err
 	}
 
-	q.Result = &pbshop.CategoriesResponse{
+	q.Result = &shop.CategoriesResponse{
 		Categories: convertpb.PbCategories(cmd.Result.Categories),
 	}
 	return nil
@@ -974,7 +972,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.MoneyTransactionsResponse{
+	q.Result = &apitypes.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
 		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
@@ -991,7 +989,7 @@ func (s *SummaryService) SummarizeFulfillments(ctx context.Context, q *Summarize
 		return err
 	}
 
-	q.Result = &pbshop.SummarizeFulfillmentsResponse{
+	q.Result = &shop.SummarizeFulfillmentsResponse{
 		Tables: convertpb.PbSummaryTables(query.Result.Tables),
 	}
 	return nil
@@ -1010,7 +1008,7 @@ func (s *SummaryService) SummarizePOS(ctx context.Context, q *SummarizePOSEndpoi
 	if err := summaryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.SummarizePOSResponse{
+	q.Result = &shop.SummarizePOSResponse{
 		Tables: convertpb.PbSummaryTablesNew(query.Result.ListTable),
 	}
 	return nil
@@ -1024,7 +1022,7 @@ func (s *SummaryService) CalcBalanceShop(ctx context.Context, q *CalcBalanceShop
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.CalcBalanceShopResponse{
+	q.Result = &shop.CalcBalanceShopResponse{
 		Balance: query.Result.Amount,
 	}
 	return nil
@@ -1085,7 +1083,7 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *GetNotifi
 	if err != nil {
 		return err
 	}
-	q.Result = &pbetop.NotificationsResponse{
+	q.Result = &etop.NotificationsResponse{
 		Notifications: convertpb.PbNotifications(notis),
 		Paging:        cmapi.PbPageInfo(paging, total),
 	}
@@ -1135,7 +1133,7 @@ func (s *ShipnowService) GetShipnowFulfillments(ctx context.Context, q *GetShipn
 	if err := shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.ShipnowFulfillments{
+	q.Result = &apitypes.ShipnowFulfillments{
 		ShipnowFulfillments: convertpb.Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(query.Result.ShipnowFulfillments),
 		Paging:              cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -1245,7 +1243,7 @@ func (s *ShipnowService) GetShipnowServices(ctx context.Context, q *GetShipnowSe
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pborder.GetShipnowServicesResponse{
+	q.Result = &apitypes.GetShipnowServicesResponse{
 		Services: convertpb.Convert_core_ShipnowServices_To_api_ShipnowServices(cmd.Result.Services),
 	}
 	return nil
@@ -1492,7 +1490,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
 		return err
 	}
-	q.Result = &pbshop.PaymentTradingOrderResponse{
+	q.Result = &shop.PaymentTradingOrderResponse{
 		Url: args.Result,
 	}
 	return nil
@@ -1559,7 +1557,7 @@ func (s *CategoryService) GetCategories(ctx context.Context, q *GetCategoriesEnd
 		return err
 	}
 
-	q.Result = &pbshop.ShopCategoriesResponse{
+	q.Result = &shop.ShopCategoriesResponse{
 		Paging:     cmapi.PbPageInfo(paging, query.Result.Count),
 		Categories: PbShopCategories(query.Result.Categories),
 	}
@@ -1629,7 +1627,7 @@ func (s *CollectionService) GetCollections(ctx context.Context, q *GetCollection
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.ShopCollectionsResponse{
+	q.Result = &shop.ShopCollectionsResponse{
 		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 		Collections: PbShopCollections(query.Result.Collections),
 	}
@@ -1702,7 +1700,7 @@ func (s *CollectionService) GetCollectionsByProductID(ctx context.Context, q *Ge
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.CollectionsResponse{
+	q.Result = &shop.CollectionsResponse{
 		Collections: PbShopCollections(query.Result),
 	}
 	return nil
@@ -1720,7 +1718,7 @@ func (s *ProductService) RemoveProductCategory(ctx context.Context, r *RemovePro
 	return nil
 }
 
-func getProductsQuantity(ctx context.Context, shopID dot.ID, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
+func getProductsQuantity(ctx context.Context, shopID dot.ID, products []*catalog.ShopProductWithVariants) ([]*shop.ShopProduct, error) {
 	var variantIDs []dot.ID
 	for _, valueProduct := range products {
 		for _, valueVariant := range valueProduct.Variants {
@@ -1734,7 +1732,7 @@ func getProductsQuantity(ctx context.Context, shopID dot.ID, products []*catalog
 	return PbProductsQuantity(products, inventoryVariants), nil
 }
 
-func getProductQuantity(ctx context.Context, shopID dot.ID, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
+func getProductQuantity(ctx context.Context, shopID dot.ID, shopProduct *catalog.ShopProductWithVariants) (*shop.ShopProduct, error) {
 	var variantIDs []dot.ID
 	for _, variant := range shopProduct.Variants {
 		variantIDs = append(variantIDs, variant.VariantID)
@@ -1775,6 +1773,6 @@ func (s *ProductService) GetVariantsBySupplierID(ctx context.Context, q *GetVari
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.ShopVariantsResponse{Variants: PbShopVariants(query.Result.Variants)}
+	q.Result = &shop.ShopVariantsResponse{Variants: PbShopVariants(query.Result.Variants)}
 	return nil
 }

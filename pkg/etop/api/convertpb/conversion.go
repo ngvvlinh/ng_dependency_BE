@@ -7,17 +7,17 @@ import (
 	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
-	"etop.vn/api/pb/etop"
-	"etop.vn/api/pb/etop/order"
+	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *order.ShipnowFulfillment {
+func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *types.ShipnowFulfillment {
 	if in == nil {
 		return nil
 	}
-	return &order.ShipnowFulfillment{
+	return &types.ShipnowFulfillment{
 		Id:                         in.Id,
 		ShopId:                     in.ShopId,
 		PartnerId:                  in.PartnerId,
@@ -52,14 +52,14 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 	}
 }
 
-func Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(ins []*shipnow.ShipnowFulfillment) (outs []*order.ShipnowFulfillment) {
+func Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(ins []*shipnow.ShipnowFulfillment) (outs []*types.ShipnowFulfillment) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in))
 	}
 	return
 }
 
-func Convert_api_DeliveryPoint_To_core_DeliveryPoint(in *order.DeliveryPoint) *shipnow.DeliveryPoint {
+func Convert_api_DeliveryPoint_To_core_DeliveryPoint(in *types.DeliveryPoint) *shipnow.DeliveryPoint {
 	return &shipnow.DeliveryPoint{
 		ShippingAddress: Convert_api_OrderAddress_To_core_OrderAddress(in.ShippingAddress),
 		Lines:           Convert_api_OrderLines_To_core_OrderLines(in.Lines),
@@ -71,15 +71,15 @@ func Convert_api_DeliveryPoint_To_core_DeliveryPoint(in *order.DeliveryPoint) *s
 	}
 }
 
-func Conver_api_DeliveryPoints_To_core_DeliveryPoints(ins []*order.DeliveryPoint) (outs []*shipnow.DeliveryPoint) {
+func Conver_api_DeliveryPoints_To_core_DeliveryPoints(ins []*types.DeliveryPoint) (outs []*shipnow.DeliveryPoint) {
 	for _, in := range ins {
 		outs = append(outs, Convert_api_DeliveryPoint_To_core_DeliveryPoint(in))
 	}
 	return
 }
 
-func Convert_core_DeliveryPoint_To_api_DeliveryPoint(in *shipnow.DeliveryPoint) *order.DeliveryPoint {
-	return &order.DeliveryPoint{
+func Convert_core_DeliveryPoint_To_api_DeliveryPoint(in *shipnow.DeliveryPoint) *types.DeliveryPoint {
+	return &types.DeliveryPoint{
 		ShippingAddress: Convert_core_OrderAddress_To_api_OrderAddress(in.ShippingAddress),
 		Lines:           Convert_core_OrderLines_To_api_OrderLines(in.Lines),
 		ShippingNote:    in.ShippingNote,
@@ -90,14 +90,14 @@ func Convert_core_DeliveryPoint_To_api_DeliveryPoint(in *shipnow.DeliveryPoint) 
 	}
 }
 
-func Convert_core_DeliveryPoints_To_api_DeliveryPoints(ins []*shipnow.DeliveryPoint) (outs []*order.DeliveryPoint) {
+func Convert_core_DeliveryPoints_To_api_DeliveryPoints(ins []*shipnow.DeliveryPoint) (outs []*types.DeliveryPoint) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_DeliveryPoint_To_api_DeliveryPoint(in))
 	}
 	return
 }
 
-func Convert_api_WeightInfo_To_core_WeightInfo(in order.WeightInfo) shippingtypes.WeightInfo {
+func Convert_api_WeightInfo_To_core_WeightInfo(in types.WeightInfo) shippingtypes.WeightInfo {
 	return shippingtypes.WeightInfo{
 		GrossWeight:      in.GrossWeight,
 		ChargeableWeight: in.ChargeableWeight,
@@ -107,8 +107,8 @@ func Convert_api_WeightInfo_To_core_WeightInfo(in order.WeightInfo) shippingtype
 	}
 }
 
-func Convert_core_WeightInfo_To_api_WeightInfo(in shippingtypes.WeightInfo) order.WeightInfo {
-	return order.WeightInfo{
+func Convert_core_WeightInfo_To_api_WeightInfo(in shippingtypes.WeightInfo) types.WeightInfo {
+	return types.WeightInfo{
 		GrossWeight:      in.GrossWeight,
 		ChargeableWeight: in.ChargeableWeight,
 		Length:           in.Length,
@@ -117,7 +117,7 @@ func Convert_core_WeightInfo_To_api_WeightInfo(in shippingtypes.WeightInfo) orde
 	}
 }
 
-func Convert_api_ValueInfo_To_core_ValueInfo(in order.ValueInfo) shippingtypes.ValueInfo {
+func Convert_api_ValueInfo_To_core_ValueInfo(in types.ValueInfo) shippingtypes.ValueInfo {
 	return shippingtypes.ValueInfo{
 		BasketValue:      in.BasketValue,
 		CodAmount:        in.CodAmount,
@@ -125,15 +125,15 @@ func Convert_api_ValueInfo_To_core_ValueInfo(in order.ValueInfo) shippingtypes.V
 	}
 }
 
-func Convert_core_ValueInfo_To_api_ValueInfo(in shippingtypes.ValueInfo) order.ValueInfo {
-	return order.ValueInfo{
+func Convert_core_ValueInfo_To_api_ValueInfo(in shippingtypes.ValueInfo) types.ValueInfo {
+	return types.ValueInfo{
 		BasketValue:      in.BasketValue,
 		CodAmount:        in.CodAmount,
 		IncludeInsurance: in.IncludeInsurance,
 	}
 }
 
-func Convert_api_OrderLine_To_core_OrderLine(in *order.OrderLine) (out *ordertypes.ItemLine) {
+func Convert_api_OrderLine_To_core_OrderLine(in *types.OrderLine) (out *ordertypes.ItemLine) {
 	return &ordertypes.ItemLine{
 		OrderId:   in.OrderId,
 		ProductId: in.ProductId,
@@ -148,7 +148,7 @@ func Convert_api_OrderLine_To_core_OrderLine(in *order.OrderLine) (out *ordertyp
 	}
 }
 
-func Convert_api_OrderLines_To_core_OrderLines(ins []*order.OrderLine) (outs []*ordertypes.ItemLine) {
+func Convert_api_OrderLines_To_core_OrderLines(ins []*types.OrderLine) (outs []*ordertypes.ItemLine) {
 	res := make([]*ordertypes.ItemLine, len(ins))
 	for i, in := range ins {
 		res[i] = Convert_api_OrderLine_To_core_OrderLine(in)
@@ -156,8 +156,8 @@ func Convert_api_OrderLines_To_core_OrderLines(ins []*order.OrderLine) (outs []*
 	return res
 }
 
-func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *order.OrderLine {
-	return &order.OrderLine{
+func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *types.OrderLine {
+	return &types.OrderLine{
 		OrderId:       in.OrderId,
 		VariantId:     in.VariantId,
 		ProductName:   in.ProductInfo.ProductName,
@@ -169,14 +169,14 @@ func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *order.Ord
 	}
 }
 
-func Convert_core_OrderLines_To_api_OrderLines(ins []*ordertypes.ItemLine) (outs []*order.OrderLine) {
+func Convert_core_OrderLines_To_api_OrderLines(ins []*ordertypes.ItemLine) (outs []*types.OrderLine) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_OrderLine_To_api_OrderLine(in))
 	}
 	return
 }
 
-func Convert_api_Attributes_To_core_Attributes(ins []*order.Attribute) []*catalogtypes.Attribute {
+func Convert_api_Attributes_To_core_Attributes(ins []*types.Attribute) []*catalogtypes.Attribute {
 	res := make([]*catalogtypes.Attribute, len(ins))
 	for i, in := range ins {
 		res[i] = &catalogtypes.Attribute{
@@ -187,9 +187,9 @@ func Convert_api_Attributes_To_core_Attributes(ins []*order.Attribute) []*catalo
 	return res
 }
 
-func Convert_core_Attributes_To_api_Attributes(ins []*catalogtypes.Attribute) (outs []*order.Attribute) {
+func Convert_core_Attributes_To_api_Attributes(ins []*catalogtypes.Attribute) (outs []*types.Attribute) {
 	for _, in := range ins {
-		outs = append(outs, &order.Attribute{
+		outs = append(outs, &types.Attribute{
 			Name:  in.Name,
 			Value: in.Value,
 		})
@@ -197,7 +197,7 @@ func Convert_core_Attributes_To_api_Attributes(ins []*catalogtypes.Attribute) (o
 	return
 }
 
-func Convert_api_OrderAddress_To_core_OrderAddress(in *order.OrderAddress) *ordertypes.Address {
+func Convert_api_OrderAddress_To_core_OrderAddress(in *types.OrderAddress) *ordertypes.Address {
 	if in == nil {
 		return nil
 	}
@@ -217,11 +217,11 @@ func Convert_api_OrderAddress_To_core_OrderAddress(in *order.OrderAddress) *orde
 	}
 }
 
-func Convert_core_OrderAddress_To_api_OrderAddress(in *ordertypes.Address) *order.OrderAddress {
+func Convert_core_OrderAddress_To_api_OrderAddress(in *ordertypes.Address) *types.OrderAddress {
 	if in == nil {
 		return nil
 	}
-	return &order.OrderAddress{
+	return &types.OrderAddress{
 		FullName:     in.FullName,
 		Phone:        in.Phone,
 		Email:        in.Email,
@@ -254,11 +254,11 @@ func Convert_core_Coordinates_To_api_Coordinates(in *ordertypes.Coordinates) *et
 	}
 }
 
-func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowService) *order.ShippnowService {
+func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowService) *types.ShippnowService {
 	if in == nil {
 		return nil
 	}
-	return &order.ShippnowService{
+	return &types.ShippnowService{
 		Carrier:     carrier.CarrierToString(in.Carrier),
 		Name:        in.Name,
 		Code:        in.Code,
@@ -267,7 +267,7 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 	}
 }
 
-func Convert_core_ShipnowServices_To_api_ShipnowServices(ins []*shipnowtypes.ShipnowService) (outs []*order.ShippnowService) {
+func Convert_core_ShipnowServices_To_api_ShipnowServices(ins []*shipnowtypes.ShipnowService) (outs []*types.ShippnowService) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_ShipnowService_To_api_ShipnowService(in))
 	}

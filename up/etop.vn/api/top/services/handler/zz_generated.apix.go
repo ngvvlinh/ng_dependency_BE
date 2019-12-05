@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	handler "etop.vn/api/pb/services/handler"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -99,7 +98,7 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *WebhookServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/handler.Webhook/ResetState":
-		msg := &handler.ResetStateRequest{}
+		msg := &ResetStateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ResetState(ctx, msg)
 		}

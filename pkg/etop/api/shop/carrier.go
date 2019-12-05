@@ -3,9 +3,10 @@ package shop
 import (
 	"context"
 
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/shopping/carrying"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -43,7 +44,7 @@ func (s *CarrierService) GetCarriers(ctx context.Context, r *GetCarriersEndpoint
 	if err := carrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.CarriersResponse{
+	r.Result = &shop.CarriersResponse{
 		Carriers: convertpb.PbCarriers(query.Result.Carriers),
 		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -58,7 +59,7 @@ func (s *CarrierService) GetCarriersByIDs(ctx context.Context, r *GetCarriersByI
 	if err := carrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.CarriersResponse{
+	r.Result = &shop.CarriersResponse{
 		Carriers: convertpb.PbCarriers(query.Result.Carriers),
 	}
 	return nil

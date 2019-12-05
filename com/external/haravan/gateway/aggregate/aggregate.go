@@ -11,10 +11,10 @@ import (
 	"etop.vn/api/external/haravan/gateway"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
-	pbsp "etop.vn/api/pb/etop/etc/shipping_provider"
-	pbtryon "etop.vn/api/pb/etop/etc/try_on"
-	pborder "etop.vn/api/pb/etop/order"
-	pbexternal "etop.vn/api/pb/external"
+	exttypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/int/types"
+	pbsp "etop.vn/api/top/types/etc/shipping_provider"
+	pbtryon "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/com/external/haravan/gateway/convert"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -70,7 +70,7 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 	}
 
 	// Haravan: default includeInsurance is false
-	req := &pborder.GetExternalShippingServicesRequest{
+	req := &types.GetExternalShippingServicesRequest{
 		Provider:         pbsp.ShippingProvider_ghn,
 		Carrier:          pbsp.ShippingProvider_ghn,
 		FromProvince:     from.Province.Name,
@@ -135,7 +135,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ nhận")
 	}
 
-	req := &pborder.GetExternalShippingServicesRequest{
+	req := &types.GetExternalShippingServicesRequest{
 		Provider:         pbsp.ShippingProvider_ghn,
 		Carrier:          pbsp.ShippingProvider_ghn,
 		FromProvince:     from.Province.Name,
@@ -178,7 +178,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		ExternalOrderID:       externalID,
 		ExternalFulfillmentID: externalFulfillmentID,
 	}
-	reqCreateOrder := &pbexternal.CreateOrderRequest{
+	reqCreateOrder := &exttypes.CreateOrderRequest{
 		ExternalId:      externalID,
 		ExternalCode:    externalID,
 		ExternalMeta:    cm.ConvertStructToMapStringString(externalMeta),
@@ -193,7 +193,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		FeeLines:        nil,
 		TotalAmount:     totalValue,
 		OrderNote:       args.Note,
-		Shipping: &pbexternal.OrderShipping{
+		Shipping: &exttypes.OrderShipping{
 			PickupAddress:       convert.ToPbExternalAddress(args.Origin, from),
 			ReturnAddress:       nil,
 			ShippingServiceCode: dot.String(service.ProviderServiceID),

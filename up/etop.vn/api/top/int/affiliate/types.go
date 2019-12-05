@@ -1,7 +1,7 @@
 package affiliate
 
 import (
-	etop "etop.vn/api/pb/etop"
+	etop "etop.vn/api/top/int/etop"
 	"etop.vn/common/jsonx"
 )
 

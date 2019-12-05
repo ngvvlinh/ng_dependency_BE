@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/etc/fee"
+	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/backend/com/main/ordering/model"
 )
 

@@ -3,8 +3,7 @@ package handler
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	handler "etop.vn/api/pb/services/handler"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -17,5 +16,5 @@ type MiscService interface {
 
 // +apix:path=/handler.Webhook
 type WebhookService interface {
-	ResetState(context.Context, *handler.ResetStateRequest) (*cm.Empty, error)
+	ResetState(context.Context, *ResetStateRequest) (*cm.Empty, error)
 }

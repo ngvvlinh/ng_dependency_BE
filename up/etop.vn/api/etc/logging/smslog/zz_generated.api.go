@@ -7,7 +7,7 @@ package smslog
 import (
 	context "context"
 
-	status3 "etop.vn/api/pb/etop/etc/status3"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 )
 

@@ -3,7 +3,8 @@ package admin
 import (
 	"context"
 
-	pborder "etop.vn/api/pb/etop/order"
+	"etop.vn/api/top/int/types"
+
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	"etop.vn/backend/pkg/common/bus"
@@ -47,7 +48,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.OrdersResponse{
+	q.Result = &types.OrdersResponse{
 		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
@@ -61,7 +62,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *GetOrdersByIDsEndp
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.OrdersResponse{
+	q.Result = &types.OrdersResponse{
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
@@ -92,7 +93,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.FulfillmentsResponse{
+	q.Result = &types.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
 		Paging:       cmapi.PbPageInfo(paging, query.Result.Total),
 	}

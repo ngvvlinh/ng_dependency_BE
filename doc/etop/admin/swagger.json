@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiCreatePartnerRequest"
+              "$ref": "#/definitions/xuCreatePartnerRequest"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocPartner"
+              "$ref": "#/definitions/baPartner"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGenerateAPIKeyRequest"
+              "$ref": "#/definitions/xuGenerateAPIKeyRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/hiGenerateAPIKeyResponse"
+              "$ref": "#/definitions/xuGenerateAPIKeyResponse"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiConfirmCreditRequest"
+              "$ref": "#/definitions/xuConfirmCreditRequest"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiCreateCreditRequest"
+              "$ref": "#/definitions/xuCreateCreditRequest"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocCredit"
+              "$ref": "#/definitions/baCredit"
             }
           }
         }
@@ -131,7 +131,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -139,7 +139,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maRemovedResponse"
+              "$ref": "#/definitions/ktRemovedResponse"
             }
           }
         }
@@ -157,7 +157,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetCreditRequest"
+              "$ref": "#/definitions/xuGetCreditRequest"
             }
           }
         ],
@@ -165,7 +165,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocCredit"
+              "$ref": "#/definitions/baCredit"
             }
           }
         }
@@ -183,7 +183,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetCreditsRequest"
+              "$ref": "#/definitions/xuGetCreditsRequest"
             }
           }
         ],
@@ -191,7 +191,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocCreditsResponse"
+              "$ref": "#/definitions/baCreditsResponse"
             }
           }
         }
@@ -209,7 +209,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiUpdateCreditRequest"
+              "$ref": "#/definitions/xuUpdateCreditRequest"
             }
           }
         ],
@@ -217,7 +217,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocCredit"
+              "$ref": "#/definitions/baCredit"
             }
           }
         }
@@ -235,7 +235,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -243,7 +243,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmFulfillment"
+              "$ref": "#/definitions/qdFulfillment"
             }
           }
         }
@@ -261,7 +261,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetFulfillmentsRequest"
+              "$ref": "#/definitions/xuGetFulfillmentsRequest"
             }
           }
         ],
@@ -269,7 +269,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmFulfillmentsResponse"
+              "$ref": "#/definitions/qdFulfillmentsResponse"
             }
           }
         }
@@ -287,7 +287,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiUpdateFulfillmentRequest"
+              "$ref": "#/definitions/xuUpdateFulfillmentRequest"
             }
           }
         ],
@@ -295,7 +295,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -313,7 +313,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiLoginAsAccountRequest"
+              "$ref": "#/definitions/xuLoginAsAccountRequest"
             }
           }
         ],
@@ -321,7 +321,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocLoginResponse"
+              "$ref": "#/definitions/baLoginResponse"
             }
           }
         }
@@ -339,7 +339,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -347,7 +347,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -365,7 +365,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiConfirmMoneyTransactionRequest"
+              "$ref": "#/definitions/xuConfirmMoneyTransactionRequest"
             }
           }
         ],
@@ -373,7 +373,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -391,7 +391,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiConfirmMoneyTransactionShippingEtopRequest"
+              "$ref": "#/definitions/xuConfirmMoneyTransactionShippingEtopRequest"
             }
           }
         ],
@@ -399,7 +399,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -417,7 +417,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -425,7 +425,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -443,7 +443,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDsRequest"
+              "$ref": "#/definitions/ktIDsRequest"
             }
           }
         ],
@@ -451,7 +451,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -469,7 +469,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDsRequest"
+              "$ref": "#/definitions/ktIDsRequest"
             }
           }
         ],
@@ -477,7 +477,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+              "$ref": "#/definitions/qdMoneyTransactionShippingEtop"
             }
           }
         }
@@ -495,7 +495,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -503,7 +503,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maDeletedResponse"
+              "$ref": "#/definitions/ktDeletedResponse"
             }
           }
         }
@@ -521,7 +521,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -529,7 +529,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maRemovedResponse"
+              "$ref": "#/definitions/ktRemovedResponse"
             }
           }
         }
@@ -547,7 +547,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -555,7 +555,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransaction"
+              "$ref": "#/definitions/qdMoneyTransaction"
             }
           }
         }
@@ -573,7 +573,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -581,7 +581,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+              "$ref": "#/definitions/qdMoneyTransactionShippingEtop"
             }
           }
         }
@@ -599,7 +599,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetMoneyTransactionShippingEtopsRequest"
+              "$ref": "#/definitions/xuGetMoneyTransactionShippingEtopsRequest"
             }
           }
         ],
@@ -607,7 +607,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingEtopsResponse"
+              "$ref": "#/definitions/qdMoneyTransactionShippingEtopsResponse"
             }
           }
         }
@@ -625,7 +625,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -633,7 +633,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+              "$ref": "#/definitions/qdMoneyTransactionShippingExternal"
             }
           }
         }
@@ -651,7 +651,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetMoneyTransactionShippingExternalsRequest"
+              "$ref": "#/definitions/xuGetMoneyTransactionShippingExternalsRequest"
             }
           }
         ],
@@ -659,7 +659,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingExternalsResponse"
+              "$ref": "#/definitions/qdMoneyTransactionShippingExternalsResponse"
             }
           }
         }
@@ -677,7 +677,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetMoneyTransactionsRequest"
+              "$ref": "#/definitions/xuGetMoneyTransactionsRequest"
             }
           }
         ],
@@ -685,7 +685,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionsResponse"
+              "$ref": "#/definitions/qdMoneyTransactionsResponse"
             }
           }
         }
@@ -703,7 +703,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiRemoveMoneyTransactionShippingExternalLinesRequest"
+              "$ref": "#/definitions/xuRemoveMoneyTransactionShippingExternalLinesRequest"
             }
           }
         ],
@@ -711,7 +711,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+              "$ref": "#/definitions/qdMoneyTransactionShippingExternal"
             }
           }
         }
@@ -729,7 +729,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiUpdateMoneyTransactionRequest"
+              "$ref": "#/definitions/xuUpdateMoneyTransactionRequest"
             }
           }
         ],
@@ -737,7 +737,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransaction"
+              "$ref": "#/definitions/qdMoneyTransaction"
             }
           }
         }
@@ -755,7 +755,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiUpdateMoneyTransactionShippingEtopRequest"
+              "$ref": "#/definitions/xuUpdateMoneyTransactionShippingEtopRequest"
             }
           }
         ],
@@ -763,7 +763,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+              "$ref": "#/definitions/qdMoneyTransactionShippingEtop"
             }
           }
         }
@@ -781,7 +781,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiUpdateMoneyTransactionShippingExternalRequest"
+              "$ref": "#/definitions/xuUpdateMoneyTransactionShippingExternalRequest"
             }
           }
         ],
@@ -789,7 +789,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+              "$ref": "#/definitions/qdMoneyTransactionShippingExternal"
             }
           }
         }
@@ -807,7 +807,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiCreateNotificationsRequest"
+              "$ref": "#/definitions/xuCreateNotificationsRequest"
             }
           }
         ],
@@ -815,7 +815,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/hiCreateNotificationsResponse"
+              "$ref": "#/definitions/xuCreateNotificationsResponse"
             }
           }
         }
@@ -833,7 +833,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -841,7 +841,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmOrder"
+              "$ref": "#/definitions/qdOrder"
             }
           }
         }
@@ -859,7 +859,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetOrdersRequest"
+              "$ref": "#/definitions/xuGetOrdersRequest"
             }
           }
         ],
@@ -867,7 +867,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmOrdersResponse"
+              "$ref": "#/definitions/qdOrdersResponse"
             }
           }
         }
@@ -885,7 +885,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDsRequest"
+              "$ref": "#/definitions/ktIDsRequest"
             }
           }
         ],
@@ -893,7 +893,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/vmOrdersResponse"
+              "$ref": "#/definitions/qdOrdersResponse"
             }
           }
         }
@@ -911,7 +911,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maIDRequest"
+              "$ref": "#/definitions/ktIDRequest"
             }
           }
         ],
@@ -919,7 +919,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocShop"
+              "$ref": "#/definitions/baShop"
             }
           }
         }
@@ -937,7 +937,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/hiGetShopsRequest"
+              "$ref": "#/definitions/xuGetShopsRequest"
             }
           }
         ],
@@ -945,7 +945,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/hiGetShopsResponse"
+              "$ref": "#/definitions/xuGetShopsResponse"
             }
           }
         }
@@ -953,664 +953,7 @@
     }
   },
   "definitions": {
-    "euAddressType": {
-      "type": "string",
-      "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
-        "unknown",
-        "warehouse"
-      ]
-    },
-    "gjSource": {
-      "type": "string",
-      "enum": [
-        "api",
-        "etop_cmx",
-        "etop_pos",
-        "etop_pxs",
-        "import",
-        "self",
-        "ts_app",
-        "unknown"
-      ]
-    },
-    "guCreditType": {
-      "type": "string",
-      "enum": [
-        "shop"
-      ]
-    },
-    "hiConfirmCreditRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiConfirmMoneyTransactionRequest": {
-      "type": "object",
-      "properties": {
-        "money_transaction_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_cod": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_orders": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiConfirmMoneyTransactionShippingEtopRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_cod": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_orders": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiCreateCreditRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "paid_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "$ref": "#/definitions/guCreditType"
-        }
-      }
-    },
-    "hiCreateNotificationsRequest": {
-      "type": "object",
-      "properties": {
-        "account_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "entity": {
-          "$ref": "#/definitions/roNotifierEntity"
-        },
-        "entity_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "message": {
-          "type": "string"
-        },
-        "send_all": {
-          "type": "boolean"
-        },
-        "title": {
-          "type": "string"
-        }
-      }
-    },
-    "hiCreateNotificationsResponse": {
-      "type": "object",
-      "properties": {
-        "created": {
-          "type": "integer"
-        },
-        "errored": {
-          "type": "integer"
-        }
-      }
-    },
-    "hiCreatePartnerRequest": {
-      "type": "object",
-      "properties": {
-        "partner": {
-          "$ref": "#/definitions/ocPartner"
-        }
-      }
-    },
-    "hiGenerateAPIKeyRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiGenerateAPIKeyResponse": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "api_key": {
-          "type": "string"
-        }
-      }
-    },
-    "hiGetCreditRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiGetCreditsRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiGetFulfillmentsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "order_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "$ref": "#/definitions/wwStatus"
-        }
-      }
-    },
-    "hiGetMoneyTransactionShippingEtopsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        },
-        "status": {
-          "$ref": "#/definitions/wwStatus"
-        }
-      }
-    },
-    "hiGetMoneyTransactionShippingExternalsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        }
-      }
-    },
-    "hiGetMoneyTransactionsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "money_transaction_shipping_external_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiGetOrdersRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        }
-      }
-    },
-    "hiGetShopsRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        }
-      }
-    },
-    "hiGetShopsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/maPageInfo"
-        },
-        "shops": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ocShop"
-          }
-        }
-      }
-    },
-    "hiLoginAsAccountRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "password": {
-          "type": "string"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiRemoveMoneyTransactionShippingExternalLinesRequest": {
-      "type": "object",
-      "properties": {
-        "line_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "money_transaction_shipping_external_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "hiUpdateCreditRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "paid_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "$ref": "#/definitions/guCreditType"
-        }
-      }
-    },
-    "hiUpdateFulfillmentRequest": {
-      "type": "object",
-      "properties": {
-        "actual_compensation_amount": {
-          "type": "integer"
-        },
-        "admin_note": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "is_partial_delivery": {
-          "type": "boolean"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "shipping_state": {
-          "$ref": "#/definitions/nqState"
-        },
-        "total_cod_amount": {
-          "type": "integer"
-        }
-      }
-    },
-    "hiUpdateMoneyTransactionRequest": {
-      "type": "object",
-      "properties": {
-        "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "invoice_number": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        }
-      }
-    },
-    "hiUpdateMoneyTransactionShippingEtopRequest": {
-      "type": "object",
-      "properties": {
-        "adds": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "invoice_number": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "replace_all": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
-    "hiUpdateMoneyTransactionShippingExternalRequest": {
-      "type": "object",
-      "properties": {
-        "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "invoice_number": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        }
-      }
-    },
-    "juFeeType": {
-      "type": "string",
-      "enum": [
-        "other",
-        "shipping",
-        "tax"
-      ]
-    },
-    "khGender": {
-      "type": "string",
-      "enum": [
-        "female",
-        "male",
-        "other",
-        "unknown"
-      ]
-    },
-    "maDeletedResponse": {
-      "type": "object",
-      "properties": {
-        "deleted": {
-          "type": "integer"
-        }
-      }
-    },
-    "maEmpty": {
-      "type": "object"
-    },
-    "maError": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "meta": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "msg": {
-          "type": "string"
-        }
-      }
-    },
-    "maFilter": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "op": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "maIDRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "maIDsRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
-    "maPageInfo": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "total": {
-          "type": "integer"
-        }
-      }
-    },
-    "maPaging": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "offset": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "string"
-        }
-      }
-    },
-    "maRemovedResponse": {
-      "type": "object",
-      "properties": {
-        "removed": {
-          "type": "integer"
-        }
-      }
-    },
-    "maUpdatedResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer"
-        }
-      }
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "nqState": {
-      "type": "string",
-      "enum": [
-        "cancelled",
-        "confirmed",
-        "created",
-        "default",
-        "delivered",
-        "delivering",
-        "holding",
-        "picking",
-        "processing",
-        "returned",
-        "returning",
-        "undeliverable",
-        "unknown"
-      ]
-    },
-    "ocAccountType": {
+    "baAccountType": {
       "type": "string",
       "enum": [
         "affiliate",
@@ -1620,7 +963,7 @@
         "unknown"
       ]
     },
-    "ocAddress": {
+    "baAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -1630,7 +973,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -1664,7 +1007,7 @@
           "type": "string"
         },
         "notes": {
-          "$ref": "#/definitions/ocAddressNote"
+          "$ref": "#/definitions/baAddressNote"
         },
         "phone": {
           "type": "string"
@@ -1679,7 +1022,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/euAddressType"
+          "$ref": "#/definitions/jjAddressType"
         },
         "ward": {
           "type": "string"
@@ -1692,7 +1035,7 @@
         }
       }
     },
-    "ocAddressNote": {
+    "baAddressNote": {
       "type": "object",
       "properties": {
         "lunch_break": {
@@ -1709,11 +1052,11 @@
         }
       }
     },
-    "ocAffiliate": {
+    "baAffiliate": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "email": {
           "type": "string"
@@ -1732,11 +1075,11 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
-    "ocBankAccount": {
+    "baBankAccount": {
       "type": "object",
       "properties": {
         "account_name": {
@@ -1756,14 +1099,14 @@
         }
       }
     },
-    "ocCompanyInfo": {
+    "baCompanyInfo": {
       "type": "object",
       "properties": {
         "address": {
           "type": "string"
         },
         "legal_representative": {
-          "$ref": "#/definitions/ocContactPerson"
+          "$ref": "#/definitions/baContactPerson"
         },
         "name": {
           "type": "string"
@@ -1776,7 +1119,7 @@
         }
       }
     },
-    "ocContactPerson": {
+    "baContactPerson": {
       "type": "object",
       "properties": {
         "email": {
@@ -1793,7 +1136,7 @@
         }
       }
     },
-    "ocCoordinates": {
+    "baCoordinates": {
       "type": "object",
       "properties": {
         "latitude": {
@@ -1806,7 +1149,7 @@
         }
       }
     },
-    "ocCredit": {
+    "baCredit": {
       "type": "object",
       "properties": {
         "amount": {
@@ -1825,14 +1168,14 @@
           "format": "date-time"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "type": {
           "type": "string"
@@ -1843,21 +1186,21 @@
         }
       }
     },
-    "ocCreditsResponse": {
+    "baCreditsResponse": {
       "type": "object",
       "properties": {
         "credits": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocCredit"
+            "$ref": "#/definitions/baCredit"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "ocLoginAccount": {
+    "baLoginAccount": {
       "type": "object",
       "properties": {
         "access_token": {
@@ -1883,32 +1226,32 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "url_slug": {
           "type": "string"
         },
         "user_account": {
-          "$ref": "#/definitions/ocUserAccountInfo"
+          "$ref": "#/definitions/baUserAccountInfo"
         }
       }
     },
-    "ocLoginResponse": {
+    "baLoginResponse": {
       "type": "object",
       "properties": {
         "access_token": {
           "type": "string"
         },
         "account": {
-          "$ref": "#/definitions/ocLoginAccount"
+          "$ref": "#/definitions/baLoginAccount"
         },
         "affiliate": {
-          "$ref": "#/definitions/ocAffiliate"
+          "$ref": "#/definitions/baAffiliate"
         },
         "available_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocLoginAccount"
+            "$ref": "#/definitions/baLoginAccount"
           }
         },
         "expires_in": {
@@ -1917,11 +1260,11 @@
         "invitation_accounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocUserAccountInfo"
+            "$ref": "#/definitions/baUserAccountInfo"
           }
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "stoken": {
           "type": "boolean"
@@ -1931,17 +1274,17 @@
           "format": "date-time"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         }
       }
     },
-    "ocPartner": {
+    "baPartner": {
       "type": "object",
       "properties": {
         "contact_persons": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocContactPerson"
+            "$ref": "#/definitions/baContactPerson"
           }
         },
         "email": {
@@ -1971,17 +1314,17 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         },
         "website_url": {
           "type": "string"
         }
       }
     },
-    "ocPermission": {
+    "baPermission": {
       "type": "object",
       "properties": {
         "permissions": {
@@ -1998,7 +1341,7 @@
         }
       }
     },
-    "ocShippingServiceSelectStrategyItem": {
+    "baShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
         "key": {
@@ -2009,23 +1352,23 @@
         }
       }
     },
-    "ocShop": {
+    "baShop": {
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "auto_create_ffm": {
           "type": "boolean"
         },
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
         },
         "company_info": {
-          "$ref": "#/definitions/ocCompanyInfo"
+          "$ref": "#/definitions/baCompanyInfo"
         },
         "email": {
           "type": "string"
@@ -2080,30 +1423,30 @@
         "shipping_service_select_strategy": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+            "$ref": "#/definitions/baShippingServiceSelectStrategyItem"
           }
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "survey_info": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ocSurveyInfo"
+            "$ref": "#/definitions/baSurveyInfo"
           }
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "user": {
-          "$ref": "#/definitions/ocUser"
+          "$ref": "#/definitions/baUser"
         },
         "website_url": {
           "type": "string"
         }
       }
     },
-    "ocSurveyInfo": {
+    "baSurveyInfo": {
       "type": "object",
       "properties": {
         "answer": {
@@ -2117,7 +1460,7 @@
         }
       }
     },
-    "ocUser": {
+    "baUser": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -2157,7 +1500,7 @@
           "type": "string"
         },
         "source": {
-          "$ref": "#/definitions/yuUserSource"
+          "$ref": "#/definitions/djUserSource"
         },
         "updated_at": {
           "type": "string",
@@ -2165,7 +1508,7 @@
         }
       }
     },
-    "ocUserAccountInfo": {
+    "baUserAccountInfo": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -2176,7 +1519,7 @@
           "type": "string"
         },
         "account_type": {
-          "$ref": "#/definitions/ocAccountType"
+          "$ref": "#/definitions/baAccountType"
         },
         "disable_reason": {
           "type": "string"
@@ -2206,16 +1549,16 @@
           "format": "int64"
         },
         "permission": {
-          "$ref": "#/definitions/ocPermission"
+          "$ref": "#/definitions/baPermission"
         },
         "position": {
           "type": "string"
         },
         "response_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "user_full_name": {
           "type": "string"
@@ -2229,15 +1572,238 @@
         }
       }
     },
-    "roNotifierEntity": {
+    "bjSource": {
       "type": "string",
       "enum": [
-        "fulfillment",
-        "money_transaction_shipping",
+        "api",
+        "etop_cmx",
+        "etop_pos",
+        "etop_pxs",
+        "import",
+        "self",
+        "ts_app",
         "unknown"
       ]
     },
-    "vmAttribute": {
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "bmStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "bnStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "NS",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "bwShippingProvider": {
+      "type": "string",
+      "enum": [
+        "all",
+        "ghn",
+        "ghtk",
+        "manual",
+        "unknown",
+        "vtpost"
+      ]
+    },
+    "csTryOnCode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "open",
+        "try",
+        "unknown"
+      ]
+    },
+    "djUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    },
+    "jjAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "ktDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ktIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "ktPageInfo": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktRemovedResponse": {
+      "type": "object",
+      "properties": {
+        "removed": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "ljCreditType": {
+      "type": "string",
+      "enum": [
+        "shop"
+      ]
+    },
+    "ojFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ]
+    },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "female",
+        "male",
+        "other",
+        "unknown"
+      ]
+    },
+    "qdAttribute": {
       "type": "object",
       "properties": {
         "name": {
@@ -2248,13 +1814,13 @@
         }
       }
     },
-    "vmDeliveryPoint": {
+    "qdDeliveryPoint": {
       "type": "object",
       "properties": {
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "order_id": {
@@ -2262,23 +1828,23 @@
           "format": "int64"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "value_info": {
-          "$ref": "#/definitions/vmValueInfo"
+          "$ref": "#/definitions/qdValueInfo"
         },
         "weight_info": {
-          "$ref": "#/definitions/vmWeightInfo"
+          "$ref": "#/definitions/qdWeightInfo"
         }
       }
     },
-    "vmExternalShippingLog": {
+    "qdExternalShippingLog": {
       "type": "object",
       "properties": {
         "message": {
@@ -2292,17 +1858,17 @@
         }
       }
     },
-    "vmFulfillment": {
+    "qdFulfillment": {
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
           "type": "integer"
         },
         "address_from": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "address_to": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
           "type": "integer"
@@ -2315,7 +1881,7 @@
           "format": "date-time"
         },
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -2350,7 +1916,7 @@
           "type": "integer"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
           "type": "string",
@@ -2376,7 +1942,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "money_transaction_shipping_external_id": {
@@ -2388,7 +1954,7 @@
           "format": "int64"
         },
         "order": {
-          "$ref": "#/definitions/vmOrder"
+          "$ref": "#/definitions/qdOrder"
         },
         "order_id": {
           "type": "string",
@@ -2399,25 +1965,25 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "self_url": {
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_code": {
           "type": "string"
@@ -2431,7 +1997,7 @@
         "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "shipping_fee_shop_transfered_at": {
@@ -2454,20 +2020,20 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/nqState"
+          "$ref": "#/definitions/sfState"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -2482,7 +2048,7 @@
           "type": "integer"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "updated_at": {
           "type": "string",
@@ -2512,7 +2078,7 @@
         "x_shipping_logs": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmExternalShippingLog"
+            "$ref": "#/definitions/qdExternalShippingLog"
           }
         },
         "x_shipping_note": {
@@ -2526,7 +2092,7 @@
           "type": "string"
         },
         "x_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "x_shipping_sub_state": {
           "type": "string"
@@ -2536,18 +2102,18 @@
           "format": "date-time"
         },
         "x_sync_states": {
-          "$ref": "#/definitions/vmFulfillmentSyncStates"
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
         },
         "x_sync_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         }
       }
     },
-    "vmFulfillmentSyncStates": {
+    "qdFulfillmentSyncStates": {
       "type": "object",
       "properties": {
         "error": {
-          "$ref": "#/definitions/maError"
+          "$ref": "#/definitions/ktError"
         },
         "next_shipping_state": {
           "type": "string"
@@ -2558,25 +2124,25 @@
         }
       }
     },
-    "vmFulfillmentsResponse": {
+    "qdFulfillmentsResponse": {
       "type": "object",
       "properties": {
         "fulfillments": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmFulfillment"
+            "$ref": "#/definitions/qdFulfillment"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "vmMoneyTransaction": {
+    "qdMoneyTransaction": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "closed_at": {
           "type": "string",
@@ -2623,7 +2189,7 @@
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -2640,11 +2206,11 @@
         }
       }
     },
-    "vmMoneyTransactionShippingEtop": {
+    "qdMoneyTransactionShippingEtop": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
@@ -2667,14 +2233,14 @@
         "money_transactions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmMoneyTransaction"
+            "$ref": "#/definitions/qdMoneyTransaction"
           }
         },
         "note": {
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -2694,25 +2260,25 @@
         }
       }
     },
-    "vmMoneyTransactionShippingEtopsResponse": {
+    "qdMoneyTransactionShippingEtopsResponse": {
       "type": "object",
       "properties": {
         "money_transaction_shipping_etops": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+            "$ref": "#/definitions/qdMoneyTransactionShippingEtop"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "vmMoneyTransactionShippingExternal": {
+    "qdMoneyTransactionShippingExternal": {
       "type": "object",
       "properties": {
         "bank_account": {
-          "$ref": "#/definitions/ocBankAccount"
+          "$ref": "#/definitions/baBankAccount"
         },
         "code": {
           "type": "string"
@@ -2735,7 +2301,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmMoneyTransactionShippingExternalLine"
+            "$ref": "#/definitions/qdMoneyTransactionShippingExternalLine"
           }
         },
         "note": {
@@ -2745,7 +2311,7 @@
           "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "total_cod": {
           "type": "integer"
@@ -2759,7 +2325,7 @@
         }
       }
     },
-    "vmMoneyTransactionShippingExternalLine": {
+    "qdMoneyTransactionShippingExternalLine": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -2797,14 +2363,14 @@
           "type": "integer"
         },
         "fulfillment": {
-          "$ref": "#/definitions/vmFulfillment"
+          "$ref": "#/definitions/qdFulfillment"
         },
         "id": {
           "type": "string",
           "format": "int64"
         },
         "import_error": {
-          "$ref": "#/definitions/maError"
+          "$ref": "#/definitions/ktError"
         },
         "money_transaction_shipping_external_id": {
           "type": "string",
@@ -2819,42 +2385,42 @@
         }
       }
     },
-    "vmMoneyTransactionShippingExternalsResponse": {
+    "qdMoneyTransactionShippingExternalsResponse": {
       "type": "object",
       "properties": {
         "money_transactions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+            "$ref": "#/definitions/qdMoneyTransactionShippingExternal"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "vmMoneyTransactionsResponse": {
+    "qdMoneyTransactionsResponse": {
       "type": "object",
       "properties": {
         "money_transactions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmMoneyTransaction"
+            "$ref": "#/definitions/qdMoneyTransaction"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "vmOrder": {
+    "qdOrder": {
       "type": "object",
       "properties": {
         "basket_value": {
           "type": "integer"
         },
         "billing_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "cancel_reason": {
           "type": "string"
@@ -2871,10 +2437,10 @@
           "type": "string"
         },
         "confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "confirm_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "confirmed_at": {
           "type": "string",
@@ -2885,29 +2451,29 @@
           "format": "date-time"
         },
         "customer": {
-          "$ref": "#/definitions/vmOrderCustomer"
+          "$ref": "#/definitions/qdOrderCustomer"
         },
         "customer_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "customer_id": {
           "type": "string",
           "format": "int64"
         },
         "customer_payment_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "discounts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderDiscount"
+            "$ref": "#/definitions/qdOrderDiscount"
           }
         },
         "ed_code": {
           "type": "string"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "exported_fields": {
           "type": "array",
@@ -2927,7 +2493,7 @@
         "fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderFeeLine"
+            "$ref": "#/definitions/qdOrderFeeLine"
           }
         },
         "fulfillment_ids": {
@@ -2938,10 +2504,10 @@
           }
         },
         "fulfillment_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_type": {
           "type": "string"
@@ -2949,7 +2515,7 @@
         "fulfillments": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmXFulfillment"
+            "$ref": "#/definitions/qdXFulfillment"
           }
         },
         "ghn_note_code": {
@@ -2962,7 +2528,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "order_discount": {
@@ -2979,7 +2545,7 @@
           "type": "string"
         },
         "payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "processed_at": {
           "type": "string",
@@ -2995,13 +2561,13 @@
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipping": {
-          "$ref": "#/definitions/vmOrderShipping"
+          "$ref": "#/definitions/qdOrderShipping"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_fee": {
           "type": "integer"
@@ -3020,16 +2586,16 @@
           "type": "string"
         },
         "shop_shipping": {
-          "$ref": "#/definitions/vmOrderShipping"
+          "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
           "type": "integer"
         },
         "source": {
-          "$ref": "#/definitions/gjSource"
+          "$ref": "#/definitions/bjSource"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -3052,7 +2618,7 @@
         }
       }
     },
-    "vmOrderAddress": {
+    "qdOrderAddress": {
       "type": "object",
       "properties": {
         "address1": {
@@ -3068,7 +2634,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/ocCoordinates"
+          "$ref": "#/definitions/baCoordinates"
         },
         "country": {
           "type": "string"
@@ -3117,7 +2683,7 @@
         }
       }
     },
-    "vmOrderCustomer": {
+    "qdOrderCustomer": {
       "type": "object",
       "properties": {
         "email": {
@@ -3136,7 +2702,7 @@
           "type": "string"
         },
         "gender": {
-          "$ref": "#/definitions/khGender"
+          "$ref": "#/definitions/pwGender"
         },
         "last_name": {
           "type": "string"
@@ -3149,7 +2715,7 @@
         }
       }
     },
-    "vmOrderDiscount": {
+    "qdOrderDiscount": {
       "type": "object",
       "properties": {
         "amount": {
@@ -3163,7 +2729,7 @@
         }
       }
     },
-    "vmOrderFeeLine": {
+    "qdOrderFeeLine": {
       "type": "object",
       "properties": {
         "amount": {
@@ -3179,17 +2745,17 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/juFeeType"
+          "$ref": "#/definitions/ojFeeType"
         }
       }
     },
-    "vmOrderLine": {
+    "qdOrderLine": {
       "type": "object",
       "properties": {
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmAttribute"
+            "$ref": "#/definitions/qdAttribute"
           }
         },
         "exported_fields": {
@@ -3210,7 +2776,7 @@
         "meta_fields": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLineMetaField"
+            "$ref": "#/definitions/qdOrderLineMetaField"
           }
         },
         "order_id": {
@@ -3242,7 +2808,7 @@
         }
       }
     },
-    "vmOrderLineMetaField": {
+    "qdOrderLineMetaField": {
       "type": "object",
       "properties": {
         "key": {
@@ -3256,11 +2822,11 @@
         }
       }
     },
-    "vmOrderShipping": {
+    "qdOrderShipping": {
       "type": "object",
       "properties": {
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -3287,19 +2853,19 @@
           "type": "integer"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "sh_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "shipping_provider": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
           "type": "string"
@@ -3311,7 +2877,7 @@
           "type": "string"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "weight": {
           "type": "integer"
@@ -3330,21 +2896,21 @@
         }
       }
     },
-    "vmOrdersResponse": {
+    "qdOrdersResponse": {
       "type": "object",
       "properties": {
         "orders": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrder"
+            "$ref": "#/definitions/qdOrder"
           }
         },
         "paging": {
-          "$ref": "#/definitions/maPageInfo"
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
-    "vmShipnowFulfillment": {
+    "qdShipnowFulfillment": {
       "type": "object",
       "properties": {
         "cancel_reason": {
@@ -3358,7 +2924,7 @@
           "format": "date-time"
         },
         "confirm_status": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "created_at": {
           "type": "string",
@@ -3367,11 +2933,11 @@
         "delivery_points": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmDeliveryPoint"
+            "$ref": "#/definitions/qdDeliveryPoint"
           }
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "id": {
           "type": "string",
@@ -3389,7 +2955,7 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "request_pickup_at": {
           "type": "string",
@@ -3440,28 +3006,28 @@
           "type": "string"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "updated_at": {
           "type": "string",
           "format": "date-time"
         },
         "value_info": {
-          "$ref": "#/definitions/vmValueInfo"
+          "$ref": "#/definitions/qdValueInfo"
         },
         "weight_info": {
-          "$ref": "#/definitions/vmWeightInfo"
+          "$ref": "#/definitions/qdWeightInfo"
         }
       }
     },
-    "vmShippingFeeLine": {
+    "qdShippingFeeLine": {
       "type": "object",
       "properties": {
         "cost": {
@@ -3483,11 +3049,11 @@
           "type": "string"
         },
         "shipping_fee_type": {
-          "$ref": "#/definitions/wuShippingFeeType"
+          "$ref": "#/definitions/sdShippingFeeType"
         }
       }
     },
-    "vmValueInfo": {
+    "qdValueInfo": {
       "type": "object",
       "properties": {
         "basket_value": {
@@ -3501,7 +3067,7 @@
         }
       }
     },
-    "vmWeightInfo": {
+    "qdWeightInfo": {
       "type": "object",
       "properties": {
         "chargeable_weight": {
@@ -3521,17 +3087,17 @@
         }
       }
     },
-    "vmXFulfillment": {
+    "qdXFulfillment": {
       "type": "object",
       "properties": {
         "actual_compensation_amount": {
           "type": "integer"
         },
         "address_from": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "address_to": {
-          "$ref": "#/definitions/ocAddress"
+          "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
           "type": "integer"
@@ -3544,7 +3110,7 @@
           "format": "date-time"
         },
         "carrier": {
-          "$ref": "#/definitions/whShippingProvider"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
           "type": "integer"
@@ -3579,7 +3145,7 @@
           "type": "integer"
         },
         "etop_payment_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
           "type": "string",
@@ -3599,7 +3165,7 @@
         "lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmOrderLine"
+            "$ref": "#/definitions/qdOrderLine"
           }
         },
         "money_transaction_shipping_external_id": {
@@ -3611,7 +3177,7 @@
           "format": "int64"
         },
         "order": {
-          "$ref": "#/definitions/vmOrder"
+          "$ref": "#/definitions/qdOrder"
         },
         "order_id": {
           "type": "string",
@@ -3622,31 +3188,31 @@
           "format": "int64"
         },
         "pickup_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "return_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "self_url": {
           "type": "string"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/wwStatus"
+          "$ref": "#/definitions/blStatus"
         },
         "shipment": {
-          "$ref": "#/definitions/vmFulfillment"
+          "$ref": "#/definitions/qdFulfillment"
         },
         "shipnow": {
-          "$ref": "#/definitions/vmShipnowFulfillment"
+          "$ref": "#/definitions/qdShipnowFulfillment"
         },
         "shipping_address": {
-          "$ref": "#/definitions/vmOrderAddress"
+          "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_code": {
           "type": "string"
@@ -3660,7 +3226,7 @@
         "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmShippingFeeLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
         },
         "shipping_fee_shop_transfered_at": {
@@ -3683,20 +3249,20 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/nqState"
+          "$ref": "#/definitions/sfState"
         },
         "shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "shop": {
-          "$ref": "#/definitions/ocShop"
+          "$ref": "#/definitions/baShop"
         },
         "shop_id": {
           "type": "string",
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
           "type": "integer"
@@ -3711,7 +3277,7 @@
           "type": "integer"
         },
         "try_on": {
-          "$ref": "#/definitions/xdTryOnCode"
+          "$ref": "#/definitions/csTryOnCode"
         },
         "updated_at": {
           "type": "string",
@@ -3741,7 +3307,7 @@
         "x_shipping_logs": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/vmExternalShippingLog"
+            "$ref": "#/definitions/qdExternalShippingLog"
           }
         },
         "x_shipping_note": {
@@ -3755,7 +3321,7 @@
           "type": "string"
         },
         "x_shipping_status": {
-          "$ref": "#/definitions/wyStatus"
+          "$ref": "#/definitions/bnStatus"
         },
         "x_shipping_sub_state": {
           "type": "string"
@@ -3765,25 +3331,14 @@
           "format": "date-time"
         },
         "x_sync_states": {
-          "$ref": "#/definitions/vmFulfillmentSyncStates"
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
         },
         "x_sync_status": {
-          "$ref": "#/definitions/wxStatus"
+          "$ref": "#/definitions/bmStatus"
         }
       }
     },
-    "whShippingProvider": {
-      "type": "string",
-      "enum": [
-        "all",
-        "ghn",
-        "ghtk",
-        "manual",
-        "unknown",
-        "vtpost"
-      ]
-    },
-    "wuShippingFeeType": {
+    "sdShippingFeeType": {
       "type": "string",
       "enum": [
         "address_change",
@@ -3798,54 +3353,499 @@
         "unknown"
       ]
     },
-    "wwStatus": {
+    "sfState": {
       "type": "string",
       "enum": [
-        "N",
-        "P",
-        "Z"
-      ]
-    },
-    "wxStatus": {
-      "type": "string",
-      "enum": [
-        "N",
-        "P",
-        "S",
-        "Z"
-      ]
-    },
-    "wyStatus": {
-      "type": "string",
-      "enum": [
-        "N",
-        "NS",
-        "P",
-        "S",
-        "Z"
-      ]
-    },
-    "xdTryOnCode": {
-      "type": "string",
-      "enum": [
-        "none",
-        "open",
-        "try",
+        "cancelled",
+        "confirmed",
+        "created",
+        "default",
+        "delivered",
+        "delivering",
+        "holding",
+        "picking",
+        "processing",
+        "returned",
+        "returning",
+        "undeliverable",
         "unknown"
       ]
     },
-    "yuUserSource": {
+    "wdNotifierEntity": {
       "type": "string",
       "enum": [
-        "etop",
-        "partner",
-        "psx",
-        "topship",
-        "ts_app_android",
-        "ts_app_ios",
-        "ts_app_web",
+        "fulfillment",
+        "money_transaction_shipping",
         "unknown"
       ]
+    },
+    "xuConfirmCreditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuConfirmMoneyTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "money_transaction_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_cod": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_orders": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuConfirmMoneyTransactionShippingEtopRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_cod": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_orders": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuCreateCreditRequest": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCreditType"
+        }
+      }
+    },
+    "xuCreateNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "account_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "entity": {
+          "$ref": "#/definitions/wdNotifierEntity"
+        },
+        "entity_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "send_all": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "xuCreateNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "integer"
+        },
+        "errored": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuCreatePartnerRequest": {
+      "type": "object",
+      "properties": {
+        "partner": {
+          "$ref": "#/definitions/baPartner"
+        }
+      }
+    },
+    "xuGenerateAPIKeyRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGenerateAPIKeyResponse": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "api_key": {
+          "type": "string"
+        }
+      }
+    },
+    "xuGetCreditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetCreditsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "xuGetMoneyTransactionShippingEtopsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "xuGetMoneyTransactionShippingExternalsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "xuGetMoneyTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "xuGetShopsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "xuGetShopsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "shops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baShop"
+          }
+        }
+      }
+    },
+    "xuLoginAsAccountRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "password": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuRemoveMoneyTransactionShippingExternalLinesRequest": {
+      "type": "object",
+      "properties": {
+        "line_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuUpdateCreditRequest": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCreditType"
+        }
+      }
+    },
+    "xuUpdateFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "actual_compensation_amount": {
+          "type": "integer"
+        },
+        "admin_note": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_partial_delivery": {
+          "type": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        },
+        "total_cod_amount": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuUpdateMoneyTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_number": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "xuUpdateMoneyTransactionShippingEtopRequest": {
+      "type": "object",
+      "properties": {
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_number": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "xuUpdateMoneyTransactionShippingExternalRequest": {
+      "type": "object",
+      "properties": {
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_number": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

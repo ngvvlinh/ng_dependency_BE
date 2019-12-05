@@ -7,9 +7,10 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	"etop.vn/api/top/int/types"
+
 	"etop.vn/api/main/location"
-	pbsheet "etop.vn/api/pb/common/spreadsheet"
-	pborder "etop.vn/api/pb/etop/order"
+	pbsheet "etop.vn/api/top/int/types/spreadsheet"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -140,8 +141,8 @@ func parseRequest(c *httpx.Context) (*Importer, error) {
 	return req, nil
 }
 
-func (imp *Importer) generateErrorResponse(idx imcsv.Indexer, errs []error) (*pborder.ImportOrdersResponse, error) {
-	resp := &pborder.ImportOrdersResponse{
+func (imp *Importer) generateErrorResponse(idx imcsv.Indexer, errs []error) (*types.ImportOrdersResponse, error) {
+	resp := &types.ImportOrdersResponse{
 		Data:       imp.toSpreadsheetData(idx),
 		CellErrors: cmapi.PbErrors(errs),
 	}

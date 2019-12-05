@@ -7,7 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	meta "etop.vn/api/meta"
-	"etop.vn/api/pb/common"
+	"etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

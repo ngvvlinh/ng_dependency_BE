@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	admin "etop.vn/api/pb/etop/admin"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -54,13 +53,13 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Account/CreatePartner":
-		msg := &admin.CreatePartnerRequest{}
+		msg := &CreatePartnerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreatePartner(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Account/GenerateAPIKey":
-		msg := &admin.GenerateAPIKeyRequest{}
+		msg := &GenerateAPIKeyRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GenerateAPIKey(ctx, msg)
 		}
@@ -105,13 +104,13 @@ func (s *CreditServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Credit/ConfirmCredit":
-		msg := &admin.ConfirmCreditRequest{}
+		msg := &ConfirmCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/CreateCredit":
-		msg := &admin.CreateCreditRequest{}
+		msg := &CreateCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCredit(ctx, msg)
 		}
@@ -123,19 +122,19 @@ func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredit":
-		msg := &admin.GetCreditRequest{}
+		msg := &GetCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredits":
-		msg := &admin.GetCreditsRequest{}
+		msg := &GetCreditsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCredits(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/UpdateCredit":
-		msg := &admin.UpdateCreditRequest{}
+		msg := &UpdateCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCredit(ctx, msg)
 		}
@@ -186,13 +185,13 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/GetFulfillments":
-		msg := &admin.GetFulfillmentsRequest{}
+		msg := &GetFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillment":
-		msg := &admin.UpdateFulfillmentRequest{}
+		msg := &UpdateFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateFulfillment(ctx, msg)
 		}
@@ -237,7 +236,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Misc/AdminLoginAsAccount":
-		msg := &admin.LoginAsAccountRequest{}
+		msg := &LoginAsAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AdminLoginAsAccount(ctx, msg)
 		}
@@ -288,13 +287,13 @@ func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req 
 func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.MoneyTransaction/ConfirmMoneyTransaction":
-		msg := &admin.ConfirmMoneyTransactionRequest{}
+		msg := &ConfirmMoneyTransactionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":
-		msg := &admin.ConfirmMoneyTransactionShippingEtopRequest{}
+		msg := &ConfirmMoneyTransactionShippingEtopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
 		}
@@ -342,7 +341,7 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtops":
-		msg := &admin.GetMoneyTransactionShippingEtopsRequest{}
+		msg := &GetMoneyTransactionShippingEtopsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingEtops(ctx, msg)
 		}
@@ -354,37 +353,37 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals":
-		msg := &admin.GetMoneyTransactionShippingExternalsRequest{}
+		msg := &GetMoneyTransactionShippingExternalsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingExternals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactions":
-		msg := &admin.GetMoneyTransactionsRequest{}
+		msg := &GetMoneyTransactionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines":
-		msg := &admin.RemoveMoneyTransactionShippingExternalLinesRequest{}
+		msg := &RemoveMoneyTransactionShippingExternalLinesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransaction":
-		msg := &admin.UpdateMoneyTransactionRequest{}
+		msg := &UpdateMoneyTransactionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":
-		msg := &admin.UpdateMoneyTransactionShippingEtopRequest{}
+		msg := &UpdateMoneyTransactionShippingEtopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":
-		msg := &admin.UpdateMoneyTransactionShippingExternalRequest{}
+		msg := &UpdateMoneyTransactionShippingExternalRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
 		}
@@ -429,7 +428,7 @@ func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 func (s *NotificationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Notification/CreateNotifications":
-		msg := &admin.CreateNotificationsRequest{}
+		msg := &CreateNotificationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateNotifications(ctx, msg)
 		}
@@ -480,7 +479,7 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrders":
-		msg := &admin.GetOrdersRequest{}
+		msg := &GetOrdersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrders(ctx, msg)
 		}
@@ -537,7 +536,7 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShops":
-		msg := &admin.GetShopsRequest{}
+		msg := &GetShopsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShops(ctx, msg)
 		}

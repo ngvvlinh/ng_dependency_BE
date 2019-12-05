@@ -7,7 +7,7 @@ package catalog
 import (
 	context "context"
 
-	types "etop.vn/api/main/catalog/types"
+	catalogtypes "etop.vn/api/main/catalog/types"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
@@ -112,7 +112,7 @@ type CreateShopVariantCommand struct {
 	Name            string
 	ImageURLs       []string
 	Note            string
-	Attributes      types.Attributes
+	Attributes      catalogtypes.Attributes
 	DescriptionInfo DescriptionInfo
 	PriceInfo       PriceInfo
 
@@ -360,7 +360,7 @@ func (h AggregateHandler) HandleUpdateShopProductStatus(ctx context.Context, msg
 type UpdateShopVariantAttributesCommand struct {
 	ShopID     dot.ID
 	VariantID  dot.ID
-	Attributes types.Attributes
+	Attributes catalogtypes.Attributes
 
 	Result *ShopVariant `json:"-"`
 }

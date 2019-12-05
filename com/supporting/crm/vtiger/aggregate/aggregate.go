@@ -8,14 +8,14 @@ import (
 	crmvtiger "etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/backend/com/supporting/crm/vtiger/convert"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-	mapping2 "etop.vn/backend/com/supporting/crm/vtiger/mapping"
+	vtigermapping "etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
 	"etop.vn/backend/com/supporting/crm/vtiger/sync"
 	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	client2 "etop.vn/backend/pkg/integration/vtiger/client"
+	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 )
 
 var (
@@ -68,7 +68,7 @@ var _ crmvtiger.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	vcsf        sqlstore.VtigerContactStoreFactory
-	fieldMap    mapping2.ConfigMap
+	fieldMap    vtigermapping.ConfigMap
 	vs          *vtigerstore.VtigerStore
 	syncContact *sync.SyncVtiger
 }
@@ -76,7 +76,7 @@ type Aggregate struct {
 type FieldMap map[string]ItemFieldMap
 type ItemFieldMap map[string]string
 
-func New(db *cmsql.Database, fieldMap mapping2.ConfigMap, client *client2.VtigerClient) *Aggregate {
+func New(db *cmsql.Database, fieldMap vtigermapping.ConfigMap, client *vtigerclient.VtigerClient) *Aggregate {
 	return &Aggregate{
 		fieldMap: fieldMap,
 		vcsf:     sqlstore.NewVtigerStore(db),

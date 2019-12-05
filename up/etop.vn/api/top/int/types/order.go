@@ -1,23 +1,34 @@
-package order
+package types
 
 import (
-	common "etop.vn/api/pb/common"
-	spreadsheet "etop.vn/api/pb/common/spreadsheet"
-	etop "etop.vn/api/pb/etop"
-	fee "etop.vn/api/pb/etop/etc/fee"
-	gender "etop.vn/api/pb/etop/etc/gender"
-	ghn_note_code "etop.vn/api/pb/etop/etc/ghn_note_code"
-	shipping "etop.vn/api/pb/etop/etc/shipping"
-	shipping_fee_type "etop.vn/api/pb/etop/etc/shipping_fee_type"
-	shipping_provider "etop.vn/api/pb/etop/etc/shipping_provider"
-	status3 "etop.vn/api/pb/etop/etc/status3"
-	status4 "etop.vn/api/pb/etop/etc/status4"
-	status5 "etop.vn/api/pb/etop/etc/status5"
-	try_on "etop.vn/api/pb/etop/etc/try_on"
-	source "etop.vn/api/pb/etop/order/source"
+	etop "etop.vn/api/top/int/etop"
+	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
+	common "etop.vn/api/top/types/common"
+	fee "etop.vn/api/top/types/etc/fee"
+	gender "etop.vn/api/top/types/etc/gender"
+	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	shipping "etop.vn/api/top/types/etc/shipping"
+	shipping_fee_type "etop.vn/api/top/types/etc/shipping_fee_type"
+	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
+	source "etop.vn/api/top/types/etc/source"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	status5 "etop.vn/api/top/types/etc/status5"
+	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
+
+func (m *OrderWithErrorsResponse) HasErrors() []*common.Error {
+	return m.FulfillmentErrors
+}
+
+func (m *ImportOrdersResponse) HasErrors() []*common.Error {
+	if len(m.CellErrors) > 0 {
+		return m.CellErrors
+	}
+	return m.ImportErrors
+}
 
 type OrdersResponse struct {
 	Paging *common.PageInfo `json:"paging"`

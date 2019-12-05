@@ -6,6 +6,7 @@ import (
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
 	"etop.vn/backend/tools/pkg/generators/api/parse"
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
@@ -14,12 +15,14 @@ var _ generator.Plugin = &plugin{}
 
 type plugin struct {
 	generator.Filterer
+	generator.Qualifier
 	ng generator.Engine
 }
 
 func New() generator.Plugin {
 	return &plugin{
-		Filterer: generator.FilterByCommand("gen:apix"),
+		Filterer:  generator.FilterByCommand("gen:apix"),
+		Qualifier: genutil.Qualifier{},
 	}
 }
 

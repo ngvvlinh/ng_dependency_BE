@@ -3,9 +3,10 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/ledgering"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -44,7 +45,7 @@ func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) er
 		return err
 	}
 
-	r.Result = &pbshop.LedgersResponse{
+	r.Result = &shop.LedgersResponse{
 		Ledgers: convertpb.PbLedgers(query.Result.Ledgers),
 		Paging:  cmapi.PbPageInfo(paging, query.Result.Count),
 	}

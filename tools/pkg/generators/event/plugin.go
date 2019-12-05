@@ -9,18 +9,21 @@ import (
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/genutil"
 )
 
 const CmdTopic = "gen:event:topic"
 
 func New() generator.Plugin {
 	return &gen{
-		Filterer: generator.FilterByCommand(CmdTopic),
+		Filterer:  generator.FilterByCommand(CmdTopic),
+		Qualifier: genutil.Qualifier{},
 	}
 }
 
 type gen struct {
 	generator.Filterer
+	generator.Qualifier
 }
 
 func (g gen) Name() string { return "event" }

@@ -8,9 +8,8 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	crm "etop.vn/api/pb/services/crm"
 	api "etop.vn/api/top/services/crm"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -29,12 +28,12 @@ type wrapCrmService struct {
 }
 
 type RefreshFulfillmentFromCarrierEndpoint struct {
-	*crm.RefreshFulfillmentFromCarrierRequest
+	*api.RefreshFulfillmentFromCarrierRequest
 	Result  *cm.UpdatedResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *crm.RefreshFulfillmentFromCarrierRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *api.RefreshFulfillmentFromCarrierRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "crm.Crm/RefreshFulfillmentFromCarrier"
@@ -64,12 +63,12 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 }
 
 type SendNotificationEndpoint struct {
-	*crm.SendNotificationRequest
+	*api.SendNotificationRequest
 	Result  *cm.MessageResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapCrmService) SendNotification(ctx context.Context, req *crm.SendNotificationRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotificationRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "crm.Crm/SendNotification"
@@ -151,12 +150,12 @@ type wrapVhtService struct {
 }
 
 type CreateOrUpdateCallHistoryByCallIDEndpoint struct {
-	*crm.VHTCallLog
-	Result  *crm.VHTCallLog
+	*api.VHTCallLog
+	Result  *api.VHTCallLog
 	Context claims.AdminClaim
 }
 
-func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, req *crm.VHTCallLog) (resp *crm.VHTCallLog, err error) {
+func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, req *api.VHTCallLog) (resp *api.VHTCallLog, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -196,12 +195,12 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 }
 
 type CreateOrUpdateCallHistoryBySDKCallIDEndpoint struct {
-	*crm.VHTCallLog
-	Result  *crm.VHTCallLog
+	*api.VHTCallLog
+	Result  *api.VHTCallLog
 	Context claims.AdminClaim
 }
 
-func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, req *crm.VHTCallLog) (resp *crm.VHTCallLog, err error) {
+func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, req *api.VHTCallLog) (resp *api.VHTCallLog, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -241,12 +240,12 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 }
 
 type GetCallHistoriesEndpoint struct {
-	*crm.GetCallHistoriesRequest
-	Result  *crm.GetCallHistoriesResponse
+	*api.GetCallHistoriesRequest
+	Result  *api.GetCallHistoriesResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapVhtService) GetCallHistories(ctx context.Context, req *crm.GetCallHistoriesRequest) (resp *crm.GetCallHistoriesResponse, err error) {
+func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHistoriesRequest) (resp *api.GetCallHistoriesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -294,12 +293,12 @@ type wrapVtigerService struct {
 }
 
 type CreateOrUpdateContactEndpoint struct {
-	*crm.ContactRequest
-	Result  *crm.ContactResponse
+	*api.ContactRequest
+	Result  *api.ContactResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *crm.ContactRequest) (resp *crm.ContactResponse, err error) {
+func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.ContactRequest) (resp *api.ContactResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -339,12 +338,12 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *crm.C
 }
 
 type CreateOrUpdateLeadEndpoint struct {
-	*crm.LeadRequest
-	Result  *crm.LeadResponse
+	*api.LeadRequest
+	Result  *api.LeadResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *crm.LeadRequest) (resp *crm.LeadResponse, err error) {
+func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.LeadRequest) (resp *api.LeadResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -384,12 +383,12 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *crm.Lead
 }
 
 type CreateTicketEndpoint struct {
-	*crm.CreateOrUpdateTicketRequest
-	Result  *crm.Ticket
+	*api.CreateOrUpdateTicketRequest
+	Result  *api.Ticket
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) CreateTicket(ctx context.Context, req *crm.CreateOrUpdateTicketRequest) (resp *crm.Ticket, err error) {
+func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUpdateTicketRequest) (resp *api.Ticket, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -430,11 +429,11 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *crm.CreateOrUp
 
 type GetCategoriesEndpoint struct {
 	*cm.Empty
-	Result  *crm.GetCategoriesResponse
+	Result  *api.GetCategoriesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (resp *crm.GetCategoriesResponse, err error) {
+func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (resp *api.GetCategoriesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -474,12 +473,12 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 }
 
 type GetContactsEndpoint struct {
-	*crm.GetContactsRequest
-	Result  *crm.GetContactsResponse
+	*api.GetContactsRequest
+	Result  *api.GetContactsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapVtigerService) GetContacts(ctx context.Context, req *crm.GetContactsRequest) (resp *crm.GetContactsResponse, err error) {
+func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContactsRequest) (resp *api.GetContactsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -520,11 +519,11 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *crm.GetContacts
 
 type GetTicketStatusCountEndpoint struct {
 	*cm.Empty
-	Result  *crm.GetTicketStatusCountResponse
+	Result  *api.GetTicketStatusCountResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Empty) (resp *crm.GetTicketStatusCountResponse, err error) {
+func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Empty) (resp *api.GetTicketStatusCountResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -564,12 +563,12 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 }
 
 type GetTicketsEndpoint struct {
-	*crm.GetTicketsRequest
-	Result  *crm.GetTicketsResponse
+	*api.GetTicketsRequest
+	Result  *api.GetTicketsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) GetTickets(ctx context.Context, req *crm.GetTicketsRequest) (resp *crm.GetTicketsResponse, err error) {
+func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRequest) (resp *api.GetTicketsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -609,12 +608,12 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *crm.GetTicketsRe
 }
 
 type UpdateTicketEndpoint struct {
-	*crm.CreateOrUpdateTicketRequest
-	Result  *crm.Ticket
+	*api.CreateOrUpdateTicketRequest
+	Result  *api.Ticket
 	Context claims.ShopClaim
 }
 
-func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *crm.CreateOrUpdateTicketRequest) (resp *crm.Ticket, err error) {
+func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUpdateTicketRequest) (resp *api.Ticket, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

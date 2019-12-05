@@ -8,10 +8,9 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	sadmin "etop.vn/api/pb/etop/sadmin"
+	etop "etop.vn/api/top/int/etop"
 	api "etop.vn/api/top/int/sadmin"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -79,12 +78,12 @@ type wrapUserService struct {
 }
 
 type CreateUserEndpoint struct {
-	*sadmin.SAdminCreateUserRequest
+	*api.SAdminCreateUserRequest
 	Result  *etop.RegisterResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) CreateUser(ctx context.Context, req *sadmin.SAdminCreateUserRequest) (resp *etop.RegisterResponse, err error) {
+func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUserRequest) (resp *etop.RegisterResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -121,12 +120,12 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *sadmin.SAdminCreat
 }
 
 type LoginAsAccountEndpoint struct {
-	*sadmin.LoginAsAccountRequest
+	*api.LoginAsAccountRequest
 	Result  *etop.LoginResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) LoginAsAccount(ctx context.Context, req *sadmin.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
+func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -163,12 +162,12 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *sadmin.LoginAs
 }
 
 type ResetPasswordEndpoint struct {
-	*sadmin.SAdminResetPasswordRequest
+	*api.SAdminResetPasswordRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) ResetPassword(ctx context.Context, req *sadmin.SAdminResetPasswordRequest) (resp *cm.Empty, err error) {
+func (s wrapUserService) ResetPassword(ctx context.Context, req *api.SAdminResetPasswordRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

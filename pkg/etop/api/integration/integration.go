@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	pbcm "etop.vn/api/pb/common"
-	pbintegration "etop.vn/api/pb/etop/integration"
+	"etop.vn/api/top/int/integration"
+
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -179,7 +180,7 @@ func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.
 	return partner, nil
 }
 
-func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
+func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -196,7 +197,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	}
 
 	meta := map[string]string{}
-	action := &pbintegration.Action{
+	action := &integration.Action{
 		Name:  "request_login",
 		Label: fmt.Sprintf(`Kết nối với %v`, partner.PublicName),
 		Meta:  meta,
@@ -217,17 +218,17 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	}
 
 	action.Msg = fmt.Sprintf("Nhập số điện thoại hoặc email để kết nối với %v", partner.PublicName)
-	resp := &pbintegration.LoginResponse{
+	resp := &integration.LoginResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   tokenCmd.Result.ExpiresIn,
-		Actions:     []*pbintegration.Action{action},
+		Actions:     []*integration.Action{action},
 		AuthPartner: convertpb.PbPublicAccountInfo(partner),
 		RedirectUrl: info.RedirectURL,
 	}
 	return resp, nil
 }
 
-func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
+func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*integration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -239,7 +240,7 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *model
 		return nil, cm.Errorf(cm.Internal, err, "")
 	}
 
-	actions := []*pbintegration.Action{
+	actions := []*integration.Action{
 		{
 			Name: "create_order",
 		},
@@ -381,10 +382,10 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		panic("unexpected")
 	}
 
-	r.Result = &pbintegration.RequestLoginResponse{
+	r.Result = &integration.RequestLoginResponse{
 		Code: "ok",
 		Msg:  msg,
-		Actions: []*pbintegration.Action{
+		Actions: []*integration.Action{
 			{
 				Name:  "login_using_token",
 				Label: "Nhập mã xác nhận",
@@ -521,13 +522,13 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 			meta["email"] = emailNorm
 		}
 		// user can create new account
-		actions := []*pbintegration.Action{
+		actions := []*integration.Action{
 			{
 				Name: "register",
 				Meta: meta,
 			},
 		}
-		r.Result = &pbintegration.LoginResponse{
+		r.Result = &integration.LoginResponse{
 			AccessToken:       tokenCmd.Result.TokenStr,
 			ExpiresIn:         tokenCmd.Result.ExpiresIn,
 			User:              nil,
@@ -576,7 +577,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	}
 
 	// we map from all accounts to partner relations and generate tokens for each one
-	availableAccounts := make([]*pbintegration.PartnerShopLoginAccount, 0, len(accQuery.Result))
+	availableAccounts := make([]*integration.PartnerShopLoginAccount, 0, len(accQuery.Result))
 	for _, acc := range accQuery.Result {
 		if acc.Account.Type != model.TypeShop {
 			continue
@@ -587,7 +588,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 			continue
 		}
 
-		availAcc := &pbintegration.PartnerShopLoginAccount{
+		availAcc := &integration.PartnerShopLoginAccount{
 			Id:       acc.Account.ID,
 			Name:     acc.Account.Name,
 			Type:     convertpb.PbAccountType(acc.Account.Type),
@@ -625,7 +626,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		// automatically select external_shop_id:
 		// 1. if there is account with that, use it
 		// 2. otherwise, clear all token and wait for the user to grant access
-		var aa *pbintegration.PartnerShopLoginAccount
+		var aa *integration.PartnerShopLoginAccount
 		for _, acc := range availableAccounts {
 			if acc.ExternalId == requestInfo.ExternalShopID {
 				aa = acc
@@ -635,11 +636,11 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 
 		if aa != nil {
 			// found, respond the only account that match
-			availableAccounts = []*pbintegration.PartnerShopLoginAccount{aa}
+			availableAccounts = []*integration.PartnerShopLoginAccount{aa}
 
 		} else {
 			var externalIDs []string
-			avails := make([]*pbintegration.PartnerShopLoginAccount, 0, len(availableAccounts))
+			avails := make([]*integration.PartnerShopLoginAccount, 0, len(availableAccounts))
 			// not found, only list the accounts with external_shop_id empty,
 			// clear all tokens and wait for the user to grant access because we
 			// don't know which shop will map to external_shop_id
@@ -659,7 +660,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		}
 	}
 
-	r.Result = &pbintegration.LoginResponse{
+	r.Result = &integration.LoginResponse{
 		AccessToken:       userTokenCmd.Result.TokenStr,
 		ExpiresIn:         userTokenCmd.Result.ExpiresIn,
 		User:              convertpb.PbPartnerUserInfo(userQuery.Result.User),
@@ -795,7 +796,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		}
 	}
 
-	r.Result = &pbintegration.RegisterResponse{
+	r.Result = &integration.RegisterResponse{
 		User:        convertpb.PbUser(user),
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   tokenCmd.Result.ExpiresIn,
@@ -880,7 +881,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 		return err
 	}
 
-	r.Result = &pbintegration.GrantAccessResponse{
+	r.Result = &integration.GrantAccessResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   tokenCmd.Result.ExpiresIn,
 	}
@@ -909,8 +910,8 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 	return nil
 }
 
-func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*pbintegration.Action) *pbintegration.LoginResponse {
-	resp := &pbintegration.LoginResponse{
+func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*integration.Action) *integration.LoginResponse {
+	resp := &integration.LoginResponse{
 		AccessToken:       accessToken,
 		ExpiresIn:         expiresIn,
 		Account:           nil,
@@ -922,7 +923,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 	}
 
 	if shop != nil {
-		account := &pbintegration.PartnerShopLoginAccount{
+		account := &integration.PartnerShopLoginAccount{
 			Id:          shop.ID,
 			Name:        shop.Name,
 			Type:        convertpb.PbAccountType(model.TypeShop),
@@ -931,7 +932,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 			ImageUrl:    shop.ImageURL,
 		}
 		resp.Account = account
-		resp.AvailableAccounts = []*pbintegration.PartnerShopLoginAccount{account}
+		resp.AvailableAccounts = []*integration.PartnerShopLoginAccount{account}
 		resp.Shop = convertpb.PbPartnerShopInfo(shop)
 	}
 	return resp

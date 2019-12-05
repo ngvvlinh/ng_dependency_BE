@@ -1,11 +1,11 @@
 package affiliate
 
 import (
-	common "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	status4 "etop.vn/api/pb/etop/etc/status4"
-	order "etop.vn/api/pb/etop/order"
-	shop "etop.vn/api/pb/etop/shop"
+	etop "etop.vn/api/top/int/etop"
+	shop "etop.vn/api/top/int/shop"
+	"etop.vn/api/top/int/types"
+	common "etop.vn/api/top/types/common"
+	status4 "etop.vn/api/top/types/etc/status4"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -37,7 +37,7 @@ type SellerCommission struct {
 	OValue      int               `json:"o_value"`
 	OBaseValue  int               `json:"o_base_value"`
 	Product     *shop.ShopProduct `json:"product"`
-	Order       *order.Order      `json:"order"`
+	Order       *types.Order      `json:"order"`
 	FromSeller  *etop.Affiliate   `json:"from_seller"`
 	ValidAt     dot.Time          `json:"valid_at"`
 	CreatedAt   dot.Time          `json:"created_at"`

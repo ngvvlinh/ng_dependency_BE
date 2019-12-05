@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	order "etop.vn/api/pb/etop/order"
-	shop "etop.vn/api/pb/etop/shop"
+	etop "etop.vn/api/top/int/etop"
+	inttypes "etop.vn/api/top/int/types"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -80,7 +79,7 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Account/RegisterShop":
-		msg := &shop.RegisterShopRequest{}
+		msg := &RegisterShopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RegisterShop(ctx, msg)
 		}
@@ -98,19 +97,19 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Account/UpdateExternalAccountAhamoveVerification":
-		msg := &shop.UpdateXAccountAhamoveVerificationRequest{}
+		msg := &UpdateXAccountAhamoveVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateExternalAccountAhamoveVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Account/UpdateExternalAccountAhamoveVerificationImages":
-		msg := &shop.UpdateXAccountAhamoveVerificationRequest{}
+		msg := &UpdateXAccountAhamoveVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateExternalAccountAhamoveVerificationImages(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Account/UpdateShop":
-		msg := &shop.UpdateShopRequest{}
+		msg := &UpdateShopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateShop(ctx, msg)
 		}
@@ -155,7 +154,7 @@ func (s *AuthorizeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 func (s *AuthorizeServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Authorize/AuthorizePartner":
-		msg := &shop.AuthorizePartnerRequest{}
+		msg := &AuthorizePartnerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AuthorizePartner(ctx, msg)
 		}
@@ -212,7 +211,7 @@ func (s *BrandServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 func (s *BrandServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Brand/CreateBrand":
-		msg := &shop.CreateBrandRequest{}
+		msg := &CreateBrandRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateBrand(ctx, msg)
 		}
@@ -230,7 +229,7 @@ func (s *BrandServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		}
 		return msg, fn, nil
 	case "/shop.Brand/GetBrands":
-		msg := &shop.GetBrandsRequest{}
+		msg := &GetBrandsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetBrands(ctx, msg)
 		}
@@ -242,7 +241,7 @@ func (s *BrandServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		}
 		return msg, fn, nil
 	case "/shop.Brand/UpdateBrandInfo":
-		msg := &shop.UpdateBrandRequest{}
+		msg := &UpdateBrandRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateBrandInfo(ctx, msg)
 		}
@@ -287,7 +286,7 @@ func (s *CarrierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *CarrierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Carrier/CreateCarrier":
-		msg := &shop.CreateCarrierRequest{}
+		msg := &CreateCarrierRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCarrier(ctx, msg)
 		}
@@ -305,7 +304,7 @@ func (s *CarrierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Carrier/GetCarriers":
-		msg := &shop.GetCarriersRequest{}
+		msg := &GetCarriersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCarriers(ctx, msg)
 		}
@@ -317,7 +316,7 @@ func (s *CarrierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Carrier/UpdateCarrier":
-		msg := &shop.UpdateCarrierRequest{}
+		msg := &UpdateCarrierRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCarrier(ctx, msg)
 		}
@@ -362,7 +361,7 @@ func (s *CategoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *CategoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Category/CreateCategory":
-		msg := &shop.CreateCategoryRequest{}
+		msg := &CreateCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCategory(ctx, msg)
 		}
@@ -374,7 +373,7 @@ func (s *CategoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Category/GetCategories":
-		msg := &shop.GetCategoriesRequest{}
+		msg := &GetCategoriesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCategories(ctx, msg)
 		}
@@ -386,7 +385,7 @@ func (s *CategoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Category/UpdateCategory":
-		msg := &shop.UpdateCategoryRequest{}
+		msg := &UpdateCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCategory(ctx, msg)
 		}
@@ -431,7 +430,7 @@ func (s *CollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 func (s *CollectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Collection/CreateCollection":
-		msg := &shop.CreateCollectionRequest{}
+		msg := &CreateCollectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCollection(ctx, msg)
 		}
@@ -443,19 +442,19 @@ func (s *CollectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 		}
 		return msg, fn, nil
 	case "/shop.Collection/GetCollections":
-		msg := &shop.GetCollectionsRequest{}
+		msg := &GetCollectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCollections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Collection/GetCollectionsByProductID":
-		msg := &shop.GetShopCollectionsByProductIDRequest{}
+		msg := &GetShopCollectionsByProductIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCollectionsByProductID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Collection/UpdateCollection":
-		msg := &shop.UpdateCollectionRequest{}
+		msg := &UpdateCollectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCollection(ctx, msg)
 		}
@@ -500,7 +499,7 @@ func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.CustomerGroup/CreateCustomerGroup":
-		msg := &shop.CreateCustomerGroupRequest{}
+		msg := &CreateCustomerGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCustomerGroup(ctx, msg)
 		}
@@ -512,13 +511,13 @@ func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		}
 		return msg, fn, nil
 	case "/shop.CustomerGroup/GetCustomerGroups":
-		msg := &shop.GetCustomerGroupsRequest{}
+		msg := &GetCustomerGroupsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCustomerGroups(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.CustomerGroup/UpdateCustomerGroup":
-		msg := &shop.UpdateCustomerGroupRequest{}
+		msg := &UpdateCustomerGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCustomerGroup(ctx, msg)
 		}
@@ -563,25 +562,25 @@ func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Customer/AddCustomersToGroup":
-		msg := &shop.AddCustomerToGroupRequest{}
+		msg := &AddCustomerToGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AddCustomersToGroup(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Customer/BatchSetCustomersStatus":
-		msg := &shop.SetCustomersStatusRequest{}
+		msg := &SetCustomersStatusRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.BatchSetCustomersStatus(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Customer/CreateCustomer":
-		msg := &shop.CreateCustomerRequest{}
+		msg := &CreateCustomerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCustomer(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Customer/CreateCustomerAddress":
-		msg := &shop.CreateCustomerAddressRequest{}
+		msg := &CreateCustomerAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCustomerAddress(ctx, msg)
 		}
@@ -605,7 +604,7 @@ func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Customer/GetCustomerAddresses":
-		msg := &shop.GetCustomerAddressesRequest{}
+		msg := &GetCustomerAddressesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCustomerAddresses(ctx, msg)
 		}
@@ -617,7 +616,7 @@ func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Customer/GetCustomers":
-		msg := &shop.GetCustomersRequest{}
+		msg := &GetCustomersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCustomers(ctx, msg)
 		}
@@ -629,7 +628,7 @@ func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Customer/RemoveCustomersFromGroup":
-		msg := &shop.RemoveCustomerOutOfGroupRequest{}
+		msg := &RemoveCustomerOutOfGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveCustomersFromGroup(ctx, msg)
 		}
@@ -641,13 +640,13 @@ func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Customer/UpdateCustomer":
-		msg := &shop.UpdateCustomerRequest{}
+		msg := &UpdateCustomerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCustomer(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Customer/UpdateCustomerAddress":
-		msg := &shop.UpdateCustomerAddressRequest{}
+		msg := &UpdateCustomerAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCustomerAddress(ctx, msg)
 		}
@@ -692,13 +691,13 @@ func (s *ExportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 func (s *ExportServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Export/GetExports":
-		msg := &shop.GetExportsRequest{}
+		msg := &GetExportsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetExports(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Export/RequestExport":
-		msg := &shop.RequestExportRequest{}
+		msg := &RequestExportRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RequestExport(ctx, msg)
 		}
@@ -749,7 +748,7 @@ func (s *ExternalAccountServiceServer) parseRoute(path string) (reqMsg capi.Mess
 		}
 		return msg, fn, nil
 	case "/shop.ExternalAccount/CreateExternalAccountHaravan":
-		msg := &shop.ExternalAccountHaravanRequest{}
+		msg := &ExternalAccountHaravanRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateExternalAccountHaravan(ctx, msg)
 		}
@@ -767,7 +766,7 @@ func (s *ExternalAccountServiceServer) parseRoute(path string) (reqMsg capi.Mess
 		}
 		return msg, fn, nil
 	case "/shop.ExternalAccount/UpdateExternalAccountHaravanToken":
-		msg := &shop.ExternalAccountHaravanRequest{}
+		msg := &ExternalAccountHaravanRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateExternalAccountHaravanToken(ctx, msg)
 		}
@@ -812,7 +811,7 @@ func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Fulfillment/GetExternalShippingServices":
-		msg := &order.GetExternalShippingServicesRequest{}
+		msg := &inttypes.GetExternalShippingServicesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetExternalShippingServices(ctx, msg)
 		}
@@ -824,25 +823,25 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 		}
 		return msg, fn, nil
 	case "/shop.Fulfillment/GetFulfillments":
-		msg := &shop.GetFulfillmentsRequest{}
+		msg := &GetFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Fulfillment/GetPublicExternalShippingServices":
-		msg := &order.GetExternalShippingServicesRequest{}
+		msg := &inttypes.GetExternalShippingServicesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetPublicExternalShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Fulfillment/GetPublicFulfillment":
-		msg := &shop.GetPublicFulfillmentRequest{}
+		msg := &GetPublicFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetPublicFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Fulfillment/UpdateFulfillmentsShippingState":
-		msg := &shop.UpdateFulfillmentsShippingStateRequest{}
+		msg := &UpdateFulfillmentsShippingStateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateFulfillmentsShippingState(ctx, msg)
 		}
@@ -887,7 +886,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.History/GetFulfillmentHistory":
-		msg := &shop.GetFulfillmentHistoryRequest{}
+		msg := &GetFulfillmentHistoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillmentHistory(ctx, msg)
 		}
@@ -932,43 +931,43 @@ func (s *InventoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 func (s *InventoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Inventory/AdjustInventoryQuantity":
-		msg := &shop.AdjustInventoryQuantityRequest{}
+		msg := &AdjustInventoryQuantityRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AdjustInventoryQuantity(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/CancelInventoryVoucher":
-		msg := &shop.CancelInventoryVoucherRequest{}
+		msg := &CancelInventoryVoucherRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/ConfirmInventoryVoucher":
-		msg := &shop.ConfirmInventoryVoucherRequest{}
+		msg := &ConfirmInventoryVoucherRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/CreateInventoryVoucher":
-		msg := &shop.CreateInventoryVoucherRequest{}
+		msg := &CreateInventoryVoucherRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVariant":
-		msg := &shop.GetInventoryVariantRequest{}
+		msg := &GetInventoryVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVariant(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVariants":
-		msg := &shop.GetInventoryVariantsRequest{}
+		msg := &GetInventoryVariantsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVariants(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVariantsByVariantIDs":
-		msg := &shop.GetInventoryVariantsByVariantIDsRequest{}
+		msg := &GetInventoryVariantsByVariantIDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVariantsByVariantIDs(ctx, msg)
 		}
@@ -980,31 +979,31 @@ func (s *InventoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVouchers":
-		msg := &shop.GetInventoryVouchersRequest{}
+		msg := &GetInventoryVouchersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVouchers(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVouchersByIDs":
-		msg := &shop.GetInventoryVouchersByIDsRequest{}
+		msg := &GetInventoryVouchersByIDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVouchersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVouchersByReference":
-		msg := &shop.GetInventoryVouchersByReferenceRequest{}
+		msg := &GetInventoryVouchersByReferenceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetInventoryVouchersByReference(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/UpdateInventoryVariantCostPrice":
-		msg := &shop.UpdateInventoryVariantCostPriceRequest{}
+		msg := &UpdateInventoryVariantCostPriceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateInventoryVariantCostPrice(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/UpdateInventoryVoucher":
-		msg := &shop.UpdateInventoryVoucherRequest{}
+		msg := &UpdateInventoryVoucherRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateInventoryVoucher(ctx, msg)
 		}
@@ -1049,7 +1048,7 @@ func (s *LedgerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 func (s *LedgerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Ledger/CreateLedger":
-		msg := &shop.CreateLedgerRequest{}
+		msg := &CreateLedgerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateLedger(ctx, msg)
 		}
@@ -1067,13 +1066,13 @@ func (s *LedgerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 		}
 		return msg, fn, nil
 	case "/shop.Ledger/GetLedgers":
-		msg := &shop.GetLedgersRequest{}
+		msg := &GetLedgersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetLedgers(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Ledger/UpdateLedger":
-		msg := &shop.UpdateLedgerRequest{}
+		msg := &UpdateLedgerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateLedger(ctx, msg)
 		}
@@ -1169,7 +1168,7 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 		}
 		return msg, fn, nil
 	case "/shop.MoneyTransaction/GetMoneyTransactions":
-		msg := &shop.GetMoneyTransactionsRequest{}
+		msg := &GetMoneyTransactionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactions(ctx, msg)
 		}
@@ -1283,25 +1282,25 @@ func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Order/CancelOrder":
-		msg := &shop.CancelOrderRequest{}
+		msg := &CancelOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/ConfirmOrder":
-		msg := &shop.ConfirmOrderRequest{}
+		msg := &ConfirmOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/ConfirmOrderAndCreateFulfillments":
-		msg := &shop.OrderIDRequest{}
+		msg := &OrderIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmOrderAndCreateFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/CreateOrder":
-		msg := &order.CreateOrderRequest{}
+		msg := &inttypes.CreateOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateOrder(ctx, msg)
 		}
@@ -1313,7 +1312,7 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		}
 		return msg, fn, nil
 	case "/shop.Order/GetOrders":
-		msg := &shop.GetOrdersRequest{}
+		msg := &GetOrdersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrders(ctx, msg)
 		}
@@ -1325,31 +1324,31 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		}
 		return msg, fn, nil
 	case "/shop.Order/GetOrdersByReceiptID":
-		msg := &shop.GetOrdersByReceiptIDRequest{}
+		msg := &GetOrdersByReceiptIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrdersByReceiptID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/UpdateOrder":
-		msg := &order.UpdateOrderRequest{}
+		msg := &inttypes.UpdateOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/UpdateOrderPaymentStatus":
-		msg := &shop.UpdateOrderPaymentStatusRequest{}
+		msg := &UpdateOrderPaymentStatusRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateOrderPaymentStatus(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/UpdateOrderShippingInfo":
-		msg := &shop.UpdateOrderShippingInfoRequest{}
+		msg := &UpdateOrderShippingInfoRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateOrderShippingInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Order/UpdateOrdersStatus":
-		msg := &shop.UpdateOrdersStatusRequest{}
+		msg := &UpdateOrdersStatusRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateOrdersStatus(ctx, msg)
 		}
@@ -1394,13 +1393,13 @@ func (s *PaymentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *PaymentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Payment/PaymentCheckReturnData":
-		msg := &shop.PaymentCheckReturnDataRequest{}
+		msg := &PaymentCheckReturnDataRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.PaymentCheckReturnData(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Payment/PaymentTradingOrder":
-		msg := &shop.PaymentTradingOrderRequest{}
+		msg := &PaymentTradingOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.PaymentTradingOrder(ctx, msg)
 		}
@@ -1445,19 +1444,19 @@ func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Product/AddProductCollection":
-		msg := &shop.AddShopProductCollectionRequest{}
+		msg := &AddShopProductCollectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AddProductCollection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/CreateProduct":
-		msg := &shop.CreateProductRequest{}
+		msg := &CreateProductRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateProduct(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/CreateVariant":
-		msg := &shop.CreateVariantRequest{}
+		msg := &CreateVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateVariant(ctx, msg)
 		}
@@ -1469,7 +1468,7 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Product/GetProducts":
-		msg := &shop.GetVariantsRequest{}
+		msg := &GetVariantsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProducts(ctx, msg)
 		}
@@ -1493,7 +1492,7 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Product/GetVariantsBySupplierID":
-		msg := &shop.GetVariantsBySupplierIDRequest{}
+		msg := &GetVariantsBySupplierIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetVariantsBySupplierID(ctx, msg)
 		}
@@ -1505,79 +1504,79 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Product/RemoveProductCollection":
-		msg := &shop.RemoveShopProductCollectionRequest{}
+		msg := &RemoveShopProductCollectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveProductCollection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/RemoveProducts":
-		msg := &shop.RemoveVariantsRequest{}
+		msg := &RemoveVariantsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/RemoveVariants":
-		msg := &shop.RemoveVariantsRequest{}
+		msg := &RemoveVariantsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveVariants(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProduct":
-		msg := &shop.UpdateProductRequest{}
+		msg := &UpdateProductRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProduct(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProductCategory":
-		msg := &shop.UpdateProductCategoryRequest{}
+		msg := &UpdateProductCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductCategory(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProductImages":
-		msg := &shop.UpdateVariantImagesRequest{}
+		msg := &UpdateVariantImagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductImages(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProductMetaFields":
-		msg := &shop.UpdateProductMetaFieldsRequest{}
+		msg := &UpdateProductMetaFieldsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductMetaFields(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProductsStatus":
-		msg := &shop.UpdateProductStatusRequest{}
+		msg := &UpdateProductStatusRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductsStatus(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateProductsTags":
-		msg := &shop.UpdateProductsTagsRequest{}
+		msg := &UpdateProductsTagsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductsTags(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateVariant":
-		msg := &shop.UpdateVariantRequest{}
+		msg := &UpdateVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateVariant(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateVariantAttributes":
-		msg := &shop.UpdateVariantAttributesRequest{}
+		msg := &UpdateVariantAttributesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateVariantAttributes(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateVariantImages":
-		msg := &shop.UpdateVariantImagesRequest{}
+		msg := &UpdateVariantImagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateVariantImages(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Product/UpdateVariantsStatus":
-		msg := &shop.UpdateProductStatusRequest{}
+		msg := &UpdateProductStatusRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateVariantsStatus(ctx, msg)
 		}
@@ -1622,25 +1621,25 @@ func (s *ProductSourceServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 func (s *ProductSourceServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.ProductSource/CreateProductSource":
-		msg := &shop.CreateProductSourceRequest{}
+		msg := &CreateProductSourceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateProductSource(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.ProductSource/CreateProductSourceCategory":
-		msg := &shop.CreatePSCategoryRequest{}
+		msg := &CreatePSCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.ProductSource/CreateVariant":
-		msg := &shop.DeprecatedCreateVariantRequest{}
+		msg := &DeprecatedCreateVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateVariant(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.ProductSource/GetProductSourceCategories":
-		msg := &shop.GetProductSourceCategoriesRequest{}
+		msg := &GetProductSourceCategoriesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProductSourceCategories(ctx, msg)
 		}
@@ -1664,13 +1663,13 @@ func (s *ProductSourceServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		}
 		return msg, fn, nil
 	case "/shop.ProductSource/UpdateProductSourceCategory":
-		msg := &shop.UpdateProductSourceCategoryRequest{}
+		msg := &UpdateProductSourceCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.ProductSource/UpdateProductsPSCategory":
-		msg := &shop.UpdateProductsPSCategoryRequest{}
+		msg := &UpdateProductsPSCategoryRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateProductsPSCategory(ctx, msg)
 		}
@@ -1715,19 +1714,19 @@ func (s *PurchaseOrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.PurchaseOrder/CancelPurchaseOrder":
-		msg := &shop.CancelPurchaseOrderRequest{}
+		msg := &CancelPurchaseOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelPurchaseOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.PurchaseOrder/ConfirmPurchaseOrder":
-		msg := &shop.ConfirmPurchaseOrderRequest{}
+		msg := &ConfirmPurchaseOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmPurchaseOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.PurchaseOrder/CreatePurchaseOrder":
-		msg := &shop.CreatePurchaseOrderRequest{}
+		msg := &CreatePurchaseOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreatePurchaseOrder(ctx, msg)
 		}
@@ -1745,7 +1744,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		}
 		return msg, fn, nil
 	case "/shop.PurchaseOrder/GetPurchaseOrders":
-		msg := &shop.GetPurchaseOrdersRequest{}
+		msg := &GetPurchaseOrdersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetPurchaseOrders(ctx, msg)
 		}
@@ -1763,7 +1762,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		}
 		return msg, fn, nil
 	case "/shop.PurchaseOrder/UpdatePurchaseOrder":
-		msg := &shop.UpdatePurchaseOrderRequest{}
+		msg := &UpdatePurchaseOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdatePurchaseOrder(ctx, msg)
 		}
@@ -1808,7 +1807,7 @@ func (s *ReceiptServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *ReceiptServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Receipt/CancelReceipt":
-		msg := &shop.CancelReceiptRequest{}
+		msg := &CancelReceiptRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelReceipt(ctx, msg)
 		}
@@ -1820,7 +1819,7 @@ func (s *ReceiptServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Receipt/CreateReceipt":
-		msg := &shop.CreateReceiptRequest{}
+		msg := &CreateReceiptRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateReceipt(ctx, msg)
 		}
@@ -1832,19 +1831,19 @@ func (s *ReceiptServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Receipt/GetReceipts":
-		msg := &shop.GetReceiptsRequest{}
+		msg := &GetReceiptsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetReceipts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Receipt/GetReceiptsByLedgerType":
-		msg := &shop.GetReceiptsByLedgerTypeRequest{}
+		msg := &GetReceiptsByLedgerTypeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetReceiptsByLedgerType(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Receipt/UpdateReceipt":
-		msg := &shop.UpdateReceiptRequest{}
+		msg := &UpdateReceiptRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateReceipt(ctx, msg)
 		}
@@ -1889,7 +1888,7 @@ func (s *ShipnowServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Shipnow/CancelShipnowFulfillment":
-		msg := &order.CancelShipnowFulfillmentRequest{}
+		msg := &inttypes.CancelShipnowFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelShipnowFulfillment(ctx, msg)
 		}
@@ -1901,7 +1900,7 @@ func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Shipnow/CreateShipnowFulfillment":
-		msg := &order.CreateShipnowFulfillmentRequest{}
+		msg := &inttypes.CreateShipnowFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateShipnowFulfillment(ctx, msg)
 		}
@@ -1913,19 +1912,19 @@ func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Shipnow/GetShipnowFulfillments":
-		msg := &order.GetShipnowFulfillmentsRequest{}
+		msg := &inttypes.GetShipnowFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShipnowFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipnow/GetShipnowServices":
-		msg := &order.GetShipnowServicesRequest{}
+		msg := &inttypes.GetShipnowServicesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShipnowServices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipnow/UpdateShipnowFulfillment":
-		msg := &order.UpdateShipnowFulfillmentRequest{}
+		msg := &inttypes.UpdateShipnowFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateShipnowFulfillment(ctx, msg)
 		}
@@ -1970,19 +1969,19 @@ func (s *StocktakeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Stocktake/CancelStocktake":
-		msg := &shop.CancelStocktakeRequest{}
+		msg := &CancelStocktakeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelStocktake(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Stocktake/ConfirmStocktake":
-		msg := &shop.ConfirmStocktakeRequest{}
+		msg := &ConfirmStocktakeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmStocktake(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Stocktake/CreateStocktake":
-		msg := &shop.CreateStocktakeRequest{}
+		msg := &CreateStocktakeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateStocktake(ctx, msg)
 		}
@@ -1994,7 +1993,7 @@ func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/shop.Stocktake/GetStocktakes":
-		msg := &shop.GetStocktakesRequest{}
+		msg := &GetStocktakesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetStocktakes(ctx, msg)
 		}
@@ -2006,7 +2005,7 @@ func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/shop.Stocktake/UpdateStocktake":
-		msg := &shop.UpdateStocktakeRequest{}
+		msg := &UpdateStocktakeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateStocktake(ctx, msg)
 		}
@@ -2057,13 +2056,13 @@ func (s *SummaryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Summary/SummarizeFulfillments":
-		msg := &shop.SummarizeFulfillmentsRequest{}
+		msg := &SummarizeFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SummarizeFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Summary/SummarizePOS":
-		msg := &shop.SummarizePOSRequest{}
+		msg := &SummarizePOSRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SummarizePOS(ctx, msg)
 		}
@@ -2108,7 +2107,7 @@ func (s *SupplierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *SupplierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Supplier/CreateSupplier":
-		msg := &shop.CreateSupplierRequest{}
+		msg := &CreateSupplierRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateSupplier(ctx, msg)
 		}
@@ -2126,7 +2125,7 @@ func (s *SupplierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Supplier/GetSuppliers":
-		msg := &shop.GetSuppliersRequest{}
+		msg := &GetSuppliersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetSuppliers(ctx, msg)
 		}
@@ -2138,13 +2137,13 @@ func (s *SupplierServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Supplier/GetSuppliersByVariantID":
-		msg := &shop.GetSuppliersByVariantIDRequest{}
+		msg := &GetSuppliersByVariantIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetSuppliersByVariantID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Supplier/UpdateSupplier":
-		msg := &shop.UpdateSupplierRequest{}
+		msg := &UpdateSupplierRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateSupplier(ctx, msg)
 		}
@@ -2189,7 +2188,7 @@ func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Trading/TradingCreateOrder":
-		msg := &order.TradingCreateOrderRequest{}
+		msg := &inttypes.TradingCreateOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.TradingCreateOrder(ctx, msg)
 		}
@@ -2201,7 +2200,7 @@ func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Trading/TradingGetOrders":
-		msg := &shop.GetOrdersRequest{}
+		msg := &GetOrdersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.TradingGetOrders(ctx, msg)
 		}

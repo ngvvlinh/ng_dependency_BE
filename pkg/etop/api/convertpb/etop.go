@@ -4,13 +4,12 @@ import (
 	"context"
 
 	"etop.vn/api/main/authorization"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/pb/etop"
-	address_type2 "etop.vn/api/pb/etop/etc/address_type"
+	etop "etop.vn/api/top/int/etop"
+	addresstype "etop.vn/api/top/types/etc/address_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -438,7 +437,7 @@ func PbAddress(a *model.Address) *etop.Address {
 		Phone:        a.Phone,
 		Email:        a.Email,
 		Position:     a.Position,
-		Type:         address_type2.PbType(a.Type),
+		Type:         addresstype.PbType(a.Type),
 		Notes:        PbAddressNote(a.Notes),
 	}
 	if a.Coordinates != nil {

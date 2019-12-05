@@ -3,9 +3,10 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/tradering"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -25,7 +26,7 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.CreateInventoryVoucherResponse{
+	q.Result = &shop.CreateInventoryVoucherResponse{
 		InventoryVouchers: PbShopInventoryVouchers(cmd.Result),
 	}
 	return nil
@@ -43,7 +44,7 @@ func (s *InventoryService) ConfirmInventoryVoucher(ctx context.Context, q *Confi
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.ConfirmInventoryVoucherResponse{
+	q.Result = &shop.ConfirmInventoryVoucherResponse{
 		InventoryVoucher: PbShopInventoryVoucher(cmd.Result),
 	}
 	return nil
@@ -62,7 +63,7 @@ func (s *InventoryService) CancelInventoryVoucher(ctx context.Context, q *Cancel
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.CancelInventoryVoucherResponse{
+	q.Result = &shop.CancelInventoryVoucherResponse{
 		Inventory: PbShopInventoryVoucher(cmd.Result),
 	}
 	return nil
@@ -92,7 +93,7 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateInventoryVoucherResponse{
+	q.Result = &shop.UpdateInventoryVoucherResponse{
 		InventoryVoucher: PbShopInventoryVoucher(cmd.Result),
 	}
 	return nil
@@ -122,7 +123,7 @@ func (s *InventoryService) AdjustInventoryQuantity(ctx context.Context, q *Adjus
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.AdjustInventoryQuantityResponse{
+	q.Result = &shop.AdjustInventoryQuantityResponse{
 		InventoryVariants: PbInventoryVariants(cmd.Result.InventoryVariants),
 		InventoryVouchers: PbShopInventoryVouchers(cmd.Result.InventoryVouchers),
 	}
@@ -141,7 +142,7 @@ func (s *InventoryService) GetInventoryVariants(ctx context.Context, q *GetInven
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetInventoryVariantsResponse{
+	q.Result = &shop.GetInventoryVariantsResponse{
 		InventoryVariants: PbInventoryVariants(query.Result.InventoryVariants),
 	}
 	return nil
@@ -157,7 +158,7 @@ func (s *InventoryService) GetInventoryVouchersByReference(ctx context.Context, 
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetInventoryVouchersByReferenceResponse{
+	q.Result = &shop.GetInventoryVouchersByReferenceResponse{
 		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVouchers),
 	}
 	return nil
@@ -185,7 +186,7 @@ func (s *InventoryService) GetInventoryVariantsByVariantIDs(ctx context.Context,
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetInventoryVariantsResponse{
+	q.Result = &shop.GetInventoryVariantsResponse{
 		InventoryVariants: PbInventoryVariants(query.Result.InventoryVariants),
 	}
 	return nil
@@ -232,13 +233,13 @@ func (s *InventoryService) GetInventoryVouchers(ctx context.Context, q *GetInven
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetInventoryVouchersResponse{
+	q.Result = &shop.GetInventoryVouchersResponse{
 		InventoryVouchers: inventoryVouchers,
 	}
 	return nil
 }
 
-func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID dot.ID, inventoryVouchers []*inventory.InventoryVoucher) (result []*pbshop.InventoryVoucher, err error) {
+func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID dot.ID, inventoryVouchers []*inventory.InventoryVoucher) (result []*shop.InventoryVoucher, err error) {
 	if inventoryVouchers == nil {
 		return result, err
 	}
@@ -281,7 +282,7 @@ func (s *InventoryService) GetInventoryVouchersByIDs(ctx context.Context, q *Get
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetInventoryVouchersResponse{
+	q.Result = &shop.GetInventoryVouchersResponse{
 		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVoucher),
 	}
 	return nil
@@ -297,7 +298,7 @@ func (s *InventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, 
 	if err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateInventoryVariantCostPriceResponse{
+	q.Result = &shop.UpdateInventoryVariantCostPriceResponse{
 		InventoryVariant: PbInventory(cmd.Result),
 	}
 	return nil

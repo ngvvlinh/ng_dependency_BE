@@ -3,13 +3,14 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/suppliering"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -36,7 +37,7 @@ func (s *SupplierService) GetSupplier(ctx context.Context, r *GetSupplierEndpoin
 	}
 	r.Result = convertpb.PbSupplier(query.Result)
 
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*pbshop.Supplier{r.Result}); err != nil {
+	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*shop.Supplier{r.Result}); err != nil {
 		return err
 	}
 	return nil
@@ -52,7 +53,7 @@ func (s *SupplierService) GetSuppliers(ctx context.Context, r *GetSuppliersEndpo
 	if err := supplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.SuppliersResponse{
+	r.Result = &shop.SuppliersResponse{
 		Suppliers: convertpb.PbSuppliers(query.Result.Suppliers),
 		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -71,7 +72,7 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 	if err := supplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(query.Result.Suppliers)}
+	r.Result = &shop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(query.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
 		return err
@@ -127,7 +128,7 @@ func (s *SupplierService) DeleteSupplier(ctx context.Context, r *DeleteSupplierE
 	return nil
 }
 
-func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, suppliers []*pbshop.Supplier) error {
+func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, suppliers []*shop.Supplier) error {
 	var supplierIDs []dot.ID
 	mapSupplierIDAndNumberOfPurchaseOrders := make(map[dot.ID]int)
 	mapSupplierIDAndTotalAmountPurchaseOrders := make(map[dot.ID]int)
@@ -164,7 +165,7 @@ func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, su
 	}
 
 	for _, supplier := range suppliers {
-		supplier.Liability = &pbshop.SupplierLiability{
+		supplier.Liability = &shop.SupplierLiability{
 			TotalPurchaseOrders: mapSupplierIDAndNumberOfPurchaseOrders[supplier.Id],
 			TotalAmount:         mapSupplierIDAndTotalAmountPurchaseOrders[supplier.Id],
 			PaidAmount:          mapSupplierIDAndTotalAmountReceipts[supplier.Id],
@@ -189,7 +190,7 @@ func (s *SupplierService) GetSuppliersByVariantID(ctx context.Context, r *GetSup
 	if err := supplierQuery.Dispatch(ctx, querySuppplies); err != nil {
 		return err
 	}
-	r.Result = &pbshop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(querySuppplies.Result.Suppliers)}
+	r.Result = &shop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(querySuppplies.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
 		return err

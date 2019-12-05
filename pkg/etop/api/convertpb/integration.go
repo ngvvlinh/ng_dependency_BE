@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/integration"
+	integration "etop.vn/api/top/int/integration"
 	"etop.vn/backend/pkg/etop/model"
 )
 

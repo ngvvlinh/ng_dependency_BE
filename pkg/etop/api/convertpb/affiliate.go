@@ -2,18 +2,18 @@ package convertpb
 
 import (
 	"etop.vn/api/main/identity"
-	"etop.vn/api/pb/etop"
-	affiliate2 "etop.vn/api/pb/services/affiliate"
 	"etop.vn/api/services/affiliate"
+	etop "etop.vn/api/top/int/etop"
+	affiliate3 "etop.vn/api/top/services/affiliate"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate2.CommissionSetting {
+func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate3.CommissionSetting {
 	if m == nil {
 		return nil
 	}
-	out := &affiliate2.CommissionSetting{
+	out := &affiliate3.CommissionSetting{
 		ProductId: m.ProductID,
 		Amount:    m.Amount,
 		Unit:      m.Unit,
@@ -23,11 +23,11 @@ func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate2.CommissionS
 	return out
 }
 
-func PbProductPromotion(m *affiliate.ProductPromotion) *affiliate2.ProductPromotion {
+func PbProductPromotion(m *affiliate.ProductPromotion) *affiliate3.ProductPromotion {
 	if m == nil {
 		return nil
 	}
-	out := &affiliate2.ProductPromotion{
+	out := &affiliate3.ProductPromotion{
 		Product:   nil,
 		Id:        m.ID,
 		ProductId: m.ProductID,
@@ -38,8 +38,8 @@ func PbProductPromotion(m *affiliate.ProductPromotion) *affiliate2.ProductPromot
 	return out
 }
 
-func PbProductPromotions(ms []*affiliate.ProductPromotion) []*affiliate2.ProductPromotion {
-	var out []*affiliate2.ProductPromotion
+func PbProductPromotions(ms []*affiliate.ProductPromotion) []*affiliate3.ProductPromotion {
+	var out []*affiliate3.ProductPromotion
 	if len(ms) == 0 {
 		return out
 	}
@@ -49,17 +49,17 @@ func PbProductPromotions(ms []*affiliate.ProductPromotion) []*affiliate2.Product
 	return out
 }
 
-func PbReferralCode(m *affiliate.AffiliateReferralCode) *affiliate2.ReferralCode {
+func PbReferralCode(m *affiliate.AffiliateReferralCode) *affiliate3.ReferralCode {
 	if m == nil {
 		return nil
 	}
-	return &affiliate2.ReferralCode{
+	return &affiliate3.ReferralCode{
 		Code: m.Code,
 	}
 }
 
-func PbReferralCodes(ms []*affiliate.AffiliateReferralCode) []*affiliate2.ReferralCode {
-	var out []*affiliate2.ReferralCode
+func PbReferralCodes(ms []*affiliate.AffiliateReferralCode) []*affiliate3.ReferralCode {
+	var out []*affiliate3.ReferralCode
 	if len(ms) == 0 {
 		return out
 	}
@@ -69,11 +69,11 @@ func PbReferralCodes(ms []*affiliate.AffiliateReferralCode) []*affiliate2.Referr
 	return out
 }
 
-func PbReferral(m *identity.Affiliate) *affiliate2.Referral {
+func PbReferral(m *identity.Affiliate) *affiliate3.Referral {
 	if m == nil {
 		return nil
 	}
-	return &affiliate2.Referral{
+	return &affiliate3.Referral{
 		Name:            m.Name,
 		Phone:           m.Phone,
 		Email:           m.Email,
@@ -84,11 +84,11 @@ func PbReferral(m *identity.Affiliate) *affiliate2.Referral {
 	}
 }
 
-func PbSupplyCommissionSetting(m *affiliate.SupplyCommissionSetting) *affiliate2.SupplyCommissionSetting {
+func PbSupplyCommissionSetting(m *affiliate.SupplyCommissionSetting) *affiliate3.SupplyCommissionSetting {
 	if m == nil {
 		return nil
 	}
-	return &affiliate2.SupplyCommissionSetting{
+	return &affiliate3.SupplyCommissionSetting{
 		ProductId:                m.ProductID,
 		Level1DirectCommission:   m.Level1DirectCommission,
 		Level1IndirectCommission: m.Level1IndirectCommission,
@@ -104,21 +104,21 @@ func PbSupplyCommissionSetting(m *affiliate.SupplyCommissionSetting) *affiliate2
 	}
 }
 
-func PbDuration(m *affiliate.Duration) *affiliate2.SupplyCommissionSettingDurationObject {
+func PbDuration(m *affiliate.Duration) *affiliate3.SupplyCommissionSettingDurationObject {
 	if m == nil {
 		return nil
 	}
-	return &affiliate2.SupplyCommissionSettingDurationObject{
+	return &affiliate3.SupplyCommissionSettingDurationObject{
 		Duration: m.Duration,
 		Type:     m.Type,
 	}
 }
 
-func PbSellerCommission(m *affiliate.SellerCommission) *affiliate2.SellerCommission {
+func PbSellerCommission(m *affiliate.SellerCommission) *affiliate3.SellerCommission {
 	if m == nil {
 		return nil
 	}
-	return &affiliate2.SellerCommission{
+	return &affiliate3.SellerCommission{
 		Id:          m.ID,
 		Value:       m.Amount,
 		Description: m.Description,

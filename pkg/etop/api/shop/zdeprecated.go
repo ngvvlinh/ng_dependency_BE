@@ -3,9 +3,10 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/identity"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -22,7 +23,7 @@ func init() {
 
 // deprecated
 func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *CreateProductSourceEndpoint) error {
-	q.Result = &pbshop.ProductSource{
+	q.Result = &shop.ProductSource{
 		Id:     q.Context.Shop.ID,
 		Status: 1,
 	}
@@ -31,8 +32,8 @@ func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *Creat
 
 // deprecated: 2018.07.24+14
 func (s *ProductSourceService) GetShopProductSources(ctx context.Context, q *GetShopProductSourcesEndpoint) error {
-	q.Result = &pbshop.ProductSourcesResponse{
-		ProductSources: []*pbshop.ProductSource{
+	q.Result = &shop.ProductSourcesResponse{
+		ProductSources: []*shop.ProductSource{
 			{
 				Id:     q.Context.Shop.ID,
 				Status: 1,

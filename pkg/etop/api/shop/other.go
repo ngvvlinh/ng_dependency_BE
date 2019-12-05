@@ -3,8 +3,9 @@ package shop
 import (
 	"context"
 
-	pbetop "etop.vn/api/pb/etop"
-	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/shop"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -54,7 +55,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 		return err
 	}
 
-	r.Result = &pbetop.HistoryResponse{
+	r.Result = &etop.HistoryResponse{
 		Paging: cmapi.PbPageInfo(paging, 0),
 		Data:   cmapi.RawJSONObjectMsg(query.Result.Data),
 	}
@@ -70,7 +71,7 @@ func (s *AccountService) GetBalanceShop(ctx context.Context, q *GetBalanceShopEn
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetBalanceShopResponse{
+	q.Result = &shop.GetBalanceShopResponse{
 		Amount: cmd.Result.Amount,
 	}
 	return nil
@@ -122,7 +123,7 @@ func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvail
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetPartnersResponse{
+	q.Result = &shop.GetPartnersResponse{
 		Partners: convertpb.PbPublicPartners(query.Result.Partners),
 	}
 	return nil
@@ -135,7 +136,7 @@ func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *GetAuth
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbshop.GetAuthorizedPartnersResponse{
+	q.Result = &shop.GetAuthorizedPartnersResponse{
 		Partners: convertpb.PbAuthorizedPartners(query.Result.Partners, q.Context.Shop),
 	}
 	return nil

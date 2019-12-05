@@ -1,8 +1,8 @@
 package crm
 
 import (
-	common "etop.vn/api/pb/common"
-	notifier_entity "etop.vn/api/pb/etop/etc/notifier_entity"
+	common "etop.vn/api/top/types/common"
+	notifier_entity "etop.vn/api/top/types/etc/notifier_entity"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )

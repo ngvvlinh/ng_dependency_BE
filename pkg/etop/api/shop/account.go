@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
-	pbshop "etop.vn/api/pb/etop/shop"
+	apietop "etop.vn/api/top/int/etop"
+	apishop "etop.vn/api/top/int/shop"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -59,7 +59,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 		return err
 	}
 
-	q.Result = &pbshop.RegisterShopResponse{
+	q.Result = &apishop.RegisterShopResponse{
 		Shop: convertpb.PbShopExtended(cmd.Result),
 	}
 	return nil
@@ -75,7 +75,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 
 		if !q.Context.Claim.SToken {
 			stokenCmd := &etop.SendSTokenEmailEndpoint{
-				SendSTokenEmailRequest: &pbetop.SendSTokenEmailRequest{
+				SendSTokenEmailRequest: &apietop.SendSTokenEmailRequest{
 					Email:     user.Email,
 					AccountId: q.Context.Shop.ID,
 				},
@@ -119,7 +119,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbshop.UpdateShopResponse{
+	q.Result = &apishop.UpdateShopResponse{
 		Shop: convertpb.PbShopExtended(cmd.Result),
 	}
 	return nil

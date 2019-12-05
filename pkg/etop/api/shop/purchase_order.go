@@ -3,10 +3,11 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -49,14 +50,14 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 		return err
 	}
 
-	var purchaseOrders []*pbshop.PurchaseOrder
+	var purchaseOrders []*shop.PurchaseOrder
 	for _, purchaseOrder := range query.Result.PurchaseOrders {
 		purchaseOrderTemp := convertpb.PbPurchaseOrder(purchaseOrder)
 		purchaseOrderTemp.InventoryVoucher = PbShopInventoryVoucher(purchaseOrder.InventoryVoucher)
 		purchaseOrders = append(purchaseOrders, purchaseOrderTemp)
 	}
 
-	r.Result = &pbshop.PurchaseOrdersResponse{
+	r.Result = &shop.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
 		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -71,7 +72,7 @@ func (s *PurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, r *Ge
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	r.Result = &shop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
 	return nil
 }
 
@@ -83,7 +84,7 @@ func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context,
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	r.Result = &shop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
 	return nil
 }
 

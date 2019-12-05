@@ -7,7 +7,7 @@ package addressing
 import (
 	context "context"
 
-	types "etop.vn/api/main/ordering/types"
+	orderingtypes "etop.vn/api/main/ordering/types"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -38,7 +38,7 @@ type CreateAddressCommand struct {
 	DistrictCode string
 	WardCode     string
 	IsDefault    bool
-	Coordinates  *types.Coordinates
+	Coordinates  *orderingtypes.Coordinates
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -85,7 +85,7 @@ type UpdateAddressCommand struct {
 	DistrictCode dot.NullString
 	WardCode     dot.NullString
 	IsDefault    dot.NullBool
-	Coordinates  *types.Coordinates
+	Coordinates  *orderingtypes.Coordinates
 
 	Result *ShopTraderAddress `json:"-"`
 }

@@ -1,4 +1,4 @@
-package partner
+package partner_proto
 
 import (
 	"etop.vn/capi/dot"

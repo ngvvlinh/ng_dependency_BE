@@ -13,8 +13,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/api/top/int/shop"
+
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
@@ -50,7 +51,7 @@ type ExportOption struct {
 }
 
 type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
-	result chan<- *pbshop.ExportStatusItem,
+	result chan<- *shop.ExportStatusItem,
 	total int, rows *sql.Rows, opts core.Opts) (_err error)
 
 func Init(sd cmService.Shutdowner, rd redis.Store, p eventstream.Publisher, cfg Config) {
@@ -194,13 +195,13 @@ func exportAndReportProgress(
 	defer exportCancel()
 
 	// perform export in another goroutine
-	result := make(chan *pbshop.ExportStatusItem, BaseRowsErrors)
+	result := make(chan *shop.ExportStatusItem, BaseRowsErrors)
 	go exportFunction(
 		exportCtx, exportID, exportOpts, fileWriter, result,
 		total, rows, opts)
 
 	// send progress to client
-	var statusItem *pbshop.ExportStatusItem
+	var statusItem *shop.ExportStatusItem
 	for statusItem = range result {
 		buf := &bytes.Buffer{}
 		if err := jsonx.MarshalTo(buf, statusItem); err != nil {

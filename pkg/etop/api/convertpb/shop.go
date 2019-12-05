@@ -8,20 +8,20 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
-	"etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/summary"
+	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func PbSummaryTables(tables []*model.SummaryTable) []*shop.SummaryTable {
-	res := make([]*shop.SummaryTable, len(tables))
+func PbSummaryTables(tables []*model.SummaryTable) []*apishop.SummaryTable {
+	res := make([]*apishop.SummaryTable, len(tables))
 	for i, table := range tables {
-		res[i] = &shop.SummaryTable{
+		res[i] = &apishop.SummaryTable{
 			Label:   table.Label,
 			Tags:    table.Tags,
 			Columns: PbSummaryColRow(table.Cols),
@@ -32,10 +32,10 @@ func PbSummaryTables(tables []*model.SummaryTable) []*shop.SummaryTable {
 	return res
 }
 
-func PbSummaryColRow(items []model.SummaryColRow) []shop.SummaryColRow {
-	res := make([]shop.SummaryColRow, len(items))
+func PbSummaryColRow(items []model.SummaryColRow) []apishop.SummaryColRow {
+	res := make([]apishop.SummaryColRow, len(items))
 	for i, item := range items {
-		res[i] = shop.SummaryColRow{
+		res[i] = apishop.SummaryColRow{
 			Label:  item.Label,
 			Spec:   item.Spec,
 			Unit:   item.Unit,
@@ -45,10 +45,10 @@ func PbSummaryColRow(items []model.SummaryColRow) []shop.SummaryColRow {
 	return res
 }
 
-func PbSummaryData(data []model.SummaryItem) []shop.SummaryItem {
-	res := make([]shop.SummaryItem, len(data))
+func PbSummaryData(data []model.SummaryItem) []apishop.SummaryItem {
+	res := make([]apishop.SummaryItem, len(data))
 	for i, item := range data {
-		res[i] = shop.SummaryItem{
+		res[i] = apishop.SummaryItem{
 			Spec:  item.Spec,
 			Value: item.Value,
 			Unit:  item.Unit,
@@ -58,10 +58,10 @@ func PbSummaryData(data []model.SummaryItem) []shop.SummaryItem {
 }
 
 // From up
-func PbSummaryTablesNew(tables []*summary.SummaryTable) []*shop.SummaryTable {
-	res := make([]*shop.SummaryTable, len(tables))
+func PbSummaryTablesNew(tables []*summary.SummaryTable) []*apishop.SummaryTable {
+	res := make([]*apishop.SummaryTable, len(tables))
 	for i, table := range tables {
-		res[i] = &shop.SummaryTable{
+		res[i] = &apishop.SummaryTable{
 			Label:   table.Label,
 			Tags:    table.Tags,
 			Columns: PbSummaryColRowNew(table.Cols),
@@ -72,10 +72,10 @@ func PbSummaryTablesNew(tables []*summary.SummaryTable) []*shop.SummaryTable {
 	return res
 }
 
-func PbSummaryColRowNew(items []summary.SummaryColRow) []shop.SummaryColRow {
-	res := make([]shop.SummaryColRow, len(items))
+func PbSummaryColRowNew(items []summary.SummaryColRow) []apishop.SummaryColRow {
+	res := make([]apishop.SummaryColRow, len(items))
 	for i, item := range items {
-		res[i] = shop.SummaryColRow{
+		res[i] = apishop.SummaryColRow{
 			Label:  item.Label,
 			Spec:   item.Spec,
 			Unit:   item.Unit,
@@ -85,10 +85,10 @@ func PbSummaryColRowNew(items []summary.SummaryColRow) []shop.SummaryColRow {
 	return res
 }
 
-func PbSummaryDataNew(data []summary.SummaryItem) []shop.SummaryItem {
-	res := make([]shop.SummaryItem, len(data))
+func PbSummaryDataNew(data []summary.SummaryItem) []apishop.SummaryItem {
+	res := make([]apishop.SummaryItem, len(data))
 	for i, item := range data {
-		res[i] = shop.SummaryItem{
+		res[i] = apishop.SummaryItem{
 			Spec:      item.Spec,
 			Value:     item.Value,
 			Unit:      item.Unit,
@@ -99,16 +99,16 @@ func PbSummaryDataNew(data []summary.SummaryItem) []shop.SummaryItem {
 	return res
 }
 
-func PbExportAttempts(ms []*model.ExportAttempt) []*shop.ExportItem {
-	res := make([]*shop.ExportItem, len(ms))
+func PbExportAttempts(ms []*model.ExportAttempt) []*apishop.ExportItem {
+	res := make([]*apishop.ExportItem, len(ms))
 	for i, m := range ms {
 		res[i] = PbExportAttempt(m)
 	}
 	return res
 }
 
-func PbExportAttempt(m *model.ExportAttempt) *shop.ExportItem {
-	return &shop.ExportItem{
+func PbExportAttempt(m *model.ExportAttempt) *apishop.ExportItem {
+	return &apishop.ExportItem{
 		Id:           m.ID,
 		Filename:     m.FileName,
 		ExportType:   m.ExportType,
@@ -125,20 +125,20 @@ func PbExportAttempt(m *model.ExportAttempt) *shop.ExportItem {
 	}
 }
 
-func PbAuthorizedPartner(item *model.Partner, s *model.Shop) *shop.AuthorizedPartnerResponse {
+func PbAuthorizedPartner(item *model.Partner, s *model.Shop) *apishop.AuthorizedPartnerResponse {
 	redirectUrl := ""
 	if item.AvailableFromEtopConfig != nil {
 		redirectUrl = item.AvailableFromEtopConfig.RedirectUrl
 	}
 	rUrl := GenerateRedirectAuthorizedPartnerURL(redirectUrl, s)
-	return &shop.AuthorizedPartnerResponse{
+	return &apishop.AuthorizedPartnerResponse{
 		Partner:     PbPublicAccountInfo(item),
 		RedirectUrl: rUrl,
 	}
 }
 
-func PbAuthorizedPartners(items []*model.Partner, s *model.Shop) []*shop.AuthorizedPartnerResponse {
-	res := make([]*shop.AuthorizedPartnerResponse, len(items))
+func PbAuthorizedPartners(items []*model.Partner, s *model.Shop) []*apishop.AuthorizedPartnerResponse {
+	res := make([]*apishop.AuthorizedPartnerResponse, len(items))
 	for i, item := range items {
 		res[i] = PbAuthorizedPartner(item, s)
 	}
@@ -158,8 +158,8 @@ func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *model.Shop) 
 	return res
 }
 
-func PbCustomer(m *customering.ShopCustomer) *shop.Customer {
-	return &shop.Customer{
+func PbCustomer(m *customering.ShopCustomer) *apishop.Customer {
+	return &apishop.Customer{
 		Id:        m.ID,
 		ShopId:    m.ShopID,
 		GroupIds:  m.GroupIDs,
@@ -177,34 +177,34 @@ func PbCustomer(m *customering.ShopCustomer) *shop.Customer {
 	}
 }
 
-func PbCustopmerGroup(m *customering.ShopCustomerGroup) *shop.CustomerGroup {
-	return &shop.CustomerGroup{
+func PbCustopmerGroup(m *customering.ShopCustomerGroup) *apishop.CustomerGroup {
+	return &apishop.CustomerGroup{
 		Id:   m.ID,
 		Name: m.Name,
 	}
 }
 
-func PbCustomerGroups(ms []*customering.ShopCustomerGroup) []*shop.CustomerGroup {
-	res := make([]*shop.CustomerGroup, len(ms))
+func PbCustomerGroups(ms []*customering.ShopCustomerGroup) []*apishop.CustomerGroup {
+	res := make([]*apishop.CustomerGroup, len(ms))
 	for i, m := range ms {
 		res[i] = PbCustopmerGroup(m)
 	}
 	return res
 }
 
-func PbCustomers(ms []*customering.ShopCustomer) []*shop.Customer {
-	res := make([]*shop.Customer, len(ms))
+func PbCustomers(ms []*customering.ShopCustomer) []*apishop.Customer {
+	res := make([]*apishop.Customer, len(ms))
 	for i, m := range ms {
 		res[i] = PbCustomer(m)
 	}
 	return res
 }
 
-func PbSupplier(m *suppliering.ShopSupplier) *shop.Supplier {
+func PbSupplier(m *suppliering.ShopSupplier) *apishop.Supplier {
 	if m == nil {
 		return nil
 	}
-	return &shop.Supplier{
+	return &apishop.Supplier{
 		Id:                m.ID,
 		ShopId:            m.ShopID,
 		FullName:          m.FullName,
@@ -222,16 +222,16 @@ func PbSupplier(m *suppliering.ShopSupplier) *shop.Supplier {
 	}
 }
 
-func PbSuppliers(ms []*suppliering.ShopSupplier) []*shop.Supplier {
-	res := make([]*shop.Supplier, len(ms))
+func PbSuppliers(ms []*suppliering.ShopSupplier) []*apishop.Supplier {
+	res := make([]*apishop.Supplier, len(ms))
 	for i, m := range ms {
 		res[i] = PbSupplier(m)
 	}
 	return res
 }
 
-func PbCarrier(m *carrying.ShopCarrier) *shop.Carrier {
-	return &shop.Carrier{
+func PbCarrier(m *carrying.ShopCarrier) *apishop.Carrier {
+	return &apishop.Carrier{
 		Id:        m.ID,
 		ShopId:    m.ShopID,
 		FullName:  m.FullName,
@@ -242,15 +242,15 @@ func PbCarrier(m *carrying.ShopCarrier) *shop.Carrier {
 	}
 }
 
-func PbCarriers(ms []*carrying.ShopCarrier) []*shop.Carrier {
-	res := make([]*shop.Carrier, len(ms))
+func PbCarriers(ms []*carrying.ShopCarrier) []*apishop.Carrier {
+	res := make([]*apishop.Carrier, len(ms))
 	for i, m := range ms {
 		res[i] = PbCarrier(m)
 	}
 	return res
 }
 
-func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) (*shop.CustomerAddress, error) {
+func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) (*apishop.CustomerAddress, error) {
 	query := &location.GetLocationQuery{
 		DistrictCode: in.DistrictCode,
 		WardCode:     in.WardCode,
@@ -259,7 +259,7 @@ func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locati
 		return nil, err
 	}
 	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
-	out := &shop.CustomerAddress{
+	out := &apishop.CustomerAddress{
 		Id:           in.ID,
 		District:     "",
 		DistrictCode: in.DistrictCode,
@@ -286,9 +286,9 @@ func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locati
 	return out, nil
 }
 
-func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, locationBus location.QueryBus) ([]*shop.CustomerAddress, error) {
+func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, locationBus location.QueryBus) ([]*apishop.CustomerAddress, error) {
 	var err error
-	res := make([]*shop.CustomerAddress, len(ms))
+	res := make([]*apishop.CustomerAddress, len(ms))
 	for i, m := range ms {
 		res[i], err = PbShopAddress(ctx, m, locationBus)
 		if err != nil {
@@ -298,8 +298,8 @@ func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, lo
 	return res, nil
 }
 
-func PbReceipt(m *receipting.Receipt) *shop.Receipt {
-	return &shop.Receipt{
+func PbReceipt(m *receipting.Receipt) *apishop.Receipt {
+	return &apishop.Receipt{
 		Id:          m.ID,
 		ShopId:      m.ShopID,
 		TraderId:    m.TraderID,
@@ -323,19 +323,19 @@ func PbReceipt(m *receipting.Receipt) *shop.Receipt {
 	}
 }
 
-func PbReceipts(ms []*receipting.Receipt) []*shop.Receipt {
-	res := make([]*shop.Receipt, len(ms))
+func PbReceipts(ms []*receipting.Receipt) []*apishop.Receipt {
+	res := make([]*apishop.Receipt, len(ms))
 	for i, m := range ms {
 		res[i] = PbReceipt(m)
 	}
 	return res
 }
 
-func PbTrader(m *receipting.Trader) *shop.Trader {
+func PbTrader(m *receipting.Trader) *apishop.Trader {
 	if m == nil {
 		return nil
 	}
-	return &shop.Trader{
+	return &apishop.Trader{
 		Id:       m.ID,
 		Type:     m.Type,
 		FullName: m.FullName,
@@ -344,38 +344,38 @@ func PbTrader(m *receipting.Trader) *shop.Trader {
 	}
 }
 
-func PbTraders(ms []*receipting.Trader) []*shop.Trader {
-	res := make([]*shop.Trader, len(ms))
+func PbTraders(ms []*receipting.Trader) []*apishop.Trader {
+	res := make([]*apishop.Trader, len(ms))
 	for i, m := range ms {
 		res[i] = PbTrader(m)
 	}
 	return res
 }
 
-func PbReceiptLine(m *receipting.ReceiptLine) *shop.ReceiptLine {
+func PbReceiptLine(m *receipting.ReceiptLine) *apishop.ReceiptLine {
 	if m == nil {
 		return nil
 	}
-	return &shop.ReceiptLine{
+	return &apishop.ReceiptLine{
 		RefId:  m.RefID,
 		Title:  m.Title,
 		Amount: m.Amount,
 	}
 }
 
-func PbReceiptLines(ms []*receipting.ReceiptLine) []*shop.ReceiptLine {
-	res := make([]*shop.ReceiptLine, len(ms))
+func PbReceiptLines(ms []*receipting.ReceiptLine) []*apishop.ReceiptLine {
+	res := make([]*apishop.ReceiptLine, len(ms))
 	for i, m := range ms {
 		res[i] = PbReceiptLine(m)
 	}
 	return res
 }
 
-func PbLedger(m *ledgering.ShopLedger) *shop.Ledger {
+func PbLedger(m *ledgering.ShopLedger) *apishop.Ledger {
 	if m == nil {
 		return nil
 	}
-	return &shop.Ledger{
+	return &apishop.Ledger{
 		Id:          m.ID,
 		Name:        m.Name,
 		BankAccount: PbBankAccount((*model.BankAccount)(m.BankAccount)),
@@ -387,19 +387,19 @@ func PbLedger(m *ledgering.ShopLedger) *shop.Ledger {
 	}
 }
 
-func PbLedgers(ms []*ledgering.ShopLedger) []*shop.Ledger {
-	res := make([]*shop.Ledger, len(ms))
+func PbLedgers(ms []*ledgering.ShopLedger) []*apishop.Ledger {
+	res := make([]*apishop.Ledger, len(ms))
 	for i, m := range ms {
 		res[i] = PbLedger(m)
 	}
 	return res
 }
 
-func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *shop.PurchaseOrderLine {
+func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *apishop.PurchaseOrderLine {
 	if m == nil {
 		return nil
 	}
-	return &shop.PurchaseOrderLine{
+	return &apishop.PurchaseOrderLine{
 		ProductName:  m.ProductName,
 		ImageUrl:     m.ImageUrl,
 		ProductId:    m.ProductID,
@@ -411,19 +411,19 @@ func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *shop.PurchaseOrder
 	}
 }
 
-func PbPurchaseOrderLines(ms []*purchaseorder.PurchaseOrderLine) []*shop.PurchaseOrderLine {
-	res := make([]*shop.PurchaseOrderLine, len(ms))
+func PbPurchaseOrderLines(ms []*purchaseorder.PurchaseOrderLine) []*apishop.PurchaseOrderLine {
+	res := make([]*apishop.PurchaseOrderLine, len(ms))
 	for i, m := range ms {
 		res[i] = PbPurchaseOrderLine(m)
 	}
 	return res
 }
 
-func PbPurchaseOrder(m *purchaseorder.PurchaseOrder) *shop.PurchaseOrder {
+func PbPurchaseOrder(m *purchaseorder.PurchaseOrder) *apishop.PurchaseOrder {
 	if m == nil {
 		return nil
 	}
-	return &shop.PurchaseOrder{
+	return &apishop.PurchaseOrder{
 		Id:              m.ID,
 		ShopId:          m.ShopID,
 		SupplierId:      m.SupplierID,
@@ -445,19 +445,19 @@ func PbPurchaseOrder(m *purchaseorder.PurchaseOrder) *shop.PurchaseOrder {
 	}
 }
 
-func PbPurchaseOrders(ms []*purchaseorder.PurchaseOrder) []*shop.PurchaseOrder {
-	res := make([]*shop.PurchaseOrder, len(ms))
+func PbPurchaseOrders(ms []*purchaseorder.PurchaseOrder) []*apishop.PurchaseOrder {
+	res := make([]*apishop.PurchaseOrder, len(ms))
 	for i, m := range ms {
 		res[i] = PbPurchaseOrder(m)
 	}
 	return res
 }
 
-func PbPurchaseOrderSupplier(m *purchaseorder.PurchaseOrderSupplier) *shop.PurchaseOrderSupplier {
+func PbPurchaseOrderSupplier(m *purchaseorder.PurchaseOrderSupplier) *apishop.PurchaseOrderSupplier {
 	if m == nil {
 		return nil
 	}
-	return &shop.PurchaseOrderSupplier{
+	return &apishop.PurchaseOrderSupplier{
 		FullName:           m.FullName,
 		Phone:              m.Phone,
 		Email:              m.Email,

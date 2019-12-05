@@ -5,8 +5,8 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
-	"etop.vn/api/pb/etop"
-	"etop.vn/api/pb/etop/shop"
+	etop "etop.vn/api/top/int/etop"
+	shop "etop.vn/api/top/int/shop"
 	"etop.vn/backend/pkg/common/cmapi"
 )
 

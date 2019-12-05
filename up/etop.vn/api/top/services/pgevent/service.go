@@ -3,8 +3,7 @@ package pgevent
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	event "etop.vn/api/pb/services/pgevent"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -17,5 +16,5 @@ type MiscService interface {
 
 // +apix:path=/pgevent.Event
 type EventService interface {
-	GenerateEvents(context.Context, *event.GenerateEventsRequest) (*cm.Empty, error)
+	GenerateEvents(context.Context, *GenerateEventsRequest) (*cm.Empty, error)
 }

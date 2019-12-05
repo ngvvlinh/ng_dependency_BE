@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/int/shop"
+
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
-	pbcm "etop.vn/api/pb/common"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
+	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -154,7 +155,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
 		return err
 	} else {
-		q.Result = &pbshop.ReceiptsResponse{
+		q.Result = &shop.ReceiptsResponse{
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
@@ -192,7 +193,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
 		return err
 	} else {
-		q.Result = &pbshop.ReceiptsResponse{
+		q.Result = &shop.ReceiptsResponse{
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
@@ -202,7 +203,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 	return nil
 }
 
-func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
+func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID, receipts []*receipting.Receipt) (receiptsResult []*shop.Receipt, _ error) {
 	mapOrderIDAndReceivedAmount := make(map[dot.ID]int)
 	mapLedger := make(map[dot.ID]*ledgering.ShopLedger)
 	var refIDs, userIDs, traderIDs, ledgerIDs []dot.ID
@@ -269,7 +270,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 
 func listTraders(
 	ctx context.Context, shopID dot.ID,
-	traderIDs []dot.ID, receiptsResult []*pbshop.Receipt,
+	traderIDs []dot.ID, receiptsResult []*shop.Receipt,
 ) error {
 	mapSupplier := make(map[dot.ID]*suppliering.ShopSupplier)
 	mapCustomer := make(map[dot.ID]*customering.ShopCustomer)

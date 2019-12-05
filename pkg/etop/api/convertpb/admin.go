@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/admin"
+	admin "etop.vn/api/top/int/admin"
 	"etop.vn/backend/pkg/etop/model"
 )
 

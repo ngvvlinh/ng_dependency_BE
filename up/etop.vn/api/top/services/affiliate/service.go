@@ -3,8 +3,7 @@ package affiliate
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	aff "etop.vn/api/pb/services/affiliate"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -12,35 +11,35 @@ import (
 
 // +apix:path=/affiliate.User
 type UserService interface {
-	UpdateReferral(context.Context, *aff.UpdateReferralRequest) (*aff.UserReferral, error)
+	UpdateReferral(context.Context, *UpdateReferralRequest) (*UserReferral, error)
 }
 
 // +apix:path=/affiliate.Trading
 type TradingService interface {
-	TradingGetProducts(context.Context, *cm.CommonListRequest) (*aff.SupplyGetProductsResponse, error)
-	CreateOrUpdateTradingCommissionSetting(context.Context, *aff.CreateOrUpdateTradingCommissionSettingRequest) (*aff.SupplyCommissionSetting, error)
-	GetTradingProductPromotionByProductIDs(context.Context, *aff.GetTradingProductPromotionByIDsRequest) (*aff.GetTradingProductPromotionByIDsResponse, error)
-	GetTradingProductPromotions(context.Context, *cm.CommonListRequest) (*aff.GetProductPromotionsResponse, error)
-	CreateTradingProductPromotion(context.Context, *aff.CreateOrUpdateProductPromotionRequest) (*aff.ProductPromotion, error)
-	UpdateTradingProductPromotion(context.Context, *aff.CreateOrUpdateProductPromotionRequest) (*aff.ProductPromotion, error)
+	TradingGetProducts(context.Context, *cm.CommonListRequest) (*SupplyGetProductsResponse, error)
+	CreateOrUpdateTradingCommissionSetting(context.Context, *CreateOrUpdateTradingCommissionSettingRequest) (*SupplyCommissionSetting, error)
+	GetTradingProductPromotionByProductIDs(context.Context, *GetTradingProductPromotionByIDsRequest) (*GetTradingProductPromotionByIDsResponse, error)
+	GetTradingProductPromotions(context.Context, *cm.CommonListRequest) (*GetProductPromotionsResponse, error)
+	CreateTradingProductPromotion(context.Context, *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error)
+	UpdateTradingProductPromotion(context.Context, *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error)
 }
 
 // +apix:path=/affiliate.Shop
 type ShopService interface {
-	GetProductPromotion(context.Context, *aff.GetProductPromotionRequest) (*aff.GetProductPromotionResponse, error)
-	ShopGetProducts(context.Context, *cm.CommonListRequest) (*aff.ShopGetProductsResponse, error)
-	CheckReferralCodeValid(context.Context, *aff.CheckReferralCodeValidRequest) (*aff.GetProductPromotionResponse, error)
+	GetProductPromotion(context.Context, *GetProductPromotionRequest) (*GetProductPromotionResponse, error)
+	ShopGetProducts(context.Context, *cm.CommonListRequest) (*ShopGetProductsResponse, error)
+	CheckReferralCodeValid(context.Context, *CheckReferralCodeValidRequest) (*GetProductPromotionResponse, error)
 }
 
 // +apix:path=/affiliate.Affiliate
 type AffiliateService interface {
-	GetCommissions(context.Context, *cm.CommonListRequest) (*aff.GetCommissionsResponse, error)
-	NotifyNewShopPurchase(context.Context, *aff.NotifyNewShopPurchaseRequest) (*aff.NotifyNewShopPurchaseResponse, error)
-	GetTransactions(context.Context, *cm.CommonListRequest) (*aff.GetTransactionsResponse, error)
-	CreateOrUpdateAffiliateCommissionSetting(context.Context, *aff.CreateOrUpdateCommissionSettingRequest) (*aff.CommissionSetting, error)
-	GetProductPromotionByProductID(context.Context, *aff.GetProductPromotionByProductIDRequest) (*aff.GetProductPromotionByProductIDResponse, error)
-	AffiliateGetProducts(context.Context, *cm.CommonListRequest) (*aff.AffiliateGetProductsResponse, error)
-	CreateReferralCode(context.Context, *aff.CreateReferralCodeRequest) (*aff.ReferralCode, error)
-	GetReferralCodes(context.Context, *cm.CommonListRequest) (*aff.GetReferralCodesResponse, error)
-	GetReferrals(context.Context, *cm.CommonListRequest) (*aff.GetReferralsResponse, error)
+	GetCommissions(context.Context, *cm.CommonListRequest) (*GetCommissionsResponse, error)
+	NotifyNewShopPurchase(context.Context, *NotifyNewShopPurchaseRequest) (*NotifyNewShopPurchaseResponse, error)
+	GetTransactions(context.Context, *cm.CommonListRequest) (*GetTransactionsResponse, error)
+	CreateOrUpdateAffiliateCommissionSetting(context.Context, *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error)
+	GetProductPromotionByProductID(context.Context, *GetProductPromotionByProductIDRequest) (*GetProductPromotionByProductIDResponse, error)
+	AffiliateGetProducts(context.Context, *cm.CommonListRequest) (*AffiliateGetProductsResponse, error)
+	CreateReferralCode(context.Context, *CreateReferralCodeRequest) (*ReferralCode, error)
+	GetReferralCodes(context.Context, *cm.CommonListRequest) (*GetReferralCodesResponse, error)
+	GetReferrals(context.Context, *cm.CommonListRequest) (*GetReferralsResponse, error)
 }

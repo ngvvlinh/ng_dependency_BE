@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"etop.vn/api/pb/etop/etc/status5"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

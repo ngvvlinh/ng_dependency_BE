@@ -3,9 +3,8 @@ package sadmin
 import (
 	"context"
 
-	cm "etop.vn/api/pb/common"
-	"etop.vn/api/pb/etop"
-	sadmin "etop.vn/api/pb/etop/sadmin"
+	etop "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 )
 
 // +gen:apix
@@ -18,7 +17,7 @@ type MiscService interface {
 
 // +apix:path=/sadmin.User
 type UserService interface {
-	CreateUser(context.Context, *sadmin.SAdminCreateUserRequest) (*etop.RegisterResponse, error)
-	ResetPassword(context.Context, *sadmin.SAdminResetPasswordRequest) (*cm.Empty, error)
-	LoginAsAccount(context.Context, *sadmin.LoginAsAccountRequest) (*etop.LoginResponse, error)
+	CreateUser(context.Context, *SAdminCreateUserRequest) (*etop.RegisterResponse, error)
+	ResetPassword(context.Context, *SAdminResetPasswordRequest) (*cm.Empty, error)
+	LoginAsAccount(context.Context, *LoginAsAccountRequest) (*etop.LoginResponse, error)
 }

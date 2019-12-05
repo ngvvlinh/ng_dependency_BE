@@ -10,10 +10,10 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
-	pborder "etop.vn/api/pb/etop/order"
-	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	apishop "etop.vn/api/top/int/shop"
+	"etop.vn/api/top/int/types"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -61,7 +61,7 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	eventBus = eventB
 }
 
-func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderRequest) (resp *pborder.Order, _err error) {
+func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
 	autoInventoryVoucher := inventory.AutoInventoryVoucher(r.AutoInventoryVoucher.Apply(""))
 	if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
@@ -72,7 +72,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 		OrderID: r.OrderId,
 		ShopID:  shop.ID,
 	}
-	resp = &pborder.Order{}
+	resp = &types.Order{}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return resp, err
 	}
@@ -120,7 +120,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 	}
 	resp = convertpb.PbOrder(order, nil, model.TagShop)
 	if autoCreateFfm {
-		req := &pbshop.OrderIDRequest{
+		req := &apishop.OrderIDRequest{
 			OrderId: r.OrderId,
 		}
 		_res, err := ConfirmOrderAndCreateFulfillments(ctx, shop, 0, req)
@@ -132,9 +132,9 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 	return resp, nil
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID dot.ID, r *pbshop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
-	resp = &pborder.OrderWithErrorsResponse{}
+	resp = &types.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          partnerID,

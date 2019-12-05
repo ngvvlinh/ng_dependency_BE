@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	affiliate "etop.vn/api/pb/services/affiliate"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -60,13 +59,13 @@ func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting":
-		msg := &affiliate.CreateOrUpdateCommissionSettingRequest{}
+		msg := &CreateOrUpdateCommissionSettingRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateReferralCode":
-		msg := &affiliate.CreateReferralCodeRequest{}
+		msg := &CreateReferralCodeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateReferralCode(ctx, msg)
 		}
@@ -78,7 +77,7 @@ func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetProductPromotionByProductID":
-		msg := &affiliate.GetProductPromotionByProductIDRequest{}
+		msg := &GetProductPromotionByProductIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProductPromotionByProductID(ctx, msg)
 		}
@@ -102,7 +101,7 @@ func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/NotifyNewShopPurchase":
-		msg := &affiliate.NotifyNewShopPurchaseRequest{}
+		msg := &NotifyNewShopPurchaseRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.NotifyNewShopPurchase(ctx, msg)
 		}
@@ -147,13 +146,13 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Shop/CheckReferralCodeValid":
-		msg := &affiliate.CheckReferralCodeValidRequest{}
+		msg := &CheckReferralCodeValidRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CheckReferralCodeValid(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/GetProductPromotion":
-		msg := &affiliate.GetProductPromotionRequest{}
+		msg := &GetProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProductPromotion(ctx, msg)
 		}
@@ -204,19 +203,19 @@ func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Trading/CreateOrUpdateTradingCommissionSetting":
-		msg := &affiliate.CreateOrUpdateTradingCommissionSettingRequest{}
+		msg := &CreateOrUpdateTradingCommissionSettingRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/CreateTradingProductPromotion":
-		msg := &affiliate.CreateOrUpdateProductPromotionRequest{}
+		msg := &CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateTradingProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotionByProductIDs":
-		msg := &affiliate.GetTradingProductPromotionByIDsRequest{}
+		msg := &GetTradingProductPromotionByIDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetTradingProductPromotionByProductIDs(ctx, msg)
 		}
@@ -234,7 +233,7 @@ func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/UpdateTradingProductPromotion":
-		msg := &affiliate.CreateOrUpdateProductPromotionRequest{}
+		msg := &CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateTradingProductPromotion(ctx, msg)
 		}
@@ -279,7 +278,7 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.User/UpdateReferral":
-		msg := &affiliate.UpdateReferralRequest{}
+		msg := &UpdateReferralRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateReferral(ctx, msg)
 		}

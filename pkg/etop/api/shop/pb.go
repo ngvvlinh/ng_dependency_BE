@@ -4,16 +4,16 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/stocktaking"
-	pbcm "etop.vn/api/pb/common"
-	pbproducttype "etop.vn/api/pb/etop/etc/product_type"
-	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/api/top/int/shop"
+	pbcm "etop.vn/api/top/types/common"
+	pbproducttype "etop.vn/api/top/types/etc/product_type"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) (res []*pbshop.ShopProduct) {
+func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) (res []*shop.ShopProduct) {
 	for _, product := range shopProducts {
 		productPb := PbProductQuantity(product, inventoryVariants)
 		res = append(res, productPb)
@@ -21,14 +21,14 @@ func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, invento
 	return
 }
 
-func PbProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) *pbshop.ShopProduct {
+func PbProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) *shop.ShopProduct {
 	shopProductPb := PbShopProductWithVariants(shopProduct)
 	shopProductPb.Variants = PbVariantsQuantity(shopProduct.Variants, inventoryVariants)
 	return shopProductPb
 }
 
-func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants map[dot.ID]*inventory.InventoryVariant) []*pbshop.ShopVariant {
-	var variants []*pbshop.ShopVariant
+func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants map[dot.ID]*inventory.InventoryVariant) []*shop.ShopVariant {
+	var variants []*shop.ShopVariant
 	for _, variant := range shopVariants {
 		inventoryVariant := inventoryVariants[variant.VariantID]
 		valuePb := PbVariantQuantity(variant, inventoryVariant)
@@ -37,10 +37,10 @@ func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants m
 	return variants
 }
 
-func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inventory.InventoryVariant) *pbshop.ShopVariant {
+func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inventory.InventoryVariant) *shop.ShopVariant {
 	shopVariantDB := PbShopVariant(shopVariant)
 	if inventoryVariant != nil {
-		shopVariantDB.InventoryVariant = &pbshop.InventoryVariantShopVariant{
+		shopVariantDB.InventoryVariant = &shop.InventoryVariantShopVariant{
 			QuantityOnHand: inventoryVariant.QuantityOnHand,
 			QuantityPicked: inventoryVariant.QuantityPicked,
 			Quantity:       inventoryVariant.QuantitySummary,
@@ -54,16 +54,16 @@ func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inven
 	return shopVariantDB
 }
 
-func PbStocktakes(args []*stocktaking.ShopStocktake) []*pbshop.Stocktake {
-	var stocktakesPb []*pbshop.Stocktake
+func PbStocktakes(args []*stocktaking.ShopStocktake) []*shop.Stocktake {
+	var stocktakesPb []*shop.Stocktake
 	for _, value := range args {
 		stocktakesPb = append(stocktakesPb, PbStocktake(value))
 	}
 	return stocktakesPb
 }
 
-func PbStocktake(args *stocktaking.ShopStocktake) *pbshop.Stocktake {
-	return &pbshop.Stocktake{
+func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
+	return &shop.Stocktake{
 		Id:            args.ID,
 		ShopId:        args.ShopID,
 		TotalQuantity: args.TotalQuantity,
@@ -81,17 +81,17 @@ func PbStocktake(args *stocktaking.ShopStocktake) *pbshop.Stocktake {
 	}
 }
 
-func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*pbshop.StocktakeLine {
-	var lines []*pbshop.StocktakeLine
+func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*shop.StocktakeLine {
+	var lines []*shop.StocktakeLine
 	for _, value := range args {
-		var attributes []*pbshop.Attribute
+		var attributes []*shop.Attribute
 		for _, attribute := range value.Attributes {
-			attributes = append(attributes, &pbshop.Attribute{
+			attributes = append(attributes, &shop.Attribute{
 				Name:  attribute.Name,
 				Value: attribute.Value,
 			})
 		}
-		lines = append(lines, &pbshop.StocktakeLine{
+		lines = append(lines, &shop.StocktakeLine{
 			VariantId:   value.VariantID,
 			OldQuantity: value.OldQuantity,
 			NewQuantity: value.NewQuantity,
@@ -107,8 +107,8 @@ func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*pbshop.StocktakeLine
 	return lines
 }
 
-func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
-	return &pbshop.InventoryVariant{
+func PbInventory(args *inventory.InventoryVariant) *shop.InventoryVariant {
+	return &shop.InventoryVariant{
 		ShopId:         args.ShopID,
 		VariantId:      args.VariantID,
 		QuantityOnHand: args.QuantityOnHand,
@@ -120,16 +120,16 @@ func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
 	}
 }
 
-func PbInventoryVariants(args []*inventory.InventoryVariant) []*pbshop.InventoryVariant {
-	var inventoryVariants []*pbshop.InventoryVariant
+func PbInventoryVariants(args []*inventory.InventoryVariant) []*shop.InventoryVariant {
+	var inventoryVariants []*shop.InventoryVariant
 	for _, value := range args {
 		inventoryVariants = append(inventoryVariants, PbInventory(value))
 	}
 	return inventoryVariants
 }
 
-func PbBrand(args *catalog.ShopBrand) *pbshop.Brand {
-	return &pbshop.Brand{
+func PbBrand(args *catalog.ShopBrand) *shop.Brand {
+	return &shop.Brand{
 		ShopId:      args.ShopID,
 		Id:          args.ID,
 		Name:        args.BrandName,
@@ -139,29 +139,29 @@ func PbBrand(args *catalog.ShopBrand) *pbshop.Brand {
 	}
 }
 
-func PbBrands(args []*catalog.ShopBrand) []*pbshop.Brand {
-	var brands []*pbshop.Brand
+func PbBrands(args []*catalog.ShopBrand) []*shop.Brand {
+	var brands []*shop.Brand
 	for _, value := range args {
 		brands = append(brands, PbBrand(value))
 	}
 	return brands
 }
 
-func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryVoucher {
+func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVoucher {
 	if args == nil {
 		return nil
 	}
 
-	var inventoryVoucherItem []*pbshop.InventoryVoucherLine
+	var inventoryVoucherItem []*shop.InventoryVoucherLine
 	for _, value := range args.Lines {
-		var attributes []pbshop.Attribute
+		var attributes []shop.Attribute
 		for _, attribute := range value.Attributes {
-			attributes = append(attributes, pbshop.Attribute{
+			attributes = append(attributes, shop.Attribute{
 				Name:  attribute.Name,
 				Value: attribute.Value,
 			})
 		}
-		inventoryVoucherItem = append(inventoryVoucherItem, &pbshop.InventoryVoucherLine{
+		inventoryVoucherItem = append(inventoryVoucherItem, &shop.InventoryVoucherLine{
 			VariantId:   value.VariantID,
 			VariantName: value.VariantName,
 			ProductId:   value.ProductID,
@@ -173,7 +173,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 			Quantity:    value.Quantity,
 		})
 	}
-	return &pbshop.InventoryVoucher{
+	return &shop.InventoryVoucher{
 		Title:        args.Title,
 		TotalAmount:  args.TotalAmount,
 		CreatedBy:    args.CreatedBy,
@@ -199,11 +199,11 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 	}
 }
 
-func PbShopTrader(args *inventory.Trader) *pbshop.Trader {
+func PbShopTrader(args *inventory.Trader) *shop.Trader {
 	if args == nil {
 		return nil
 	}
-	return &pbshop.Trader{
+	return &shop.Trader{
 		Id:       args.ID,
 		Type:     args.Type,
 		FullName: args.FullName,
@@ -212,26 +212,26 @@ func PbShopTrader(args *inventory.Trader) *pbshop.Trader {
 	}
 }
 
-func PbShopInventoryVouchers(inventory []*inventory.InventoryVoucher) []*pbshop.InventoryVoucher {
-	var inventoryVouchers []*pbshop.InventoryVoucher
+func PbShopInventoryVouchers(inventory []*inventory.InventoryVoucher) []*shop.InventoryVoucher {
+	var inventoryVouchers []*shop.InventoryVoucher
 	for _, value := range inventory {
 		inventoryVouchers = append(inventoryVouchers, PbShopInventoryVoucher(value))
 	}
 	return inventoryVouchers
 }
 
-func PbShopVariants(items []*catalog.ShopVariant) []*pbshop.ShopVariant {
-	res := make([]*pbshop.ShopVariant, len(items))
+func PbShopVariants(items []*catalog.ShopVariant) []*shop.ShopVariant {
+	res := make([]*shop.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariant(item)
 	}
 	return res
 }
 
-func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
-	res := &pbshop.ShopVariant{
+func PbShopVariant(m *catalog.ShopVariant) *shop.ShopVariant {
+	res := &shop.ShopVariant{
 		Id: m.VariantID,
-		Info: &pbshop.EtopVariant{
+		Info: &shop.EtopVariant{
 			Id:          0,
 			Code:        m.Code,
 			Name:        m.Name,
@@ -259,8 +259,8 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 	return res
 }
 
-func PbShopCategory(m *catalog.ShopCategory) *pbshop.ShopCategory {
-	res := &pbshop.ShopCategory{
+func PbShopCategory(m *catalog.ShopCategory) *shop.ShopCategory {
+	res := &shop.ShopCategory{
 		Id:       m.ID,
 		ShopId:   m.ShopID,
 		Status:   0,
@@ -270,8 +270,8 @@ func PbShopCategory(m *catalog.ShopCategory) *pbshop.ShopCategory {
 	return res
 }
 
-func PbShopCollection(m *catalog.ShopCollection) *pbshop.ShopCollection {
-	res := &pbshop.ShopCollection{
+func PbShopCollection(m *catalog.ShopCollection) *shop.ShopCollection {
+	res := &shop.ShopCollection{
 		Id:          m.ID,
 		ShopId:      m.ShopID,
 		Description: m.Description,
@@ -282,37 +282,37 @@ func PbShopCollection(m *catalog.ShopCollection) *pbshop.ShopCollection {
 	return res
 }
 
-func PbShopCollections(items []*catalog.ShopCollection) []*pbshop.ShopCollection {
-	res := make([]*pbshop.ShopCollection, len(items))
+func PbShopCollections(items []*catalog.ShopCollection) []*shop.ShopCollection {
+	res := make([]*shop.ShopCollection, len(items))
 	for i, item := range items {
 		res[i] = PbShopCollection(item)
 	}
 	return res
 }
 
-func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbshop.ShopProduct {
-	res := make([]*pbshop.ShopProduct, len(items))
+func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*shop.ShopProduct {
+	res := make([]*shop.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProductWithVariants(item)
 	}
 	return res
 }
 
-func PbShopCategories(items []*catalog.ShopCategory) []*pbshop.ShopCategory {
-	res := make([]*pbshop.ShopCategory, len(items))
+func PbShopCategories(items []*catalog.ShopCategory) []*shop.ShopCategory {
+	res := make([]*shop.ShopCategory, len(items))
 	for i, item := range items {
 		res[i] = PbShopCategory(item)
 	}
 	return res
 }
 
-func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVariant {
+func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *shop.ShopVariant {
 	if m == nil {
 		return nil
 	}
-	res := &pbshop.ShopVariant{
+	res := &shop.ShopVariant{
 		Id: m.VariantID,
-		Info: &pbshop.EtopVariant{
+		Info: &shop.EtopVariant{
 			Id:          0,
 			Code:        m.Code,
 			Name:        m.Name,
@@ -339,7 +339,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVar
 		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	if m.ShopProduct != nil {
-		res.Product = &pbshop.ShopShortProduct{
+		res.Product = &shop.ShopShortProduct{
 			Id:   m.ShopProduct.ProductID,
 			Name: m.ShopProduct.Name,
 		}
@@ -348,15 +348,15 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVar
 	return res
 }
 
-func PbShopVariantsWithProducts(items []*catalog.ShopVariantWithProduct) []*pbshop.ShopVariant {
-	res := make([]*pbshop.ShopVariant, len(items))
+func PbShopVariantsWithProducts(items []*catalog.ShopVariantWithProduct) []*shop.ShopVariant {
+	res := make([]*shop.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariantWithProduct(item)
 	}
 	return res
 }
 
-func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
+func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *shop.ShopProduct {
 	shopID := m.ShopProduct.ShopID
 	metaFields := []*pbcm.MetaField{}
 	for _, metaField := range m.MetaFields {
@@ -365,9 +365,9 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 			Value: metaField.Value,
 		})
 	}
-	res := &pbshop.ShopProduct{
+	res := &shop.ShopProduct{
 		Id: m.ShopProduct.ProductID,
-		Info: &pbshop.EtopProduct{
+		Info: &shop.EtopProduct{
 			Id:          m.ShopProduct.ProductID,
 			Code:        m.ShopProduct.Code,
 			Name:        m.ShopProduct.Name,

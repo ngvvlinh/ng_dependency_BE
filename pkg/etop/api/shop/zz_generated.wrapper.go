@@ -9,11 +9,10 @@ import (
 	"strings"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	order "etop.vn/api/pb/etop/order"
-	shop "etop.vn/api/pb/etop/shop"
+	etop "etop.vn/api/top/int/etop"
 	api "etop.vn/api/top/int/shop"
+	inttypes "etop.vn/api/top/int/types"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -34,11 +33,11 @@ type wrapAccountService struct {
 
 type CreateExternalAccountAhamoveEndpoint struct {
 	*cm.Empty
-	Result  *shop.ExternalAccountAhamove
+	Result  *api.ExternalAccountAhamove
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountAhamove, err error) {
+func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *api.ExternalAccountAhamove, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -142,11 +141,11 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 
 type GetBalanceShopEndpoint struct {
 	*cm.Empty
-	Result  *shop.GetBalanceShopResponse
+	Result  *api.GetBalanceShopResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (resp *shop.GetBalanceShopResponse, err error) {
+func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (resp *api.GetBalanceShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -196,11 +195,11 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 
 type GetExternalAccountAhamoveEndpoint struct {
 	*cm.Empty
-	Result  *shop.ExternalAccountAhamove
+	Result  *api.ExternalAccountAhamove
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountAhamove, err error) {
+func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *api.ExternalAccountAhamove, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -240,13 +239,13 @@ func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *
 }
 
 type RegisterShopEndpoint struct {
-	*shop.RegisterShopRequest
-	Result     *shop.RegisterShopResponse
+	*api.RegisterShopRequest
+	Result     *api.RegisterShopResponse
 	Context    claims.UserClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapAccountService) RegisterShop(ctx context.Context, req *shop.RegisterShopRequest) (resp *shop.RegisterShopResponse, err error) {
+func (s wrapAccountService) RegisterShop(ctx context.Context, req *api.RegisterShopRequest) (resp *api.RegisterShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -394,12 +393,12 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 }
 
 type UpdateExternalAccountAhamoveVerificationEndpoint struct {
-	*shop.UpdateXAccountAhamoveVerificationRequest
+	*api.UpdateXAccountAhamoveVerificationRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context.Context, req *shop.UpdateXAccountAhamoveVerificationRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context.Context, req *api.UpdateXAccountAhamoveVerificationRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -448,12 +447,12 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 }
 
 type UpdateExternalAccountAhamoveVerificationImagesEndpoint struct {
-	*shop.UpdateXAccountAhamoveVerificationRequest
+	*api.UpdateXAccountAhamoveVerificationRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, req *shop.UpdateXAccountAhamoveVerificationRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, req *api.UpdateXAccountAhamoveVerificationRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -502,12 +501,12 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 }
 
 type UpdateShopEndpoint struct {
-	*shop.UpdateShopRequest
-	Result  *shop.UpdateShopResponse
+	*api.UpdateShopRequest
+	Result  *api.UpdateShopResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountService) UpdateShop(ctx context.Context, req *shop.UpdateShopRequest) (resp *shop.UpdateShopResponse, err error) {
+func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopRequest) (resp *api.UpdateShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -564,12 +563,12 @@ type wrapAuthorizeService struct {
 }
 
 type AuthorizePartnerEndpoint struct {
-	*shop.AuthorizePartnerRequest
-	Result  *shop.AuthorizedPartnerResponse
+	*api.AuthorizePartnerRequest
+	Result  *api.AuthorizedPartnerResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *shop.AuthorizePartnerRequest) (resp *shop.AuthorizedPartnerResponse, err error) {
+func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *api.AuthorizePartnerRequest) (resp *api.AuthorizedPartnerResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -619,11 +618,11 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *shop.Au
 
 type GetAuthorizedPartnersEndpoint struct {
 	*cm.Empty
-	Result  *shop.GetAuthorizedPartnersResponse
+	Result  *api.GetAuthorizedPartnersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm.Empty) (resp *shop.GetAuthorizedPartnersResponse, err error) {
+func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm.Empty) (resp *api.GetAuthorizedPartnersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -664,11 +663,11 @@ func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm
 
 type GetAvailablePartnersEndpoint struct {
 	*cm.Empty
-	Result  *shop.GetPartnersResponse
+	Result  *api.GetPartnersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.Empty) (resp *shop.GetPartnersResponse, err error) {
+func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.Empty) (resp *api.GetPartnersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -716,12 +715,12 @@ type wrapBrandService struct {
 }
 
 type CreateBrandEndpoint struct {
-	*shop.CreateBrandRequest
-	Result  *shop.Brand
+	*api.CreateBrandRequest
+	Result  *api.Brand
 	Context claims.ShopClaim
 }
 
-func (s wrapBrandService) CreateBrand(ctx context.Context, req *shop.CreateBrandRequest) (resp *shop.Brand, err error) {
+func (s wrapBrandService) CreateBrand(ctx context.Context, req *api.CreateBrandRequest) (resp *api.Brand, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -771,11 +770,11 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *shop.CreateBrand
 
 type DeleteBrandEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.DeleteBrandResponse
+	Result  *api.DeleteBrandResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (resp *shop.DeleteBrandResponse, err error) {
+func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (resp *api.DeleteBrandResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -825,11 +824,11 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 
 type GetBrandByIDEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Brand
+	Result  *api.Brand
 	Context claims.ShopClaim
 }
 
-func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (resp *shop.Brand, err error) {
+func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (resp *api.Brand, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -878,13 +877,13 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 }
 
 type GetBrandsEndpoint struct {
-	*shop.GetBrandsRequest
-	Result     *shop.GetBrandsResponse
+	*api.GetBrandsRequest
+	Result     *api.GetBrandsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapBrandService) GetBrands(ctx context.Context, req *shop.GetBrandsRequest) (resp *shop.GetBrandsResponse, err error) {
+func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsRequest) (resp *api.GetBrandsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -936,11 +935,11 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *shop.GetBrandsRequ
 
 type GetBrandsByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.GetBrandsByIDsResponse
+	Result  *api.GetBrandsByIDsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.GetBrandsByIDsResponse, err error) {
+func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.GetBrandsByIDsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -989,12 +988,12 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 }
 
 type UpdateBrandInfoEndpoint struct {
-	*shop.UpdateBrandRequest
-	Result  *shop.Brand
+	*api.UpdateBrandRequest
+	Result  *api.Brand
 	Context claims.ShopClaim
 }
 
-func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *shop.UpdateBrandRequest) (resp *shop.Brand, err error) {
+func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBrandRequest) (resp *api.Brand, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1051,12 +1050,12 @@ type wrapCarrierService struct {
 }
 
 type CreateCarrierEndpoint struct {
-	*shop.CreateCarrierRequest
-	Result  *shop.Carrier
+	*api.CreateCarrierRequest
+	Result  *api.Carrier
 	Context claims.ShopClaim
 }
 
-func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *shop.CreateCarrierRequest) (resp *shop.Carrier, err error) {
+func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *api.CreateCarrierRequest) (resp *api.Carrier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1160,11 +1159,11 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 
 type GetCarrierEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Carrier
+	Result  *api.Carrier
 	Context claims.ShopClaim
 }
 
-func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (resp *shop.Carrier, err error) {
+func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (resp *api.Carrier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1213,12 +1212,12 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 }
 
 type GetCarriersEndpoint struct {
-	*shop.GetCarriersRequest
-	Result  *shop.CarriersResponse
+	*api.GetCarriersRequest
+	Result  *api.CarriersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCarrierService) GetCarriers(ctx context.Context, req *shop.GetCarriersRequest) (resp *shop.CarriersResponse, err error) {
+func (s wrapCarrierService) GetCarriers(ctx context.Context, req *api.GetCarriersRequest) (resp *api.CarriersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1268,11 +1267,11 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *shop.GetCarrie
 
 type GetCarriersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.CarriersResponse
+	Result  *api.CarriersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.CarriersResponse, err error) {
+func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.CarriersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1321,12 +1320,12 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 }
 
 type UpdateCarrierEndpoint struct {
-	*shop.UpdateCarrierRequest
-	Result  *shop.Carrier
+	*api.UpdateCarrierRequest
+	Result  *api.Carrier
 	Context claims.ShopClaim
 }
 
-func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *shop.UpdateCarrierRequest) (resp *shop.Carrier, err error) {
+func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCarrierRequest) (resp *api.Carrier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1383,12 +1382,12 @@ type wrapCategoryService struct {
 }
 
 type CreateCategoryEndpoint struct {
-	*shop.CreateCategoryRequest
-	Result  *shop.ShopCategory
+	*api.CreateCategoryRequest
+	Result  *api.ShopCategory
 	Context claims.ShopClaim
 }
 
-func (s wrapCategoryService) CreateCategory(ctx context.Context, req *shop.CreateCategoryRequest) (resp *shop.ShopCategory, err error) {
+func (s wrapCategoryService) CreateCategory(ctx context.Context, req *api.CreateCategoryRequest) (resp *api.ShopCategory, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1491,12 +1490,12 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 }
 
 type GetCategoriesEndpoint struct {
-	*shop.GetCategoriesRequest
-	Result  *shop.ShopCategoriesResponse
+	*api.GetCategoriesRequest
+	Result  *api.ShopCategoriesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCategoryService) GetCategories(ctx context.Context, req *shop.GetCategoriesRequest) (resp *shop.ShopCategoriesResponse, err error) {
+func (s wrapCategoryService) GetCategories(ctx context.Context, req *api.GetCategoriesRequest) (resp *api.ShopCategoriesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1546,11 +1545,11 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *shop.GetCat
 
 type GetCategoryEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.ShopCategory
+	Result  *api.ShopCategory
 	Context claims.ShopClaim
 }
 
-func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopCategory, err error) {
+func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest) (resp *api.ShopCategory, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1599,12 +1598,12 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 }
 
 type UpdateCategoryEndpoint struct {
-	*shop.UpdateCategoryRequest
-	Result  *shop.ShopCategory
+	*api.UpdateCategoryRequest
+	Result  *api.ShopCategory
 	Context claims.ShopClaim
 }
 
-func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *shop.UpdateCategoryRequest) (resp *shop.ShopCategory, err error) {
+func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.UpdateCategoryRequest) (resp *api.ShopCategory, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1661,12 +1660,12 @@ type wrapCollectionService struct {
 }
 
 type CreateCollectionEndpoint struct {
-	*shop.CreateCollectionRequest
-	Result  *shop.ShopCollection
+	*api.CreateCollectionRequest
+	Result  *api.ShopCollection
 	Context claims.ShopClaim
 }
 
-func (s wrapCollectionService) CreateCollection(ctx context.Context, req *shop.CreateCollectionRequest) (resp *shop.ShopCollection, err error) {
+func (s wrapCollectionService) CreateCollection(ctx context.Context, req *api.CreateCollectionRequest) (resp *api.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1716,11 +1715,11 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *shop.C
 
 type GetCollectionEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.ShopCollection
+	Result  *api.ShopCollection
 	Context claims.ShopClaim
 }
 
-func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopCollection, err error) {
+func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequest) (resp *api.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1769,12 +1768,12 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 }
 
 type GetCollectionsEndpoint struct {
-	*shop.GetCollectionsRequest
-	Result  *shop.ShopCollectionsResponse
+	*api.GetCollectionsRequest
+	Result  *api.ShopCollectionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCollectionService) GetCollections(ctx context.Context, req *shop.GetCollectionsRequest) (resp *shop.ShopCollectionsResponse, err error) {
+func (s wrapCollectionService) GetCollections(ctx context.Context, req *api.GetCollectionsRequest) (resp *api.ShopCollectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1823,12 +1822,12 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *shop.Get
 }
 
 type GetCollectionsByProductIDEndpoint struct {
-	*shop.GetShopCollectionsByProductIDRequest
-	Result  *shop.CollectionsResponse
+	*api.GetShopCollectionsByProductIDRequest
+	Result  *api.CollectionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, req *shop.GetShopCollectionsByProductIDRequest) (resp *shop.CollectionsResponse, err error) {
+func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, req *api.GetShopCollectionsByProductIDRequest) (resp *api.CollectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1877,12 +1876,12 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 }
 
 type UpdateCollectionEndpoint struct {
-	*shop.UpdateCollectionRequest
-	Result  *shop.ShopCollection
+	*api.UpdateCollectionRequest
+	Result  *api.ShopCollection
 	Context claims.ShopClaim
 }
 
-func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *shop.UpdateCollectionRequest) (resp *shop.ShopCollection, err error) {
+func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.UpdateCollectionRequest) (resp *api.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1939,12 +1938,12 @@ type wrapCustomerService struct {
 }
 
 type AddCustomersToGroupEndpoint struct {
-	*shop.AddCustomerToGroupRequest
+	*api.AddCustomerToGroupRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *shop.AddCustomerToGroupRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *api.AddCustomerToGroupRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1993,12 +1992,12 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *shop.
 }
 
 type BatchSetCustomersStatusEndpoint struct {
-	*shop.SetCustomersStatusRequest
+	*api.SetCustomersStatusRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *shop.SetCustomersStatusRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *api.SetCustomersStatusRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2047,12 +2046,12 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *s
 }
 
 type CreateCustomerEndpoint struct {
-	*shop.CreateCustomerRequest
-	Result  *shop.Customer
+	*api.CreateCustomerRequest
+	Result  *api.Customer
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *shop.CreateCustomerRequest) (resp *shop.Customer, err error) {
+func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *api.CreateCustomerRequest) (resp *api.Customer, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2101,12 +2100,12 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *shop.Creat
 }
 
 type CreateCustomerAddressEndpoint struct {
-	*shop.CreateCustomerAddressRequest
-	Result  *shop.CustomerAddress
+	*api.CreateCustomerAddressRequest
+	Result  *api.CustomerAddress
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *shop.CreateCustomerAddressRequest) (resp *shop.CustomerAddress, err error) {
+func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *api.CreateCustomerAddressRequest) (resp *api.CustomerAddress, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2264,11 +2263,11 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 
 type GetCustomerEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Customer
+	Result  *api.Customer
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest) (resp *shop.Customer, err error) {
+func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest) (resp *api.Customer, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2317,12 +2316,12 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 }
 
 type GetCustomerAddressesEndpoint struct {
-	*shop.GetCustomerAddressesRequest
-	Result  *shop.CustomerAddressesResponse
+	*api.GetCustomerAddressesRequest
+	Result  *api.CustomerAddressesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *shop.GetCustomerAddressesRequest) (resp *shop.CustomerAddressesResponse, err error) {
+func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *api.GetCustomerAddressesRequest) (resp *api.CustomerAddressesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2372,11 +2371,11 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *shop
 
 type GetCustomerDetailsEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.CustomerDetailsResponse
+	Result  *api.CustomerDetailsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDRequest) (resp *shop.CustomerDetailsResponse, err error) {
+func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDRequest) (resp *api.CustomerDetailsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2425,12 +2424,12 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 }
 
 type GetCustomersEndpoint struct {
-	*shop.GetCustomersRequest
-	Result  *shop.CustomersResponse
+	*api.GetCustomersRequest
+	Result  *api.CustomersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) GetCustomers(ctx context.Context, req *shop.GetCustomersRequest) (resp *shop.CustomersResponse, err error) {
+func (s wrapCustomerService) GetCustomers(ctx context.Context, req *api.GetCustomersRequest) (resp *api.CustomersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2480,11 +2479,11 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *shop.GetCust
 
 type GetCustomersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.CustomersResponse
+	Result  *api.CustomersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.CustomersResponse, err error) {
+func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.CustomersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2533,12 +2532,12 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 }
 
 type RemoveCustomersFromGroupEndpoint struct {
-	*shop.RemoveCustomerOutOfGroupRequest
+	*api.RemoveCustomerOutOfGroupRequest
 	Result  *cm.RemovedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *shop.RemoveCustomerOutOfGroupRequest) (resp *cm.RemovedResponse, err error) {
+func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *api.RemoveCustomerOutOfGroupRequest) (resp *cm.RemovedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2641,12 +2640,12 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 }
 
 type UpdateCustomerEndpoint struct {
-	*shop.UpdateCustomerRequest
-	Result  *shop.Customer
+	*api.UpdateCustomerRequest
+	Result  *api.Customer
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *shop.UpdateCustomerRequest) (resp *shop.Customer, err error) {
+func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *api.UpdateCustomerRequest) (resp *api.Customer, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2695,12 +2694,12 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *shop.Updat
 }
 
 type UpdateCustomerAddressEndpoint struct {
-	*shop.UpdateCustomerAddressRequest
-	Result  *shop.CustomerAddress
+	*api.UpdateCustomerAddressRequest
+	Result  *api.CustomerAddress
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *shop.UpdateCustomerAddressRequest) (resp *shop.CustomerAddress, err error) {
+func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api.UpdateCustomerAddressRequest) (resp *api.CustomerAddress, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2757,12 +2756,12 @@ type wrapCustomerGroupService struct {
 }
 
 type CreateCustomerGroupEndpoint struct {
-	*shop.CreateCustomerGroupRequest
-	Result  *shop.CustomerGroup
+	*api.CreateCustomerGroupRequest
+	Result  *api.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *shop.CreateCustomerGroupRequest) (resp *shop.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *api.CreateCustomerGroupRequest) (resp *api.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2812,11 +2811,11 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 
 type GetCustomerGroupEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.CustomerGroup
+	Result  *api.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.IDRequest) (resp *shop.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.IDRequest) (resp *api.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2865,12 +2864,12 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 }
 
 type GetCustomerGroupsEndpoint struct {
-	*shop.GetCustomerGroupsRequest
-	Result  *shop.CustomerGroupsResponse
+	*api.GetCustomerGroupsRequest
+	Result  *api.CustomerGroupsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *shop.GetCustomerGroupsRequest) (resp *shop.CustomerGroupsResponse, err error) {
+func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *api.GetCustomerGroupsRequest) (resp *api.CustomerGroupsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2919,12 +2918,12 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *sh
 }
 
 type UpdateCustomerGroupEndpoint struct {
-	*shop.UpdateCustomerGroupRequest
-	Result  *shop.CustomerGroup
+	*api.UpdateCustomerGroupRequest
+	Result  *api.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *shop.UpdateCustomerGroupRequest) (resp *shop.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *api.UpdateCustomerGroupRequest) (resp *api.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2981,12 +2980,12 @@ type wrapExportService struct {
 }
 
 type GetExportsEndpoint struct {
-	*shop.GetExportsRequest
-	Result  *shop.GetExportsResponse
+	*api.GetExportsRequest
+	Result  *api.GetExportsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapExportService) GetExports(ctx context.Context, req *shop.GetExportsRequest) (resp *shop.GetExportsResponse, err error) {
+func (s wrapExportService) GetExports(ctx context.Context, req *api.GetExportsRequest) (resp *api.GetExportsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3026,12 +3025,12 @@ func (s wrapExportService) GetExports(ctx context.Context, req *shop.GetExportsR
 }
 
 type RequestExportEndpoint struct {
-	*shop.RequestExportRequest
-	Result  *shop.RequestExportResponse
+	*api.RequestExportRequest
+	Result  *api.RequestExportResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapExportService) RequestExport(ctx context.Context, req *shop.RequestExportRequest) (resp *shop.RequestExportResponse, err error) {
+func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestExportRequest) (resp *api.RequestExportResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3133,12 +3132,12 @@ func (s wrapExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(
 }
 
 type CreateExternalAccountHaravanEndpoint struct {
-	*shop.ExternalAccountHaravanRequest
-	Result  *shop.ExternalAccountHaravan
+	*api.ExternalAccountHaravanRequest
+	Result  *api.ExternalAccountHaravan
 	Context claims.ShopClaim
 }
 
-func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Context, req *shop.ExternalAccountHaravanRequest) (resp *shop.ExternalAccountHaravan, err error) {
+func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Context, req *api.ExternalAccountHaravanRequest) (resp *api.ExternalAccountHaravan, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3242,11 +3241,11 @@ func (s wrapExternalAccountService) DeleteConnectedCarrierServiceExternalAccount
 
 type GetExternalAccountHaravanEndpoint struct {
 	*cm.Empty
-	Result  *shop.ExternalAccountHaravan
+	Result  *api.ExternalAccountHaravan
 	Context claims.ShopClaim
 }
 
-func (s wrapExternalAccountService) GetExternalAccountHaravan(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountHaravan, err error) {
+func (s wrapExternalAccountService) GetExternalAccountHaravan(ctx context.Context, req *cm.Empty) (resp *api.ExternalAccountHaravan, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3286,12 +3285,12 @@ func (s wrapExternalAccountService) GetExternalAccountHaravan(ctx context.Contex
 }
 
 type UpdateExternalAccountHaravanTokenEndpoint struct {
-	*shop.ExternalAccountHaravanRequest
-	Result  *shop.ExternalAccountHaravan
+	*api.ExternalAccountHaravanRequest
+	Result  *api.ExternalAccountHaravan
 	Context claims.ShopClaim
 }
 
-func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.Context, req *shop.ExternalAccountHaravanRequest) (resp *shop.ExternalAccountHaravan, err error) {
+func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.Context, req *api.ExternalAccountHaravanRequest) (resp *api.ExternalAccountHaravan, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3348,13 +3347,13 @@ type wrapFulfillmentService struct {
 }
 
 type GetExternalShippingServicesEndpoint struct {
-	*order.GetExternalShippingServicesRequest
-	Result     *order.GetExternalShippingServicesResponse
+	*inttypes.GetExternalShippingServicesRequest
+	Result     *inttypes.GetExternalShippingServicesResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context, req *order.GetExternalShippingServicesRequest) (resp *order.GetExternalShippingServicesResponse, err error) {
+func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context, req *inttypes.GetExternalShippingServicesRequest) (resp *inttypes.GetExternalShippingServicesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3406,12 +3405,12 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 
 type GetFulfillmentEndpoint struct {
 	*cm.IDRequest
-	Result     *order.Fulfillment
+	Result     *inttypes.Fulfillment
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.Fulfillment, err error) {
+func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Fulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3462,13 +3461,13 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 }
 
 type GetFulfillmentsEndpoint struct {
-	*shop.GetFulfillmentsRequest
-	Result     *order.FulfillmentsResponse
+	*api.GetFulfillmentsRequest
+	Result     *inttypes.FulfillmentsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *shop.GetFulfillmentsRequest) (resp *order.FulfillmentsResponse, err error) {
+func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.GetFulfillmentsRequest) (resp *inttypes.FulfillmentsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3519,12 +3518,12 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *shop.G
 }
 
 type GetPublicExternalShippingServicesEndpoint struct {
-	*order.GetExternalShippingServicesRequest
-	Result  *order.GetExternalShippingServicesResponse
+	*inttypes.GetExternalShippingServicesRequest
+	Result  *inttypes.GetExternalShippingServicesResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Context, req *order.GetExternalShippingServicesRequest) (resp *order.GetExternalShippingServicesResponse, err error) {
+func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Context, req *inttypes.GetExternalShippingServicesRequest) (resp *inttypes.GetExternalShippingServicesResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "shop.Fulfillment/GetPublicExternalShippingServices"
@@ -3549,12 +3548,12 @@ func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Co
 }
 
 type GetPublicFulfillmentEndpoint struct {
-	*shop.GetPublicFulfillmentRequest
-	Result  *order.PublicFulfillment
+	*api.GetPublicFulfillmentRequest
+	Result  *inttypes.PublicFulfillment
 	Context claims.EmptyClaim
 }
 
-func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *shop.GetPublicFulfillmentRequest) (resp *order.PublicFulfillment, err error) {
+func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *api.GetPublicFulfillmentRequest) (resp *inttypes.PublicFulfillment, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "shop.Fulfillment/GetPublicFulfillment"
@@ -3579,12 +3578,12 @@ func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *s
 }
 
 type UpdateFulfillmentsShippingStateEndpoint struct {
-	*shop.UpdateFulfillmentsShippingStateRequest
+	*api.UpdateFulfillmentsShippingStateRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context, req *shop.UpdateFulfillmentsShippingStateRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context, req *api.UpdateFulfillmentsShippingStateRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3632,13 +3631,13 @@ type wrapHistoryService struct {
 }
 
 type GetFulfillmentHistoryEndpoint struct {
-	*shop.GetFulfillmentHistoryRequest
+	*api.GetFulfillmentHistoryRequest
 	Result     *etop.HistoryResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *shop.GetFulfillmentHistoryRequest) (resp *etop.HistoryResponse, err error) {
+func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.GetFulfillmentHistoryRequest) (resp *etop.HistoryResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3688,12 +3687,12 @@ type wrapInventoryService struct {
 }
 
 type AdjustInventoryQuantityEndpoint struct {
-	*shop.AdjustInventoryQuantityRequest
-	Result  *shop.AdjustInventoryQuantityResponse
+	*api.AdjustInventoryQuantityRequest
+	Result  *api.AdjustInventoryQuantityResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *shop.AdjustInventoryQuantityRequest) (resp *shop.AdjustInventoryQuantityResponse, err error) {
+func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *api.AdjustInventoryQuantityRequest) (resp *api.AdjustInventoryQuantityResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3742,12 +3741,12 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 }
 
 type CancelInventoryVoucherEndpoint struct {
-	*shop.CancelInventoryVoucherRequest
-	Result  *shop.CancelInventoryVoucherResponse
+	*api.CancelInventoryVoucherRequest
+	Result  *api.CancelInventoryVoucherResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *shop.CancelInventoryVoucherRequest) (resp *shop.CancelInventoryVoucherResponse, err error) {
+func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *api.CancelInventoryVoucherRequest) (resp *api.CancelInventoryVoucherResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3796,12 +3795,12 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *s
 }
 
 type ConfirmInventoryVoucherEndpoint struct {
-	*shop.ConfirmInventoryVoucherRequest
-	Result  *shop.ConfirmInventoryVoucherResponse
+	*api.ConfirmInventoryVoucherRequest
+	Result  *api.ConfirmInventoryVoucherResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *shop.ConfirmInventoryVoucherRequest) (resp *shop.ConfirmInventoryVoucherResponse, err error) {
+func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *api.ConfirmInventoryVoucherRequest) (resp *api.ConfirmInventoryVoucherResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3850,12 +3849,12 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 }
 
 type CreateInventoryVoucherEndpoint struct {
-	*shop.CreateInventoryVoucherRequest
-	Result  *shop.CreateInventoryVoucherResponse
+	*api.CreateInventoryVoucherRequest
+	Result  *api.CreateInventoryVoucherResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *shop.CreateInventoryVoucherRequest) (resp *shop.CreateInventoryVoucherResponse, err error) {
+func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *api.CreateInventoryVoucherRequest) (resp *api.CreateInventoryVoucherResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3904,12 +3903,12 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *s
 }
 
 type GetInventoryVariantEndpoint struct {
-	*shop.GetInventoryVariantRequest
-	Result  *shop.InventoryVariant
+	*api.GetInventoryVariantRequest
+	Result  *api.InventoryVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *shop.GetInventoryVariantRequest) (resp *shop.InventoryVariant, err error) {
+func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.GetInventoryVariantRequest) (resp *api.InventoryVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3958,12 +3957,12 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *shop
 }
 
 type GetInventoryVariantsEndpoint struct {
-	*shop.GetInventoryVariantsRequest
-	Result  *shop.GetInventoryVariantsResponse
+	*api.GetInventoryVariantsRequest
+	Result  *api.GetInventoryVariantsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *shop.GetInventoryVariantsRequest) (resp *shop.GetInventoryVariantsResponse, err error) {
+func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api.GetInventoryVariantsRequest) (resp *api.GetInventoryVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4012,12 +4011,12 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *sho
 }
 
 type GetInventoryVariantsByVariantIDsEndpoint struct {
-	*shop.GetInventoryVariantsByVariantIDsRequest
-	Result  *shop.GetInventoryVariantsResponse
+	*api.GetInventoryVariantsByVariantIDsRequest
+	Result  *api.GetInventoryVariantsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Context, req *shop.GetInventoryVariantsByVariantIDsRequest) (resp *shop.GetInventoryVariantsResponse, err error) {
+func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Context, req *api.GetInventoryVariantsByVariantIDsRequest) (resp *api.GetInventoryVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4067,11 +4066,11 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 
 type GetInventoryVoucherEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.InventoryVoucher
+	Result  *api.InventoryVoucher
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.IDRequest) (resp *shop.InventoryVoucher, err error) {
+func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.IDRequest) (resp *api.InventoryVoucher, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4120,12 +4119,12 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 }
 
 type GetInventoryVouchersEndpoint struct {
-	*shop.GetInventoryVouchersRequest
-	Result  *shop.GetInventoryVouchersResponse
+	*api.GetInventoryVouchersRequest
+	Result  *api.GetInventoryVouchersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *shop.GetInventoryVouchersRequest) (resp *shop.GetInventoryVouchersResponse, err error) {
+func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *api.GetInventoryVouchersRequest) (resp *api.GetInventoryVouchersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4174,12 +4173,12 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *sho
 }
 
 type GetInventoryVouchersByIDsEndpoint struct {
-	*shop.GetInventoryVouchersByIDsRequest
-	Result  *shop.GetInventoryVouchersResponse
+	*api.GetInventoryVouchersByIDsRequest
+	Result  *api.GetInventoryVouchersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req *shop.GetInventoryVouchersByIDsRequest) (resp *shop.GetInventoryVouchersResponse, err error) {
+func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req *api.GetInventoryVouchersByIDsRequest) (resp *api.GetInventoryVouchersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4228,12 +4227,12 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 }
 
 type GetInventoryVouchersByReferenceEndpoint struct {
-	*shop.GetInventoryVouchersByReferenceRequest
-	Result  *shop.GetInventoryVouchersByReferenceResponse
+	*api.GetInventoryVouchersByReferenceRequest
+	Result  *api.GetInventoryVouchersByReferenceResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Context, req *shop.GetInventoryVouchersByReferenceRequest) (resp *shop.GetInventoryVouchersByReferenceResponse, err error) {
+func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Context, req *api.GetInventoryVouchersByReferenceRequest) (resp *api.GetInventoryVouchersByReferenceResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4282,12 +4281,12 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 }
 
 type UpdateInventoryVariantCostPriceEndpoint struct {
-	*shop.UpdateInventoryVariantCostPriceRequest
-	Result  *shop.UpdateInventoryVariantCostPriceResponse
+	*api.UpdateInventoryVariantCostPriceRequest
+	Result  *api.UpdateInventoryVariantCostPriceResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, req *shop.UpdateInventoryVariantCostPriceRequest) (resp *shop.UpdateInventoryVariantCostPriceResponse, err error) {
+func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, req *api.UpdateInventoryVariantCostPriceRequest) (resp *api.UpdateInventoryVariantCostPriceResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4336,12 +4335,12 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 }
 
 type UpdateInventoryVoucherEndpoint struct {
-	*shop.UpdateInventoryVoucherRequest
-	Result  *shop.UpdateInventoryVoucherResponse
+	*api.UpdateInventoryVoucherRequest
+	Result  *api.UpdateInventoryVoucherResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *shop.UpdateInventoryVoucherRequest) (resp *shop.UpdateInventoryVoucherResponse, err error) {
+func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *api.UpdateInventoryVoucherRequest) (resp *api.UpdateInventoryVoucherResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4398,12 +4397,12 @@ type wrapLedgerService struct {
 }
 
 type CreateLedgerEndpoint struct {
-	*shop.CreateLedgerRequest
-	Result  *shop.Ledger
+	*api.CreateLedgerRequest
+	Result  *api.Ledger
 	Context claims.ShopClaim
 }
 
-func (s wrapLedgerService) CreateLedger(ctx context.Context, req *shop.CreateLedgerRequest) (resp *shop.Ledger, err error) {
+func (s wrapLedgerService) CreateLedger(ctx context.Context, req *api.CreateLedgerRequest) (resp *api.Ledger, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4507,11 +4506,11 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 
 type GetLedgerEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Ledger
+	Result  *api.Ledger
 	Context claims.ShopClaim
 }
 
-func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (resp *shop.Ledger, err error) {
+func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (resp *api.Ledger, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4560,12 +4559,12 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 }
 
 type GetLedgersEndpoint struct {
-	*shop.GetLedgersRequest
-	Result  *shop.LedgersResponse
+	*api.GetLedgersRequest
+	Result  *api.LedgersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapLedgerService) GetLedgers(ctx context.Context, req *shop.GetLedgersRequest) (resp *shop.LedgersResponse, err error) {
+func (s wrapLedgerService) GetLedgers(ctx context.Context, req *api.GetLedgersRequest) (resp *api.LedgersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4614,12 +4613,12 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *shop.GetLedgersR
 }
 
 type UpdateLedgerEndpoint struct {
-	*shop.UpdateLedgerRequest
-	Result  *shop.Ledger
+	*api.UpdateLedgerRequest
+	Result  *api.Ledger
 	Context claims.ShopClaim
 }
 
-func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *shop.UpdateLedgerRequest) (resp *shop.Ledger, err error) {
+func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedgerRequest) (resp *api.Ledger, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4715,11 +4714,11 @@ type wrapMoneyTransactionService struct {
 
 type GetMoneyTransactionEndpoint struct {
 	*cm.IDRequest
-	Result  *order.MoneyTransaction
+	Result  *inttypes.MoneyTransaction
 	Context claims.ShopClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, req *cm.IDRequest) (resp *order.MoneyTransaction, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, req *cm.IDRequest) (resp *inttypes.MoneyTransaction, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4768,12 +4767,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 }
 
 type GetMoneyTransactionsEndpoint struct {
-	*shop.GetMoneyTransactionsRequest
-	Result  *order.MoneyTransactionsResponse
+	*api.GetMoneyTransactionsRequest
+	Result  *inttypes.MoneyTransactionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, req *shop.GetMoneyTransactionsRequest) (resp *order.MoneyTransactionsResponse, err error) {
+func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, req *api.GetMoneyTransactionsRequest) (resp *inttypes.MoneyTransactionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5063,13 +5062,13 @@ type wrapOrderService struct {
 }
 
 type CancelOrderEndpoint struct {
-	*shop.CancelOrderRequest
-	Result     *order.OrderWithErrorsResponse
+	*api.CancelOrderRequest
+	Result     *inttypes.OrderWithErrorsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) CancelOrder(ctx context.Context, req *shop.CancelOrderRequest) (resp *order.OrderWithErrorsResponse, err error) {
+func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderRequest) (resp *inttypes.OrderWithErrorsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5120,13 +5119,13 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *shop.CancelOrder
 }
 
 type ConfirmOrderEndpoint struct {
-	*shop.ConfirmOrderRequest
-	Result     *order.Order
+	*api.ConfirmOrderRequest
+	Result     *inttypes.Order
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *shop.ConfirmOrderRequest) (resp *order.Order, err error) {
+func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrderRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5177,13 +5176,13 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *shop.ConfirmOrd
 }
 
 type ConfirmOrderAndCreateFulfillmentsEndpoint struct {
-	*shop.OrderIDRequest
-	Result     *order.OrderWithErrorsResponse
+	*api.OrderIDRequest
+	Result     *inttypes.OrderWithErrorsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, req *shop.OrderIDRequest) (resp *order.OrderWithErrorsResponse, err error) {
+func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, req *api.OrderIDRequest) (resp *inttypes.OrderWithErrorsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5234,13 +5233,13 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 }
 
 type CreateOrderEndpoint struct {
-	*order.CreateOrderRequest
-	Result     *order.Order
+	*inttypes.CreateOrderRequest
+	Result     *inttypes.Order
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) CreateOrder(ctx context.Context, req *order.CreateOrderRequest) (resp *order.Order, err error) {
+func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateOrderRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5292,12 +5291,12 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *order.CreateOrde
 
 type GetOrderEndpoint struct {
 	*cm.IDRequest
-	Result     *order.Order
+	Result     *inttypes.Order
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *order.Order, err error) {
+func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5348,13 +5347,13 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 }
 
 type GetOrdersEndpoint struct {
-	*shop.GetOrdersRequest
-	Result     *order.OrdersResponse
+	*api.GetOrdersRequest
+	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) GetOrders(ctx context.Context, req *shop.GetOrdersRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5406,12 +5405,12 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *shop.GetOrdersRequ
 
 type GetOrdersByIDsEndpoint struct {
 	*etop.IDsRequest
-	Result     *order.OrdersResponse
+	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5462,13 +5461,13 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 }
 
 type GetOrdersByReceiptIDEndpoint struct {
-	*shop.GetOrdersByReceiptIDRequest
-	Result     *order.OrdersResponse
+	*api.GetOrdersByReceiptIDRequest
+	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *shop.GetOrdersByReceiptIDRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.GetOrdersByReceiptIDRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5519,13 +5518,13 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *shop.Ge
 }
 
 type UpdateOrderEndpoint struct {
-	*order.UpdateOrderRequest
-	Result     *order.Order
+	*inttypes.UpdateOrderRequest
+	Result     *inttypes.Order
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) UpdateOrder(ctx context.Context, req *order.UpdateOrderRequest) (resp *order.Order, err error) {
+func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateOrderRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5576,13 +5575,13 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *order.UpdateOrde
 }
 
 type UpdateOrderPaymentStatusEndpoint struct {
-	*shop.UpdateOrderPaymentStatusRequest
+	*api.UpdateOrderPaymentStatusRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *shop.UpdateOrderPaymentStatusRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api.UpdateOrderPaymentStatusRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5633,13 +5632,13 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *sho
 }
 
 type UpdateOrderShippingInfoEndpoint struct {
-	*shop.UpdateOrderShippingInfoRequest
+	*api.UpdateOrderShippingInfoRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *shop.UpdateOrderShippingInfoRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.UpdateOrderShippingInfoRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5690,13 +5689,13 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *shop
 }
 
 type UpdateOrdersStatusEndpoint struct {
-	*shop.UpdateOrdersStatusRequest
+	*api.UpdateOrdersStatusRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *shop.UpdateOrdersStatusRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.UpdateOrdersStatusRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5755,12 +5754,12 @@ type wrapPaymentService struct {
 }
 
 type PaymentCheckReturnDataEndpoint struct {
-	*shop.PaymentCheckReturnDataRequest
+	*api.PaymentCheckReturnDataRequest
 	Result  *cm.MessageResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *shop.PaymentCheckReturnDataRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *api.PaymentCheckReturnDataRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5809,12 +5808,12 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *sho
 }
 
 type PaymentTradingOrderEndpoint struct {
-	*shop.PaymentTradingOrderRequest
-	Result  *shop.PaymentTradingOrderResponse
+	*api.PaymentTradingOrderRequest
+	Result  *api.PaymentTradingOrderResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *shop.PaymentTradingOrderRequest) (resp *shop.PaymentTradingOrderResponse, err error) {
+func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.PaymentTradingOrderRequest) (resp *api.PaymentTradingOrderResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5871,12 +5870,12 @@ type wrapProductService struct {
 }
 
 type AddProductCollectionEndpoint struct {
-	*shop.AddShopProductCollectionRequest
+	*api.AddShopProductCollectionRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) AddProductCollection(ctx context.Context, req *shop.AddShopProductCollectionRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapProductService) AddProductCollection(ctx context.Context, req *api.AddShopProductCollectionRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5925,12 +5924,12 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *shop.
 }
 
 type CreateProductEndpoint struct {
-	*shop.CreateProductRequest
-	Result  *shop.ShopProduct
+	*api.CreateProductRequest
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) CreateProduct(ctx context.Context, req *shop.CreateProductRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) CreateProduct(ctx context.Context, req *api.CreateProductRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -5979,12 +5978,12 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *shop.CreateP
 }
 
 type CreateVariantEndpoint struct {
-	*shop.CreateVariantRequest
-	Result  *shop.ShopVariant
+	*api.CreateVariantRequest
+	Result  *api.ShopVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) CreateVariant(ctx context.Context, req *shop.CreateVariantRequest) (resp *shop.ShopVariant, err error) {
+func (s wrapProductService) CreateVariant(ctx context.Context, req *api.CreateVariantRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6034,12 +6033,12 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *shop.CreateV
 
 type GetProductEndpoint struct {
 	*cm.IDRequest
-	Result     *shop.ShopProduct
+	Result     *api.ShopProduct
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6090,13 +6089,13 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 }
 
 type GetProductsEndpoint struct {
-	*shop.GetVariantsRequest
-	Result     *shop.ShopProductsResponse
+	*api.GetVariantsRequest
+	Result     *api.ShopProductsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetProducts(ctx context.Context, req *shop.GetVariantsRequest) (resp *shop.ShopProductsResponse, err error) {
+func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariantsRequest) (resp *api.ShopProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6148,12 +6147,12 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *shop.GetVarian
 
 type GetProductsByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result     *shop.ShopProductsResponse
+	Result     *api.ShopProductsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.ShopProductsResponse, err error) {
+func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.ShopProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6205,12 +6204,12 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 
 type GetVariantEndpoint struct {
 	*cm.IDRequest
-	Result     *shop.ShopVariant
+	Result     *api.ShopVariant
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopVariant, err error) {
+func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6262,12 +6261,12 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (
 
 type GetVariantsByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result     *shop.ShopVariantsResponse
+	Result     *api.ShopVariantsResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.ShopVariantsResponse, err error) {
+func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.ShopVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6318,12 +6317,12 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 }
 
 type GetVariantsBySupplierIDEndpoint struct {
-	*shop.GetVariantsBySupplierIDRequest
-	Result  *shop.ShopVariantsResponse
+	*api.GetVariantsBySupplierIDRequest
+	Result  *api.ShopVariantsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *shop.GetVariantsBySupplierIDRequest) (resp *shop.ShopVariantsResponse, err error) {
+func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *api.GetVariantsBySupplierIDRequest) (resp *api.ShopVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6373,11 +6372,11 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *sh
 
 type RemoveProductCategoryEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.ShopProduct
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.IDRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6426,12 +6425,12 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 }
 
 type RemoveProductCollectionEndpoint struct {
-	*shop.RemoveShopProductCollectionRequest
+	*api.RemoveShopProductCollectionRequest
 	Result  *cm.RemovedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *shop.RemoveShopProductCollectionRequest) (resp *cm.RemovedResponse, err error) {
+func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *api.RemoveShopProductCollectionRequest) (resp *cm.RemovedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6480,12 +6479,12 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *sh
 }
 
 type RemoveProductsEndpoint struct {
-	*shop.RemoveVariantsRequest
+	*api.RemoveVariantsRequest
 	Result  *cm.RemovedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) RemoveProducts(ctx context.Context, req *shop.RemoveVariantsRequest) (resp *cm.RemovedResponse, err error) {
+func (s wrapProductService) RemoveProducts(ctx context.Context, req *api.RemoveVariantsRequest) (resp *cm.RemovedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6534,12 +6533,12 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *shop.Remove
 }
 
 type RemoveVariantsEndpoint struct {
-	*shop.RemoveVariantsRequest
+	*api.RemoveVariantsRequest
 	Result  *cm.RemovedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) RemoveVariants(ctx context.Context, req *shop.RemoveVariantsRequest) (resp *cm.RemovedResponse, err error) {
+func (s wrapProductService) RemoveVariants(ctx context.Context, req *api.RemoveVariantsRequest) (resp *cm.RemovedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6588,12 +6587,12 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *shop.Remove
 }
 
 type UpdateProductEndpoint struct {
-	*shop.UpdateProductRequest
-	Result  *shop.ShopProduct
+	*api.UpdateProductRequest
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProduct(ctx context.Context, req *shop.UpdateProductRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) UpdateProduct(ctx context.Context, req *api.UpdateProductRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6642,12 +6641,12 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *shop.UpdateP
 }
 
 type UpdateProductCategoryEndpoint struct {
-	*shop.UpdateProductCategoryRequest
-	Result  *shop.ShopProduct
+	*api.UpdateProductCategoryRequest
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *shop.UpdateProductCategoryRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *api.UpdateProductCategoryRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6696,12 +6695,12 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *shop
 }
 
 type UpdateProductImagesEndpoint struct {
-	*shop.UpdateVariantImagesRequest
-	Result  *shop.ShopProduct
+	*api.UpdateVariantImagesRequest
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProductImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) UpdateProductImages(ctx context.Context, req *api.UpdateVariantImagesRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6750,12 +6749,12 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *shop.U
 }
 
 type UpdateProductMetaFieldsEndpoint struct {
-	*shop.UpdateProductMetaFieldsRequest
-	Result  *shop.ShopProduct
+	*api.UpdateProductMetaFieldsRequest
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *shop.UpdateProductMetaFieldsRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *api.UpdateProductMetaFieldsRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6804,12 +6803,12 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *sh
 }
 
 type UpdateProductsStatusEndpoint struct {
-	*shop.UpdateProductStatusRequest
-	Result  *shop.UpdateProductStatusResponse
+	*api.UpdateProductStatusRequest
+	Result  *api.UpdateProductStatusResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *shop.UpdateProductStatusRequest) (resp *shop.UpdateProductStatusResponse, err error) {
+func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *api.UpdateProductStatusRequest) (resp *api.UpdateProductStatusResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6858,12 +6857,12 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *shop.
 }
 
 type UpdateProductsTagsEndpoint struct {
-	*shop.UpdateProductsTagsRequest
+	*api.UpdateProductsTagsRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *shop.UpdateProductsTagsRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *api.UpdateProductsTagsRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6912,12 +6911,12 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *shop.Up
 }
 
 type UpdateVariantEndpoint struct {
-	*shop.UpdateVariantRequest
-	Result  *shop.ShopVariant
+	*api.UpdateVariantRequest
+	Result  *api.ShopVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateVariant(ctx context.Context, req *shop.UpdateVariantRequest) (resp *shop.ShopVariant, err error) {
+func (s wrapProductService) UpdateVariant(ctx context.Context, req *api.UpdateVariantRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6966,12 +6965,12 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *shop.UpdateV
 }
 
 type UpdateVariantAttributesEndpoint struct {
-	*shop.UpdateVariantAttributesRequest
-	Result  *shop.ShopVariant
+	*api.UpdateVariantAttributesRequest
+	Result  *api.ShopVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *shop.UpdateVariantAttributesRequest) (resp *shop.ShopVariant, err error) {
+func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *api.UpdateVariantAttributesRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7020,12 +7019,12 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *sh
 }
 
 type UpdateVariantImagesEndpoint struct {
-	*shop.UpdateVariantImagesRequest
-	Result  *shop.ShopVariant
+	*api.UpdateVariantImagesRequest
+	Result  *api.ShopVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *shop.ShopVariant, err error) {
+func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *api.UpdateVariantImagesRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7074,12 +7073,12 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *shop.U
 }
 
 type UpdateVariantsStatusEndpoint struct {
-	*shop.UpdateProductStatusRequest
-	Result  *shop.UpdateProductStatusResponse
+	*api.UpdateProductStatusRequest
+	Result  *api.UpdateProductStatusResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *shop.UpdateProductStatusRequest) (resp *shop.UpdateProductStatusResponse, err error) {
+func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.UpdateProductStatusRequest) (resp *api.UpdateProductStatusResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7136,12 +7135,12 @@ type wrapProductSourceService struct {
 }
 
 type CreateProductSourceEndpoint struct {
-	*shop.CreateProductSourceRequest
-	Result  *shop.ProductSource
+	*api.CreateProductSourceRequest
+	Result  *api.ProductSource
 	Context claims.ShopClaim
 }
 
-func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *shop.CreateProductSourceRequest) (resp *shop.ProductSource, err error) {
+func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *api.CreateProductSourceRequest) (resp *api.ProductSource, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7190,12 +7189,12 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 }
 
 type CreateProductSourceCategoryEndpoint struct {
-	*shop.CreatePSCategoryRequest
-	Result  *shop.Category
+	*api.CreatePSCategoryRequest
+	Result  *api.Category
 	Context claims.ShopClaim
 }
 
-func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Context, req *shop.CreatePSCategoryRequest) (resp *shop.Category, err error) {
+func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Context, req *api.CreatePSCategoryRequest) (resp *api.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7244,13 +7243,13 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 }
 
 type DeprecatedCreateVariantEndpoint struct {
-	*shop.DeprecatedCreateVariantRequest
-	Result     *shop.ShopProduct
+	*api.DeprecatedCreateVariantRequest
+	Result     *api.ShopProduct
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *shop.DeprecatedCreateVariantRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.DeprecatedCreateVariantRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7301,13 +7300,13 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *shop.D
 }
 
 type GetProductSourceCategoriesEndpoint struct {
-	*shop.GetProductSourceCategoriesRequest
-	Result     *shop.CategoriesResponse
+	*api.GetProductSourceCategoriesRequest
+	Result     *api.CategoriesResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context, req *shop.GetProductSourceCategoriesRequest) (resp *shop.CategoriesResponse, err error) {
+func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context, req *api.GetProductSourceCategoriesRequest) (resp *api.CategoriesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7359,12 +7358,12 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 
 type GetProductSourceCategoryEndpoint struct {
 	*cm.IDRequest
-	Result     *shop.Category
+	Result     *api.Category
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, req *cm.IDRequest) (resp *shop.Category, err error) {
+func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, req *cm.IDRequest) (resp *api.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7416,12 +7415,12 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 
 type GetShopProductSourcesEndpoint struct {
 	*cm.Empty
-	Result     *shop.ProductSourcesResponse
+	Result     *api.ProductSourcesResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req *cm.Empty) (resp *shop.ProductSourcesResponse, err error) {
+func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req *cm.Empty) (resp *api.ProductSourcesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7526,12 +7525,12 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 }
 
 type UpdateProductSourceCategoryEndpoint struct {
-	*shop.UpdateProductSourceCategoryRequest
-	Result  *shop.Category
+	*api.UpdateProductSourceCategoryRequest
+	Result  *api.Category
 	Context claims.ShopClaim
 }
 
-func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Context, req *shop.UpdateProductSourceCategoryRequest) (resp *shop.Category, err error) {
+func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Context, req *api.UpdateProductSourceCategoryRequest) (resp *api.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7580,12 +7579,12 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 }
 
 type UpdateProductsPSCategoryEndpoint struct {
-	*shop.UpdateProductsPSCategoryRequest
+	*api.UpdateProductsPSCategoryRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, req *shop.UpdateProductsPSCategoryRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, req *api.UpdateProductsPSCategoryRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7642,12 +7641,12 @@ type wrapPurchaseOrderService struct {
 }
 
 type CancelPurchaseOrderEndpoint struct {
-	*shop.CancelPurchaseOrderRequest
+	*api.CancelPurchaseOrderRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *shop.CancelPurchaseOrderRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *api.CancelPurchaseOrderRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7696,12 +7695,12 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 }
 
 type ConfirmPurchaseOrderEndpoint struct {
-	*shop.ConfirmPurchaseOrderRequest
+	*api.ConfirmPurchaseOrderRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req *shop.ConfirmPurchaseOrderRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req *api.ConfirmPurchaseOrderRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7750,12 +7749,12 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 }
 
 type CreatePurchaseOrderEndpoint struct {
-	*shop.CreatePurchaseOrderRequest
-	Result  *shop.PurchaseOrder
+	*api.CreatePurchaseOrderRequest
+	Result  *api.PurchaseOrder
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *shop.CreatePurchaseOrderRequest) (resp *shop.PurchaseOrder, err error) {
+func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *api.CreatePurchaseOrderRequest) (resp *api.PurchaseOrder, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7850,11 +7849,11 @@ func (s wrapPurchaseOrderService) DeletePurchaseOrder(ctx context.Context, req *
 
 type GetPurchaseOrderEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.PurchaseOrder
+	Result  *api.PurchaseOrder
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.IDRequest) (resp *shop.PurchaseOrder, err error) {
+func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.IDRequest) (resp *api.PurchaseOrder, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7903,12 +7902,12 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 }
 
 type GetPurchaseOrdersEndpoint struct {
-	*shop.GetPurchaseOrdersRequest
-	Result  *shop.PurchaseOrdersResponse
+	*api.GetPurchaseOrdersRequest
+	Result  *api.PurchaseOrdersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *shop.GetPurchaseOrdersRequest) (resp *shop.PurchaseOrdersResponse, err error) {
+func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *api.GetPurchaseOrdersRequest) (resp *api.PurchaseOrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7958,11 +7957,11 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *sh
 
 type GetPurchaseOrdersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.PurchaseOrdersResponse
+	Result  *api.PurchaseOrdersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.PurchaseOrdersResponse, err error) {
+func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.PurchaseOrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8012,11 +8011,11 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 
 type GetPurchaseOrdersByReceiptIDEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.PurchaseOrdersResponse
+	Result  *api.PurchaseOrdersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, req *cm.IDRequest) (resp *shop.PurchaseOrdersResponse, err error) {
+func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, req *cm.IDRequest) (resp *api.PurchaseOrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8065,12 +8064,12 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 }
 
 type UpdatePurchaseOrderEndpoint struct {
-	*shop.UpdatePurchaseOrderRequest
-	Result  *shop.PurchaseOrder
+	*api.UpdatePurchaseOrderRequest
+	Result  *api.PurchaseOrder
 	Context claims.ShopClaim
 }
 
-func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *shop.UpdatePurchaseOrderRequest) (resp *shop.PurchaseOrder, err error) {
+func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *api.UpdatePurchaseOrderRequest) (resp *api.PurchaseOrder, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8127,12 +8126,12 @@ type wrapReceiptService struct {
 }
 
 type CancelReceiptEndpoint struct {
-	*shop.CancelReceiptRequest
+	*api.CancelReceiptRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *shop.CancelReceiptRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *api.CancelReceiptRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8235,12 +8234,12 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 }
 
 type CreateReceiptEndpoint struct {
-	*shop.CreateReceiptRequest
-	Result  *shop.Receipt
+	*api.CreateReceiptRequest
+	Result  *api.Receipt
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *shop.CreateReceiptRequest) (resp *shop.Receipt, err error) {
+func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *api.CreateReceiptRequest) (resp *api.Receipt, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8290,11 +8289,11 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *shop.CreateR
 
 type GetReceiptEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Receipt
+	Result  *api.Receipt
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (resp *shop.Receipt, err error) {
+func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (resp *api.Receipt, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8343,12 +8342,12 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 }
 
 type GetReceiptsEndpoint struct {
-	*shop.GetReceiptsRequest
-	Result  *shop.ReceiptsResponse
+	*api.GetReceiptsRequest
+	Result  *api.ReceiptsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceiptsRequest) (resp *shop.ReceiptsResponse, err error) {
+func (s wrapReceiptService) GetReceipts(ctx context.Context, req *api.GetReceiptsRequest) (resp *api.ReceiptsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8397,12 +8396,12 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceip
 }
 
 type GetReceiptsByLedgerTypeEndpoint struct {
-	*shop.GetReceiptsByLedgerTypeRequest
-	Result  *shop.ReceiptsResponse
+	*api.GetReceiptsByLedgerTypeRequest
+	Result  *api.ReceiptsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *shop.GetReceiptsByLedgerTypeRequest) (resp *shop.ReceiptsResponse, err error) {
+func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *api.GetReceiptsByLedgerTypeRequest) (resp *api.ReceiptsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8451,12 +8450,12 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *sh
 }
 
 type UpdateReceiptEndpoint struct {
-	*shop.UpdateReceiptRequest
-	Result  *shop.Receipt
+	*api.UpdateReceiptRequest
+	Result  *api.Receipt
 	Context claims.ShopClaim
 }
 
-func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *shop.UpdateReceiptRequest) (resp *shop.Receipt, err error) {
+func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateReceiptRequest) (resp *api.Receipt, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8513,12 +8512,12 @@ type wrapShipnowService struct {
 }
 
 type CancelShipnowFulfillmentEndpoint struct {
-	*order.CancelShipnowFulfillmentRequest
+	*inttypes.CancelShipnowFulfillmentRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *order.CancelShipnowFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *inttypes.CancelShipnowFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8568,11 +8567,11 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *o
 
 type ConfirmShipnowFulfillmentEndpoint struct {
 	*cm.IDRequest
-	Result  *order.ShipnowFulfillment
+	Result  *inttypes.ShipnowFulfillment
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.ShipnowFulfillment, err error) {
+func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *inttypes.ShipnowFulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8621,12 +8620,12 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 }
 
 type CreateShipnowFulfillmentEndpoint struct {
-	*order.CreateShipnowFulfillmentRequest
-	Result  *order.ShipnowFulfillment
+	*inttypes.CreateShipnowFulfillmentRequest
+	Result  *inttypes.ShipnowFulfillment
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *order.CreateShipnowFulfillmentRequest) (resp *order.ShipnowFulfillment, err error) {
+func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *inttypes.CreateShipnowFulfillmentRequest) (resp *inttypes.ShipnowFulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8676,11 +8675,11 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *o
 
 type GetShipnowFulfillmentEndpoint struct {
 	*cm.IDRequest
-	Result  *order.ShipnowFulfillment
+	Result  *inttypes.ShipnowFulfillment
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.ShipnowFulfillment, err error) {
+func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *inttypes.ShipnowFulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8729,12 +8728,12 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 }
 
 type GetShipnowFulfillmentsEndpoint struct {
-	*order.GetShipnowFulfillmentsRequest
-	Result  *order.ShipnowFulfillments
+	*inttypes.GetShipnowFulfillmentsRequest
+	Result  *inttypes.ShipnowFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *order.GetShipnowFulfillmentsRequest) (resp *order.ShipnowFulfillments, err error) {
+func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *inttypes.GetShipnowFulfillmentsRequest) (resp *inttypes.ShipnowFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8783,12 +8782,12 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *ord
 }
 
 type GetShipnowServicesEndpoint struct {
-	*order.GetShipnowServicesRequest
-	Result  *order.GetShipnowServicesResponse
+	*inttypes.GetShipnowServicesRequest
+	Result  *inttypes.GetShipnowServicesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *order.GetShipnowServicesRequest) (resp *order.GetShipnowServicesResponse, err error) {
+func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *inttypes.GetShipnowServicesRequest) (resp *inttypes.GetShipnowServicesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8837,12 +8836,12 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *order.G
 }
 
 type UpdateShipnowFulfillmentEndpoint struct {
-	*order.UpdateShipnowFulfillmentRequest
-	Result  *order.ShipnowFulfillment
+	*inttypes.UpdateShipnowFulfillmentRequest
+	Result  *inttypes.ShipnowFulfillment
 	Context claims.ShopClaim
 }
 
-func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *order.UpdateShipnowFulfillmentRequest) (resp *order.ShipnowFulfillment, err error) {
+func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *inttypes.UpdateShipnowFulfillmentRequest) (resp *inttypes.ShipnowFulfillment, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8899,12 +8898,12 @@ type wrapStocktakeService struct {
 }
 
 type CancelStocktakeEndpoint struct {
-	*shop.CancelStocktakeRequest
-	Result  *shop.Stocktake
+	*api.CancelStocktakeRequest
+	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *shop.CancelStocktakeRequest) (resp *shop.Stocktake, err error) {
+func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.CancelStocktakeRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -8953,12 +8952,12 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *shop.Can
 }
 
 type ConfirmStocktakeEndpoint struct {
-	*shop.ConfirmStocktakeRequest
-	Result  *shop.Stocktake
+	*api.ConfirmStocktakeRequest
+	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *shop.ConfirmStocktakeRequest) (resp *shop.Stocktake, err error) {
+func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.ConfirmStocktakeRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9007,12 +9006,12 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *shop.Co
 }
 
 type CreateStocktakeEndpoint struct {
-	*shop.CreateStocktakeRequest
-	Result  *shop.Stocktake
+	*api.CreateStocktakeRequest
+	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *shop.CreateStocktakeRequest) (resp *shop.Stocktake, err error) {
+func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.CreateStocktakeRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9069,11 +9068,11 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *shop.Cre
 
 type GetStocktakeEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Stocktake
+	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDRequest) (resp *shop.Stocktake, err error) {
+func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9122,12 +9121,12 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 }
 
 type GetStocktakesEndpoint struct {
-	*shop.GetStocktakesRequest
-	Result  *shop.GetStocktakesResponse
+	*api.GetStocktakesRequest
+	Result  *api.GetStocktakesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *shop.GetStocktakesRequest) (resp *shop.GetStocktakesResponse, err error) {
+func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetStocktakesRequest) (resp *api.GetStocktakesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9177,11 +9176,11 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *shop.GetSt
 
 type GetStocktakesByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.GetStocktakesByIDsResponse
+	Result  *api.GetStocktakesByIDsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.GetStocktakesByIDsResponse, err error) {
+func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.GetStocktakesByIDsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9230,12 +9229,12 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 }
 
 type UpdateStocktakeEndpoint struct {
-	*shop.UpdateStocktakeRequest
-	Result  *shop.Stocktake
+	*api.UpdateStocktakeRequest
+	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *shop.UpdateStocktakeRequest) (resp *shop.Stocktake, err error) {
+func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.UpdateStocktakeRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9293,12 +9292,12 @@ type wrapSummaryService struct {
 
 type CalcBalanceShopEndpoint struct {
 	*cm.Empty
-	Result     *shop.CalcBalanceShopResponse
+	Result     *api.CalcBalanceShopResponse
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) (resp *shop.CalcBalanceShopResponse, err error) {
+func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) (resp *api.CalcBalanceShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9349,12 +9348,12 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 }
 
 type SummarizeFulfillmentsEndpoint struct {
-	*shop.SummarizeFulfillmentsRequest
-	Result  *shop.SummarizeFulfillmentsResponse
+	*api.SummarizeFulfillmentsRequest
+	Result  *api.SummarizeFulfillmentsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *shop.SummarizeFulfillmentsRequest) (resp *shop.SummarizeFulfillmentsResponse, err error) {
+func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *api.SummarizeFulfillmentsRequest) (resp *api.SummarizeFulfillmentsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9403,12 +9402,12 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *shop
 }
 
 type SummarizePOSEndpoint struct {
-	*shop.SummarizePOSRequest
-	Result  *shop.SummarizePOSResponse
+	*api.SummarizePOSRequest
+	Result  *api.SummarizePOSResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *shop.SummarizePOSRequest) (resp *shop.SummarizePOSResponse, err error) {
+func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.SummarizePOSRequest) (resp *api.SummarizePOSResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9465,12 +9464,12 @@ type wrapSupplierService struct {
 }
 
 type CreateSupplierEndpoint struct {
-	*shop.CreateSupplierRequest
-	Result  *shop.Supplier
+	*api.CreateSupplierRequest
+	Result  *api.Supplier
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *shop.CreateSupplierRequest) (resp *shop.Supplier, err error) {
+func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *api.CreateSupplierRequest) (resp *api.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9574,11 +9573,11 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 
 type GetSupplierEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Supplier
+	Result  *api.Supplier
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest) (resp *shop.Supplier, err error) {
+func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest) (resp *api.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9627,12 +9626,12 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 }
 
 type GetSuppliersEndpoint struct {
-	*shop.GetSuppliersRequest
-	Result  *shop.SuppliersResponse
+	*api.GetSuppliersRequest
+	Result  *api.SuppliersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *shop.GetSuppliersRequest) (resp *shop.SuppliersResponse, err error) {
+func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *api.GetSuppliersRequest) (resp *api.SuppliersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9682,11 +9681,11 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *shop.GetSupp
 
 type GetSuppliersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.SuppliersResponse
+	Result  *api.SuppliersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.SuppliersResponse, err error) {
+func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.SuppliersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9735,12 +9734,12 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 }
 
 type GetSuppliersByVariantIDEndpoint struct {
-	*shop.GetSuppliersByVariantIDRequest
-	Result  *shop.SuppliersResponse
+	*api.GetSuppliersByVariantIDRequest
+	Result  *api.SuppliersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *shop.GetSuppliersByVariantIDRequest) (resp *shop.SuppliersResponse, err error) {
+func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *api.GetSuppliersByVariantIDRequest) (resp *api.SuppliersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9789,12 +9788,12 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *s
 }
 
 type UpdateSupplierEndpoint struct {
-	*shop.UpdateSupplierRequest
-	Result  *shop.Supplier
+	*api.UpdateSupplierRequest
+	Result  *api.Supplier
 	Context claims.ShopClaim
 }
 
-func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *shop.UpdateSupplierRequest) (resp *shop.Supplier, err error) {
+func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.UpdateSupplierRequest) (resp *api.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9851,12 +9850,12 @@ type wrapTradingService struct {
 }
 
 type TradingCreateOrderEndpoint struct {
-	*order.TradingCreateOrderRequest
-	Result  *order.Order
+	*inttypes.TradingCreateOrderRequest
+	Result  *inttypes.Order
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *order.TradingCreateOrderRequest) (resp *order.Order, err error) {
+func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *inttypes.TradingCreateOrderRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9897,11 +9896,11 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *order.T
 
 type TradingGetOrderEndpoint struct {
 	*cm.IDRequest
-	Result  *order.Order
+	Result  *inttypes.Order
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDRequest) (resp *order.Order, err error) {
+func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Order, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9941,12 +9940,12 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 }
 
 type TradingGetOrdersEndpoint struct {
-	*shop.GetOrdersRequest
-	Result  *order.OrdersResponse
+	*api.GetOrdersRequest
+	Result  *inttypes.OrdersResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *shop.GetOrdersRequest) (resp *order.OrdersResponse, err error) {
+func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *api.GetOrdersRequest) (resp *inttypes.OrdersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -9987,11 +9986,11 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *shop.GetO
 
 type TradingGetProductEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.ShopProduct
+	Result  *api.ShopProduct
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopProduct, err error) {
+func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDRequest) (resp *api.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -10032,11 +10031,11 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 
 type TradingGetProductsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *shop.ShopProductsResponse
+	Result  *api.ShopProductsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *shop.ShopProductsResponse, err error) {
+func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *api.ShopProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

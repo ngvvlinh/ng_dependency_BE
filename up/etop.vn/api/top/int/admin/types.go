@@ -1,12 +1,12 @@
 package admin
 
 import (
-	common "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	credit_type "etop.vn/api/pb/etop/etc/credit_type"
-	notifier_entity "etop.vn/api/pb/etop/etc/notifier_entity"
-	shipping "etop.vn/api/pb/etop/etc/shipping"
-	status3 "etop.vn/api/pb/etop/etc/status3"
+	etop "etop.vn/api/top/int/etop"
+	common "etop.vn/api/top/types/common"
+	credit_type "etop.vn/api/top/types/etc/credit_type"
+	notifier_entity "etop.vn/api/top/types/etc/notifier_entity"
+	shipping "etop.vn/api/top/types/etc/shipping"
+	status3 "etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )

@@ -3,15 +3,15 @@ package convert
 import (
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/main/location"
-	pbexternal "etop.vn/api/pb/external"
+	"etop.vn/api/top/external/types"
 	"etop.vn/capi/dot"
 )
 
-func ToPbExternalAddress(in *haravan.Address, loc *location.LocationQueryResult) *pbexternal.OrderAddress {
+func ToPbExternalAddress(in *haravan.Address, loc *location.LocationQueryResult) *types.OrderAddress {
 	if in == nil {
 		return nil
 	}
-	return &pbexternal.OrderAddress{
+	return &types.OrderAddress{
 		FullName: in.Name,
 		Phone:    in.Phone,
 		Province: loc.Province.Name,
@@ -22,11 +22,11 @@ func ToPbExternalAddress(in *haravan.Address, loc *location.LocationQueryResult)
 	}
 }
 
-func ToPbExternalCreateOrderLine(in *haravan.Item) *pbexternal.OrderLine {
+func ToPbExternalCreateOrderLine(in *haravan.Item) *types.OrderLine {
 	if in == nil {
 		return nil
 	}
-	return &pbexternal.OrderLine{
+	return &types.OrderLine{
 		ProductName:  in.Name,
 		Quantity:     in.Quantity,
 		ListPrice:    int(in.Price),
@@ -35,7 +35,7 @@ func ToPbExternalCreateOrderLine(in *haravan.Item) *pbexternal.OrderLine {
 	}
 }
 
-func ToPbExternalCreateOrderLines(ins []*haravan.Item) (outs []*pbexternal.OrderLine) {
+func ToPbExternalCreateOrderLines(ins []*haravan.Item) (outs []*types.OrderLine) {
 	for _, in := range ins {
 		outs = append(outs, ToPbExternalCreateOrderLine(in))
 	}

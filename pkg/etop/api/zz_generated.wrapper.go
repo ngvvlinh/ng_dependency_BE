@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
 	api "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -32,11 +31,11 @@ type wrapAccountService struct {
 
 type GetPublicPartnerInfoEndpoint struct {
 	*cm.IDRequest
-	Result  *etop.PublicAccountInfo
+	Result  *api.PublicAccountInfo
 	Context claims.EmptyClaim
 }
 
-func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.IDRequest) (resp *etop.PublicAccountInfo, err error) {
+func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.IDRequest) (resp *api.PublicAccountInfo, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -72,11 +71,11 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 
 type GetPublicPartnersEndpoint struct {
 	*cm.IDsRequest
-	Result  *etop.PublicAccountsResponse
+	Result  *api.PublicAccountsResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRequest) (resp *etop.PublicAccountsResponse, err error) {
+func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRequest) (resp *api.PublicAccountsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -111,12 +110,12 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 }
 
 type UpdateURLSlugEndpoint struct {
-	*etop.UpdateURLSlugRequest
+	*api.UpdateURLSlugRequest
 	Result  *cm.Empty
 	Context claims.UserClaim
 }
 
-func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *etop.UpdateURLSlugRequest) (resp *cm.Empty, err error) {
+func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateURLSlugRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -166,12 +165,12 @@ type wrapAccountRelationshipService struct {
 }
 
 type AccountRelationshipCreateInvitationEndpoint struct {
-	*etop.CreateInvitationRequest
-	Result  *etop.Invitation
+	*api.CreateInvitationRequest
+	Result  *api.Invitation
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, req *etop.CreateInvitationRequest) (resp *etop.Invitation, err error) {
+func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, req *api.CreateInvitationRequest) (resp *api.Invitation, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -220,12 +219,12 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 }
 
 type AccountRelationshipDeleteInvitationEndpoint struct {
-	*etop.DeleteInvitationRequest
+	*api.DeleteInvitationRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, req *etop.DeleteInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, req *api.DeleteInvitationRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -274,12 +273,12 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 }
 
 type AccountRelationshipGetInvitationsEndpoint struct {
-	*etop.GetInvitationsRequest
-	Result  *etop.InvitationsResponse
+	*api.GetInvitationsRequest
+	Result  *api.InvitationsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *etop.InvitationsResponse, err error) {
+func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req *api.GetInvitationsRequest) (resp *api.InvitationsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -328,12 +327,12 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 }
 
 type AccountRelationshipGetRelationshipsEndpoint struct {
-	*etop.GetRelationshipsRequest
-	Result  *etop.RelationshipsResponse
+	*api.GetRelationshipsRequest
+	Result  *api.RelationshipsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, req *etop.GetRelationshipsRequest) (resp *etop.RelationshipsResponse, err error) {
+func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, req *api.GetRelationshipsRequest) (resp *api.RelationshipsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -382,12 +381,12 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 }
 
 type AccountRelationshipRemoveUserEndpoint struct {
-	*etop.RemoveUserRequest
+	*api.RemoveUserRequest
 	Result  *cm.UpdatedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *etop.RemoveUserRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api.RemoveUserRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -436,12 +435,12 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *eto
 }
 
 type AccountRelationshipUpdatePermissionEndpoint struct {
-	*etop.UpdateAccountUserPermissionRequest
-	Result  *etop.Relationship
+	*api.UpdateAccountUserPermissionRequest
+	Result  *api.Relationship
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, req *etop.UpdateAccountUserPermissionRequest) (resp *etop.Relationship, err error) {
+func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, req *api.UpdateAccountUserPermissionRequest) (resp *api.Relationship, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -490,12 +489,12 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 }
 
 type AccountRelationshipUpdateRelationshipEndpoint struct {
-	*etop.UpdateRelationshipRequest
-	Result  *etop.Relationship
+	*api.UpdateRelationshipRequest
+	Result  *api.Relationship
 	Context claims.ShopClaim
 }
 
-func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, req *etop.UpdateRelationshipRequest) (resp *etop.Relationship, err error) {
+func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, req *api.UpdateRelationshipRequest) (resp *api.Relationship, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -552,12 +551,12 @@ type wrapAddressService struct {
 }
 
 type CreateAddressEndpoint struct {
-	*etop.CreateAddressRequest
-	Result  *etop.Address
+	*api.CreateAddressRequest
+	Result  *api.Address
 	Context claims.UserClaim
 }
 
-func (s wrapAddressService) CreateAddress(ctx context.Context, req *etop.CreateAddressRequest) (resp *etop.Address, err error) {
+func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAddressRequest) (resp *api.Address, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -600,12 +599,12 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *etop.CreateA
 
 type GetAddressesEndpoint struct {
 	*cm.Empty
-	Result     *etop.GetAddressResponse
+	Result     *api.GetAddressResponse
 	Context    claims.UserClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (resp *etop.GetAddressResponse, err error) {
+func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (resp *api.GetAddressResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -692,12 +691,12 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 }
 
 type UpdateAddressEndpoint struct {
-	*etop.UpdateAddressRequest
-	Result  *etop.Address
+	*api.UpdateAddressRequest
+	Result  *api.Address
 	Context claims.UserClaim
 }
 
-func (s wrapAddressService) UpdateAddress(ctx context.Context, req *etop.UpdateAddressRequest) (resp *etop.Address, err error) {
+func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAddressRequest) (resp *api.Address, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -748,11 +747,11 @@ type wrapBankService struct {
 
 type GetBanksEndpoint struct {
 	*cm.Empty
-	Result  *etop.GetBanksResponse
+	Result  *api.GetBanksResponse
 	Context claims.UserClaim
 }
 
-func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *etop.GetBanksResponse, err error) {
+func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api.GetBanksResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -794,12 +793,12 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *eto
 }
 
 type GetBranchesByBankProvinceEndpoint struct {
-	*etop.GetBranchesByBankProvinceResquest
-	Result  *etop.GetBranchesByBankProvinceResponse
+	*api.GetBranchesByBankProvinceResquest
+	Result  *api.GetBranchesByBankProvinceResponse
 	Context claims.UserClaim
 }
 
-func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *etop.GetBranchesByBankProvinceResquest) (resp *etop.GetBranchesByBankProvinceResponse, err error) {
+func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api.GetBranchesByBankProvinceResquest) (resp *api.GetBranchesByBankProvinceResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -841,12 +840,12 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *eto
 }
 
 type GetProvincesByBankEndpoint struct {
-	*etop.GetProvincesByBankResquest
-	Result  *etop.GetBankProvincesResponse
+	*api.GetProvincesByBankResquest
+	Result  *api.GetBankProvincesResponse
 	Context claims.UserClaim
 }
 
-func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *etop.GetProvincesByBankResquest) (resp *etop.GetBankProvincesResponse, err error) {
+func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetProvincesByBankResquest) (resp *api.GetBankProvincesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -897,11 +896,11 @@ type wrapLocationService struct {
 
 type GetDistrictsEndpoint struct {
 	*cm.Empty
-	Result  *etop.GetDistrictsResponse
+	Result  *api.GetDistrictsResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (resp *etop.GetDistrictsResponse, err error) {
+func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (resp *api.GetDistrictsResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetDistricts"
@@ -926,12 +925,12 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 }
 
 type GetDistrictsByProvinceEndpoint struct {
-	*etop.GetDistrictsByProvinceRequest
-	Result  *etop.GetDistrictsResponse
+	*api.GetDistrictsByProvinceRequest
+	Result  *api.GetDistrictsResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *etop.GetDistrictsByProvinceRequest) (resp *etop.GetDistrictsResponse, err error) {
+func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *api.GetDistrictsByProvinceRequest) (resp *api.GetDistrictsResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetDistrictsByProvince"
@@ -957,11 +956,11 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *et
 
 type GetProvincesEndpoint struct {
 	*cm.Empty
-	Result  *etop.GetProvincesResponse
+	Result  *api.GetProvincesResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (resp *etop.GetProvincesResponse, err error) {
+func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (resp *api.GetProvincesResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetProvinces"
@@ -987,11 +986,11 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 
 type GetWardsEndpoint struct {
 	*cm.Empty
-	Result  *etop.GetWardsResponse
+	Result  *api.GetWardsResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp *etop.GetWardsResponse, err error) {
+func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp *api.GetWardsResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetWards"
@@ -1016,12 +1015,12 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 }
 
 type GetWardsByDistrictEndpoint struct {
-	*etop.GetWardsByDistrictRequest
-	Result  *etop.GetWardsResponse
+	*api.GetWardsByDistrictRequest
+	Result  *api.GetWardsResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *etop.GetWardsByDistrictRequest) (resp *etop.GetWardsResponse, err error) {
+func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.GetWardsByDistrictRequest) (resp *api.GetWardsResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetWardsByDistrict"
@@ -1046,12 +1045,12 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *etop.G
 }
 
 type ParseLocationEndpoint struct {
-	*etop.ParseLocationRequest
-	Result  *etop.ParseLocationResponse
+	*api.ParseLocationRequest
+	Result  *api.ParseLocationResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapLocationService) ParseLocation(ctx context.Context, req *etop.ParseLocationRequest) (resp *etop.ParseLocationResponse, err error) {
+func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLocationRequest) (resp *api.ParseLocationResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1132,12 +1131,12 @@ type wrapRelationshipService struct {
 }
 
 type AnswerInvitationEndpoint struct {
-	*etop.AnswerInvitationRequest
-	Result  *etop.UserAccountInfo
+	*api.AnswerInvitationRequest
+	Result  *api.UserAccountInfo
 	Context claims.UserClaim
 }
 
-func (s wrapRelationshipService) AnswerInvitation(ctx context.Context, req *etop.AnswerInvitationRequest) (resp *etop.UserAccountInfo, err error) {
+func (s wrapRelationshipService) AnswerInvitation(ctx context.Context, req *api.AnswerInvitationRequest) (resp *api.UserAccountInfo, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1179,12 +1178,12 @@ func (s wrapRelationshipService) AnswerInvitation(ctx context.Context, req *etop
 }
 
 type GetUsersInCurrentAccountsEndpoint struct {
-	*etop.GetUsersInCurrentAccountsRequest
-	Result  *etop.ProtectedUsersResponse
+	*api.GetUsersInCurrentAccountsRequest
+	Result  *api.ProtectedUsersResponse
 	Context claims.UserClaim
 }
 
-func (s wrapRelationshipService) GetUsersInCurrentAccounts(ctx context.Context, req *etop.GetUsersInCurrentAccountsRequest) (resp *etop.ProtectedUsersResponse, err error) {
+func (s wrapRelationshipService) GetUsersInCurrentAccounts(ctx context.Context, req *api.GetUsersInCurrentAccountsRequest) (resp *api.ProtectedUsersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1226,12 +1225,12 @@ func (s wrapRelationshipService) GetUsersInCurrentAccounts(ctx context.Context, 
 }
 
 type InviteUserToAccountEndpoint struct {
-	*etop.InviteUserToAccountRequest
-	Result  *etop.UserAccountInfo
+	*api.InviteUserToAccountRequest
+	Result  *api.UserAccountInfo
 	Context claims.UserClaim
 }
 
-func (s wrapRelationshipService) InviteUserToAccount(ctx context.Context, req *etop.InviteUserToAccountRequest) (resp *etop.UserAccountInfo, err error) {
+func (s wrapRelationshipService) InviteUserToAccount(ctx context.Context, req *api.InviteUserToAccountRequest) (resp *api.UserAccountInfo, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1273,12 +1272,12 @@ func (s wrapRelationshipService) InviteUserToAccount(ctx context.Context, req *e
 }
 
 type LeaveAccountEndpoint struct {
-	*etop.LeaveAccountRequest
+	*api.LeaveAccountRequest
 	Result  *cm.Empty
 	Context claims.UserClaim
 }
 
-func (s wrapRelationshipService) LeaveAccount(ctx context.Context, req *etop.LeaveAccountRequest) (resp *cm.Empty, err error) {
+func (s wrapRelationshipService) LeaveAccount(ctx context.Context, req *api.LeaveAccountRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1320,12 +1319,12 @@ func (s wrapRelationshipService) LeaveAccount(ctx context.Context, req *etop.Lea
 }
 
 type RemoveUserFromCurrentAccountEndpoint struct {
-	*etop.RemoveUserFromCurrentAccountRequest
+	*api.RemoveUserFromCurrentAccountRequest
 	Result  *cm.Empty
 	Context claims.UserClaim
 }
 
-func (s wrapRelationshipService) RemoveUserFromCurrentAccount(ctx context.Context, req *etop.RemoveUserFromCurrentAccountRequest) (resp *cm.Empty, err error) {
+func (s wrapRelationshipService) RemoveUserFromCurrentAccount(ctx context.Context, req *api.RemoveUserFromCurrentAccountRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1375,12 +1374,12 @@ type wrapUserService struct {
 }
 
 type ChangePasswordEndpoint struct {
-	*etop.ChangePasswordRequest
+	*api.ChangePasswordRequest
 	Result  *cm.Empty
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) ChangePassword(ctx context.Context, req *etop.ChangePasswordRequest) (resp *cm.Empty, err error) {
+func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePasswordRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1422,12 +1421,12 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *etop.ChangePas
 }
 
 type ChangePasswordUsingTokenEndpoint struct {
-	*etop.ChangePasswordUsingTokenRequest
+	*api.ChangePasswordUsingTokenRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *etop.ChangePasswordUsingTokenRequest) (resp *cm.Empty, err error) {
+func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.ChangePasswordUsingTokenRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.User/ChangePasswordUsingToken"
@@ -1452,12 +1451,12 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *etop
 }
 
 type CheckUserRegistrationEndpoint struct {
-	*etop.GetUserByPhoneRequest
-	Result  *etop.GetUserByPhoneResponse
+	*api.GetUserByPhoneRequest
+	Result  *api.GetUserByPhoneResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *etop.GetUserByPhoneRequest) (resp *etop.GetUserByPhoneResponse, err error) {
+func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.GetUserByPhoneRequest) (resp *api.GetUserByPhoneResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.User/CheckUserRegistration"
@@ -1486,12 +1485,12 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *etop.Ge
 }
 
 type LoginEndpoint struct {
-	*etop.LoginRequest
-	Result  *etop.LoginResponse
+	*api.LoginRequest
+	Result  *api.LoginResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) Login(ctx context.Context, req *etop.LoginRequest) (resp *etop.LoginResponse, err error) {
+func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.User/Login"
@@ -1516,12 +1515,12 @@ func (s wrapUserService) Login(ctx context.Context, req *etop.LoginRequest) (res
 }
 
 type RegisterEndpoint struct {
-	*etop.CreateUserRequest
-	Result  *etop.RegisterResponse
+	*api.CreateUserRequest
+	Result  *api.RegisterResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) Register(ctx context.Context, req *etop.CreateUserRequest) (resp *etop.RegisterResponse, err error) {
+func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserRequest) (resp *api.RegisterResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.User/Register"
@@ -1546,12 +1545,12 @@ func (s wrapUserService) Register(ctx context.Context, req *etop.CreateUserReque
 }
 
 type ResetPasswordEndpoint struct {
-	*etop.ResetPasswordRequest
+	*api.ResetPasswordRequest
 	Result  *cm.MessageResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) ResetPassword(ctx context.Context, req *etop.ResetPasswordRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswordRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.User/ResetPassword"
@@ -1576,12 +1575,12 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *etop.ResetPassw
 }
 
 type SendEmailVerificationEndpoint struct {
-	*etop.SendEmailVerificationRequest
+	*api.SendEmailVerificationRequest
 	Result  *cm.MessageResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) SendEmailVerification(ctx context.Context, req *etop.SendEmailVerificationRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.SendEmailVerificationRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1623,12 +1622,12 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *etop.Se
 }
 
 type SendPhoneVerificationEndpoint struct {
-	*etop.SendPhoneVerificationRequest
+	*api.SendPhoneVerificationRequest
 	Result  *cm.MessageResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *etop.SendPhoneVerificationRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.SendPhoneVerificationRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1670,12 +1669,12 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *etop.Se
 }
 
 type SendSTokenEmailEndpoint struct {
-	*etop.SendSTokenEmailRequest
+	*api.SendSTokenEmailRequest
 	Result  *cm.MessageResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *etop.SendSTokenEmailRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSTokenEmailRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1718,11 +1717,11 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *etop.SendSTok
 
 type SessionInfoEndpoint struct {
 	*cm.Empty
-	Result  *etop.LoginResponse
+	Result  *api.LoginResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *etop.LoginResponse, err error) {
+func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1764,12 +1763,12 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 }
 
 type SwitchAccountEndpoint struct {
-	*etop.SwitchAccountRequest
-	Result  *etop.AccessTokenResponse
+	*api.SwitchAccountRequest
+	Result  *api.AccessTokenResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) SwitchAccount(ctx context.Context, req *etop.SwitchAccountRequest) (resp *etop.AccessTokenResponse, err error) {
+func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccountRequest) (resp *api.AccessTokenResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1811,12 +1810,12 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *etop.SwitchAcco
 }
 
 type UpdatePermissionEndpoint struct {
-	*etop.UpdatePermissionRequest
-	Result  *etop.UpdatePermissionResponse
+	*api.UpdatePermissionRequest
+	Result  *api.UpdatePermissionResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) UpdatePermission(ctx context.Context, req *etop.UpdatePermissionRequest) (resp *etop.UpdatePermissionResponse, err error) {
+func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePermissionRequest) (resp *api.UpdatePermissionResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1858,12 +1857,12 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *etop.UpdateP
 }
 
 type UpdateReferenceSaleEndpoint struct {
-	*etop.UpdateReferenceSaleRequest
+	*api.UpdateReferenceSaleRequest
 	Result  *cm.UpdatedResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *etop.UpdateReferenceSaleRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.UpdateReferenceSaleRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1905,12 +1904,12 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *etop.Upda
 }
 
 type UpdateReferenceUserEndpoint struct {
-	*etop.UpdateReferenceUserRequest
+	*api.UpdateReferenceUserRequest
 	Result  *cm.UpdatedResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *etop.UpdateReferenceUserRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.UpdateReferenceUserRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1952,12 +1951,12 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *etop.Upda
 }
 
 type UpgradeAccessTokenEndpoint struct {
-	*etop.UpgradeAccessTokenRequest
-	Result  *etop.AccessTokenResponse
+	*api.UpgradeAccessTokenRequest
+	Result  *api.AccessTokenResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *etop.UpgradeAccessTokenRequest) (resp *etop.AccessTokenResponse, err error) {
+func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.UpgradeAccessTokenRequest) (resp *api.AccessTokenResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1999,12 +1998,12 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *etop.Upgra
 }
 
 type VerifyEmailUsingTokenEndpoint struct {
-	*etop.VerifyEmailUsingTokenRequest
+	*api.VerifyEmailUsingTokenRequest
 	Result  *cm.MessageResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *etop.VerifyEmailUsingTokenRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.VerifyEmailUsingTokenRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2046,12 +2045,12 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *etop.Ve
 }
 
 type VerifyPhoneUsingTokenEndpoint struct {
-	*etop.VerifyPhoneUsingTokenRequest
+	*api.VerifyPhoneUsingTokenRequest
 	Result  *cm.MessageResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *etop.VerifyPhoneUsingTokenRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.VerifyPhoneUsingTokenRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2101,12 +2100,12 @@ type wrapUserRelationshipService struct {
 }
 
 type UserRelationshipAcceptInvitationEndpoint struct {
-	*etop.AcceptInvitationRequest
+	*api.AcceptInvitationRequest
 	Result  *cm.UpdatedResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *etop.AcceptInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *api.AcceptInvitationRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2148,12 +2147,12 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 }
 
 type UserRelationshipGetInvitationByTokenEndpoint struct {
-	*etop.GetInvitationByTokenRequest
-	Result  *etop.Invitation
+	*api.GetInvitationByTokenRequest
+	Result  *api.Invitation
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, req *etop.GetInvitationByTokenRequest) (resp *etop.Invitation, err error) {
+func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, req *api.GetInvitationByTokenRequest) (resp *api.Invitation, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "etop.UserRelationship/GetInvitationByToken"
@@ -2178,12 +2177,12 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 }
 
 type UserRelationshipGetInvitationsEndpoint struct {
-	*etop.GetInvitationsRequest
-	Result  *etop.InvitationsResponse
+	*api.GetInvitationsRequest
+	Result  *api.InvitationsResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *etop.InvitationsResponse, err error) {
+func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *api.GetInvitationsRequest) (resp *api.InvitationsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2225,12 +2224,12 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *et
 }
 
 type UserRelationshipLeaveAccountEndpoint struct {
-	*etop.UserRelationshipLeaveAccountRequest
+	*api.UserRelationshipLeaveAccountRequest
 	Result  *cm.UpdatedResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *etop.UserRelationshipLeaveAccountRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.UserRelationshipLeaveAccountRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2272,12 +2271,12 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *etop
 }
 
 type UserRelationshipRejectInvitationEndpoint struct {
-	*etop.RejectInvitationRequest
+	*api.RejectInvitationRequest
 	Result  *cm.UpdatedResponse
 	Context claims.UserClaim
 }
 
-func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *etop.RejectInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *api.RejectInvitationRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

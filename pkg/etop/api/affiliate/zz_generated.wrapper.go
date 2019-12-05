@@ -8,10 +8,9 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	etop "etop.vn/api/pb/etop"
-	affiliate "etop.vn/api/pb/etop/affiliate"
 	api "etop.vn/api/top/int/affiliate"
+	etop "etop.vn/api/top/int/etop"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -74,12 +73,12 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 }
 
 type RegisterAffiliateEndpoint struct {
-	*affiliate.RegisterAffiliateRequest
+	*api.RegisterAffiliateRequest
 	Result  *etop.Affiliate
 	Context claims.UserClaim
 }
 
-func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *affiliate.RegisterAffiliateRequest) (resp *etop.Affiliate, err error) {
+func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.RegisterAffiliateRequest) (resp *etop.Affiliate, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -121,12 +120,12 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *affiliat
 }
 
 type UpdateAffiliateEndpoint struct {
-	*affiliate.UpdateAffiliateRequest
+	*api.UpdateAffiliateRequest
 	Result  *etop.Affiliate
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *affiliate.UpdateAffiliateRequest) (resp *etop.Affiliate, err error) {
+func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.UpdateAffiliateRequest) (resp *etop.Affiliate, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -166,12 +165,12 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *affiliate.
 }
 
 type UpdateAffiliateBankAccountEndpoint struct {
-	*affiliate.UpdateAffiliateBankAccountRequest
+	*api.UpdateAffiliateBankAccountRequest
 	Result  *etop.Affiliate
 	Context claims.AffiliateClaim
 }
 
-func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req *affiliate.UpdateAffiliateBankAccountRequest) (resp *etop.Affiliate, err error) {
+func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req *api.UpdateAffiliateBankAccountRequest) (resp *etop.Affiliate, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

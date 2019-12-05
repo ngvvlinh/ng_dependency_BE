@@ -8,9 +8,8 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/api/pb/common"
-	integration "etop.vn/api/pb/etop/integration"
 	api "etop.vn/api/top/int/integration"
+	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -29,13 +28,13 @@ type wrapIntegrationService struct {
 }
 
 type GrantAccessEndpoint struct {
-	*integration.GrantAccessRequest
-	Result     *integration.GrantAccessResponse
+	*api.GrantAccessRequest
+	Result     *api.GrantAccessResponse
 	Context    claims.UserClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *integration.GrantAccessRequest) (resp *integration.GrantAccessResponse, err error) {
+func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantAccessRequest) (resp *api.GrantAccessResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -75,12 +74,12 @@ func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *integratio
 }
 
 type InitEndpoint struct {
-	*integration.InitRequest
-	Result  *integration.LoginResponse
+	*api.InitRequest
+	Result  *api.LoginResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapIntegrationService) Init(ctx context.Context, req *integration.InitRequest) (resp *integration.LoginResponse, err error) {
+func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "integration.Integration/Init"
@@ -105,13 +104,13 @@ func (s wrapIntegrationService) Init(ctx context.Context, req *integration.InitR
 }
 
 type LoginUsingTokenEndpoint struct {
-	*integration.LoginUsingTokenRequest
-	Result     *integration.LoginResponse
+	*api.LoginUsingTokenRequest
+	Result     *api.LoginResponse
 	Context    claims.EmptyClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *integration.LoginUsingTokenRequest) (resp *integration.LoginResponse, err error) {
+func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.LoginUsingTokenRequest) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -148,13 +147,13 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *integr
 }
 
 type RegisterEndpoint struct {
-	*integration.RegisterRequest
-	Result     *integration.RegisterResponse
+	*api.RegisterRequest
+	Result     *api.RegisterResponse
 	Context    claims.EmptyClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapIntegrationService) Register(ctx context.Context, req *integration.RegisterRequest) (resp *integration.RegisterResponse, err error) {
+func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterRequest) (resp *api.RegisterResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -191,13 +190,13 @@ func (s wrapIntegrationService) Register(ctx context.Context, req *integration.R
 }
 
 type RequestLoginEndpoint struct {
-	*integration.RequestLoginRequest
-	Result     *integration.RequestLoginResponse
+	*api.RequestLoginRequest
+	Result     *api.RequestLoginResponse
 	Context    claims.EmptyClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *integration.RequestLoginRequest) (resp *integration.RequestLoginResponse, err error) {
+func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.RequestLoginRequest) (resp *api.RequestLoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -239,12 +238,12 @@ func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *integrati
 
 type SessionInfoEndpoint struct {
 	*cm.Empty
-	Result     *integration.LoginResponse
+	Result     *api.LoginResponse
 	Context    claims.EmptyClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *integration.LoginResponse, err error) {
+func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

@@ -9,10 +9,10 @@ import (
 	time "time"
 
 	etop "etop.vn/api/main/etop"
-	types1 "etop.vn/api/main/ordering/types"
-	types "etop.vn/api/main/shipnow/carrier/types"
-	types2 "etop.vn/api/main/shipnow/types"
-	types3 "etop.vn/api/main/shipping/types"
+	orderingtypes "etop.vn/api/main/ordering/types"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -58,13 +58,13 @@ func (h AggregateHandler) HandleConfirmShipnowFulfillment(ctx context.Context, m
 
 type CreateShipnowFulfillmentCommand struct {
 	OrderIds            []dot.ID
-	Carrier             types.Carrier
+	Carrier             carriertypes.Carrier
 	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
-	PickupAddress       *types1.Address
+	PickupAddress       *orderingtypes.Address
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -77,8 +77,8 @@ func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, ms
 type GetShipnowServicesCommand struct {
 	ShopId         dot.ID
 	OrderIds       []dot.ID
-	PickupAddress  *types1.Address
-	DeliveryPoints []*types2.DeliveryPoint
+	PickupAddress  *orderingtypes.Address
+	DeliveryPoints []*shipnowtypes.DeliveryPoint
 
 	Result *GetShipnowServicesResult `json:"-"`
 }
@@ -91,13 +91,13 @@ func (h AggregateHandler) HandleGetShipnowServices(ctx context.Context, msg *Get
 type UpdateShipnowFulfillmentCommand struct {
 	Id                  dot.ID
 	OrderIds            []dot.ID
-	Carrier             types.Carrier
+	Carrier             carriertypes.Carrier
 	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
-	PickupAddress       *types1.Address
+	PickupAddress       *orderingtypes.Address
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -110,10 +110,10 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, ms
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	Id                         dot.ID
 	ShippingCode               string
-	ShippingState              types2.State
+	ShippingState              shipnowtypes.State
 	TotalFee                   int
-	FeeLines                   []*types3.FeeLine
-	CarrierFeeLines            []*types3.FeeLine
+	FeeLines                   []*shippingtypes.FeeLine
+	CarrierFeeLines            []*shippingtypes.FeeLine
 	ShippingCreatedAt          time.Time
 	EtopPaymentStatus          etop.Status4
 	ShippingStatus             etop.Status5
@@ -143,7 +143,7 @@ type UpdateShipnowFulfillmentStateCommand struct {
 	ConfirmStatus  etop.Status3
 	ShippingStatus etop.Status5
 	SyncStates     *SyncStates
-	ShippingState  types2.State
+	ShippingState  shipnowtypes.State
 
 	Result *ShipnowFulfillment `json:"-"`
 }

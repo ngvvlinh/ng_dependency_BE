@@ -14,7 +14,7 @@ import (
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
-	cmP "etop.vn/api/pb/common"
+	cmP "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/telebot"

@@ -3,28 +3,23 @@ package api
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/backend/pkg/etop/sqlstore"
-
-	"etop.vn/capi/dot"
-
-	"etop.vn/api/main/etop"
-
 	"etop.vn/api/main/authorization"
-
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
+	apietop "etop.vn/api/top/int/etop"
+	pbcm "etop.vn/api/top/types/common"
 	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
 	"etop.vn/backend/com/main/invitation/convert"
 	servicelocation "etop.vn/backend/com/main/location"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/bank"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -82,7 +77,7 @@ func (s *LocationService) GetProvinces(ctx context.Context, q *GetProvincesEndpo
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.GetProvincesResponse{
+	q.Result = &apietop.GetProvincesResponse{
 		Provinces: convertpb.PbProvinces(query.Result.Provinces),
 	}
 	return nil
@@ -93,7 +88,7 @@ func (s *LocationService) GetDistricts(ctx context.Context, q *GetDistrictsEndpo
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.GetDistrictsResponse{
+	q.Result = &apietop.GetDistrictsResponse{
 		Districts: convertpb.PbDistricts(query.Result.Districts),
 	}
 	return nil
@@ -104,7 +99,7 @@ func (s *LocationService) GetDistrictsByProvince(ctx context.Context, q *GetDist
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.GetDistrictsResponse{
+	q.Result = &apietop.GetDistrictsResponse{
 		Districts: convertpb.PbDistricts(query.Result.Districts),
 	}
 	return nil
@@ -115,7 +110,7 @@ func (s *LocationService) GetWards(ctx context.Context, q *GetWardsEndpoint) err
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.GetWardsResponse{
+	q.Result = &apietop.GetWardsResponse{
 		Wards: convertpb.PbWards(query.Result.Wards),
 	}
 	return nil
@@ -126,7 +121,7 @@ func (s *LocationService) GetWardsByDistrict(ctx context.Context, q *GetWardsByD
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.GetWardsResponse{
+	q.Result = &apietop.GetWardsResponse{
 		Wards: convertpb.PbWards(query.Result.Wards),
 	}
 	return nil
@@ -142,7 +137,7 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEnd
 		return err
 	}
 	loc := query.Result
-	res := &pbetop.ParseLocationResponse{}
+	res := &apietop.ParseLocationResponse{}
 	if loc.Province != nil {
 		res.Province = convertpb.PbProvince(loc.Province)
 	}
@@ -157,7 +152,7 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEnd
 }
 
 func (s *BankService) GetBanks(ctx context.Context, q *GetBanksEndpoint) error {
-	q.Result = &pbetop.GetBanksResponse{
+	q.Result = &apietop.GetBanksResponse{
 		Banks: convertpb.PbBanks(bank.Banks),
 	}
 	return nil
@@ -170,7 +165,7 @@ func (s *BankService) GetProvincesByBank(ctx context.Context, q *GetProvincesByB
 	}
 
 	provinces := bank.GetProvinceByBank(query)
-	q.Result = &pbetop.GetBankProvincesResponse{
+	q.Result = &apietop.GetBankProvincesResponse{
 		Provinces: convertpb.PbBankProvinces(provinces),
 	}
 	return nil
@@ -187,7 +182,7 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranc
 	}
 
 	branches := bank.GetBranchByBankProvince(bankQuery, provinceQuery)
-	q.Result = &pbetop.GetBranchesByBankProvinceResponse{
+	q.Result = &apietop.GetBranchesByBankProvinceResponse{
 		Branches: convertpb.PbBankBranches(branches),
 	}
 	return nil
@@ -216,7 +211,7 @@ func (s *AddressService) GetAddresses(ctx context.Context, q *GetAddressesEndpoi
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil
 	}
-	q.Result = &pbetop.GetAddressResponse{
+	q.Result = &apietop.GetAddressResponse{
 		Addresses: convertpb.PbAddresses(query.Result.Addresses),
 	}
 	return nil
@@ -293,7 +288,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
 		return err
 	}
-	q.Result.ShopShort = &pbetop.ShopShort{
+	q.Result.ShopShort = &apietop.ShopShort{
 		ID:       getAccountQuery.Result.ID,
 		Name:     getAccountQuery.Result.Name,
 		Code:     getAccountQuery.Result.Code,
@@ -334,7 +329,7 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 	if err := invitationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.InvitationsResponse{
+	q.Result = &apietop.InvitationsResponse{
 		Invitations: convertpb.PbInvitations(query.Result.Invitations),
 		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -365,7 +360,7 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 	}
 
 	for _, invitationEl := range q.Result.Invitations {
-		invitationEl.ShopShort = &pbetop.ShopShort{
+		invitationEl.ShopShort = &apietop.ShopShort{
 			ID:       invitationEl.ShopId,
 			Name:     mapShop[invitationEl.ShopId].Name,
 			Code:     mapShop[invitationEl.ShopId].Code,
@@ -421,7 +416,7 @@ func (s *AccountRelationshipService) GetInvitations(ctx context.Context, q *Acco
 	if err := invitationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.InvitationsResponse{
+	q.Result = &apietop.InvitationsResponse{
 		Invitations: convertpb.PbInvitations(query.Result.Invitations),
 		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 	}
@@ -488,7 +483,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *Ac
 		relationships = append(relationships, authorizationconvert.ConvertAccountUserToRelationship(accountUser.AccountUser))
 	}
 
-	q.Result = &pbetop.RelationshipsResponse{Relationships: convertpb.PbRelationships(relationships)}
+	q.Result = &apietop.RelationshipsResponse{Relationships: convertpb.PbRelationships(relationships)}
 
 	var userIDs []dot.ID
 	mapUser := make(map[dot.ID]*model.User)

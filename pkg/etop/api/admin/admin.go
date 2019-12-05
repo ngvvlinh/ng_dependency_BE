@@ -3,10 +3,12 @@ package admin
 import (
 	"context"
 
-	pbcm "etop.vn/api/pb/common"
-	pbetop "etop.vn/api/pb/etop"
-	pbadmin "etop.vn/api/pb/etop/admin"
-	pborder "etop.vn/api/pb/etop/order"
+	"etop.vn/api/top/int/etop"
+
+	"etop.vn/api/top/int/admin"
+	"etop.vn/api/top/int/types"
+
+	pbcm "etop.vn/api/top/types/common"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -119,7 +121,7 @@ func (s *MiscService) AdminLoginAsAccount(ctx context.Context, q *AdminLoginAsAc
 	return err
 }
 
-func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID dot.ID) (*pbetop.LoginResponse, error) {
+func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID dot.ID) (*etop.LoginResponse, error) {
 	if adminID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing AdminID", nil)
 	}
@@ -154,7 +156,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.MoneyTransactionsResponse{
+	q.Result = &types.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
 		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
@@ -213,7 +215,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx conte
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.MoneyTransactionShippingExternalsResponse{
+	q.Result = &types.MoneyTransactionShippingExternalsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
 		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
 	}
@@ -306,7 +308,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbadmin.GetShopsResponse{
+	q.Result = &admin.GetShopsResponse{
 		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
 		Shops:  convertpb.PbShopExtendeds(query.Result.Shops),
 	}
@@ -348,7 +350,7 @@ func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) e
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.CreditsResponse{
+	q.Result = &etop.CreditsResponse{
 		Credits: convertpb.PbCreditExtendeds(query.Result.Credits),
 		Paging:  cmapi.PbPageInfo(paging, query.Result.Total),
 	}
@@ -442,7 +444,7 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *GenerateAPIKeyEn
 		Permissions: nil,
 	}
 	err = sqlstore.AccountAuth(ctx).Create(aa)
-	q.Result = &pbadmin.GenerateAPIKeyResponse{
+	q.Result = &admin.GenerateAPIKeyResponse{
 		AccountId: q.AccountId,
 		ApiKey:    aa.AuthKey,
 	}
@@ -471,7 +473,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.C
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pborder.MoneyTransactionShippingEtopsResponse{
+	q.Result = &types.MoneyTransactionShippingEtopsResponse{
 		Paging:                        cmapi.PbPageInfo(paging, query.Result.Total),
 		MoneyTransactionShippingEtops: convertpb.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
 	}
@@ -549,7 +551,7 @@ func (s *NotificationService) CreateNotifications(ctx context.Context, q *Create
 	if err != nil {
 		return err
 	}
-	q.Result = &pbadmin.CreateNotificationsResponse{
+	q.Result = &admin.CreateNotificationsResponse{
 		Created: created,
 		Errored: errored,
 	}

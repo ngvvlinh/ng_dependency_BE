@@ -9,8 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	common "etop.vn/api/pb/common"
-	sadmin "etop.vn/api/pb/etop/sadmin"
+	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
@@ -99,19 +98,19 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/sadmin.User/CreateUser":
-		msg := &sadmin.SAdminCreateUserRequest{}
+		msg := &SAdminCreateUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/sadmin.User/LoginAsAccount":
-		msg := &sadmin.LoginAsAccountRequest{}
+		msg := &LoginAsAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LoginAsAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/sadmin.User/ResetPassword":
-		msg := &sadmin.SAdminResetPasswordRequest{}
+		msg := &SAdminResetPasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ResetPassword(ctx, msg)
 		}

@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/top/int/types"
+
 	"etop.vn/api/main/location"
-	pbsp "etop.vn/api/pb/etop/etc/shipping_provider"
-	pborder "etop.vn/api/pb/etop/order"
+	pbsp "etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -15,7 +16,7 @@ import (
 
 var ll = l.New()
 
-func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *pborder.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
+func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: q.FromProvinceCode,
 		DistrictCode: q.FromDistrictCode,

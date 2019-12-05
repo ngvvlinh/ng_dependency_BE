@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkRefreshFulfillmentFromCarrierRequest"
+              "$ref": "#/definitions/jsRefreshFulfillmentFromCarrierRequest"
             }
           }
         ],
@@ -35,7 +35,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkSendNotificationRequest"
+              "$ref": "#/definitions/jsSendNotificationRequest"
             }
           }
         ],
@@ -61,7 +61,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maMessageResponse"
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -79,7 +79,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/maVersionInfoResponse"
+              "$ref": "#/definitions/ktVersionInfoResponse"
             }
           }
         }
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkVHTCallLog"
+              "$ref": "#/definitions/jsVHTCallLog"
             }
           }
         ],
@@ -113,7 +113,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkVHTCallLog"
+              "$ref": "#/definitions/jsVHTCallLog"
             }
           }
         }
@@ -131,7 +131,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkVHTCallLog"
+              "$ref": "#/definitions/jsVHTCallLog"
             }
           }
         ],
@@ -139,7 +139,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkVHTCallLog"
+              "$ref": "#/definitions/jsVHTCallLog"
             }
           }
         }
@@ -157,7 +157,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkGetCallHistoriesRequest"
+              "$ref": "#/definitions/jsGetCallHistoriesRequest"
             }
           }
         ],
@@ -165,7 +165,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkGetCallHistoriesResponse"
+              "$ref": "#/definitions/jsGetCallHistoriesResponse"
             }
           }
         }
@@ -183,7 +183,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkContactRequest"
+              "$ref": "#/definitions/jsContactRequest"
             }
           }
         ],
@@ -191,7 +191,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkContactResponse"
+              "$ref": "#/definitions/jsContactResponse"
             }
           }
         }
@@ -209,7 +209,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkLeadRequest"
+              "$ref": "#/definitions/jsLeadRequest"
             }
           }
         ],
@@ -217,7 +217,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkLeadResponse"
+              "$ref": "#/definitions/jsLeadResponse"
             }
           }
         }
@@ -235,7 +235,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkCreateOrUpdateTicketRequest"
+              "$ref": "#/definitions/jsCreateOrUpdateTicketRequest"
             }
           }
         ],
@@ -243,7 +243,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkTicket"
+              "$ref": "#/definitions/jsTicket"
             }
           }
         }
@@ -261,7 +261,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -269,7 +269,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkGetCategoriesResponse"
+              "$ref": "#/definitions/jsGetCategoriesResponse"
             }
           }
         }
@@ -287,7 +287,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkGetContactsRequest"
+              "$ref": "#/definitions/jsGetContactsRequest"
             }
           }
         ],
@@ -295,7 +295,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkGetContactsResponse"
+              "$ref": "#/definitions/jsGetContactsResponse"
             }
           }
         }
@@ -313,7 +313,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/maEmpty"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -321,7 +321,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkGetTicketStatusCountResponse"
+              "$ref": "#/definitions/jsGetTicketStatusCountResponse"
             }
           }
         }
@@ -339,7 +339,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkGetTicketsRequest"
+              "$ref": "#/definitions/jsGetTicketsRequest"
             }
           }
         ],
@@ -347,7 +347,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkGetTicketsResponse"
+              "$ref": "#/definitions/jsGetTicketsResponse"
             }
           }
         }
@@ -365,7 +365,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xkCreateOrUpdateTicketRequest"
+              "$ref": "#/definitions/jsCreateOrUpdateTicketRequest"
             }
           }
         ],
@@ -373,7 +373,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/xkTicket"
+              "$ref": "#/definitions/jsTicket"
             }
           }
         }
@@ -381,75 +381,7 @@
     }
   },
   "definitions": {
-    "maEmpty": {
-      "type": "object"
-    },
-    "maMessageResponse": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        }
-      }
-    },
-    "maPaging": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "offset": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "string"
-        }
-      }
-    },
-    "maRawJSONObject": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
-    "maUpdatedResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer"
-        }
-      }
-    },
-    "maVersionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "string"
-        }
-      }
-    },
-    "roNotifierEntity": {
-      "type": "string",
-      "enum": [
-        "fulfillment",
-        "money_transaction_shipping",
-        "unknown"
-      ]
-    },
-    "xkAccount": {
+    "jsAccount": {
       "type": "object",
       "properties": {
         "company": {
@@ -473,7 +405,7 @@
         }
       }
     },
-    "xkCategory": {
+    "jsCategory": {
       "type": "object",
       "properties": {
         "code": {
@@ -484,7 +416,7 @@
         }
       }
     },
-    "xkContactRequest": {
+    "jsContactRequest": {
       "type": "object",
       "properties": {
         "assigned_user_id": {
@@ -564,7 +496,7 @@
         }
       }
     },
-    "xkContactResponse": {
+    "jsContactResponse": {
       "type": "object",
       "properties": {
         "assigned_user_id": {
@@ -644,7 +576,7 @@
         }
       }
     },
-    "xkCountTicketByStatusResponse": {
+    "jsCountTicketByStatusResponse": {
       "type": "object",
       "properties": {
         "code": {
@@ -655,11 +587,11 @@
         }
       }
     },
-    "xkCreateOrUpdateTicketRequest": {
+    "jsCreateOrUpdateTicketRequest": {
       "type": "object",
       "properties": {
         "account": {
-          "$ref": "#/definitions/xkAccount"
+          "$ref": "#/definitions/jsAccount"
         },
         "code": {
           "type": "string"
@@ -717,98 +649,98 @@
         }
       }
     },
-    "xkGetCallHistoriesRequest": {
+    "jsGetCallHistoriesRequest": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         },
         "text_search": {
           "type": "string"
         }
       }
     },
-    "xkGetCallHistoriesResponse": {
+    "jsGetCallHistoriesResponse": {
       "type": "object",
       "properties": {
         "vht_call_log": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/xkVHTCallLog"
+            "$ref": "#/definitions/jsVHTCallLog"
           }
         }
       }
     },
-    "xkGetCategoriesResponse": {
+    "jsGetCategoriesResponse": {
       "type": "object",
       "properties": {
         "categories": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/xkCategory"
+            "$ref": "#/definitions/jsCategory"
           }
         }
       }
     },
-    "xkGetContactsRequest": {
+    "jsGetContactsRequest": {
       "type": "object",
       "properties": {
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         },
         "text_search": {
           "type": "string"
         }
       }
     },
-    "xkGetContactsResponse": {
+    "jsGetContactsResponse": {
       "type": "object",
       "properties": {
         "contacts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/xkContactResponse"
+            "$ref": "#/definitions/jsContactResponse"
           }
         }
       }
     },
-    "xkGetTicketStatusCountResponse": {
+    "jsGetTicketStatusCountResponse": {
       "type": "object",
       "properties": {
         "status_count": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/xkCountTicketByStatusResponse"
+            "$ref": "#/definitions/jsCountTicketByStatusResponse"
           }
         }
       }
     },
-    "xkGetTicketsRequest": {
+    "jsGetTicketsRequest": {
       "type": "object",
       "properties": {
         "orderby": {
-          "$ref": "#/definitions/xkOrderBy"
+          "$ref": "#/definitions/jsOrderBy"
         },
         "paging": {
-          "$ref": "#/definitions/maPaging"
+          "$ref": "#/definitions/ktPaging"
         },
         "ticket": {
-          "$ref": "#/definitions/xkTicketRequest"
+          "$ref": "#/definitions/jsTicketRequest"
         }
       }
     },
-    "xkGetTicketsResponse": {
+    "jsGetTicketsResponse": {
       "type": "object",
       "properties": {
         "tickets": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/xkTicket"
+            "$ref": "#/definitions/jsTicket"
           }
         }
       }
     },
-    "xkLeadRequest": {
+    "jsLeadRequest": {
       "type": "object",
       "properties": {
         "assigned_user_id": {
@@ -880,7 +812,7 @@
         }
       }
     },
-    "xkLeadResponse": {
+    "jsLeadResponse": {
       "type": "object",
       "properties": {
         "assigned_user_id": {
@@ -952,7 +884,7 @@
         }
       }
     },
-    "xkOrderBy": {
+    "jsOrderBy": {
       "type": "object",
       "properties": {
         "field": {
@@ -963,7 +895,7 @@
         }
       }
     },
-    "xkRefreshFulfillmentFromCarrierRequest": {
+    "jsRefreshFulfillmentFromCarrierRequest": {
       "type": "object",
       "properties": {
         "shipping_code": {
@@ -971,7 +903,7 @@
         }
       }
     },
-    "xkSendNotificationRequest": {
+    "jsSendNotificationRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -979,7 +911,7 @@
           "format": "int64"
         },
         "entity": {
-          "$ref": "#/definitions/roNotifierEntity"
+          "$ref": "#/definitions/wdNotifierEntity"
         },
         "entity_id": {
           "type": "string",
@@ -989,14 +921,14 @@
           "type": "string"
         },
         "meta_data": {
-          "$ref": "#/definitions/maRawJSONObject"
+          "$ref": "#/definitions/ktRawJSONObject"
         },
         "title": {
           "type": "string"
         }
       }
     },
-    "xkTicket": {
+    "jsTicket": {
       "type": "object",
       "properties": {
         "assigned_user_id": {
@@ -1128,7 +1060,7 @@
         }
       }
     },
-    "xkTicketRequest": {
+    "jsTicketRequest": {
       "type": "object",
       "properties": {
         "code": {
@@ -1187,7 +1119,7 @@
         }
       }
     },
-    "xkVHTCallLog": {
+    "jsVHTCallLog": {
       "type": "object",
       "properties": {
         "call_id": {
@@ -1255,6 +1187,74 @@
           "type": "string"
         }
       }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktMessageResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktRawJSONObject": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "wdNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "fulfillment",
+        "money_transaction_shipping",
+        "unknown"
+      ]
     }
   },
   "tags": [
