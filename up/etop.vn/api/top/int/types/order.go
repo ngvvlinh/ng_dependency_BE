@@ -106,6 +106,7 @@ type Order struct {
 	ReceivedAmount int            `json:"received_amount"`
 	CustomerId     dot.ID         `json:"customer_id"`
 	PaymentStatus  status4.Status `json:"payment_status"`
+	CreatedBy      dot.ID         `json:"created_by"`
 }
 
 func (m *Order) Reset()         { *m = Order{} }

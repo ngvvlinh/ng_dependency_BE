@@ -125,7 +125,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 	eTopTrading := identityconvert.ShopDB(query.Result)
 	shopClaim := &claims.ShopClaim{Shop: eTopTrading}
 	shopID := r.Context.Shop.ID
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, nil, req, &shopID)
+	resp, err := logicorder.CreateOrder(ctx, shopClaim, nil, req, &shopID, 0)
 	if err != nil {
 		return 0, err
 	}

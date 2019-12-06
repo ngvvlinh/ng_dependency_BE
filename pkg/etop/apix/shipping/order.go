@@ -129,7 +129,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
 
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, partner, req, nil)
+	resp, err := logicorder.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}

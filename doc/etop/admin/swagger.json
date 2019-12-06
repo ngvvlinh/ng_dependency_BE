@@ -2450,6 +2450,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
         "customer": {
           "$ref": "#/definitions/qdOrderCustomer"
         },

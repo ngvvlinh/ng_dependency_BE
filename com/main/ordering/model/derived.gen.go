@@ -30,7 +30,7 @@ func sqlgenOrder(_ *Order) bool { return true }
 type Orders []*Order
 
 const __sqlOrder_Table = "order"
-const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\",\"customer_id\""
+const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\",\"customer_id\",\"created_by\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
@@ -120,6 +120,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.PaymentID),
 		core.JSON{m.ReferralMeta},
 		core.Int64(m.CustomerID),
+		core.Int64(m.CreatedBy),
 	}
 }
 
@@ -191,6 +192,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.PaymentID),
 		core.JSON{&m.ReferralMeta},
 		(*core.Int64)(&m.CustomerID),
+		(*core.Int64)(&m.CreatedBy),
 	}
 }
 
@@ -228,7 +230,7 @@ func (_ *Orders) SQLSelect(w SQLWriter) error {
 func (m *Order) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(66)
+	w.WriteMarkers(67)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -238,7 +240,7 @@ func (ms Orders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(66)
+		w.WriteMarkers(67)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -259,7 +261,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -267,7 +269,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.Code != "" {
 		flag = true
@@ -307,7 +309,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.PartnerID)
+		w.WriteArg(int64(m.PartnerID))
 	}
 	if m.Currency != "" {
 		flag = true
@@ -643,7 +645,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderSourceID)
+		w.WriteArg(int64(m.OrderSourceID))
 	}
 	if m.ExternalOrderID != "" {
 		flag = true
@@ -747,7 +749,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.TradingShopID)
+		w.WriteArg(int64(m.TradingShopID))
 	}
 	if m.PaymentStatus != 0 {
 		flag = true
@@ -763,7 +765,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.PaymentID)
+		w.WriteArg(int64(m.PaymentID))
 	}
 	if m.ReferralMeta != nil {
 		flag = true
@@ -779,7 +781,15 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.CustomerID)
+		w.WriteArg(int64(m.CustomerID))
+	}
+	if m.CreatedBy != 0 {
+		flag = true
+		w.WriteName("created_by")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int64(m.CreatedBy))
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -791,7 +801,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 func (m *Order) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(66)
+	w.WriteMarkers(67)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -889,17 +899,18 @@ func (m OrderHistory) PaymentStatus() core.Interface   { return core.Interface{m
 func (m OrderHistory) PaymentID() core.Interface       { return core.Interface{m["payment_id"]} }
 func (m OrderHistory) ReferralMeta() core.Interface    { return core.Interface{m["referral_meta"]} }
 func (m OrderHistory) CustomerID() core.Interface      { return core.Interface{m["customer_id"]} }
+func (m OrderHistory) CreatedBy() core.Interface       { return core.Interface{m["created_by"]} }
 
 func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 66)
-	args := make([]interface{}, 66)
-	for i := 0; i < 66; i++ {
+	data := make([]interface{}, 67)
+	args := make([]interface{}, 67)
+	for i := 0; i < 67; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderHistory, 66)
+	res := make(OrderHistory, 67)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["code"] = data[2]
@@ -966,14 +977,15 @@ func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["payment_id"] = data[63]
 	res["referral_meta"] = data[64]
 	res["customer_id"] = data[65]
+	res["created_by"] = data[66]
 	*m = res
 	return nil
 }
 
 func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 66)
-	args := make([]interface{}, 66)
-	for i := 0; i < 66; i++ {
+	data := make([]interface{}, 67)
+	args := make([]interface{}, 67)
+	for i := 0; i < 67; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderHistories, 0, 128)
@@ -1048,6 +1060,7 @@ func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["payment_id"] = data[63]
 		m["referral_meta"] = data[64]
 		m["customer_id"] = data[65]
+		m["created_by"] = data[66]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1193,7 +1206,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.OrderID)
+		w.WriteArg(int64(m.OrderID))
 	}
 	if m.VariantID != 0 {
 		flag = true
@@ -1201,7 +1214,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.VariantID)
+		w.WriteArg(int64(m.VariantID))
 	}
 	if m.ProductName != "" {
 		flag = true
@@ -1217,7 +1230,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
+		w.WriteArg(int64(m.ProductID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -1225,7 +1238,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.Weight != 0 {
 		flag = true

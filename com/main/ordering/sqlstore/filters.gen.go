@@ -809,7 +809,7 @@ func (ft *OrderFilters) ByIsOutsideEtop(IsOutsideEtop bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
-		IsNil:  !IsOutsideEtop,
+		IsNil:  bool(!IsOutsideEtop),
 	}
 }
 
@@ -819,7 +819,7 @@ func (ft *OrderFilters) ByIsOutsideEtopPtr(IsOutsideEtop *bool) *sq.ColumnFilter
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
 		IsNil:  IsOutsideEtop == nil,
-		IsZero: IsOutsideEtop != nil && !(*IsOutsideEtop),
+		IsZero: IsOutsideEtop != nil && bool(!(*IsOutsideEtop)),
 	}
 }
 
@@ -991,6 +991,25 @@ func (ft *OrderFilters) ByCustomerIDPtr(CustomerID *dot.ID) *sq.ColumnFilterPtr 
 		Value:  CustomerID,
 		IsNil:  CustomerID == nil,
 		IsZero: CustomerID != nil && (*CustomerID) == 0,
+	}
+}
+
+func (ft *OrderFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *OrderFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
 	}
 }
 
@@ -1279,7 +1298,7 @@ func (ft *OrderLineFilters) ByIsOutsideEtop(IsOutsideEtop bool) *sq.ColumnFilter
 		Prefix: &ft.prefix,
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
-		IsNil:  !IsOutsideEtop,
+		IsNil:  bool(!IsOutsideEtop),
 	}
 }
 
@@ -1289,7 +1308,7 @@ func (ft *OrderLineFilters) ByIsOutsideEtopPtr(IsOutsideEtop *bool) *sq.ColumnFi
 		Column: "is_outside_etop",
 		Value:  IsOutsideEtop,
 		IsNil:  IsOutsideEtop == nil,
-		IsZero: IsOutsideEtop != nil && !(*IsOutsideEtop),
+		IsZero: IsOutsideEtop != nil && bool(!(*IsOutsideEtop)),
 	}
 }
 

@@ -37,7 +37,7 @@ var ll = l.New()
 func CreateOrder(
 	ctx context.Context, claim *claims.ShopClaim,
 	authPartner *model.Partner, r *types.CreateOrderRequest,
-	tradingShopID *dot.ID) (*types.Order, error) {
+	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
@@ -224,7 +224,7 @@ func CreateOrder(
 	if err != nil {
 		return nil, err
 	}
-	order, err := PrepareOrder(ctx, shop.ID, r, lines)
+	order, err := PrepareOrder(ctx, shop.ID, r, lines, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -794,7 +794,7 @@ func prepareOrderLine(
 	return line, nil
 }
 
-func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
+func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine, userID dot.ID) (*ordermodel.Order, error) {
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -984,6 +984,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ExternalMeta:               externalMeta,
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
+		CreatedBy:                  userID,
 	}
 	if err = convertpb.OrderShippingToModel(shipping, order); err != nil {
 		return nil, err

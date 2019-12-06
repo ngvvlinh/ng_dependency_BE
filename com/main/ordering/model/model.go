@@ -122,6 +122,7 @@ type Order struct {
 	ReferralMeta json.RawMessage
 
 	CustomerID dot.ID
+	CreatedBy  dot.ID
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

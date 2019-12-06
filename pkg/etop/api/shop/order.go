@@ -196,7 +196,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 }
 
 func (s *OrderService) createOrder(ctx context.Context, q *CreateOrderEndpoint) (*CreateOrderEndpoint, error) {
-	result, err := logicorder.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest, nil)
+	result, err := logicorder.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest, nil, q.Context.UserID)
 	q.Result = result
 	return q, err
 }
