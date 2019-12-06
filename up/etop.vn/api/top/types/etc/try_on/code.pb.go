@@ -4,13 +4,21 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type TryOnCode int
 
 const (
+	// +enum=unknown
 	TryOnCode_unknown TryOnCode = 0
-	TryOnCode_none    TryOnCode = 1
-	TryOnCode_open    TryOnCode = 2
-	TryOnCode_try     TryOnCode = 3
+
+	// +enum=none
+	TryOnCode_none TryOnCode = 1
+
+	// +enum=open
+	TryOnCode_open TryOnCode = 2
+
+	// +enum=try
+	TryOnCode_try TryOnCode = 3
 )
 
 var TryOnCode_name = map[int]string{

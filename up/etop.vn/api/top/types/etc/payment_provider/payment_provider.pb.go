@@ -4,11 +4,15 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type PaymentProvider int
 
 const (
+	// +enum=unknown
 	PaymentProvider_unknown PaymentProvider = 0
-	PaymentProvider_vtpay   PaymentProvider = 1
+
+	// +enum=vtpay
+	PaymentProvider_vtpay PaymentProvider = 1
 )
 
 var PaymentProvider_name = map[int]string{

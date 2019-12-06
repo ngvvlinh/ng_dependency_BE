@@ -4,15 +4,27 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type ShippingProvider int
 
 const (
+	// +enum=unknown
 	ShippingProvider_unknown ShippingProvider = 0
-	ShippingProvider_all     ShippingProvider = 22
-	ShippingProvider_manual  ShippingProvider = 20
-	ShippingProvider_ghn     ShippingProvider = 19
-	ShippingProvider_ghtk    ShippingProvider = 21
-	ShippingProvider_vtpost  ShippingProvider = 23
+
+	// +enum=all
+	ShippingProvider_all ShippingProvider = 22
+
+	// +enum=manual
+	ShippingProvider_manual ShippingProvider = 20
+
+	// +enum=ghn
+	ShippingProvider_ghn ShippingProvider = 19
+
+	// +enum=ghtk
+	ShippingProvider_ghtk ShippingProvider = 21
+
+	// +enum=vtpost
+	ShippingProvider_vtpost ShippingProvider = 23
 )
 
 var ShippingProvider_name = map[int]string{

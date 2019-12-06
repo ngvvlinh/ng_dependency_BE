@@ -31,20 +31,42 @@ type ShipnowService struct {
 	Description        string
 }
 
+// +enum
 type State int
 
 const (
-	StateDefault       State = 0
-	StateCreated       State = 1
-	StateAssigning     State = 2
-	StatePicking       State = 3
-	StateDelivering    State = 4
-	StateDelivered     State = 5
-	StateReturning     State = 6
-	StateReturned      State = 7
-	StateUnknown       State = 101
+	// +enum=default
+	StateDefault State = 0
+
+	// +enum=created
+	StateCreated State = 1
+
+	// +enum=assigning
+	StateAssigning State = 2
+
+	// +enum=picking
+	StatePicking State = 3
+
+	// +enum=delivering
+	StateDelivering State = 4
+
+	// +enum=delivered
+	StateDelivered State = 5
+
+	// +enum=returning
+	StateReturning State = 6
+
+	// +enum=returned
+	StateReturned State = 7
+
+	// +enum=unknown
+	StateUnknown State = 101
+
+	// +enum=undeliverable
 	StateUndeliverable State = 126
-	StateCancelled     State = 127
+
+	// +enum=cancelled
+	StateCancelled State = 127
 )
 
 func (s State) String() string {

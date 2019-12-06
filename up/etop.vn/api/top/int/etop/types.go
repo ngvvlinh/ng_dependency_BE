@@ -11,14 +11,24 @@ import (
 )
 
 // Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
+// +enum
 type AccountType int
 
 const (
-	AccountType_unknown   AccountType = 0
-	AccountType_partner   AccountType = 21
-	AccountType_shop      AccountType = 33
+	// +enum=unknown
+	AccountType_unknown AccountType = 0
+
+	// +enum=partner
+	AccountType_partner AccountType = 21
+
+	// +enum=shop
+	AccountType_shop AccountType = 33
+
+	// +enum=affiliate
 	AccountType_affiliate AccountType = 35
-	AccountType_etop      AccountType = 101
+
+	// +enum=etop
+	AccountType_etop AccountType = 101
 )
 
 var AccountType_name = map[int]string{

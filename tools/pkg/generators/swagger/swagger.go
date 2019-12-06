@@ -24,6 +24,7 @@ import (
 )
 
 var ll = l.New()
+var info *parse.Info
 
 var _ generator.Plugin = &plugin{}
 
@@ -45,6 +46,7 @@ func New() generator.Plugin {
 func (p *plugin) Name() string { return "swagger" }
 
 func (p *plugin) Generate(ng generator.Engine) error {
+	info = parse.NewInfo(ng)
 	return ng.GenerateEachPackage(p.generatePackage)
 }
 
@@ -96,7 +98,6 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ g
 }
 
 func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (*spec.SwaggerProps, error) {
-	initTypes(ng)
 	definitions := map[string]spec.Schema{}
 	pathItems := map[string]spec.PathItem{}
 	for _, service := range services {
@@ -261,16 +262,16 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 	ll.V(3).Debugf("parse schema for type %v", typ)
 	var inner types.Type
 	switch {
-	case isTime(typ):
+	case info.IsTime(typ):
 		return simpleType("string", "date-time")
 
-	case isSliceOfBytes(typ):
+	case info.IsSliceOfBytes(typ):
 		return simpleType("string", "byte")
 
-	case isNullID(typ):
+	case info.IsNullID(typ):
 		return simpleType("string", "int64")
 
-	case isBasic(typ, &inner) || isNullBasic(typ, &inner):
+	case info.IsBasic(typ, &inner) || info.IsNullBasic(typ, &inner):
 		switch inner.(*types.Basic).Kind() {
 		case types.Bool:
 			return simpleType("boolean", "")
@@ -294,7 +295,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			return simpleType("string", "")
 		}
 
-	case isNamedStruct(typ, &inner):
+	case info.IsNamedStruct(typ, &inner):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -335,7 +336,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		definitions[id] = s
 		return refSchema
 
-	case isArray(typ, &inner):
+	case info.IsArray(typ, &inner):
 		refSchema := parseSchema(ng, definitions, inner)
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -347,7 +348,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		}
 		return s
 
-	case isMap(typ):
+	case info.IsMap(typ):
 		m := typ.(*types.Map)
 		elemSchema := parseSchema(ng, definitions, m.Elem())
 		s := spec.Schema{
@@ -360,7 +361,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		}
 		return s
 
-	case isEnum(typ, &inner):
+	case info.IsEnum(typ):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -371,41 +372,38 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			return refSchema
 		}
 
-		// read all enum
-		named := skipPointer(typ).(*types.Named)
-		var enumValues []interface{}
-		objects := ng.GetObjectsByScope(named.Obj().Pkg().Scope())
-		for _, obj := range objects {
-			cnst, ok := obj.(*types.Const)
-			if !ok {
-				continue
+		enum := info.GetEnum(typ)
+		var enumNames []interface{}
+		for _, value := range enum.Values {
+			enumNames = append(enumNames, enum.MapName[value])
+		}
+
+		var deprecatedEnumNames []string
+		for name, value := range enum.MapValue {
+			if enum.MapName[value] != name {
+				deprecatedEnumNames = append(deprecatedEnumNames, name)
 			}
-			if cnst.Type() != named {
-				continue
-			}
-			parts := strings.SplitN(cnst.Name(), "_", 2)
-			if len(parts) != 2 {
-				panic(fmt.Sprintf("invalid enum constant %v", cnst.Name()))
-			}
-			val := parts[1]
-			enumValues = append(enumValues, val)
 		}
 
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
 				Type: spec.StringOrArray{"string"},
-				Enum: enumValues,
+				Enum: enumNames,
 			},
+		}
+		if len(deprecatedEnumNames) != 0 {
+			s.Description = fmt.Sprintf(`Deprecated values: "%v"`, strings.Join(deprecatedEnumNames, `", "`))
 		}
 		definitions[id] = s
 		return refSchema
 
-	case isID(typ):
+	case info.IsID(typ):
 		return simpleType("string", "int64")
 
-	case isNamedInterface(typ, &inner):
+	case info.IsNamedInterface(typ, &inner):
 		panic(fmt.Sprintf("oneof is not supported"))
 	}
+
 	panic(fmt.Sprintf("unsupported %v", typ))
 }
 

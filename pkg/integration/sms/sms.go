@@ -86,12 +86,12 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 		createSms := &smsing.CreateSmsLogCommand{
 			Content:    cmd.Content,
 			Phone:      cmd.Phone,
-			Status:     status3.Status_P,
+			Status:     status3.P,
 			Provider:   "Vietguys",
 			ExternalID: resp,
 		}
 		if err != nil {
-			createSms.Status = status3.Status_Z
+			createSms.Status = status3.Z
 			createSms.Error = err.Error()
 		}
 		if logErr := smsAggr.Dispatch(ctx, createSms); logErr != nil {

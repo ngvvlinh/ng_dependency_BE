@@ -4,14 +4,24 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type AddressType int
 
 const (
-	AddressType_unknown   AddressType = 0
-	AddressType_general   AddressType = 1
+	// +enum=unknown
+	AddressType_unknown AddressType = 0
+
+	// +enum=general
+	AddressType_general AddressType = 1
+
+	// +enum=warehouse
 	AddressType_warehouse AddressType = 2
-	AddressType_shipto    AddressType = 3
-	AddressType_shipfrom  AddressType = 4
+
+	// +enum=shipto
+	AddressType_shipto AddressType = 3
+
+	// +enum=shipfrom
+	AddressType_shipfrom AddressType = 4
 )
 
 var AddressType_name = map[int]string{

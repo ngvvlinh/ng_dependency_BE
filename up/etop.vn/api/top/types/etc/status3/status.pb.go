@@ -4,12 +4,18 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type Status int
 
 const (
-	Status_Z Status = 0
-	Status_P Status = 1
-	Status_N Status = 127
+	// +enum=Z
+	Z Status = 0
+
+	// +enum=P
+	P Status = 1
+
+	// +enum=N
+	N Status = 127
 )
 
 var Status_name = map[int]string{

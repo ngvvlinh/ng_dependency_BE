@@ -4,17 +4,33 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type Source int
 
 const (
-	Source_unknown  Source = 0
-	Source_self     Source = 1
-	Source_import   Source = 2
-	Source_api      Source = 3
+	// +enum=unknown
+	Source_unknown Source = 0
+
+	// +enum=self
+	Source_self Source = 1
+
+	// +enum=import
+	Source_import Source = 2
+
+	// +enum=api
+	Source_api Source = 3
+
+	// +enum=etop_pos
 	Source_etop_pos Source = 5
+
+	// +enum=etop_pxs
 	Source_etop_pxs Source = 6
+
+	// +enum=etop_cmx
 	Source_etop_cmx Source = 7
-	Source_ts_app   Source = 8
+
+	// +enum=ts_app
+	Source_ts_app Source = 8
 )
 
 var Source_name = map[int]string{

@@ -4,19 +4,39 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type ShippingFeeType int
 
 const (
-	ShippingFeeType_main           ShippingFeeType = 0
-	ShippingFeeType_return         ShippingFeeType = 1
-	ShippingFeeType_adjustment     ShippingFeeType = 2
-	ShippingFeeType_insurance      ShippingFeeType = 3
-	ShippingFeeType_tax            ShippingFeeType = 4
-	ShippingFeeType_other          ShippingFeeType = 5
-	ShippingFeeType_cods           ShippingFeeType = 6
+	// +enum=main
+	ShippingFeeType_main ShippingFeeType = 0
+
+	// +enum=return
+	ShippingFeeType_return ShippingFeeType = 1
+
+	// +enum=adjustment
+	ShippingFeeType_adjustment ShippingFeeType = 2
+
+	// +enum=insurance
+	ShippingFeeType_insurance ShippingFeeType = 3
+
+	// +enum=tax
+	ShippingFeeType_tax ShippingFeeType = 4
+
+	// +enum=other
+	ShippingFeeType_other ShippingFeeType = 5
+
+	// +enum=cods
+	ShippingFeeType_cods ShippingFeeType = 6
+
+	// +enum=address_change
 	ShippingFeeType_address_change ShippingFeeType = 7
-	ShippingFeeType_discount       ShippingFeeType = 8
-	ShippingFeeType_unknown        ShippingFeeType = 127
+
+	// +enum=discount
+	ShippingFeeType_discount ShippingFeeType = 8
+
+	// +enum=unknown
+	ShippingFeeType_unknown ShippingFeeType = 127
 )
 
 var ShippingFeeType_name = map[int]string{

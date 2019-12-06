@@ -50,13 +50,21 @@ type Coordinates struct {
 	Longitude float32
 }
 
+// +enum
 type Fulfill int
 
 const (
-	FulfillNone     Fulfill = 0
-	FulfillManual   Fulfill = 1
+	// +enum=none
+	FulfillNone Fulfill = 0
+
+	// +enum=manual
+	FulfillManual Fulfill = 1
+
+	// +enum=shipment
 	FulfillShipment Fulfill = 10
-	FulfillShipnow  Fulfill = 11
+
+	// +enum=shipnow
+	FulfillShipnow Fulfill = 11
 )
 
 var Fulfill_name = map[int]string{

@@ -4,12 +4,18 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type FeeType int
 
 const (
-	FeeType_other    FeeType = 0
+	// +enum=other
+	FeeType_other FeeType = 0
+
+	// +enum=shipping
 	FeeType_shipping FeeType = 1
-	FeeType_tax      FeeType = 2
+
+	// +enum=tax
+	FeeType_tax FeeType = 2
 )
 
 var FeeType_name = map[int]string{

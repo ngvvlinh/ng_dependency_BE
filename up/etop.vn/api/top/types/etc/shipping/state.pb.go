@@ -4,22 +4,48 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type State int
 
 const (
-	State_default       State = 0
-	State_created       State = 1
-	State_confirmed     State = 2
-	State_processing    State = 3
-	State_picking       State = 4
-	State_holding       State = 5
-	State_returning     State = 6
-	State_returned      State = 7
-	State_delivering    State = 8
-	State_delivered     State = 9
-	State_unknown       State = 101
+	// +enum=default
+	State_default State = 0
+
+	// +enum=created
+	State_created State = 1
+
+	// +enum=confirmed
+	State_confirmed State = 2
+
+	// +enum=processing
+	State_processing State = 3
+
+	// +enum=picking
+	State_picking State = 4
+
+	// +enum=holding
+	State_holding State = 5
+
+	// +enum=returning
+	State_returning State = 6
+
+	// +enum=returned
+	State_returned State = 7
+
+	// +enum=delivering
+	State_delivering State = 8
+
+	// +enum=delivered
+	State_delivered State = 9
+
+	// +enum=unknown
+	State_unknown State = 101
+
+	// +enum=undeliverable
 	State_undeliverable State = 126
-	State_cancelled     State = 127
+
+	// +enum=cancelled
+	State_cancelled State = 127
 )
 
 var State_name = map[int]string{

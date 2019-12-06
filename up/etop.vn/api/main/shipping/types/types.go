@@ -7,26 +7,50 @@ import (
 	orderingtypes "etop.vn/api/main/ordering/types"
 )
 
+// +enum
 type TryOn int
 
 const (
+	// +enum=unknown
 	TryOnUnknown TryOn = 0
-	TryOnNone    TryOn = 1
-	TryOnOpen    TryOn = 2
-	TryOnTry     TryOn = 3
+
+	// +enum=none
+	TryOnNone TryOn = 1
+
+	// +enum=open
+	TryOnOpen TryOn = 2
+
+	// +enum=try
+	TryOnTry TryOn = 3
 )
 
+// +enum
 type FeeLineType int
 
 const (
-	FeeLineTypeOther         FeeLineType = 0
-	FeeLineTypeMain          FeeLineType = 1
-	FeeLineTypeReturn        FeeLineType = 2
-	FeeLineTypeAdjustment    FeeLineType = 3
-	FeeLineTypeCods          FeeLineType = 4
-	FeeLineTypeInsurance     FeeLineType = 5
+	// +enum=other
+	FeeLineTypeOther FeeLineType = 0
+
+	// +enum=main
+	FeeLineTypeMain FeeLineType = 1
+
+	// +enum=return
+	FeeLineTypeReturn FeeLineType = 2
+
+	// +enum=adjustment
+	FeeLineTypeAdjustment FeeLineType = 3
+
+	// +enum=cods
+	FeeLineTypeCods FeeLineType = 4
+
+	// +enum=insurance
+	FeeLineTypeInsurance FeeLineType = 5
+
+	// +enum=address_change
 	FeeLineTypeAddressChange FeeLineType = 6
-	FeeLineTypeDiscount      FeeLineType = 7
+
+	// +enum=discount
+	FeeLineTypeDiscount FeeLineType = 7
 )
 
 var TryOnCode_name = map[int]string{

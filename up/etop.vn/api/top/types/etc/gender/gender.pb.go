@@ -4,13 +4,21 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type Gender int
 
 const (
+	// +enum=unknown
 	Gender_unknown Gender = 0
-	Gender_male    Gender = 1
-	Gender_female  Gender = 2
-	Gender_other   Gender = 3
+
+	// +enum=male
+	Gender_male Gender = 1
+
+	// +enum=female
+	Gender_female Gender = 2
+
+	// +enum=other
+	Gender_other Gender = 3
 )
 
 var Gender_name = map[int]string{

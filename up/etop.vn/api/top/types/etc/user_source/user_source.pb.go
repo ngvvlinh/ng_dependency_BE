@@ -4,17 +4,33 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type UserSource int
 
 const (
-	UserSource_unknown        UserSource = 0
-	UserSource_psx            UserSource = 1
-	UserSource_etop           UserSource = 2
-	UserSource_topship        UserSource = 3
+	// +enum=unknown
+	UserSource_unknown UserSource = 0
+
+	// +enum=psx
+	UserSource_psx UserSource = 1
+
+	// +enum=etop
+	UserSource_etop UserSource = 2
+
+	// +enum=topship
+	UserSource_topship UserSource = 3
+
+	// +enum=ts_app_android
 	UserSource_ts_app_android UserSource = 4
-	UserSource_ts_app_ios     UserSource = 5
-	UserSource_ts_app_web     UserSource = 6
-	UserSource_partner        UserSource = 7
+
+	// +enum=ts_app_ios
+	UserSource_ts_app_ios UserSource = 5
+
+	// +enum=ts_app_web
+	UserSource_ts_app_web UserSource = 6
+
+	// +enum=partner
+	UserSource_partner UserSource = 7
 )
 
 var UserSource_name = map[int]string{

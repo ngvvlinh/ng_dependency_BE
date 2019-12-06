@@ -18,8 +18,6 @@ type Service struct {
 	FullName string
 	APIPath  string
 	Methods  []*Method
-
-	Meta map[interface{}]interface{}
 }
 
 type Method struct {
@@ -29,8 +27,6 @@ type Method struct {
 	Method   *types.Func
 	Request  *Message
 	Response *Message
-
-	Meta map[interface{}]interface{}
 }
 
 type Message struct {
@@ -46,6 +42,19 @@ type ArgItem struct {
 	Var    *types.Var
 	Ptr    bool
 	Struct *types.Struct
+}
+
+type Enum struct {
+	Name string
+
+	// sorted values as appear in code
+	Values   []interface{}
+	MapValue map[string]interface{} // int or uint64
+	MapName  map[interface{}]string
+
+	Type      *types.Named
+	BasicKind types.BasicKind
+	MapConst  map[string]*types.Const
 }
 
 type NodeType int

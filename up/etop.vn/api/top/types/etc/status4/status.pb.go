@@ -4,12 +4,20 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type Status int
 
 const (
+	// +enum=Z
 	Status_Z Status = 0
+
+	// +enum=P
 	Status_P Status = 1
+
+	// +enum=S
 	Status_S Status = 2
+
+	// +enum=N
 	Status_N Status = 127
 )
 

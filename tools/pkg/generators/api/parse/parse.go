@@ -2,13 +2,16 @@ package parse
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
+	"regexp"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
@@ -204,4 +207,133 @@ func toTitle(s string) string {
 		return ""
 	}
 	return strings.ToUpper(s[0:1]) + s[1:]
+}
+
+func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]*defs.Enum, error) {
+	mapEnum := make(map[string]*defs.Enum)
+	objects := ng.GetObjectsByPackage(pkg)
+
+	// read all enums in the package
+	for _, obj := range objects {
+		_, ok := obj.(*types.TypeName)
+		if !ok {
+			continue
+		}
+		if !obj.Exported() {
+			continue
+		}
+		directive, ok := ng.GetDirectives(obj).Get("enum")
+		if !ok {
+			continue
+		}
+		name := obj.Name()
+		if directive.Arg != "" {
+			return nil, generator.Errorf(nil, "invalid argument for enum %v", name)
+		}
+		basic, err := genutil.CheckType(obj.Type(), genutil.Named, genutil.Basic)
+		if err != nil {
+			return nil, generator.Errorf(err, "enum %v.%v must be integer type", pkg.PkgPath, name)
+		}
+		kind := basic.(*types.Basic).Kind()
+		switch kind {
+		case types.Int, types.Uint64:
+			// no-op
+		default:
+			return nil, generator.Errorf(err, "enum %v.%v must be int or uint64 type (got %v)", pkg.PkgPath, name, basic.String())
+		}
+		mapEnum[name] = &defs.Enum{
+			Name:      name,
+			Type:      obj.Type().(*types.Named),
+			BasicKind: kind,
+			MapValue:  map[string]interface{}{},
+			MapName:   map[interface{}]string{},
+			MapConst:  map[string]*types.Const{},
+		}
+	}
+
+	// read values for enum
+	for _, obj := range objects {
+		cnst, ok := obj.(*types.Const)
+		if !ok {
+			continue
+		}
+		directive, ok := ng.GetDirectives(cnst).Get("enum")
+		enum := validateEnumConstType(pkg.Types, mapEnum, cnst.Type())
+		if ok != (enum != nil) {
+			return nil, generator.Errorf(nil, "enum constant must have directive [+enum] (%v.%v)", pkg.PkgPath, obj.Name())
+		}
+		if !ok {
+			continue
+		}
+		nameList := directive.Arg
+		names, ok := validateEnumNames(strings.Split(nameList, ","))
+		if !ok {
+			return nil, generator.Errorf(nil, "invalid enum value %v (%v.%v)", nameList, pkg.PkgPath, obj.Name())
+		}
+		for _, name := range names {
+			if _cnst, exists := enum.MapConst[name]; exists {
+				return nil, generator.Errorf(nil, "duplicated value of %v for enum %v.%v (%v and %v)",
+					name, pkg.PkgPath, enum.Name, _cnst.Name(), cnst.Name())
+			}
+
+			var enumValue interface{}
+			switch enum.BasicKind {
+			case types.Int:
+				value, ok := constant.Int64Val(cnst.Val())
+				if !ok {
+					return nil, generator.Errorf(nil, "invalid enum value %v (%v.%v)", cnst.Val(), pkg.PkgPath, cnst.Name())
+				}
+				enumValue = int(value)
+			case types.Uint64:
+				value, ok := constant.Uint64Val(cnst.Val())
+				if !ok {
+					return nil, generator.Errorf(nil, "invalid enum value %v (%v.%v)", cnst.Val(), pkg.PkgPath, cnst.Name())
+				}
+				enumValue = value
+			default:
+				panic(fmt.Sprintf("unexpected kind %v", enum.BasicKind))
+			}
+
+			enum.MapConst[name] = cnst
+			enum.MapValue[name] = enumValue
+
+			// multiple name can exist for a value, only map value to the first name
+			if _, exists := enum.MapName[enumValue]; !exists {
+				enum.MapName[enumValue] = name
+				enum.Values = append(enum.Values, enumValue)
+			}
+		}
+	}
+	return mapEnum, nil
+}
+
+func GetMethodByName(named *types.Named, methodName string) *types.Func {
+	for i, n := 0, named.NumMethods(); i < n; i++ {
+		method := named.Method(i)
+		if method.Name() == methodName {
+			return method
+		}
+	}
+	return nil
+}
+
+func validateEnumConstType(pkg *types.Package, mapEnum map[string]*defs.Enum, typ types.Type) *defs.Enum {
+	named, ok := typ.(*types.Named)
+	if ok && named.Obj().Pkg() == pkg {
+		return mapEnum[named.Obj().Name()]
+	}
+	return nil
+}
+
+var reEnumValue = regexp.MustCompile(`[A-z_][A-z0-9_]*`)
+
+func validateEnumNames(values []string) ([]string, bool) {
+	for i, value := range values {
+		value = strings.TrimSpace(value)
+		values[i] = value
+		if !reEnumValue.MatchString(value) {
+			return nil, false
+		}
+	}
+	return values, true
 }

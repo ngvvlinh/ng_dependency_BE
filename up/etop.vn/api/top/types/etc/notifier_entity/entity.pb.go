@@ -4,11 +4,17 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type NotifierEntity int
 
 const (
-	NotifierEntity_unknown                    NotifierEntity = 0
-	NotifierEntity_fulfillment                NotifierEntity = 1
+	// +enum=unknown
+	NotifierEntity_unknown NotifierEntity = 0
+
+	// +enum=fulfillment
+	NotifierEntity_fulfillment NotifierEntity = 1
+
+	// +enum=money_transaction_shipping
 	NotifierEntity_money_transaction_shipping NotifierEntity = 2
 )
 

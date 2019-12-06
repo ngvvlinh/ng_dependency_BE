@@ -7,8 +7,10 @@ import (
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"etop.vn/backend/tools/pkg/generators/api/parse"
 )
 
+var meta = make(parse.Meta)
 var currentPrinter generator.Printer
 var tpl = template.Must(template.New("template").Funcs(funcs).Parse(tplText))
 
@@ -108,8 +110,10 @@ func generateArgList(args []*defs.ArgItem) string {
 	return b.String()
 }
 
+type keyBusName struct{}
+
 func renderBusName(s *defs.Service) string {
-	return cache(&s.Meta, "busName", func() interface{} {
+	return cache(s, keyBusName{}, func() interface{} {
 		switch s.Kind {
 		case defs.KindQuery:
 			return s.Name + "QueryBus"
@@ -123,8 +127,10 @@ func renderBusName(s *defs.Service) string {
 	}).(string)
 }
 
+type keyInterfaceMethod struct{}
+
 func renderInterfaceMethod(s *defs.Service) string {
-	return cache(&s.Meta, "interfaceMethod", func() interface{} {
+	return cache(s, keyInterfaceMethod{}, func() interface{} {
 		switch s.Kind {
 		case defs.KindQuery:
 			return "query" + s.Name
@@ -138,8 +144,10 @@ func renderInterfaceMethod(s *defs.Service) string {
 	}).(string)
 }
 
+type keyMessageName struct{}
+
 func renderMessageName(m *defs.Method) string {
-	return cache(&m.Meta, "messageName", func() interface{} {
+	return cache(m, keyMessageName{}, func() interface{} {
 		switch m.Service.Kind {
 		case defs.KindQuery:
 			return m.Name + "Query"
@@ -233,14 +241,6 @@ func processTag(tag string) (string, error) {
 	return "`" + tag + "`", nil
 }
 
-func cache(meta *map[interface{}]interface{}, key interface{}, fn func() interface{}) interface{} {
-	if *meta == nil {
-		*meta = map[interface{}]interface{}{}
-	}
-	if val := (*meta)[key]; val != nil {
-		return val
-	}
-	val := fn()
-	(*meta)[key] = val
-	return val
+func cache(item, key interface{}, fn func() interface{}) interface{} {
+	return meta.Cache(item, key, fn)
 }

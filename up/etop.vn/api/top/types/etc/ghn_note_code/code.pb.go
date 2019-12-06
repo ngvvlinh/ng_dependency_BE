@@ -4,13 +4,21 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type GHNNoteCode int
 
 const (
-	GHNNoteCode_unknown            GHNNoteCode = 0
-	GHNNoteCode_CHOTHUHANG         GHNNoteCode = 1
+	// +enum=unknown
+	GHNNoteCode_unknown GHNNoteCode = 0
+
+	// +enum=CHOTHUHANG
+	GHNNoteCode_CHOTHUHANG GHNNoteCode = 1
+
+	// +enum=CHOXEMHANGKHONGTHU
 	GHNNoteCode_CHOXEMHANGKHONGTHU GHNNoteCode = 2
-	GHNNoteCode_KHONGCHOXEMHANG    GHNNoteCode = 3
+
+	// +enum=KHONGCHOXEMHANG
+	GHNNoteCode_KHONGCHOXEMHANG GHNNoteCode = 3
 )
 
 var GHNNoteCode_name = map[int]string{

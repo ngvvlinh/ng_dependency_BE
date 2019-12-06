@@ -4,9 +4,11 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type CreditType int
 
 const (
+	// +enum=shop
 	CreditType_shop CreditType = 1
 )
 

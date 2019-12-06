@@ -4,12 +4,18 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type ProductType int
 
 const (
-	ProductType_unknown  ProductType = 0
+	// +enum=unknown
+	ProductType_unknown ProductType = 0
+
+	// +enum=services
 	ProductType_services ProductType = 1
-	ProductType_goods    ProductType = 2
+
+	// +enum=goods
+	ProductType_goods ProductType = 2
 )
 
 var ProductType_name = map[int]string{

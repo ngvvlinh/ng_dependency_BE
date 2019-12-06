@@ -4,11 +4,15 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type AuthMode int
 
 const (
+	// +enum=default
 	AuthMode_default AuthMode = 0
-	AuthMode_manual  AuthMode = 1
+
+	// +enum=manual
+	AuthMode_manual AuthMode = 1
 )
 
 var AuthMode_name = map[int]string{

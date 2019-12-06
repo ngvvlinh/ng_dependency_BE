@@ -4,13 +4,21 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+// +enum
 type ChangeType int
 
 const (
+	// +enum=unknown
 	ChangeType_unknown ChangeType = 0
-	ChangeType_update  ChangeType = 1
-	ChangeType_create  ChangeType = 2
-	ChangeType_delete  ChangeType = 3
+
+	// +enum=update
+	ChangeType_update ChangeType = 1
+
+	// +enum=create
+	ChangeType_create ChangeType = 2
+
+	// +enum=delete
+	ChangeType_delete ChangeType = 3
 )
 
 var ChangeType_name = map[int]string{
