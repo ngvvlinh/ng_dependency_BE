@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	gender "etop.vn/api/top/types/etc/gender"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -54,7 +55,7 @@ func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, msg
 type CreateCustomerCommand struct {
 	ShopID   dot.ID
 	FullName string
-	Gender   string
+	Gender   gender.Gender
 	Type     CustomerType
 	Birthday string
 	Note     string
@@ -108,7 +109,7 @@ type UpdateCustomerCommand struct {
 	ID       dot.ID
 	ShopID   dot.ID
 	FullName dot.NullString
-	Gender   dot.NullString
+	Gender   gender.NullGender
 	Type     CustomerType
 	Birthday dot.NullString
 	Note     dot.NullString
@@ -243,6 +244,7 @@ func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, msg *
 }
 
 // implement interfaces
+
 func (q *AddCustomersToGroupCommand) command()      {}
 func (q *BatchSetCustomersStatusCommand) command()  {}
 func (q *CreateCustomerCommand) command()           {}

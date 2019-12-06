@@ -956,11 +956,11 @@
     "baAccountType": {
       "type": "string",
       "enum": [
-        "affiliate",
-        "etop",
+        "unknown",
         "partner",
         "shop",
-        "unknown"
+        "affiliate",
+        "etop"
       ]
     },
     "baAddress": {
@@ -1575,84 +1575,84 @@
     "bjSource": {
       "type": "string",
       "enum": [
+        "unknown",
+        "self",
+        "import",
         "api",
-        "etop_cmx",
         "etop_pos",
         "etop_pxs",
-        "import",
-        "self",
-        "ts_app",
-        "unknown"
+        "etop_cmx",
+        "ts_app"
       ]
     },
     "blStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
-        "Z"
+        "N"
       ]
     },
     "bmStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
         "S",
-        "Z"
+        "N"
       ]
     },
     "bnStatus": {
       "type": "string",
       "enum": [
-        "N",
-        "NS",
+        "Z",
         "P",
         "S",
-        "Z"
+        "N",
+        "NS"
       ]
     },
     "bwShippingProvider": {
       "type": "string",
       "enum": [
+        "unknown",
         "all",
+        "manual",
         "ghn",
         "ghtk",
-        "manual",
-        "unknown",
         "vtpost"
       ]
     },
     "csTryOnCode": {
       "type": "string",
       "enum": [
+        "unknown",
         "none",
         "open",
-        "try",
-        "unknown"
+        "try"
       ]
     },
     "djUserSource": {
       "type": "string",
       "enum": [
-        "etop",
-        "partner",
+        "unknown",
         "psx",
+        "etop",
         "topship",
         "ts_app_android",
         "ts_app_ios",
         "ts_app_web",
-        "unknown"
+        "partner"
       ]
     },
     "jjAddressType": {
       "type": "string",
       "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
         "unknown",
-        "warehouse"
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
       ]
     },
     "ktDeletedResponse": {
@@ -1797,10 +1797,10 @@
     "pwGender": {
       "type": "string",
       "enum": [
-        "female",
+        "unknown",
         "male",
-        "other",
-        "unknown"
+        "female",
+        "other"
       ]
     },
     "qdAttribute": {
@@ -3345,42 +3345,42 @@
     "sdShippingFeeType": {
       "type": "string",
       "enum": [
-        "address_change",
-        "adjustment",
-        "cods",
-        "discount",
-        "insurance",
         "main",
-        "other",
         "return",
+        "adjustment",
+        "insurance",
         "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
         "unknown"
       ]
     },
     "sfState": {
       "type": "string",
       "enum": [
-        "cancelled",
-        "confirmed",
-        "created",
         "default",
-        "delivered",
-        "delivering",
-        "holding",
-        "picking",
+        "created",
+        "confirmed",
         "processing",
-        "returned",
+        "picking",
+        "holding",
         "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "unknown",
         "undeliverable",
-        "unknown"
+        "cancelled"
       ]
     },
     "wdNotifierEntity": {
       "type": "string",
       "enum": [
+        "unknown",
         "fulfillment",
-        "money_transaction_shipping",
-        "unknown"
+        "money_transaction_shipping"
       ]
     },
     "xuConfirmCreditRequest": {

@@ -71,8 +71,8 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 
 	// Haravan: default includeInsurance is false
 	req := &types.GetExternalShippingServicesRequest{
-		Provider:         pbsp.ShippingProvider_ghn,
-		Carrier:          pbsp.ShippingProvider_ghn,
+		Provider:         pbsp.Ghn,
+		Carrier:          pbsp.Ghn,
 		FromProvince:     from.Province.Name,
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
@@ -136,8 +136,8 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 
 	req := &types.GetExternalShippingServicesRequest{
-		Provider:         pbsp.ShippingProvider_ghn,
-		Carrier:          pbsp.ShippingProvider_ghn,
+		Provider:         pbsp.Ghn,
+		Carrier:          pbsp.Ghn,
 		FromProvince:     from.Province.Name,
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
@@ -178,6 +178,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		ExternalOrderID:       externalID,
 		ExternalFulfillmentID: externalFulfillmentID,
 	}
+	tryonNone := pbtryon.None
 	reqCreateOrder := &exttypes.CreateOrderRequest{
 		ExternalId:      externalID,
 		ExternalCode:    externalID,
@@ -200,7 +201,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			ShippingServiceFee:  dot.Int(service.ServiceFee),
 			Carrier:             &carrier,
 			IncludeInsurance:    dot.Bool(includeInsurance),
-			TryOn:               pbtryon.TryOnCode_none.Enum(),
+			TryOn:               &tryonNone,
 			ShippingNote:        dot.String(args.Note),
 			CodAmount:           dot.Int(codAmount),
 			ChargeableWeight:    dot.Int(weight),

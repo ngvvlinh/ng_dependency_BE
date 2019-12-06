@@ -14,7 +14,6 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
-	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
@@ -308,18 +307,8 @@ func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.Orde
 		Email:    getCustomer.Result.Email,
 		Phone:    getCustomer.Result.Phone,
 		Type:     string(getCustomer.Result.Type),
+		Gender:   getCustomer.Result.Gender,
 	}
-	switch getCustomer.Result.Gender {
-	case "male":
-		customer.Gender = gender.Gender_male
-	case "female":
-		customer.Gender = gender.Gender_female
-	case "other":
-		customer.Gender = gender.Gender_other
-	default:
-		customer.Gender = gender.Gender_unknown
-	}
-
 	return customer
 }
 
@@ -608,7 +597,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			FullName: query.Result.FullName,
 			Email:    query.Result.Email,
 			Phone:    query.Result.Phone,
-			Gender:   gender.PbGender(query.Result.Gender),
+			Gender:   query.Result.Gender,
 			Type:     string(query.Result.Type),
 		}
 
@@ -977,7 +966,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ExternalURL:                m.ExternalUrl,
 		ShopShipping:               nil, // will be filled later
 		IsOutsideEtop:              false,
-		GhnNoteCode:                m.GhnNoteCode.ToModel(),
+		GhnNoteCode:                m.GhnNoteCode.String(),
 		TryOn:                      tryOn,
 		CustomerNameNorm:           "",
 		ProductNameNorm:            "",

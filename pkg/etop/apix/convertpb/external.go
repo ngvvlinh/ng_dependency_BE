@@ -3,7 +3,6 @@ package convertpb
 import (
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/types"
-	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -318,32 +317,6 @@ func PbOrderAddressFromAddress(m *model.Address) *exttypes.OrderAddress {
 		Company:  m.Company,
 		Address1: m.Address1,
 		Address2: m.Address2,
-	}
-}
-
-func PbOrderCustomer(m *ordermodel.OrderCustomer) *exttypes.OrderCustomer {
-	if m == nil {
-		return nil
-	}
-	return &exttypes.OrderCustomer{
-		FullName: m.GetFullName(),
-		Email:    m.Email,
-		Phone:    m.Phone,
-		Gender:   gender.PbGender(m.Gender),
-	}
-}
-
-func OrderCustomerToPbOrder(m *exttypes.OrderCustomer) *types.OrderCustomer {
-	if m == nil {
-		return nil
-	}
-	return &types.OrderCustomer{
-		FirstName: "",
-		LastName:  "",
-		FullName:  m.FullName,
-		Email:     m.Email,
-		Phone:     m.Phone,
-		Gender:    m.Gender,
 	}
 }
 

@@ -190,10 +190,7 @@ var mapComp2OrigPath = map[string]string{}
 var mapOrig2CompPath = map[string]string{}
 
 func getDefinitionID(typ types.Type) string {
-	ptr, ok := typ.(*types.Pointer)
-	if ok {
-		typ = ptr.Elem()
-	}
+	typ = parse.UnwrapNull(parse.SkipPointer(typ))
 	named, ok := typ.(*types.Named)
 	if !ok {
 		panic(fmt.Sprintf("must be named type (got %v)", typ))
@@ -295,6 +292,42 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			return simpleType("string", "")
 		}
 
+	case info.IsEnum(typ):
+		id := getDefinitionID(typ)
+		refSchema := spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
+			},
+		}
+		if _, ok := definitions[id]; ok {
+			return refSchema
+		}
+
+		enum := info.GetEnum(typ)
+		var enumNames []interface{}
+		for _, value := range enum.Values {
+			enumNames = append(enumNames, enum.MapName[value])
+		}
+
+		var deprecatedEnumNames []string
+		for name, value := range enum.MapValue {
+			if enum.MapName[value] != name {
+				deprecatedEnumNames = append(deprecatedEnumNames, name)
+			}
+		}
+
+		s := spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: spec.StringOrArray{"string"},
+				Enum: enumNames,
+			},
+		}
+		if len(deprecatedEnumNames) != 0 {
+			s.Description = fmt.Sprintf(`Deprecated values: "%v"`, strings.Join(deprecatedEnumNames, `", "`))
+		}
+		definitions[id] = s
+		return refSchema
+
 	case info.IsNamedStruct(typ, &inner):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
@@ -360,42 +393,6 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			},
 		}
 		return s
-
-	case info.IsEnum(typ):
-		id := getDefinitionID(typ)
-		refSchema := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
-			},
-		}
-		if _, ok := definitions[id]; ok {
-			return refSchema
-		}
-
-		enum := info.GetEnum(typ)
-		var enumNames []interface{}
-		for _, value := range enum.Values {
-			enumNames = append(enumNames, enum.MapName[value])
-		}
-
-		var deprecatedEnumNames []string
-		for name, value := range enum.MapValue {
-			if enum.MapName[value] != name {
-				deprecatedEnumNames = append(deprecatedEnumNames, name)
-			}
-		}
-
-		s := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: spec.StringOrArray{"string"},
-				Enum: enumNames,
-			},
-		}
-		if len(deprecatedEnumNames) != 0 {
-			s.Description = fmt.Sprintf(`Deprecated values: "%v"`, strings.Join(deprecatedEnumNames, `", "`))
-		}
-		definitions[id] = s
-		return refSchema
 
 	case info.IsID(typ):
 		return simpleType("string", "int64")

@@ -231,6 +231,7 @@ func (h QueryServiceHandler) HandleGetTickets(ctx context.Context, msg *GetTicke
 }
 
 // implement interfaces
+
 func (q *CreateOrUpdateContactCommand) command() {}
 func (q *CreateOrUpdateLeadCommand) command()    {}
 func (q *CreateTicketCommand) command()          {}

@@ -78,7 +78,7 @@ func AddressToModel(a *etop.Address) (*model.Address, error) {
 		Position:     a.Position,
 		Email:        a.Email,
 		Notes:        PbAddressNoteToModel(a.Notes),
-		Type:         a.Type.ToModel(),
+		Type:         a.Type.String(),
 	}
 	locationQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: a.ProvinceCode,
@@ -131,12 +131,13 @@ func PbUser(m *model.User) *etop.User {
 
 		EmailVerificationSentAt: cmapi.PbTime(m.EmailVerificationSentAt),
 		PhoneVerificationSentAt: cmapi.PbTime(m.PhoneVerificationSentAt),
-		Source:                  PbUserSource(m.Source),
+		Source:                  m.Source,
 	}
 }
 
 func PbAccountType(t model.AccountType) etop.AccountType {
-	return etop.AccountType(etop.AccountType_value[string(t)])
+	accountType, _ := etop.ParseAccountType(string(t))
+	return accountType
 }
 
 func PbLoginAccount(m *model.AccountUserExtended) *etop.LoginAccount {
@@ -419,6 +420,7 @@ func PbAddress(a *model.Address) *etop.Address {
 	if a == nil {
 		return nil
 	}
+	addressType, _ := addresstype.ParseAddressType(a.Type)
 	res := &etop.Address{
 		Id:           a.ID,
 		Province:     a.Province,
@@ -437,7 +439,7 @@ func PbAddress(a *model.Address) *etop.Address {
 		Phone:        a.Phone,
 		Email:        a.Email,
 		Position:     a.Position,
-		Type:         addresstype.PbType(a.Type),
+		Type:         addressType,
 		Notes:        PbAddressNote(a.Notes),
 	}
 	if a.Coordinates != nil {

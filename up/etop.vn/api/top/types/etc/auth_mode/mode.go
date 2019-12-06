@@ -1,5 +1,12 @@
 package auth_mode
 
-func (x AuthMode) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+// +enum
+type AuthMode int
+
+const (
+	// +enum=default
+	Default AuthMode = 0
+
+	// +enum=manual
+	Manual AuthMode = 1
+)

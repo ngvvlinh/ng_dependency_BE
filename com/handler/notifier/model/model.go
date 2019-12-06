@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/notifier_entity"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
@@ -14,11 +15,11 @@ import (
 
 var _ = sqlgenNotification(&Notification{})
 
-type NotiEntity string
+type NotiEntity = notifier_entity.NotifierEntity
 
 const (
-	NotiFulfillment              NotiEntity = "fulfillment"
-	NotiMoneyTransactionShipping NotiEntity = "money_transaction_shipping"
+	NotiFulfillment              = notifier_entity.Fulfillment
+	NotiMoneyTransactionShipping = notifier_entity.MoneyTransactionShipping
 	// OneSignal service ID default
 	ExternalServiceOneSignalID = 101
 )

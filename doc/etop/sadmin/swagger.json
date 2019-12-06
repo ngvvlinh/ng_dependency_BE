@@ -124,11 +124,11 @@
     "baAccountType": {
       "type": "string",
       "enum": [
-        "affiliate",
-        "etop",
+        "unknown",
         "partner",
         "shop",
-        "unknown"
+        "affiliate",
+        "etop"
       ]
     },
     "baAddress": {
@@ -689,41 +689,41 @@
     "blStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
-        "Z"
+        "N"
       ]
     },
     "csTryOnCode": {
       "type": "string",
       "enum": [
+        "unknown",
         "none",
         "open",
-        "try",
-        "unknown"
+        "try"
       ]
     },
     "djUserSource": {
       "type": "string",
       "enum": [
-        "etop",
-        "partner",
+        "unknown",
         "psx",
+        "etop",
         "topship",
         "ts_app_android",
         "ts_app_ios",
         "ts_app_web",
-        "unknown"
+        "partner"
       ]
     },
     "jjAddressType": {
       "type": "string",
       "enum": [
-        "general",
-        "shipfrom",
-        "shipto",
         "unknown",
-        "warehouse"
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
       ]
     },
     "ktEmpty": {

@@ -113,6 +113,7 @@ func (h QueryServiceHandler) HandleListSuppliersByIDs(ctx context.Context, msg *
 }
 
 // implement interfaces
+
 func (q *CreateSupplierCommand) command() {}
 func (q *DeleteSupplierCommand) command() {}
 func (q *UpdateSupplierCommand) command() {}

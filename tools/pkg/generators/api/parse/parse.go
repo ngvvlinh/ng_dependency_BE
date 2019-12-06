@@ -5,6 +5,7 @@ import (
 	"go/constant"
 	"go/types"
 	"regexp"
+	"sort"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
@@ -209,9 +210,10 @@ func toTitle(s string) string {
 	return strings.ToUpper(s[0:1]) + s[1:]
 }
 
-func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]*defs.Enum, error) {
+func ParseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]*defs.Enum, error) {
 	mapEnum := make(map[string]*defs.Enum)
 	objects := ng.GetObjectsByPackage(pkg)
+	sort.Slice(objects, func(i, j int) bool { return objects[i].Pos() < objects[j].Pos() })
 
 	// read all enums in the package
 	for _, obj := range objects {
@@ -242,12 +244,12 @@ func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 			return nil, generator.Errorf(err, "enum %v.%v must be int or uint64 type (got %v)", pkg.PkgPath, name, basic.String())
 		}
 		mapEnum[name] = &defs.Enum{
-			Name:      name,
-			Type:      obj.Type().(*types.Named),
-			BasicKind: kind,
-			MapValue:  map[string]interface{}{},
-			MapName:   map[interface{}]string{},
-			MapConst:  map[string]*types.Const{},
+			Name:     name,
+			Type:     obj.Type().(*types.Named),
+			Basic:    basic.(*types.Basic),
+			MapValue: map[string]interface{}{},
+			MapName:  map[interface{}]string{},
+			MapConst: map[string]*types.Const{},
 		}
 	}
 
@@ -277,7 +279,7 @@ func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 			}
 
 			var enumValue interface{}
-			switch enum.BasicKind {
+			switch enum.Basic.Kind() {
 			case types.Int:
 				value, ok := constant.Int64Val(cnst.Val())
 				if !ok {
@@ -291,11 +293,12 @@ func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 				}
 				enumValue = value
 			default:
-				panic(fmt.Sprintf("unexpected kind %v", enum.BasicKind))
+				panic(fmt.Sprintf("unexpected kind %v", enum.Basic))
 			}
 
 			enum.MapConst[name] = cnst
 			enum.MapValue[name] = enumValue
+			enum.Names = append(enum.Names, name)
 
 			// multiple name can exist for a value, only map value to the first name
 			if _, exists := enum.MapName[enumValue]; !exists {
@@ -305,16 +308,6 @@ func parseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 		}
 	}
 	return mapEnum, nil
-}
-
-func GetMethodByName(named *types.Named, methodName string) *types.Func {
-	for i, n := 0, named.NumMethods(); i < n; i++ {
-		method := named.Method(i)
-		if method.Name() == methodName {
-			return method
-		}
-	}
-	return nil
 }
 
 func validateEnumConstType(pkg *types.Package, mapEnum map[string]*defs.Enum, typ types.Type) *defs.Enum {

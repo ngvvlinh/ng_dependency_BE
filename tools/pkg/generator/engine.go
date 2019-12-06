@@ -311,7 +311,6 @@ func (ng *wrapEngine) GenerateFile(pkgName string, filePath string) (Printer, er
 func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) Directives {
 	directives, ok := ng.mapPkgDirectives[pkg.PkgPath]
 	if !ok {
-		var ds []Directive
 		for _, file := range pkg.GoFiles {
 			body, err := ioutil.ReadFile(file)
 			if err != nil {
@@ -322,14 +321,12 @@ func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) Directives {
 				panic(err)
 			}
 
-			var errs []error
-			ds, errs = parseDirectivesFromBody(ds, body)
+			errs := parseDirectivesFromBody(body, &directives, nil)
 			for _, err := range errs {
 				ll.V(1).Debugf("invalid directive from file %v: %v", file, err)
 			}
 		}
-		directives = ds
-		ng.mapPkgDirectives[pkg.PkgPath] = ds
+		ng.mapPkgDirectives[pkg.PkgPath] = directives
 	}
 	return cloneDirectives(directives)
 }

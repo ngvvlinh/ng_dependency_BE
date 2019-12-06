@@ -75,6 +75,7 @@ func (h QueryServiceHandler) HandleGetLocation(ctx context.Context, msg *GetLoca
 }
 
 // implement interfaces
+
 func (q *FindLocationQuery) query()      {}
 func (q *FindOrGetLocationQuery) query() {}
 func (q *GetAllLocationsQuery) query()   {}

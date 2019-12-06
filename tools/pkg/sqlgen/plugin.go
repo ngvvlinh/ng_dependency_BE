@@ -260,10 +260,10 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 		def.base = typs[1]
 		def.all = false
 
-		if g.TypeString(typs[2]) != "sq.AS" {
+		if g.TypeString(typs[2]) != "sq.AS" && g.TypeString(typs[2]) != "string" {
 			fmt.Print(helpJoin)
 			return "", fmt.Errorf(
-				"JOIN %v: The third param must be sq.AS (got %v)",
+				"JOIN %v: The third param must be sq.AS or string (got %v)",
 				g.TypeString(typs[0]), g.TypeString(typs[2]))
 		}
 
@@ -581,7 +581,7 @@ func (g *gen) parseJoinLine(typs []types.Type) (*joinDef, error) {
 	}
 
 	as := typs[2]
-	if gt.TypeString(as) != "sq.AS" {
+	if gt.TypeString(as) != "sq.AS" && gt.TypeString(as) != "string" {
 		return nil, fmt.Errorf(
 			"Invalid AS: must be sq.AS (got %v)", g.TypeString(as))
 	}

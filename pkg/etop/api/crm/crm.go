@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/top/services/crm"
-
 	"etop.vn/api/supporting/crm/vht"
 	"etop.vn/api/supporting/crm/vtiger"
+	"etop.vn/api/top/services/crm"
 	pbcm "etop.vn/api/top/types/common"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -132,7 +131,7 @@ func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEn
 		Title:            r.Title,
 		Message:          r.Message,
 		EntityID:         r.EntityId,
-		Entity:           notimodel.NotiEntity(r.Entity.ToModel()),
+		Entity:           r.Entity,
 		SendNotification: true,
 		MetaData:         r.MetaData.Data,
 	}

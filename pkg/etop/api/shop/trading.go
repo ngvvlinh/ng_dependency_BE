@@ -85,7 +85,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 	}()
 	req := &types.CreateOrderRequest{
 		PaymentMethod:   r.PaymentMethod,
-		Source:          pbsource.Source_etop_pos,
+		Source:          pbsource.EtopPos,
 		Customer:        r.Customer,
 		CustomerAddress: r.CustomerAddress,
 		BillingAddress:  r.BillingAddress,

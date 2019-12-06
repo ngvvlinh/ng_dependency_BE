@@ -266,14 +266,15 @@ func collectPackages(
 		wg.Add(1)
 		go func() {
 			defer func() { wg.Done(); <-limit }() // release limit
-			directives, err := parseDirectivesFromPackage(fileCh, pkg, cleanedFileNames)
+			directives, inlineDirectives, err := parseDirectivesFromPackage(fileCh, pkg, cleanedFileNames)
 			if err != nil {
 				_err = Errorf(err, "parsing %v: %v", pkg.PkgPath, err)
 			}
 			p := filteringPackage{
-				PkgPath:    pkg.PkgPath,
-				Imports:    pkg.Imports,
-				Directives: directives,
+				PkgPath:          pkg.PkgPath,
+				Imports:          pkg.Imports,
+				Directives:       directives,
+				InlineDirectives: inlineDirectives,
 			}
 			collectedPackages[i] = p
 		}()
@@ -288,17 +289,17 @@ func collectPackages(
 	return
 }
 
-func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package, cleanedFileNames map[string]bool) (directives []Directive, _err error) {
+func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package, cleanedFileNames map[string]bool) (directives, inlineDirectives []Directive, _err error) {
 	for _, file := range pkg.CompiledGoFiles {
 		if cleanedFileNames[filepath.Base(file)] {
 			continue
 		}
 		body, err := ioutil.ReadFile(file)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		fileCh <- fileContent{Path: file, Body: body}
-		ds, errs := parseDirectivesFromBody(directives, body)
+		errs := parseDirectivesFromBody(body, &directives, &inlineDirectives)
 		if len(errs) != 0 {
 			// ignore unknown directives
 			if ll.Verbosed(2) {
@@ -307,14 +308,13 @@ func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package
 				}
 			}
 		}
-		directives = append(directives, ds...)
 	}
 	return
 }
 
 var startDirective = []byte(startDirectiveStr)
 
-func parseDirectivesFromBody(directives []Directive, body []byte) (_ []Directive, errs []error) {
+func parseDirectivesFromBody(body []byte, directives, inlineDirectives *[]Directive) (errs []error) {
 	// store processing directives
 	var tmp []Directive
 	lastIdx := -1
@@ -337,20 +337,23 @@ func parseDirectivesFromBody(directives []Directive, body []byte) (_ []Directive
 		}
 		// directives are followed by a blank line, accept them
 		if idx+1 < len(body) && body[idx+1] == '\n' {
-			directives = append(directives, tmp...)
+			*directives = append(*directives, tmp...)
 			tmp = tmp[:0]
 		}
 		// find the next directive
 		if !bytes.HasPrefix(body[idx+1:], startDirective) && idx+1 != len(body) {
-			// discard directives not followed by a blank line
+			// put directives not followed by a blank line into inline directives
+			if inlineDirectives != nil {
+				*inlineDirectives = append(*inlineDirectives, tmp...)
+			}
 			tmp = tmp[:0]
 			continue
 		}
 		lastIdx = idx + 1
 	}
 	// source file should end with a newline, so we don't process remaining lastIdx
-	directives = append(directives, tmp...)
-	return directives, errs
+	*directives = append(*directives, tmp...)
+	return errs
 }
 
 func (ng *engine) validateConfig(cfg *Config) (_err error) {

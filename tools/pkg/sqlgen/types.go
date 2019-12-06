@@ -79,6 +79,9 @@ func genScanArg2(path string, typ types.Type) string {
 	case desc.IsNullBasic(typ):
 		return "&" + path
 
+	case desc.IsScanable(typ):
+		return "&" + path
+
 	case desc.IsBasic(): // && !IsPtrBasic()
 		return "(*core." + basicWrappers[desc.Elem] + ")(&" + path + ")"
 
@@ -134,6 +137,9 @@ func genInsertArg2(path string, typ types.Type, timeLevel timeLevel) string {
 		return path
 
 	case desc.IsNullBasic(typ):
+		return path
+
+	case desc.IsScanable(typ):
 		return path
 
 	case desc.IsBasic(): // && !desc.IsBasic()
@@ -201,6 +207,9 @@ func genUpdateArg2(path string, typ types.Type, timeLevel timeLevel) string {
 	case desc.IsNullBasic(typ):
 		return path
 
+	case desc.IsScanable(typ):
+		return path
+
 	case desc.IsBasic(): // && !desc.IsPtrBasic()
 		if desc.TypeString == desc.Underlying {
 			return path
@@ -246,6 +255,8 @@ func genNotEqualToZero(path string, typ types.Type) string {
 	case desc.IsNillable():
 		return path + " != nil"
 	case desc.IsNullBasic(typ):
+		return path + ".Valid"
+	case desc.IsNullType(typ):
 		return path + ".Valid"
 	case desc.IsNumber():
 		return path + " != 0"

@@ -36,6 +36,7 @@ func (h AggregateHandler) HandleCreateSmsLog(ctx context.Context, msg *CreateSms
 }
 
 // implement interfaces
+
 func (q *CreateSmsLogCommand) command() {}
 
 // implement conversion

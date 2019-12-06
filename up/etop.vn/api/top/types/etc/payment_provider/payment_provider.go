@@ -1,14 +1,12 @@
 package payment_provider
 
-import "etop.vn/api/external/payment"
+// +enum
+type PaymentProvider int
 
-func (x *PaymentProvider) ToPaymentProvider() payment.PaymentProvider {
-	if x == nil || *x == 0 {
-		return ""
-	}
-	return payment.PaymentProvider(PaymentProvider_name[int(*x)])
-}
+const (
+	// +enum=unknown
+	Unknown PaymentProvider = 0
 
-func (x PaymentProvider) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+	// +enum=vtpay
+	Vtpay PaymentProvider = 1
+)

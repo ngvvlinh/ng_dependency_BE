@@ -123,6 +123,7 @@ func (h QueryServiceHandler) HandleListStocktake(ctx context.Context, msg *ListS
 }
 
 // implement interfaces
+
 func (q *CancelStocktakeCommand) command()  {}
 func (q *ConfirmStocktakeCommand) command() {}
 func (q *CreateStocktakeCommand) command()  {}

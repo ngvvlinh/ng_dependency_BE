@@ -316,11 +316,14 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 }
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoint) error {
+
 	cmd := &model.CreateCreditCommand{
 		Amount: int(q.Amount),
 		ShopID: q.ShopId,
-		Type:   model.AccountType(q.Type.ToModel()),
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
+	}
+	if q.Type != nil {
+		cmd.Type = model.AccountType(etop.AccountType(*q.Type).Name())
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -543,7 +546,7 @@ func (s *NotificationService) CreateNotifications(ctx context.Context, q *Create
 		Title:            q.Title,
 		Message:          q.Message,
 		EntityID:         q.EntityId,
-		Entity:           notimodel.NotiEntity(q.Entity.ToModel()),
+		Entity:           q.Entity,
 		SendAll:          q.SendAll,
 		SendNotification: true,
 	}

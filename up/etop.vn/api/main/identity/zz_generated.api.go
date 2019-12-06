@@ -274,6 +274,7 @@ func (h QueryServiceHandler) HandleGetUserByPhone(ctx context.Context, msg *GetU
 }
 
 // implement interfaces
+
 func (q *CreateAffiliateCommand) command()                          {}
 func (q *CreateExternalAccountAhamoveCommand) command()             {}
 func (q *DeleteAffiliateCommand) command()                          {}

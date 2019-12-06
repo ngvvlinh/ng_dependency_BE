@@ -132,6 +132,7 @@ func (h QueryServiceHandler) HandleListLedgersByType(ctx context.Context, msg *L
 }
 
 // implement interfaces
+
 func (q *CreateLedgerCommand) command() {}
 func (q *DeleteLedgerCommand) command() {}
 func (q *UpdateLedgerCommand) command() {}

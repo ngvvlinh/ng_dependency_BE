@@ -55,9 +55,9 @@ func init() {
 func (m *ImportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.UserID),
-		core.Int64(m.AccountID),
+		m.ID,
+		m.UserID,
+		m.AccountID,
 		core.String(m.OriginalFile),
 		core.String(m.StoredFile),
 		core.String(m.Type),
@@ -74,9 +74,9 @@ func (m *ImportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ImportAttempt) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.UserID),
-		(*core.Int64)(&m.AccountID),
+		&m.ID,
+		&m.UserID,
+		&m.AccountID,
 		(*core.String)(&m.OriginalFile),
 		(*core.String)(&m.StoredFile),
 		(*core.String)(&m.Type),
@@ -156,7 +156,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -164,7 +164,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -172,7 +172,7 @@ func (m *ImportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.OriginalFile != "" {
 		flag = true
@@ -403,8 +403,8 @@ func (m *ExportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		core.String(m.ID),
-		core.Int64(m.UserID),
-		core.Int64(m.AccountID),
+		m.UserID,
+		m.AccountID,
 		core.String(m.ExportType),
 		core.String(m.FileName),
 		core.String(m.StoredFile),
@@ -428,8 +428,8 @@ func (m *ExportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *ExportAttempt) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.String)(&m.ID),
-		(*core.Int64)(&m.UserID),
-		(*core.Int64)(&m.AccountID),
+		&m.UserID,
+		&m.AccountID,
 		(*core.String)(&m.ExportType),
 		(*core.String)(&m.FileName),
 		(*core.String)(&m.StoredFile),
@@ -523,7 +523,7 @@ func (m *ExportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -531,7 +531,7 @@ func (m *ExportAttempt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.ExportType != "" {
 		flag = true
@@ -826,8 +826,8 @@ func init() {
 
 func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OwnerID),
+		m.ID,
+		m.OwnerID,
 		core.String(m.Name),
 		core.String(m.Type),
 		core.String(m.ImageURL),
@@ -837,8 +837,8 @@ func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OwnerID),
+		&m.ID,
+		&m.OwnerID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Type),
 		(*core.String)(&m.ImageURL),
@@ -911,7 +911,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.OwnerID != 0 {
 		flag = true
@@ -919,7 +919,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OwnerID))
+		w.WriteArg(m.OwnerID)
 	}
 	if m.Name != "" {
 		flag = true
@@ -1069,13 +1069,13 @@ func init() {
 func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Name),
-		core.Int64(m.OwnerID),
+		m.OwnerID,
 		core.Int(m.IsTest),
-		core.Int64(m.AddressID),
-		core.Int64(m.ShipToAddressID),
-		core.Int64(m.ShipFromAddressID),
+		m.AddressID,
+		m.ShipToAddressID,
+		m.ShipFromAddressID,
 		core.String(m.Phone),
 		core.JSON{m.BankAccount},
 		core.String(m.WebsiteURL),
@@ -1083,7 +1083,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Email),
 		core.String(m.Code),
 		core.Bool(m.AutoCreateFFM),
-		core.Int64(m.OrderSourceID),
+		m.OrderSourceID,
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -1101,13 +1101,13 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Name),
-		(*core.Int64)(&m.OwnerID),
+		&m.OwnerID,
 		(*core.Int)(&m.IsTest),
-		(*core.Int64)(&m.AddressID),
-		(*core.Int64)(&m.ShipToAddressID),
-		(*core.Int64)(&m.ShipFromAddressID),
+		&m.AddressID,
+		&m.ShipToAddressID,
+		&m.ShipFromAddressID,
 		(*core.String)(&m.Phone),
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.WebsiteURL),
@@ -1115,7 +1115,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Email),
 		(*core.String)(&m.Code),
 		(*core.Bool)(&m.AutoCreateFFM),
-		(*core.Int64)(&m.OrderSourceID),
+		&m.OrderSourceID,
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -1196,7 +1196,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.Name != "" {
 		flag = true
@@ -1212,7 +1212,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OwnerID))
+		w.WriteArg(m.OwnerID)
 	}
 	if m.IsTest != 0 {
 		flag = true
@@ -1228,7 +1228,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AddressID))
+		w.WriteArg(m.AddressID)
 	}
 	if m.ShipToAddressID != 0 {
 		flag = true
@@ -1236,7 +1236,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShipToAddressID))
+		w.WriteArg(m.ShipToAddressID)
 	}
 	if m.ShipFromAddressID != 0 {
 		flag = true
@@ -1244,7 +1244,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShipFromAddressID))
+		w.WriteArg(m.ShipFromAddressID)
 	}
 	if m.Phone != "" {
 		flag = true
@@ -1308,7 +1308,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderSourceID))
+		w.WriteArg(m.OrderSourceID)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -1925,8 +1925,8 @@ func init() {
 func (m *Partner) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OwnerID),
+		m.ID,
+		m.OwnerID,
 		core.Int(m.Status),
 		core.Int(m.IsTest),
 		core.String(m.Name),
@@ -1948,8 +1948,8 @@ func (m *Partner) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Partner) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OwnerID),
+		&m.ID,
+		&m.OwnerID,
 		(*core.Int)(&m.Status),
 		(*core.Int)(&m.IsTest),
 		(*core.String)(&m.Name),
@@ -2034,7 +2034,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.OwnerID != 0 {
 		flag = true
@@ -2042,7 +2042,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OwnerID))
+		w.WriteArg(m.OwnerID)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -2329,7 +2329,7 @@ func (m *AccountAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		core.String(m.AuthKey),
-		core.Int64(m.AccountID),
+		m.AccountID,
 		core.Int(m.Status),
 		core.Array{m.Roles, opts},
 		core.Array{m.Permissions, opts},
@@ -2342,7 +2342,7 @@ func (m *AccountAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *AccountAuth) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.String)(&m.AuthKey),
-		(*core.Int64)(&m.AccountID),
+		&m.AccountID,
 		(*core.Int)(&m.Status),
 		core.Array{&m.Roles, opts},
 		core.Array{&m.Permissions, opts},
@@ -2425,7 +2425,7 @@ func (m *AccountAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -2794,11 +2794,11 @@ func (m *PartnerRelation) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		core.String(m.AuthKey),
-		core.Int64(m.PartnerID),
-		core.Int64(m.SubjectID),
+		m.PartnerID,
+		m.SubjectID,
 		core.String(m.SubjectType),
 		core.String(m.ExternalSubjectID),
-		core.Int64(m.Nonce),
+		m.Nonce,
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -2811,11 +2811,11 @@ func (m *PartnerRelation) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *PartnerRelation) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.String)(&m.AuthKey),
-		(*core.Int64)(&m.PartnerID),
-		(*core.Int64)(&m.SubjectID),
+		&m.PartnerID,
+		&m.SubjectID,
 		(*core.String)(&m.SubjectType),
 		(*core.String)(&m.ExternalSubjectID),
-		(*core.Int64)(&m.Nonce),
+		&m.Nonce,
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -2898,7 +2898,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.PartnerID))
+		w.WriteArg(m.PartnerID)
 	}
 	if m.SubjectID != 0 {
 		flag = true
@@ -2906,7 +2906,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SubjectID))
+		w.WriteArg(m.SubjectID)
 	}
 	if m.SubjectType != "" {
 		flag = true
@@ -2930,7 +2930,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.Nonce))
+		w.WriteArg(m.Nonce)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -3226,7 +3226,7 @@ func init() {
 func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.UserInner.FullName),
 		core.String(m.UserInner.ShortName),
 		core.String(m.UserInner.Email),
@@ -3242,15 +3242,15 @@ func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.EmailVerificationSentAt),
 		core.Time(m.PhoneVerificationSentAt),
 		core.Int(m.IsTest),
-		core.String(m.Source),
-		core.Int64(m.RefUserID),
-		core.Int64(m.RefSaleID),
+		m.Source,
+		m.RefUserID,
+		m.RefSaleID,
 	}
 }
 
 func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.UserInner.FullName),
 		(*core.String)(&m.UserInner.ShortName),
 		(*core.String)(&m.UserInner.Email),
@@ -3266,9 +3266,9 @@ func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.EmailVerificationSentAt),
 		(*core.Time)(&m.PhoneVerificationSentAt),
 		(*core.Int)(&m.IsTest),
-		(*core.String)(&m.Source),
-		(*core.Int64)(&m.RefUserID),
-		(*core.Int64)(&m.RefSaleID),
+		&m.Source,
+		&m.RefUserID,
+		&m.RefSaleID,
 	}
 }
 
@@ -3337,7 +3337,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.UserInner.FullName != "" {
 		flag = true
@@ -3459,13 +3459,13 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IsTest)
 	}
-	if m.Source != "" {
+	if m.Source != 0 {
 		flag = true
 		w.WriteName("source")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Source))
+		w.WriteArg(m.Source)
 	}
 	if m.RefUserID != 0 {
 		flag = true
@@ -3473,7 +3473,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.RefUserID))
+		w.WriteArg(m.RefUserID)
 	}
 	if m.RefSaleID != 0 {
 		flag = true
@@ -3481,7 +3481,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.RefSaleID))
+		w.WriteArg(m.RefSaleID)
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -3644,8 +3644,8 @@ func init() {
 func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.AccountID),
-		core.Int64(m.UserID),
+		m.AccountID,
+		m.UserID,
 		core.Int(m.Status),
 		core.Int(m.ResponseStatus),
 		core.Now(m.CreatedAt, now, create),
@@ -3657,7 +3657,7 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ShortName),
 		core.String(m.Position),
 		core.Time(m.InvitationSentAt),
-		core.Int64(m.InvitationSentBy),
+		m.InvitationSentBy,
 		core.Time(m.InvitationAcceptedAt),
 		core.Time(m.InvitationRejectedAt),
 		core.Time(m.DisabledAt),
@@ -3668,8 +3668,8 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.AccountID),
-		(*core.Int64)(&m.UserID),
+		&m.AccountID,
+		&m.UserID,
 		(*core.Int)(&m.Status),
 		(*core.Int)(&m.ResponseStatus),
 		(*core.Time)(&m.CreatedAt),
@@ -3681,7 +3681,7 @@ func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShortName),
 		(*core.String)(&m.Position),
 		(*core.Time)(&m.InvitationSentAt),
-		(*core.Int64)(&m.InvitationSentBy),
+		&m.InvitationSentBy,
 		(*core.Time)(&m.InvitationAcceptedAt),
 		(*core.Time)(&m.InvitationRejectedAt),
 		(*core.Time)(&m.DisabledAt),
@@ -3755,7 +3755,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -3763,7 +3763,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -3859,7 +3859,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.InvitationSentBy))
+		w.WriteArg(m.InvitationSentBy)
 	}
 	if !m.InvitationAcceptedAt.IsZero() {
 		flag = true
@@ -4398,7 +4398,7 @@ func init() {
 func (m *UserAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.UserID),
+		m.UserID,
 		core.String(m.AuthType),
 		core.String(m.AuthKey),
 		core.Now(m.CreatedAt, now, create),
@@ -4408,7 +4408,7 @@ func (m *UserAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *UserAuth) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.UserID),
+		&m.UserID,
 		(*core.String)(&m.AuthType),
 		(*core.String)(&m.AuthKey),
 		(*core.Time)(&m.CreatedAt),
@@ -4481,7 +4481,7 @@ func (m *UserAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.AuthType != "" {
 		flag = true
@@ -4628,7 +4628,7 @@ func init() {
 func (m *UserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Hashpwd),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -4636,7 +4636,7 @@ func (m *UserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *UserInternal) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Hashpwd),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -4707,7 +4707,7 @@ func (m *UserInternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.Hashpwd != "" {
 		flag = true
@@ -4832,7 +4832,7 @@ func init() {
 func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.FullName),
 		core.String(m.FirstName),
 		core.String(m.LastName),
@@ -4852,7 +4852,7 @@ func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Address1),
 		core.String(m.Address2),
 		core.String(m.Type),
-		core.Int64(m.AccountID),
+		m.AccountID,
 		core.JSON{m.Notes},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -4862,7 +4862,7 @@ func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Address) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.FirstName),
 		(*core.String)(&m.LastName),
@@ -4882,7 +4882,7 @@ func (m *Address) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Address1),
 		(*core.String)(&m.Address2),
 		(*core.String)(&m.Type),
-		(*core.Int64)(&m.AccountID),
+		&m.AccountID,
 		core.JSON{&m.Notes},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -4955,7 +4955,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.FullName != "" {
 		flag = true
@@ -5115,7 +5115,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.Notes != nil {
 		flag = true
@@ -5526,9 +5526,9 @@ func init() {
 func (m *Credit) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.Int(m.Amount),
-		core.Int64(m.ShopID),
+		m.ShopID,
 		core.String(m.Type),
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
@@ -5539,9 +5539,9 @@ func (m *Credit) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Credit) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.Int)(&m.Amount),
-		(*core.Int64)(&m.ShopID),
+		&m.ShopID,
 		(*core.String)(&m.Type),
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
@@ -5615,7 +5615,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -5631,7 +5631,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.Type != "" {
 		flag = true
@@ -5893,7 +5893,7 @@ func init() {
 func (m *ShippingSource) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Name),
 		core.String(m.Username),
 		core.String(m.Type),
@@ -5904,7 +5904,7 @@ func (m *ShippingSource) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShippingSource) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Username),
 		(*core.String)(&m.Type),
@@ -5978,7 +5978,7 @@ func (m *ShippingSource) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.Name != "" {
 		flag = true
@@ -6136,7 +6136,7 @@ func init() {
 func (m *ShippingSourceInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.LastSyncAt),
@@ -6148,7 +6148,7 @@ func (m *ShippingSourceInternal) SQLArgs(opts core.Opts, create bool) []interfac
 
 func (m *ShippingSourceInternal) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.LastSyncAt),
@@ -6223,7 +6223,7 @@ func (m *ShippingSourceInternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -6406,8 +6406,8 @@ func init() {
 func (m *Webhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.AccountID),
+		m.ID,
+		m.AccountID,
 		core.Array{m.Entities, opts},
 		core.Array{m.Fields, opts},
 		core.String(m.URL),
@@ -6420,8 +6420,8 @@ func (m *Webhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Webhook) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.AccountID),
+		&m.ID,
+		&m.AccountID,
 		core.Array{&m.Entities, opts},
 		core.Array{&m.Fields, opts},
 		(*core.String)(&m.URL),
@@ -6497,7 +6497,7 @@ func (m *Webhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -6505,7 +6505,7 @@ func (m *Webhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.Entities != nil {
 		flag = true
@@ -6688,9 +6688,9 @@ func init() {
 func (m *Callback) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.WebhookID),
-		core.Int64(m.AccountID),
+		m.ID,
+		m.WebhookID,
+		m.AccountID,
 		core.Now(m.CreatedAt, now, create),
 		core.JSON{m.Changes},
 		core.JSON{m.Result},
@@ -6699,9 +6699,9 @@ func (m *Callback) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Callback) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.WebhookID),
-		(*core.Int64)(&m.AccountID),
+		&m.ID,
+		&m.WebhookID,
+		&m.AccountID,
 		(*core.Time)(&m.CreatedAt),
 		core.JSON{&m.Changes},
 		core.JSON{&m.Result},
@@ -6773,7 +6773,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.WebhookID != 0 {
 		flag = true
@@ -6781,7 +6781,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.WebhookID))
+		w.WriteArg(m.WebhookID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -6789,7 +6789,7 @@ func (m *Callback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true

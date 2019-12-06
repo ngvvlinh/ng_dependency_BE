@@ -10,6 +10,7 @@ import (
 	catalogtypes "etop.vn/api/main/catalog/types"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	product_type "etop.vn/api/top/types/etc/product_type"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -93,7 +94,7 @@ type CreateShopProductCommand struct {
 	Note            string
 	DescriptionInfo DescriptionInfo
 	PriceInfo       PriceInfo
-	ProductType     string
+	ProductType     product_type.ProductType
 	MetaFields      []*MetaField
 	BrandID         dot.ID
 
@@ -320,7 +321,7 @@ type UpdateShopProductInfoCommand struct {
 	ListPrice   dot.NullInt
 	RetailPrice dot.NullInt
 	BrandID     dot.NullID
-	ProductType string
+	ProductType product_type.ProductType
 	CategoryID  dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
@@ -687,6 +688,7 @@ func (h QueryServiceHandler) HandleValidateVariantIDs(ctx context.Context, msg *
 }
 
 // implement interfaces
+
 func (q *AddShopProductCollectionCommand) command()    {}
 func (q *CreateBrandCommand) command()                 {}
 func (q *CreateShopCategoryCommand) command()          {}

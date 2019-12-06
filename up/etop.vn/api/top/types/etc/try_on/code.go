@@ -1,5 +1,18 @@
 package try_on
 
-func (x TryOnCode) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+// +enum
+type TryOnCode int
+
+const (
+	// +enum=unknown
+	Unknown TryOnCode = 0
+
+	// +enum=none
+	None TryOnCode = 1
+
+	// +enum=open
+	Open TryOnCode = 2
+
+	// +enum=try
+	Try TryOnCode = 3
+)

@@ -252,7 +252,7 @@ func (i Interface) ID() dot.NullID {
 		return dot.NullID{}
 	}
 	v := i.V.(int64)
-	return dot.NID(dot.ID(v))
+	return dot.WrapID(dot.ID(v))
 }
 
 func (i Interface) String() dot.NullString {

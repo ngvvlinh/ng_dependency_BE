@@ -7,11 +7,11 @@ import (
 )
 
 func PbShippingState(s model.ShippingState) shipping.State {
-	st, ok := shipping.State_value[string(s)]
+	st, ok := shipping.ParseState(string(s))
 	if !ok {
-		return shipping.State_unknown
+		return shipping.Unknown
 	}
-	return shipping.State(st)
+	return st
 }
 
 func PbPtrShippingState(s model.ShippingState) *shipping.State {
@@ -31,5 +31,5 @@ func ShippingStateToModel(s *shipping.State) model.ShippingState {
 	if s == nil {
 		return ""
 	}
-	return model.ShippingState(shipping.State_name[int(*s)])
+	return model.ShippingState(s.String())
 }

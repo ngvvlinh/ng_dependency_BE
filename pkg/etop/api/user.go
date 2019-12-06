@@ -188,7 +188,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			Status:         model.StatusActive,
 			AgreeTOS:       r.AgreeTos,
 			AgreeEmailInfo: r.AgreeEmailInfo.Bool,
-			Source:         convertpb.UserSourceToModel(&r.Source),
+			Source:         r.Source,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err

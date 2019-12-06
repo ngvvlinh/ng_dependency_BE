@@ -67,30 +67,12 @@ const (
 	FulfillShipnow Fulfill = 11
 )
 
-var Fulfill_name = map[int]string{
-	0:  "none",
-	1:  "manual",
-	10: "shipment",
-	11: "shipnow",
-}
-
-var Fulfill_value = map[string]int{
-	"none":     0,
-	"manual":   1,
-	"shipment": 10,
-	"shipnow":  11,
-}
-
 func FulfillFromInt(s int) (Fulfill, error) {
-	_, ok := Fulfill_name[s]
+	_, ok := enumFulfillName[s]
 	if !ok {
 		return 0, errors.New("invalid fulfill code")
 	}
 	return Fulfill(s), nil
-}
-
-func (f Fulfill) String() string {
-	return Fulfill_name[int(f)]
 }
 
 func GetFullAddress(a *Address, location *location.LocationQueryResult) string {

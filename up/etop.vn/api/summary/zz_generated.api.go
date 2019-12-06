@@ -34,6 +34,7 @@ func (h QueryServiceHandler) HandleSummaryPOS(ctx context.Context, msg *SummaryP
 }
 
 // implement interfaces
+
 func (q *SummaryPOSQuery) query() {}
 
 // implement conversion

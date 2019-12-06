@@ -5,6 +5,8 @@ import (
 	"go/types"
 	"reflect"
 	"strings"
+
+	"etop.vn/backend/tools/pkg/generators/api/parse"
 )
 
 const dotPkgPath = "etop.vn/capi/dot"
@@ -101,6 +103,33 @@ func (k KindTuple) IsNullBasic(typ types.Type) bool {
 		return false
 	}
 	return pkg.Path() == dotPkgPath && strings.HasPrefix(named.Obj().Name(), "Null")
+}
+
+var cacheScanable = map[*types.Named]bool{}
+
+func (k KindTuple) IsScanable(typ types.Type) bool {
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return false
+	}
+	if scanable, ok := cacheScanable[named]; ok {
+		return scanable
+	}
+	flagValue, flagScan := false, false
+	for i, n := 0, named.NumMethods(); i < n; i++ {
+		switch named.Method(i).Name() {
+		case "Value":
+			flagValue = true
+		case "Scan":
+			flagScan = true
+		}
+	}
+	cacheScanable[named] = flagValue && flagScan
+	return cacheScanable[named]
+}
+
+func (k KindTuple) IsNullType(typ types.Type) bool {
+	return parse.UnwrapNull(typ) != typ
 }
 
 func (k KindTuple) IsBasic() bool {

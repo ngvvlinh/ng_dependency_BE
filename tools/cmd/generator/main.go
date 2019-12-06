@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"etop.vn/backend/tools/pkg/generators/enum"
+
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api"
 	"etop.vn/backend/tools/pkg/generators/apix"
@@ -32,9 +34,10 @@ Options:
 
 func main() {
 	plugins := []generator.Plugin{
+		api.New(),
 		apix.New(),
 		convert.New(),
-		api.New(),
+		enum.New(),
 		event.New(),
 		sample.New(),
 		swagger.New(),

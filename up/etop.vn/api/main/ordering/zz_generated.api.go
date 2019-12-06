@@ -176,6 +176,7 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, 
 }
 
 // implement interfaces
+
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
 func (q *UpdateOrderPaymentInfoCommand) command()    {}

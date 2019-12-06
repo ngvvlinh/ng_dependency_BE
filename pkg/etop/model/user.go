@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/capi/dot"
 )
 
@@ -51,7 +52,7 @@ type CreateUserCommand struct {
 	AgreeEmailInfo bool
 	IsTest         bool
 	IsStub         bool
-	Source         UserSource
+	Source         user_source.UserSource
 	Result         struct {
 		User         *User
 		UserInternal *UserInternal

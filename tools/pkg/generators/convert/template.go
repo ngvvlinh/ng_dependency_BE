@@ -85,9 +85,7 @@ func renderFieldApply(prefix string, field fieldConvert) string {
 	}
 	// render NullString, NullInt, ...Apply()
 	if argType, ok := arg.Type().(*types.Named); ok {
-		typObj := argType.Obj()
-		if typObj.Pkg().Path() == capiPkgPath &&
-			strings.HasPrefix(typObj.Name(), "Null") {
+		if checkApplicable(argType) {
 			lastComment = "// apply change"
 			return prefix + "." + arg.Name() + ".Apply(out." + out.Name() + ")"
 		}
@@ -208,4 +206,24 @@ func checkBasicType(typ types.Type) *types.Basic {
 	}
 	basic, _ := typ.(*types.Basic)
 	return basic
+}
+
+var cacheApplicable = map[*types.Named]bool{}
+
+func checkApplicable(named *types.Named) bool {
+	if applicable, ok := cacheApplicable[named]; ok {
+		return applicable
+	}
+	if !genutil.HasPrefixCamel(named.Obj().Name(), "Null") {
+		cacheApplicable[named] = false
+		return false
+	}
+	for i, n := 0, named.NumMethods(); i < n; i++ {
+		if named.Method(i).Name() == "Apply" {
+			cacheApplicable[named] = true
+			return true
+		}
+	}
+	cacheApplicable[named] = false
+	return false
 }

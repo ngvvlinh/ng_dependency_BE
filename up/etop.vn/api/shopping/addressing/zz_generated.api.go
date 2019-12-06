@@ -144,6 +144,7 @@ func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, 
 }
 
 // implement interfaces
+
 func (q *CreateAddressCommand) command()     {}
 func (q *DeleteAddressCommand) command()     {}
 func (q *SetDefaultAddressCommand) command() {}

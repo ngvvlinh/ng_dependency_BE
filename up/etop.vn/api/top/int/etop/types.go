@@ -16,55 +16,20 @@ type AccountType int
 
 const (
 	// +enum=unknown
-	AccountType_unknown AccountType = 0
+	AccountTypeUnknown AccountType = 0
 
 	// +enum=partner
-	AccountType_partner AccountType = 21
+	AccountTypePartner AccountType = 21
 
 	// +enum=shop
-	AccountType_shop AccountType = 33
+	AccountTypeShop AccountType = 33
 
 	// +enum=affiliate
-	AccountType_affiliate AccountType = 35
+	AccountTypeAffiliate AccountType = 35
 
 	// +enum=etop
-	AccountType_etop AccountType = 101
+	AccountTypeEtop AccountType = 101
 )
-
-var AccountType_name = map[int]string{
-	0:   "unknown",
-	21:  "partner",
-	33:  "shop",
-	35:  "affiliate",
-	101: "etop",
-}
-
-var AccountType_value = map[string]int{
-	"unknown":   0,
-	"partner":   21,
-	"shop":      33,
-	"affiliate": 35,
-	"etop":      101,
-}
-
-func (x AccountType) Enum() *AccountType {
-	p := new(AccountType)
-	*p = x
-	return p
-}
-
-func (x AccountType) String() string {
-	return jsonx.EnumName(AccountType_name, int(x))
-}
-
-func (x *AccountType) UnmarshalJSON(data []byte) error {
-	value, err := jsonx.UnmarshalJSONEnum(AccountType_value, data, "AccountType")
-	if err != nil {
-		return err
-	}
-	*x = AccountType(value)
-	return nil
-}
 
 type Authorization struct {
 	UserId  dot.ID   `json:"user_id"`
@@ -1209,10 +1174,6 @@ type SendPhoneVerifyRequest struct {
 
 func (m *SendPhoneVerifyRequest) Reset()         { *m = SendPhoneVerifyRequest{} }
 func (m *SendPhoneVerifyRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-func (x AccountType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
 
 func (m *CreateUserRequest) Censor() {
 	if m.Password != "" {

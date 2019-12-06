@@ -282,6 +282,7 @@ func (h QueryServiceHandler) HandleListShopProductPromotions(ctx context.Context
 }
 
 // implement interfaces
+
 func (q *CreateAffiliateReferralCodeCommand) command()           {}
 func (q *CreateOrUpdateCommissionSettingCommand) command()       {}
 func (q *CreateOrUpdateSupplyCommissionSettingCommand) command() {}

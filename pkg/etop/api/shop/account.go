@@ -107,7 +107,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 			Email:                         q.Email,
 			Address:                       address,
 			TryOn:                         convertpb.TryOnCodeToModel(q.TryOn),
-			GhnNoteCode:                   q.GhnNoteCode.ToModel(),
+			GhnNoteCode:                   q.GhnNoteCode.String(),
 			CompanyInfo:                   convertpb.CompanyInfoToModel(q.CompanyInfo),
 			MoneyTransactionRRule:         q.MoneyTransactionRrule,
 			SurveyInfo:                    convertpb.SurveyInfosToModel(q.SurveyInfo),
@@ -140,7 +140,7 @@ func (s *AccountService) DeleteShop(ctx context.Context, q *DeleteShopEndpoint) 
 func (s *AccountService) SetDefaultAddress(ctx context.Context, q *SetDefaultAddressEndpoint) error {
 	cmd := &model.SetDefaultAddressShopCommand{
 		ShopID:    q.Context.Shop.ID,
-		Type:      q.Type.ToModel(),
+		Type:      q.Type.String(),
 		AddressID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {

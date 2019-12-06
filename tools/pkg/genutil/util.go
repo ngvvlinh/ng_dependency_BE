@@ -26,3 +26,10 @@ func (q Qualifier) Qualify(pkg *types.Package) string {
 func Plural(s string) string {
 	return english.PluralWord(2, s, "")
 }
+
+func HasPrefixCamel(s string, prefix string) bool {
+	ln := len(prefix)
+	return len(s) > ln &&
+		s[:ln] == prefix &&
+		!(s[ln] >= 'a' && s[ln] <= 'z')
+}

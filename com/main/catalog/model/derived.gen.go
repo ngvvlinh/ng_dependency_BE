@@ -153,9 +153,9 @@ func init() {
 func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.VariantID),
-		core.Int64(m.ProductID),
+		m.ShopID,
+		m.VariantID,
+		m.ProductID,
 		core.String(m.Code),
 		core.String(m.Name),
 		core.String(m.Description),
@@ -179,9 +179,9 @@ func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.VariantID),
-		(*core.Int64)(&m.ProductID),
+		&m.ShopID,
+		&m.VariantID,
+		&m.ProductID,
 		(*core.String)(&m.Code),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
@@ -591,8 +591,8 @@ func init() {
 func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.ProductID),
+		m.ShopID,
+		m.ProductID,
 		core.String(m.Code),
 		core.String(m.Name),
 		core.String(m.Description),
@@ -602,26 +602,26 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Note),
 		core.Array{m.Tags, opts},
 		core.String(m.Unit),
-		core.Int64(m.CategoryID),
+		m.CategoryID,
 		core.Int(m.CostPrice),
 		core.Int(m.ListPrice),
 		core.Int(m.RetailPrice),
-		core.Int64(m.BrandID),
+		m.BrandID,
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
 		core.String(m.NameNorm),
 		core.String(m.NameNormUa),
-		core.String(m.ProductType),
+		m.ProductType,
 		core.JSON{m.MetaFields},
 	}
 }
 
 func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.ProductID),
+		&m.ShopID,
+		&m.ProductID,
 		(*core.String)(&m.Code),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
@@ -631,18 +631,18 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Note),
 		core.Array{&m.Tags, opts},
 		(*core.String)(&m.Unit),
-		(*core.Int64)(&m.CategoryID),
+		&m.CategoryID,
 		(*core.Int)(&m.CostPrice),
 		(*core.Int)(&m.ListPrice),
 		(*core.Int)(&m.RetailPrice),
-		(*core.Int64)(&m.BrandID),
+		&m.BrandID,
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
 		(*core.String)(&m.NameNorm),
 		(*core.String)(&m.NameNormUa),
-		(*core.String)(&m.ProductType),
+		&m.ProductType,
 		core.JSON{&m.MetaFields},
 	}
 }
@@ -882,7 +882,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.NameNormUa)
 	}
-	if m.ProductType != "" {
+	if m.ProductType != 0 {
 		flag = true
 		w.WriteName("product_type")
 		w.WriteByte('=')
@@ -1068,9 +1068,9 @@ func init() {
 func (m *ProductShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.CollectionID),
-		core.Int64(m.ProductID),
-		core.Int64(m.ShopID),
+		m.CollectionID,
+		m.ProductID,
+		m.ShopID,
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -1079,9 +1079,9 @@ func (m *ProductShopCollection) SQLArgs(opts core.Opts, create bool) []interface
 
 func (m *ProductShopCollection) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.CollectionID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.ShopID),
+		&m.CollectionID,
+		&m.ProductID,
+		&m.ShopID,
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -1323,9 +1323,9 @@ func init() {
 func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ParentID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ParentID,
+		m.ShopID,
 		core.String(m.Name),
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
@@ -1336,9 +1336,9 @@ func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCategory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ParentID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ParentID,
+		&m.ShopID,
 		(*core.String)(&m.Name),
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
@@ -1592,8 +1592,8 @@ func init() {
 func (m *ShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Name),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -1605,8 +1605,8 @@ func (m *ShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCollection) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -1861,9 +1861,9 @@ func init() {
 func (m *ShopProductCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ProductID),
-		core.Int64(m.CollectionID),
-		core.Int64(m.ShopID),
+		m.ProductID,
+		m.CollectionID,
+		m.ShopID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -1871,9 +1871,9 @@ func (m *ShopProductCollection) SQLArgs(opts core.Opts, create bool) []interface
 
 func (m *ShopProductCollection) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.CollectionID),
-		(*core.Int64)(&m.ShopID),
+		&m.ProductID,
+		&m.CollectionID,
+		&m.ShopID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -2103,8 +2103,8 @@ func init() {
 func (m *ShopBrand) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.BrandName),
 		core.String(m.Description),
 		core.Now(m.CreatedAt, now, create),
@@ -2115,8 +2115,8 @@ func (m *ShopBrand) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopBrand) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.BrandName),
 		(*core.String)(&m.Description),
 		(*core.Time)(&m.CreatedAt),
@@ -2359,9 +2359,9 @@ func init() {
 func (m *ShopVariantSupplier) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.SupplierID),
-		core.Int64(m.VariantID),
+		m.ShopID,
+		m.SupplierID,
+		m.VariantID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -2369,9 +2369,9 @@ func (m *ShopVariantSupplier) SQLArgs(opts core.Opts, create bool) []interface{}
 
 func (m *ShopVariantSupplier) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplierID),
-		(*core.Int64)(&m.VariantID),
+		&m.ShopID,
+		&m.SupplierID,
+		&m.VariantID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}

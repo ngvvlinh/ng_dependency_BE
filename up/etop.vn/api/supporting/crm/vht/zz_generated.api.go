@@ -132,6 +132,7 @@ func (h QueryServiceHandler) HandleGetLastCallHistory(ctx context.Context, msg *
 }
 
 // implement interfaces
+
 func (q *CreateOrUpdateCallHistoryByCallIDCommand) command()    {}
 func (q *CreateOrUpdateCallHistoryBySDKCallIDCommand) command() {}
 func (q *PingServerVhtCommand) command()                        {}

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
@@ -131,7 +132,7 @@ type ShopProduct struct {
 
 	NameNorm    string
 	NameNormUa  string // unaccent normalization
-	ProductType string
+	ProductType product_type.ProductType
 
 	MetaFields []*MetaField
 }

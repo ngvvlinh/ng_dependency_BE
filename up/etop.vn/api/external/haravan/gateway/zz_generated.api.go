@@ -82,6 +82,7 @@ func (h AggregateHandler) HandleGetShippingRate(ctx context.Context, msg *GetShi
 }
 
 // implement interfaces
+
 func (q *CancelOrderCommand) command()     {}
 func (q *CreateOrderCommand) command()     {}
 func (q *GetOrderCommand) command()        {}

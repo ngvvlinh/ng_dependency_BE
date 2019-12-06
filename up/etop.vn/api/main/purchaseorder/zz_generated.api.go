@@ -165,6 +165,7 @@ func (h QueryServiceHandler) HandleListPurchaseOrdersBySupplierIDsAndStatuses(ct
 }
 
 // implement interfaces
+
 func (q *CancelPurchaseOrderCommand) command()  {}
 func (q *ConfirmPurchaseOrderCommand) command() {}
 func (q *CreatePurchaseOrderCommand) command()  {}

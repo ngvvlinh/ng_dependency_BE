@@ -1,5 +1,15 @@
 package fee
 
-func (x FeeType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+// +enum
+type FeeType int
+
+const (
+	// +enum=other
+	Other FeeType = 0
+
+	// +enum=shipping
+	Shipping FeeType = 1
+
+	// +enum=tax
+	Tax FeeType = 2
+)

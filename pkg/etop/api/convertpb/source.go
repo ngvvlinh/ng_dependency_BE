@@ -6,9 +6,10 @@ import (
 )
 
 func PbSource(s model.OrderSourceType) source.Source {
-	return source.Source(source.Source_value[string(s)])
+	value, _ := source.ParseSource(string(s))
+	return value
 }
 
 func SourceToModel(s source.Source) model.OrderSourceType {
-	return model.OrderSourceType(source.Source_name[int(s)])
+	return model.OrderSourceType(s.Name())
 }

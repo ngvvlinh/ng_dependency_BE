@@ -244,6 +244,7 @@ func PbOrderCustomer(m *ordermodel.OrderCustomer) *types.OrderCustomer {
 	if m == nil {
 		return nil
 	}
+	_gender, _ := gender.ParseGender(m.Gender)
 	return &types.OrderCustomer{
 		ExportedFields: exportedOrderCustomer,
 
@@ -252,7 +253,7 @@ func PbOrderCustomer(m *ordermodel.OrderCustomer) *types.OrderCustomer {
 		FullName:  m.GetFullName(),
 		Email:     m.Email,
 		Phone:     m.Phone,
-		Gender:    gender.PbGender(m.Gender),
+		Gender:    _gender,
 	}
 }
 
@@ -266,7 +267,7 @@ func OrderCustomerToModel(m *types.OrderCustomer) *ordermodel.OrderCustomer {
 		FullName:  m.FullName,
 		Email:     m.Email,
 		Phone:     m.Phone,
-		Gender:    m.Gender.ToModel(),
+		Gender:    m.Gender.String(),
 	}
 }
 
@@ -550,7 +551,7 @@ func PbOrderFeeLinesToModel(items []*types.OrderFeeLine) []ordermodel.OrderFeeLi
 			Desc:   item.Desc,
 			Code:   item.Code,
 			Name:   item.Name,
-			Type:   FeeTypeToModel(&item.Type),
+			Type:   item.Type,
 		})
 	}
 	return res
@@ -560,7 +561,7 @@ func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*types.OrderFeeLine {
 	res := make([]*types.OrderFeeLine, len(items))
 	for i, item := range items {
 		res[i] = &types.OrderFeeLine{
-			Type:   Pb(item.Type),
+			Type:   item.Type,
 			Name:   item.Name,
 			Code:   item.Code,
 			Desc:   item.Desc,

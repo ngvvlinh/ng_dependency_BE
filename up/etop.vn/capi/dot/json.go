@@ -54,7 +54,7 @@ func (id *NullID) UnmarshalJSON(data []byte) error {
 		*id = NullID{}
 		return err
 	}
-	*id = NID(_id)
+	*id = WrapID(_id)
 	return nil
 }
 

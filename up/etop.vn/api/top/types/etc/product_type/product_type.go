@@ -1,19 +1,15 @@
 package product_type
 
-import "etop.vn/api/main/catalog"
+// +enum
+type ProductType int
 
-func (s *ProductType) ToProductType() catalog.ProductType {
-	if s == nil || *s == 0 {
-		return ""
-	}
-	return ProductType_name[int(*s)]
-}
+const (
+	// +enum=unknown
+	Unknown ProductType = 0
 
-func PbProductType(s string) *ProductType {
-	res := ProductType(ProductType_value[s])
-	return &res
-}
+	// +enum=services
+	Services ProductType = 1
 
-func (s ProductType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + s.String() + `"`), nil
-}
+	// +enum=goods
+	Goods ProductType = 2
+)

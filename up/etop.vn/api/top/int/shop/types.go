@@ -5,6 +5,7 @@ import (
 	"etop.vn/api/top/int/types"
 	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
 	common "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/gender"
 	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
 	payment_provider "etop.vn/api/top/types/etc/payment_provider"
 	product_type "etop.vn/api/top/types/etc/product_type"
@@ -410,21 +411,21 @@ type ShopProduct struct {
 	ImageUrls   []string `json:"image_urls"`
 	CategoryId  dot.ID   `json:"category_id"`
 	// @deprecated use stags instead
-	Tags            []string                  `json:"tags"`
-	Stags           []*Tag                    `json:"stags"`
-	Note            string                    `json:"note"`
-	Status          status3.Status            `json:"status"`
-	IsAvailable     bool                      `json:"is_available"`
-	ListPrice       int                       `json:"list_price"`
-	RetailPrice     int                       `json:"retail_price"`
-	CollectionIds   []dot.ID                  `json:"collection_ids"`
-	Variants        []*ShopVariant            `json:"variants"`
-	ProductSourceId dot.ID                    `json:"product_source_id"`
-	CreatedAt       dot.Time                  `json:"created_at"`
-	UpdatedAt       dot.Time                  `json:"updated_at"`
-	ProductType     *product_type.ProductType `json:"product_type"`
-	MetaFields      []*common.MetaField       `json:"meta_fields"`
-	BrandId         dot.ID                    `json:"brand_id"`
+	Tags            []string                     `json:"tags"`
+	Stags           []*Tag                       `json:"stags"`
+	Note            string                       `json:"note"`
+	Status          status3.Status               `json:"status"`
+	IsAvailable     bool                         `json:"is_available"`
+	ListPrice       int                          `json:"list_price"`
+	RetailPrice     int                          `json:"retail_price"`
+	CollectionIds   []dot.ID                     `json:"collection_ids"`
+	Variants        []*ShopVariant               `json:"variants"`
+	ProductSourceId dot.ID                       `json:"product_source_id"`
+	CreatedAt       dot.Time                     `json:"created_at"`
+	UpdatedAt       dot.Time                     `json:"updated_at"`
+	ProductType     product_type.NullProductType `json:"product_type"`
+	MetaFields      []*common.MetaField          `json:"meta_fields"`
+	BrandId         dot.ID                       `json:"brand_id"`
 }
 
 func (m *ShopProduct) Reset()         { *m = ShopProduct{} }
@@ -696,20 +697,20 @@ func (m *CreateCategoryRequest) Reset()         { *m = CreateCategoryRequest{} }
 func (m *CreateCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateProductRequest struct {
-	Code        string                    `json:"code"`
-	Name        string                    `json:"name"`
-	Unit        string                    `json:"unit"`
-	Note        string                    `json:"note"`
-	Description string                    `json:"description"`
-	ShortDesc   string                    `json:"short_desc"`
-	DescHtml    string                    `json:"desc_html"`
-	ImageUrls   []string                  `json:"image_urls"`
-	CostPrice   int                       `json:"cost_price"`
-	ListPrice   int                       `json:"list_price"`
-	RetailPrice int                       `json:"retail_price"`
-	ProductType *product_type.ProductType `json:"product_type"`
-	BrandId     dot.ID                    `json:"brand_id"`
-	MetaFields  []*common.MetaField       `json:"meta_fields"`
+	Code        string                       `json:"code"`
+	Name        string                       `json:"name"`
+	Unit        string                       `json:"unit"`
+	Note        string                       `json:"note"`
+	Description string                       `json:"description"`
+	ShortDesc   string                       `json:"short_desc"`
+	DescHtml    string                       `json:"desc_html"`
+	ImageUrls   []string                     `json:"image_urls"`
+	CostPrice   int                          `json:"cost_price"`
+	ListPrice   int                          `json:"list_price"`
+	RetailPrice int                          `json:"retail_price"`
+	ProductType product_type.NullProductType `json:"product_type"`
+	BrandId     dot.ID                       `json:"brand_id"`
+	MetaFields  []*common.MetaField          `json:"meta_fields"`
 }
 
 func (m *CreateProductRequest) Reset()         { *m = CreateProductRequest{} }
@@ -1201,7 +1202,7 @@ type Customer struct {
 	Note      string             `json:"note"`
 	Phone     string             `json:"phone"`
 	Email     string             `json:"email"`
-	Gender    string             `json:"gender"`
+	Gender    gender.Gender      `json:"gender"`
 	Type      string             `json:"type"`
 	Birthday  string             `json:"birthday"`
 	CreatedAt dot.Time           `json:"created_at"`
@@ -1216,9 +1217,9 @@ func (m *Customer) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCustomerRequest struct {
 	// @required
-	FullName string `json:"full_name"`
-	Gender   string `json:"gender"`
-	Birthday string `json:"birthday"`
+	FullName string        `json:"full_name"`
+	Gender   gender.Gender `json:"gender"`
+	Birthday string        `json:"birthday"`
 	// enum ('individual', 'organization')
 	Type string `json:"type"`
 	Note string `json:"note"`
@@ -1231,10 +1232,10 @@ func (m *CreateCustomerRequest) Reset()         { *m = CreateCustomerRequest{} }
 func (m *CreateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerRequest struct {
-	Id       dot.ID         `json:"id"`
-	FullName dot.NullString `json:"full_name"`
-	Gender   dot.NullString `json:"gender"`
-	Birthday dot.NullString `json:"birthday"`
+	Id       dot.ID            `json:"id"`
+	FullName dot.NullString    `json:"full_name"`
+	Gender   gender.NullGender `json:"gender"`
+	Birthday dot.NullString    `json:"birthday"`
 	// enum ('individual', 'organization','independent')
 	Type  dot.NullString `json:"type"`
 	Note  dot.NullString `json:"note"`

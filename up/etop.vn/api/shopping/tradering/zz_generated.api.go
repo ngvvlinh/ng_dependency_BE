@@ -74,6 +74,7 @@ func (h QueryServiceHandler) HandleListTradersByIDs(ctx context.Context, msg *Li
 }
 
 // implement interfaces
+
 func (q *DeleteTraderCommand) command() {}
 
 func (q *GetTraderByIDQuery) query()     {}

@@ -84,6 +84,7 @@ func (h QueryServiceHandler) HandleGetPaymentByID(ctx context.Context, msg *GetP
 }
 
 // implement interfaces
+
 func (q *CreateOrUpdatePaymentCommand) command()     {}
 func (q *UpdateExternalPaymentInfoCommand) command() {}
 

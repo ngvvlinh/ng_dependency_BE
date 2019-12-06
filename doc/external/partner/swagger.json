@@ -384,11 +384,11 @@
     "baAccountType": {
       "type": "string",
       "enum": [
-        "affiliate",
-        "etop",
+        "unknown",
         "partner",
         "shop",
-        "unknown"
+        "affiliate",
+        "etop"
       ]
     },
     "baPublicAccountInfo": {
@@ -415,48 +415,48 @@
     "blStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
-        "Z"
+        "N"
       ]
     },
     "bmStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
         "S",
-        "Z"
+        "N"
       ]
     },
     "bnStatus": {
       "type": "string",
       "enum": [
-        "N",
-        "NS",
+        "Z",
         "P",
         "S",
-        "Z"
+        "N",
+        "NS"
       ]
     },
     "bwShippingProvider": {
       "type": "string",
       "enum": [
+        "unknown",
         "all",
+        "manual",
         "ghn",
         "ghtk",
-        "manual",
-        "unknown",
         "vtpost"
       ]
     },
     "csTryOnCode": {
       "type": "string",
       "enum": [
+        "unknown",
         "none",
         "open",
-        "try",
-        "unknown"
+        "try"
       ]
     },
     "iqAuthorizeShopRequest": {
@@ -1421,19 +1421,19 @@
     "sfState": {
       "type": "string",
       "enum": [
-        "cancelled",
-        "confirmed",
-        "created",
         "default",
-        "delivered",
-        "delivering",
-        "holding",
-        "picking",
+        "created",
+        "confirmed",
         "processing",
-        "returned",
+        "picking",
+        "holding",
         "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "unknown",
         "undeliverable",
-        "unknown"
+        "cancelled"
       ]
     }
   },

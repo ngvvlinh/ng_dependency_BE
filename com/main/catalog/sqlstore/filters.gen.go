@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -760,22 +761,22 @@ func (ft *ShopProductFilters) ByNameNormUaPtr(NameNormUa *string) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShopProductFilters) ByProductType(ProductType string) *sq.ColumnFilter {
+func (ft *ShopProductFilters) ByProductType(ProductType product_type.ProductType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_type",
 		Value:  ProductType,
-		IsNil:  ProductType == "",
+		IsNil:  ProductType == 0,
 	}
 }
 
-func (ft *ShopProductFilters) ByProductTypePtr(ProductType *string) *sq.ColumnFilterPtr {
+func (ft *ShopProductFilters) ByProductTypePtr(ProductType *product_type.ProductType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_type",
 		Value:  ProductType,
 		IsNil:  ProductType == nil,
-		IsZero: ProductType != nil && (*ProductType) == "",
+		IsZero: ProductType != nil && (*ProductType) == 0,
 	}
 }
 

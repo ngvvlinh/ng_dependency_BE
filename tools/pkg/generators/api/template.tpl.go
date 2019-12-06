@@ -26,6 +26,7 @@ type {{$m|messageName}} struct {
 {{end}}
 
 // implement interfaces
+
 {{range $s := .Services -}}
 {{range $m := .Methods -}}
 func (q *{{$m|messageName}}) {{$s|interfaceMethod}}() {}

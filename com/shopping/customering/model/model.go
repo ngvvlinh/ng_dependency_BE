@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/gender"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/customering"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -29,7 +31,7 @@ type ShopCustomer struct {
 	Code         string
 	CodeNorm     int
 	FullName     string
-	Gender       string
+	Gender       gender.Gender
 	Type         customering.CustomerType
 	Birthday     string
 	Note         string

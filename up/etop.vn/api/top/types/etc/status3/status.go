@@ -1,5 +1,15 @@
 package status3
 
-func (x Status) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+// +enum
+type Status int
+
+const (
+	// +enum=Z
+	Z Status = 0
+
+	// +enum=P
+	P Status = 1
+
+	// +enum=N
+	N Status = 127
+)

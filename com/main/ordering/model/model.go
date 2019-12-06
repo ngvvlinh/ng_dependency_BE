@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/fee"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
@@ -15,13 +16,12 @@ import (
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
-type OrderFeeType string
 type FulfillType int
 
 const (
-	OrderFeeOther    OrderFeeType = "other"
-	OrderFeeShipping OrderFeeType = "shipping"
-	OrderFeeTax      OrderFeeType = "tax"
+	OrderFeeOther    = fee.Other
+	OrderFeeShipping = fee.Shipping
+	OrderFeeTax      = fee.Tax
 
 	// FulfillNone: Tự quản lý trên đơn hàng
 	FulfillNone     FulfillType = 0  // none
@@ -388,11 +388,11 @@ func (l *OrderLine) GetTotalDiscount() int {
 }
 
 type OrderFeeLine struct {
-	Amount int          `json:"amount"`
-	Desc   string       `json:"desc"`
-	Code   string       `json:"code"`
-	Name   string       `json:"name"`
-	Type   OrderFeeType `json:"type"`
+	Amount int         `json:"amount"`
+	Desc   string      `json:"desc"`
+	Code   string      `json:"code"`
+	Name   string      `json:"name"`
+	Type   fee.FeeType `json:"type"`
 }
 
 type OrderFeeLines []OrderFeeLine

@@ -3,6 +3,7 @@ package customering
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/gender"
 	dot "etop.vn/capi/dot"
 )
 
@@ -21,7 +22,7 @@ type ShopCustomer struct {
 	Code      string
 	CodeNorm  int
 	FullName  string
-	Gender    string
+	Gender    gender.Gender
 	Type      CustomerType
 	Birthday  string
 	Note      string

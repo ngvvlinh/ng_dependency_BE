@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modelx"
@@ -155,7 +156,7 @@ func main() {
 					Desc:   "Phí vận chuyển tính với khách",
 					Code:   "",
 					Name:   "Phí vận chuyển tính với khách",
-					Type:   "shipping",
+					Type:   fee.Shipping,
 				},
 			},
 			ShopCOD:          0,

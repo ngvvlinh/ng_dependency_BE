@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/user_source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/sq"
@@ -77,7 +78,6 @@ type (
 	ShippingRouteType    string
 	ShippingDistrictType string
 	DBName               string
-	UserSource           string
 	EtopPaymentStatus    Status4
 )
 
@@ -223,14 +223,6 @@ const (
 	ShippingDistrictTypeUrban     ShippingDistrictType = "noi_thanh"
 	ShippingDistrictTypeSubUrban1 ShippingDistrictType = "ngoai_thanh_1"
 	ShippingDistrictTypeSubUrban2 ShippingDistrictType = "ngoai_thanh_2"
-
-	UserSourcePSX          UserSource = "psx"
-	UserSourceEtop         UserSource = "etop"
-	UserSourceTopship      UserSource = "topship"
-	UserSourceTsAppAndroid UserSource = "ts_app_android"
-	UserSourceTsAppIOS     UserSource = "ts_app_ios"
-	UserSourceTsAppWeb     UserSource = "ts_app_web"
-	UserSourcePartner      UserSource = "partner"
 )
 
 type NormalizedPhone = validate.NormalizedPhone
@@ -244,7 +236,7 @@ var ShippingFeeShopTypes = []ShippingFeeLineType{
 //        SyncAt: updated when sending data to external service successfully
 //     TrySyncAt: updated when sending data to external service (may unsuccessfully)
 //    LastSyncAt: updated when querying external data source successfully
-// LastTrySyncAt: updated when querying external data source (may unsuccessfully)
+// LastTrySypkg/etop/model/model.go:18:ncAt: updated when querying external data source (may unsuccessfully)
 
 var ShippingStateMap = map[ShippingState]string{
 	StateDefault:       "Mặc định",
@@ -732,7 +724,7 @@ type User struct {
 	PhoneVerificationSentAt time.Time
 
 	IsTest    int
-	Source    UserSource
+	Source    user_source.UserSource
 	RefUserID dot.ID
 	RefSaleID dot.ID
 }

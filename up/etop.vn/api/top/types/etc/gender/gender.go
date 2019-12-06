@@ -1,26 +1,18 @@
 package gender
 
-func PbGender(s string) Gender {
-	if s == "" {
-		return 0
-	}
-	return Gender(Gender_value[s])
-}
+// +enum
+type Gender int
 
-func PbGenderPtr(s *string) Gender {
-	if s == nil || *s == "" {
-		return 0
-	}
-	return Gender(Gender_value[*s])
-}
+const (
+	// +enum=unknown
+	Unknown Gender = 0
 
-func (x Gender) ToModel() string {
-	if x == 0 {
-		return ""
-	}
-	return x.String()
-}
+	// +enum=male
+	Male Gender = 1
 
-func (x Gender) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+	// +enum=female
+	Female Gender = 2
+
+	// +enum=other
+	Other Gender = 3
+)

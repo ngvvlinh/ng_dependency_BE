@@ -10,12 +10,12 @@ func ShippingProviderToModel(s *shipping_provider.ShippingProvider) model.Shippi
 	if s == nil || *s == 0 {
 		return ""
 	}
-	return model.ShippingProvider(shipping_provider.ShippingProvider_name[int(*s)])
+	return model.ShippingProvider(s.String())
 }
 
 func PbShippingProviderType(sp model.ShippingProvider) shipping_provider.ShippingProvider {
-	spString := string(sp)
-	return shipping_provider.ShippingProvider(shipping_provider.ShippingProvider_value[spString])
+	p, _ := shipping_provider.ParseShippingProvider(string(sp))
+	return p
 }
 
 func PbPtrShippingProvider(sp model.ShippingProvider) *shipping_provider.ShippingProvider {

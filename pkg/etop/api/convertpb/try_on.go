@@ -14,7 +14,8 @@ func TryOnCodeToModel(x *try_on.TryOnCode) model.TryOn {
 }
 
 func PbTryOn(m model.TryOn) try_on.TryOnCode {
-	return try_on.TryOnCode(try_on.TryOnCode_value[string(m)])
+	value, _ := try_on.ParseTryOnCode(string(m))
+	return value
 }
 
 func PbPtrTryOn(m model.TryOn) *try_on.TryOnCode {

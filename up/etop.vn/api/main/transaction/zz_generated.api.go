@@ -104,6 +104,7 @@ func (h QueryServiceHandler) HandleListTransactions(ctx context.Context, msg *Li
 }
 
 // implement interfaces
+
 func (q *CancelTransactionCommand) command()  {}
 func (q *ConfirmTransactionCommand) command() {}
 func (q *CreateTransactionCommand) command()  {}

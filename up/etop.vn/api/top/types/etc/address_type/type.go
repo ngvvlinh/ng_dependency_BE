@@ -1,20 +1,21 @@
 package address_type
 
-func PbType(s string) AddressType {
-	return AddressType(AddressType_value[s])
-}
+// +enum
+type AddressType int
 
-func PbTypeFromInt(s int) AddressType {
-	return AddressType(s)
-}
+const (
+	// +enum=unknown
+	Unknown AddressType = 0
 
-func (x *AddressType) ToModel() string {
-	if x == nil {
-		return ""
-	}
-	return AddressType_name[int(*x)]
-}
+	// +enum=general
+	General AddressType = 1
 
-func (x AddressType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+	// +enum=warehouse
+	Warehouse AddressType = 2
+
+	// +enum=shipto
+	Shipto AddressType = 3
+
+	// +enum=shipfrom
+	Shipfrom AddressType = 4
+)

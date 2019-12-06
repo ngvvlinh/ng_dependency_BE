@@ -4,18 +4,12 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog/types"
+	"etop.vn/api/top/types/etc/product_type"
 	dot "etop.vn/capi/dot"
 	cmutil "etop.vn/capi/util"
 )
 
 // +gen:event:topic=event/catalog
-
-type ProductType = string
-
-const (
-	ProductTypeService ProductType = "services"
-	ProductTypeGoods   ProductType = "goods"
-)
 
 type ShopProduct struct {
 	ShopID dot.ID
@@ -50,7 +44,7 @@ type ShopProduct struct {
 
 	DeletedAt time.Time
 
-	ProductType ProductType
+	ProductType product_type.ProductType
 
 	MetaFields []*MetaField
 

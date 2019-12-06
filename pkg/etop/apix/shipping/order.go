@@ -66,7 +66,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	}
 
 	req := &types.CreateOrderRequest{
-		Source:          pbsource.Source_api,
+		Source:          pbsource.Api,
 		ExternalId:      r.ExternalId,
 		ExternalCode:    externalCode,
 		ExternalMeta:    r.ExternalMeta,

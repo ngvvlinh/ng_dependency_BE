@@ -4,7 +4,6 @@ import (
 	catalogtypes "etop.vn/api/main/catalog/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
-	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	etop "etop.vn/api/top/int/etop"
@@ -259,7 +258,7 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 		return nil
 	}
 	return &types.ShippnowService{
-		Carrier:     carrier.CarrierToString(in.Carrier),
+		Carrier:     in.Carrier.String(),
 		Name:        in.Name,
 		Code:        in.Code,
 		Fee:         in.Fee,

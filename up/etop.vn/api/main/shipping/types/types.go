@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"time"
 
 	orderingtypes "etop.vn/api/main/ordering/types"
@@ -53,60 +52,12 @@ const (
 	FeeLineTypeDiscount FeeLineType = 7
 )
 
-var TryOnCode_name = map[int]string{
-	0: "unknown",
-	1: "none",
-	2: "open",
-	3: "try",
-}
-
-var TryOnCode_value = map[string]int{
-	"unknown": 0,
-	"none":    1,
-	"open":    2,
-	"try":     3,
-}
-
-func TryOnFromString(s string) (TryOn, error) {
-	t := TryOnCode_value[s]
-	if t == 0 {
-		return 0, errors.New("invalid tryon code")
-	}
-	return TryOn(t), nil
-}
-
-var FeeLineType_name = map[int]string{
-	0: "other",
-	1: "main",
-	2: "return",
-	3: "adjustment",
-	4: "cods",
-	5: "insurance",
-	6: "address_change",
-	7: "discount",
-}
-
-var FeeLineType_value = map[string]int{
-	"other":          0,
-	"main":           1,
-	"return":         2,
-	"adjustment":     3,
-	"cods":           4,
-	"insurance":      5,
-	"address_change": 6,
-	"discount":       7,
-}
-
 func FeelineTypeFromString(s string) FeeLineType {
-	f, ok := FeeLineType_value[s]
+	f, ok := enumFeeLineTypeValue[s]
 	if !ok {
 		f = 0
 	}
 	return FeeLineType(f)
-}
-
-func (t FeeLineType) String() string {
-	return FeeLineType_name[int(t)]
 }
 
 type ShippingInfo struct {

@@ -190,6 +190,7 @@ func (h QueryServiceHandler) HandleGetShipnowFulfillments(ctx context.Context, m
 }
 
 // implement interfaces
+
 func (q *CancelShipnowFulfillmentCommand) command()            {}
 func (q *ConfirmShipnowFulfillmentCommand) command()           {}
 func (q *CreateShipnowFulfillmentCommand) command()            {}

@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 )
@@ -191,22 +192,22 @@ func (ft *ShopCustomerFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopCustomerFilters) ByGender(Gender string) *sq.ColumnFilter {
+func (ft *ShopCustomerFilters) ByGender(Gender gender.Gender) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "gender",
 		Value:  Gender,
-		IsNil:  Gender == "",
+		IsNil:  Gender == 0,
 	}
 }
 
-func (ft *ShopCustomerFilters) ByGenderPtr(Gender *string) *sq.ColumnFilterPtr {
+func (ft *ShopCustomerFilters) ByGenderPtr(Gender *gender.Gender) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "gender",
 		Value:  Gender,
 		IsNil:  Gender == nil,
-		IsZero: Gender != nil && (*Gender) == "",
+		IsZero: Gender != nil && (*Gender) == 0,
 	}
 }
 
@@ -647,7 +648,7 @@ func (ft *ShopTraderAddressFilters) ByIsDefault(IsDefault bool) *sq.ColumnFilter
 		Prefix: &ft.prefix,
 		Column: "is_default",
 		Value:  IsDefault,
-		IsNil:  !IsDefault,
+		IsNil:  bool(!IsDefault),
 	}
 }
 
@@ -657,7 +658,7 @@ func (ft *ShopTraderAddressFilters) ByIsDefaultPtr(IsDefault *bool) *sq.ColumnFi
 		Column: "is_default",
 		Value:  IsDefault,
 		IsNil:  IsDefault == nil,
-		IsZero: IsDefault != nil && !(*IsDefault),
+		IsZero: IsDefault != nil && bool(!(*IsDefault)),
 	}
 }
 

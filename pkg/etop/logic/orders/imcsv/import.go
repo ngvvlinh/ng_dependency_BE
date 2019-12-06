@@ -685,14 +685,14 @@ func parseAsGHNNoteCode(v string) (string, error) {
 	case "":
 		return "", nil
 	case "Cho xem hàng không thử",
-		ghn_note_code.GHNNoteCode_CHOXEMHANGKHONGTHU.String():
-		return ghn_note_code.GHNNoteCode_CHOXEMHANGKHONGTHU.String(), nil
+		ghn_note_code.CHOXEMHANGKHONGTHU.String():
+		return ghn_note_code.CHOXEMHANGKHONGTHU.String(), nil
 	case "Cho thử hàng",
-		ghn_note_code.GHNNoteCode_CHOTHUHANG.String():
-		return ghn_note_code.GHNNoteCode_CHOTHUHANG.String(), nil
+		ghn_note_code.CHOTHUHANG.String():
+		return ghn_note_code.CHOTHUHANG.String(), nil
 	case "Không cho xem hàng",
-		ghn_note_code.GHNNoteCode_KHONGCHOXEMHANG.String():
-		return ghn_note_code.GHNNoteCode_KHONGCHOXEMHANG.String(), nil
+		ghn_note_code.KHONGCHOXEMHANG.String():
+		return ghn_note_code.KHONGCHOXEMHANG.String(), nil
 	}
 
 	ghnNote := validate.NormalizeSearchSimple(v)
@@ -700,11 +700,11 @@ func parseAsGHNNoteCode(v string) (string, error) {
 	case "":
 		return "", nil
 	case model.GHNNoteChoXemHang:
-		return ghn_note_code.GHNNoteCode_CHOXEMHANGKHONGTHU.String(), nil
+		return ghn_note_code.CHOXEMHANGKHONGTHU.String(), nil
 	case model.GHNNoteChoThuHang:
-		return ghn_note_code.GHNNoteCode_CHOTHUHANG.String(), nil
+		return ghn_note_code.CHOTHUHANG.String(), nil
 	case model.GHNNoteKhongXemHang:
-		return ghn_note_code.GHNNoteCode_KHONGCHOXEMHANG.String(), nil
+		return ghn_note_code.KHONGCHOXEMHANG.String(), nil
 	default:
 		return "", errors.New("Ghi chú xem hàng không hợp lệ, cần một trong các giá trị: 'Cho thử hàng', 'Cho xem hàng không thử', 'Không cho xem hàng'.")
 	}

@@ -177,7 +177,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 	}
 
 	if receipt.Status != int(etopmodel.S3Zero) {
-		args.TraderID = NID(receipt.TraderID)
+		args.TraderID = WrapID(receipt.TraderID)
 		args.Amount = Int(receipt.Amount)
 		args.RefType = receipt.RefType
 		args.Lines = receipt.Lines

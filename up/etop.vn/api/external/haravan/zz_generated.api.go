@@ -43,6 +43,7 @@ func (h AggregateHandler) HandleSendUpdateExternalPaymentStatus(ctx context.Cont
 }
 
 // implement interfaces
+
 func (q *SendUpdateExternalFulfillmentStateCommand) command() {}
 func (q *SendUpdateExternalPaymentStatusCommand) command()    {}
 

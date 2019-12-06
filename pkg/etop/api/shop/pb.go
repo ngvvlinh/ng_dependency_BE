@@ -6,7 +6,6 @@ import (
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
-	pbproducttype "etop.vn/api/top/types/etc/product_type"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
@@ -402,7 +401,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *shop.ShopPro
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
 		CreatedAt:       cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:       cmapi.PbTime(m.UpdatedAt),
-		ProductType:     pbproducttype.PbProductType(m.ProductType),
+		ProductType:     m.ProductType.Wrap(),
 		MetaFields:      metaFields,
 		BrandId:         m.BrandID,
 	}

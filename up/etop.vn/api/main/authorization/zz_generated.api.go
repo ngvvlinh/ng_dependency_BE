@@ -117,6 +117,7 @@ func (h QueryServiceHandler) HandleGetRelationships(ctx context.Context, msg *Ge
 }
 
 // implement interfaces
+
 func (q *LeaveAccountCommand) command()       {}
 func (q *RemoveUserCommand) command()         {}
 func (q *UpdatePermissionCommand) command()   {}

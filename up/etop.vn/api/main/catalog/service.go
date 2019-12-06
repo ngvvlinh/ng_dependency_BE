@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/api/top/types/etc/product_type"
 	. "etop.vn/capi/dot"
 	dot "etop.vn/capi/dot"
 )
@@ -203,7 +204,7 @@ type CreateShopProductArgs struct {
 	Note      string
 	DescriptionInfo
 	PriceInfo
-	ProductType ProductType
+	ProductType product_type.ProductType
 	MetaFields  []*MetaField
 	BrandID     dot.ID
 }
@@ -231,7 +232,7 @@ type UpdateShopProductInfoArgs struct {
 	ListPrice   NullInt
 	RetailPrice NullInt
 	BrandID     NullID
-	ProductType ProductType
+	ProductType product_type.ProductType
 	CategoryID  dot.ID
 }
 

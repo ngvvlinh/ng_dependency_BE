@@ -69,40 +69,8 @@ const (
 	StateCancelled State = 127
 )
 
-func (s State) String() string {
-	return State_name[int(s)]
-}
-
-var State_name = map[int]string{
-	0:   "default",
-	1:   "created",
-	2:   "assigning",
-	3:   "picking",
-	4:   "delivering",
-	5:   "delivered",
-	6:   "returning",
-	7:   "returned",
-	101: "unknown",
-	126: "undeliverable",
-	127: "cancelled",
-}
-
-var State_value = map[string]int{
-	"default":       0,
-	"created":       1,
-	"assigning":     2,
-	"picking":       3,
-	"delivering":    4,
-	"delivered":     5,
-	"returning":     6,
-	"returned":      7,
-	"unknown":       101,
-	"undeliverable": 126,
-	"cancelled":     127,
-}
-
 func StateFromString(s string) State {
-	st, ok := State_value[s]
+	st, ok := enumStateValue[s]
 	if !ok {
 		return StateUnknown
 	}

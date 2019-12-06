@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/user_source"
+
 	"etop.vn/api/top/int/integration"
 
 	pbcm "etop.vn/api/top/types/common"
@@ -706,7 +708,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 
 	generatedPassword := gencode.GenerateCode(gencode.Alphabet32, 8)
 	// set default source: "partner"
-	source := model.UserSourcePartner
+	source := user_source.Partner
 
 	cmd := &usering.CreateUserCommand{
 		UserInner: model.UserInner{

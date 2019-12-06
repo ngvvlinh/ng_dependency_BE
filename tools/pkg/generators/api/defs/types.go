@@ -49,12 +49,13 @@ type Enum struct {
 
 	// sorted values as appear in code
 	Values   []interface{}
+	Names    []string
 	MapValue map[string]interface{} // int or uint64
 	MapName  map[interface{}]string
 
-	Type      *types.Named
-	BasicKind types.BasicKind
-	MapConst  map[string]*types.Const
+	Type     *types.Named
+	Basic    *types.Basic
+	MapConst map[string]*types.Const
 }
 
 type NodeType int

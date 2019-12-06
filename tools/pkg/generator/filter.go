@@ -5,9 +5,10 @@ import (
 )
 
 type FilteringPackage struct {
-	PkgPath    string
-	Imports    map[string]*packages.Package
-	Directives Directives
+	PkgPath          string
+	Imports          map[string]*packages.Package
+	Directives       Directives
+	InlineDirectives Directives
 
 	ng *filterEngine
 }
@@ -17,9 +18,10 @@ func (p *FilteringPackage) Include() {
 }
 
 type filteringPackage struct {
-	PkgPath    string
-	Imports    map[string]*packages.Package
-	Directives []Directive
+	PkgPath          string
+	Imports          map[string]*packages.Package
+	Directives       Directives
+	InlineDirectives Directives
 }
 
 type includedPackage struct {
@@ -85,9 +87,10 @@ func (ng *filterEngine) ParsingPackages() []*FilteringPackage {
 	res := make([]*FilteringPackage, len(ng.pkgs))
 	for i, pkg := range ng.pkgs {
 		p := FilteringPackage{
-			PkgPath:    pkg.PkgPath,
-			Imports:    pkg.Imports,
-			Directives: cloneDirectives(pkg.Directives),
+			PkgPath:          pkg.PkgPath,
+			Imports:          pkg.Imports,
+			Directives:       cloneDirectives(pkg.Directives),
+			InlineDirectives: cloneDirectives(pkg.InlineDirectives),
 
 			ng: ng,
 		}

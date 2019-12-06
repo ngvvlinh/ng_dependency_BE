@@ -98,6 +98,7 @@ func (h QueryServiceHandler) HandleGetExternalAccountHaravanByXShopID(ctx contex
 }
 
 // implement interfaces
+
 func (q *ConnectCarrierServiceExternalAccountHaravanCommand) command()         {}
 func (q *CreateExternalAccountHaravanCommand) command()                        {}
 func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) command() {}

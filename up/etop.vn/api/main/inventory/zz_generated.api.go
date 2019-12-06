@@ -286,6 +286,7 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByRefIDs(ctx context.Cont
 }
 
 // implement interfaces
+
 func (q *AdjustInventoryQuantityCommand) command()                {}
 func (q *CancelInventoryVoucherCommand) command()                 {}
 func (q *CheckInventoryVariantsQuantityCommand) command()         {}

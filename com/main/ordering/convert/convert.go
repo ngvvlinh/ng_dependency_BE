@@ -181,7 +181,7 @@ func OrderToShippingInfo(in *model.Order) (out *shiptypes.ShippingInfo) {
 		return nil
 	}
 	shopShipping := in.ShopShipping
-	tryOn, _ := shiptypes.TryOnFromString(string(in.TryOn))
+	tryOn, _ := shiptypes.ParseTryOn(string(in.TryOn))
 
 	return &shiptypes.ShippingInfo{
 		PickupAddress:       Address(shopShipping.ShopAddress),

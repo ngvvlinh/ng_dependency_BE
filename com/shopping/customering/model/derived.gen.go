@@ -53,16 +53,16 @@ func init() {
 
 func (m *ShopTrader) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Type),
 	}
 }
 
 func (m *ShopTrader) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Type),
 	}
 }
@@ -257,12 +257,12 @@ func init() {
 func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
 		core.String(m.FullName),
-		core.String(m.Gender),
+		m.Gender,
 		core.String(m.Type),
 		core.String(m.Birthday),
 		core.String(m.Note),
@@ -279,12 +279,12 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.FullName),
-		(*core.String)(&m.Gender),
+		&m.Gender,
 		(*core.String)(&m.Type),
 		(*core.String)(&m.Birthday),
 		(*core.String)(&m.Note),
@@ -398,7 +398,7 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.FullName)
 	}
-	if m.Gender != "" {
+	if m.Gender != 0 {
 		flag = true
 		w.WriteName("gender")
 		w.WriteByte('=')
@@ -643,9 +643,9 @@ func init() {
 func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.Int64(m.TraderID),
+		m.ID,
+		m.ShopID,
+		m.TraderID,
 		core.String(m.FullName),
 		core.String(m.Phone),
 		core.String(m.Email),
@@ -665,9 +665,9 @@ func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopTraderAddress) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.TraderID),
+		&m.ID,
+		&m.ShopID,
+		&m.TraderID,
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Email),
@@ -1035,8 +1035,8 @@ func init() {
 func (m *ShopCustomerGroupCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.GroupID),
-		core.Int64(m.CustomerID),
+		m.GroupID,
+		m.CustomerID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -1044,8 +1044,8 @@ func (m *ShopCustomerGroupCustomer) SQLArgs(opts core.Opts, create bool) []inter
 
 func (m *ShopCustomerGroupCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.GroupID),
-		(*core.Int64)(&m.CustomerID),
+		&m.GroupID,
+		&m.CustomerID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1264,7 +1264,7 @@ func init() {
 func (m *ShopCustomerGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Name),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -1273,7 +1273,7 @@ func (m *ShopCustomerGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCustomerGroup) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Name),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),

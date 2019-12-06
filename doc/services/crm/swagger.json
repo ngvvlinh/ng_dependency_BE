@@ -1251,9 +1251,9 @@
     "wdNotifierEntity": {
       "type": "string",
       "enum": [
+        "unknown",
         "fulfillment",
-        "money_transaction_shipping",
-        "unknown"
+        "money_transaction_shipping"
       ]
     }
   },

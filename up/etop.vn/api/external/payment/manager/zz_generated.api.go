@@ -91,6 +91,7 @@ func (h AggregateHandler) HandleGetTransaction(ctx context.Context, msg *GetTran
 }
 
 // implement interfaces
+
 func (q *BuildUrlConnectPaymentGatewayCommand) command() {}
 func (q *CancelTransactionCommand) command()             {}
 func (q *CheckReturnDataCommand) command()               {}

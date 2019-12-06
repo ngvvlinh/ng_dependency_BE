@@ -77,6 +77,7 @@ func (h AggregateHandler) HandleGetFulfillmentByID(ctx context.Context, msg *Get
 }
 
 // implement interfaces
+
 func (q *CancelFulfillmentCommand) command()  {}
 func (q *ConfirmFulfillmentCommand) command() {}
 func (q *CreateFulfillmentCommand) command()  {}

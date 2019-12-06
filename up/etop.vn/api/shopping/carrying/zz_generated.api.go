@@ -103,6 +103,7 @@ func (h QueryServiceHandler) HandleListCarriersByIDs(ctx context.Context, msg *L
 }
 
 // implement interfaces
+
 func (q *CreateCarrierCommand) command() {}
 func (q *DeleteCarrierCommand) command() {}
 func (q *UpdateCarrierCommand) command() {}

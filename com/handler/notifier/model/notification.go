@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 
+	"etop.vn/api/top/types/etc/notifier_entity"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/onesignal"
 	"etop.vn/capi/dot"
@@ -13,7 +14,7 @@ type CreateNotificationArgs struct {
 	Title            string
 	Message          string
 	EntityID         dot.ID
-	Entity           NotiEntity
+	Entity           notifier_entity.NotifierEntity
 	SendNotification bool
 	MetaData         json.RawMessage
 }
@@ -24,7 +25,7 @@ type CreateNotificationsArgs struct {
 	Title            string
 	Message          string
 	EntityID         dot.ID
-	Entity           NotiEntity
+	Entity           notifier_entity.NotifierEntity
 	SendNotification bool
 	MetaData         json.RawMessage
 }

@@ -50,7 +50,7 @@ type NullID struct {
 	Valid bool
 }
 
-func NID(id ID) NullID              { return NullID{ID: id, Valid: true} }
+func WrapID(id ID) NullID           { return NullID{ID: id, Valid: true} }
 func Bool(b bool) NullBool          { return NullBool{Bool: b, Valid: true} }
 func String(s string) NullString    { return NullString{String: s, Valid: true} }
 func Int64(i int64) NullInt64       { return NullInt64{Int64: i, Valid: true} }

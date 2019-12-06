@@ -53,9 +53,7 @@ import (
 	"etop.vn/common/l"
 )
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 func init() {
 	bus.AddHandler("api", miscService.VersionInfo)
@@ -592,7 +590,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, q *CreateProductEndp
 			RetailPrice: q.RetailPrice,
 		},
 		BrandID:     q.BrandId,
-		ProductType: q.ProductType.ToProductType(),
+		ProductType: q.ProductType.Apply(0),
 		MetaFields:  metaFields,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
@@ -1145,9 +1143,10 @@ func (s *ShipnowService) CreateShipnowFulfillment(ctx context.Context, q *Create
 	if err != nil {
 		return err
 	}
+	_carrier, _ := carriertypes.ParseCarrier(q.Carrier)
 	cmd := &shipnow.CreateShipnowFulfillmentCommand{
 		OrderIds:            q.OrderIds,
-		Carrier:             carriertypes.CarrierFromString(q.Carrier),
+		Carrier:             _carrier,
 		ShopId:              q.Context.Shop.ID,
 		ShippingServiceCode: q.ShippingServiceCode,
 		ShippingServiceFee:  q.ShippingServiceFee,
@@ -1179,10 +1178,11 @@ func (s *ShipnowService) UpdateShipnowFulfillment(ctx context.Context, q *Update
 	if err != nil {
 		return err
 	}
+	_carrier, _ := carriertypes.ParseCarrier(q.Carrier)
 	cmd := &shipnow.UpdateShipnowFulfillmentCommand{
 		Id:                  q.Id,
 		OrderIds:            q.OrderIds,
-		Carrier:             carriertypes.CarrierFromString(q.Carrier),
+		Carrier:             _carrier,
 		ShopId:              q.Context.Shop.ID,
 		ShippingServiceCode: q.ShippingServiceCode,
 		ShippingServiceFee:  q.ShippingServiceFee,
@@ -1484,7 +1484,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 		Desc:              q.Desc,
 		ReturnURL:         q.ReturnUrl,
 		TransactionAmount: q.Amount,
-		Provider:          q.PaymentProvider.ToPaymentProvider(),
+		Provider:          payment.PaymentProvider(q.PaymentProvider),
 	}
 
 	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
@@ -1509,7 +1509,7 @@ func (s *PaymentService) PaymentCheckReturnData(ctx context.Context, q *PaymentC
 		PaymentStatus:         q.PaymentStatus,
 		Amount:                q.Amount,
 		ExternalTransactionID: q.ExternalTransactionId,
-		Provider:              q.PaymentProvider.ToPaymentProvider(),
+		Provider:              payment.PaymentProvider(q.PaymentProvider),
 	}
 	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
 		return err

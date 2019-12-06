@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -1002,7 +1003,7 @@ func (ft *ShopFilters) ByAutoCreateFFM(AutoCreateFFM bool) *sq.ColumnFilter {
 		Prefix: &ft.prefix,
 		Column: "auto_create_ffm",
 		Value:  AutoCreateFFM,
-		IsNil:  !AutoCreateFFM,
+		IsNil:  bool(!AutoCreateFFM),
 	}
 }
 
@@ -1012,7 +1013,7 @@ func (ft *ShopFilters) ByAutoCreateFFMPtr(AutoCreateFFM *bool) *sq.ColumnFilterP
 		Column: "auto_create_ffm",
 		Value:  AutoCreateFFM,
 		IsNil:  AutoCreateFFM == nil,
-		IsZero: AutoCreateFFM != nil && !(*AutoCreateFFM),
+		IsZero: AutoCreateFFM != nil && bool(!(*AutoCreateFFM)),
 	}
 }
 
@@ -1410,7 +1411,7 @@ func (ft *PartnerFilters) ByAvailableFromEtop(AvailableFromEtop bool) *sq.Column
 		Prefix: &ft.prefix,
 		Column: "available_from_etop",
 		Value:  AvailableFromEtop,
-		IsNil:  !AvailableFromEtop,
+		IsNil:  bool(!AvailableFromEtop),
 	}
 }
 
@@ -1420,7 +1421,7 @@ func (ft *PartnerFilters) ByAvailableFromEtopPtr(AvailableFromEtop *bool) *sq.Co
 		Column: "available_from_etop",
 		Value:  AvailableFromEtop,
 		IsNil:  AvailableFromEtop == nil,
-		IsZero: AvailableFromEtop != nil && !(*AvailableFromEtop),
+		IsZero: AvailableFromEtop != nil && bool(!(*AvailableFromEtop)),
 	}
 }
 
@@ -2131,22 +2132,22 @@ func (ft *UserFilters) ByIsTestPtr(IsTest *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserFilters) BySource(Source m.UserSource) *sq.ColumnFilter {
+func (ft *UserFilters) BySource(Source user_source.UserSource) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "source",
 		Value:  Source,
-		IsNil:  Source == "",
+		IsNil:  Source == 0,
 	}
 }
 
-func (ft *UserFilters) BySourcePtr(Source *m.UserSource) *sq.ColumnFilterPtr {
+func (ft *UserFilters) BySourcePtr(Source *user_source.UserSource) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "source",
 		Value:  Source,
 		IsNil:  Source == nil,
-		IsZero: Source != nil && (*Source) == "",
+		IsZero: Source != nil && (*Source) == 0,
 	}
 }
 

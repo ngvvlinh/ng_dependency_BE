@@ -41,16 +41,7 @@ func (p *plugin) Filter(ng generator.FilterEngine) error {
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
-	for _, pkg := range ng.GeneratingPackages() {
-		printer := pkg.GetPrinter()
-		if err := p.generatePackage(ng, pkg.Package, printer); err != nil {
-			return err
-		}
-		if err := printer.Close(); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ng.GenerateEachPackage(p.generatePackage)
 }
 
 func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {

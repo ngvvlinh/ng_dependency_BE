@@ -1,20 +1,15 @@
 package notifier_entity
 
-func PbEntity(s string) NotifierEntity {
-	return NotifierEntity(NotifierEntity_value[s])
-}
+// +enum
+type NotifierEntity int
 
-func PbEntityFromInt(s int) NotifierEntity {
-	return NotifierEntity(s)
-}
+const (
+	// +enum=unknown
+	Unknown NotifierEntity = 0
 
-func (x *NotifierEntity) ToModel() string {
-	if x == nil {
-		return ""
-	}
-	return NotifierEntity_name[int(*x)]
-}
+	// +enum=fulfillment
+	Fulfillment NotifierEntity = 1
 
-func (x NotifierEntity) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+	// +enum=money_transaction_shipping
+	MoneyTransactionShipping NotifierEntity = 2
+)

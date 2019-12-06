@@ -38,6 +38,7 @@ func (h AggregateHandler) HandleHandleExternalDataResponse(ctx context.Context, 
 }
 
 // implement interfaces
+
 func (q *HandleExternalDataResponseCommand) command() {}
 
 // implement conversion

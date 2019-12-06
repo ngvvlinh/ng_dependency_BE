@@ -15,8 +15,7 @@ import (
 )
 
 func CarrierToModel(in carrier.Carrier) shipnowmodel.Carrier {
-	str := carrier.CarrierToString(in)
-	res := shipnowmodel.Carrier(str)
+	res := shipnowmodel.Carrier(in.String())
 	return res
 }
 
@@ -66,13 +65,14 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 }
 
 func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillment) {
+	_carrier, _ := carrier.ParseCarrier(string(in.Carrier))
 	out = &shipnow.ShipnowFulfillment{
 		Id:                  in.ID,
 		ShopId:              in.ShopID,
 		PartnerId:           in.PartnerID,
 		PickupAddress:       orderconvert.Address(in.PickupAddress),
 		DeliveryPoints:      DeliveryPoints(in.DeliveryPoints),
-		Carrier:             carrier.CarrierFromString(string(in.Carrier)),
+		Carrier:             _carrier,
 		ShippingServiceCode: in.ShippingServiceCode,
 		ShippingServiceFee:  in.ShippingServiceFee,
 		WeightInfo: shippingtypes.WeightInfo{

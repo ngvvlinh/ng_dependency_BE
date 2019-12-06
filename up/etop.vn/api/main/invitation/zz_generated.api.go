@@ -145,6 +145,7 @@ func (h QueryServiceHandler) HandleListInvitationsByEmail(ctx context.Context, m
 }
 
 // implement interfaces
+
 func (q *AcceptInvitationCommand) command() {}
 func (q *CreateInvitationCommand) command() {}
 func (q *DeleteInvitationCommand) command() {}

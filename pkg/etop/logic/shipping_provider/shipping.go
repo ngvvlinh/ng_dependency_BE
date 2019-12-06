@@ -91,25 +91,25 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 	}
 
 	switch q.Provider {
-	case pbsp.ShippingProvider_ghn:
+	case pbsp.Ghn:
 		services, err := ctrl.GHN.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, services...)
-	case pbsp.ShippingProvider_ghtk:
+	case pbsp.Ghtk:
 		services, err := ctrl.GHTK.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, services...)
-	case pbsp.ShippingProvider_vtpost:
+	case pbsp.Vtpost:
 		services, err := ctrl.VTPost.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, services...)
-	case pbsp.ShippingProvider_all, pbsp.ShippingProvider_unknown:
+	case pbsp.All, pbsp.Unknown:
 		ch := make(chan []*model.AvailableShippingService, 3)
 		go func() {
 			defer catchAndRecover()

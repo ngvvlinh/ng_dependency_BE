@@ -203,6 +203,7 @@ func (h QueryServiceHandler) HandleListReceiptsByTraderIDsAndStatuses(ctx contex
 }
 
 // implement interfaces
+
 func (q *CancelReceiptCommand) command()  {}
 func (q *ConfirmReceiptCommand) command() {}
 func (q *CreateReceiptCommand) command()  {}

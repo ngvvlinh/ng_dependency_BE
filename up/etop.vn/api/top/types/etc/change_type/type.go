@@ -1,5 +1,18 @@
 package change_type
 
-func (x ChangeType) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + x.String() + `"`), nil
-}
+// +enum
+type ChangeType int
+
+const (
+	// +enum=unknown
+	Unknown ChangeType = 0
+
+	// +enum=update
+	Update ChangeType = 1
+
+	// +enum=create
+	Create ChangeType = 2
+
+	// +enum=delete
+	Delete ChangeType = 3
+)

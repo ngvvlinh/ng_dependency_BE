@@ -52,6 +52,7 @@ func (h AggregateHandler) HandleValidateTransaction(ctx context.Context, msg *Va
 }
 
 // implement interfaces
+
 func (q *GetResultCommand) command()           {}
 func (q *ValidateTransactionCommand) command() {}
 

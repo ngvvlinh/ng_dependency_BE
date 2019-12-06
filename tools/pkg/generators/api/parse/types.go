@@ -5,6 +5,8 @@ import (
 	"go/types"
 	"strings"
 
+	"etop.vn/backend/tools/pkg/genutil"
+
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
@@ -74,14 +76,6 @@ func populateType(ng generator.Engine, typ *types.Type, pkgPath, name string) {
 func (inf *Info) IsTime(typ types.Type) bool {
 	typ = SkipPointer(typ)
 	return typ == inf.typeStdTime || typ == inf.typeDotTime
-}
-
-func SkipPointer(typ types.Type) types.Type {
-	ptr, ok := typ.(*types.Pointer)
-	if ok {
-		return ptr.Elem()
-	}
-	return typ
 }
 
 func (inf *Info) IsNullID(typ types.Type) bool {
@@ -160,6 +154,7 @@ func (inf *Info) IsMap(typ types.Type) bool {
 
 func (inf *Info) IsEnum(typ types.Type) bool {
 	typ = SkipPointer(typ)
+	typ = UnwrapNull(typ)
 	named, ok := typ.(*types.Named)
 	if !ok {
 		return false
@@ -175,6 +170,7 @@ type keyEnum struct{}
 
 func (inf *Info) GetEnum(typ types.Type) *defs.Enum {
 	typ = SkipPointer(typ)
+	typ = UnwrapNull(typ)
 	return inf.Cache(typ, keyEnum{}, func() interface{} {
 		obj := typ.(*types.Named).Obj()
 		pkgPath := obj.Pkg().Path()
@@ -189,7 +185,7 @@ func (inf *Info) GetEnum(typ types.Type) *defs.Enum {
 
 func (inf *Info) parseEnumInPackage(pkg *packages.Package) map[string]*defs.Enum {
 	return inf.Cache(pkg, keyEnum{}, func() interface{} {
-		mapEnum, err := parseEnumInPackage(inf.ng, pkg)
+		mapEnum, err := ParseEnumInPackage(inf.ng, pkg)
 		if err != nil {
 			fmt.Printf("%+v", err)
 			panic(fmt.Sprintf("can not parse enum in package %v", pkg.PkgPath))
@@ -211,4 +207,30 @@ func (inf *Info) IsNamedInterface(typ types.Type, inner *types.Type) bool {
 	iface, ok := named.Underlying().(*types.Interface)
 	*inner = iface
 	return ok
+}
+
+func SkipPointer(typ types.Type) types.Type {
+	ptr, ok := typ.(*types.Pointer)
+	if ok {
+		return ptr.Elem()
+	}
+	return typ
+}
+
+func UnwrapNull(typ types.Type) types.Type {
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return typ
+	}
+	if !genutil.HasPrefixCamel(named.Obj().Name(), "Null") {
+		return typ
+	}
+	st, ok := named.Underlying().(*types.Struct)
+	if !ok {
+		return typ
+	}
+	if st.NumFields() == 2 && st.Field(1).Name() == "Valid" {
+		return st.Field(0).Type()
+	}
+	panic(fmt.Sprintf("unwrap null: %v.%v must be proper null struct", named.Obj().Pkg().Path(), named.Obj().Name()))
 }

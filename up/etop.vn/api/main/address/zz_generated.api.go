@@ -31,6 +31,7 @@ func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, msg *GetA
 }
 
 // implement interfaces
+
 func (q *GetAddressByIDQuery) query() {}
 
 // implement conversion

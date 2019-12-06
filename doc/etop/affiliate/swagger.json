@@ -197,9 +197,9 @@
     "blStatus": {
       "type": "string",
       "enum": [
-        "N",
+        "Z",
         "P",
-        "Z"
+        "N"
       ]
     },
     "ktEmpty": {

@@ -54,13 +54,13 @@ func init() {
 func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Title),
 		core.String(m.Message),
 		core.Bool(m.IsRead),
-		core.Int64(m.EntityID),
-		core.String(m.Entity),
-		core.Int64(m.AccountID),
+		m.EntityID,
+		m.Entity,
+		m.AccountID,
 		core.Int(m.SyncStatus),
 		core.Int(m.ExternalServiceID),
 		core.String(m.ExternalNotiID),
@@ -75,13 +75,13 @@ func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Notification) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Title),
 		(*core.String)(&m.Message),
 		(*core.Bool)(&m.IsRead),
-		(*core.Int64)(&m.EntityID),
-		(*core.String)(&m.Entity),
-		(*core.Int64)(&m.AccountID),
+		&m.EntityID,
+		&m.Entity,
+		&m.AccountID,
 		(*core.Int)(&m.SyncStatus),
 		(*core.Int)(&m.ExternalServiceID),
 		(*core.String)(&m.ExternalNotiID),
@@ -193,13 +193,13 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EntityID)
 	}
-	if m.Entity != "" {
+	if m.Entity != 0 {
 		flag = true
 		w.WriteName("entity")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Entity))
+		w.WriteArg(m.Entity)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -433,13 +433,13 @@ func init() {
 func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.DeviceID),
 		core.String(m.DeviceName),
 		core.String(m.ExternalDeviceID),
 		core.Int(m.ExternalServiceID),
-		core.Int64(m.AccountID),
-		core.Int64(m.UserID),
+		m.AccountID,
+		m.UserID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeactivatedAt),
@@ -449,13 +449,13 @@ func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Device) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.DeviceID),
 		(*core.String)(&m.DeviceName),
 		(*core.String)(&m.ExternalDeviceID),
 		(*core.Int)(&m.ExternalServiceID),
-		(*core.Int64)(&m.AccountID),
-		(*core.Int64)(&m.UserID),
+		&m.AccountID,
+		&m.UserID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeactivatedAt),
