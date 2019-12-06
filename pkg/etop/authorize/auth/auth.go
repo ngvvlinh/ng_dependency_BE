@@ -32,13 +32,13 @@ const (
 	p, shop/carrier:delete, admin, owner, salesman
 	p, shop/carrier:view, admin, owner, salesman, accountant
 	# category
-	p, shop/category:create, admin, owner, salesman	
-    p, shop/category:update, admin, owner, salesman
+	p, shop/category:create, admin, owner, salesman
+	p, shop/category:update, admin, owner, salesman, purchasing_management
     p, shop/category:delete, admin, owner, salesman
     p, shop/category:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
 	# collection
-	p, shop/collection:create, admin, owner, salesman	
-    p, shop/collection:update, admin, owner, salesman
+	p, shop/collection:create, admin, owner, salesman, purchasing_management
+	p, shop/collection:update, admin, owner, salesman, purchasing_management
     p, shop/collection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
 	# customer
 	p, shop/customer:create, admin, owner, salesman
@@ -90,6 +90,7 @@ const (
 	p, shop/product/basic_info:view, admin, owner, salesman, purchasing_management, inventory_management
 	p, shop/product/cost_price:view, admin, owner, purchasing_management
 	p, shop/product/cost_price:update, admin, owner, purchasing_management
+	p, shop/product/retail_price:update, admin, owner
 	# receipt
 	p, shop/receipt:create, admin, owner, salesman, accountant, purchasing_management
 	p, shop/receipt:update, admin, owner, accountant
@@ -110,26 +111,26 @@ const (
 	p, shop/settings/shipping_setting:view, admin, owner
 	p, shop/settings/shipping_setting:update, admin, owner
 	# shipnow FFM
-	p, shop/shipnow:view, admin, owner, salesman
-    p, shop/shipnow:create, admin, owner, salesman
+	p, shop/shipnow:view, admin, owner, salesman, accountant
+	p, shop/shipnow:create, admin, owner, salesman
 	p, shop/shipnow:update, admin, owner, salesman
     p, shop/shipnow:cancel, admin, owner, salesman
 	p, shop/shipnow:confirm, admin, owner, salesman
 	# shop
-	p, shop/balance:view, admin, owner, accountant	
-    p, shop/account:delete, owner
+	p, shop/balance:view, admin, owner, accountant
+	p, shop/account:delete, owner
 	# staff
 	p, relationship/invitation:create, admin, owner, staff_management
 	p, relationship/invitation:view, admin, owner, staff_management
 	p, relationship/invitation:delete, admin, owner, staff_management
 	p, relationship/permission:update, admin, owner, staff_management
 	p, relationship/relationship:update, admin, owner, staff_management
-	p, relationship/relationship:view, admin, owner, staff_management	
+	p, relationship/relationship:view, admin, owner, staff_management
 	p, relationship/user:remove, admin, owner, staff_management
 	# stocktake
-	p, shop/stocktake:create, admin, owner, inventory_management
+	p, shop/stocktake:create, admin, owner, purchasing_management, inventory_management
 	p, shop/stocktake:update, admin, owner, inventory_management
-	p, shop/stocktake:confirm, admin, owner, inventory_management
+	p, shop/stocktake:confirm, admin, owner, purchasing_management, inventory_management
 	p, shop/stocktake:cancel, admin, owner, inventory_management
 	p, shop/stocktake:view, admin, owner, accountant, inventory_management
 	# supplier
