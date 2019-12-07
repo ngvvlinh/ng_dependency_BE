@@ -54,15 +54,18 @@ func (e *{{.Name}}) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-{{if $enum|modelType }}
 func (e {{.Name}}) Value() (driver.Value, error) {
+{{if $enum|zeroAsNull -}}
+	if e == 0 {
+		return nil, nil
+	}
+{{end -}}
+{{if $enum|modelType -}}
 	return int64(e), nil
-}
-{{else}}
-func (e {{.Name}}) Value() (driver.Value, error) {
+{{else -}}
 	return e.String(), nil
+{{end -}}
 }
-{{end}}
 
 func (e *{{.Name}}) Scan(src interface{}) error {
 	value, err := mix.ScanEnum{{$enum|valueTypeCap}}(enum{{.Name}}Value, src, {{.Name|quote}})

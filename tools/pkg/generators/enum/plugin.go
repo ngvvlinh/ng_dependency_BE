@@ -29,8 +29,6 @@ func (p *plugin) Filter(ng generator.FilterEngine) error {
 		ds := pkg.InlineDirectives
 		if _, ok := ds.Get("enum"); ok {
 			pkg.Include()
-		} else if _, ok := ds.Get("enum:sql"); ok {
-			pkg.Include()
 		}
 	}
 	return nil
@@ -65,18 +63,32 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 }
 
 type keyModelType struct{}
+type keyModelZero struct{}
 
 func parseDirectives(ng generator.Engine, enum *defs.Enum) error {
 	obj := enum.Type.Obj()
 	ds := ng.GetDirectives(obj)
-	modelType := ds.GetArg("enum:sql")
-	switch modelType {
-	case "":
+	{
+		modelType := ds.GetArg("enum:sql")
+		switch modelType {
+		case "":
+			// no-op
+		case "int", "uint64":
+			currentInfo.Set(enum, keyModelType{}, modelType)
+		default:
+			return generator.Errorf(nil, "invalid enum:sql for %v.%v", obj.Pkg().Path(), obj.Name())
+		}
+	}
+	{
+		zeroType := ds.GetArg("enum:sql:zero")
+		switch zeroType {
+		case "":
 		// no-op
-	case "int", "uint64":
-		currentInfo.Set(enum, keyModelType{}, modelType)
-	default:
-		return generator.Errorf(nil, "invalid enum:sql for %v.%v", obj.Pkg().Path(), obj.Name())
+		case "null":
+			currentInfo.Set(enum, keyModelZero{}, true)
+		default:
+			return generator.Errorf(nil, "invalid enum:sql:zero for %v.%v", obj.Pkg().Path(), obj.Name())
+		}
 	}
 	return nil
 }
@@ -87,6 +99,7 @@ var tpl = template.Must(template.New("template").Funcs(funcs).Parse(tplText))
 var funcs = map[string]interface{}{
 	"modelType":    fnModelType,
 	"quote":        fnQuote,
+	"zeroAsNull":   fnZeroAsNull,
 	"valueType":    fnValueType,
 	"valueTypeCap": fnValueTypeCap,
 }
@@ -97,6 +110,11 @@ func fnModelType(enum *defs.Enum) string {
 		return modelType.(string)
 	}
 	return ""
+}
+
+func fnZeroAsNull(enum *defs.Enum) bool {
+	zero := currentInfo.Get(enum, keyModelZero{})
+	return zero != nil
 }
 
 func fnValueType(enum *defs.Enum) string {
