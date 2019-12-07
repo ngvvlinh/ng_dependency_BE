@@ -5,6 +5,7 @@
 package types
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -72,7 +73,7 @@ func (e *FeeLineType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e FeeLineType) Value() (interface{}, error) {
+func (e FeeLineType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -98,7 +99,7 @@ func (n NullFeeLineType) Apply(s FeeLineType) FeeLineType {
 	return s
 }
 
-func (n NullFeeLineType) Value() (interface{}, error) {
+func (n NullFeeLineType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
@@ -182,7 +183,7 @@ func (e *TryOn) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e TryOn) Value() (interface{}, error) {
+func (e TryOn) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -208,7 +209,7 @@ func (n NullTryOn) Apply(s TryOn) TryOn {
 	return s
 }
 
-func (n NullTryOn) Value() (interface{}, error) {
+func (n NullTryOn) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

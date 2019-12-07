@@ -5,6 +5,7 @@
 package ghn_note_code
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -64,7 +65,7 @@ func (e *GHNNoteCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e GHNNoteCode) Value() (interface{}, error) {
+func (e GHNNoteCode) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -90,7 +91,7 @@ func (n NullGHNNoteCode) Apply(s GHNNoteCode) GHNNoteCode {
 	return s
 }
 
-func (n NullGHNNoteCode) Value() (interface{}, error) {
+func (n NullGHNNoteCode) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

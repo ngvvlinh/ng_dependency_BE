@@ -5,6 +5,7 @@
 package notifier_entity
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -62,7 +63,7 @@ func (e *NotifierEntity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e NotifierEntity) Value() (interface{}, error) {
+func (e NotifierEntity) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -88,7 +89,7 @@ func (n NullNotifierEntity) Apply(s NotifierEntity) NotifierEntity {
 	return s
 }
 
-func (n NullNotifierEntity) Value() (interface{}, error) {
+func (n NullNotifierEntity) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

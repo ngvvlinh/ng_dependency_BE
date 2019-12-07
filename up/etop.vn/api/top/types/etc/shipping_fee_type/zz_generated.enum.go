@@ -5,6 +5,7 @@
 package shipping_fee_type
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -76,7 +77,7 @@ func (e *ShippingFeeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e ShippingFeeType) Value() (interface{}, error) {
+func (e ShippingFeeType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -102,7 +103,7 @@ func (n NullShippingFeeType) Apply(s ShippingFeeType) ShippingFeeType {
 	return s
 }
 
-func (n NullShippingFeeType) Value() (interface{}, error) {
+func (n NullShippingFeeType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

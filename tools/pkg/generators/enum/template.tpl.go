@@ -55,11 +55,11 @@ func (e *{{.Name}}) UnmarshalJSON(data []byte) error {
 }
 
 {{if $enum|modelType }}
-func (e {{.Name}}) Value() (interface{}, error) {
+func (e {{.Name}}) Value() (driver.Value, error) {
 	return {{$enum|modelType}}(e), nil
 }
 {{else}}
-func (e {{.Name}}) Value() (interface{}, error) {
+func (e {{.Name}}) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 {{end}}
@@ -86,7 +86,7 @@ func (n Null{{.Name}}) Apply(s {{.Name}}) {{.Name}} {
 	return s
 }
 
-func (n Null{{.Name}}) Value() (interface{}, error) {
+func (n Null{{.Name}}) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

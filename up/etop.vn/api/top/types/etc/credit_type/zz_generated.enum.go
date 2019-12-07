@@ -5,6 +5,7 @@
 package credit_type
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -58,7 +59,7 @@ func (e *CreditType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e CreditType) Value() (interface{}, error) {
+func (e CreditType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -84,7 +85,7 @@ func (n NullCreditType) Apply(s CreditType) CreditType {
 	return s
 }
 
-func (n NullCreditType) Value() (interface{}, error) {
+func (n NullCreditType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

@@ -5,6 +5,7 @@
 package fee
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -62,7 +63,7 @@ func (e *FeeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e FeeType) Value() (interface{}, error) {
+func (e FeeType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -88,7 +89,7 @@ func (n NullFeeType) Apply(s FeeType) FeeType {
 	return s
 }
 
-func (n NullFeeType) Value() (interface{}, error) {
+func (n NullFeeType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

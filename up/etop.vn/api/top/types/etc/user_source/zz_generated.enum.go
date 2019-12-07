@@ -5,6 +5,7 @@
 package user_source
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -72,7 +73,7 @@ func (e *UserSource) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e UserSource) Value() (interface{}, error) {
+func (e UserSource) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -98,7 +99,7 @@ func (n NullUserSource) Apply(s UserSource) UserSource {
 	return s
 }
 
-func (n NullUserSource) Value() (interface{}, error) {
+func (n NullUserSource) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

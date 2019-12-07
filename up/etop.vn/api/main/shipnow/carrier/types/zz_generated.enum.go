@@ -5,6 +5,7 @@
 package types
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -60,7 +61,7 @@ func (e *Carrier) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Carrier) Value() (interface{}, error) {
+func (e Carrier) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -86,7 +87,7 @@ func (n NullCarrier) Apply(s Carrier) Carrier {
 	return s
 }
 
-func (n NullCarrier) Value() (interface{}, error) {
+func (n NullCarrier) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

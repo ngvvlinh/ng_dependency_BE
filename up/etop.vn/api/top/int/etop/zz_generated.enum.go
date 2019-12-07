@@ -5,6 +5,7 @@
 package etop
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -66,7 +67,7 @@ func (e *AccountType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e AccountType) Value() (interface{}, error) {
+func (e AccountType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -92,7 +93,7 @@ func (n NullAccountType) Apply(s AccountType) AccountType {
 	return s
 }
 
-func (n NullAccountType) Value() (interface{}, error) {
+func (n NullAccountType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

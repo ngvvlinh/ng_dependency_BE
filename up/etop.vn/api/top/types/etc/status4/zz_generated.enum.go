@@ -5,6 +5,7 @@
 package status4
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -64,7 +65,7 @@ func (e *Status) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Status) Value() (interface{}, error) {
+func (e Status) Value() (driver.Value, error) {
 	return int(e), nil
 }
 
@@ -90,7 +91,7 @@ func (n NullStatus) Apply(s Status) Status {
 	return s
 }
 
-func (n NullStatus) Value() (interface{}, error) {
+func (n NullStatus) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

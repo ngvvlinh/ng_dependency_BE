@@ -5,6 +5,7 @@
 package try_on
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -64,7 +65,7 @@ func (e *TryOnCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e TryOnCode) Value() (interface{}, error) {
+func (e TryOnCode) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -90,7 +91,7 @@ func (n NullTryOnCode) Apply(s TryOnCode) TryOnCode {
 	return s
 }
 
-func (n NullTryOnCode) Value() (interface{}, error) {
+func (n NullTryOnCode) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

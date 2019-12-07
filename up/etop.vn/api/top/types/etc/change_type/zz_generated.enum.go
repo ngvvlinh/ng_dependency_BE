@@ -5,6 +5,7 @@
 package change_type
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -64,7 +65,7 @@ func (e *ChangeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e ChangeType) Value() (interface{}, error) {
+func (e ChangeType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -90,7 +91,7 @@ func (n NullChangeType) Apply(s ChangeType) ChangeType {
 	return s
 }
 
-func (n NullChangeType) Value() (interface{}, error) {
+func (n NullChangeType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

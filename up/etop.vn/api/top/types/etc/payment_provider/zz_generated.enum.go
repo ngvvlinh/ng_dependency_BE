@@ -5,6 +5,7 @@
 package payment_provider
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -60,7 +61,7 @@ func (e *PaymentProvider) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e PaymentProvider) Value() (interface{}, error) {
+func (e PaymentProvider) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -86,7 +87,7 @@ func (n NullPaymentProvider) Apply(s PaymentProvider) PaymentProvider {
 	return s
 }
 
-func (n NullPaymentProvider) Value() (interface{}, error) {
+func (n NullPaymentProvider) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

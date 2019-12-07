@@ -5,6 +5,7 @@
 package address_type
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -66,7 +67,7 @@ func (e *AddressType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e AddressType) Value() (interface{}, error) {
+func (e AddressType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -92,7 +93,7 @@ func (n NullAddressType) Apply(s AddressType) AddressType {
 	return s
 }
 
-func (n NullAddressType) Value() (interface{}, error) {
+func (n NullAddressType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

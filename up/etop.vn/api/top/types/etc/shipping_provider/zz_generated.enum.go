@@ -5,6 +5,7 @@
 package shipping_provider
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -68,7 +69,7 @@ func (e *ShippingProvider) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e ShippingProvider) Value() (interface{}, error) {
+func (e ShippingProvider) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -94,7 +95,7 @@ func (n NullShippingProvider) Apply(s ShippingProvider) ShippingProvider {
 	return s
 }
 
-func (n NullShippingProvider) Value() (interface{}, error) {
+func (n NullShippingProvider) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

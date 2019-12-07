@@ -5,6 +5,7 @@
 package product_type
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -62,7 +63,7 @@ func (e *ProductType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e ProductType) Value() (interface{}, error) {
+func (e ProductType) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -88,7 +89,7 @@ func (n NullProductType) Apply(s ProductType) ProductType {
 	return s
 }
 
-func (n NullProductType) Value() (interface{}, error) {
+func (n NullProductType) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

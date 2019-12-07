@@ -5,6 +5,7 @@
 package gender
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -64,7 +65,7 @@ func (e *Gender) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Gender) Value() (interface{}, error) {
+func (e Gender) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -90,7 +91,7 @@ func (n NullGender) Apply(s Gender) Gender {
 	return s
 }
 
-func (n NullGender) Value() (interface{}, error) {
+func (n NullGender) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}

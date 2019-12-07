@@ -5,6 +5,7 @@
 package auth_mode
 
 import (
+	driver "database/sql/driver"
 	fmt "fmt"
 
 	mix "etop.vn/capi/mix"
@@ -60,7 +61,7 @@ func (e *AuthMode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e AuthMode) Value() (interface{}, error) {
+func (e AuthMode) Value() (driver.Value, error) {
 	return e.String(), nil
 }
 
@@ -86,7 +87,7 @@ func (n NullAuthMode) Apply(s AuthMode) AuthMode {
 	return s
 }
 
-func (n NullAuthMode) Value() (interface{}, error) {
+func (n NullAuthMode) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
