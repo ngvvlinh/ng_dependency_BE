@@ -298,7 +298,7 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 
 			// generate sqlstore/filter.gen.go
 			if pkgName == "model" {
-				if strings.HasPrefix(pkgPath, "./") {
+				if strings.HasPrefix(pkgPath, ".") {
 					var err error
 					pkgPath, err = filepath.Abs(pkgPath)
 					if err != nil {
