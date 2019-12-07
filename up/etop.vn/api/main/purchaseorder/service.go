@@ -3,7 +3,8 @@ package purchaseorder
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -25,7 +26,7 @@ type QueryService interface {
 	GetPurchaseOrderByID(context.Context, *shopping.IDQueryShopArg) (*PurchaseOrder, error)
 	GetPurchaseOrdersByIDs(ctx context.Context, IDs []dot.ID, ShopID dot.ID) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrders(context.Context, *shopping.ListQueryShopArgs) (*PurchaseOrdersResponse, error)
-	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3) (*PurchaseOrdersResponse, error)
+	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []status3.Status) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrdersByReceiptID(ctx context.Context, receiptID, shopID dot.ID) (*PurchaseOrdersResponse, error)
 }
 

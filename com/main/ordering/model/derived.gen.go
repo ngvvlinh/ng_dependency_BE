@@ -77,12 +77,12 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.ConfirmedAt),
 		core.Time(m.CancelledAt),
 		core.String(m.CancelReason),
-		core.Int(m.CustomerConfirm),
-		core.Int(m.ShopConfirm),
-		core.Int(m.ConfirmStatus),
-		core.Int(m.FulfillmentShippingStatus),
-		core.Int(m.EtopPaymentStatus),
-		core.Int(m.Status),
+		m.CustomerConfirm,
+		m.ShopConfirm,
+		m.ConfirmStatus,
+		m.FulfillmentShippingStatus,
+		m.EtopPaymentStatus,
+		m.Status,
 		core.Array{m.FulfillmentShippingStates, opts},
 		core.Array{m.FulfillmentPaymentStatuses, opts},
 		core.JSON{m.Lines},
@@ -116,7 +116,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.FulfillmentIDs, opts},
 		core.JSON{m.ExternalMeta},
 		m.TradingShopID,
-		core.Int(m.PaymentStatus),
+		m.PaymentStatus,
 		m.PaymentID,
 		core.JSON{m.ReferralMeta},
 		m.CustomerID,
@@ -149,12 +149,12 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.ConfirmedAt),
 		(*core.Time)(&m.CancelledAt),
 		(*core.String)(&m.CancelReason),
-		(*core.Int)(&m.CustomerConfirm),
-		(*core.Int)(&m.ShopConfirm),
-		(*core.Int)(&m.ConfirmStatus),
-		(*core.Int)(&m.FulfillmentShippingStatus),
-		(*core.Int)(&m.EtopPaymentStatus),
-		(*core.Int)(&m.Status),
+		&m.CustomerConfirm,
+		&m.ShopConfirm,
+		&m.ConfirmStatus,
+		&m.FulfillmentShippingStatus,
+		&m.EtopPaymentStatus,
+		&m.Status,
 		core.Array{&m.FulfillmentShippingStates, opts},
 		core.Array{&m.FulfillmentPaymentStatuses, opts},
 		core.JSON{&m.Lines},
@@ -188,7 +188,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.FulfillmentIDs, opts},
 		core.JSON{&m.ExternalMeta},
 		&m.TradingShopID,
-		(*core.Int)(&m.PaymentStatus),
+		&m.PaymentStatus,
 		&m.PaymentID,
 		core.JSON{&m.ReferralMeta},
 		&m.CustomerID,
@@ -445,7 +445,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.CustomerConfirm))
+		w.WriteArg(m.CustomerConfirm)
 	}
 	if m.ShopConfirm != 0 {
 		flag = true
@@ -453,7 +453,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ShopConfirm))
+		w.WriteArg(m.ShopConfirm)
 	}
 	if m.ConfirmStatus != 0 {
 		flag = true
@@ -461,7 +461,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ConfirmStatus))
+		w.WriteArg(m.ConfirmStatus)
 	}
 	if m.FulfillmentShippingStatus != 0 {
 		flag = true
@@ -469,7 +469,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.FulfillmentShippingStatus))
+		w.WriteArg(m.FulfillmentShippingStatus)
 	}
 	if m.EtopPaymentStatus != 0 {
 		flag = true
@@ -477,7 +477,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.EtopPaymentStatus))
+		w.WriteArg(m.EtopPaymentStatus)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -485,7 +485,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.FulfillmentShippingStates != nil {
 		flag = true
@@ -757,7 +757,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.PaymentStatus))
+		w.WriteArg(m.PaymentStatus)
 	}
 	if m.PaymentID != 0 {
 		flag = true

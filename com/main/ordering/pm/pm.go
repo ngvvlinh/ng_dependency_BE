@@ -3,7 +3,10 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
@@ -13,7 +16,6 @@ import (
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -119,7 +121,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int(model.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err
@@ -139,14 +141,14 @@ func (p *ProcessManager) updatePaymentStatus(
 	orders []*ordering.Order, mapOrderIDAndReceivedAmount map[dot.ID]int,
 ) error {
 	for _, order := range orders {
-		if int(order.PaymentStatus) == int(model.S4Negative) || int(order.PaymentStatus) == int(model.S4SuperPos) {
+		if int(order.PaymentStatus) == int(status4.N) || int(order.PaymentStatus) == int(status4.S) {
 			continue
 		}
-		var status *model.Status3
+		var status status3.NullStatus
 		if order.TotalAmount == mapOrderIDAndReceivedAmount[order.ID] {
-			status = model.S3Positive.P()
+			status = status3.P.Wrap()
 		} else {
-			status = model.S3Zero.P()
+			status = status3.Z.Wrap()
 		}
 
 		updateOrderPaymentStatus := &modelx.UpdateOrderPaymentStatusCommand{
@@ -268,7 +270,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int(etop.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err

@@ -8,12 +8,12 @@ import (
 
 	"etop.vn/api/main/transaction"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	transactionmodel "etop.vn/backend/com/main/transaction/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	. "etop.vn/backend/pkg/common/testing"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -52,7 +52,7 @@ func TestTransactionQueryService(t *testing.T) {
 			ID:        tranID,
 			Amount:    amount,
 			AccountID: accountID,
-			Status:    int(model.S3Positive),
+			Status:    status3.P,
 			Type:      string(transaction.TransactionTypeAffiliate),
 			Metadata: &transactionmodel.TransactionMetadata{
 				ReferralType: string(transaction.ReferralTypeOrder),

@@ -3,7 +3,10 @@ package ordering
 import (
 	"context"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/ordering/sqlstore"
@@ -50,15 +53,15 @@ func (a *Aggregate) ValidateOrdersForShipping(ctx context.Context, args *orderin
 
 func ValidateOrderStatus(order *ordering.Order) error {
 	switch order.Status {
-	case etoptypes.S5Negative:
+	case status5.N:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil).WithMetaID("orderID", order.ID)
-	case etoptypes.S5Positive:
+	case status5.P:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil).WithMetaID("orderID", order.ID)
-	case etoptypes.S5NegSuper:
+	case status5.NS:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil).WithMetaID("orderID", order.ID)
 	}
 
-	if order.ConfirmStatus == etoptypes.S3Negative {
+	if order.ConfirmStatus == status3.N {
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil).WithMetaID("orderID", order.ID)
 	}
 	return nil

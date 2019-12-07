@@ -3,8 +3,9 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/shopping/suppliering"
@@ -125,7 +126,7 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").
 			Throw()
 	}
-	if purchaseOrder.Status != etop.S3Zero {
+	if purchaseOrder.Status != status3.Z {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể chỉnh sửa đơn nhập hàng, kiểm tra trạng thái đơn.")
 	}
 
@@ -303,7 +304,7 @@ func (a *PurchaseOrderAggregate) CancelPurchaseOrder(
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").
 			Throw()
 	}
-	if purchaseOrder.Status != etop.S3Zero {
+	if purchaseOrder.Status != status3.Z {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể huỷ đơn nhập hàng.")
 	}
 
@@ -321,7 +322,7 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").
 			Throw()
 	}
-	if purchaseOrder.Status != etop.S3Zero {
+	if purchaseOrder.Status != status3.Z {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể xác nhận đơn nhập hàng.")
 	}
 

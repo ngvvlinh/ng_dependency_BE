@@ -3,12 +3,13 @@ package convert
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
 	. "etop.vn/capi/dot"
 )
 
@@ -69,7 +70,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 			CostPrice:   in.CostPrice,
 			RetailPrice: in.RetailPrice,
 		},
-		Status:      int(in.Status),
+		Status:      in.Status,
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
 		CategoryID:  in.CategoryID,
@@ -142,7 +143,7 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		CostPrice:     in.CostPrice,
 		ListPrice:     in.ListPrice,
 		RetailPrice:   in.RetailPrice,
-		Status:        model.Status3(in.Status),
+		Status:        status3.Status(in.Status),
 		CreatedAt:     in.CreatedAt,
 		UpdatedAt:     in.UpdatedAt,
 
@@ -199,7 +200,7 @@ func ShopVariant(in *catalogmodel.ShopVariant) (out *catalog.ShopVariant) {
 			DescHTML:    in.DescHTML,
 		},
 		ImageURLs:  in.ImageURLs,
-		Status:     int16(in.Status),
+		Status:     in.Status,
 		Attributes: Attributes(in.Attributes),
 		PriceInfo: catalog.PriceInfo{
 			ListPrice:   in.ListPrice,

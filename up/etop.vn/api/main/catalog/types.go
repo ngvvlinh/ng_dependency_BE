@@ -3,6 +3,8 @@ package catalog
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/types/etc/product_type"
 	dot "etop.vn/capi/dot"
@@ -36,7 +38,7 @@ type ShopProduct struct {
 
 	Tags []string
 
-	Status int
+	Status status3.Status
 
 	CreatedAt time.Time
 
@@ -67,7 +69,7 @@ type ShopVariant struct {
 
 	ImageURLs []string
 
-	Status int16
+	Status status3.Status
 
 	Attributes Attributes
 

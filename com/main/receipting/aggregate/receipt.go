@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/purchaseorder"
@@ -18,7 +20,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
@@ -149,7 +150,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 			Throw()
 	}
 
-	if receipt.Status == int(etopmodel.S3Negative) {
+	if receipt.Status == status3.N {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể thay đổi phiếu đã hủy.")
 	}
 
@@ -163,7 +164,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		RefType:     receipt.RefType,
 		ShopID:      receipt.ShopID,
 	}
-	if receipt.Status == int(etopmodel.S3Zero) {
+	if receipt.Status == status3.Z {
 		if args.TraderID.Valid && args.TraderID.ID != receipt.TraderID {
 			receiptNeedValidate.TraderID = args.TraderID.ID
 		}
@@ -176,7 +177,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		return nil, err
 	}
 
-	if receipt.Status != int(etopmodel.S3Zero) {
+	if receipt.Status != status3.Z {
 		args.TraderID = WrapID(receipt.TraderID)
 		args.Amount = Int(receipt.Amount)
 		args.RefType = receipt.RefType
@@ -372,7 +373,7 @@ func (a *ReceiptAggregate) CancelReceipt(
 			Throw()
 	}
 
-	if receipt.Status == int(etopmodel.S3Negative) {
+	if receipt.Status == status3.N {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
 	}
 
@@ -407,9 +408,9 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 	}
 
 	switch receipt.Status {
-	case int(etopmodel.S3Positive):
+	case status3.P:
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã xác nhận")
-	case int(etopmodel.S3Negative):
+	case status3.N:
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
 	default:
 		//no-op

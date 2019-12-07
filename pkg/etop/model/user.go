@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/capi/dot"
 )
@@ -47,7 +49,7 @@ type GetUserByLoginQuery struct {
 type CreateUserCommand struct {
 	UserInner
 	Password       string
-	Status         Status3
+	Status         status3.Status
 	AgreeTOS       bool
 	AgreeEmailInfo bool
 	IsTest         bool
@@ -76,8 +78,8 @@ type UpdateUserVerificationCommand struct {
 
 type UpdateUserIdentifierCommand struct {
 	UserID    dot.ID
-	Status    Status3 // We don't allow update status to 0
-	UserInner         // Must be normalized identifier
+	Status    status3.Status // We don't allow update status to 0
+	UserInner                // Must be normalized identifier
 
 	Password    string
 	Identifying UserIdentifying

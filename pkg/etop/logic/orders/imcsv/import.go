@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
@@ -109,7 +111,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		switch {
 		case rerr != nil:
 			stack := debug.Stack()
-			attempt.Status = model.S4Negative
+			attempt.Status = status4.N
 			attempt.ErrorType = "panic"
 			savedErr := cm.Errorf(cm.Internal, nil, "%v", rerr).
 				WithMeta("stack", cm.UnsafeBytesToString(stack))
@@ -119,13 +121,13 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 			_err = cm.Error(cm.Internal, "", nil)
 
 		case _err != nil:
-			attempt.Status = model.S4Negative
+			attempt.Status = status4.N
 			attempt.ErrorType = "error"
 			_err = xerrors.ToError(_err).WithMetaID("import_id", importID)
 			attempt.Errors = []*model.Error{model.ToError(_err)}
 
 		case len(_resp.CellErrors) > 0:
-			attempt.Status = model.S4Negative
+			attempt.Status = status4.N
 			attempt.ErrorType = "cell_errors"
 			attempt.Errors = cmapi.ErrorsToModel(_resp.CellErrors)
 			attempt.NError = len(_resp.CellErrors)
@@ -133,11 +135,11 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		case len(_resp.ImportErrors) > 0:
 			count := cmapi.CountErrors(_resp.ImportErrors)
 			if count == 0 {
-				attempt.Status = model.S4Positive
+				attempt.Status = status4.P
 				attempt.NCreated = len(_resp.ImportErrors)
 
 			} else {
-				attempt.Status = model.S4SuperPos // partially error
+				attempt.Status = status4.S // partially error
 				attempt.ErrorType = "import_errors"
 				attempt.Errors = cmapi.ErrorsToModel(_resp.ImportErrors)
 				attempt.NError = count

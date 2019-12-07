@@ -6,7 +6,6 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	affiliate3 "etop.vn/api/top/services/affiliate"
 	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate3.CommissionSetting {
@@ -123,7 +122,7 @@ func PbSellerCommission(m *affiliate.SellerCommission) *affiliate3.SellerCommiss
 		Value:       m.Amount,
 		Description: m.Description,
 		Note:        m.Note,
-		Status:      Pb4(model.Status4(m.Status)),
+		Status:      m.Status,
 		Type:        m.Type,
 		OValue:      m.OValue,
 		OBaseValue:  m.OBaseValue,
@@ -143,7 +142,7 @@ func Convert_core_Affiliate_To_api_Affiliate(in *identity.Affiliate) *etop.Affil
 	return &etop.Affiliate{
 		Id:          in.ID,
 		Name:        in.Name,
-		Status:      Pb3(model.Status3(in.Status)),
+		Status:      in.Status,
 		IsTest:      in.IsTest != 0,
 		Phone:       in.Phone,
 		Email:       in.Email,

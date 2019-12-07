@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/gender"
+	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
 )
 
@@ -28,7 +29,7 @@ type ShopCustomer struct {
 	Note      string
 	Phone     string
 	Email     string
-	Status    int
+	Status    status3.Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

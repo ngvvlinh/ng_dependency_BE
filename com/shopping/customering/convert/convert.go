@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
@@ -97,7 +98,7 @@ func ShopTraderAddress(args *model.ShopTraderAddress, out *addressing.ShopTrader
 func ShopTraderAddressDB(args *addressing.ShopTraderAddress, out *model.ShopTraderAddress) {
 	convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(args, out)
 	out.Coordinates = orderconvert.CoordinatesDB(args.Coordinates)
-	out.Status = etop.S3Positive
+	out.Status = status3.P
 }
 
 func CreateShopTraderAddress(args *addressing.CreateAddressArgs, out *addressing.ShopTraderAddress) {

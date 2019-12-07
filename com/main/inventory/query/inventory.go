@@ -3,7 +3,10 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/sqlstore"
@@ -121,17 +124,17 @@ func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	var status = etop.S4Negative
+	var status = status4.N
 	if len(result) == 0 {
-		status = etop.S4Zero
+		status = status4.Z
 	} else {
 		for _, value := range result {
-			if value.Status == etop.S3Zero {
-				status = etop.S4SuperPos
+			if value.Status == status3.Z {
+				status = status4.S
 				break
 			}
-			if value.Status == etop.S3Positive {
-				status = etop.S4Positive
+			if value.Status == status3.P {
+				status = status4.P
 				break
 			}
 		}

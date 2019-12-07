@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 
@@ -14,7 +15,7 @@ type Transaction struct {
 	ID        dot.ID
 	Amount    int
 	AccountID dot.ID
-	Status    int
+	Status    status3.Status
 	Type      string
 	Note      string
 	Metadata  *TransactionMetadata

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/capi/dot"
 
 	"github.com/PuerkitoBio/goquery"
@@ -87,7 +89,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	newStatus := state.ToStatus5(ffm.ShippingState)
 
 	// UpdateInfo ClosedAt
-	if newStatus == model.S5Negative || newStatus == model.S5NegSuper || newStatus == model.S5Positive {
+	if newStatus == status5.N || newStatus == status5.NS || newStatus == status5.P {
 		if ffm.ExternalShippingClosedAt.IsZero() {
 			update.ClosedAt = now
 		}

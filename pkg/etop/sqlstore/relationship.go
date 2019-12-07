@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
@@ -255,7 +257,7 @@ func DeleteAccountUser(ctx context.Context, cmd *model.DeleteAccountUserCommand)
 		Where("user_id = ?", cmd.UserID).
 		UpdateMap(map[string]interface{}{
 			"deleted_at": time.Now(),
-			"status":     int(model.S3Negative),
+			"status":     int(status3.N),
 		})
 	if err != nil {
 		return err

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/stocktaking"
@@ -65,7 +66,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 			return nil, err
 		}
 		for _, value := range inventoryVoucherRefIDs {
-			if value.Status == etop.S3Positive || value.Status == etop.S3Zero {
+			if value.Status == status3.P || value.Status == status3.Z {
 				return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu xuất nhập kho cho ref_id đã tồn tại, Vui lòng kiểm tra lại ", value.ID)
 			}
 		}
@@ -228,7 +229,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if err != nil {
 		return nil, err
 	}
-	if inventoryVoucher.Status != etop.S3Zero {
+	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "This inventory is already confirmed or cancelled")
 	}
 	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
@@ -386,7 +387,7 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 	if err != nil {
 		return nil, err
 	}
-	if inventoryVoucher.Status != etop.S3Zero {
+	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
 	for _, value := range inventoryVoucher.Lines {
@@ -412,7 +413,7 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 			return nil, err
 		}
 	}
-	inventoryVoucher.Status = etop.S3Positive
+	inventoryVoucher.Status = status3.P
 	inventoryVoucher.ConfirmedAt = time.Now()
 
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAllDB(inventoryVoucher)
@@ -437,7 +438,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	if err != nil {
 		return nil, err
 	}
-	if inventoryVoucher.Status != etop.S3Zero {
+	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
 	if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeOut) {
@@ -457,7 +458,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 			}
 		}
 	}
-	inventoryVoucher.Status = etop.S3Negative
+	inventoryVoucher.Status = status3.N
 	inventoryVoucher.CancelledAt = time.Now()
 	inventoryVoucher.CancelReason = args.Reason
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAllDB(inventoryVoucher)
@@ -629,7 +630,7 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 	}
 	POExists := false
 	for _, value := range inventoryVouchers {
-		if value.Status == etop.S3Positive {
+		if value.Status == status3.P {
 			POExists = true
 			break
 		}
@@ -683,7 +684,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 	if err := q.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return nil, err
 	}
-	if queryPurchaseOrder.Result.Status != etop.S3Positive {
+	if queryPurchaseOrder.Result.Status != status3.P {
 		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho Purchase Order chưa được xác nhận.", nil)
 	}
 	// GET info and put it to cmd
@@ -786,7 +787,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 	if err := q.StocktakeQuery.Dispatch(ctx, queryStocktake); err != nil {
 		return nil, err
 	}
-	if queryStocktake.Result.Status != etop.S3Positive {
+	if queryStocktake.Result.Status != status3.P {
 		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho stocktake chưa được xác nhận.", nil)
 	}
 	// GET info and put it to cmd

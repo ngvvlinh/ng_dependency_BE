@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/backend/pkg/common/imcsv"
 
 	"etop.vn/capi/dot"
@@ -321,7 +323,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 	ffmsByShippingCode := make(map[string]*shipmodel.Fulfillment, len(cmd.Result.Fulfillments))
 	for _, ffm := range cmd.Result.Fulfillments {
 		// ignore ffms that finished
-		if (ffm.Status != model.S5Zero && ffm.Status != model.S5SuperPos) ||
+		if (ffm.Status != status5.Z && ffm.Status != status5.S) ||
 			!ffm.CODEtopTransferedAt.IsZero() {
 			continue
 		}

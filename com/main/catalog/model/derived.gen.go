@@ -167,7 +167,7 @@ func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.CostPrice),
 		core.Int(m.ListPrice),
 		core.Int(m.RetailPrice),
-		core.Int(m.Status),
+		m.Status,
 		core.JSON{m.Attributes},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -193,7 +193,7 @@ func (m *ShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.CostPrice),
 		(*core.Int)(&m.ListPrice),
 		(*core.Int)(&m.RetailPrice),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		core.JSON{&m.Attributes},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -380,7 +380,7 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.Attributes != nil {
 		flag = true
@@ -607,7 +607,7 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.ListPrice),
 		core.Int(m.RetailPrice),
 		m.BrandID,
-		core.Int(m.Status),
+		m.Status,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -636,7 +636,7 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.ListPrice),
 		(*core.Int)(&m.RetailPrice),
 		&m.BrandID,
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -840,7 +840,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true

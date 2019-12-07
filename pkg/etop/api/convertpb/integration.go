@@ -22,7 +22,7 @@ func PbPartnerShopInfo(m *model.Shop) *integration.PartnerShopInfo {
 	return &integration.PartnerShopInfo{
 		Id:     m.ID,
 		Name:   m.Name,
-		Status: Pb3(m.Status),
+		Status: m.Status,
 		IsTest: m.IsTest != 0,
 		// Address:           m.Address,
 		// Phone:             m.

@@ -1,7 +1,6 @@
 package convert
 
 import (
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/transaction"
 	transactionmodel "etop.vn/backend/com/main/transaction/model"
 )
@@ -34,7 +33,7 @@ func Transaction(in *transactionmodel.Transaction) *transaction.Transaction {
 		ID:        in.ID,
 		Amount:    in.Amount,
 		AccountID: in.AccountID,
-		Status:    etoptypes.Status3FromInt(in.Status),
+		Status:    in.Status,
 		Type:      transaction.TransactionType(in.Type),
 		Note:      in.Note,
 		Metadata:  TransactionMetadata(in.Metadata),
@@ -58,7 +57,7 @@ func TransactionDB(in *transaction.Transaction) *transactionmodel.Transaction {
 		ID:        in.ID,
 		Amount:    in.Amount,
 		AccountID: in.AccountID,
-		Status:    int(in.Status),
+		Status:    in.Status,
 		Type:      string(in.Type),
 		Note:      in.Note,
 		Metadata:  TransactionMetadataDB(in.Metadata),

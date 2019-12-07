@@ -1,8 +1,8 @@
 package convert
 
 import (
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/top/types/etc/status3"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -26,7 +26,7 @@ func ShopDB(in *identity.Shop) (out *model.Shop) {
 		Email:                         in.Email,
 		Code:                          in.Code,
 		AutoCreateFFM:                 in.AutoCreateFFM,
-		Status:                        model.Status3(in.Status),
+		Status:                        status3.Status(in.Status),
 		CreatedAt:                     in.CreatedAt,
 		UpdatedAt:                     in.UpdatedAt,
 		DeletedAt:                     in.DeletedAt,
@@ -60,7 +60,7 @@ func Shop(in *model.Shop) (out *identity.Shop) {
 		Email:             in.Email,
 		Code:              in.Code,
 		AutoCreateFFM:     in.AutoCreateFFM,
-		Status:            etoptypes.Status3(in.Status),
+		Status:            status3.Status(in.Status),
 		CreatedAt:         in.CreatedAt,
 		UpdatedAt:         in.UpdatedAt,
 		DeletedAt:         in.DeletedAt,
@@ -78,7 +78,7 @@ func User(in *model.User) (out *identity.User) {
 		ShortName:       in.ShortName,
 		Email:           in.Email,
 		Phone:           in.Phone,
-		Status:          etoptypes.Status3(in.Status),
+		Status:          status3.Status(in.Status),
 		EmailVerifiedAt: in.EmailVerifiedAt,
 		CreatedAt:       in.CreatedAt,
 		UpdatedAt:       in.UpdatedAt,
@@ -120,7 +120,7 @@ func Affiliate(in *identitymodel.Affiliate) *identity.Affiliate {
 		Name:        in.Name,
 		Phone:       in.Phone,
 		Email:       in.Email,
-		Status:      etoptypes.Status3FromInt(int(in.Status)),
+		Status:      in.Status,
 		IsTest:      in.IsTest,
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
@@ -150,7 +150,7 @@ func AffiliateDB(in *identity.Affiliate) *identitymodel.Affiliate {
 		Name:        in.Name,
 		Phone:       in.Phone,
 		Email:       in.Email,
-		Status:      model.Status3(in.Status),
+		Status:      status3.Status(in.Status),
 		IsTest:      in.IsTest,
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,

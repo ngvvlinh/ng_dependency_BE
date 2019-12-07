@@ -3,9 +3,10 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/gender"
 
-	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/customering"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/capi/dot"
@@ -68,7 +69,7 @@ type ShopTraderAddress struct {
 	DeletedAt    time.Time
 
 	//Default status = 1
-	Status etop.Status3
+	Status status3.Status
 }
 
 var _ = sqlgenShopCustomerGroupCustomer(&ShopCustomerGroupCustomer{})

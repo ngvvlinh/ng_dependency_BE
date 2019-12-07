@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/top/int/etop"
+	"etop.vn/api/top/types/etc/status3"
 
+	"etop.vn/api/top/int/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
@@ -43,10 +44,10 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInv
 	if r.AccountId == 0 {
 		return r, cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
-	if r.Response == nil {
+	if !r.Response.Valid {
 		return r, cm.Error(cm.InvalidArgument, "Invalid response", nil)
 	}
-	response := *convertpb.Status3ToModel(r.Response)
+	response := r.Response.Enum
 
 	userID := r.Context.UserID
 	accountID := r.AccountId
@@ -65,16 +66,16 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInv
 
 	accUser := accUserQuery.Result.AccountUser
 	switch accUser.Status {
-	case model.S3Zero:
+	case status3.Z:
 		switch response {
-		case model.S3Positive, model.S3Negative:
+		case status3.P, status3.N:
 			updateAccUser.Status = response
 			updateAccUser.ResponseStatus = response
 		default:
 			return r, cm.Error(cm.InvalidArgument, "Invalid response", nil)
 		}
 
-	case model.S3Positive, model.S3Negative:
+	case status3.P, status3.N:
 		// If the response is the same as the status, just respond it
 		if response == accUser.Status {
 			r.Result = convertpb.PbUserAccount(&accUserQuery.Result)

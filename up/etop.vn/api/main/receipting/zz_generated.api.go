@@ -8,8 +8,8 @@ import (
 	context "context"
 	time "time"
 
-	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -192,7 +192,7 @@ func (h QueryServiceHandler) HandleListReceiptsByRefsAndStatus(ctx context.Conte
 type ListReceiptsByTraderIDsAndStatusesQuery struct {
 	ShopID    dot.ID
 	TraderIDs []dot.ID
-	Statuses  []etop.Status3
+	Statuses  []status3.Status
 
 	Result *ReceiptsResponse `json:"-"`
 }
@@ -409,7 +409,7 @@ func (q *ListReceiptsByRefsAndStatusQuery) SetListReceiptsByRefsAndStatusArgs(ar
 	q.Status = args.Status
 }
 
-func (q *ListReceiptsByTraderIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []etop.Status3) {
+func (q *ListReceiptsByTraderIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status) {
 	return ctx,
 		q.ShopID,
 		q.TraderIDs,

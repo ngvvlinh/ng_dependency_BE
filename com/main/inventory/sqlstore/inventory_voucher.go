@@ -3,7 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/inventory/model"
@@ -57,7 +58,7 @@ func (s *InventoryVoucherStore) IDs(ids ...dot.ID) *InventoryVoucherStore {
 	return s
 }
 
-func (s *InventoryVoucherStore) Status(status etop.Status3) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) Status(status status3.Status) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }

@@ -8,6 +8,8 @@ import (
 	"encoding/hex"
 	"io"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
@@ -59,13 +61,13 @@ func LoginUser(ctx context.Context, query *LoginUserQuery) error {
 	hashpwd := userQuery.Result.UserInternal.Hashpwd
 
 	// If the user is activated, verify password and login
-	if user.Status != model.S3Zero {
+	if user.Status != status3.Z {
 		if !VerifyPassword(query.Password, hashpwd) {
 			return cm.Error(cm.Unauthenticated, MsgLoginUnauthenticated, nil).MarkTrivial()
 		}
 
 		// The user must be activated
-		if user.Status != model.S3Positive {
+		if user.Status != status3.P {
 			return cm.Error(cm.Unauthenticated,
 				"Tài khoản của bạn đã bị khóa. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
 		}

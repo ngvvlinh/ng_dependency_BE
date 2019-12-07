@@ -3,6 +3,7 @@ package carrying
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
 )
 
@@ -11,7 +12,7 @@ type ShopCarrier struct {
 	ShopID    dot.ID
 	FullName  string
 	Note      string
-	Status    int
+	Status    status3.Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

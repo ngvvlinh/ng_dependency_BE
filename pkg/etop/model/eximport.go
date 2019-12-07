@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -26,7 +28,7 @@ type ImportAttempt struct {
 	NCreated     int
 	NUpdated     int
 	NError       int
-	Status       Status4
+	Status       status4.Status
 	ErrorType    string
 	Errors       []*Error
 	DurationMs   int
@@ -51,7 +53,7 @@ type ExportAttempt struct {
 	RequestQuery string
 	MimeType     string
 
-	Status    Status4
+	Status    status4.Status
 	Errors    []*Error
 	Error     *Error
 	NTotal    int
@@ -66,7 +68,7 @@ type ExportAttempt struct {
 }
 
 func (e *ExportAttempt) GetAbortedError() error {
-	if e.Status != S4Negative {
+	if e.Status != status4.N {
 		return nil
 	}
 	if len(e.Errors) == 0 {

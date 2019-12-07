@@ -4,14 +4,18 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
-	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/com/main/shipnow/convert"
 	"etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
@@ -168,22 +172,22 @@ func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillm
 
 type UpdateStateArgs struct {
 	ID             dot.ID
-	SyncStatus     etop.Status4
-	Status         etop.Status5
+	SyncStatus     status4.Status
+	Status         status5.Status
 	ShippingState  shipnowtypes.State
 	SyncStates     *shipnow.SyncStates
-	ConfirmStatus  etop.Status3
-	ShippingStatus etop.Status5
+	ConfirmStatus  status3.Status
+	ShippingStatus status5.Status
 }
 
 func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
-		SyncStatus:     etopconvert.Status4ToModel(args.SyncStatus),
-		Status:         etopconvert.Status5ToModel(args.Status),
-		ConfirmStatus:  etopconvert.Status3ToModel(args.ConfirmStatus),
+		SyncStatus:     args.SyncStatus,
+		Status:         args.Status,
+		ConfirmStatus:  args.ConfirmStatus,
 		ShippingState:  shipnowtypes.StateToString(args.ShippingState),
 		SyncStates:     convert.SyncStateToModel(args.SyncStates),
-		ShippingStatus: etopconvert.Status5ToModel(args.ShippingStatus),
+		ShippingStatus: args.ShippingStatus,
 	}
 	err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(updateFfm)
 	if err != nil {
@@ -195,17 +199,17 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFu
 
 type UpdateCancelArgs struct {
 	ID            dot.ID
-	ConfirmStatus etop.Status3
-	Status        etop.Status5
+	ConfirmStatus status3.Status
+	Status        status5.Status
 	ShippingState shipnowtypes.State
 	CancelReason  string
 }
 
 func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
-		ConfirmStatus: etopconvert.Status3ToModel(args.ConfirmStatus),
+		ConfirmStatus: args.ConfirmStatus,
 		ShippingState: shipnowtypes.StateToString(args.ShippingState),
-		Status:        etopconvert.Status5ToModel(args.Status),
+		Status:        args.Status,
 		CancelReason:  args.CancelReason,
 	}
 	err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(updateFfm)
@@ -224,10 +228,10 @@ type UpdateCarrierInfoArgs struct {
 	ShippingCode        string
 	ShippingCreatedAt   time.Time
 	ShippingState       shipnowtypes.State
-	ShippingStatus      etop.Status5
-	EtopPaymentStatus   etop.Status4
+	ShippingStatus      status5.Status
+	EtopPaymentStatus   status4.Status
 	CODEtopTransferedAt time.Time
-	Status              etop.Status5
+	Status              status5.Status
 
 	ShippingPickingAt          time.Time
 	ShippingDeliveringAt       time.Time
@@ -242,15 +246,15 @@ type UpdateCarrierInfoArgs struct {
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
 		ShippingState:       shipnowtypes.StateToString(args.ShippingState),
-		ShippingStatus:      etopconvert.Status5ToModel(args.ShippingStatus),
+		ShippingStatus:      args.ShippingStatus,
 		ShippingCreatedAt:   args.ShippingCreatedAt,
 		ShippingCode:        args.ShippingCode,
 		FeeLines:            convert.FeelinesToModel(args.FeeLines),
 		CarrierFeeLines:     convert.FeelinesToModel(args.CarrierFeeLines),
 		TotalFee:            args.TotalFee,
-		EtopPaymentStatus:   etopconvert.Status4ToModel(args.EtopPaymentStatus),
+		EtopPaymentStatus:   args.EtopPaymentStatus,
 		CODEtopTransferedAt: args.CODEtopTransferedAt,
-		Status:              etopconvert.Status5ToModel(args.Status),
+		Status:              args.Status,
 
 		ShippingPickingAt:          args.ShippingPickingAt,
 		ShippingDeliveringAt:       args.ShippingDeliveringAt,

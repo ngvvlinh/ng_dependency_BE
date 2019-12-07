@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/capi/dot"
 )
 
@@ -25,7 +26,7 @@ type QueryService interface {
 
 type CreatePaymentArgs struct {
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           PaymentState
 	PaymentProvider PaymentProvider
 	ExternalTransID string
@@ -37,7 +38,7 @@ type CreatePaymentArgs struct {
 type UpdateExternalPaymentInfoArgs struct {
 	ID              dot.ID
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           PaymentState
 	ExternalData    json.RawMessage
 	ExternalTransID string

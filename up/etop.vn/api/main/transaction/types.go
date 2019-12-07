@@ -3,7 +3,8 @@ package transaction
 import (
 	"time"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 )
 
@@ -22,7 +23,7 @@ type Transaction struct {
 	ID        dot.ID
 	Amount    int
 	AccountID dot.ID
-	Status    etoptypes.Status3
+	Status    status3.Status
 	Type      TransactionType
 	Note      string
 	Metadata  *TransactionMetadata

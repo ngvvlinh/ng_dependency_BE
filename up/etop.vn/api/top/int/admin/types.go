@@ -20,11 +20,11 @@ func (m *GetOrdersRequest) Reset()         { *m = GetOrdersRequest{} }
 func (m *GetOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	ShopId  dot.ID           `json:"shop_id"`
-	OrderId dot.ID           `json:"order_id"`
-	Status  *status3.Status  `json:"status"`
-	Filters []*common.Filter `json:"filters"`
+	Paging  *common.Paging     `json:"paging"`
+	ShopId  dot.ID             `json:"shop_id"`
+	OrderId dot.ID             `json:"order_id"`
+	Status  status3.NullStatus `json:"status"`
+	Filters []*common.Filter   `json:"filters"`
 }
 
 func (m *GetFulfillmentsRequest) Reset()         { *m = GetFulfillmentsRequest{} }
@@ -218,10 +218,10 @@ func (m *UpdateMoneyTransactionShippingEtopRequest) String() string {
 }
 
 type GetMoneyTransactionShippingEtopsRequest struct {
-	Ids     []dot.ID         `json:"ids"`
-	Status  *status3.Status  `json:"status"`
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+	Ids     []dot.ID           `json:"ids"`
+	Status  status3.NullStatus `json:"status"`
+	Paging  *common.Paging     `json:"paging"`
+	Filters []*common.Filter   `json:"filters"`
 }
 
 func (m *GetMoneyTransactionShippingEtopsRequest) Reset() {

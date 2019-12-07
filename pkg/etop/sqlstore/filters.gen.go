@@ -5,6 +5,8 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/pkg/etop/model"
@@ -196,7 +198,7 @@ func (ft *ImportAttemptFilters) ByNErrorPtr(NError *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByStatus(Status m.Status4) *sq.ColumnFilter {
+func (ft *ImportAttemptFilters) ByStatus(Status status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -205,7 +207,7 @@ func (ft *ImportAttemptFilters) ByStatus(Status m.Status4) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByStatusPtr(Status *m.Status4) *sq.ColumnFilterPtr {
+func (ft *ImportAttemptFilters) ByStatusPtr(Status *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -457,7 +459,7 @@ func (ft *ExportAttemptFilters) ByMimeTypePtr(MimeType *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *ExportAttemptFilters) ByStatus(Status m.Status4) *sq.ColumnFilter {
+func (ft *ExportAttemptFilters) ByStatus(Status status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -466,7 +468,7 @@ func (ft *ExportAttemptFilters) ByStatus(Status m.Status4) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ExportAttemptFilters) ByStatusPtr(Status *m.Status4) *sq.ColumnFilterPtr {
+func (ft *ExportAttemptFilters) ByStatusPtr(Status *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1036,7 +1038,7 @@ func (ft *ShopFilters) ByOrderSourceIDPtr(OrderSourceID *dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *ShopFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1045,7 +1047,7 @@ func (ft *ShopFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1254,7 +1256,7 @@ func (ft *PartnerFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PartnerFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *PartnerFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1263,7 +1265,7 @@ func (ft *PartnerFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PartnerFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *PartnerFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1534,7 +1536,7 @@ func (ft *AccountAuthFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilter
 	}
 }
 
-func (ft *AccountAuthFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *AccountAuthFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1543,7 +1545,7 @@ func (ft *AccountAuthFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountAuthFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *AccountAuthFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1738,7 +1740,7 @@ func (ft *PartnerRelationFilters) ByNoncePtr(Nonce *dot.ID) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *PartnerRelationFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *PartnerRelationFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1747,7 +1749,7 @@ func (ft *PartnerRelationFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PartnerRelationFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *PartnerRelationFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1923,7 +1925,7 @@ func (ft *UserFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *UserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1932,7 +1934,7 @@ func (ft *UserFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -2241,7 +2243,7 @@ func (ft *AccountUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AccountUserFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *AccountUserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -2250,7 +2252,7 @@ func (ft *AccountUserFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountUserFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *AccountUserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -2260,7 +2262,7 @@ func (ft *AccountUserFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *AccountUserFilters) ByResponseStatus(ResponseStatus m.Status3) *sq.ColumnFilter {
+func (ft *AccountUserFilters) ByResponseStatus(ResponseStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "response_status",
@@ -2269,7 +2271,7 @@ func (ft *AccountUserFilters) ByResponseStatus(ResponseStatus m.Status3) *sq.Col
 	}
 }
 
-func (ft *AccountUserFilters) ByResponseStatusPtr(ResponseStatus *m.Status3) *sq.ColumnFilterPtr {
+func (ft *AccountUserFilters) ByResponseStatusPtr(ResponseStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "response_status",
@@ -3351,7 +3353,7 @@ func (ft *CreditFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *CreditFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
+func (ft *CreditFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -3360,7 +3362,7 @@ func (ft *CreditFilters) ByStatus(Status m.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CreditFilters) ByStatusPtr(Status *m.Status3) *sq.ColumnFilterPtr {
+func (ft *CreditFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

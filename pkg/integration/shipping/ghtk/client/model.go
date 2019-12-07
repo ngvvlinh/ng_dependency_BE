@@ -3,6 +3,8 @@ package client
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/etop/model"
@@ -121,16 +123,16 @@ func (sID StateID) ToModel() model.ShippingState {
 	}
 }
 
-func (sID StateID) ToStatus5() model.Status5 {
+func (sID StateID) ToStatus5() status5.Status {
 	switch sID {
 	case StateIDCanceled, StateIDNotTake:
-		return model.S5Negative
+		return status5.N
 	case StateIDReturned, StateIDBoiHoan:
-		return model.S5NegSuper
+		return status5.NS
 	case StateIDCrossChecked, StateIDDelivered:
-		return model.S5Positive
+		return status5.P
 	default:
-		return model.S5SuperPos
+		return status5.S
 	}
 }
 

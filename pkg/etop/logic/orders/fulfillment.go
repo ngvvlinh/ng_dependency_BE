@@ -5,6 +5,12 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/location"
@@ -78,14 +84,14 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrder
 	}
 	order := query.Result.Order
 	switch order.Status {
-	case model.S5Negative:
+	case status5.N:
 		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
-	case model.S5Positive:
+	case status5.P:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
-	case model.S5NegSuper:
+	case status5.NS:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}
-	if order.ConfirmStatus == model.S3Negative || order.ShopConfirm == model.S3Negative {
+	if order.ConfirmStatus == status3.N || order.ShopConfirm == status3.N {
 		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
 	}
 
@@ -95,18 +101,18 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrder
 
 	// Only update order status when success.
 	// This disallow updating order.
-	if order.ConfirmStatus != model.S3Positive ||
-		order.ShopConfirm != model.S3Positive {
+	if order.ConfirmStatus != status3.P ||
+		order.ShopConfirm != status3.P {
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
 			OrderIDs:      []dot.ID{r.OrderId},
-			ConfirmStatus: model.S3Positive.P(),
-			ShopConfirm:   model.S3Positive.P(),
+			ConfirmStatus: status3.P.Wrap(),
+			ShopConfirm:   status3.P.Wrap(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return resp, err
 		}
-		order.ConfirmStatus = model.S3Positive
-		order.ShopConfirm = model.S3Positive
+		order.ConfirmStatus = status3.P
+		order.ShopConfirm = status3.P
 
 		event := &ordering.OrderConfirmedEvent{
 			OrderID:              order.ID,
@@ -148,16 +154,16 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 
 	// Verify status
 	switch order.Status {
-	case model.S5Negative:
+	case status5.N:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
-	case model.S5Positive:
+	case status5.P:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
-	case model.S5NegSuper:
+	case status5.NS:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}
 
-	if order.ConfirmStatus == model.S3Negative ||
-		order.ShopConfirm == model.S3Negative {
+	if order.ConfirmStatus == status3.N ||
+		order.ShopConfirm == status3.N {
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
 	}
 
@@ -227,18 +233,18 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 
 	// Only update order status when success.
 	// This disallow updating order.
-	if order.ConfirmStatus != model.S3Positive ||
-		order.ShopConfirm != model.S3Positive {
+	if order.ConfirmStatus != status3.P ||
+		order.ShopConfirm != status3.P {
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
 			OrderIDs:      []dot.ID{r.OrderId},
-			ConfirmStatus: model.S3Positive.P(),
-			ShopConfirm:   model.S3Positive.P(),
+			ConfirmStatus: status3.P.Wrap(),
+			ShopConfirm:   status3.P.Wrap(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			_err = err
 		}
-		order.ConfirmStatus = model.S3Positive
-		order.ShopConfirm = model.S3Positive
+		order.ConfirmStatus = status3.P
+		order.ShopConfirm = status3.P
 	}
 
 	// update order fulfillment_type: `shipment`
@@ -405,7 +411,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 		OrderID:           order.ID,
 		ShopID:            shop.ID,
 		PartnerID:         order.PartnerID,
-		ShopConfirm:       model.S3Positive, // Always set shop_confirm to 1
+		ShopConfirm:       status3.P, // Always set shop_confirm to 1
 		ConfirmStatus:     0,
 		TotalItems:        totalItems,
 		TotalWeight:       order.TotalWeight,
@@ -492,8 +498,8 @@ func compareFulfillments(order *ordermodel.Order, olds []*shipmodel.Fulfillment,
 	// active ffm: Those which are not cancelled
 	var old *shipmodel.Fulfillment
 	for _, oldFfm := range olds {
-		if oldFfm.Status != model.S5Negative && oldFfm.Status != model.S5NegSuper &&
-			oldFfm.ShopConfirm != model.S3Negative {
+		if oldFfm.Status != status5.N && oldFfm.Status != status5.NS &&
+			oldFfm.ShopConfirm != status3.N {
 			old = oldFfm
 		}
 	}
@@ -502,7 +508,7 @@ func compareFulfillments(order *ordermodel.Order, olds []*shipmodel.Fulfillment,
 		return []*shipmodel.Fulfillment{ffm}, nil, nil
 	}
 	// update error fulfillments
-	if old.Status == model.S5Zero {
+	if old.Status == status5.Z {
 		ffm.ID = old.ID
 		return nil, []*shipmodel.Fulfillment{ffm}, nil
 	}
@@ -555,11 +561,11 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 
 	for i, ffm := range fulfillments {
 		switch ffm.Status {
-		case model.S5Positive, model.S5Negative, model.S5NegSuper:
+		case status5.P, status5.N, status5.NS:
 			continue
 		}
 
-		if ffm.ShopConfirm != model.S3Negative {
+		if ffm.ShopConfirm != status3.N {
 			ffmToCancel = append(ffmToCancel, ffm)
 		}
 
@@ -588,7 +594,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}
 		updateCmd := &shipmodelx.UpdateFulfillmentsStatusCommand{
 			FulfillmentIDs: ids,
-			ShopConfirm:    model.S3Negative.P(),
+			ShopConfirm:    status3.N.Wrap(),
 		}
 		if err := bus.Dispatch(ctx, updateCmd); err != nil {
 			return nil, err
@@ -622,7 +628,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 			// UpdateInfo to pending
 			update := &shipmodel.Fulfillment{
 				ID:         ffm.ID,
-				SyncStatus: model.S4SuperPos,
+				SyncStatus: status4.S,
 				SyncStates: &model.FulfillmentSyncStates{
 					SyncAt:            now,
 					NextShippingState: action.ToShippingState(),
@@ -651,7 +657,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				// UpdateInfo to error
 				update2 := &shipmodel.Fulfillment{
 					ID:         ffm.ID,
-					SyncStatus: model.S4Negative,
+					SyncStatus: status4.N,
 					SyncStates: &model.FulfillmentSyncStates{
 						SyncAt: time.Now(),
 						Error:  model.ToError(shippingProviderErr),
@@ -670,13 +676,13 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 			update2 := &shipmodel.Fulfillment{
 				ID:            ffm.ID,
 				ShippingState: update.SyncStates.NextShippingState,
-				SyncStatus:    model.S4Positive,
+				SyncStatus:    status4.P,
 				SyncStates: &model.FulfillmentSyncStates{
 					SyncAt: time.Now(),
 				},
 			}
 			if update2.ShippingState == model.StateCancelled {
-				update2.Status = model.S5Negative
+				update2.Status = status5.N
 			}
 			update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
 			if err := bus.Dispatch(ctx, update2Cmd); err != nil {

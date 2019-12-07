@@ -83,7 +83,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		OrderID: q.OrderId,
-		Status:  convertpb.Status3ToModel(q.Status),
+		Status:  q.Status,
 		Paging:  paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}

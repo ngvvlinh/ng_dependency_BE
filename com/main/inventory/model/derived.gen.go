@@ -320,7 +320,7 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.UpdatedBy,
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
-		core.Int(m.Status),
+		m.Status,
 		core.String(m.Note),
 		m.TraderID,
 		core.JSON{m.Trader},
@@ -349,7 +349,7 @@ func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.UpdatedBy,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.String)(&m.Note),
 		&m.TraderID,
 		core.JSON{&m.Trader},
@@ -483,7 +483,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.Note != "" {
 		flag = true

@@ -3,6 +3,8 @@ package affiliate
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
@@ -40,7 +42,7 @@ type SellerCommission struct {
 	Description  string
 	Note         string
 	Type         string
-	Status       int
+	Status       status4.Status
 	OValue       int
 	OBaseValue   int
 	ValidAt      time.Time

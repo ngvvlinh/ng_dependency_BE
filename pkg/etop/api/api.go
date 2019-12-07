@@ -3,8 +3,9 @@ package api
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/authorization"
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	apietop "etop.vn/api/top/int/etop"
@@ -395,7 +396,7 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *Ac
 		ShortName: q.ShortName,
 		Position:  q.Position,
 		Roles:     roles,
-		Status:    etop.S3Zero,
+		Status:    status3.Z,
 		InvitedBy: q.Context.UserID,
 	}
 	if err := invitationAggregate.Dispatch(ctx, cmd); err != nil {

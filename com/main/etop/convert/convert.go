@@ -1,50 +1,52 @@
 package convert
 
 import (
-	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func Status3(in model.Status3) (out etop.Status3) {
+func Status3(in status3.Status) (out status3.Status) {
 	if in < 0 {
-		return etop.Status3(in + 128)
+		return status3.Status(in + 128)
 	}
-	return etop.Status3(in)
+	return status3.Status(in)
 }
 
-func Status3ToModel(in etop.Status3) (out model.Status3) {
-	out = model.Status3(in)
+func Status3ToModel(in status3.Status) (out status3.Status) {
+	out = status3.Status(in)
 	if out >= 64 {
 		out -= 128
 	}
 	return out
 }
 
-func Status4(in model.Status4) (out etop.Status4) {
+func Status4(in status4.Status) (out status4.Status) {
 	if in < 0 {
-		return etop.Status4(in + 128)
+		return status4.Status(in + 128)
 	}
-	return etop.Status4(in)
+	return status4.Status(in)
 }
 
-func Status4ToModel(in etop.Status4) (out model.Status4) {
-	out = model.Status4(in)
+func Status4ToModel(in status4.Status) (out status4.Status) {
+	out = status4.Status(in)
 	if out >= 64 {
 		out -= 128
 	}
 	return out
 }
 
-func Status5(in model.Status5) (out etop.Status5) {
+func Status5(in status5.Status) (out status5.Status) {
 	if in < 0 {
-		return etop.Status5(in + 128)
+		return status5.Status(in + 128)
 	}
-	return etop.Status5(in)
+	return status5.Status(in)
 }
 
-func Status5ToModel(in etop.Status5) (out model.Status5) {
-	out = model.Status5(in)
+func Status5ToModel(in status5.Status) (out status5.Status) {
+	out = status5.Status(in)
 	if out >= 64 {
 		out -= 128
 	}

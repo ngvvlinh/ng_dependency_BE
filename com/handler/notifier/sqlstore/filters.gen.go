@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/notifier_entity"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -158,7 +158,7 @@ func (ft *NotificationFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *NotificationFilters) BySyncStatus(SyncStatus model.Status3) *sq.ColumnFilter {
+func (ft *NotificationFilters) BySyncStatus(SyncStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sync_status",
@@ -167,7 +167,7 @@ func (ft *NotificationFilters) BySyncStatus(SyncStatus model.Status3) *sq.Column
 	}
 }
 
-func (ft *NotificationFilters) BySyncStatusPtr(SyncStatus *model.Status3) *sq.ColumnFilterPtr {
+func (ft *NotificationFilters) BySyncStatusPtr(SyncStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sync_status",

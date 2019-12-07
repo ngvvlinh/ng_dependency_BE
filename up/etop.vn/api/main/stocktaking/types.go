@@ -3,7 +3,8 @@ package stocktaking
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/capi/dot"
 )
@@ -37,7 +38,7 @@ type ShopStocktake struct {
 	CancelledAt time.Time
 
 	Lines  []*StocktakeLine
-	Status etop.Status3
+	Status status3.Status
 }
 
 type StocktakeLine struct {

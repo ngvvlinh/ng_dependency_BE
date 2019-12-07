@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
@@ -93,7 +95,7 @@ func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) erro
 	// UpdateInfo external_noti_id and sync_status
 	updateNoti := &notifiermodel.Notification{
 		ID:                noti.ID,
-		SyncStatus:        etopmodel.S3Positive,
+		SyncStatus:        status3.P,
 		ExternalNotiID:    cmd.Result.ID,
 		ExternalServiceID: notifiermodel.ExternalServiceOneSignalID,
 		SyncedAt:          now,

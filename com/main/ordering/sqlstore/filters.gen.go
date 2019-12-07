@@ -5,6 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	m "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
@@ -348,7 +351,7 @@ func (ft *OrderFilters) ByCancelReasonPtr(CancelReason *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderFilters) ByCustomerConfirm(CustomerConfirm model.Status3) *sq.ColumnFilter {
+func (ft *OrderFilters) ByCustomerConfirm(CustomerConfirm status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "customer_confirm",
@@ -357,7 +360,7 @@ func (ft *OrderFilters) ByCustomerConfirm(CustomerConfirm model.Status3) *sq.Col
 	}
 }
 
-func (ft *OrderFilters) ByCustomerConfirmPtr(CustomerConfirm *model.Status3) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByCustomerConfirmPtr(CustomerConfirm *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "customer_confirm",
@@ -367,7 +370,7 @@ func (ft *OrderFilters) ByCustomerConfirmPtr(CustomerConfirm *model.Status3) *sq
 	}
 }
 
-func (ft *OrderFilters) ByShopConfirm(ShopConfirm model.Status3) *sq.ColumnFilter {
+func (ft *OrderFilters) ByShopConfirm(ShopConfirm status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_confirm",
@@ -376,7 +379,7 @@ func (ft *OrderFilters) ByShopConfirm(ShopConfirm model.Status3) *sq.ColumnFilte
 	}
 }
 
-func (ft *OrderFilters) ByShopConfirmPtr(ShopConfirm *model.Status3) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByShopConfirmPtr(ShopConfirm *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_confirm",
@@ -386,7 +389,7 @@ func (ft *OrderFilters) ByShopConfirmPtr(ShopConfirm *model.Status3) *sq.ColumnF
 	}
 }
 
-func (ft *OrderFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
+func (ft *OrderFilters) ByConfirmStatus(ConfirmStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -395,7 +398,7 @@ func (ft *OrderFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnF
 	}
 }
 
-func (ft *OrderFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByConfirmStatusPtr(ConfirmStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -405,7 +408,7 @@ func (ft *OrderFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.Col
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentShippingStatus(FulfillmentShippingStatus model.Status5) *sq.ColumnFilter {
+func (ft *OrderFilters) ByFulfillmentShippingStatus(FulfillmentShippingStatus status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_shipping_status",
@@ -414,7 +417,7 @@ func (ft *OrderFilters) ByFulfillmentShippingStatus(FulfillmentShippingStatus mo
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentShippingStatusPtr(FulfillmentShippingStatus *model.Status5) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByFulfillmentShippingStatusPtr(FulfillmentShippingStatus *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_shipping_status",
@@ -424,7 +427,7 @@ func (ft *OrderFilters) ByFulfillmentShippingStatusPtr(FulfillmentShippingStatus
 	}
 }
 
-func (ft *OrderFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq.ColumnFilter {
+func (ft *OrderFilters) ByEtopPaymentStatus(EtopPaymentStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -433,7 +436,7 @@ func (ft *OrderFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq
 	}
 }
 
-func (ft *OrderFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -443,7 +446,7 @@ func (ft *OrderFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.Status4)
 	}
 }
 
-func (ft *OrderFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
+func (ft *OrderFilters) ByStatus(Status status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -452,7 +455,7 @@ func (ft *OrderFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByStatusPtr(Status *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -937,7 +940,7 @@ func (ft *OrderFilters) ByTradingShopIDPtr(TradingShopID *dot.ID) *sq.ColumnFilt
 	}
 }
 
-func (ft *OrderFilters) ByPaymentStatus(PaymentStatus model.Status4) *sq.ColumnFilter {
+func (ft *OrderFilters) ByPaymentStatus(PaymentStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "payment_status",
@@ -946,7 +949,7 @@ func (ft *OrderFilters) ByPaymentStatus(PaymentStatus model.Status4) *sq.ColumnF
 	}
 }
 
-func (ft *OrderFilters) ByPaymentStatusPtr(PaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByPaymentStatusPtr(PaymentStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "payment_status",

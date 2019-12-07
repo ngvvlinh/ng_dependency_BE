@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/user_source"
 
 	"etop.vn/api/top/int/integration"
@@ -144,16 +146,16 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 		rel := relationQuery.Result.PartnerRelation
 		shop := relationQuery.Result.Shop
 		user := relationQuery.Result.User
-		if rel.Status == model.S3Positive && rel.DeletedAt.IsZero() &&
-			shop.Status == model.S3Positive && shop.DeletedAt.IsZero() &&
-			user.Status == model.S3Positive {
+		if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
+			shop.Status == status3.P && shop.DeletedAt.IsZero() &&
+			user.Status == status3.P {
 			// everything looks good
 			resp, err := s.generateNewSession(ctx, nil, partner, shop)
 			q.Result = resp
 			return err
 		}
-		if shop.Status != model.S3Positive || !shop.DeletedAt.IsZero() ||
-			user.Status != model.S3Positive {
+		if shop.Status != status3.P || !shop.DeletedAt.IsZero() ||
+			user.Status != status3.P {
 			return cm.Errorf(cm.AccountClosed, nil, "")
 		}
 		resp, err := s.actionRequestLogin(ctx, partner, requestInfo)
@@ -176,7 +178,7 @@ func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
 	}
 	partner := partnerQuery.Result.Partner
-	if partner.Status != model.S3Positive || !partner.DeletedAt.IsZero() {
+	if partner.Status != status3.P || !partner.DeletedAt.IsZero() {
 		return nil, cm.Errorf(cm.Unavailable, nil, "Tài khoản đối tác đã khoá hoặc không còn được sử dụng")
 	}
 	return partner, nil

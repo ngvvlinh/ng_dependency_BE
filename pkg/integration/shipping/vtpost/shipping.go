@@ -4,6 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -203,8 +207,8 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	now := time.Now()
 	updateFfm := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
-		Status:                    model.S5SuperPos, // Now processing
-		ShippingStatus:            model.S5SuperPos,
+		Status:                    status5.S, // Now processing
+		ShippingStatus:            status5.S,
 		ShippingFeeCustomer:       order.ShopShippingFee,
 		ShippingServiceFee:        r.Data.MoneyTotal,
 		ShippingFeeShop:           r.Data.MoneyTotal,
@@ -220,7 +224,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
 		ShippingState:      model.StateCreated,
-		SyncStatus:         model.S4Positive,
+		SyncStatus:         status4.P,
 		SyncStates: &model.FulfillmentSyncStates{
 			SyncAt:    now,
 			TrySyncAt: now,

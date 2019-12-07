@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
 )
 
@@ -43,7 +44,7 @@ func prepareMtsNotiCommands(event *pgevent.PgEvent, history txmodel.MoneyTransac
 		res = append(res, cmd)
 	}
 
-	if history.Status().Int().Valid && mts.Status == etopmodel.S3Positive {
+	if history.Status().Int().Valid && mts.Status == status3.P {
 		cmd := templateMtsConfirmed(mts)
 		res = append(res, cmd)
 	}

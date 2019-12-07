@@ -7,12 +7,12 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/api/main/transaction"
+	"etop.vn/api/top/types/etc/status3"
 	transactionmodel "etop.vn/backend/com/main/transaction/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	. "etop.vn/backend/pkg/common/testing"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -50,7 +50,7 @@ func TestTransactionAggregate(t *testing.T) {
 			ID:        tranID,
 			Amount:    amount,
 			AccountID: accountID,
-			Status:    int(model.S3Zero),
+			Status:    status3.Z,
 			Metadata: &transactionmodel.TransactionMetadata{
 				ReferralType: string(transaction.ReferralTypeOrder),
 				ReferralIDs:  []dot.ID{555555},
@@ -104,7 +104,7 @@ func TestTransactionAggregate(t *testing.T) {
 			}
 			err := Aggr.Dispatch(ctx, cmd)
 			So(err, ShouldBeNil)
-			So(cmd.Result.Status, ShouldEqual, model.S3Positive)
+			So(cmd.Result.Status, ShouldEqual, status3.P)
 
 			Convey("Confirm Fail Precondition: Status = 1", func() {
 				cmd := &transaction.ConfirmTransactionCommand{
@@ -123,7 +123,7 @@ func TestTransactionAggregate(t *testing.T) {
 			}
 			err := Aggr.Dispatch(ctx, cmd)
 			So(err, ShouldBeNil)
-			So(cmd.Result.Status, ShouldEqual, model.S3Negative)
+			So(cmd.Result.Status, ShouldEqual, status3.N)
 
 			Convey("Cancel Fail Precondition: Status = -1", func() {
 				cmd := &transaction.CancelTransactionCommand{

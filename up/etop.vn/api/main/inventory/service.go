@@ -4,7 +4,10 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
@@ -206,7 +209,7 @@ type InventoryVoucher struct {
 	CancelReason string
 	Note         string
 	Lines        []*InventoryVoucherItem
-	Status       etop.Status3
+	Status       status3.Status
 }
 
 type Trader struct {
@@ -257,7 +260,7 @@ type InventoryVoucherConfirmEvent struct {
 
 type GetInventoryVoucherByReferenceResponse struct {
 	InventoryVouchers []*InventoryVoucher
-	Status            etop.Status4
+	Status            status4.Status
 }
 
 type CreateInventoryVoucherByQuantityChangeResponse struct {

@@ -469,7 +469,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.C
 	paging := cmapi.CMPaging(q.Paging)
 	query := &modelx.GetMoneyTransactionShippingEtops{
 		IDs:     q.Ids,
-		Status:  convertpb.Status3ToModel(q.Status),
+		Status:  q.Status,
 		Paging:  paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}

@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 )
 
@@ -19,7 +20,7 @@ type Invitation struct {
 	ShortName  string
 	Roles      []string
 	Token      string
-	Status     etop.Status3
+	Status     status3.Status
 	InvitedBy  dot.ID
 	AcceptedAt time.Time
 	RejectedAt time.Time

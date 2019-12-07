@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/notifier_entity"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -32,7 +33,7 @@ type Notification struct {
 	EntityID          dot.ID
 	Entity            NotiEntity
 	AccountID         dot.ID
-	SyncStatus        model.Status3
+	SyncStatus        status3.Status
 	ExternalServiceID int
 	ExternalNotiID    string
 	SendNotification  bool

@@ -6,12 +6,13 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/backend/cmd/etop-server/config"
 
 	"etop.vn/backend/pkg/etop/api"
 
 	"etop.vn/api/main/authorization"
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/shopping/customering"
@@ -180,10 +181,10 @@ func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation
 	if !invitation.ExpiresAt.After(time.Now()) {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Lời mời đã hết hạn")
 	}
-	if !invitation.AcceptedAt.IsZero() || invitation.Status == etop.S3Positive {
+	if !invitation.AcceptedAt.IsZero() || invitation.Status == status3.P {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Lời mời đã được chấp nhận")
 	}
-	if !invitation.RejectedAt.IsZero() || invitation.Status == etop.S3Negative {
+	if !invitation.RejectedAt.IsZero() || invitation.Status == status3.N {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Lời mời đã được từ chối")
 	}
 	return nil

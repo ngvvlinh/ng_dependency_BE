@@ -3,7 +3,8 @@ package transaction
 import (
 	"context"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
@@ -30,7 +31,7 @@ type CreateTransactionArgs struct {
 	ID        dot.ID
 	Amount    int
 	AccountID dot.ID
-	Status    etoptypes.Status3
+	Status    status3.Status
 	Type      TransactionType
 	Note      string
 	Metadata  *TransactionMetadata

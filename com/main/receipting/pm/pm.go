@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
@@ -94,7 +96,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		ShopID:  event.ShopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int(etopmodel.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := m.receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
 		return err
@@ -156,7 +158,7 @@ func (m *ProcessManager) createPayment(
 			Title:       "Thanh toán phí vận chuyển Topship",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipting.ReceiptTypePayment,
-			Status:      int(etopmodel.S3Positive),
+			Status:      int(status3.P),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
 			RefType:     receipting.ReceiptRefTypeFulfillment,
@@ -198,7 +200,7 @@ func createReceipts(
 			Title:       "Thanh toán đơn hàng",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipting.ReceiptTypeReceipt,
-			Status:      int(etopmodel.S3Positive),
+			Status:      int(status3.P),
 			Amount:      value - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
 			RefIDs:      []dot.ID{key},

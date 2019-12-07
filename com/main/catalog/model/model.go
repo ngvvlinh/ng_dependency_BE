@@ -3,10 +3,11 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -82,7 +83,7 @@ type ShopVariant struct {
 	ListPrice   int
 	RetailPrice int
 
-	Status     model.Status3
+	Status     status3.Status
 	Attributes ProductAttributes
 
 	CreatedAt time.Time `sq:"create"`
@@ -124,7 +125,7 @@ type ShopProduct struct {
 	RetailPrice int
 	BrandID     dot.ID
 
-	Status model.Status3
+	Status status3.Status
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

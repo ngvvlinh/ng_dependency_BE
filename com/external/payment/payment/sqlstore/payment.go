@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/external/payment"
-	"etop.vn/api/main/etop"
 	"etop.vn/backend/com/external/payment/payment/convert"
 	"etop.vn/backend/com/external/payment/payment/model"
 	cm "etop.vn/backend/pkg/common"
@@ -61,7 +62,7 @@ func (s *PaymentStore) GetPayment() (*payment.Payment, error) {
 
 type CreatePaymentArgs struct {
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           payment.PaymentState
 	PaymentProvider payment.PaymentProvider
 	ExternalTransID string
@@ -88,7 +89,7 @@ func (s *PaymentStore) CreatePayment(args *CreatePaymentArgs) (*payment.Payment,
 type UpdateExternalPaymentInfoArgs struct {
 	ID              dot.ID
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           payment.PaymentState
 	ExternalData    json.RawMessage
 	ExternalTransID string

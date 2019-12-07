@@ -3,7 +3,8 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/api/main/ordering"
 	"etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/ordering/sqlstore"
@@ -44,7 +45,7 @@ func (q *QueryService) GetOrders(ctx context.Context, args *ordering.GetOrdersAr
 func (q *QueryService) GetOrdersByIDsAndCustomerID(
 	ctx context.Context, shopID dot.ID, IDs []dot.ID, customerID dot.ID,
 ) (*ordering.OrdersResponse, error) {
-	statuses := []etop.Status5{etop.S5Zero, etop.S5Positive, etop.S5SuperPos}
+	statuses := []status5.Status{status5.Z, status5.P, status5.S}
 	orders, err := q.store(ctx).IDs(IDs...).CustomerID(customerID).Statuses(statuses).ListOrders()
 	if err != nil {
 		return nil, err
@@ -57,7 +58,7 @@ func (q *QueryService) GetOrderByCode(ctx context.Context, args *ordering.GetOrd
 }
 
 func (q *QueryService) ListOrdersByCustomerID(ctx context.Context, shopID, customerID dot.ID) (*ordering.OrdersResponse, error) {
-	statuses := []etop.Status5{etop.S5Zero, etop.S5Positive, etop.S5SuperPos}
+	statuses := []status5.Status{status5.Z, status5.P, status5.S}
 	orders, err := q.store(ctx).CustomerID(customerID).Statuses(statuses).ListOrders()
 	if err != nil {
 		return nil, err
@@ -66,7 +67,7 @@ func (q *QueryService) ListOrdersByCustomerID(ctx context.Context, shopID, custo
 }
 
 func (q *QueryService) ListOrdersByCustomerIDs(ctx context.Context, shopID dot.ID, customerIDs []dot.ID) (*ordering.OrdersResponse, error) {
-	statuses := []etop.Status5{etop.S5Zero, etop.S5Positive, etop.S5SuperPos}
+	statuses := []status5.Status{status5.Z, status5.P, status5.S}
 	orders, err := q.store(ctx).CustomerIDs(customerIDs...).Statuses(statuses).ListOrders()
 	if err != nil {
 		return nil, err

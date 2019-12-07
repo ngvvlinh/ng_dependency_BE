@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/authorization"
 
-	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	"etop.vn/capi/dot"
@@ -54,7 +55,7 @@ type CreateInvitationArgs struct {
 	ShortName string
 	Position  string
 	Roles     []authorization.Role
-	Status    etop.Status3
+	Status    status3.Status
 	InvitedBy dot.ID
 	CreatedBy time.Time
 }

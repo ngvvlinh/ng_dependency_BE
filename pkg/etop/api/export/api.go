@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	apishop "etop.vn/api/top/int/shop"
 	ordering "etop.vn/backend/com/main/ordering/modelx"
 	shipping "etop.vn/backend/com/main/shipping/modelx"
@@ -99,13 +101,13 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		CreatedAt:    time.Now(),
 		RequestQuery: jsonx.MustMarshalToString(r),
 		MimeType:     "text/csv",
-		Status:       model.S4Zero,
+		Status:       status4.Z,
 	}
 	resp := &apishop.RequestExportResponse{
 		Id:         exportID,
 		Filename:   zipFileName,
 		ExportType: r.ExportType,
-		Status:     convertpb.Pb4(model.S4Zero),
+		Status:     status4.Z,
 	}
 
 	if err := sqlstore.ExportAttempt(ctx).Create(exportItem); err != nil {

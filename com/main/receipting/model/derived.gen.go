@@ -64,7 +64,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Description),
 		core.String(m.TraderFullNameNorm),
 		core.Int(m.Amount),
-		core.Int(m.Status),
+		m.Status,
 		core.Array{m.RefIDs, opts},
 		core.String(m.RefType),
 		core.JSON{m.Lines},
@@ -94,7 +94,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Description),
 		(*core.String)(&m.TraderFullNameNorm),
 		(*core.Int)(&m.Amount),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		core.Array{&m.RefIDs, opts},
 		(*core.String)(&m.RefType),
 		core.JSON{&m.Lines},
@@ -257,7 +257,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.RefIDs != nil {
 		flag = true

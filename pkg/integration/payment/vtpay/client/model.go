@@ -3,8 +3,9 @@ package client
 import (
 	"strconv"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/external/payment"
-	etoptypes "etop.vn/api/main/etop"
 	cm "etop.vn/backend/pkg/common"
 )
 
@@ -51,18 +52,18 @@ func (s PaymentStatus) ToState() payment.PaymentState {
 	}
 }
 
-func (s PaymentStatus) ToStatus() etoptypes.Status4 {
+func (s PaymentStatus) ToStatus() status4.Status {
 	switch s {
 	case PaymentStatusNotCreate:
-		return etoptypes.S4Zero
+		return status4.Z
 	case PaymentStatusPending, PaymentStatusUnknown:
-		return etoptypes.S4SuperPos
+		return status4.S
 	case PaymentStatusSuccess:
-		return etoptypes.S4Positive
+		return status4.P
 	case PaymentStatusFailed:
-		return etoptypes.S4Negative
+		return status4.N
 	default:
-		return etoptypes.S4SuperPos
+		return status4.S
 	}
 }
 

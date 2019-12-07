@@ -70,7 +70,7 @@ func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) 
 		core.Int(m.TotalOrders),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
-		core.Int(m.Status),
+		m.Status,
 		core.Time(m.ExternalPaidAt),
 		core.String(m.Provider),
 		core.JSON{m.BankAccount},
@@ -87,7 +87,7 @@ func (m *MoneyTransactionShippingExternal) SQLScanArgs(opts core.Opts) []interfa
 		(*core.Int)(&m.TotalOrders),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.Time)(&m.ExternalPaidAt),
 		(*core.String)(&m.Provider),
 		core.JSON{&m.BankAccount},
@@ -209,7 +209,7 @@ func (m *MoneyTransactionShippingExternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if !m.ExternalPaidAt.IsZero() {
 		flag = true
@@ -944,7 +944,7 @@ func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interf
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.ClosedAt),
-		core.Int(m.Status),
+		m.Status,
 		core.Int(m.TotalCOD),
 		core.Int(m.TotalAmount),
 		core.Int(m.TotalOrders),
@@ -968,7 +968,7 @@ func (m *MoneyTransactionShipping) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.ClosedAt),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.Int)(&m.TotalCOD),
 		(*core.Int)(&m.TotalAmount),
 		(*core.Int)(&m.TotalOrders),
@@ -1090,7 +1090,7 @@ func (m *MoneyTransactionShipping) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.TotalCOD != 0 {
 		flag = true
@@ -1493,7 +1493,7 @@ func (m *MoneyTransactionShippingEtop) SQLArgs(opts core.Opts, create bool) []in
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.ConfirmedAt),
-		core.Int(m.Status),
+		m.Status,
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
 		core.String(m.InvoiceNumber),
@@ -1512,7 +1512,7 @@ func (m *MoneyTransactionShippingEtop) SQLScanArgs(opts core.Opts) []interface{}
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.ConfirmedAt),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
 		(*core.String)(&m.InvoiceNumber),
@@ -1664,7 +1664,7 @@ func (m *MoneyTransactionShippingEtop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.BankAccount != nil {
 		flag = true

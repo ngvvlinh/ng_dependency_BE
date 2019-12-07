@@ -603,8 +603,8 @@ func (m *InviteUserToAccountRequest) Reset()         { *m = InviteUserToAccountR
 func (m *InviteUserToAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AnswerInvitationRequest struct {
-	AccountId dot.ID          `json:"account_id"`
-	Response  *status3.Status `json:"response"`
+	AccountId dot.ID             `json:"account_id"`
+	Response  status3.NullStatus `json:"response"`
 }
 
 func (m *AnswerInvitationRequest) Reset()         { *m = AnswerInvitationRequest{} }

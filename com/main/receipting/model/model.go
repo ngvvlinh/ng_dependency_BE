@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 )
 
@@ -23,7 +24,7 @@ type Receipt struct {
 	TraderFullNameNorm string
 
 	Amount          int
-	Status          model.Status3
+	Status          status3.Status
 	RefIDs          []dot.ID
 	RefType         string
 	Lines           []*ReceiptLine

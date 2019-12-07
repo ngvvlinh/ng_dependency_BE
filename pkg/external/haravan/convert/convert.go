@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/pkg/etop/model"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 )
@@ -28,15 +29,15 @@ func ToFulfillmentState(in model.ShippingState) haravanclient.FulfillmentState {
 	}
 }
 
-func ToCODStatus(etopPaymentStatus model.Status4) haravanclient.PaymentStatus {
+func ToCODStatus(etopPaymentStatus status4.Status) haravanclient.PaymentStatus {
 	switch etopPaymentStatus {
-	case model.S4Zero:
+	case status4.Z:
 		return haravanclient.PaymentPendingStatus
-	case model.S4Positive:
+	case status4.P:
 		return haravanclient.PaymentReceiptStatus
-	case model.S4Negative:
+	case status4.N:
 		return ""
-	case model.S4SuperPos:
+	case status4.S:
 		return haravanclient.PaymentPendingStatus
 	}
 	return ""

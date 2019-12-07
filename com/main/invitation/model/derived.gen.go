@@ -61,7 +61,7 @@ func (m *Invitation) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ShortName),
 		core.Array{m.Roles, opts},
 		core.String(m.Token),
-		core.Int(m.Status),
+		m.Status,
 		m.InvitedBy,
 		core.Time(m.AcceptedAt),
 		core.Time(m.RejectedAt),
@@ -81,7 +81,7 @@ func (m *Invitation) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShortName),
 		core.Array{&m.Roles, opts},
 		(*core.String)(&m.Token),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		&m.InvitedBy,
 		(*core.Time)(&m.AcceptedAt),
 		(*core.Time)(&m.RejectedAt),
@@ -213,7 +213,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.InvitedBy != 0 {
 		flag = true

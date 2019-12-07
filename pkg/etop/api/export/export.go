@@ -13,6 +13,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/top/int/shop"
 
 	pbcm "etop.vn/api/top/types/common"
@@ -118,7 +120,7 @@ func exportAndReportProgress(
 		}
 
 		if _err != nil {
-			exportResult.Status = model.S4Negative
+			exportResult.Status = status4.N
 			exportResult.Error = cmapi.ErrorToModel(cmapi.PbError(_err))
 
 			event := eventstream.Event{
@@ -131,7 +133,7 @@ func exportAndReportProgress(
 			return
 		}
 
-		exportResult.Status = model.S4Positive
+		exportResult.Status = status4.P
 
 		event := eventstream.Event{
 			Type:      "export/ok",
@@ -278,22 +280,22 @@ func FirstLine(line *int, v string) string {
 	return "(nt)"
 }
 
-func LabelCODTransferAt(paymentStatus model.Status4, transferedAt time.Time) string {
+func LabelCODTransferAt(paymentStatus status4.Status, transferedAt time.Time) string {
 	switch {
 	case !transferedAt.IsZero():
 		return "Đã chuyển tiền thu hộ"
-	case paymentStatus == model.S4SuperPos:
+	case paymentStatus == status4.S:
 		return "Chưa chuyển tiền thu hộ"
 	default:
 		return ""
 	}
 }
 
-func LabelShippingFeeTransferAt(paymentStatus model.Status4, transferedAt time.Time) string {
+func LabelShippingFeeTransferAt(paymentStatus status4.Status, transferedAt time.Time) string {
 	switch {
 	case !transferedAt.IsZero():
 		return "Đã thanh toán"
-	case paymentStatus == model.S4SuperPos:
+	case paymentStatus == status4.S:
 		return "Chưa thanh toán"
 	default:
 		return ""

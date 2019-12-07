@@ -5,10 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
-
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type ShopStocktakeFilters struct{ prefix string }
@@ -177,7 +176,7 @@ func (ft *ShopStocktakeFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -186,7 +185,7 @@ func (ft *ShopStocktakeFilters) ByStatus(Status model.Status3) *sq.ColumnFilter 
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

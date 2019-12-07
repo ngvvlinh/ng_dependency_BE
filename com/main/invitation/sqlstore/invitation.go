@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/invitation/convert"
@@ -78,7 +79,7 @@ func (s *InvitationStore) Email(email string) *InvitationStore {
 	return s
 }
 
-func (s *InvitationStore) Status(status etop.Status3) *InvitationStore {
+func (s *InvitationStore) Status(status status3.Status) *InvitationStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
@@ -133,7 +134,7 @@ func (s *InvitationStore) Accept() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("invitation").UpdateMap(map[string]interface{}{
-		"status":      int(etop.S3Positive),
+		"status":      int(status3.P),
 		"accepted_at": time.Now(),
 	})
 
@@ -144,7 +145,7 @@ func (s *InvitationStore) Reject() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("invitation").UpdateMap(map[string]interface{}{
-		"status":      int(etop.S3Negative),
+		"status":      int(status3.N),
 		"rejected_at": time.Now(),
 	})
 

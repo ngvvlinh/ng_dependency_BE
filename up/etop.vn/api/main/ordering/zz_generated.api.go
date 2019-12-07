@@ -8,8 +8,10 @@ import (
 	context "context"
 	time "time"
 
-	etop "etop.vn/api/main/etop"
 	orderingtypes "etop.vn/api/main/ordering/types"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	status5 "etop.vn/api/top/types/etc/status5"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -53,7 +55,7 @@ func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, msg *Re
 
 type UpdateOrderPaymentInfoCommand struct {
 	ID            dot.ID
-	PaymentStatus etop.Status4
+	PaymentStatus status4.Status
 	PaymentID     dot.ID
 
 	Result struct {
@@ -67,9 +69,9 @@ func (h AggregateHandler) HandleUpdateOrderPaymentInfo(ctx context.Context, msg 
 type UpdateOrderShippingStatusCommand struct {
 	ID                         dot.ID
 	FulfillmentShippingStates  []string
-	FulfillmentShippingStatus  etop.Status5
+	FulfillmentShippingStatus  status5.Status
 	FulfillmentPaymentStatuses []int
-	EtopPaymentStatus          etop.Status4
+	EtopPaymentStatus          status4.Status
 	CODEtopPaidAt              time.Time
 
 	Result *UpdateOrderShippingStatusResponse `json:"-"`
@@ -82,8 +84,8 @@ func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, m
 
 type UpdateOrdersConfirmStatusCommand struct {
 	IDs           []dot.ID
-	ShopConfirm   etop.Status3
-	ConfirmStatus etop.Status3
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 
 	Result *UpdateOrdersConfirmStatusResponse `json:"-"`
 }

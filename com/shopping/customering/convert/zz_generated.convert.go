@@ -10,6 +10,7 @@ import (
 	addressing "etop.vn/api/shopping/addressing"
 	customering "etop.vn/api/shopping/customering"
 	tradering "etop.vn/api/shopping/tradering"
+	status3 "etop.vn/api/top/types/etc/status3"
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -296,21 +297,21 @@ func Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 }
 
 func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *customeringmodel.ShopCustomer, out *customering.ShopCustomer) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.GroupIDs = arg.GroupIDs   // simple assign
-	out.Code = arg.Code           // simple assign
-	out.CodeNorm = arg.CodeNorm   // simple assign
-	out.FullName = arg.FullName   // simple assign
-	out.Gender = arg.Gender       // simple assign
-	out.Type = arg.Type           // simple assign
-	out.Birthday = arg.Birthday   // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Phone = arg.Phone         // simple assign
-	out.Email = arg.Email         // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ID = arg.ID                         // simple assign
+	out.ShopID = arg.ShopID                 // simple assign
+	out.GroupIDs = arg.GroupIDs             // simple assign
+	out.Code = arg.Code                     // simple assign
+	out.CodeNorm = arg.CodeNorm             // simple assign
+	out.FullName = arg.FullName             // simple assign
+	out.Gender = arg.Gender                 // simple assign
+	out.Type = arg.Type                     // simple assign
+	out.Birthday = arg.Birthday             // simple assign
+	out.Note = arg.Note                     // simple assign
+	out.Phone = arg.Phone                   // simple assign
+	out.Email = arg.Email                   // simple assign
+	out.Status = status3.Status(arg.Status) // simple conversion
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_customeringmodel_ShopCustomers_customering_ShopCustomers(args []*customeringmodel.ShopCustomer) (outs []*customering.ShopCustomer) {
@@ -345,7 +346,7 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 	out.Note = arg.Note           // simple assign
 	out.Phone = arg.Phone         // simple assign
 	out.Email = arg.Email         // simple assign
-	out.Status = arg.Status       // simple assign
+	out.Status = int(arg.Status)  // simple conversion
 	out.FullNameNorm = ""         // zero value
 	out.PhoneNorm = ""            // zero value
 	out.GroupIDs = arg.GroupIDs   // simple assign

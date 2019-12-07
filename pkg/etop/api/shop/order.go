@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/status3"
 
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
@@ -157,9 +158,9 @@ func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *UpdateOrdersSt
 		ShopID:       q.Context.Shop.ID,
 		PartnerID:    q.CtxPartner.GetID(),
 		OrderIDs:     q.Ids,
-		ShopConfirm:  convertpb.Status3ToModel(q.Confirm),
+		ShopConfirm:  q.Confirm,
 		CancelReason: q.CancelReason,
-		Status:       convertpb.Status4ToModel(&q.Status),
+		Status:       q.Status.Wrap(),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -289,7 +290,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
 		RefType: receipting.ReceiptRefTypeOrder,
-		Status:  int(model.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err
@@ -352,7 +353,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		OrderID:   q.OrderId,
-		Status:    convertpb.Status3ToModel(q.Status),
+		Status:    q.Status,
 		Paging:    paging,
 		Filters:   cmapi.ToFilters(q.Filters),
 	}
@@ -413,7 +414,7 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
 		ShopID:  q.Context.Shop.ID,
 		OrderID: q.OrderId,
-		Status:  convertpb.Status3ToModel(q.Status),
+		Status:  q.Status,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

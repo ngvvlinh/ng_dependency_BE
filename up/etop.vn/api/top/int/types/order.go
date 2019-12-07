@@ -232,7 +232,7 @@ type CreateOrderRequest struct {
 	// If there are products from shop, this field should be set.
 	// Otherwise, use shop default address.
 	ShopAddress *OrderAddress      `json:"shop_address"`
-	ShConfirm   *status3.Status    `json:"sh_confirm"`
+	ShConfirm   status3.NullStatus `json:"sh_confirm"`
 	Lines       []*CreateOrderLine `json:"lines"`
 	Discounts   []*OrderDiscount   `json:"discounts"`
 	TotalItems  int                `json:"total_items"`

@@ -7,10 +7,10 @@ package purchaseorder
 import (
 	context "context"
 
-	etop "etop.vn/api/main/etop"
 	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -154,7 +154,7 @@ func (h QueryServiceHandler) HandleListPurchaseOrdersByReceiptID(ctx context.Con
 type ListPurchaseOrdersBySupplierIDsAndStatusesQuery struct {
 	ShopID      dot.ID
 	SupplierIDs []dot.ID
-	Statuses    []etop.Status3
+	Statuses    []status3.Status
 
 	Result *PurchaseOrdersResponse `json:"-"`
 }
@@ -306,7 +306,7 @@ func (q *ListPurchaseOrdersByReceiptIDQuery) GetArgs(ctx context.Context) (_ con
 		q.ShopID
 }
 
-func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3) {
+func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []status3.Status) {
 	return ctx,
 		q.ShopID,
 		q.SupplierIDs,

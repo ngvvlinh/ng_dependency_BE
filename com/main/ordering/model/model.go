@@ -6,6 +6,12 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/types/etc/fee"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
@@ -60,12 +66,12 @@ type Order struct {
 	CancelledAt  time.Time
 	CancelReason string
 
-	CustomerConfirm model.Status3
-	ShopConfirm     model.Status3
-	ConfirmStatus   model.Status3
+	CustomerConfirm status3.Status
+	ShopConfirm     status3.Status
+	ConfirmStatus   status3.Status
 
-	FulfillmentShippingStatus model.Status5
-	EtopPaymentStatus         model.Status4
+	FulfillmentShippingStatus status5.Status
+	EtopPaymentStatus         status4.Status
 
 	// -1:cancelled, 0:default, 1:delivered, 2:processing
 	//
@@ -74,7 +80,7 @@ type Order struct {
 	// 1: done
 	// -1: cancelled
 	// -2: returned
-	Status model.Status5
+	Status status5.Status
 
 	FulfillmentShippingStates  []string
 	FulfillmentPaymentStatuses []int
@@ -116,7 +122,7 @@ type Order struct {
 	TradingShopID    dot.ID
 
 	// payment
-	PaymentStatus model.Status4
+	PaymentStatus status4.Status
 	PaymentID     dot.ID
 
 	ReferralMeta json.RawMessage

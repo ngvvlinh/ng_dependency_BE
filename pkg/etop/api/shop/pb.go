@@ -8,7 +8,6 @@ import (
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -74,7 +73,7 @@ func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
 		UpdatedAt:     cmapi.PbTime(args.UpdatedAt),
 		ConfirmedAt:   cmapi.PbTime(args.ConfirmedAt),
 		CancelledAt:   cmapi.PbTime(args.CancelledAt),
-		Status:        convertpb.Pb3(model.Status3(args.Status)),
+		Status:        args.Status,
 		Code:          args.Code,
 		Lines:         PbstocktakeLines(args.Lines),
 	}
@@ -185,7 +184,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,
 		Trader:       PbShopTrader(args.Trader),
-		Status:       convertpb.Pb3(model.Status3(args.Status)),
+		Status:       args.Status,
 		Note:         args.Note,
 		Type:         string(args.Type),
 		Id:           args.ID,
@@ -250,7 +249,7 @@ func PbShopVariant(m *catalog.ShopVariant) *shop.ShopVariant {
 		ImageUrls:   m.ImageURLs,
 		Tags:        nil,
 		Note:        m.Note,
-		Status:      convertpb.Pb3(model.Status3(m.Status)),
+		Status:      m.Status,
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
@@ -332,7 +331,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *shop.ShopVaria
 		ImageUrls:   m.ImageURLs,
 		Tags:        nil,
 		Note:        m.Note,
-		Status:      convertpb.Pb3(model.Status3(m.Status)),
+		Status:      m.Status,
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
@@ -392,7 +391,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *shop.ShopPro
 		Tags:            m.ShopProduct.Tags,
 		Stags:           nil,
 		Note:            m.Note,
-		Status:          convertpb.Pb3(model.Status3(m.ShopProduct.Status)),
+		Status:          m.ShopProduct.Status,
 		IsAvailable:     false,
 		ListPrice:       m.ShopProduct.ListPrice,
 		RetailPrice:     coalesceInt(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),

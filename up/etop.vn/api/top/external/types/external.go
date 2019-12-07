@@ -200,10 +200,10 @@ type Order struct {
 	ConfirmedAt               dot.Time              `json:"confirmed_at"`
 	CancelledAt               dot.Time              `json:"cancelled_at"`
 	CancelReason              dot.NullString        `json:"cancel_reason"`
-	ConfirmStatus             *status3.Status       `json:"confirm_status"`
-	Status                    *status5.Status       `json:"status"`
-	FulfillmentShippingStatus *status5.Status       `json:"fulfillment_shipping_status"`
-	EtopPaymentStatus         *status4.Status       `json:"etop_payment_status"`
+	ConfirmStatus             status3.NullStatus    `json:"confirm_status"`
+	Status                    status5.NullStatus    `json:"status"`
+	FulfillmentShippingStatus status5.NullStatus    `json:"fulfillment_shipping_status"`
+	EtopPaymentStatus         status4.NullStatus    `json:"etop_payment_status"`
 	Lines                     []*OrderLine          `json:"lines"`
 	TotalItems                dot.NullInt           `json:"total_items"`
 	BasketValue               dot.NullInt           `json:"basket_value"`
@@ -300,17 +300,17 @@ type Fulfillment struct {
 	ShippingNote             dot.NullString                      `json:"shipping_note"`
 	TryOn                    *try_on.TryOnCode                   `json:"try_on"`
 	IncludeInsurance         dot.NullBool                        `json:"include_insurance"`
-	ConfirmStatus            *status3.Status                     `json:"confirm_status"`
+	ConfirmStatus            status3.NullStatus                  `json:"confirm_status"`
 	ShippingState            *shipping.State                     `json:"shipping_state"`
-	ShippingStatus           *status5.Status                     `json:"shipping_status"`
-	Status                   *status5.Status                     `json:"status"`
+	ShippingStatus           status5.NullStatus                  `json:"shipping_status"`
+	Status                   status5.NullStatus                  `json:"status"`
 	CodAmount                dot.NullInt                         `json:"cod_amount"`
 	ActualCodAmount          dot.NullInt                         `json:"actual_cod_amount"`
 	ChargeableWeight         dot.NullInt                         `json:"chargeable_weight"`
 	PickupAddress            *OrderAddress                       `json:"pickup_address"`
 	ReturnAddress            *OrderAddress                       `json:"return_address"`
 	ShippingAddress          *OrderAddress                       `json:"shipping_address"`
-	EtopPaymentStatus        *status4.Status                     `json:"etop_payment_status"`
+	EtopPaymentStatus        status4.NullStatus                  `json:"etop_payment_status"`
 	EstimatedDeliveryAt      dot.Time                            `json:"estimated_delivery_at"`
 	EstimatedPickupAt        dot.Time                            `json:"estimated_pickup_at"`
 }
@@ -422,10 +422,10 @@ func (m *OrderAddress) Reset()         { *m = OrderAddress{} }
 func (m *OrderAddress) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *Order) HasChanged() bool {
-	return m.Status != nil ||
-		m.ConfirmStatus != nil ||
-		m.FulfillmentShippingStatus != nil ||
-		m.EtopPaymentStatus != nil ||
+	return m.Status.Valid ||
+		m.ConfirmStatus.Valid ||
+		m.FulfillmentShippingStatus.Valid ||
+		m.EtopPaymentStatus.Valid ||
 		m.BasketValue.Valid ||
 		m.TotalAmount.Valid ||
 		m.Shipping != nil ||
@@ -433,9 +433,9 @@ func (m *Order) HasChanged() bool {
 }
 
 func (m *Fulfillment) HasChanged() bool {
-	return m.Status != nil ||
+	return m.Status.Valid ||
 		m.ShippingState != nil ||
-		m.EtopPaymentStatus != nil ||
+		m.EtopPaymentStatus.Valid ||
 		m.ActualShippingServiceFee.Valid ||
 		m.CodAmount.Valid ||
 		m.ActualCodAmount.Valid ||

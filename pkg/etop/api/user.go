@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/int/etop"
 
 	apisms "etop.vn/api/etc/logging/smslog"
@@ -218,10 +220,10 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	}
 
 	// If any identifier is activated -> AlreadyExists
-	if userByPhone.User != nil && userByPhone.User.Status != model.S3Zero {
+	if userByPhone.User != nil && userByPhone.User.Status != status3.Z {
 		return cm.Error(cm.FailedPrecondition, sqlstore.MsgCreateUserDuplicatedPhone, nil)
 	}
-	if userByEmail.User != nil && userByEmail.User.Status != model.S3Zero {
+	if userByEmail.User != nil && userByEmail.User.Status != status3.Z {
 		return cm.Error(cm.FailedPrecondition, sqlstore.MsgCreateUserDuplicatedEmail, nil)
 	}
 
@@ -238,7 +240,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	var inner model.UserInner
 	var hashpwd string
 	switch {
-	case userByPhone.User != nil && userByPhone.User.Status == model.S3Zero:
+	case userByPhone.User != nil && userByPhone.User.Status == status3.Z:
 		user = userByPhone.User
 		if user.Email != "" {
 			// unexpected: if both identifier exist, it must not be a stub!
@@ -250,14 +252,14 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		inner = user.UserInner
 		inner.Email = emailNorm.String()
 		updateUserCmd.UserID = user.ID
-		updateUserCmd.Status = model.S3Positive
+		updateUserCmd.Status = status3.P
 		updateUserCmd.CreatedAt = now
 		updateUserCmd.Identifying = "full"
 		if emailNorm == "" {
 			updateUserCmd.Identifying = "half"
 		}
 
-	case userByEmail.User != nil && userByEmail.User.Status == model.S3Zero:
+	case userByEmail.User != nil && userByEmail.User.Status == status3.Z:
 		user = userByEmail.User
 		if user.Phone != "" {
 			// unexpected: if both identifier exist, it must not be a stub!
@@ -269,7 +271,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		inner = user.UserInner
 		inner.Phone = phoneNorm.String()
 		updateUserCmd.UserID = user.ID
-		updateUserCmd.Status = model.S3Positive
+		updateUserCmd.Status = status3.P
 		updateUserCmd.CreatedAt = now
 		updateUserCmd.Identifying = "full"
 

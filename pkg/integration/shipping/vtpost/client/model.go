@@ -5,6 +5,8 @@ import (
 	"math"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -163,35 +165,35 @@ func ToVTPostShippingState(code int) StateShipping {
 	return stateName
 }
 
-func (s StateShipping) ToStatus5() model.Status5 {
+func (s StateShipping) ToStatus5() status5.Status {
 	switch s {
 	case StateCanceled:
-		return model.S5Negative
+		return status5.N
 	case StateReturned:
-		return model.S5NegSuper
+		return status5.NS
 	case StateDelivered:
-		return model.S5Positive
+		return status5.P
 	}
-	return model.S5SuperPos
+	return status5.S
 }
 
-func (s StateShipping) ToShippingStatus5(old model.ShippingState) model.Status5 {
+func (s StateShipping) ToShippingStatus5(old model.ShippingState) status5.Status {
 	switch s {
 	case StateCanceled:
-		return model.S5Negative
+		return status5.N
 	case StateReturned:
-		return model.S5NegSuper
+		return status5.NS
 	case StateDelivered:
-		return model.S5Positive
+		return status5.P
 	case StateStored, StatePicked, StateDelivering:
 		switch old {
 		case model.StateReturned, model.StateReturning:
-			return model.S5NegSuper
+			return status5.NS
 		default:
-			return model.S5SuperPos
+			return status5.S
 		}
 	}
-	return model.S5SuperPos
+	return status5.S
 }
 
 func (s StateShipping) ToModel(old model.ShippingState) model.ShippingState {

@@ -58,8 +58,8 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.OrderID,
 		m.ShopID,
 		m.PartnerID,
-		core.Int(m.ShopConfirm),
-		core.Int(m.ConfirmStatus),
+		m.ShopConfirm,
+		m.ConfirmStatus,
 		core.Int(m.TotalItems),
 		core.Int(m.TotalWeight),
 		core.Int(m.BasketValue),
@@ -130,15 +130,15 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.ExternalShippingClosedAt),
 		core.String(m.ExternalShippingState),
 		core.String(m.ExternalShippingStateCode),
-		core.Int(m.ExternalShippingStatus),
+		m.ExternalShippingStatus,
 		core.String(m.ExternalShippingNote),
 		core.String(m.ExternalShippingSubState),
 		core.JSON{m.ExternalShippingData},
 		core.String(m.ShippingState),
-		core.Int(m.ShippingStatus),
-		core.Int(m.EtopPaymentStatus),
-		core.Int(m.Status),
-		core.Int(m.SyncStatus),
+		m.ShippingStatus,
+		m.EtopPaymentStatus,
+		m.Status,
+		m.SyncStatus,
 		core.JSON{m.SyncStates},
 		core.Time(m.LastSyncAt),
 		core.JSON{m.ExternalShippingLogs},
@@ -153,8 +153,8 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.OrderID,
 		&m.ShopID,
 		&m.PartnerID,
-		(*core.Int)(&m.ShopConfirm),
-		(*core.Int)(&m.ConfirmStatus),
+		&m.ShopConfirm,
+		&m.ConfirmStatus,
 		(*core.Int)(&m.TotalItems),
 		(*core.Int)(&m.TotalWeight),
 		(*core.Int)(&m.BasketValue),
@@ -225,15 +225,15 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.ExternalShippingClosedAt),
 		(*core.String)(&m.ExternalShippingState),
 		(*core.String)(&m.ExternalShippingStateCode),
-		(*core.Int)(&m.ExternalShippingStatus),
+		&m.ExternalShippingStatus,
 		(*core.String)(&m.ExternalShippingNote),
 		(*core.String)(&m.ExternalShippingSubState),
 		core.JSON{&m.ExternalShippingData},
 		(*core.String)(&m.ShippingState),
-		(*core.Int)(&m.ShippingStatus),
-		(*core.Int)(&m.EtopPaymentStatus),
-		(*core.Int)(&m.Status),
-		(*core.Int)(&m.SyncStatus),
+		&m.ShippingStatus,
+		&m.EtopPaymentStatus,
+		&m.Status,
+		&m.SyncStatus,
 		core.JSON{&m.SyncStates},
 		(*core.Time)(&m.LastSyncAt),
 		core.JSON{&m.ExternalShippingLogs},
@@ -339,7 +339,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ShopConfirm))
+		w.WriteArg(m.ShopConfirm)
 	}
 	if m.ConfirmStatus != 0 {
 		flag = true
@@ -347,7 +347,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ConfirmStatus))
+		w.WriteArg(m.ConfirmStatus)
 	}
 	if m.TotalItems != 0 {
 		flag = true
@@ -915,7 +915,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ExternalShippingStatus))
+		w.WriteArg(m.ExternalShippingStatus)
 	}
 	if m.ExternalShippingNote != "" {
 		flag = true
@@ -955,7 +955,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ShippingStatus))
+		w.WriteArg(m.ShippingStatus)
 	}
 	if m.EtopPaymentStatus != 0 {
 		flag = true
@@ -963,7 +963,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.EtopPaymentStatus))
+		w.WriteArg(m.EtopPaymentStatus)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -971,7 +971,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.SyncStatus != 0 {
 		flag = true
@@ -979,7 +979,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.SyncStatus))
+		w.WriteArg(m.SyncStatus)
 	}
 	if m.SyncStates != nil {
 		flag = true

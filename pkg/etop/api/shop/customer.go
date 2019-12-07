@@ -3,9 +3,10 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/int/shop"
 
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/customering"
@@ -256,7 +257,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 	getReceiptsByCustomerIDs := &receipting.ListReceiptsByTraderIDsAndStatusesQuery{
 		ShopID:    shopID,
 		TraderIDs: customerIDs,
-		Statuses:  []etop.Status3{etop.S3Positive},
+		Statuses:  []status3.Status{status3.P},
 	}
 	if err := receiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
 		return err

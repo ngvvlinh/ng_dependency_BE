@@ -5,6 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/capi/dot"
 
 	"etop.vn/api/main/location"
@@ -128,7 +132,7 @@ func (c *Carrier) CreateFulfillment(
 	updateFfm := &shipmodel.Fulfillment{
 		ID:                ffm.ID,
 		ProviderServiceID: service.ProviderServiceID,
-		Status:            model.S5SuperPos, // Now processing
+		Status:            status5.S, // Now processing
 
 		ShippingFeeCustomer: order.ShopShippingFee,
 		ShippingFeeShop:     order.ShopShipping.ExternalShippingFee,
@@ -142,7 +146,7 @@ func (c *Carrier) CreateFulfillment(
 		ShippingCreatedAt:         now,
 		ExternalShippingFee:       int(r.TotalServiceFee),
 		ShippingState:             model.StateCreated,
-		SyncStatus:                model.S4Positive,
+		SyncStatus:                status4.P,
 		SyncStates: &model.FulfillmentSyncStates{
 			SyncAt:    now,
 			TrySyncAt: now,

@@ -173,7 +173,7 @@ func PbCustomer(m *customering.ShopCustomer) *apishop.Customer {
 		Birthday:  m.Birthday,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		UpdatedAt: cmapi.PbTime(m.UpdatedAt),
-		Status:    Pb3(model.Status3(m.Status)),
+		Status:    m.Status,
 	}
 }
 
@@ -216,7 +216,7 @@ func PbSupplier(m *suppliering.ShopSupplier) *apishop.Supplier {
 		TaxNumber:         m.TaxNumber,
 		HeadquaterAddress: m.HeadquaterAddress,
 
-		Status:    Pb3(model.Status3(m.Status)),
+		Status:    m.Status,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		UpdatedAt: cmapi.PbTime(m.UpdatedAt),
 	}
@@ -236,7 +236,7 @@ func PbCarrier(m *carrying.ShopCarrier) *apishop.Carrier {
 		ShopId:    m.ShopID,
 		FullName:  m.FullName,
 		Note:      m.Note,
-		Status:    Pb3(model.Status3(m.Status)),
+		Status:    m.Status,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		UpdatedAt: cmapi.PbTime(m.UpdatedAt),
 	}
@@ -312,7 +312,7 @@ func PbReceipt(m *receipting.Receipt) *apishop.Receipt {
 		RefType:     string(m.RefType),
 		Lines:       PbReceiptLines(m.Lines),
 		Trader:      PbTrader(m.Trader),
-		Status:      Pb3(model.Status3(m.Status)),
+		Status:      m.Status,
 		CreatedBy:   m.CreatedBy,
 		CreatedType: string(m.CreatedType),
 		PaidAt:      cmapi.PbTime(m.PaidAt),
@@ -433,7 +433,7 @@ func PbPurchaseOrder(m *purchaseorder.PurchaseOrder) *apishop.PurchaseOrder {
 		TotalAmount:     m.TotalAmount,
 		Code:            m.Code,
 		Note:            m.Note,
-		Status:          Pb3(model.Status3(m.Status)),
+		Status:          m.Status,
 		Lines:           PbPurchaseOrderLines(m.Lines),
 		PaidAmount:      m.PaidAmount,
 		CreatedBy:       m.CreatedBy,

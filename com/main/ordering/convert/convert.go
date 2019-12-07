@@ -1,7 +1,6 @@
 package convert
 
 import (
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -70,10 +69,10 @@ func Order(in *model.Order) (out *ordering.Order) {
 		CustomerAddress:           Address(in.CustomerAddress),
 		ShippingAddress:           Address(in.ShippingAddress),
 		CancelReason:              in.CancelReason,
-		ConfirmStatus:             etoptypes.Status3FromInt(int(in.ConfirmStatus)),
-		Status:                    etoptypes.Status5FromInt(int(in.Status)),
-		FulfillmentShippingStatus: etoptypes.Status5FromInt(int(in.FulfillmentShippingStatus)),
-		EtopPaymentStatus:         etoptypes.Status4FromInt(int(in.EtopPaymentStatus)),
+		ConfirmStatus:             in.ConfirmStatus,
+		Status:                    in.Status,
+		FulfillmentShippingStatus: in.FulfillmentShippingStatus,
+		EtopPaymentStatus:         in.EtopPaymentStatus,
 		Lines:                     OrderLines(in.Lines),
 		TotalItems:                in.TotalItems,
 		BasketValue:               in.BasketValue,
@@ -92,7 +91,7 @@ func Order(in *model.Order) (out *ordering.Order) {
 		CancelledAt:               in.CancelledAt,
 		FulfillmentIDs:            in.FulfillmentIDs,
 		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
-		PaymentStatus:             etoptypes.Status4FromInt(int(in.PaymentStatus)),
+		PaymentStatus:             in.PaymentStatus,
 		PaymentID:                 in.PaymentID,
 		CustomerID:                in.CustomerID,
 		TradingShopID:             in.TradingShopID,

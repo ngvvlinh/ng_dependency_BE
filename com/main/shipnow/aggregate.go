@@ -4,8 +4,11 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/address"
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
@@ -107,7 +110,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 		if err != nil {
 			return err
 		}
-		if ffm.ConfirmStatus != etoptypes.S3Zero || ffm.ShippingCode != "" {
+		if ffm.ConfirmStatus != status3.Z || ffm.ShippingCode != "" {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật đơn giao hàng này.")
 		}
 
@@ -159,7 +162,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		}
 
 		switch ffm.Status {
-		case etoptypes.S5Positive, etoptypes.S5Negative, etoptypes.S5NegSuper:
+		case status5.P, status5.N, status5.NS:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển không thể hủy")
 		}
 
@@ -186,8 +189,8 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		updateArgs := sqlstore.UpdateCancelArgs{
 			ID:            ffm.Id,
 			ShippingState: shipnowtypes.StateCancelled,
-			Status:        etoptypes.S5Negative,
-			ConfirmStatus: etoptypes.S3Negative,
+			Status:        status5.N,
+			ConfirmStatus: status3.N,
 			CancelReason:  cmd.CancelReason,
 		}
 		ffm, err = a.store(ctx).UpdateCancelled(updateArgs)
@@ -227,9 +230,9 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 
 		update := sqlstore.UpdateStateArgs{
 			ID:             cmd.Id,
-			ConfirmStatus:  etoptypes.S3Positive,
-			ShippingStatus: etoptypes.S5SuperPos,
-			Status:         etoptypes.S5SuperPos,
+			ConfirmStatus:  status3.P,
+			ShippingStatus: status5.S,
+			Status:         status5.S,
 		}
 		shipnowFfm, err := a.store(ctx).UpdateSyncState(update)
 		if err != nil {
@@ -295,12 +298,12 @@ func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []dot.ID
 
 func ValidateConfirmFulfillment(ffm *shipnow.ShipnowFulfillment) error {
 	switch ffm.ConfirmStatus {
-	case etoptypes.S3Negative:
+	case status3.N:
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hủy")
-	case etoptypes.S3Positive:
+	case status3.P:
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã xác nhận")
 	}
-	if ffm.Status == etoptypes.S5Negative || ffm.Status == etoptypes.S5Positive {
+	if ffm.Status == status5.N || ffm.Status == status5.P {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể xác nhận đơn giao hàng này")
 	}
 

@@ -3,9 +3,10 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/backend/pkg/common/sq/core"
 
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/transaction"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/transaction/convert"
@@ -13,7 +14,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -51,7 +51,7 @@ func (s *TransactionStore) AccountID(id dot.ID) *TransactionStore {
 }
 
 func (s *TransactionStore) ByConfirmedTransaction() *TransactionStore {
-	s.preds = append(s.preds, s.ft.ByStatus(int(model.S3Positive)))
+	s.preds = append(s.preds, s.ft.ByStatus(status3.P))
 	return s
 }
 
@@ -124,13 +124,13 @@ func (s *TransactionStore) CreateTransaction(trxn *transaction.Transaction) (*tr
 type UpdateTransactionStatusArgs struct {
 	ID        dot.ID
 	AccountID dot.ID
-	Status    etoptypes.Status3
+	Status    status3.Status
 }
 
 func (s *TransactionStore) UpdateTransactionStatus(args *UpdateTransactionStatusArgs) (*transaction.Transaction, error) {
 	sqlstore.MustNoPreds(s.preds)
 	update := &transactionmodel.Transaction{
-		Status: int(args.Status),
+		Status: args.Status,
 	}
 
 	if err := s.query().Table("transaction").Where(s.ft.ByID(args.ID)).Where(s.ft.ByAccountID(args.AccountID)).ShouldUpdate(update); err != nil {

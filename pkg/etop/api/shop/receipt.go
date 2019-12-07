@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/int/shop"
 
 	"etop.vn/api/main/ledgering"
@@ -59,7 +61,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		RefType:     receipting.ReceiptRefType(q.RefType),
 		Type:        receipting.ReceiptType(q.Type),
 		CreatedType: receipting.ReceiptCreatedTypeManual,
-		Status:      int(model.S3Zero),
+		Status:      int(status3.Z),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
 	}

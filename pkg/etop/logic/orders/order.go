@@ -7,6 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/top/int/types"
 
 	"etop.vn/api/main/catalog"
@@ -482,13 +486,13 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	oldOrder := query.Result.Order
 
 	switch oldOrder.Status {
-	case model.S5Negative:
+	case status5.N:
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hủy, không thể cập nhật đơn", nil)
-	case model.S5NegSuper:
+	case status5.NS:
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã trả hàng, không thể cập nhật đơn", nil)
-	case model.S5Positive:
+	case status5.P:
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hoàn thành, không thể cập nhật đơn", nil)
-	case model.S5SuperPos:
+	case status5.S:
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đang xử lý, không thể cập nhật đơn", nil)
 	}
 
@@ -867,10 +871,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 			WithMetap("expected total_items", totalItems)
 	}
 
-	var confirm model.Status3 = 0
-	if s := convertpb.Status3ToModel(m.ShConfirm); s != nil {
-		confirm = *s
-	}
+	confirm := m.ShConfirm.Apply(0)
 
 	customerAddress, err := convertpb.OrderAddressToModel(m.CustomerAddress)
 	if err != nil {
@@ -1012,11 +1013,11 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 	order := getOrderQuery.Result.Order
 
 	switch order.Status {
-	case model.S5Negative:
+	case status5.N:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
-	case model.S5Positive:
+	case status5.P:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
-	case model.S5NegSuper:
+	case status5.NS:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}
 
@@ -1029,8 +1030,8 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 		ShopID:        shopID,
 		PartnerID:     authPartnerID,
 		OrderIDs:      []dot.ID{orderID},
-		ShopConfirm:   model.S3Negative.P(),
-		ConfirmStatus: model.S3Negative.P(),
+		ShopConfirm:   status3.N.Wrap(),
+		ConfirmStatus: status3.N.Wrap(),
 		CancelReason:  cancelReason,
 	}
 	if err := bus.Dispatch(ctx, updateOrderCmd); err != nil {

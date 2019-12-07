@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/product_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -253,7 +253,7 @@ func (ft *ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopVariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *ShopVariantFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -262,7 +262,7 @@ func (ft *ShopVariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *ShopVariantFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -647,7 +647,7 @@ func (ft *ShopProductFilters) ByBrandIDPtr(BrandID *dot.ID) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *ShopProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *ShopProductFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -656,7 +656,7 @@ func (ft *ShopProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *ShopProductFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

@@ -3,6 +3,8 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 
 	"etop.vn/api/main/identity"
@@ -71,7 +73,7 @@ func (m *ProcessManager) UserCreated(ctx context.Context, event *identity.UserCr
 				AccountUser: &model.AccountUser{
 					AccountID: invitation.AccountID,
 					UserID:    event.UserID,
-					Status:    model.S3Zero,
+					Status:    status3.Z,
 					Permission: model.Permission{
 						Roles: roles,
 					},

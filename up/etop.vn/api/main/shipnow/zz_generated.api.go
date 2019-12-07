@@ -8,12 +8,14 @@ import (
 	context "context"
 	time "time"
 
-	etop "etop.vn/api/main/etop"
 	orderingtypes "etop.vn/api/main/ordering/types"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	status5 "etop.vn/api/top/types/etc/status5"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -115,9 +117,9 @@ type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	FeeLines                   []*shippingtypes.FeeLine
 	CarrierFeeLines            []*shippingtypes.FeeLine
 	ShippingCreatedAt          time.Time
-	EtopPaymentStatus          etop.Status4
-	ShippingStatus             etop.Status5
-	Status                     etop.Status5
+	EtopPaymentStatus          status4.Status
+	ShippingStatus             status5.Status
+	Status                     status5.Status
 	CodEtopTransferedAt        time.Time
 	ShippingPickingAt          time.Time
 	ShippingDeliveringAt       time.Time
@@ -138,10 +140,10 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillmentCarrierInfo(ctx context.
 
 type UpdateShipnowFulfillmentStateCommand struct {
 	Id             dot.ID
-	SyncStatus     etop.Status4
-	Status         etop.Status5
-	ConfirmStatus  etop.Status3
-	ShippingStatus etop.Status5
+	SyncStatus     status4.Status
+	Status         status5.Status
+	ConfirmStatus  status3.Status
+	ShippingStatus status5.Status
 	SyncStates     *SyncStates
 	ShippingState  shipnowtypes.State
 

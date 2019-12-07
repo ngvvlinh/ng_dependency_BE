@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/receipting"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
@@ -163,7 +165,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 
 	transaction := &txmodel.MoneyTransactionShipping{
 		ShopID: cmd.Shop.ID,
-		Status: model.S3Zero,
+		Status: status3.Z,
 	}
 
 	transaction.ID = cm.NewID()
@@ -258,7 +260,7 @@ func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransa
 }
 
 func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransactions) error {
-	s := x.Table("money_transaction_shipping").Where("m.status != ?", model.S3Negative)
+	s := x.Table("money_transaction_shipping").Where("m.status != ?", status3.N)
 	if query.ShopID != 0 {
 		s = s.Where("m.shop_id = ?", query.ShopID)
 	}
@@ -338,7 +340,7 @@ func UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransact
 		if err := s1.ShouldGet(transaction); err != nil {
 			return err
 		}
-		if transaction.Status == model.S3Positive {
+		if transaction.Status == status3.P {
 			return cm.Error(cm.InvalidArgument, "This money transaction was confirm. Can not update!", nil)
 		}
 	}
@@ -423,7 +425,7 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 		}
 		if totalOrders == 0 && totalCOD == 0 {
 			// money transaction does not have any ffm => update status = -1
-			m["status"] = model.S3Negative
+			m["status"] = status3.N
 		}
 
 		if err := s.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).ShouldUpdateMap(m); err != nil {
@@ -461,7 +463,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 	}
 	fulfillments := query.Result.Fulfillments
 	transaction := query.Result.MoneyTransactionShipping
-	if transaction.Status != model.S3Zero {
+	if transaction.Status != status3.Z {
 		return cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil)
 	}
 	var ffms = make([]*shipmodel.Fulfillment, len(fulfillments))
@@ -490,7 +492,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 				"total_orders":       totalOrders,
 				"total_cod":          totalCOD,
 				"total_amount":       totalAmount,
-				"status":             model.S3Positive,
+				"status":             status3.P,
 				"confirmed_at":       now,
 				"etop_transfered_at": now,
 			}); err != nil {
@@ -529,7 +531,7 @@ func DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransact
 		ShouldGet(transaction); err != nil {
 		return err
 	}
-	if transaction.Status == model.S3Positive {
+	if transaction.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "Can not delete this money transaction", nil)
 	}
 	return inTransaction(func(s Qx) error {
@@ -775,7 +777,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		}
 		if totalOrders == 0 && totalCOD == 0 {
 			// money transaction does not have any ffm => update status = -1
-			m["status"] = model.S3Negative
+			m["status"] = status3.N
 		}
 
 		if err := s.Table("money_transaction_shipping_external").Where("id = ?", cmd.MoneyTransactionShippingExternalID).
@@ -806,7 +808,7 @@ func DeleteMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Del
 		ShouldGet(transaction); err != nil {
 		return err
 	}
-	if transaction.Status == model.S3Positive {
+	if transaction.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "Can not delete this money transaction", nil)
 	}
 	return inTransaction(func(s Qx) error {
@@ -842,7 +844,7 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
 		if err := s1.ShouldGet(transaction); err != nil {
 			return err
 		}
-		if transaction.Status == model.S3Positive {
+		if transaction.Status == status3.P {
 			return cm.Error(cm.FailedPrecondition, "Can not update this money transaction", nil)
 		}
 	}
@@ -881,7 +883,7 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
 
 func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[dot.ID][]*shipmodel.Fulfillment, _err error) {
 	shopFfmMap = make(map[dot.ID][]*shipmodel.Fulfillment)
-	if externalMoneyTransactionExtended.Status != model.S3Zero {
+	if externalMoneyTransactionExtended.Status != status3.Z {
 		_err = cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil).WithMetap("id", externalMoneyTransactionExtended.ID)
 		return shopFfmMap, _err
 	}
@@ -1006,7 +1008,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 		}
 		if err := s.Table("money_transaction_shipping_external").In("id", externalTransactionIDs).
 			ShouldUpdateMap(M{
-				"status": model.S3Positive,
+				"status": status3.P,
 			}); err != nil {
 			return err
 		}
@@ -1309,10 +1311,10 @@ func ConfirmCredit(ctx context.Context, cmd *model.ConfirmCreditCommand) error {
 		if err := s2.ShouldGet(credit); err != nil {
 			return nil
 		}
-		if credit.Status == model.S3Positive {
+		if credit.Status == status3.P {
 			return cm.Error(cm.FailedPrecondition, "This credit has already confirmed", nil)
 		}
-		if credit.Status != model.S3Zero {
+		if credit.Status != status3.Z {
 			return cm.Error(cm.FailedPrecondition, "Can not confirm this credit", nil)
 		}
 		if credit.PaidAt.IsZero() || credit.PaidAt.Equal(zeroTime) {
@@ -1320,7 +1322,7 @@ func ConfirmCredit(ctx context.Context, cmd *model.ConfirmCreditCommand) error {
 		}
 	}
 	if err := s.ShouldUpdateMap(M{
-		"status": model.S3Positive,
+		"status": status3.P,
 	}); err != nil {
 		return err
 	}
@@ -1343,10 +1345,10 @@ func DeleteCredit(ctx context.Context, cmd *model.DeleteCreditCommand) error {
 		if err := s2.ShouldGet(credit); err != nil {
 			return nil
 		}
-		if credit.Status == model.S3Positive {
+		if credit.Status == status3.P {
 			return cm.Error(cm.FailedPrecondition, "This credit has already confirmed", nil)
 		}
-		if credit.Status != model.S3Zero {
+		if credit.Status != status3.Z {
 			return cm.Error(cm.FailedPrecondition, "Can not delete this credit", nil)
 		}
 	}
@@ -1384,7 +1386,7 @@ func CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) erro
 			Scan(&totalShippingFee); err != nil {
 			return err
 		}
-		if err := s.SQL("SELECT SUM(amount) from credit").Where("shop_id = ? AND status = ? AND paid_at is not NULL", shopID, model.S3Positive).
+		if err := s.SQL("SELECT SUM(amount) from credit").Where("shop_id = ? AND status = ? AND paid_at is not NULL", shopID, status3.P).
 			Scan(&totalCredit); err != nil {
 			return err
 		}
@@ -1455,7 +1457,7 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoney
 		return err
 	}
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
-	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ? AND status != ?", query.ID, model.S3Negative).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
+	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ? AND status != ?", query.ID, status3.N).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
 	moneyTransactionShippingIDs := make([]dot.ID, len(moneyTransactionShippings))
@@ -1483,7 +1485,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
-	if query.Status != nil {
+	if query.Status.Valid {
 		s = s.Where("status = ?", query.Status)
 	}
 	if len(query.IDs) > 0 {
@@ -1555,7 +1557,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 		if err := s1.ShouldGet(transaction); err != nil {
 			return err
 		}
-		if transaction.Status == model.S3Positive {
+		if transaction.Status == status3.P {
 			return cm.Error(cm.InvalidArgument, "This money transaction was confirmed. Can not update!", nil)
 		}
 	}
@@ -1661,7 +1663,7 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtI
 	totalAmountManual := 0
 
 	for _, mt := range moneyTransactions {
-		if mt.Status != model.S3Zero {
+		if mt.Status != status3.Z {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTransactionShipping does not valid. (money_transaction_shipping_id = %v)", mt.ID)
 		}
 		if mt.MoneyTransactionShippingEtopID != 0 && mt.MoneyTransactionShippingEtopID != mtseID {
@@ -1701,7 +1703,7 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteM
 	if err := x.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).ShouldGet(mtse); err != nil {
 		return err
 	}
-	if mtse.Status == model.S3Positive {
+	if mtse.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "MoneyTransaction was confirmed. Can not delete.", nil)
 	}
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
@@ -1710,7 +1712,7 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteM
 	}
 	var mtIDs = make([]dot.ID, len(moneyTransactionShippings))
 	for i, mt := range moneyTransactionShippings {
-		if mt.Status == model.S3Positive {
+		if mt.Status == status3.P {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Can not delete this MoneyTransactionShippingEtop. This MoneyTransactionShipping (id = %v) was confirmed", mt.ID)
 		}
 		mtIDs[i] = mt.ID
@@ -1744,7 +1746,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 	}
 	mtse := query.Result.MoneyTransactionShippingEtop
 	moneyTransactionShippings := query.Result.MoneyTransactions
-	if mtse.Status != model.S3Zero {
+	if mtse.Status != status3.Z {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this MoneyTransactionShippingEtop")
 	}
 
@@ -1752,7 +1754,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 	totalCOD, totalAmount, totalOrders, totalFee := 0, 0, 0, 0
 	var ffmIDs []dot.ID
 	for i, mt := range moneyTransactionShippings {
-		if mt.Status != model.S3Zero {
+		if mt.Status != status3.Z {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this MoneyTransactionShipping (money_transaction_shipping_id = %v).", mt.ID)
 		}
 		var _ffms = make([]*shipmodel.Fulfillment, len(mt.Fulfillments))
@@ -1799,7 +1801,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 					"total_orders":       mt.TotalOrders,
 					"total_cod":          mt.TotalCOD,
 					"total_amount":       mt.TotalAmount,
-					"status":             model.S3Positive,
+					"status":             status3.P,
 					"confirmed_at":       now,
 					"etop_transfered_at": now,
 				}); err != nil {
@@ -1820,7 +1822,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 				"total_orders":            totalOrders,
 				"total_cod":               totalCOD,
 				"total_amount":            totalAmount,
-				"status":                  model.S3Positive,
+				"status":                  status3.P,
 				"total_fee":               totalFee,
 				"total_money_transaction": len(_moneyTransactions),
 				"confirmed_at":            now,

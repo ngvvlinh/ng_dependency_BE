@@ -61,7 +61,7 @@ func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.EntityID,
 		m.Entity,
 		m.AccountID,
-		core.Int(m.SyncStatus),
+		m.SyncStatus,
 		core.Int(m.ExternalServiceID),
 		core.String(m.ExternalNotiID),
 		core.Bool(m.SendNotification),
@@ -82,7 +82,7 @@ func (m *Notification) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.EntityID,
 		&m.Entity,
 		&m.AccountID,
-		(*core.Int)(&m.SyncStatus),
+		&m.SyncStatus,
 		(*core.Int)(&m.ExternalServiceID),
 		(*core.String)(&m.ExternalNotiID),
 		(*core.Bool)(&m.SendNotification),
@@ -215,7 +215,7 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.SyncStatus))
+		w.WriteArg(m.SyncStatus)
 	}
 	if m.ExternalServiceID != 0 {
 		flag = true

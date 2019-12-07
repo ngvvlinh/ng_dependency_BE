@@ -3,8 +3,9 @@ package purchaseorder
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	dot "etop.vn/capi/dot"
@@ -24,7 +25,7 @@ type PurchaseOrder struct {
 	Code             string
 	CodeNorm         int
 	Note             string
-	Status           etop.Status3
+	Status           status3.Status
 	VariantIDs       []dot.ID
 	Lines            []*PurchaseOrderLine
 	PaidAmount       int

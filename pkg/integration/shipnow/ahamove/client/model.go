@@ -1,8 +1,8 @@
 package client
 
 import (
-	"etop.vn/api/main/etop"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -84,14 +84,14 @@ func (orderState OrderState) ToCoreState() shipnowtypes.State {
 	}
 }
 
-func (orderState OrderState) ToStatus5() etop.Status5 {
+func (orderState OrderState) ToStatus5() status5.Status {
 	switch orderState {
 	case StateCancelled:
-		return etop.S5Negative
+		return status5.N
 	case StateCompleted:
-		return etop.S5Positive
+		return status5.P
 	default:
-		return etop.S5SuperPos
+		return status5.S
 	}
 }
 
@@ -106,14 +106,14 @@ func (s DeliveryStatus) ToCoreState(currentState shipnowtypes.State) shipnowtype
 	}
 }
 
-func (s DeliveryStatus) ToStatus5() etop.Status5 {
+func (s DeliveryStatus) ToStatus5() status5.Status {
 	switch s {
 	case StateDeliveryCompleted:
-		return etop.S5Positive
+		return status5.P
 	case StateDeliveryFailed:
-		return etop.S5Negative
+		return status5.N
 	default:
-		return etop.S5SuperPos
+		return status5.S
 	}
 }
 

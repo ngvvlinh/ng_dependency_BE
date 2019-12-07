@@ -1,12 +1,14 @@
 package convert
 
 import (
-	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
@@ -35,8 +37,8 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ShippingNote:               in.ShippingNote,
 		RequestPickupAt:            in.RequestPickupAt,
 		DeliveryPoints:             DeliveryPointsToModel(in.DeliveryPoints),
-		ConfirmStatus:              model.Status3(in.ConfirmStatus),
-		Status:                     model.Status5(in.Status),
+		ConfirmStatus:              status3.Status(in.ConfirmStatus),
+		Status:                     status5.Status(in.Status),
 		ShippingState:              in.ShippingState.String(),
 		ShippingCode:               in.ShippingCode,
 		ShippingCreatedAt:          in.ShippingCreatedAt,
@@ -47,7 +49,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		CreatedAt:                  in.CreatedAt,
 		UpdatedAt:                  in.UpdatedAt,
 		CODEtopTransferedAt:        in.CodEtopTransferedAt,
-		EtopPaymentStatus:          model.Status4(in.EtopPaymentStatus),
+		EtopPaymentStatus:          status4.Status(in.EtopPaymentStatus),
 		ShippingServiceName:        in.ShippingServiceName,
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,
@@ -89,8 +91,8 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		},
 		ShippingNote:               in.ShippingNote,
 		RequestPickupAt:            in.RequestPickupAt,
-		ConfirmStatus:              etoptypes.Status3FromInt(int(in.ConfirmStatus)),
-		Status:                     etoptypes.Status5FromInt(int(in.Status)),
+		ConfirmStatus:              in.ConfirmStatus,
+		Status:                     in.Status,
 		ShippingState:              shipnowtypes.StateFromString(in.ShippingState),
 		ShippingCode:               in.ShippingCode,
 		OrderIds:                   in.OrderIDs,
@@ -102,7 +104,7 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		ShippingDeliveredAt:        in.ShippingDeliveredAt,
 		ShippingCancelledAt:        in.ShippingCancelledAt,
 		CodEtopTransferedAt:        in.CODEtopTransferedAt,
-		EtopPaymentStatus:          etoptypes.Status4FromInt(int(in.EtopPaymentStatus)),
+		EtopPaymentStatus:          in.EtopPaymentStatus,
 		ShippingServiceName:        in.ShippingServiceName,
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,

@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/external/payment"
 	"etop.vn/api/external/payment/vtpay"
 	vtpaygateway "etop.vn/api/external/payment/vtpay/gateway"
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	paymentutil "etop.vn/backend/com/external/payment"
 	"etop.vn/backend/pkg/common/bus"
@@ -102,7 +103,7 @@ func (a *Aggregate) HandleValiDateTransactionOrder(ctx context.Context, orderID 
 }
 
 func isOrderPaid(order *ordering.Order) bool {
-	return order.PaymentStatus == etop.S4Positive
+	return order.PaymentStatus == status4.P
 }
 
 func (a *Aggregate) GetResult(ctx context.Context, args *vtpaygateway.GetResultArgs) (*vtpaygateway.GetResultResult, error) {

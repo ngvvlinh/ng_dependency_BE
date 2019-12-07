@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"strconv"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
 	"github.com/lib/pq"
 
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	ordermodely "etop.vn/backend/com/main/ordering/modely"
@@ -248,7 +253,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 
 	var shipnows []*shipnowmodel.ShipnowFulfillment
 	if err := x.Table("shipnow_fulfillment").
-		Where("status != ?", model.S5Negative).
+		Where("status != ?", status5.N).
 		Where("order_ids && ?", pq.Int64Array(util.IDsToInt64(orderIds))).
 		Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
 		return err
@@ -421,10 +426,10 @@ func SimpleGetOrdersByIDs(ctx context.Context, query *ordermodelx.SimpleGetOrder
 }
 
 func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatusCommand) error {
-	if cmd.ShopConfirm != nil && *cmd.ShopConfirm != -1 && cmd.CancelReason != "" {
+	if cmd.ShopConfirm.Apply(0) == status3.N && cmd.CancelReason != "" {
 		return cm.Error(cm.InvalidArgument, "Cancel reason provided but confirm status is not cancel", nil)
 	}
-	if cmd.ShopConfirm != nil && *cmd.ShopConfirm == -1 && cmd.CancelReason == "" {
+	if cmd.ShopConfirm.Apply(0) == status3.N && cmd.CancelReason == "" {
 		return cm.Error(cm.InvalidArgument, "Cancel orders must provide cancel reason", nil)
 	}
 
@@ -439,13 +444,13 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 	}
 
 	m := M{}
-	if cmd.ShopConfirm != nil {
+	if cmd.ShopConfirm.Valid {
 		m["shop_confirm"] = cmd.ShopConfirm
 	}
-	if cmd.ConfirmStatus != nil {
+	if cmd.ConfirmStatus.Valid {
 		m["confirm_status"] = cmd.ConfirmStatus
 	}
-	if cmd.Status != nil {
+	if cmd.Status.Valid {
 		m["status"] = cmd.Status
 	}
 	if len(m) == 0 {
@@ -627,7 +632,7 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 	// only update order_lines if order's fulfillment does not exist
 	if len(cmd.Lines) > 0 {
 		var ffm = new(shipmodel.Fulfillment)
-		has, _ := x.Table("fulfillment").Where("order_id = ? AND status != ?", cmd.ID, model.S5Zero).Get(ffm)
+		has, _ := x.Table("fulfillment").Where("order_id = ? AND status != ?", cmd.ID, status5.Z).Get(ffm)
 		if has {
 			return cm.Error(cm.FailedPrecondition, "Đơn giao hàng đã được tạo. Không thể cập nhật đơn hàng này.", nil)
 		}
@@ -766,7 +771,7 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 	if query.OrderID != 0 {
 		s = s.Where("order_id = ?", query.OrderID)
 	}
-	if query.Status != nil {
+	if query.Status.Valid {
 		s = s.Where("status = ?", query.Status)
 	}
 	if len(query.ShippingCodes) > 0 {
@@ -853,7 +858,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	if query.OrderID != 0 {
 		s = s.Where("f.order_id = ?", query.OrderID)
 	}
-	if query.Status != nil {
+	if query.Status.Valid {
 		s = s.Where("f.status = ?", query.Status)
 	}
 	if len(query.ShippingCodes) > 0 {
@@ -1048,14 +1053,14 @@ func UpdateFulfillmentsStatus(ctx context.Context, cmd *shipmodelx.UpdateFulfill
 	}
 
 	m := map[string]interface{}{}
-	if cmd.Status != nil {
-		m["status"] = *cmd.Status
+	if cmd.Status.Valid {
+		m["status"] = cmd.Status
 	}
-	if cmd.ShopConfirm != nil {
-		m["shop_confirm"] = *cmd.ShopConfirm
+	if cmd.ShopConfirm.Valid {
+		m["shop_confirm"] = cmd.ShopConfirm
 	}
-	if cmd.SyncStatus != nil {
-		m["sync_status"] = *cmd.SyncStatus
+	if cmd.SyncStatus.Valid {
+		m["sync_status"] = cmd.SyncStatus
 	}
 	if cmd.ShippingState != "" {
 		m["shipping_state"] = cmd.ShippingState
@@ -1154,23 +1159,23 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 		}
 
 		switch order.Status {
-		case model.S5Negative:
+		case status5.N:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("ffm ID", id)
-		case model.S5Positive:
+		case status5.P:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hoàn thành").WithMetap("fulfillment_id", id)
-		case model.S5NegSuper:
+		case status5.NS:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("fulfillment_id", id)
 		}
-		if order.ConfirmStatus == model.S3Negative ||
-			order.ShopConfirm == model.S3Negative {
+		if order.ConfirmStatus == status3.N ||
+			order.ShopConfirm == status3.N {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("ffm ID", id)
 		}
 		switch ffm.Status {
-		case model.S5Negative:
+		case status5.N:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã huỷ").WithMetap("fulfillment_id", id)
-		case model.S5Positive:
+		case status5.P:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hoàn thành").WithMetap("fulfillment_id", id)
-		case model.S5NegSuper:
+		case status5.NS:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("fulfillment_id", id)
 		}
 
@@ -1208,7 +1213,7 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái thanh toán cho đơn hàng này")
 	}
 
-	if order.PaymentStatus == model.S4Positive {
+	if order.PaymentStatus == status4.P {
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã được thanh toán", nil)
 	}
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(M{
@@ -1250,22 +1255,22 @@ func canUpdateOrder(order *ordermodel.Order) (bool, error) {
 		return false, cm.Error(cm.FailedPrecondition, "Đơn hàng không tồn tại", nil)
 	}
 	switch order.Status {
-	case model.S5Negative:
+	case status5.N:
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("id", order.ID)
-	case model.S5Positive:
+	case status5.P:
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hoàn thành").WithMetap("id", order.ID)
-	case model.S5NegSuper:
+	case status5.NS:
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("id", order.ID)
 	}
-	if order.ConfirmStatus == model.S3Negative ||
-		order.ShopConfirm == model.S3Negative {
+	if order.ConfirmStatus == status3.N ||
+		order.ShopConfirm == status3.N {
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("id", order.ID)
 	}
 	return true, nil
 }
 
 func canUpdateFulfillment(ffm *shipmodel.Fulfillment) (bool, error) {
-	if ffm.Status == model.S5Positive {
+	if ffm.Status == status5.P {
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã hoàn thành")
 	}
 	if !ffm.CODEtopTransferedAt.IsZero() {

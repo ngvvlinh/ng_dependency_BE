@@ -3,6 +3,8 @@ package receipting
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/meta"
 	dot "etop.vn/capi/dot"
 )
@@ -36,7 +38,7 @@ type Receipt struct {
 	Type        ReceiptType
 	Description string
 	Amount      int
-	Status      int
+	Status      status3.Status
 	LedgerID    dot.ID
 	RefIDs      []dot.ID
 	RefType     ReceiptRefType

@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"regexp"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	extpartner "etop.vn/api/top/external/partner"
 	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
@@ -144,9 +146,9 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			rel := relationQuery.Result.PartnerRelation
 			shop := relationQuery.Result.Shop
 			user := relationQuery.Result.User
-			if rel.Status == model.S3Positive && rel.DeletedAt.IsZero() &&
-				shop.Status == model.S3Positive && shop.DeletedAt.IsZero() &&
-				user.Status == model.S3Positive {
+			if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
+				shop.Status == status3.P && shop.DeletedAt.IsZero() &&
+				user.Status == status3.P {
 				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopKey,
@@ -156,11 +158,11 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				}
 				return nil
 			}
-			if shop.Status != model.S3Positive || !shop.DeletedAt.IsZero() ||
-				user.Status != model.S3Positive {
+			if shop.Status != status3.P || !shop.DeletedAt.IsZero() ||
+				user.Status != status3.P {
 				return cm.Errorf(cm.AccountClosed, nil, "")
 			}
-			if rel.Status != model.S3Positive || !rel.DeletedAt.IsZero() {
+			if rel.Status != status3.P || !rel.DeletedAt.IsZero() {
 				info := PartnerShopToken{
 					PartnerID:      partner.ID,
 					ShopID:         shop.ID,

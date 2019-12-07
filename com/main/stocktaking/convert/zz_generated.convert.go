@@ -7,11 +7,9 @@ package convert
 import (
 	time "time"
 
-	etop "etop.vn/api/main/etop"
 	stocktaking "etop.vn/api/main/stocktaking"
 	stocktakingmodel "etop.vn/backend/com/main/stocktaking/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
 /*
@@ -172,7 +170,7 @@ func convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg *stock
 	out.ConfirmedAt = arg.ConfirmedAt     // simple assign
 	out.CancelledAt = arg.CancelledAt     // simple assign
 	out.Lines = Convert_stocktakingmodel_StocktakeLines_stocktaking_StocktakeLines(arg.Lines)
-	out.Status = etop.Status3(arg.Status) // simple conversion
+	out.Status = arg.Status // simple assign
 }
 
 func Convert_stocktakingmodel_ShopStocktakes_stocktaking_ShopStocktakes(args []*stocktakingmodel.ShopStocktake) (outs []*stocktaking.ShopStocktake) {
@@ -196,19 +194,19 @@ func Convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stock
 }
 
 func convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stocktaking.ShopStocktake, out *stocktakingmodel.ShopStocktake) {
-	out.ID = arg.ID                            // simple assign
-	out.ShopID = arg.ShopID                    // simple assign
-	out.TotalQuantity = arg.TotalQuantity      // simple assign
-	out.CreatedBy = arg.CreatedBy              // simple assign
-	out.UpdatedBy = arg.UpdatedBy              // simple assign
-	out.CancelReason = arg.CancelReason        // simple assign
-	out.Code = arg.Code                        // simple assign
-	out.CodeNorm = arg.CodeNorm                // simple assign
-	out.Status = etopmodel.Status3(arg.Status) // simple conversion
-	out.CreatedAt = arg.CreatedAt              // simple assign
-	out.UpdatedAt = arg.UpdatedAt              // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt          // simple assign
-	out.CancelledAt = arg.CancelledAt          // simple assign
+	out.ID = arg.ID                       // simple assign
+	out.ShopID = arg.ShopID               // simple assign
+	out.TotalQuantity = arg.TotalQuantity // simple assign
+	out.CreatedBy = arg.CreatedBy         // simple assign
+	out.UpdatedBy = arg.UpdatedBy         // simple assign
+	out.CancelReason = arg.CancelReason   // simple assign
+	out.Code = arg.Code                   // simple assign
+	out.CodeNorm = arg.CodeNorm           // simple assign
+	out.Status = arg.Status               // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt     // simple assign
+	out.CancelledAt = arg.CancelledAt     // simple assign
 	out.Lines = Convert_stocktaking_StocktakeLines_stocktakingmodel_StocktakeLines(arg.Lines)
 	out.Note = arg.Note // simple assign
 }

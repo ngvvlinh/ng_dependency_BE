@@ -5,10 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
-
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type ExternalAccountAhamoveFilters struct{ prefix string }
@@ -495,7 +494,7 @@ func (ft *AffiliateFilters) ByIsTestPtr(IsTest *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AffiliateFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *AffiliateFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -504,7 +503,7 @@ func (ft *AffiliateFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AffiliateFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *AffiliateFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

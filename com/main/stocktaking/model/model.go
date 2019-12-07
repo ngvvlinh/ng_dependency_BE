@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 )
 
@@ -20,7 +21,7 @@ type ShopStocktake struct {
 	CancelReason  string
 	Code          string
 	CodeNorm      int
-	Status        model.Status3
+	Status        status3.Status
 	CreatedAt     time.Time `sq:"create"`
 	UpdatedAt     time.Time `sq:"update"`
 	ConfirmedAt   time.Time

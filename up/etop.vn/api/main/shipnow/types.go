@@ -3,7 +3,12 @@ package shipnow
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ordering/types"
 	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -29,16 +34,16 @@ type ShipnowFulfillment struct {
 	ValueInfo            shippingtypes.ValueInfo
 	ShippingNote         string
 	RequestPickupAt      time.Time
-	Status               etop.Status5
-	ShippingStatus       etop.Status5
+	Status               status5.Status
+	ShippingStatus       status5.Status
 	ShippingCode         string
 	ShippingState        shipnowtypes.State
-	ConfirmStatus        etop.Status3
+	ConfirmStatus        status3.Status
 	OrderIds             []dot.ID
 	ShippingCreatedAt    time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
-	EtopPaymentStatus    etop.Status4
+	EtopPaymentStatus    status4.Status
 	CodEtopTransferedAt  time.Time
 	ShippingPickingAt    time.Time
 	ShippingDeliveringAt time.Time
@@ -94,23 +99,23 @@ type ShipnowCreateExternalEvent struct {
 	ShipnowFulfillmentId dot.ID
 }
 
-func ShipnowStatus(state shipnowtypes.State, paymentStatus etop.Status4) etop.Status5 {
+func ShipnowStatus(state shipnowtypes.State, paymentStatus status4.Status) status5.Status {
 	switch state {
 	case shipnowtypes.StateDefault:
 	case shipnowtypes.StateCreated:
 	case shipnowtypes.StateAssigning:
 	case shipnowtypes.StatePicking:
 	case shipnowtypes.StateDelivering:
-		return etop.S5SuperPos
+		return status5.S
 	case shipnowtypes.StateCancelled:
-		return etop.S5Negative
+		return status5.N
 	case shipnowtypes.StateDelivered:
-		if paymentStatus == etop.S4Positive {
-			return etop.S5Positive
+		if paymentStatus == status4.P {
+			return status5.P
 		}
-		return etop.S5SuperPos
+		return status5.S
 	default:
-		return etop.S5Zero
+		return status5.Z
 	}
-	return etop.S5Zero
+	return status5.Z
 }

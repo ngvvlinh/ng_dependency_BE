@@ -5,6 +5,12 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
@@ -52,10 +58,10 @@ type ShipnowFulfillment struct {
 	DeliveryPoints []*DeliveryPoint
 	CancelReason   string
 
-	Status            model.Status5
-	ConfirmStatus     model.Status3
-	ShippingStatus    model.Status5
-	EtopPaymentStatus model.Status4
+	Status            status5.Status
+	ConfirmStatus     status3.Status
+	ShippingStatus    status5.Status
+	EtopPaymentStatus status4.Status
 
 	ShippingState        string
 	ShippingCode         string
@@ -68,7 +74,7 @@ type ShipnowFulfillment struct {
 	ShippingDeliveredAt  time.Time
 	ShippingCancelledAt  time.Time
 
-	SyncStatus          model.Status4
+	SyncStatus          status4.Status
 	SyncStates          *model.FulfillmentSyncStates
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`

@@ -3,8 +3,9 @@ package manager
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	paymentmanager "etop.vn/api/external/payment/manager"
-	"etop.vn/api/main/etop"
 )
 
 type PaymentProvider interface {
@@ -26,6 +27,6 @@ type CheckReturnDataArgs struct {
 type CheckReturnDataResult struct {
 	Message                   string
 	PaymentState              paymentmanager.PaymentState
-	PaymentStatus             etop.Status4
+	PaymentStatus             status4.Status
 	ExternalPaymentStatusText string
 }

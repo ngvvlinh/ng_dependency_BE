@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/capi/dot"
 
 	"etop.vn/api/main/location"
@@ -93,7 +95,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		// UpdateInfo status to pending
 		updateFfm := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
-			SyncStatus: model.S4SuperPos,
+			SyncStatus: status4.S,
 			SyncStates: &model.FulfillmentSyncStates{
 				TrySyncAt:         time.Now(),
 				NextShippingState: model.StateCreated,
@@ -112,7 +114,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		}
 		updateFfm2 := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
-			SyncStatus: model.S4Negative,
+			SyncStatus: status4.N,
 			SyncStates: &model.FulfillmentSyncStates{
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),

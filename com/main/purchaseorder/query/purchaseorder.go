@@ -3,7 +3,8 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
@@ -13,7 +14,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 )
@@ -221,7 +221,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 		ShopID:  shopID,
 		RefIDs:  purchaseOrderIDs,
 		RefType: receipting.ReceiptRefTypePurchaseOrder,
-		Status:  int(model.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := q.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err
@@ -241,7 +241,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 }
 
 func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
-	ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3,
+	ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []status3.Status,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(shopID).SupplierIDs(supplierIDs...)
 	if len(statuses) != 0 {

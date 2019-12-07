@@ -4,7 +4,12 @@ import (
 	"context"
 	"time"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -67,10 +72,10 @@ type Order struct {
 	ShippingAddress *types.Address
 	CancelReason    string
 
-	ConfirmStatus             etoptypes.Status3
-	Status                    etoptypes.Status5
-	FulfillmentShippingStatus etoptypes.Status5
-	EtopPaymentStatus         etoptypes.Status4
+	ConfirmStatus             status3.Status
+	Status                    status5.Status
+	FulfillmentShippingStatus status5.Status
+	EtopPaymentStatus         status4.Status
 
 	Lines         []*types.ItemLine
 	TotalItems    int
@@ -95,7 +100,7 @@ type Order struct {
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 
-	PaymentStatus etoptypes.Status4
+	PaymentStatus status4.Status
 	PaymentID     dot.ID
 	ReferralMeta  *ReferralMeta
 
@@ -137,21 +142,21 @@ type ReleaseOrdersForFfmResponse struct {
 type UpdateOrderShippingStatusArgs struct {
 	ID                         dot.ID
 	FulfillmentShippingStates  []string
-	FulfillmentShippingStatus  etoptypes.Status5
+	FulfillmentShippingStatus  status5.Status
 	FulfillmentPaymentStatuses []int
-	EtopPaymentStatus          etoptypes.Status4
+	EtopPaymentStatus          status4.Status
 	CODEtopPaidAt              time.Time
 }
 
 type UpdateOrdersConfirmStatusArgs struct {
 	IDs           []dot.ID
-	ShopConfirm   etoptypes.Status3
-	ConfirmStatus etoptypes.Status3
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 }
 
 type UpdateOrderPaymentInfoArgs struct {
 	ID            dot.ID
-	PaymentStatus etoptypes.Status4
+	PaymentStatus status4.Status
 	PaymentID     dot.ID
 }
 

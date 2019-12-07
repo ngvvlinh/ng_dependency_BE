@@ -3,7 +3,8 @@ package identity
 import (
 	"time"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
@@ -31,7 +32,7 @@ type Shop struct {
 	Code              string
 	AutoCreateFFM     bool
 
-	Status    etoptypes.Status3
+	Status    status3.Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time
@@ -44,7 +45,7 @@ type Affiliate struct {
 	Phone       string
 	Email       string
 	IsTest      int
-	Status      etoptypes.Status3
+	Status      status3.Status
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   time.Time
@@ -59,7 +60,7 @@ type User struct {
 	Email     string
 	Phone     string
 
-	Status etoptypes.Status3 // 1: actual user, 0: stub, -1: disabled
+	Status status3.Status // 1: actual user, 0: stub, -1: disabled
 
 	EmailVerifiedAt time.Time
 

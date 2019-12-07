@@ -4,7 +4,10 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/purchaseorder/convert"
@@ -73,12 +76,12 @@ func (s *PurchaseOrderStore) ShopID(id dot.ID) *PurchaseOrderStore {
 	return s
 }
 
-func (s *PurchaseOrderStore) Status(status etop.Status3) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) Status(status status3.Status) *PurchaseOrderStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
 
-func (s *PurchaseOrderStore) Statuses(statuses ...etop.Status3) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) Statuses(statuses ...status3.Status) *PurchaseOrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", statuses))
 	return s
 }
@@ -125,7 +128,7 @@ func (s *PurchaseOrderStore) ConfirmPurchaseOrder() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("purchase_order").UpdateMap(map[string]interface{}{
-		"status":       int(etop.S5Positive),
+		"status":       int(status5.P),
 		"confirmed_at": time.Now(),
 	})
 
@@ -136,7 +139,7 @@ func (s *PurchaseOrderStore) CancelPurchaseOrder(reason string) (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("purchase_order").UpdateMap(map[string]interface{}{
-		"status":           int(etop.S3Negative),
+		"status":           int(status3.N),
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})

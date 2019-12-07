@@ -536,7 +536,7 @@ func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Phone),
 		core.String(m.Email),
 		core.Int(m.IsTest),
-		core.Int(m.Status),
+		m.Status,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -552,7 +552,7 @@ func (m *Affiliate) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Email),
 		(*core.Int)(&m.IsTest),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -673,7 +673,7 @@ func (m *Affiliate) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true

@@ -11,7 +11,6 @@ import (
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
 /*
@@ -509,7 +508,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.CategoryID = arg.CategoryID                 // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Tags = arg.Tags                             // simple assign
-	out.Status = int(arg.Status)                    // simple conversion
+	out.Status = arg.Status                         // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DeletedAt = arg.DeletedAt                   // simple assign
@@ -532,31 +531,31 @@ func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 }
 
 func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
-	out.ShopID = arg.ShopID                    // simple assign
-	out.ProductID = arg.ProductID              // simple assign
-	out.CollectionIDs = arg.CollectionIDs      // simple assign
-	out.Code = arg.Code                        // simple assign
-	out.Name = arg.Name                        // simple assign
-	out.Description = ""                       // zero value
-	out.DescHTML = ""                          // zero value
-	out.ShortDesc = ""                         // zero value
-	out.ImageURLs = arg.ImageURLs              // simple assign
-	out.Note = arg.Note                        // simple assign
-	out.Tags = arg.Tags                        // simple assign
-	out.Unit = arg.Unit                        // simple assign
-	out.CategoryID = arg.CategoryID            // simple assign
-	out.CostPrice = 0                          // zero value
-	out.ListPrice = 0                          // zero value
-	out.RetailPrice = 0                        // zero value
-	out.BrandID = arg.BrandID                  // simple assign
-	out.Status = etopmodel.Status3(arg.Status) // simple conversion
-	out.CreatedAt = arg.CreatedAt              // simple assign
-	out.UpdatedAt = arg.UpdatedAt              // simple assign
-	out.DeletedAt = arg.DeletedAt              // simple assign
-	out.NameNorm = ""                          // zero value
-	out.NameNormUa = ""                        // zero value
-	out.ProductType = arg.ProductType          // simple assign
-	out.MetaFields = nil                       // types do not match
+	out.ShopID = arg.ShopID               // simple assign
+	out.ProductID = arg.ProductID         // simple assign
+	out.CollectionIDs = arg.CollectionIDs // simple assign
+	out.Code = arg.Code                   // simple assign
+	out.Name = arg.Name                   // simple assign
+	out.Description = ""                  // zero value
+	out.DescHTML = ""                     // zero value
+	out.ShortDesc = ""                    // zero value
+	out.ImageURLs = arg.ImageURLs         // simple assign
+	out.Note = arg.Note                   // simple assign
+	out.Tags = arg.Tags                   // simple assign
+	out.Unit = arg.Unit                   // simple assign
+	out.CategoryID = arg.CategoryID       // simple assign
+	out.CostPrice = 0                     // zero value
+	out.ListPrice = 0                     // zero value
+	out.RetailPrice = 0                   // zero value
+	out.BrandID = arg.BrandID             // simple assign
+	out.Status = arg.Status               // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.DeletedAt = arg.DeletedAt         // simple assign
+	out.NameNorm = ""                     // zero value
+	out.NameNormUa = ""                   // zero value
+	out.ProductType = arg.ProductType     // simple assign
+	out.MetaFields = nil                  // types do not match
 }
 
 func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
@@ -640,7 +639,7 @@ func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.Shop
 	out.Name = arg.Name                             // simple assign
 	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
 	out.ImageURLs = arg.ImageURLs                   // simple assign
-	out.Status = int16(arg.Status)                  // simple conversion
+	out.Status = arg.Status                         // simple assign
 	out.Attributes = Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
 	out.PriceInfo = catalog.PriceInfo{} // zero value
 	out.Note = arg.Note                 // simple assign
@@ -663,21 +662,21 @@ func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVaria
 }
 
 func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
-	out.ShopID = arg.ShopID                    // simple assign
-	out.VariantID = arg.VariantID              // simple assign
-	out.ProductID = arg.ProductID              // simple assign
-	out.Code = arg.Code                        // simple assign
-	out.Name = arg.Name                        // simple assign
-	out.Description = ""                       // zero value
-	out.DescHTML = ""                          // zero value
-	out.ShortDesc = ""                         // zero value
-	out.ImageURLs = arg.ImageURLs              // simple assign
-	out.Note = arg.Note                        // simple assign
-	out.Tags = nil                             // zero value
-	out.CostPrice = 0                          // zero value
-	out.ListPrice = 0                          // zero value
-	out.RetailPrice = 0                        // zero value
-	out.Status = etopmodel.Status3(arg.Status) // simple conversion
+	out.ShopID = arg.ShopID       // simple assign
+	out.VariantID = arg.VariantID // simple assign
+	out.ProductID = arg.ProductID // simple assign
+	out.Code = arg.Code           // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Description = ""          // zero value
+	out.DescHTML = ""             // zero value
+	out.ShortDesc = ""            // zero value
+	out.ImageURLs = arg.ImageURLs // simple assign
+	out.Note = arg.Note           // simple assign
+	out.Tags = nil                // zero value
+	out.CostPrice = 0             // zero value
+	out.ListPrice = 0             // zero value
+	out.RetailPrice = 0           // zero value
+	out.Status = arg.Status       // simple assign
 	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign

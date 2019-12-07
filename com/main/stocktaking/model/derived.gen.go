@@ -62,7 +62,7 @@ func (m *ShopStocktake) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.CancelReason),
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
-		core.Int(m.Status),
+		m.Status,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.ConfirmedAt),
@@ -82,7 +82,7 @@ func (m *ShopStocktake) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.CancelReason),
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.ConfirmedAt),
@@ -221,7 +221,7 @@ func (m *ShopStocktake) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true

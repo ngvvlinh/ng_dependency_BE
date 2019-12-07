@@ -9,7 +9,6 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *types.ShipnowFulfillment {
@@ -33,14 +32,14 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		RequestPickupAt:            cmapi.PbTime(in.RequestPickupAt),
 		CreatedAt:                  cmapi.PbTime(in.CreatedAt),
 		UpdatedAt:                  cmapi.PbTime(in.UpdatedAt),
-		Status:                     Pb5(model.Status5(in.Status)),
-		ShippingStatus:             Pb5(model.Status5(in.ShippingStatus)),
+		Status:                     in.Status,
+		ShippingStatus:             in.ShippingStatus,
 		ShippingState:              shipnowtypes.StateToString(in.ShippingState),
-		ConfirmStatus:              Pb3(model.Status3(in.ConfirmStatus)),
+		ConfirmStatus:              in.ConfirmStatus,
 		OrderIds:                   in.OrderIds,
 		ShippingCreatedAt:          cmapi.PbTime(in.ShippingCreatedAt),
 		ShippingCode:               in.ShippingCode,
-		EtopPaymentStatus:          Pb4(model.Status4(in.EtopPaymentStatus)),
+		EtopPaymentStatus:          in.EtopPaymentStatus,
 		CodEtopTransferedAt:        cmapi.PbTime(in.CodEtopTransferedAt),
 		ShippingPickingAt:          cmapi.PbTime(in.ShippingPickingAt),
 		ShippingDeliveringAt:       cmapi.PbTime(in.ShippingDeliveringAt),

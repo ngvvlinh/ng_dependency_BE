@@ -7,7 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -100,7 +103,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 }
 
 func (wh *Webhook) ProcessAhamoveWebhook(ctx context.Context, ffm *shipnow.ShipnowFulfillment, orderMsg client.Order) error {
-	if ffm.Status != etop.S5Zero && ffm.Status != etop.S5SuperPos {
+	if ffm.Status != status5.Z && ffm.Status != status5.S {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Can not update this shipnow").WithMeta("result", "ignore")
 	}
 	err := wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
@@ -153,10 +156,10 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		CarrierFeeLines:      nil, // update if needed
 		CancelReason:         orderMsg.CancelComment,
 	}
-	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != etop.S4Positive {
+	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != status4.P {
 		// EtopPaymentStatus: Ahamove khong doi soat, thanh toán ngay khi lấy hàng
 		update.CodEtopTransferedAt = time.Now()
-		update.EtopPaymentStatus = etop.S4Positive
+		update.EtopPaymentStatus = status4.P
 		paymentStatus = update.EtopPaymentStatus
 	}
 	update.Status = shipnow.ShipnowStatus(update.ShippingState, paymentStatus)
@@ -167,7 +170,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 	return update.Result, nil
 }
 
-func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint, shippingState shipnowtypes.State, paymentStatus etop.Status4) error {
+func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint, shippingState shipnowtypes.State, paymentStatus status4.Status) error {
 	trackingNumber := point.TrackingNumber
 	if trackingNumber == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing tracking number (order_code)").WithMeta("result", "ignore")

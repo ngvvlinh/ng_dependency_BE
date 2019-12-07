@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/capi/dot"
 
 	"etop.vn/api/main/location"
@@ -257,7 +259,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	// Only update status4 if the current status is not ending status
 	newStatus := stateID.ToStatus5()
 	// UpdateInfo ClosedAt
-	if newStatus == model.S5Negative || newStatus == model.S5NegSuper || newStatus == model.S5Positive {
+	if newStatus == status5.N || newStatus == status5.NS || newStatus == status5.P {
 		if ffm.ExternalShippingClosedAt.IsZero() {
 			update.ClosedAt = now
 		}

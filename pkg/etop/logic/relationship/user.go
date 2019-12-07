@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
@@ -141,7 +143,7 @@ func getOrCreateUserStub(ctx context.Context, cmd *GetOrCreateUserStubCommand) (
 			Phone:     cmd.Phone,
 		},
 		Password:       generatedPassword,
-		Status:         model.S3Zero,
+		Status:         status3.Z,
 		AgreeTOS:       false,
 		AgreeEmailInfo: false,
 		IsTest:         false,
@@ -237,7 +239,7 @@ func getOrCreateInvitation(ctx context.Context, cmd *GetOrCreateInvitationComman
 	accUser := &model.AccountUser{
 		AccountID:        cmd.AccountID,
 		UserID:           cmd.UserID,
-		Status:           model.S3Zero, // Not activated yet
+		Status:           status3.Z, // Not activated yet
 		Permission:       cmd.Invitation.Permission,
 		FullName:         cmd.Invitation.FullName,
 		ShortName:        cmd.Invitation.ShortName,

@@ -5,7 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 )
@@ -285,7 +285,7 @@ func (ft *InventoryVoucherFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilter
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByStatus(Status etop.Status3) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -294,7 +294,7 @@ func (ft *InventoryVoucherFilters) ByStatus(Status etop.Status3) *sq.ColumnFilte
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByStatusPtr(Status *etop.Status3) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

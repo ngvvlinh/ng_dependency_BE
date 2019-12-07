@@ -9,7 +9,7 @@ import (
 	json "encoding/json"
 	time "time"
 
-	etop "etop.vn/api/main/etop"
+	status4 "etop.vn/api/top/types/etc/status4"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -29,7 +29,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 
 type CreateOrUpdatePaymentCommand struct {
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           PaymentState
 	PaymentProvider PaymentProvider
 	ExternalTransID string
@@ -48,7 +48,7 @@ func (h AggregateHandler) HandleCreateOrUpdatePayment(ctx context.Context, msg *
 type UpdateExternalPaymentInfoCommand struct {
 	ID              dot.ID
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           PaymentState
 	ExternalData    json.RawMessage
 	ExternalTransID string

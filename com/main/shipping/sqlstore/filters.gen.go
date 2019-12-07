@@ -5,6 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 
@@ -101,7 +104,7 @@ func (ft *FulfillmentFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilter
 	}
 }
 
-func (ft *FulfillmentFilters) ByShopConfirm(ShopConfirm model.Status3) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByShopConfirm(ShopConfirm status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_confirm",
@@ -110,7 +113,7 @@ func (ft *FulfillmentFilters) ByShopConfirm(ShopConfirm model.Status3) *sq.Colum
 	}
 }
 
-func (ft *FulfillmentFilters) ByShopConfirmPtr(ShopConfirm *model.Status3) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByShopConfirmPtr(ShopConfirm *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_confirm",
@@ -120,7 +123,7 @@ func (ft *FulfillmentFilters) ByShopConfirmPtr(ShopConfirm *model.Status3) *sq.C
 	}
 }
 
-func (ft *FulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByConfirmStatus(ConfirmStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -129,7 +132,7 @@ func (ft *FulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.C
 	}
 }
 
-func (ft *FulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -1336,7 +1339,7 @@ func (ft *FulfillmentFilters) ByExternalShippingStateCodePtr(ExternalShippingSta
 	}
 }
 
-func (ft *FulfillmentFilters) ByExternalShippingStatus(ExternalShippingStatus model.Status5) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByExternalShippingStatus(ExternalShippingStatus status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_shipping_status",
@@ -1345,7 +1348,7 @@ func (ft *FulfillmentFilters) ByExternalShippingStatus(ExternalShippingStatus mo
 	}
 }
 
-func (ft *FulfillmentFilters) ByExternalShippingStatusPtr(ExternalShippingStatus *model.Status5) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByExternalShippingStatusPtr(ExternalShippingStatus *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_shipping_status",
@@ -1412,7 +1415,7 @@ func (ft *FulfillmentFilters) ByShippingStatePtr(ShippingState *model.ShippingSt
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByShippingStatus(ShippingStatus status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -1421,7 +1424,7 @@ func (ft *FulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByShippingStatusPtr(ShippingStatus *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -1431,7 +1434,7 @@ func (ft *FulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5)
 	}
 }
 
-func (ft *FulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -1440,7 +1443,7 @@ func (ft *FulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status
 	}
 }
 
-func (ft *FulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -1450,7 +1453,7 @@ func (ft *FulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.St
 	}
 }
 
-func (ft *FulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByStatus(Status status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1459,7 +1462,7 @@ func (ft *FulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByStatusPtr(Status *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1469,7 +1472,7 @@ func (ft *FulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilte
 	}
 }
 
-func (ft *FulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) BySyncStatus(SyncStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sync_status",
@@ -1478,7 +1481,7 @@ func (ft *FulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnF
 	}
 }
 
-func (ft *FulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) BySyncStatusPtr(SyncStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sync_status",

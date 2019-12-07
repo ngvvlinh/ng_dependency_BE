@@ -659,7 +659,7 @@ func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
-		core.Int(m.Status),
+		m.Status,
 	}
 }
 
@@ -681,7 +681,7 @@ func (m *ShopTraderAddress) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
-		(*core.Int)(&m.Status),
+		&m.Status,
 	}
 }
 
@@ -878,7 +878,7 @@ func (m *ShopTraderAddress) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if !flag {
 		return core.ErrNoColumn

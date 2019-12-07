@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	suppliering "etop.vn/api/shopping/suppliering"
+	status3 "etop.vn/api/top/types/etc/status3"
 	supplieringmodel "etop.vn/backend/com/shopping/suppliering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -79,7 +80,7 @@ func convert_supplieringmodel_ShopSupplier_suppliering_ShopSupplier(arg *supplie
 	out.TaxNumber = arg.TaxNumber                 // simple assign
 	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
 	out.Note = arg.Note                           // simple assign
-	out.Status = arg.Status                       // simple assign
+	out.Status = status3.Status(arg.Status)       // simple conversion
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 }
@@ -118,7 +119,7 @@ func convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *supplie
 	out.Note = arg.Note                           // simple assign
 	out.FullNameNorm = ""                         // zero value
 	out.PhoneNorm = ""                            // zero value
-	out.Status = arg.Status                       // simple assign
+	out.Status = int(arg.Status)                  // simple conversion
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 	out.DeletedAt = time.Time{}                   // zero value

@@ -77,7 +77,6 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		BillingAddress:  convertpb.OrderAddressToPbOrder(r.CustomerAddress),
 		ShippingAddress: convertpb.OrderAddressToPbOrder(r.ShippingAddress),
 		ShopAddress:     convertpb.OrderAddressToPbOrder(shipping.PickupAddress),
-		ShConfirm:       nil,
 		Lines:           lines,
 		Discounts:       nil,
 		TotalItems:      r.TotalItems,

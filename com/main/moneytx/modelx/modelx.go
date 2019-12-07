@@ -3,6 +3,7 @@ package modelx
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -199,7 +200,7 @@ type GetMoneyTransactionShippingEtop struct {
 type GetMoneyTransactionShippingEtops struct {
 	IDs     []dot.ID
 	Paging  *cm.Paging
-	Status  *model.Status3
+	Status  status3.NullStatus
 	Filters []cm.Filter
 
 	Result struct {

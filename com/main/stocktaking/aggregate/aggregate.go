@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/backend/com/main/stocktaking/convert"
 	"etop.vn/backend/com/main/stocktaking/sqlstore"
@@ -88,11 +89,11 @@ func (q *StocktakeAggregate) ConfirmStocktake(ctx context.Context, args *stockta
 	if err != nil {
 		return nil, err
 	}
-	if stocktakeDB.Status != etop.S3Zero {
+	if stocktakeDB.Status != status3.Z {
 		return nil, cm.Error(cm.InvalidArgument, "Stocktake đã được xác nhận hoặc hủy bỏ, Vui lòng kiểm tra lại", nil)
 	}
 	stocktakeDB.ConfirmedAt = time.Now()
-	stocktakeDB.Status = etop.S3Positive
+	stocktakeDB.Status = status3.P
 	err = q.DB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(stocktakeDB)
 		event := stocktake.StocktakeConfirmedEvent{
@@ -119,11 +120,11 @@ func (q *StocktakeAggregate) CancelStocktake(ctx context.Context, args *stocktak
 	if err != nil {
 		return nil, err
 	}
-	if stocktake.Status != etop.S3Zero {
+	if stocktake.Status != status3.Z {
 		return nil, cm.Error(cm.InvalidArgument, "Stocktake đã được xác nhận hoặc hủy bỏ, Vui lòng kiểm tra lại", nil)
 	}
 	stocktake.CancelledAt = time.Now()
-	stocktake.Status = etop.S3Negative
+	stocktake.Status = status3.N
 	stocktake.CancelReason = args.CancelReason
 	err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(stocktake)
 	return stocktake, nil

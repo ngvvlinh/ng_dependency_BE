@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -159,8 +161,8 @@ func CalcOtherTimeBaseOnState(update *shipmodel.Fulfillment, oldFfm *shipmodel.F
 }
 
 func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
-	return ffm.Status == model.S5Zero ||
-		ffm.Status == model.S5SuperPos ||
+	return ffm.Status == status5.Z ||
+		ffm.Status == status5.S ||
 
 		// returning has status -2 (NS) and we allow updating it via webhook
 		ffm.ShippingState == model.StateReturning

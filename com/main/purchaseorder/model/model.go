@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/capi/dot"
 )
@@ -23,7 +24,7 @@ type PurchaseOrder struct {
 	Code            string
 	CodeNorm        int
 	Note            string
-	Status          etop.Status3
+	Status          status3.Status
 	VariantIDs      []dot.ID
 	Lines           []*PurchaseOrderLine
 	CreatedBy       dot.ID

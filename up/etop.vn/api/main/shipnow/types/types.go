@@ -3,7 +3,8 @@ package types
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
 	"etop.vn/api/main/ordering/types"
 	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
@@ -84,20 +85,20 @@ func StateToString(s State) string {
 	return s.String()
 }
 
-func StateToStatus5(s State) etop.Status5 {
+func StateToStatus5(s State) status5.Status {
 	switch s {
 	case StateDefault:
 	case StateCreated:
-		return etop.S5Zero
+		return status5.Z
 	case StateCancelled:
-		return etop.S5Negative
+		return status5.N
 	case StateReturned:
 	case StateReturning:
-		return etop.S5NegSuper
+		return status5.NS
 	case StateDelivered:
-		return etop.S5Positive
+		return status5.P
 	default:
-		return etop.S5SuperPos
+		return status5.S
 	}
-	return etop.S5SuperPos
+	return status5.S
 }

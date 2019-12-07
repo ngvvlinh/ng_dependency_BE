@@ -7,8 +7,8 @@ package transaction
 import (
 	context "context"
 
-	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -54,7 +54,7 @@ type CreateTransactionCommand struct {
 	ID        dot.ID
 	Amount    int
 	AccountID dot.ID
-	Status    etop.Status3
+	Status    status3.Status
 	Type      TransactionType
 	Note      string
 	Metadata  *TransactionMetadata

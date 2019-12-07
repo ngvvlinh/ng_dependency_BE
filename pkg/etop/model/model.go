@@ -7,6 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/user_source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
@@ -16,48 +19,6 @@ import (
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
-
-type Status3 int
-
-const (
-	S3Negative Status3 = -1 + iota
-	S3Zero
-	S3Positive
-)
-
-type Status4 int
-
-const (
-	S4Negative Status4 = -1 + iota
-	S4Zero
-	S4Positive
-	S4SuperPos
-)
-
-// -1:cancelled, 0:default, 1:delivered, 2:processing
-//
-// 0: just created, still error, can be edited
-// 2: processing, can not be edited
-// 1: done
-//-1: cancelled
-//-2: returned
-type Status5 int
-
-const (
-	S5NegSuper Status5 = -2 + iota
-	S5Negative
-	S5Zero
-	S5Positive
-	S5SuperPos
-)
-
-func (s Status3) P() *Status3 {
-	return &s
-}
-
-func (s Status4) P() *Status4 {
-	return &s
-}
 
 type (
 	AccountType         string
@@ -78,7 +39,7 @@ type (
 	ShippingRouteType    string
 	ShippingDistrictType string
 	DBName               string
-	EtopPaymentStatus    Status4
+	EtopPaymentStatus    status4.Status
 )
 
 func (s ShippingProvider) ToString() string {
@@ -261,39 +222,39 @@ func (s ShippingState) Text() string {
 	return res
 }
 
-func EtopPaymentStatusLabel(s Status4) string {
+func EtopPaymentStatusLabel(s status4.Status) string {
 	switch s {
-	case S4Negative:
+	case status4.N:
 		return "Không cần thanh toán"
-	case S4Zero:
+	case status4.Z:
 		return "Chưa đối soát"
-	case S4Positive:
+	case status4.P:
 		return "Đã thanh toán"
-	case S4SuperPos:
+	case status4.S:
 		return "Cần thanh toán"
 	default:
 		return "Không xác định"
 	}
 }
 
-func OrderStatusLabel(s Status5) string {
+func OrderStatusLabel(s status5.Status) string {
 	switch s {
-	case S5NegSuper:
+	case status5.NS:
 		return "Trả hàng"
-	case S5Negative:
+	case status5.N:
 		return "Huỷ"
-	case S5Zero:
+	case status5.Z:
 		return "Mới"
-	case S5Positive:
+	case status5.P:
 		return "Thành công"
-	case S5SuperPos:
+	case status5.S:
 		return "Đang xử lý"
 	default:
 		return "Không xác định"
 	}
 }
 
-func PaymentStatusLabel(s Status4) string {
+func PaymentStatusLabel(s status4.Status) string {
 	switch s {
 	case 0:
 		return ""
@@ -459,7 +420,7 @@ type Shop struct {
 
 	OrderSourceID dot.ID
 
-	Status    Status3
+	Status    status3.Status
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
@@ -553,7 +514,7 @@ var _ = sqlgenPartner(&Partner{})
 type Partner struct {
 	ID      dot.ID
 	OwnerID dot.ID
-	Status  Status3
+	Status  status3.Status
 	IsTest  int
 
 	Name       string
@@ -616,7 +577,7 @@ var _ = sqlgenAccountAuth(&AccountAuth{})
 type AccountAuth struct {
 	AuthKey     string
 	AccountID   dot.ID
-	Status      Status3
+	Status      status3.Status
 	Roles       []string
 	Permissions []string
 	CreatedAt   time.Time `sq:"create"`
@@ -665,7 +626,7 @@ type PartnerRelation struct {
 	ExternalSubjectID string
 
 	Nonce     dot.ID
-	Status    Status3
+	Status    status3.Status
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
@@ -709,7 +670,7 @@ type User struct {
 
 	UserInner `sq:"inline"`
 
-	Status      Status3 // 1: actual user, 0: stub, -1: disabled
+	Status      status3.Status // 1: actual user, 0: stub, -1: disabled
 	Identifying UserIdentifying
 
 	CreatedAt time.Time `sq:"create"`
@@ -762,8 +723,8 @@ type AccountUser struct {
 	AccountID dot.ID
 	UserID    dot.ID
 
-	Status         Status3 // 1: activated, -1: rejected/disabled, 0: pending
-	ResponseStatus Status3 // 1: accepted,  -1: rejected, 0: pending
+	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
+	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -830,7 +791,7 @@ type UserInternal struct {
 }
 
 type StatusQuery struct {
-	Status *Status3
+	Status *status3.Status
 }
 
 type ExternalShippingLog struct {
@@ -1101,7 +1062,7 @@ type Credit struct {
 	Amount    int
 	ShopID    dot.ID
 	Type      string
-	Status    Status3
+	Status    status3.Status
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	PaidAt    time.Time
@@ -1243,31 +1204,31 @@ type ShippingSourceSecret struct {
 	GroupAddressID int `json:"GroupAddressID"`
 }
 
-func (s ShippingState) ToStatus4() Status4 {
+func (s ShippingState) ToStatus4() status4.Status {
 	switch s {
 	case StateDefault:
-		return S4Zero
+		return status4.Z
 	case StateCancelled,
 		StateReturned:
-		return S4Negative
+		return status4.N
 	case StateClosed:
-		return S4Positive
+		return status4.P
 	}
-	return S4SuperPos
+	return status4.S
 }
 
-func (s ShippingState) ToShippingStatus5() Status5 {
+func (s ShippingState) ToShippingStatus5() status5.Status {
 	switch s {
 	case StateDefault:
-		return S5Zero
+		return status5.Z
 	case StateCancelled:
-		return S5Negative
+		return status5.N
 	case StateReturning, StateReturned:
-		return S5NegSuper
+		return status5.NS
 	case StateDelivered:
-		return S5Positive
+		return status5.P
 	default:
-		return S5SuperPos
+		return status5.S
 	}
 }
 

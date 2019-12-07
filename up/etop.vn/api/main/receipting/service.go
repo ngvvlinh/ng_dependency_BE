@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/meta"
 	. "etop.vn/capi/dot"
 	dot "etop.vn/capi/dot"
@@ -26,7 +27,7 @@ type QueryService interface {
 	ListReceipts(context.Context, *ListReceiptsArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *GetReceiptbyIDsArgs) (*ReceiptsResponse, error)
 	ListReceiptsByRefsAndStatus(context.Context, *ListReceiptsByRefsAndStatusArgs) (*ReceiptsResponse, error)
-	ListReceiptsByTraderIDsAndStatuses(ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []etop.Status3) (*ReceiptsResponse, error)
+	ListReceiptsByTraderIDsAndStatuses(ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
 

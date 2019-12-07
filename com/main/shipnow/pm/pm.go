@@ -4,7 +4,10 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
@@ -127,8 +130,8 @@ func (m *ProcessManager) ValidateConfirmed(ctx context.Context, event *shipnow.S
 	// update order confirm status
 	cmd2 := &ordering.UpdateOrdersConfirmStatusCommand{
 		IDs:           event.OrderIds,
-		ShopConfirm:   etop.S3Positive,
-		ConfirmStatus: etop.S3Positive,
+		ShopConfirm:   status3.P,
+		ConfirmStatus: status3.P,
 	}
 	if err := m.order.Dispatch(ctx, cmd2); err != nil {
 		return err
@@ -148,7 +151,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 		// update sync status
 		update := &shipnow.UpdateShipnowFulfillmentStateCommand{
 			Id:         ffm.Id,
-			SyncStatus: etop.S4SuperPos,
+			SyncStatus: status4.S,
 			SyncStates: &shipnow.SyncStates{
 				TrySyncAt: time.Now(),
 			},
@@ -164,7 +167,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 		}
 		update := &shipnow.UpdateShipnowFulfillmentStateCommand{
 			Id:         ffm.Id,
-			SyncStatus: etop.S4Negative,
+			SyncStatus: status4.N,
 			SyncStates: &shipnow.SyncStates{
 				TrySyncAt: time.Now(),
 				Error:     etopconvert.Error(model.ToError(_err)),

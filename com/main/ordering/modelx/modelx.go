@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -35,7 +37,7 @@ type GetOrderExtendedsQuery struct {
 	IDs           []dot.ID
 	ShopIDs       []dot.ID // MixedAccount
 	PartnerID     dot.ID
-	Status        *model.Status3
+	Status        status3.NullStatus
 	TradingShopID dot.ID
 	DateFrom      time.Time
 	DateTo        time.Time
@@ -134,9 +136,9 @@ type UpdateOrdersStatusCommand struct {
 	PartnerID dot.ID
 	OrderIDs  []dot.ID
 
-	Status        *model.Status4
-	ShopConfirm   *model.Status3
-	ConfirmStatus *model.Status3
+	Status        status4.NullStatus
+	ShopConfirm   status3.NullStatus
+	ConfirmStatus status3.NullStatus
 	CancelReason  string
 
 	Result struct {
@@ -168,7 +170,7 @@ func SumOrderLineDiscount(lines []*ordermodel.OrderLine) int {
 type UpdateOrderPaymentStatusCommand struct {
 	ShopID  dot.ID
 	OrderID dot.ID
-	Status  *model.Status3
+	Status  status3.NullStatus
 
 	Result struct {
 		Updated int

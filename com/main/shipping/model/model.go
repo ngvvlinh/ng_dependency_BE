@@ -5,6 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -20,8 +26,8 @@ type Fulfillment struct {
 	ShopID    dot.ID
 	PartnerID dot.ID
 
-	ShopConfirm   model.Status3
-	ConfirmStatus model.Status3
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 
 	TotalItems        int
 	TotalWeight       int
@@ -113,15 +119,15 @@ type Fulfillment struct {
 	ExternalShippingClosedAt    time.Time
 	ExternalShippingState       string
 	ExternalShippingStateCode   string
-	ExternalShippingStatus      model.Status5
+	ExternalShippingStatus      status5.Status
 	ExternalShippingNote        string
 	ExternalShippingSubState    string
 
 	ExternalShippingData json.RawMessage
 
 	ShippingState     model.ShippingState
-	ShippingStatus    model.Status5
-	EtopPaymentStatus model.Status4
+	ShippingStatus    status5.Status
+	EtopPaymentStatus status4.Status
 
 	// -1:cancelled, 0:default, 1:delivered, 2:processing
 	//
@@ -130,9 +136,9 @@ type Fulfillment struct {
 	// 1: done
 	// -1: cancelled
 	// -2: returned
-	Status model.Status5
+	Status status5.Status
 
-	SyncStatus model.Status4 // -1:error, 0:new, 1:created, 2:pending
+	SyncStatus status4.Status // -1:error, 0:new, 1:created, 2:pending
 	SyncStates *model.FulfillmentSyncStates
 
 	// Updated by webhook or querying GHN API

@@ -5,10 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
-
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type MoneyTransactionShippingExternalFilters struct{ prefix string }
@@ -139,7 +138,7 @@ func (ft *MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *tim
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -148,7 +147,7 @@ func (ft *MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -623,7 +622,7 @@ func (ft *MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *s
 	}
 }
 
-func (ft *MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -632,7 +631,7 @@ func (ft *MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.Co
 	}
 }
 
-func (ft *MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1074,7 +1073,7 @@ func (ft *MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *tim
 	}
 }
 
-func (ft *MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1083,7 +1082,7 @@ func (ft *MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *s
 	}
 }
 
-func (ft *MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",

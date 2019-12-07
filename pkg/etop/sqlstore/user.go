@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/backend/pkg/common/sq"
 
 	cm "etop.vn/backend/pkg/common"
@@ -218,12 +220,12 @@ const (
 
 func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 	switch cmd.Status {
-	case model.S3Positive:
-	case model.S3Zero:
+	case status3.P:
+	case status3.Z:
 	default:
 		return cm.Error(cm.InvalidArgument, "Invalid status", nil)
 	}
-	if cmd.IsStub != (cmd.Status == model.S3Zero) {
+	if cmd.IsStub != (cmd.Status == status3.Z) {
 		return cm.Error(cm.InvalidArgument, "Mismatch status", nil)
 	}
 

@@ -605,9 +605,9 @@ type UpdateOrdersStatusRequest struct {
 	// @required
 	Ids []dot.ID `json:"ids"`
 	// @required
-	Confirm      *status3.Status `json:"confirm"`
-	CancelReason string          `json:"cancel_reason"`
-	Status       status4.Status  `json:"status"`
+	Confirm      status3.NullStatus `json:"confirm"`
+	CancelReason string             `json:"cancel_reason"`
+	Status       status4.Status     `json:"status"`
 }
 
 func (m *UpdateOrdersStatusRequest) Reset()         { *m = UpdateOrdersStatusRequest{} }
@@ -817,7 +817,7 @@ type GetFulfillmentsRequest struct {
 	Filters []*common.Filter   `json:"filters"`
 	Mixed   *etop.MixedAccount `json:"mixed"`
 	OrderId dot.ID             `json:"order_id"`
-	Status  *status3.Status    `json:"status"`
+	Status  status3.NullStatus `json:"status"`
 }
 
 func (m *GetFulfillmentsRequest) Reset()         { *m = GetFulfillmentsRequest{} }
@@ -869,8 +869,8 @@ func (m *UpdateFulfillmentsShippingStateRequest) Reset() {
 func (m *UpdateFulfillmentsShippingStateRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateOrderPaymentStatusRequest struct {
-	OrderId dot.ID          `json:"order_id"`
-	Status  *status3.Status `json:"status"`
+	OrderId dot.ID             `json:"order_id"`
+	Status  status3.NullStatus `json:"status"`
 }
 
 func (m *UpdateOrderPaymentStatusRequest) Reset()         { *m = UpdateOrderPaymentStatusRequest{} }

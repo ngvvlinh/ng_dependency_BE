@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	carrying "etop.vn/api/shopping/carrying"
+	status3 "etop.vn/api/top/types/etc/status3"
 	carryingmodel "etop.vn/backend/com/shopping/carrying/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -67,13 +68,13 @@ func Convert_carryingmodel_ShopCarrier_carrying_ShopCarrier(arg *carryingmodel.S
 }
 
 func convert_carryingmodel_ShopCarrier_carrying_ShopCarrier(arg *carryingmodel.ShopCarrier, out *carrying.ShopCarrier) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.FullName = arg.FullName   // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ID = arg.ID                         // simple assign
+	out.ShopID = arg.ShopID                 // simple assign
+	out.FullName = arg.FullName             // simple assign
+	out.Note = arg.Note                     // simple assign
+	out.Status = status3.Status(arg.Status) // simple conversion
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_carryingmodel_ShopCarriers_carrying_ShopCarriers(args []*carryingmodel.ShopCarrier) (outs []*carrying.ShopCarrier) {
@@ -101,7 +102,7 @@ func convert_carrying_ShopCarrier_carryingmodel_ShopCarrier(arg *carrying.ShopCa
 	out.ShopID = arg.ShopID       // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
+	out.Status = int(arg.Status)  // simple conversion
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value

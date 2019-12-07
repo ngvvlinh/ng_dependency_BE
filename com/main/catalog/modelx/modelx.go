@@ -2,6 +2,7 @@ package modelx
 
 import (
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/top/types/etc/status3"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -92,7 +93,7 @@ type DeprecatedCreateVariantCommand struct {
 	ShortDesc   string
 	ImageURLs   []string
 	Tags        []string
-	Status      model.Status3
+	Status      status3.Status
 	ProductCode string
 	VariantCode string
 

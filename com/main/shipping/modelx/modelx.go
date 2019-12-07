@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
@@ -17,7 +19,7 @@ type GetFulfillmentExtendedsQuery struct {
 	ShopIDs       []dot.ID // MixedAccount
 	PartnerID     dot.ID
 	OrderID       dot.ID
-	Status        *model.Status3
+	Status        status3.NullStatus
 	ShippingCodes []string
 	DateFrom      time.Time
 	DateTo        time.Time
@@ -64,7 +66,7 @@ type GetFulfillmentsQuery struct {
 	PartnerID dot.ID
 	OrderID   dot.ID
 
-	Status                *model.Status3
+	Status                status3.NullStatus
 	ShippingCodes         []string
 	ExternalShippingCodes []string
 	IDs                   []dot.ID
@@ -127,9 +129,9 @@ type UpdateFulfillmentsWithoutTransactionCommand struct {
 
 type UpdateFulfillmentsStatusCommand struct {
 	FulfillmentIDs []dot.ID
-	Status         *model.Status4
-	ShopConfirm    *model.Status3
-	SyncStatus     *model.Status4
+	Status         status4.NullStatus
+	ShopConfirm    status3.NullStatus
+	SyncStatus     status4.NullStatus
 	ShippingState  string
 }
 

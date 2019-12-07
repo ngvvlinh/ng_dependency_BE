@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status5"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/etop/model"
@@ -99,48 +101,48 @@ func (s State) ToModel(old model.ShippingState, callbackOrder *CallbackOrder) mo
 	}
 }
 
-func (s State) ToStatus5(old model.ShippingState) model.Status5 {
+func (s State) ToStatus5(old model.ShippingState) status5.Status {
 	switch s {
 	case StateCancel:
-		return model.S5Negative
+		return status5.N
 
 	case StateReturned:
-		return model.S5NegSuper
+		return status5.NS
 
 	case StateFinish:
 		switch old {
 		case model.StateCancelled:
-			return model.S5Negative
+			return status5.N
 		case model.StateReturned, model.StateReturning:
-			return model.S5NegSuper
+			return status5.NS
 		default:
-			return model.S5Positive
+			return status5.P
 		}
 	}
 
-	return model.S5SuperPos
+	return status5.S
 }
 
-func (s State) ToShippingStatus5(old model.ShippingState) model.Status5 {
+func (s State) ToShippingStatus5(old model.ShippingState) status5.Status {
 	switch s {
 	case StateCancel:
-		return model.S5Negative
+		return status5.N
 
 	case StateReturned:
-		return model.S5NegSuper
+		return status5.NS
 
 	case StateWaitingToFinish, StateFinish:
 		switch old {
 		case model.StateCancelled:
-			return model.S5Negative
+			return status5.N
 		case model.StateReturned, model.StateReturning:
-			return model.S5NegSuper
+			return status5.NS
 		default:
-			return model.S5Positive
+			return status5.P
 		}
 	}
 
-	return model.S5SuperPos
+	return status5.S
 }
 
 func (id ServiceFeeID) ToModel() model.ShippingFeeLineType {

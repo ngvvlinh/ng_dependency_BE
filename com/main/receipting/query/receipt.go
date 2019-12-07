@@ -3,12 +3,12 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/receipting"
 	"etop.vn/backend/com/main/receipting/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -57,7 +57,7 @@ func (q *ReceiptQuery) ListReceipts(
 		return nil, err
 	}
 
-	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(model.S3Positive).SumAmountReceiptAndPayment()
+	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(status3.P).SumAmountReceiptAndPayment()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *receipting.GetReceipt
 func (q *ReceiptQuery) ListReceiptsByRefsAndStatus(
 	ctx context.Context, args *receipting.ListReceiptsByRefsAndStatusArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).RefType(args.RefType).Status(model.Status3(args.Status))
+	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).RefType(args.RefType).Status(status3.Status(args.Status))
 	receipts, err := query.ListReceipts()
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID
 }
 
 func (q *ReceiptQuery) ListReceiptsByTraderIDsAndStatuses(
-	ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []etop.Status3,
+	ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(shopID).TraderIDs(traderIDs...)
 	if len(statuses) != 0 {
@@ -116,7 +116,7 @@ func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 		return nil, err
 	}
 
-	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(model.S3Positive).SumAmountReceiptAndPayment()
+	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(status3.P).SumAmountReceiptAndPayment()
 	if err != nil {
 		return nil, err
 	}

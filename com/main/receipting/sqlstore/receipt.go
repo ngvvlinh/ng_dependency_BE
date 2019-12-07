@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/receipting/convert"
@@ -15,7 +16,6 @@ import (
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -115,12 +115,12 @@ func (s *ReceiptStore) RefType(refType receipting.ReceiptRefType) *ReceiptStore 
 	return s
 }
 
-func (s *ReceiptStore) Status(status etopmodel.Status3) *ReceiptStore {
+func (s *ReceiptStore) Status(status status3.Status) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
 
-func (s *ReceiptStore) Statuses(statuses ...etop.Status3) *ReceiptStore {
+func (s *ReceiptStore) Statuses(statuses ...status3.Status) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", statuses))
 	return s
 }
@@ -155,7 +155,7 @@ func (s *ReceiptStore) ConfirmReceipt() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
-		"status":       int(etopmodel.S3Positive),
+		"status":       int(status3.P),
 		"confirmed_at": time.Now(),
 	})
 
@@ -166,7 +166,7 @@ func (s *ReceiptStore) CancelReceipt(reason string) (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
-		"status":           int(etopmodel.S3Negative),
+		"status":           int(status3.N),
 		"cancelled_reason": reason,
 		"cancelled_at":     time.Now(),
 	})

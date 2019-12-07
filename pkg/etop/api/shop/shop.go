@@ -745,7 +745,7 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 		ShortDesc:   q.ShortDesc,
 		ImageURLs:   q.ImageUrls,
 		Tags:        q.Tags,
-		Status:      *convertpb.Status3ToModel(&q.Status),
+		Status:      q.Status,
 
 		CostPrice:   q.CostPrice,
 		ListPrice:   q.ListPrice,

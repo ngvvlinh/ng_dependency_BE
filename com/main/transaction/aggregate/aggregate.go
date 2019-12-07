@@ -3,7 +3,8 @@ package aggregate
 import (
 	"context"
 
-	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/transaction"
 	"etop.vn/backend/com/main/transaction/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -58,13 +59,13 @@ func (a *Aggregate) ConfirmTransaction(ctx context.Context, trxnID dot.ID, accou
 	update := &sqlstore.UpdateTransactionStatusArgs{
 		ID:        trxnID,
 		AccountID: accountID,
-		Status:    etoptypes.S3Positive,
+		Status:    status3.P,
 	}
 	return a.store(ctx).UpdateTransactionStatus(update)
 }
 
 func canTransactionChange(trxn *transaction.Transaction) bool {
-	return trxn.Status == etoptypes.S3Zero
+	return trxn.Status == status3.Z
 }
 
 func (a *Aggregate) CancelTransaction(ctx context.Context, trxnID dot.ID, accountID dot.ID) (*transaction.Transaction, error) {
@@ -85,7 +86,7 @@ func (a *Aggregate) CancelTransaction(ctx context.Context, trxnID dot.ID, accoun
 	update := &sqlstore.UpdateTransactionStatusArgs{
 		ID:        trxnID,
 		AccountID: accountID,
-		Status:    etoptypes.S3Negative,
+		Status:    status3.N,
 	}
 	return a.store(ctx).UpdateTransactionStatus(update)
 }

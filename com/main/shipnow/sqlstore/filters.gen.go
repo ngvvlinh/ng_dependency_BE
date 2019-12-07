@@ -5,9 +5,11 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	m "etop.vn/backend/com/main/shipnow/model"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -310,7 +312,7 @@ func (ft *ShipnowFulfillmentFilters) ByCancelReasonPtr(CancelReason *string) *sq
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByStatus(Status status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -319,7 +321,7 @@ func (ft *ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFi
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByStatusPtr(Status *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -329,7 +331,7 @@ func (ft *ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.Colu
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -338,7 +340,7 @@ func (ft *ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -348,7 +350,7 @@ func (ft *ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Sta
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus status5.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -357,7 +359,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Statu
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *status5.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -367,7 +369,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.S
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -376,7 +378,7 @@ func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus model
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_payment_status",
@@ -538,7 +540,7 @@ func (ft *ShipnowFulfillmentFilters) ByShippingCancelledAtPtr(ShippingCancelledA
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) BySyncStatus(SyncStatus status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sync_status",
@@ -547,7 +549,7 @@ func (ft *ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sync_status",

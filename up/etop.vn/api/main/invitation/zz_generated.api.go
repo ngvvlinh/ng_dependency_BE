@@ -9,9 +9,9 @@ import (
 	time "time"
 
 	authorization "etop.vn/api/main/authorization"
-	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -48,7 +48,7 @@ type CreateInvitationCommand struct {
 	ShortName string
 	Position  string
 	Roles     []authorization.Role
-	Status    etop.Status3
+	Status    status3.Status
 	InvitedBy dot.ID
 	CreatedBy time.Time
 

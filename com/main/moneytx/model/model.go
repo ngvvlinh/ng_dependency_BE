@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/common/sq"
@@ -39,7 +41,7 @@ type MoneyTransactionShippingExternal struct {
 	TotalOrders    int
 	CreatedAt      time.Time `sq:"create"`
 	UpdatedAt      time.Time `sq:"update"`
-	Status         model.Status3
+	Status         status3.Status
 	ExternalPaidAt time.Time
 	Provider       string
 	BankAccount    *model.BankAccount
@@ -83,7 +85,7 @@ type MoneyTransactionShipping struct {
 	CreatedAt                          time.Time `sq:"create"`
 	UpdatedAt                          time.Time `sq:"update"`
 	ClosedAt                           time.Time
-	Status                             model.Status3
+	Status                             status3.Status
 	TotalCOD                           int
 	TotalAmount                        int
 	TotalOrders                        int
@@ -115,7 +117,7 @@ type MoneyTransactionShippingEtop struct {
 	CreatedAt             time.Time `sq:"create"`
 	UpdatedAt             time.Time `sq:"update"`
 	ConfirmedAt           time.Time
-	Status                model.Status3
+	Status                status3.Status
 	BankAccount           *model.BankAccount
 	Note                  string
 	InvoiceNumber         string

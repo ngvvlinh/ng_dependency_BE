@@ -3,7 +3,8 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
 	cm "etop.vn/backend/pkg/common"
@@ -53,7 +54,7 @@ func (p *ProcessManager) ReceiptCreating(
 	}
 	purchaseOrders = query.Result.PurchaseOrders
 	for _, purchaseOrder := range purchaseOrders {
-		if purchaseOrder.Status == etop.S3Negative {
+		if purchaseOrder.Status == status3.N {
 			continue
 		}
 		mPurchaseOrder[purchaseOrder.ID] = purchaseOrder
@@ -76,7 +77,7 @@ func (p *ProcessManager) ReceiptCreating(
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
 		RefType: receipting.ReceiptRefTypePurchaseOrder,
-		Status:  int(etop.S3Positive),
+		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return err

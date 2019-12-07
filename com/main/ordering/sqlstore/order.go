@@ -3,10 +3,14 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status5"
+
+	"etop.vn/api/top/types/etc/status4"
+
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
-	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
@@ -59,7 +63,7 @@ func (s *OrderStore) CustomerID(id dot.ID) *OrderStore {
 	return s
 }
 
-func (s *OrderStore) Statuses(values []etop.Status5) *OrderStore {
+func (s *OrderStore) Statuses(values []status5.Status) *OrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", values))
 	return s
 }
@@ -176,11 +180,11 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 		"fulfillment_type":            nil,
 		"fulfillment_ids":             nil,
 		"fulfillment_shipping_states": nil,
-		"fulfillment_shipping_status": etop.S5Zero,
-		"etop_payment_status":         etop.S5Zero,
-		"confirm_status":              etop.S5Zero,
-		"shop_confirm":                etop.S5Zero,
-		"status":                      etop.S5Zero,
+		"fulfillment_shipping_status": status5.Z,
+		"etop_payment_status":         status5.Z,
+		"confirm_status":              status5.Z,
+		"shop_confirm":                status5.Z,
+		"status":                      status5.Z,
 	}); err != nil {
 		return err
 	}
@@ -189,8 +193,8 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 
 type UpdateOrderShippingStatusArgs struct {
 	ID                        dot.ID
-	FulfillmentShippingStatus etop.Status5
-	EtopPaymentStatus         etop.Status4
+	FulfillmentShippingStatus status5.Status
+	EtopPaymentStatus         status4.Status
 
 	FulfillmentShippingStates  []string
 	FulfillmentPaymentStatuses []int
@@ -201,8 +205,8 @@ func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArg
 		return cm.Errorf(cm.InvalidArgument, nil, "Mising Order ID")
 	}
 	update := &model.Order{
-		FulfillmentShippingStatus:  etopconvert.Status5ToModel(args.FulfillmentShippingStatus),
-		EtopPaymentStatus:          etopconvert.Status4ToModel(args.EtopPaymentStatus),
+		FulfillmentShippingStatus:  args.FulfillmentShippingStatus,
+		EtopPaymentStatus:          args.EtopPaymentStatus,
 		FulfillmentShippingStates:  args.FulfillmentShippingStates,
 		FulfillmentPaymentStatuses: args.FulfillmentPaymentStatuses,
 	}
@@ -214,8 +218,8 @@ func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArg
 
 type UpdateOrdersConfirmStatusArgs struct {
 	IDs           []dot.ID
-	ShopConfirm   etop.Status3
-	ConfirmStatus etop.Status3
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 }
 
 func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArgs) error {
@@ -223,8 +227,8 @@ func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArg
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
 	}
 	update := &model.Order{
-		ShopConfirm:   etopconvert.Status3ToModel(args.ShopConfirm),
-		ConfirmStatus: etopconvert.Status3ToModel(args.ConfirmStatus),
+		ShopConfirm:   args.ShopConfirm,
+		ConfirmStatus: args.ConfirmStatus,
 	}
 	if _, err := s.query().Table("order").In("id", args.IDs).Update(update); err != nil {
 		return err
@@ -234,7 +238,7 @@ func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArg
 
 type UpdateOrderPaymentInfoArgs struct {
 	ID            dot.ID
-	PaymentStatus etop.Status4
+	PaymentStatus status4.Status
 	PaymentID     dot.ID
 }
 
@@ -243,7 +247,7 @@ func (s *OrderStore) UpdateOrderPaymentInfo(args UpdateOrderPaymentInfoArgs) err
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
 	}
 	update := &model.Order{
-		PaymentStatus: etopconvert.Status4ToModel(args.PaymentStatus),
+		PaymentStatus: args.PaymentStatus,
 		PaymentID:     args.PaymentID,
 	}
 	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(update); err != nil {

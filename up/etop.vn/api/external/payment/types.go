@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status4"
+
 	"etop.vn/capi/dot"
 )
 
 type Payment struct {
 	ID              dot.ID
 	Amount          int
-	Status          etop.Status4
+	Status          status4.Status
 	State           PaymentState
 	PaymentProvider PaymentProvider
 	ExternalTransID string

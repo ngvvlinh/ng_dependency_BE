@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/etop"
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/capi/dot"
 )
 
@@ -31,7 +32,7 @@ type InventoryVoucher struct {
 	UpdatedBy    dot.ID
 	Code         string
 	CodeNorm     int
-	Status       etop.Status3
+	Status       status3.Status
 	Note         string
 	TraderID     dot.ID
 	Trader       *Trader

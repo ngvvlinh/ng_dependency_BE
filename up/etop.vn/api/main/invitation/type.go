@@ -3,11 +3,12 @@ package invitation
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
+
 	"etop.vn/api/main/authorization"
 
 	"github.com/dgrijalva/jwt-go"
 
-	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
@@ -27,7 +28,7 @@ type Invitation struct {
 	Position   string
 	Roles      []authorization.Role
 	Token      string
-	Status     etop.Status3
+	Status     status3.Status
 	InvitedBy  dot.ID
 	AcceptedAt time.Time
 	RejectedAt time.Time
