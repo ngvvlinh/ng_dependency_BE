@@ -3,7 +3,6 @@ set -ex
 
 list=$(grep --include=\*.go -rnw . -e 'go:generate' | grep derive | cut -d':' -f1)
 list=$(echo $list | sed -E 's/\/[a-z]+\.go//g')
-list=$(echo $list | grep -v summary)  # workaround summary
 
 go install etop.vn/backend/tools/cmd/goderive
 goderive $list
