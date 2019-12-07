@@ -7,7 +7,7 @@ package address_type
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -58,7 +58,7 @@ func (e AddressType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *AddressType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumAddressTypeValue, data, "AddressType")
+	value, err := mix.UnmarshalJSONEnumInt(enumAddressTypeValue, data, "AddressType")
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (e AddressType) Value() (interface{}, error) {
 }
 
 func (e *AddressType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumAddressTypeValue, src, "AddressType")
+	value, err := mix.ScanEnumInt(enumAddressTypeValue, src, "AddressType")
 	*e = (AddressType)(value)
 	return err
 }

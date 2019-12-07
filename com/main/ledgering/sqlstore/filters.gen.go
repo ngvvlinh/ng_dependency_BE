@@ -146,7 +146,7 @@ func (ft *ShopLedgerFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *ShopLedgerFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_by",

@@ -7,7 +7,7 @@ package gender
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -56,7 +56,7 @@ func (e Gender) MarshalJSON() ([]byte, error) {
 }
 
 func (e *Gender) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumGenderValue, data, "Gender")
+	value, err := mix.UnmarshalJSONEnumInt(enumGenderValue, data, "Gender")
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (e Gender) Value() (interface{}, error) {
 }
 
 func (e *Gender) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumGenderValue, src, "Gender")
+	value, err := mix.ScanEnumInt(enumGenderValue, src, "Gender")
 	*e = (Gender)(value)
 	return err
 }

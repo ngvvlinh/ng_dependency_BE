@@ -54,15 +54,15 @@ func init() {
 func (m *Invitation) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.AccountID),
+		m.ID,
+		m.AccountID,
 		core.String(m.Email),
 		core.String(m.FullName),
 		core.String(m.ShortName),
 		core.Array{m.Roles, opts},
 		core.String(m.Token),
 		core.Int(m.Status),
-		core.Int64(m.InvitedBy),
+		m.InvitedBy,
 		core.Time(m.AcceptedAt),
 		core.Time(m.RejectedAt),
 		core.Time(m.ExpiresAt),
@@ -74,15 +74,15 @@ func (m *Invitation) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Invitation) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.AccountID),
+		&m.ID,
+		&m.AccountID,
 		(*core.String)(&m.Email),
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.ShortName),
 		core.Array{&m.Roles, opts},
 		(*core.String)(&m.Token),
 		(*core.Int)(&m.Status),
-		(*core.Int64)(&m.InvitedBy),
+		&m.InvitedBy,
 		(*core.Time)(&m.AcceptedAt),
 		(*core.Time)(&m.RejectedAt),
 		(*core.Time)(&m.ExpiresAt),
@@ -157,7 +157,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -165,7 +165,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.Email != "" {
 		flag = true
@@ -221,7 +221,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.InvitedBy))
+		w.WriteArg(m.InvitedBy)
 	}
 	if !m.AcceptedAt.IsZero() {
 		flag = true

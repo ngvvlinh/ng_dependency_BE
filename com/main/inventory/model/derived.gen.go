@@ -54,8 +54,8 @@ func init() {
 func (m *InventoryVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.VariantID),
+		m.ShopID,
+		m.VariantID,
 		core.Int(m.QuantityOnHand),
 		core.Int(m.QuantityPicked),
 		core.Int(m.CostPrice),
@@ -66,8 +66,8 @@ func (m *InventoryVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *InventoryVariant) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.VariantID),
+		&m.ShopID,
+		&m.VariantID,
 		(*core.Int)(&m.QuantityOnHand),
 		(*core.Int)(&m.QuantityPicked),
 		(*core.Int)(&m.CostPrice),
@@ -314,21 +314,21 @@ func init() {
 func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.ID),
-		core.Int64(m.CreatedBy),
-		core.Int64(m.UpdatedBy),
+		m.ShopID,
+		m.ID,
+		m.CreatedBy,
+		m.UpdatedBy,
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
 		core.Int(m.Status),
 		core.String(m.Note),
-		core.Int64(m.TraderID),
+		m.TraderID,
 		core.JSON{m.Trader},
 		core.Int(m.TotalAmount),
 		core.String(m.Type),
 		core.JSON{m.Lines},
 		core.Array{m.VariantIDs, opts},
-		core.Int64(m.RefID),
+		m.RefID,
 		core.String(m.RefCode),
 		core.String(m.RefType),
 		core.String(m.RefName),
@@ -343,21 +343,21 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.CreatedBy),
-		(*core.Int64)(&m.UpdatedBy),
+		&m.ShopID,
+		&m.ID,
+		&m.CreatedBy,
+		&m.UpdatedBy,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
 		(*core.Int)(&m.Status),
 		(*core.String)(&m.Note),
-		(*core.Int64)(&m.TraderID),
+		&m.TraderID,
 		core.JSON{&m.Trader},
 		(*core.Int)(&m.TotalAmount),
 		(*core.String)(&m.Type),
 		core.JSON{&m.Lines},
 		core.Array{&m.VariantIDs, opts},
-		(*core.Int64)(&m.RefID),
+		&m.RefID,
 		(*core.String)(&m.RefCode),
 		(*core.String)(&m.RefType),
 		(*core.String)(&m.RefName),

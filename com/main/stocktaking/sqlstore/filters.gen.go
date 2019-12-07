@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
+
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type ShopStocktakeFilters struct{ prefix string }
@@ -90,7 +91,7 @@ func (ft *ShopStocktakeFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_by",
@@ -109,7 +110,7 @@ func (ft *ShopStocktakeFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByUpdatedByPtr(UpdatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByUpdatedByPtr(UpdatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_by",

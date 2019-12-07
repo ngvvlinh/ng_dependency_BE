@@ -46,7 +46,7 @@ func (e {{.Name}}) MarshalJSON() ([]byte, error) {
 }
 
 func (e *{{.Name}}) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnum{{$enum|valueTypeCap}}(enum{{.Name}}Value, data, {{.Name|quote}})
+	value, err := mix.UnmarshalJSONEnum{{$enum|valueTypeCap}}(enum{{.Name}}Value, data, {{.Name|quote}})
 	if err != nil {
 		return err
 	}
@@ -54,12 +54,18 @@ func (e *{{.Name}}) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+{{if $enum|modelType }}
+func (e {{.Name}}) Value() (interface{}, error) {
+	return {{$enum|modelType}}(e), nil
+}
+{{else}}
 func (e {{.Name}}) Value() (interface{}, error) {
 	return e.String(), nil
 }
+{{end}}
 
 func (e *{{.Name}}) Scan(src interface{}) error {
-	value, err := encode.ScanEnum{{$enum|valueTypeCap}}(enum{{.Name}}Value, src, {{.Name|quote}})
+	value, err := mix.ScanEnum{{$enum|valueTypeCap}}(enum{{.Name}}Value, src, {{.Name|quote}})
 	*e = ({{.Name}})(value)
 	return err
 }

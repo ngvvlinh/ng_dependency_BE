@@ -7,7 +7,7 @@ package auth_mode
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -52,7 +52,7 @@ func (e AuthMode) MarshalJSON() ([]byte, error) {
 }
 
 func (e *AuthMode) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumAuthModeValue, data, "AuthMode")
+	value, err := mix.UnmarshalJSONEnumInt(enumAuthModeValue, data, "AuthMode")
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (e AuthMode) Value() (interface{}, error) {
 }
 
 func (e *AuthMode) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumAuthModeValue, src, "AuthMode")
+	value, err := mix.ScanEnumInt(enumAuthModeValue, src, "AuthMode")
 	*e = (AuthMode)(value)
 	return err
 }

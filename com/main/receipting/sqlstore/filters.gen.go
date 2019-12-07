@@ -318,7 +318,7 @@ func (ft *ReceiptFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_by",

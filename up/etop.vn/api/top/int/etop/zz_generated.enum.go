@@ -7,7 +7,7 @@ package etop
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -58,7 +58,7 @@ func (e AccountType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *AccountType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumAccountTypeValue, data, "AccountType")
+	value, err := mix.UnmarshalJSONEnumInt(enumAccountTypeValue, data, "AccountType")
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (e AccountType) Value() (interface{}, error) {
 }
 
 func (e *AccountType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumAccountTypeValue, src, "AccountType")
+	value, err := mix.ScanEnumInt(enumAccountTypeValue, src, "AccountType")
 	*e = (AccountType)(value)
 	return err
 }

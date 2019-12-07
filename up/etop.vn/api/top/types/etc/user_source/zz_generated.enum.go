@@ -7,7 +7,7 @@ package user_source
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -64,7 +64,7 @@ func (e UserSource) MarshalJSON() ([]byte, error) {
 }
 
 func (e *UserSource) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumUserSourceValue, data, "UserSource")
+	value, err := mix.UnmarshalJSONEnumInt(enumUserSourceValue, data, "UserSource")
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (e UserSource) Value() (interface{}, error) {
 }
 
 func (e *UserSource) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumUserSourceValue, src, "UserSource")
+	value, err := mix.ScanEnumInt(enumUserSourceValue, src, "UserSource")
 	*e = (UserSource)(value)
 	return err
 }

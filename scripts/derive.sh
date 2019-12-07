@@ -9,4 +9,6 @@ rm derived.gen.go || true
 
 go install etop.vn/backend/tools/cmd/goderive
 goderive $ARG
-goimports -w $ARG
+
+genfiles=$(find . -name 'derive.gen.go' -o -name 'filters.gen.go')
+goimports -w $genfiles

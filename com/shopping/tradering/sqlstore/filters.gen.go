@@ -3,6 +3,8 @@
 package sqlstore
 
 import (
+	"time"
+
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 )
@@ -75,5 +77,24 @@ func (ft *ShopTraderFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 		Value:  Type,
 		IsNil:  Type == nil,
 		IsZero: Type != nil && (*Type) == "",
+	}
+}
+
+func (ft *ShopTraderFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *ShopTraderFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }

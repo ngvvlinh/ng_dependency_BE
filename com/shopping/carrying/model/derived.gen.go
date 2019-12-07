@@ -54,8 +54,8 @@ func init() {
 func (m *ShopCarrier) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.FullName),
 		core.String(m.Note),
 		core.Int(m.Status),
@@ -67,8 +67,8 @@ func (m *ShopCarrier) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCarrier) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.Note),
 		(*core.Int)(&m.Status),

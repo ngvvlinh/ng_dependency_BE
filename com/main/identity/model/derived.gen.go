@@ -54,8 +54,8 @@ func init() {
 func (m *ExternalAccountAhamove) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OwnerID),
+		m.ID,
+		m.OwnerID,
 		core.String(m.Phone),
 		core.String(m.Name),
 		core.String(m.ExternalID),
@@ -80,8 +80,8 @@ func (m *ExternalAccountAhamove) SQLArgs(opts core.Opts, create bool) []interfac
 
 func (m *ExternalAccountAhamove) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OwnerID),
+		&m.ID,
+		&m.OwnerID,
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.ExternalID),
@@ -530,8 +530,8 @@ func init() {
 func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OwnerID),
+		m.ID,
+		m.OwnerID,
 		core.String(m.Name),
 		core.String(m.Phone),
 		core.String(m.Email),
@@ -546,8 +546,8 @@ func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Affiliate) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OwnerID),
+		&m.ID,
+		&m.OwnerID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Email),

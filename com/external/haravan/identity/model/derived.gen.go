@@ -54,8 +54,8 @@ func init() {
 func (m *ExternalAccountHaravan) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Subdomain),
 		core.String(m.AccessToken),
 		core.Int(m.ExternalShopID),
@@ -69,8 +69,8 @@ func (m *ExternalAccountHaravan) SQLArgs(opts core.Opts, create bool) []interfac
 
 func (m *ExternalAccountHaravan) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Subdomain),
 		(*core.String)(&m.AccessToken),
 		(*core.Int)(&m.ExternalShopID),

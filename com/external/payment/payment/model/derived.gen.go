@@ -54,7 +54,7 @@ func init() {
 func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.Int(m.Amount),
 		core.Int(m.Status),
 		core.String(m.State),
@@ -68,7 +68,7 @@ func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Payment) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.Int)(&m.Amount),
 		(*core.Int)(&m.Status),
 		(*core.String)(&m.State),

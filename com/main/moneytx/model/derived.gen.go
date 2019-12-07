@@ -64,7 +64,7 @@ func init() {
 func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Code),
 		core.Int(m.TotalCOD),
 		core.Int(m.TotalOrders),
@@ -81,7 +81,7 @@ func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) 
 
 func (m *MoneyTransactionShippingExternal) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.TotalCOD),
 		(*core.Int)(&m.TotalOrders),
@@ -419,7 +419,7 @@ func init() {
 func (m *MoneyTransactionShippingExternalLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.ExternalCode),
 		core.String(m.ExternalCustomer),
 		core.String(m.ExternalAddress),
@@ -427,9 +427,9 @@ func (m *MoneyTransactionShippingExternalLine) SQLArgs(opts core.Opts, create bo
 		core.Time(m.ExternalCreatedAt),
 		core.Time(m.ExternalClosedAt),
 		core.String(m.EtopFulfillmentIdRaw),
-		core.Int64(m.EtopFulfillmentID),
+		m.EtopFulfillmentID,
 		core.String(m.Note),
-		core.Int64(m.MoneyTransactionShippingExternalID),
+		m.MoneyTransactionShippingExternalID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.JSON{m.ImportError},
@@ -439,7 +439,7 @@ func (m *MoneyTransactionShippingExternalLine) SQLArgs(opts core.Opts, create bo
 
 func (m *MoneyTransactionShippingExternalLine) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.ExternalCode),
 		(*core.String)(&m.ExternalCustomer),
 		(*core.String)(&m.ExternalAddress),
@@ -447,9 +447,9 @@ func (m *MoneyTransactionShippingExternalLine) SQLScanArgs(opts core.Opts) []int
 		(*core.Time)(&m.ExternalCreatedAt),
 		(*core.Time)(&m.ExternalClosedAt),
 		(*core.String)(&m.EtopFulfillmentIdRaw),
-		(*core.Int64)(&m.EtopFulfillmentID),
+		&m.EtopFulfillmentID,
 		(*core.String)(&m.Note),
-		(*core.Int64)(&m.MoneyTransactionShippingExternalID),
+		&m.MoneyTransactionShippingExternalID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		core.JSON{&m.ImportError},
@@ -939,8 +939,8 @@ func init() {
 func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.ClosedAt),
@@ -949,8 +949,8 @@ func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interf
 		core.Int(m.TotalAmount),
 		core.Int(m.TotalOrders),
 		core.String(m.Code),
-		core.Int64(m.MoneyTransactionShippingExternalID),
-		core.Int64(m.MoneyTransactionShippingEtopID),
+		m.MoneyTransactionShippingExternalID,
+		m.MoneyTransactionShippingEtopID,
 		core.String(m.Provider),
 		core.Time(m.ConfirmedAt),
 		core.Time(m.EtopTransferedAt),
@@ -963,8 +963,8 @@ func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interf
 
 func (m *MoneyTransactionShipping) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.ClosedAt),
@@ -973,8 +973,8 @@ func (m *MoneyTransactionShipping) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.TotalAmount),
 		(*core.Int)(&m.TotalOrders),
 		(*core.String)(&m.Code),
-		(*core.Int64)(&m.MoneyTransactionShippingExternalID),
-		(*core.Int64)(&m.MoneyTransactionShippingEtopID),
+		&m.MoneyTransactionShippingExternalID,
+		&m.MoneyTransactionShippingEtopID,
 		(*core.String)(&m.Provider),
 		(*core.Time)(&m.ConfirmedAt),
 		(*core.Time)(&m.EtopTransferedAt),
@@ -1483,7 +1483,7 @@ func init() {
 func (m *MoneyTransactionShippingEtop) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Code),
 		core.Int(m.TotalCOD),
 		core.Int(m.TotalOrders),
@@ -1502,7 +1502,7 @@ func (m *MoneyTransactionShippingEtop) SQLArgs(opts core.Opts, create bool) []in
 
 func (m *MoneyTransactionShippingEtop) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.TotalCOD),
 		(*core.Int)(&m.TotalOrders),

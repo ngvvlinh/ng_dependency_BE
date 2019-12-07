@@ -218,7 +218,7 @@ func (ft *InventoryVoucherFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_by",
@@ -237,7 +237,7 @@ func (ft *InventoryVoucherFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByUpdatedByPtr(UpdatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByUpdatedByPtr(UpdatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_by",

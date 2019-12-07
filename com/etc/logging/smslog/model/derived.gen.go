@@ -54,26 +54,26 @@ func init() {
 func (m *SmsLog) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.ExternalID),
 		core.String(m.Phone),
 		core.String(m.Provider),
 		core.String(m.Content),
 		core.Now(m.CreatedAt, now, create),
-		core.Int(m.Status),
+		m.Status,
 		core.String(m.Error),
 	}
 }
 
 func (m *SmsLog) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.ExternalID),
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.Provider),
 		(*core.String)(&m.Content),
 		(*core.Time)(&m.CreatedAt),
-		(*core.Int)(&m.Status),
+		&m.Status,
 		(*core.String)(&m.Error),
 	}
 }
@@ -143,7 +143,7 @@ func (m *SmsLog) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ExternalID != "" {
 		flag = true
@@ -191,7 +191,7 @@ func (m *SmsLog) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
+		w.WriteArg(m.Status)
 	}
 	if m.Error != "" {
 		flag = true

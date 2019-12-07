@@ -10,7 +10,6 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
-	"etop.vn/capi/dot"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
@@ -773,7 +772,7 @@ func init() {
 
 func (m *UserInfo) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.UserID),
+		m.UserID,
 		core.String(m.Metadata),
 		core.Bool(m.Bool),
 		core.Float64(m.Float64),
@@ -790,7 +789,7 @@ func (m *UserInfo) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *UserInfo) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.UserID),
+		&m.UserID,
 		(*core.String)(&m.Metadata),
 		(*core.Bool)(&m.Bool),
 		(*core.Float64)(&m.Float64),
@@ -2095,14 +2094,14 @@ func init() {
 
 func (m *Profile) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Style),
 	}
 }
 
 func (m *Profile) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Style),
 	}
 }
@@ -2227,37 +2226,6 @@ func (m Profiles) SQLPreload(table string) *core.PreloadDesc {
 		}
 	default:
 		return nil
-	}
-}
-
-func (m *Profile) SQLPopulate(items core.IFind) error {
-	switch items := items.(type) {
-	case *UserInfoes:
-		m.UserInfos = *items
-		return nil
-	default:
-		return core.Errorf("can not populate %T into %T", items, m)
-	}
-}
-
-func (m Profiles) SQLPopulate(items core.IFind) error {
-	mapID := make(map[dot.ID]*Profile)
-	for _, item := range m {
-		mapID[item.ID] = item
-	}
-
-	switch items := items.(type) {
-	case *UserInfoes:
-		for _, item := range *items {
-			mitem := mapID[item.UserID]
-			if mitem == nil {
-				return core.Errorf("can not populate id %v", item.UserID)
-			}
-			mitem.UserInfos = append(mitem.UserInfos, item)
-		}
-		return nil
-	default:
-		return core.Errorf("can not populate %T into %T", items, m)
 	}
 }
 

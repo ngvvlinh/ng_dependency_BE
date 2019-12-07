@@ -17,7 +17,6 @@ import (
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
 	"etop.vn/capi/dot"
-	"etop.vn/capi/util"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -151,7 +150,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	ffmsMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, log := range ghnOrderLogs {
 		if log.OrderInfo.ExternalCode != "" {
-			externalCode, err := util.ParseID(log.OrderInfo.ExternalCode.String())
+			externalCode, err := dot.ParseID(log.OrderInfo.ExternalCode.String())
 			if err == nil {
 				ffmIDMap[externalCode] = externalCode
 			}
@@ -174,7 +173,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 
 	updateFfmMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, oLog := range ghnOrderLogs {
-		externalCode, err := util.ParseID(oLog.OrderInfo.ExternalCode.String())
+		externalCode, err := dot.ParseID(oLog.OrderInfo.ExternalCode.String())
 		if err != nil {
 			continue
 		}

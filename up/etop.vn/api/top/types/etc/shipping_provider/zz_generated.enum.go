@@ -7,7 +7,7 @@ package shipping_provider
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -60,7 +60,7 @@ func (e ShippingProvider) MarshalJSON() ([]byte, error) {
 }
 
 func (e *ShippingProvider) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumShippingProviderValue, data, "ShippingProvider")
+	value, err := mix.UnmarshalJSONEnumInt(enumShippingProviderValue, data, "ShippingProvider")
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func (e ShippingProvider) Value() (interface{}, error) {
 }
 
 func (e *ShippingProvider) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumShippingProviderValue, src, "ShippingProvider")
+	value, err := mix.ScanEnumInt(enumShippingProviderValue, src, "ShippingProvider")
 	*e = (ShippingProvider)(value)
 	return err
 }

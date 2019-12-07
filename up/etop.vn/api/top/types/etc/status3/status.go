@@ -1,6 +1,7 @@
 package status3
 
 // +enum
+// +enum:sql=int
 type Status int
 
 const (
@@ -11,5 +12,5 @@ const (
 	P Status = 1
 
 	// +enum=N
-	N Status = 127
+	N Status = -1
 )

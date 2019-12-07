@@ -54,7 +54,7 @@ func init() {
 func (m *ShippingProviderWebhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.ShippingProvider),
 		core.JSON{m.Data},
 		core.String(m.ShippingCode),
@@ -68,7 +68,7 @@ func (m *ShippingProviderWebhook) SQLArgs(opts core.Opts, create bool) []interfa
 
 func (m *ShippingProviderWebhook) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.ShippingProvider),
 		core.JSON{&m.Data},
 		(*core.String)(&m.ShippingCode),

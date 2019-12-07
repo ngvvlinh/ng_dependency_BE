@@ -7,7 +7,7 @@ package product_type
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -54,7 +54,7 @@ func (e ProductType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *ProductType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumProductTypeValue, data, "ProductType")
+	value, err := mix.UnmarshalJSONEnumInt(enumProductTypeValue, data, "ProductType")
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (e ProductType) Value() (interface{}, error) {
 }
 
 func (e *ProductType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumProductTypeValue, src, "ProductType")
+	value, err := mix.ScanEnumInt(enumProductTypeValue, src, "ProductType")
 	*e = (ProductType)(value)
 	return err
 }

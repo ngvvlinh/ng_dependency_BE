@@ -30,8 +30,6 @@ var funcs = map[string]interface{}{
 	"requireEtopAdmin":         requireEtopAdmin,
 	"requireSuperAdmin":        requireSuperAdmin,
 	"requireRole":              requireRole,
-	"getRole":                  getRole,
-	"getRoleLevel":             getRoleLevel,
 	"requireSecret":            requireSecret,
 	"getClaim":                 getClaim,
 	"requireCaptcha":           requireCaptcha,
@@ -136,20 +134,6 @@ func requireSuperAdmin(m *Method) bool {
 func requireRole(m *Method) bool {
 	p := getPermission(m)
 	return p.Type >= permission.Partner && p.Type <= permission.EtopAdmin
-}
-
-func getRole(m *Method) string {
-	p := getPermission(m)
-	return string(p.Role)
-}
-
-func getRoleLevel(m *Method) int {
-	p := getPermission(m)
-	lvl := permission.RoleLevel(p.Role)
-	if p.Role != "" && lvl <= 0 {
-		gen.Fatalf("Method %v: invalid role (%v)", m.FullPath(), p.Role)
-	}
-	return lvl
 }
 
 func requireSecret(m *Method) bool {

@@ -54,9 +54,9 @@ func init() {
 func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.Int64(m.SupplierID),
+		m.ID,
+		m.ShopID,
+		m.SupplierID,
 		core.JSON{m.Supplier},
 		core.Int(m.BasketValue),
 		core.Int(m.TotalDiscount),
@@ -67,7 +67,7 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.Status),
 		core.Array{m.VariantIDs, opts},
 		core.JSON{m.Lines},
-		core.Int64(m.CreatedBy),
+		m.CreatedBy,
 		core.String(m.CancelledReason),
 		core.Time(m.ConfirmedAt),
 		core.Time(m.CancelledAt),
@@ -81,9 +81,9 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplierID),
+		&m.ID,
+		&m.ShopID,
+		&m.SupplierID,
 		core.JSON{&m.Supplier},
 		(*core.Int)(&m.BasketValue),
 		(*core.Int)(&m.TotalDiscount),
@@ -94,7 +94,7 @@ func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Status),
 		core.Array{&m.VariantIDs, opts},
 		core.JSON{&m.Lines},
-		(*core.Int64)(&m.CreatedBy),
+		&m.CreatedBy,
 		(*core.String)(&m.CancelledReason),
 		(*core.Time)(&m.ConfirmedAt),
 		(*core.Time)(&m.CancelledAt),
@@ -171,7 +171,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -179,7 +179,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.SupplierID != 0 {
 		flag = true
@@ -187,7 +187,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplierID))
+		w.WriteArg(m.SupplierID)
 	}
 	if m.Supplier != nil {
 		flag = true
@@ -275,7 +275,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CreatedBy))
+		w.WriteArg(m.CreatedBy)
 	}
 	if m.CancelledReason != "" {
 		flag = true

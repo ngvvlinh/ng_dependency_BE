@@ -3,11 +3,13 @@ package sqlgen
 import (
 	"fmt"
 	"go/types"
-	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+
+	gen2 "etop.vn/backend/tools/pkg/gen"
 
 	"github.com/awalterschulze/goderive/derive"
 	"github.com/dustin/go-humanize/english"
@@ -287,23 +289,27 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 	if len(def.joins) == 0 {
 		if g.genFilter == nil {
 			var pkgName string
+			var pkgPath string
 			_ = types.TypeString(typ, func(p *types.Package) string {
 				pkgName = p.Name()
+				pkgPath = p.Path()
 				return p.Path()
 			})
 
 			// generate sqlstore/filter.gen.go
 			if pkgName == "model" {
-				wd, err := os.Getwd()
-				if err != nil {
-					panic(err)
+				if strings.HasPrefix(pkgPath, "./") {
+					var err error
+					pkgPath, err = filepath.Abs(pkgPath)
+					if err != nil {
+						panic(err)
+					}
+					pkgPath, err = filepath.Rel(gen2.ProjectPath(), pkgPath)
+					if err != nil {
+						panic(err)
+					}
+					pkgPath = filepath.Join("etop.vn/backend", pkgPath)
 				}
-				// get package path using current working directory
-				idx := strings.LastIndex(wd, "etop.vn/")
-				if idx < 0 {
-					panic(fmt.Sprintf("unexpected: invalid path %v", wd))
-				}
-				pkgPath := wd[idx:]
 				g.genFilter = filtergen.NewGen(pkgPath)
 			}
 		}

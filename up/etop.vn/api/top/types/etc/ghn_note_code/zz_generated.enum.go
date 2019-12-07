@@ -7,7 +7,7 @@ package ghn_note_code
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -56,7 +56,7 @@ func (e GHNNoteCode) MarshalJSON() ([]byte, error) {
 }
 
 func (e *GHNNoteCode) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumGHNNoteCodeValue, data, "GHNNoteCode")
+	value, err := mix.UnmarshalJSONEnumInt(enumGHNNoteCodeValue, data, "GHNNoteCode")
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (e GHNNoteCode) Value() (interface{}, error) {
 }
 
 func (e *GHNNoteCode) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumGHNNoteCodeValue, src, "GHNNoteCode")
+	value, err := mix.ScanEnumInt(enumGHNNoteCodeValue, src, "GHNNoteCode")
 	*e = (GHNNoteCode)(value)
 	return err
 }

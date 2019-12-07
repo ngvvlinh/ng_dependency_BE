@@ -7,7 +7,7 @@ package shipping_fee_type
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -68,7 +68,7 @@ func (e ShippingFeeType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *ShippingFeeType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumShippingFeeTypeValue, data, "ShippingFeeType")
+	value, err := mix.UnmarshalJSONEnumInt(enumShippingFeeTypeValue, data, "ShippingFeeType")
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (e ShippingFeeType) Value() (interface{}, error) {
 }
 
 func (e *ShippingFeeType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumShippingFeeTypeValue, src, "ShippingFeeType")
+	value, err := mix.ScanEnumInt(enumShippingFeeTypeValue, src, "ShippingFeeType")
 	*e = (ShippingFeeType)(value)
 	return err
 }

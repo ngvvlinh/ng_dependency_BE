@@ -54,9 +54,9 @@ func init() {
 func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.Int64(m.PartnerID),
+		m.ID,
+		m.ShopID,
+		m.PartnerID,
 		core.Array{m.OrderIDs, opts},
 		core.JSON{m.PickupAddress},
 		core.String(m.Carrier),
@@ -97,9 +97,9 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 
 func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.PartnerID),
+		&m.ID,
+		&m.ShopID,
+		&m.PartnerID,
 		core.Array{&m.OrderIDs, opts},
 		core.JSON{&m.PickupAddress},
 		(*core.String)(&m.Carrier),

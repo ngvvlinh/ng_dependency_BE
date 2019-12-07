@@ -54,9 +54,9 @@ func init() {
 func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.Int64(m.TraderID),
+		m.ID,
+		m.ShopID,
+		m.TraderID,
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
 		core.String(m.Title),
@@ -68,11 +68,11 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.RefIDs, opts},
 		core.String(m.RefType),
 		core.JSON{m.Lines},
-		core.Int64(m.LedgerID),
+		m.LedgerID,
 		core.JSON{m.Trader},
 		core.String(m.CancelledReason),
 		core.String(m.CreatedType),
-		core.Int64(m.CreatedBy),
+		m.CreatedBy,
 		core.Time(m.PaidAt),
 		core.Time(m.ConfirmedAt),
 		core.Time(m.CancelledAt),
@@ -84,9 +84,9 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.TraderID),
+		&m.ID,
+		&m.ShopID,
+		&m.TraderID,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Title),
@@ -98,11 +98,11 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.RefIDs, opts},
 		(*core.String)(&m.RefType),
 		core.JSON{&m.Lines},
-		(*core.Int64)(&m.LedgerID),
+		&m.LedgerID,
 		core.JSON{&m.Trader},
 		(*core.String)(&m.CancelledReason),
 		(*core.String)(&m.CreatedType),
-		(*core.Int64)(&m.CreatedBy),
+		&m.CreatedBy,
 		(*core.Time)(&m.PaidAt),
 		(*core.Time)(&m.ConfirmedAt),
 		(*core.Time)(&m.CancelledAt),

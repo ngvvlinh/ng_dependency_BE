@@ -55,8 +55,8 @@ func init() {
 func (m *Foo) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.AccountID),
+		m.ID,
+		m.AccountID,
 		core.String(m.ABC),
 		core.String(m.Def2),
 		core.Now(m.CreatedAt, now, create),
@@ -66,8 +66,8 @@ func (m *Foo) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Foo) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.AccountID),
+		&m.ID,
+		&m.AccountID,
 		(*core.String)(&m.ABC),
 		(*core.String)(&m.Def2),
 		(*core.Time)(&m.CreatedAt),
@@ -297,14 +297,14 @@ func init() {
 
 func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Name),
 	}
 }
 
 func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Name),
 	}
 }

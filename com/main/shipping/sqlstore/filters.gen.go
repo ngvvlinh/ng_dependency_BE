@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
+
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type FulfillmentFilters struct{ prefix string }
@@ -561,7 +562,7 @@ func (ft *FulfillmentFilters) ByEtopPriceRule(EtopPriceRule bool) *sq.ColumnFilt
 		Prefix: &ft.prefix,
 		Column: "etop_price_rule",
 		Value:  EtopPriceRule,
-		IsNil:  !EtopPriceRule,
+		IsNil:  bool(!EtopPriceRule),
 	}
 }
 
@@ -571,7 +572,7 @@ func (ft *FulfillmentFilters) ByEtopPriceRulePtr(EtopPriceRule *bool) *sq.Column
 		Column: "etop_price_rule",
 		Value:  EtopPriceRule,
 		IsNil:  EtopPriceRule == nil,
-		IsZero: EtopPriceRule != nil && !(*EtopPriceRule),
+		IsZero: EtopPriceRule != nil && bool(!(*EtopPriceRule)),
 	}
 }
 
@@ -1112,7 +1113,7 @@ func (ft *FulfillmentFilters) ByIncludeInsurance(IncludeInsurance bool) *sq.Colu
 		Prefix: &ft.prefix,
 		Column: "include_insurance",
 		Value:  IncludeInsurance,
-		IsNil:  !IncludeInsurance,
+		IsNil:  bool(!IncludeInsurance),
 	}
 }
 
@@ -1122,7 +1123,7 @@ func (ft *FulfillmentFilters) ByIncludeInsurancePtr(IncludeInsurance *bool) *sq.
 		Column: "include_insurance",
 		Value:  IncludeInsurance,
 		IsNil:  IncludeInsurance == nil,
-		IsZero: IncludeInsurance != nil && !(*IncludeInsurance),
+		IsZero: IncludeInsurance != nil && bool(!(*IncludeInsurance)),
 	}
 }
 
@@ -1530,7 +1531,7 @@ func (ft *FulfillmentFilters) ByIsPartialDelivery(IsPartialDelivery bool) *sq.Co
 		Prefix: &ft.prefix,
 		Column: "is_partial_delivery",
 		Value:  IsPartialDelivery,
-		IsNil:  !IsPartialDelivery,
+		IsNil:  bool(!IsPartialDelivery),
 	}
 }
 
@@ -1540,6 +1541,6 @@ func (ft *FulfillmentFilters) ByIsPartialDeliveryPtr(IsPartialDelivery *bool) *s
 		Column: "is_partial_delivery",
 		Value:  IsPartialDelivery,
 		IsNil:  IsPartialDelivery == nil,
-		IsZero: IsPartialDelivery != nil && !(*IsPartialDelivery),
+		IsZero: IsPartialDelivery != nil && bool(!(*IsPartialDelivery)),
 	}
 }

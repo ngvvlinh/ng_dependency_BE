@@ -54,10 +54,10 @@ func init() {
 func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OrderID),
-		core.Int64(m.ShopID),
-		core.Int64(m.PartnerID),
+		m.ID,
+		m.OrderID,
+		m.ShopID,
+		m.PartnerID,
 		core.Int(m.ShopConfirm),
 		core.Int(m.ConfirmStatus),
 		core.Int(m.TotalItems),
@@ -110,8 +110,8 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.ShippingHoldingAt),
 		core.Time(m.ShippingDeliveringAt),
 		core.Time(m.ShippingReturningAt),
-		core.Int64(m.MoneyTransactionID),
-		core.Int64(m.MoneyTransactionShippingExternalID),
+		m.MoneyTransactionID,
+		m.MoneyTransactionShippingExternalID,
 		core.String(m.CancelReason),
 		core.String(m.ShippingProvider),
 		core.String(m.ProviderServiceID),
@@ -149,10 +149,10 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OrderID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.PartnerID),
+		&m.ID,
+		&m.OrderID,
+		&m.ShopID,
+		&m.PartnerID,
 		(*core.Int)(&m.ShopConfirm),
 		(*core.Int)(&m.ConfirmStatus),
 		(*core.Int)(&m.TotalItems),
@@ -205,8 +205,8 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.ShippingHoldingAt),
 		(*core.Time)(&m.ShippingDeliveringAt),
 		(*core.Time)(&m.ShippingReturningAt),
-		(*core.Int64)(&m.MoneyTransactionID),
-		(*core.Int64)(&m.MoneyTransactionShippingExternalID),
+		&m.MoneyTransactionID,
+		&m.MoneyTransactionShippingExternalID,
 		(*core.String)(&m.CancelReason),
 		(*core.String)(&m.ShippingProvider),
 		(*core.String)(&m.ProviderServiceID),

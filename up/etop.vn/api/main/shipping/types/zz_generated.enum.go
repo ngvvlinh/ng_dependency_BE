@@ -7,7 +7,7 @@ package types
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -64,7 +64,7 @@ func (e FeeLineType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *FeeLineType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumFeeLineTypeValue, data, "FeeLineType")
+	value, err := mix.UnmarshalJSONEnumInt(enumFeeLineTypeValue, data, "FeeLineType")
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (e FeeLineType) Value() (interface{}, error) {
 }
 
 func (e *FeeLineType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumFeeLineTypeValue, src, "FeeLineType")
+	value, err := mix.ScanEnumInt(enumFeeLineTypeValue, src, "FeeLineType")
 	*e = (FeeLineType)(value)
 	return err
 }
@@ -174,7 +174,7 @@ func (e TryOn) MarshalJSON() ([]byte, error) {
 }
 
 func (e *TryOn) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumTryOnValue, data, "TryOn")
+	value, err := mix.UnmarshalJSONEnumInt(enumTryOnValue, data, "TryOn")
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func (e TryOn) Value() (interface{}, error) {
 }
 
 func (e *TryOn) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumTryOnValue, src, "TryOn")
+	value, err := mix.ScanEnumInt(enumTryOnValue, src, "TryOn")
 	*e = (TryOn)(value)
 	return err
 }

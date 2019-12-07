@@ -54,11 +54,11 @@ func init() {
 func (m *ShopStocktake) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.Int(m.TotalQuantity),
-		core.Int64(m.CreatedBy),
-		core.Int64(m.UpdatedBy),
+		m.CreatedBy,
+		m.UpdatedBy,
 		core.String(m.CancelReason),
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
@@ -74,11 +74,11 @@ func (m *ShopStocktake) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopStocktake) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.Int)(&m.TotalQuantity),
-		(*core.Int64)(&m.CreatedBy),
-		(*core.Int64)(&m.UpdatedBy),
+		&m.CreatedBy,
+		&m.UpdatedBy,
 		(*core.String)(&m.CancelReason),
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),

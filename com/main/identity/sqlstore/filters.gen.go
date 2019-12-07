@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
+
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type ExternalAccountAhamoveFilters struct{ prefix string }
@@ -124,7 +125,7 @@ func (ft *ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified boo
 		Prefix: &ft.prefix,
 		Column: "external_verified",
 		Value:  ExternalVerified,
-		IsNil:  !ExternalVerified,
+		IsNil:  bool(!ExternalVerified),
 	}
 }
 
@@ -134,7 +135,7 @@ func (ft *ExternalAccountAhamoveFilters) ByExternalVerifiedPtr(ExternalVerified 
 		Column: "external_verified",
 		Value:  ExternalVerified,
 		IsNil:  ExternalVerified == nil,
-		IsZero: ExternalVerified != nil && !(*ExternalVerified),
+		IsZero: ExternalVerified != nil && bool(!(*ExternalVerified)),
 	}
 }
 

@@ -5,12 +5,11 @@ import (
 	"go/types"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/genutil"
-
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"etop.vn/backend/tools/pkg/genutil"
 )
 
 type MetaKey struct {

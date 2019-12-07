@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -16,7 +18,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
-	"etop.vn/capi/util"
 	"etop.vn/common/l"
 )
 
@@ -68,7 +69,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	if msg.ExternalCode == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is empty")
 	}
-	ffmID, err := util.ParseID(msg.ExternalCode.String())
+	ffmID, err := dot.ParseID(msg.ExternalCode.String())
 	if err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is invalid: %v", msg.ExternalCode)
 	}

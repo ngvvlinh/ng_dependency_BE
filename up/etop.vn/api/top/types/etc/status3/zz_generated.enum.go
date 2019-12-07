@@ -7,21 +7,21 @@ package status3
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
 
 var enumStatusName = map[int]string{
-	0:   "Z",
-	1:   "P",
-	127: "N",
+	0:  "Z",
+	1:  "P",
+	-1: "N",
 }
 
 var enumStatusValue = map[string]int{
 	"Z": 0,
 	"P": 1,
-	"N": 127,
+	"N": -1,
 }
 
 func ParseStatus(s string) (Status, bool) {
@@ -54,7 +54,7 @@ func (e Status) MarshalJSON() ([]byte, error) {
 }
 
 func (e *Status) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumStatusValue, data, "Status")
+	value, err := mix.UnmarshalJSONEnumInt(enumStatusValue, data, "Status")
 	if err != nil {
 		return err
 	}
@@ -63,11 +63,11 @@ func (e *Status) UnmarshalJSON(data []byte) error {
 }
 
 func (e Status) Value() (interface{}, error) {
-	return e.String(), nil
+	return int(e), nil
 }
 
 func (e *Status) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumStatusValue, src, "Status")
+	value, err := mix.ScanEnumInt(enumStatusValue, src, "Status")
 	*e = (Status)(value)
 	return err
 }

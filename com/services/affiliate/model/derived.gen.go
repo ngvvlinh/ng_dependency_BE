@@ -54,8 +54,8 @@ func init() {
 func (m *CommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ProductID),
-		core.Int64(m.AccountID),
+		m.ProductID,
+		m.AccountID,
 		core.Int(m.Amount),
 		core.String(m.Unit),
 		core.String(m.Type),
@@ -66,8 +66,8 @@ func (m *CommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *CommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.AccountID),
+		&m.ProductID,
+		&m.AccountID,
 		(*core.Int)(&m.Amount),
 		(*core.String)(&m.Unit),
 		(*core.String)(&m.Type),
@@ -141,7 +141,7 @@ func (m *CommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.AccountID != 0 {
 		flag = true
@@ -149,7 +149,7 @@ func (m *CommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AccountID))
+		w.WriteArg(m.AccountID)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -310,9 +310,9 @@ func init() {
 func (m *ProductPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ProductID,
+		m.ShopID,
 		core.Int(m.Amount),
 		core.String(m.Unit),
 		core.String(m.Code),
@@ -327,9 +327,9 @@ func (m *ProductPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ProductPromotion) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ProductID,
+		&m.ShopID,
 		(*core.Int)(&m.Amount),
 		(*core.String)(&m.Unit),
 		(*core.String)(&m.Code),
@@ -407,7 +407,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -415,7 +415,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -423,7 +423,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -631,13 +631,13 @@ func init() {
 func (m *SellerCommission) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.SellerID),
-		core.Int64(m.FromSellerID),
-		core.Int64(m.ProductID),
-		core.Int64(m.ShopID),
-		core.Int64(m.SupplyID),
-		core.Int64(m.OrderId),
+		m.ID,
+		m.SellerID,
+		m.FromSellerID,
+		m.ProductID,
+		m.ShopID,
+		m.SupplyID,
+		m.OrderId,
 		core.Int(m.Amount),
 		core.String(m.Description),
 		core.String(m.Note),
@@ -653,13 +653,13 @@ func (m *SellerCommission) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *SellerCommission) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.SellerID),
-		(*core.Int64)(&m.FromSellerID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplyID),
-		(*core.Int64)(&m.OrderId),
+		&m.ID,
+		&m.SellerID,
+		&m.FromSellerID,
+		&m.ProductID,
+		&m.ShopID,
+		&m.SupplyID,
+		&m.OrderId,
 		(*core.Int)(&m.Amount),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.Note),
@@ -738,7 +738,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.SellerID != 0 {
 		flag = true
@@ -746,7 +746,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SellerID))
+		w.WriteArg(m.SellerID)
 	}
 	if m.FromSellerID != 0 {
 		flag = true
@@ -754,7 +754,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.FromSellerID))
+		w.WriteArg(m.FromSellerID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -762,7 +762,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -770,7 +770,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -778,7 +778,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplyID))
+		w.WriteArg(m.SupplyID)
 	}
 	if m.OrderId != 0 {
 		flag = true
@@ -786,7 +786,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderId))
+		w.WriteArg(m.OrderId)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -1019,12 +1019,12 @@ func init() {
 func (m *OrderCreatedNotify) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.OrderID),
-		core.Int64(m.ShopUserID),
-		core.Int64(m.SellerID),
-		core.Int64(m.ShopID),
-		core.Int64(m.SupplyID),
+		m.ID,
+		m.OrderID,
+		m.ShopUserID,
+		m.SellerID,
+		m.ShopID,
+		m.SupplyID,
 		core.String(m.ReferralCode),
 		core.Int(m.PromotionSnapshotStatus),
 		core.String(m.PromotionSnapshotErr),
@@ -1044,12 +1044,12 @@ func (m *OrderCreatedNotify) SQLArgs(opts core.Opts, create bool) []interface{} 
 
 func (m *OrderCreatedNotify) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.OrderID),
-		(*core.Int64)(&m.ShopUserID),
-		(*core.Int64)(&m.SellerID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplyID),
+		&m.ID,
+		&m.OrderID,
+		&m.ShopUserID,
+		&m.SellerID,
+		&m.ShopID,
+		&m.SupplyID,
 		(*core.String)(&m.ReferralCode),
 		(*core.Int)(&m.PromotionSnapshotStatus),
 		(*core.String)(&m.PromotionSnapshotErr),
@@ -1132,7 +1132,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -1140,7 +1140,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.ShopUserID != 0 {
 		flag = true
@@ -1148,7 +1148,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopUserID))
+		w.WriteArg(m.ShopUserID)
 	}
 	if m.SellerID != 0 {
 		flag = true
@@ -1156,7 +1156,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SellerID))
+		w.WriteArg(m.SellerID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -1164,7 +1164,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -1172,7 +1172,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplyID))
+		w.WriteArg(m.SupplyID)
 	}
 	if m.ReferralCode != "" {
 		flag = true
@@ -1468,10 +1468,10 @@ func init() {
 func (m *AffiliateReferralCode) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.String(m.Code),
-		core.Int64(m.AffiliateID),
-		core.Int64(m.UserID),
+		m.AffiliateID,
+		m.UserID,
 		core.Now(m.CreatedAt, now, create),
 		core.Time(m.UpdatedAt),
 	}
@@ -1479,10 +1479,10 @@ func (m *AffiliateReferralCode) SQLArgs(opts core.Opts, create bool) []interface
 
 func (m *AffiliateReferralCode) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.String)(&m.Code),
-		(*core.Int64)(&m.AffiliateID),
-		(*core.Int64)(&m.UserID),
+		&m.AffiliateID,
+		&m.UserID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1553,7 +1553,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.Code != "" {
 		flag = true
@@ -1569,7 +1569,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.AffiliateID))
+		w.WriteArg(m.AffiliateID)
 	}
 	if m.UserID != 0 {
 		flag = true
@@ -1577,7 +1577,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -1721,10 +1721,10 @@ func init() {
 func (m *UserReferral) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.UserID),
-		core.Int64(m.ReferralID),
+		m.UserID,
+		m.ReferralID,
 		core.String(m.ReferralCode),
-		core.Int64(m.SaleReferralID),
+		m.SaleReferralID,
 		core.String(m.SaleReferralCode),
 		core.Time(m.ReferralAt),
 		core.Time(m.SaleReferralAt),
@@ -1735,10 +1735,10 @@ func (m *UserReferral) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *UserReferral) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.UserID),
-		(*core.Int64)(&m.ReferralID),
+		&m.UserID,
+		&m.ReferralID,
 		(*core.String)(&m.ReferralCode),
-		(*core.Int64)(&m.SaleReferralID),
+		&m.SaleReferralID,
 		(*core.String)(&m.SaleReferralCode),
 		(*core.Time)(&m.ReferralAt),
 		(*core.Time)(&m.SaleReferralAt),
@@ -1812,7 +1812,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.ReferralID != 0 {
 		flag = true
@@ -1820,7 +1820,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ReferralID))
+		w.WriteArg(m.ReferralID)
 	}
 	if m.ReferralCode != "" {
 		flag = true
@@ -1836,7 +1836,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SaleReferralID))
+		w.WriteArg(m.SaleReferralID)
 	}
 	if m.SaleReferralCode != "" {
 		flag = true
@@ -2009,8 +2009,8 @@ func init() {
 func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ShopID),
-		core.Int64(m.ProductID),
+		m.ShopID,
+		m.ProductID,
 		core.Int(m.Level1DirectCommission),
 		core.Int(m.Level1IndirectCommission),
 		core.Int(m.Level2DirectCommission),
@@ -2021,7 +2021,7 @@ func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfa
 		core.JSON{m.MLevel1LimitDuration},
 		core.Int64(m.LifetimeDuration),
 		core.JSON{m.MLifetimeDuration},
-		core.Int64(m.CustomerPolicyGroupID),
+		m.CustomerPolicyGroupID,
 		core.String(m.Group),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -2030,8 +2030,8 @@ func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfa
 
 func (m *SupplyCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.ProductID),
+		&m.ShopID,
+		&m.ProductID,
 		(*core.Int)(&m.Level1DirectCommission),
 		(*core.Int)(&m.Level1IndirectCommission),
 		(*core.Int)(&m.Level2DirectCommission),
@@ -2042,7 +2042,7 @@ func (m *SupplyCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.MLevel1LimitDuration},
 		(*core.Int64)(&m.LifetimeDuration),
 		core.JSON{&m.MLifetimeDuration},
-		(*core.Int64)(&m.CustomerPolicyGroupID),
+		&m.CustomerPolicyGroupID,
 		(*core.String)(&m.Group),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -2114,7 +2114,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2122,7 +2122,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.Level1DirectCommission != 0 {
 		flag = true
@@ -2210,7 +2210,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CustomerPolicyGroupID))
+		w.WriteArg(m.CustomerPolicyGroupID)
 	}
 	if m.Group != "" {
 		flag = true
@@ -2414,15 +2414,15 @@ func init() {
 func (m *OrderPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductID),
-		core.Int64(m.OrderID),
+		m.ID,
+		m.ProductID,
+		m.OrderID,
 		core.Int(m.ProductQuantity),
 		core.Int(m.BaseValue),
 		core.Int(m.Amount),
 		core.String(m.Unit),
 		core.String(m.Type),
-		core.Int64(m.OrderCreatedNotifyID),
+		m.OrderCreatedNotifyID,
 		core.String(m.Description),
 		core.String(m.Src),
 		core.Now(m.CreatedAt, now, create),
@@ -2432,15 +2432,15 @@ func (m *OrderPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *OrderPromotion) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.OrderID),
+		&m.ID,
+		&m.ProductID,
+		&m.OrderID,
 		(*core.Int)(&m.ProductQuantity),
 		(*core.Int)(&m.BaseValue),
 		(*core.Int)(&m.Amount),
 		(*core.String)(&m.Unit),
 		(*core.String)(&m.Type),
-		(*core.Int64)(&m.OrderCreatedNotifyID),
+		&m.OrderCreatedNotifyID,
 		(*core.String)(&m.Description),
 		(*core.String)(&m.Src),
 		(*core.Time)(&m.CreatedAt),
@@ -2513,7 +2513,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2521,7 +2521,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -2529,7 +2529,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -2577,7 +2577,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderCreatedNotifyID))
+		w.WriteArg(m.OrderCreatedNotifyID)
 	}
 	if m.Description != "" {
 		flag = true
@@ -2752,9 +2752,9 @@ func init() {
 func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.OrderID),
-		core.Int64(m.SupplyID),
-		core.Int64(m.ProductID),
+		m.OrderID,
+		m.SupplyID,
+		m.ProductID,
 		core.Int(m.ProductQuantity),
 		core.Int(m.Level1DirectCommission),
 		core.Int(m.Level1IndirectCommission),
@@ -2765,7 +2765,7 @@ func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfac
 		core.Int64(m.Level1LimitDuration),
 		core.Int64(m.LifetimeDuration),
 		core.String(m.Group),
-		core.Int64(m.CustomerPolicyGroupID),
+		m.CustomerPolicyGroupID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -2773,9 +2773,9 @@ func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfac
 
 func (m *OrderCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.OrderID),
-		(*core.Int64)(&m.SupplyID),
-		(*core.Int64)(&m.ProductID),
+		&m.OrderID,
+		&m.SupplyID,
+		&m.ProductID,
 		(*core.Int)(&m.ProductQuantity),
 		(*core.Int)(&m.Level1DirectCommission),
 		(*core.Int)(&m.Level1IndirectCommission),
@@ -2786,7 +2786,7 @@ func (m *OrderCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.Level1LimitDuration),
 		(*core.Int64)(&m.LifetimeDuration),
 		(*core.String)(&m.Group),
-		(*core.Int64)(&m.CustomerPolicyGroupID),
+		&m.CustomerPolicyGroupID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -2857,7 +2857,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -2865,7 +2865,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplyID))
+		w.WriteArg(m.SupplyID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -2873,7 +2873,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -2961,7 +2961,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CustomerPolicyGroupID))
+		w.WriteArg(m.CustomerPolicyGroupID)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -3157,11 +3157,11 @@ func init() {
 func (m *ShopCashback) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.Int64(m.OrderID),
+		m.ID,
+		m.ShopID,
+		m.OrderID,
 		core.Int(m.Amount),
-		core.Int64(m.OrderCreatedNotifyID),
+		m.OrderCreatedNotifyID,
 		core.String(m.Description),
 		core.Int8(m.Status),
 		core.Time(m.ValidAt),
@@ -3172,11 +3172,11 @@ func (m *ShopCashback) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopCashback) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.OrderID),
+		&m.ID,
+		&m.ShopID,
+		&m.OrderID,
 		(*core.Int)(&m.Amount),
-		(*core.Int64)(&m.OrderCreatedNotifyID),
+		&m.OrderCreatedNotifyID,
 		(*core.String)(&m.Description),
 		(*core.Int8)(&m.Status),
 		(*core.Time)(&m.ValidAt),
@@ -3250,7 +3250,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -3258,7 +3258,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -3266,7 +3266,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -3282,7 +3282,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderCreatedNotifyID))
+		w.WriteArg(m.OrderCreatedNotifyID)
 	}
 	if m.Description != "" {
 		flag = true
@@ -3454,12 +3454,12 @@ func init() {
 func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.UserID),
-		core.Int64(m.ShopID),
-		core.Int64(m.OrderID),
-		core.Int64(m.SupplyID),
-		core.Int64(m.ProductID),
-		core.Int64(m.CustomerPolicyGroupID),
+		m.UserID,
+		m.ShopID,
+		m.OrderID,
+		m.SupplyID,
+		m.ProductID,
+		m.CustomerPolicyGroupID,
 		core.Int(m.ProductQuantity),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -3468,12 +3468,12 @@ func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interfa
 
 func (m *ShopOrderProductHistory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.UserID),
-		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.OrderID),
-		(*core.Int64)(&m.SupplyID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.CustomerPolicyGroupID),
+		&m.UserID,
+		&m.ShopID,
+		&m.OrderID,
+		&m.SupplyID,
+		&m.ProductID,
+		&m.CustomerPolicyGroupID,
 		(*core.Int)(&m.ProductQuantity),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -3545,7 +3545,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.UserID))
+		w.WriteArg(m.UserID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -3553,7 +3553,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.OrderID != 0 {
 		flag = true
@@ -3561,7 +3561,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -3569,7 +3569,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplyID))
+		w.WriteArg(m.SupplyID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -3577,7 +3577,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.CustomerPolicyGroupID != 0 {
 		flag = true
@@ -3585,7 +3585,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CustomerPolicyGroupID))
+		w.WriteArg(m.CustomerPolicyGroupID)
 	}
 	if m.ProductQuantity != 0 {
 		flag = true
@@ -3752,8 +3752,8 @@ func init() {
 func (m *CustomerPolicyGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.SupplyID),
+		m.ID,
+		m.SupplyID,
 		core.String(m.Name),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -3762,8 +3762,8 @@ func (m *CustomerPolicyGroup) SQLArgs(opts core.Opts, create bool) []interface{}
 
 func (m *CustomerPolicyGroup) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.SupplyID),
+		&m.ID,
+		&m.SupplyID,
 		(*core.String)(&m.Name),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -3835,7 +3835,7 @@ func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.SupplyID != 0 {
 		flag = true
@@ -3843,7 +3843,7 @@ func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.SupplyID))
+		w.WriteArg(m.SupplyID)
 	}
 	if m.Name != "" {
 		flag = true

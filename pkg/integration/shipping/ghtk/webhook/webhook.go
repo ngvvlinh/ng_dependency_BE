@@ -18,7 +18,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
-	"etop.vn/capi/util"
 	"etop.vn/common/l"
 )
 
@@ -74,7 +73,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	if msg.PartnerID == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is empty").WithMeta("result", "ignore")
 	}
-	ffmID, err := util.ParseID(msg.PartnerID.String())
+	ffmID, err := dot.ParseID(msg.PartnerID.String())
 	if err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is invalid: %v", msg.PartnerID).WithMeta("result", "ignore")
 	}

@@ -10,8 +10,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 type OrderStoreFactory func(context.Context) *OrderStore
 
 func NewOrderStore(db *cmsql.Database) OrderStoreFactory {

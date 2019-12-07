@@ -7,7 +7,7 @@ package try_on
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -56,7 +56,7 @@ func (e TryOnCode) MarshalJSON() ([]byte, error) {
 }
 
 func (e *TryOnCode) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumTryOnCodeValue, data, "TryOnCode")
+	value, err := mix.UnmarshalJSONEnumInt(enumTryOnCodeValue, data, "TryOnCode")
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (e TryOnCode) Value() (interface{}, error) {
 }
 
 func (e *TryOnCode) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumTryOnCodeValue, src, "TryOnCode")
+	value, err := mix.ScanEnumInt(enumTryOnCodeValue, src, "TryOnCode")
 	*e = (TryOnCode)(value)
 	return err
 }

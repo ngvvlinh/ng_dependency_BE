@@ -7,7 +7,7 @@ package types
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -56,7 +56,7 @@ func (e Fulfill) MarshalJSON() ([]byte, error) {
 }
 
 func (e *Fulfill) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumFulfillValue, data, "Fulfill")
+	value, err := mix.UnmarshalJSONEnumInt(enumFulfillValue, data, "Fulfill")
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (e Fulfill) Value() (interface{}, error) {
 }
 
 func (e *Fulfill) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumFulfillValue, src, "Fulfill")
+	value, err := mix.ScanEnumInt(enumFulfillValue, src, "Fulfill")
 	*e = (Fulfill)(value)
 	return err
 }

@@ -54,9 +54,9 @@ func init() {
 func (m *Transaction) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
+		m.ID,
 		core.Int(m.Amount),
-		core.Int64(m.AccountID),
+		m.AccountID,
 		core.Int(m.Status),
 		core.String(m.Type),
 		core.String(m.Note),
@@ -68,9 +68,9 @@ func (m *Transaction) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Transaction) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
+		&m.ID,
 		(*core.Int)(&m.Amount),
-		(*core.Int64)(&m.AccountID),
+		&m.AccountID,
 		(*core.Int)(&m.Status),
 		(*core.String)(&m.Type),
 		(*core.String)(&m.Note),

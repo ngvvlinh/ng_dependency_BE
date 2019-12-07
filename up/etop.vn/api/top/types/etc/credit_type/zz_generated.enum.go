@@ -7,7 +7,7 @@ package credit_type
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -50,7 +50,7 @@ func (e CreditType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *CreditType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumCreditTypeValue, data, "CreditType")
+	value, err := mix.UnmarshalJSONEnumInt(enumCreditTypeValue, data, "CreditType")
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (e CreditType) Value() (interface{}, error) {
 }
 
 func (e *CreditType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumCreditTypeValue, src, "CreditType")
+	value, err := mix.ScanEnumInt(enumCreditTypeValue, src, "CreditType")
 	*e = (CreditType)(value)
 	return err
 }

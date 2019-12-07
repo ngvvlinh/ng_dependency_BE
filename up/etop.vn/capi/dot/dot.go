@@ -7,6 +7,11 @@ import (
 
 type ID int64
 
+func ParseID(s string) (ID, error) {
+	id, err := strconv.ParseInt(s, 10, 64)
+	return ID(id), err
+}
+
 func (id ID) Int64() int64 {
 	return int64(id)
 }

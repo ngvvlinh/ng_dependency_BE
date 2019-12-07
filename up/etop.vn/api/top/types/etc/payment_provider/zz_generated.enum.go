@@ -7,7 +7,7 @@ package payment_provider
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -52,7 +52,7 @@ func (e PaymentProvider) MarshalJSON() ([]byte, error) {
 }
 
 func (e *PaymentProvider) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumPaymentProviderValue, data, "PaymentProvider")
+	value, err := mix.UnmarshalJSONEnumInt(enumPaymentProviderValue, data, "PaymentProvider")
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (e PaymentProvider) Value() (interface{}, error) {
 }
 
 func (e *PaymentProvider) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumPaymentProviderValue, src, "PaymentProvider")
+	value, err := mix.ScanEnumInt(enumPaymentProviderValue, src, "PaymentProvider")
 	*e = (PaymentProvider)(value)
 	return err
 }

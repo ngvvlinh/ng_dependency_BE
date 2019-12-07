@@ -54,14 +54,14 @@ func init() {
 func (m *ShopLedger) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Name),
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
 		core.String(m.Type),
 		core.Int(m.Status),
-		core.Int64(m.CreatedBy),
+		m.CreatedBy,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -70,14 +70,14 @@ func (m *ShopLedger) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopLedger) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Name),
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
 		(*core.String)(&m.Type),
 		(*core.Int)(&m.Status),
-		(*core.Int64)(&m.CreatedBy),
+		&m.CreatedBy,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),

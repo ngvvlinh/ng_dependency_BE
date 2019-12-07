@@ -54,13 +54,13 @@ func init() {
 func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
+		m.ID,
+		m.ShopID,
 		core.String(m.Code),
 		core.String(m.EdCode),
 		core.Array{m.ProductIDs, opts},
 		core.Array{m.VariantIDs, opts},
-		core.Int64(m.PartnerID),
+		m.PartnerID,
 		core.String(m.Currency),
 		core.String(m.PaymentMethod),
 		core.JSON{m.Customer},
@@ -102,7 +102,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ShopNote),
 		core.String(m.ShippingNote),
 		core.String(m.OrderSourceType),
-		core.Int64(m.OrderSourceID),
+		m.OrderSourceID,
 		core.String(m.ExternalOrderID),
 		core.String(m.ReferenceURL),
 		core.String(m.ExternalURL),
@@ -115,24 +115,24 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.FulfillmentType),
 		core.Array{m.FulfillmentIDs, opts},
 		core.JSON{m.ExternalMeta},
-		core.Int64(m.TradingShopID),
+		m.TradingShopID,
 		core.Int(m.PaymentStatus),
-		core.Int64(m.PaymentID),
+		m.PaymentID,
 		core.JSON{m.ReferralMeta},
-		core.Int64(m.CustomerID),
-		core.Int64(m.CreatedBy),
+		m.CustomerID,
+		m.CreatedBy,
 	}
 }
 
 func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
+		&m.ID,
+		&m.ShopID,
 		(*core.String)(&m.Code),
 		(*core.String)(&m.EdCode),
 		core.Array{&m.ProductIDs, opts},
 		core.Array{&m.VariantIDs, opts},
-		(*core.Int64)(&m.PartnerID),
+		&m.PartnerID,
 		(*core.String)(&m.Currency),
 		(*core.String)(&m.PaymentMethod),
 		core.JSON{&m.Customer},
@@ -174,7 +174,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShopNote),
 		(*core.String)(&m.ShippingNote),
 		(*core.String)(&m.OrderSourceType),
-		(*core.Int64)(&m.OrderSourceID),
+		&m.OrderSourceID,
 		(*core.String)(&m.ExternalOrderID),
 		(*core.String)(&m.ReferenceURL),
 		(*core.String)(&m.ExternalURL),
@@ -187,12 +187,12 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.FulfillmentType),
 		core.Array{&m.FulfillmentIDs, opts},
 		core.JSON{&m.ExternalMeta},
-		(*core.Int64)(&m.TradingShopID),
+		&m.TradingShopID,
 		(*core.Int)(&m.PaymentStatus),
-		(*core.Int64)(&m.PaymentID),
+		&m.PaymentID,
 		core.JSON{&m.ReferralMeta},
-		(*core.Int64)(&m.CustomerID),
-		(*core.Int64)(&m.CreatedBy),
+		&m.CustomerID,
+		&m.CreatedBy,
 	}
 }
 
@@ -261,7 +261,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ID))
+		w.WriteArg(m.ID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -269,7 +269,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.Code != "" {
 		flag = true
@@ -309,7 +309,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.PartnerID))
+		w.WriteArg(m.PartnerID)
 	}
 	if m.Currency != "" {
 		flag = true
@@ -645,7 +645,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderSourceID))
+		w.WriteArg(m.OrderSourceID)
 	}
 	if m.ExternalOrderID != "" {
 		flag = true
@@ -749,7 +749,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.TradingShopID))
+		w.WriteArg(m.TradingShopID)
 	}
 	if m.PaymentStatus != 0 {
 		flag = true
@@ -765,7 +765,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.PaymentID))
+		w.WriteArg(m.PaymentID)
 	}
 	if m.ReferralMeta != nil {
 		flag = true
@@ -781,7 +781,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CustomerID))
+		w.WriteArg(m.CustomerID)
 	}
 	if m.CreatedBy != 0 {
 		flag = true
@@ -789,7 +789,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.CreatedBy))
+		w.WriteArg(m.CreatedBy)
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -1099,11 +1099,11 @@ func init() {
 
 func (m *OrderLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
-		core.Int64(m.OrderID),
-		core.Int64(m.VariantID),
+		m.OrderID,
+		m.VariantID,
 		core.String(m.ProductName),
-		core.Int64(m.ProductID),
-		core.Int64(m.ShopID),
+		m.ProductID,
+		m.ShopID,
 		core.Int(m.Weight),
 		core.Int(m.Quantity),
 		core.Int(m.ListPrice),
@@ -1121,11 +1121,11 @@ func (m *OrderLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *OrderLine) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int64)(&m.OrderID),
-		(*core.Int64)(&m.VariantID),
+		&m.OrderID,
+		&m.VariantID,
 		(*core.String)(&m.ProductName),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.ShopID),
+		&m.ProductID,
+		&m.ShopID,
 		(*core.Int)(&m.Weight),
 		(*core.Int)(&m.Quantity),
 		(*core.Int)(&m.ListPrice),
@@ -1206,7 +1206,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.OrderID))
+		w.WriteArg(m.OrderID)
 	}
 	if m.VariantID != 0 {
 		flag = true
@@ -1214,7 +1214,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.VariantID))
+		w.WriteArg(m.VariantID)
 	}
 	if m.ProductName != "" {
 		flag = true
@@ -1230,7 +1230,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ProductID))
+		w.WriteArg(m.ProductID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -1238,7 +1238,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int64(m.ShopID))
+		w.WriteArg(m.ShopID)
 	}
 	if m.Weight != 0 {
 		flag = true

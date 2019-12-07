@@ -7,7 +7,7 @@ package fee
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -54,7 +54,7 @@ func (e FeeType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *FeeType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumFeeTypeValue, data, "FeeType")
+	value, err := mix.UnmarshalJSONEnumInt(enumFeeTypeValue, data, "FeeType")
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (e FeeType) Value() (interface{}, error) {
 }
 
 func (e *FeeType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumFeeTypeValue, src, "FeeType")
+	value, err := mix.ScanEnumInt(enumFeeTypeValue, src, "FeeType")
 	*e = (FeeType)(value)
 	return err
 }

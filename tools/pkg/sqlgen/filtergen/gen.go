@@ -103,6 +103,9 @@ func fnGenerate(col *ColumnDef) bool {
 
 func fnType(col *ColumnDef) string {
 	s := col.TypeDesc.TypeString
+	if strings.HasPrefix(s, "etop_vn_backend_pkg_etop_model") {
+		s = strings.TrimPrefix(s, "etop_vn_backend_pkg_etop_")
+	}
 	if col.origPkg {
 		s = addPrefix(s, "m.")
 	}
@@ -147,19 +150,21 @@ func fnGenIsZero(ptr bool, col *ColumnDef) string {
 	if ptr {
 		path = "(*" + path + ")"
 	}
-	res := genIsZero(path, &desc)
+	res := genIsZero(path, &desc, col.FieldType)
 	if desc.Elem == reflect.Bool && desc.Container == 0 {
 		res = "bool(" + res + ")"
 	}
 	return res
 }
 
-func genIsZero(path string, desc *typedesc.TypeDesc) string {
+func genIsZero(path string, desc *typedesc.TypeDesc, typ types.Type) string {
 	switch {
 	case desc.IsBareTime():
 		return path + ".IsZero()"
 	case desc.IsNillable():
 		return path + " == nil"
+	case desc.IsNullType(typ):
+		return "!" + path + ".Valid"
 	case desc.IsNumber():
 		return path + " == 0"
 	case desc.IsKind(reflect.Bool):
@@ -186,6 +191,7 @@ func (g *Gen) Generate() {
 		"Imports":     "",
 		"OrigPackage": "",
 	}
+	fmt.Println("--", g.pkgPath)
 	if g.importOrigPkg {
 		vars["OrigPackage"] = `m "` + g.pkgPath + `"`
 	}
@@ -198,9 +204,9 @@ func (g *Gen) Generate() {
 		panic(fmt.Sprintf("Unable to generate filters: %v", err))
 	}
 
-	dir, err := os.Getwd()
-	must(err)
-	sqlstorePath, err := filepath.Abs(filepath.Join(dir, "../sqlstore"))
+	pkgSortPath := strings.TrimPrefix(g.pkgPath, "etop.vn/backend/")
+	dir := filepath.Join(gen.ProjectPath(), pkgSortPath, "../sqlstore")
+	sqlstorePath, err := filepath.Abs(dir)
 	must(err)
 	fi, err := os.Stat(sqlstorePath)
 	if err != nil {
@@ -212,7 +218,7 @@ func (g *Gen) Generate() {
 	}
 
 	filePath := filepath.Join(sqlstorePath, "filters.gen.go")
-	gen.WriteFileAndFormat(filePath, b.Bytes())
+	gen.WriteFile(filePath, b.Bytes())
 }
 
 func must(err error) {

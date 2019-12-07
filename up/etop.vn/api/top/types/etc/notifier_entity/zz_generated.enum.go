@@ -7,7 +7,7 @@ package notifier_entity
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -54,7 +54,7 @@ func (e NotifierEntity) MarshalJSON() ([]byte, error) {
 }
 
 func (e *NotifierEntity) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumNotifierEntityValue, data, "NotifierEntity")
+	value, err := mix.UnmarshalJSONEnumInt(enumNotifierEntityValue, data, "NotifierEntity")
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (e NotifierEntity) Value() (interface{}, error) {
 }
 
 func (e *NotifierEntity) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumNotifierEntityValue, src, "NotifierEntity")
+	value, err := mix.ScanEnumInt(enumNotifierEntityValue, src, "NotifierEntity")
 	*e = (NotifierEntity)(value)
 	return err
 }

@@ -7,7 +7,7 @@ package change_type
 import (
 	fmt "fmt"
 
-	encode "etop.vn/capi/encode"
+	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
@@ -56,7 +56,7 @@ func (e ChangeType) MarshalJSON() ([]byte, error) {
 }
 
 func (e *ChangeType) UnmarshalJSON(data []byte) error {
-	value, err := encode.UnmarshalJSONEnumInt(enumChangeTypeValue, data, "ChangeType")
+	value, err := mix.UnmarshalJSONEnumInt(enumChangeTypeValue, data, "ChangeType")
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (e ChangeType) Value() (interface{}, error) {
 }
 
 func (e *ChangeType) Scan(src interface{}) error {
-	value, err := encode.ScanEnumInt(enumChangeTypeValue, src, "ChangeType")
+	value, err := mix.ScanEnumInt(enumChangeTypeValue, src, "ChangeType")
 	*e = (ChangeType)(value)
 	return err
 }
