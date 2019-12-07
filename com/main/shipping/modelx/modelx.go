@@ -4,13 +4,16 @@ import (
 	"database/sql"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	"etop.vn/api/top/types/etc/shipping"
+
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq/core"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -54,7 +57,7 @@ type GetFulfillmentQuery struct {
 	PartnerID     dot.ID
 	FulfillmentID dot.ID
 
-	ShippingProvider     model.ShippingProvider
+	ShippingProvider     shipping_provider.ShippingProvider
 	ShippingCode         string
 	ExternalShippingCode string
 
@@ -81,7 +84,7 @@ type GetFulfillmentsQuery struct {
 }
 
 type GetUnCompleteFulfillmentsQuery struct {
-	ShippingProviders []model.ShippingProvider
+	ShippingProviders []shipping_provider.ShippingProvider
 
 	Result []*shipmodel.Fulfillment
 }
@@ -89,7 +92,7 @@ type GetUnCompleteFulfillmentsQuery struct {
 type GetFulfillmentsCallbackLogs struct {
 	FromID                dot.ID
 	Paging                *cm.Paging
-	ExcludeShippingStates []model.ShippingState
+	ExcludeShippingStates []shipping.State
 
 	Result struct {
 		Fulfillments []*shipmodel.Fulfillment
@@ -145,7 +148,7 @@ type UpdateFulfillmentsShippingStateCommand struct {
 	ShopID        dot.ID
 	PartnerID     dot.ID
 	IDs           []dot.ID
-	ShippingState model.ShippingState
+	ShippingState shipping.State
 
 	Result struct {
 		Updated int
@@ -160,7 +163,7 @@ type AdminUpdateFulfillmentCommand struct {
 	IsPartialDelivery        bool
 	AdminNote                string
 	ActualCompensationAmount int
-	ShippingState            model.ShippingState
+	ShippingState            shipping.NullState
 
 	Result struct {
 		Updated int

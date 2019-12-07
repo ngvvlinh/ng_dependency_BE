@@ -6,6 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	"etop.vn/api/top/types/etc/try_on"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -112,7 +116,7 @@ type Order struct {
 
 	// @deprecated: use try_on instead
 	GhnNoteCode string
-	TryOn       model.TryOn
+	TryOn       try_on.TryOnCode
 
 	CustomerNameNorm string
 	ProductNameNorm  string
@@ -168,15 +172,15 @@ func (m *Order) GetFeeLines() []OrderFeeLine {
 	return m.FeeLines
 }
 
-func (m *Order) GetTryOn() model.TryOn {
-	if m.TryOn != "" {
+func (m *Order) GetTryOn() try_on.TryOnCode {
+	if m.TryOn != 0 {
 		return m.TryOn
 	}
 	return model.TryOnFromGHNNoteCode(m.GhnNoteCode)
 }
 
 func (m *Order) BeforeInsert() error {
-	if (m.TryOn == "" || m.TryOn == "unknown") && m.GhnNoteCode != "" {
+	if m.TryOn == 0 && m.GhnNoteCode != "" {
 		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
 	if m.ShopShipping != nil {
@@ -199,10 +203,10 @@ func (m *Order) BeforeInsert() error {
 }
 
 func (m *Order) BeforeUpdate() error {
-	if (m.TryOn == "" || m.TryOn == "unknown") && m.GhnNoteCode != "" {
+	if m.TryOn == 0 && m.GhnNoteCode != "" {
 		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
-	if m.ShopShipping != nil && m.ShopShipping.ShippingProvider != "" {
+	if m.ShopShipping != nil && m.ShopShipping.ShippingProvider != 0 {
 		if err := m.ShopShipping.Validate(); err != nil {
 			return err
 		}
@@ -227,14 +231,14 @@ func (m *Order) GetChargeableWeight() int {
 }
 
 type OrderShipping struct {
-	ShopAddress         *OrderAddress          `json:"shop_address"`
-	ReturnAddress       *OrderAddress          `json:"return_address"`
-	ExternalServiceID   string                 `json:"external_service_id"`
-	ExternalShippingFee int                    `json:"external_shipping_fee"`
-	ExternalServiceName string                 `json:"external_service_name"`
-	ShippingProvider    model.ShippingProvider `json:"shipping_provider"`
-	ProviderServiceID   string                 `json:"provider_service_id"`
-	IncludeInsurance    bool                   `json:"include_insurance"`
+	ShopAddress         *OrderAddress                      `json:"shop_address"`
+	ReturnAddress       *OrderAddress                      `json:"return_address"`
+	ExternalServiceID   string                             `json:"external_service_id"`
+	ExternalShippingFee int                                `json:"external_shipping_fee"`
+	ExternalServiceName string                             `json:"external_service_name"`
+	ShippingProvider    shipping_provider.ShippingProvider `json:"shipping_provider"`
+	ProviderServiceID   string                             `json:"provider_service_id"`
+	IncludeInsurance    bool                               `json:"include_insurance"`
 
 	Length int `json:"length"`
 	Width  int `json:"width"`
@@ -258,9 +262,9 @@ func (s *OrderShipping) GetPickupAddress() *OrderAddress {
 	return s.ShopAddress
 }
 
-func (s *OrderShipping) GetShippingProvider() model.ShippingProvider {
+func (s *OrderShipping) GetShippingProvider() shipping_provider.ShippingProvider {
 	if s == nil {
-		return ""
+		return 0
 	}
 	return s.ShippingProvider
 }

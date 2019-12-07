@@ -1,6 +1,7 @@
 package relationship
 
 import (
+	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -9,7 +10,7 @@ type InviterInfo struct {
 	InviterUserID      dot.ID
 	InviterFullName    string
 	InviterAccountName string
-	InviterAccountType model.AccountType
+	InviterAccountType account_type.AccountType
 }
 
 type InvitationInfo struct {

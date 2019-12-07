@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -26,6 +27,25 @@ var enumCarrierValue = map[string]int{
 func ParseCarrier(s string) (Carrier, bool) {
 	val, ok := enumCarrierValue[s]
 	return Carrier(val), ok
+}
+
+func ParseCarrierWithDefault(s string, d Carrier) Carrier {
+	val, ok := enumCarrierValue[s]
+	if !ok {
+		return d
+	}
+	return Carrier(val)
+}
+
+func ParseCarrierWithNull(s dot.NullString, d Carrier) NullCarrier {
+	if !s.Valid {
+		return NullCarrier{}
+	}
+	val, ok := enumCarrierValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Carrier(val).Wrap()
 }
 
 func (e Carrier) Enum() int {

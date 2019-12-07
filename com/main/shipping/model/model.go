@@ -5,6 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	"etop.vn/api/top/types/etc/try_on"
+
+	"etop.vn/api/top/types/etc/shipping"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -101,11 +107,11 @@ type Fulfillment struct {
 	// UpdatedBy   dot.ID
 	// CancelledBy dot.ID
 
-	ShippingProvider  model.ShippingProvider
+	ShippingProvider  shipping_provider.ShippingProvider
 	ProviderServiceID string
 	ShippingCode      string
 	ShippingNote      string
-	TryOn             model.TryOn
+	TryOn             try_on.TryOnCode
 	IncludeInsurance  bool
 
 	ExternalShippingName        string
@@ -125,7 +131,7 @@ type Fulfillment struct {
 
 	ExternalShippingData json.RawMessage
 
-	ShippingState     model.ShippingState
+	ShippingState     shipping.State
 	ShippingStatus    status5.Status
 	EtopPaymentStatus status4.Status
 

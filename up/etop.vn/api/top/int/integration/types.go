@@ -2,6 +2,7 @@ package integration
 
 import (
 	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/types/etc/account_type"
 	status3 "etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
@@ -62,7 +63,7 @@ type PartnerShopLoginAccount struct {
 	// @required
 	Name string `json:"name"`
 	// @required
-	Type etop.AccountType `json:"type"`
+	Type account_type.AccountType `json:"type"`
 	// Associated token for the account. It's returned when calling Login or
 	// SwitchAccount with regenerate_tokens set to true.
 	AccessToken string `json:"access_token"`

@@ -1,12 +1,13 @@
 package convert
 
 import (
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/pkg/etop/model"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 )
 
-func ToFulfillmentState(in model.ShippingState) haravanclient.FulfillmentState {
+func ToFulfillmentState(in shipping.State) haravanclient.FulfillmentState {
 	switch in {
 	case model.StateCreated:
 		return haravanclient.PendingState

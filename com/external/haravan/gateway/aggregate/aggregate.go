@@ -21,7 +21,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
@@ -71,8 +70,8 @@ func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippi
 
 	// Haravan: default includeInsurance is false
 	req := &types.GetExternalShippingServicesRequest{
-		Provider:         pbsp.Ghn,
-		Carrier:          pbsp.Ghn,
+		Provider:         pbsp.GHN,
+		Carrier:          pbsp.GHN,
 		FromProvince:     from.Province.Name,
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
@@ -136,8 +135,8 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 
 	req := &types.GetExternalShippingServicesRequest{
-		Provider:         pbsp.Ghn,
-		Carrier:          pbsp.Ghn,
+		Provider:         pbsp.GHN,
+		Carrier:          pbsp.GHN,
 		FromProvince:     from.Province.Name,
 		FromDistrict:     from.District.Name,
 		ToProvince:       to.Province.Name,
@@ -171,7 +170,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	totalValue := getOrderValue(args.Items)
 	codAmount := int(args.CodAmount)
 	weight := int(args.TotalGrams)
-	carrier := convertpb.PbShippingProviderType(service.Provider)
+	carrier := service.Provider
 	// Haravan always set IncludeInsurance = false
 	includeInsurance := false
 	externalMeta := &haravan.ExternalMeta{
@@ -199,9 +198,9 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			ReturnAddress:       nil,
 			ShippingServiceCode: dot.String(service.ProviderServiceID),
 			ShippingServiceFee:  dot.Int(service.ServiceFee),
-			Carrier:             &carrier,
+			Carrier:             carrier,
 			IncludeInsurance:    dot.Bool(includeInsurance),
-			TryOn:               &tryonNone,
+			TryOn:               tryonNone,
 			ShippingNote:        dot.String(args.Note),
 			CodAmount:           dot.Int(codAmount),
 			ChargeableWeight:    dot.Int(weight),

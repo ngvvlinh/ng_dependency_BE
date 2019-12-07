@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -75,7 +77,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 		}
 		query := &etopmodel.GetAllAccountUsersQuery{
 			UserIDs: userIDs,
-			Type:    etopmodel.TypeShop,
+			Type:    account_type.Shop.Wrap(),
 		}
 		if err := bus.Dispatch(context.Background(), query); err != nil {
 			return 0, 0, err

@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -30,6 +31,25 @@ var enumFulfillValue = map[string]int{
 func ParseFulfill(s string) (Fulfill, bool) {
 	val, ok := enumFulfillValue[s]
 	return Fulfill(val), ok
+}
+
+func ParseFulfillWithDefault(s string, d Fulfill) Fulfill {
+	val, ok := enumFulfillValue[s]
+	if !ok {
+		return d
+	}
+	return Fulfill(val)
+}
+
+func ParseFulfillWithNull(s dot.NullString, d Fulfill) NullFulfill {
+	if !s.Valid {
+		return NullFulfill{}
+	}
+	val, ok := enumFulfillValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Fulfill(val).Wrap()
 }
 
 func (e Fulfill) Enum() int {

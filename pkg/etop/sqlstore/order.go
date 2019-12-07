@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"strconv"
 
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/shipping_provider"
 
 	"github.com/lib/pq"
 
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	ordermodely "etop.vn/backend/com/main/ordering/modely"
@@ -716,7 +717,7 @@ func GetFulfillment(ctx context.Context, query *shipmodelx.GetFulfillmentQuery) 
 	if query.PartnerID != 0 {
 		s = s.Where("partner_id = ?", query.PartnerID)
 	}
-	if query.ShippingProvider != "" {
+	if query.ShippingProvider != 0 {
 		s = s.Where("shipping_provider = ?", query.ShippingProvider)
 	}
 	switch {
@@ -1179,13 +1180,13 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("fulfillment_id", id)
 		}
 
-		if order.ShopShipping == nil || order.ShopShipping.ShippingProvider != model.TypeShippingProviderManual {
+		if order.ShopShipping == nil || order.ShopShipping.ShippingProvider != shipping_provider.Manual {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái đơn giao hàng này, ID = %v", id)
 		}
 	}
 	update := map[string]interface{}{
 		"shipping_state":  cmd.ShippingState,
-		"shipping_status": cmd.ShippingState.ToShippingStatus5(),
+		"shipping_status": cmd.ShippingState.ToStatus5(),
 		"status":          cmd.ShippingState.ToStatus4(),
 	}
 	if err := x.Table("fulfillment").In("id", cmd.IDs).ShouldUpdateMap(update); err != nil {
@@ -1209,7 +1210,7 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 	if _, err := canUpdateOrder(order); err != nil {
 		return err
 	}
-	if order.ShopShipping == nil || order.ShopShipping.ShippingProvider != model.TypeShippingProviderManual {
+	if order.ShopShipping == nil || order.ShopShipping.ShippingProvider != shipping_provider.Manual {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái thanh toán cho đơn hàng này")
 	}
 
@@ -1311,17 +1312,19 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	}
 
 	if cmd.ActualCompensationAmount != 0 {
-		if ffm.ShippingState != model.StateUndeliverable && cmd.ShippingState != model.StateUndeliverable {
+		if ffm.ShippingState != model.StateUndeliverable &&
+			cmd.ShippingState.Apply(shipping.Unknown) != model.StateUndeliverable {
 			return cm.Error(cm.FailedPrecondition, "Chỉ cập nhật ActualCompensationAmount khi đơn vận chuyển không giao được hàng.", nil)
 		} else {
 			updateFfm.ActualCompensationAmount = cmd.ActualCompensationAmount
 		}
 	}
-	if cmd.ShippingState != "" {
-		if ffm.ShippingState != model.StateUndeliverable && cmd.ShippingState != model.StateUndeliverable {
+	if cmd.ShippingState.Valid {
+		state := cmd.ShippingState.Apply(shipping.Unknown)
+		if ffm.ShippingState != model.StateUndeliverable && state != model.StateUndeliverable {
 			return cm.Error(cm.PermissionDenied, "Chỉ được cập nhật sang trạng thái không giao được hàng", nil)
 		}
-		updateFfm.ShippingState = cmd.ShippingState
+		updateFfm.ShippingState = state
 	}
 
 	updateFfmMap := M{}

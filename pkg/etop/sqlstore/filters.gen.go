@@ -5,8 +5,10 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/pkg/etop/model"
@@ -701,22 +703,22 @@ func (ft *AccountFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AccountFilters) ByType(Type m.AccountType) *sq.ColumnFilter {
+func (ft *AccountFilters) ByType(Type account_type.AccountType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *AccountFilters) ByTypePtr(Type *m.AccountType) *sq.ColumnFilterPtr {
+func (ft *AccountFilters) ByTypePtr(Type *account_type.AccountType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 
@@ -1133,22 +1135,22 @@ func (ft *ShopFilters) ByGhnNoteCodePtr(GhnNoteCode *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *ShopFilters) ByTryOn(TryOn m.TryOn) *sq.ColumnFilter {
+func (ft *ShopFilters) ByTryOn(TryOn try_on.TryOnCode) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
-		IsNil:  TryOn == "",
+		IsNil:  TryOn == 0,
 	}
 }
 
-func (ft *ShopFilters) ByTryOnPtr(TryOn *m.TryOn) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByTryOnPtr(TryOn *try_on.TryOnCode) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
 		IsNil:  TryOn == nil,
-		IsZero: TryOn != nil && (*TryOn) == "",
+		IsZero: TryOn != nil && (*TryOn) == 0,
 	}
 }
 

@@ -2,6 +2,7 @@ package convertpb
 
 import (
 	integration "etop.vn/api/top/int/integration"
+	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -36,7 +37,7 @@ func PbPartnerShopLoginAccount(m *model.Shop, accessToken string, expiresIn int)
 	return &integration.PartnerShopLoginAccount{
 		Id:          m.ID,
 		Name:        m.Name,
-		Type:        PbAccountType(model.TypeShop),
+		Type:        PbAccountType(account_type.Shop),
 		AccessToken: accessToken,
 		ExpiresIn:   expiresIn,
 		ImageUrl:    m.ImageURL,

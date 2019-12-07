@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -26,6 +27,25 @@ var enumPaymentProviderValue = map[string]int{
 func ParsePaymentProvider(s string) (PaymentProvider, bool) {
 	val, ok := enumPaymentProviderValue[s]
 	return PaymentProvider(val), ok
+}
+
+func ParsePaymentProviderWithDefault(s string, d PaymentProvider) PaymentProvider {
+	val, ok := enumPaymentProviderValue[s]
+	if !ok {
+		return d
+	}
+	return PaymentProvider(val)
+}
+
+func ParsePaymentProviderWithNull(s dot.NullString, d PaymentProvider) NullPaymentProvider {
+	if !s.Valid {
+		return NullPaymentProvider{}
+	}
+	val, ok := enumPaymentProviderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return PaymentProvider(val).Wrap()
 }
 
 func (e PaymentProvider) Enum() int {

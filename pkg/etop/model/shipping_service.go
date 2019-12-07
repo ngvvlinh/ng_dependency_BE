@@ -1,14 +1,16 @@
 package model
 
+import "etop.vn/api/top/types/etc/shipping_provider"
+
 type ShippingServiceRegistry struct {
-	getShippingServiceNamesFuncs map[ShippingProvider]func(code string) (name string, ok bool)
+	getShippingServiceNamesFuncs map[shipping_provider.ShippingProvider]func(code string) (name string, ok bool)
 
 	// the map is only read after init, no need to lock
 	init bool
 }
 
 var shippingServiceRegistry = &ShippingServiceRegistry{
-	getShippingServiceNamesFuncs: make(map[ShippingProvider]func(code string) (name string, ok bool)),
+	getShippingServiceNamesFuncs: make(map[shipping_provider.ShippingProvider]func(code string) (name string, ok bool)),
 }
 
 func GetShippingServiceRegistry() *ShippingServiceRegistry {
@@ -26,7 +28,7 @@ func (s *ShippingServiceRegistry) Initialize() {
 }
 
 func (s *ShippingServiceRegistry) RegisterNameFunc(
-	provider ShippingProvider,
+	provider shipping_provider.ShippingProvider,
 	fn func(code string) (name string, ok bool),
 ) {
 	if s.init {
@@ -38,7 +40,7 @@ func (s *ShippingServiceRegistry) RegisterNameFunc(
 	s.getShippingServiceNamesFuncs[provider] = fn
 }
 
-func (s *ShippingServiceRegistry) GetName(provider ShippingProvider, code string) (name string, ok bool) {
+func (s *ShippingServiceRegistry) GetName(provider shipping_provider.ShippingProvider, code string) (name string, ok bool) {
 	fn := s.getShippingServiceNamesFuncs[provider]
 	if fn == nil {
 		return "", false

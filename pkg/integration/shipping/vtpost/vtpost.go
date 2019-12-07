@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/capi/dot"
@@ -29,7 +31,7 @@ const (
 )
 
 func init() {
-	model.GetShippingServiceRegistry().RegisterNameFunc(model.TypeVTPost, DecodeShippingServiceName)
+	model.GetShippingServiceRegistry().RegisterNameFunc(shipping_provider.VTPost, DecodeShippingServiceName)
 }
 
 func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient.Client, error) {
@@ -126,7 +128,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		result.Result.GiaCuoc = resp.Data.MoneyTotal
 
 		now := time.Now()
-		expectedPickTime := shipping.CalcPickTime(model.TypeVTPost, now)
+		expectedPickTime := shipping.CalcPickTime(shipping_provider.VTPost, now)
 		thoigian := result.Result.ThoiGian // has format: "12 giờ"
 		thoigian = strings.Replace(thoigian, " giờ", "", -1)
 		hours, err := strconv.Atoi(thoigian)
@@ -141,7 +143,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		resItem := result.Result.ToAvailableShippingService(providerServiceID, expectedPickTime, expectedDeliveryTime)
 		res = append(res, resItem)
 	}
-	res = shipping.CalcServicesTime(model.TypeVTPost, cmd.FromDistrict, cmd.ToDistrict, res)
+	res = shipping.CalcServicesTime(shipping_provider.VTPost, cmd.FromDistrict, cmd.ToDistrict, res)
 	cmd.Result = res
 	return nil
 }
@@ -163,7 +165,7 @@ func (c *Carrier) GetShippingFeeLines(ctx context.Context, cmd *GetShippingFeeLi
 	}
 
 	now := time.Now()
-	expectedPickTime := shipping.CalcPickTime(model.TypeVTPost, now)
+	expectedPickTime := shipping.CalcPickTime(shipping_provider.VTPost, now)
 	expectedDeliveryDuration := CalcDeliveryDuration(orderService, cmd.FromProvince, cmd.ToProvince, cmd.FromDistrict, cmd.ToDistrict)
 	expectedDeliveryTime := expectedPickTime.Add(expectedDeliveryDuration)
 	lines, err := res.Data.CalcAndConvertShippingFeeLines()

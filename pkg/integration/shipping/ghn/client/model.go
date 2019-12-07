@@ -6,6 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	shipping2 "etop.vn/api/top/types/etc/shipping"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	cm "etop.vn/backend/pkg/common"
@@ -61,7 +65,7 @@ const (
 	ServiceFeeTypeMain ServiceFeeType = "1"
 )
 
-func (s State) ToModel(old model.ShippingState, callbackOrder *CallbackOrder) model.ShippingState {
+func (s State) ToModel(old shipping2.State, callbackOrder *CallbackOrder) shipping2.State {
 	switch s {
 	case StateReadyToPick:
 		return model.StateCreated
@@ -101,7 +105,7 @@ func (s State) ToModel(old model.ShippingState, callbackOrder *CallbackOrder) mo
 	}
 }
 
-func (s State) ToStatus5(old model.ShippingState) status5.Status {
+func (s State) ToStatus5(old shipping2.State) status5.Status {
 	switch s {
 	case StateCancel:
 		return status5.N
@@ -123,7 +127,7 @@ func (s State) ToStatus5(old model.ShippingState) status5.Status {
 	return status5.S
 }
 
-func (s State) ToShippingStatus5(old model.ShippingState) status5.Status {
+func (s State) ToShippingStatus5(old shipping2.State) status5.Status {
 	switch s {
 	case StateCancel:
 		return status5.N
@@ -483,10 +487,10 @@ func (s *AvailableService) ToShippingService(providerServiceID string) *model.Av
 		Name:              s.Name.String(),
 		ServiceFee:        int(s.ServiceFee),
 		ShippingFeeMain:   int(s.ServiceFee),
-		Provider:          model.TypeGHN,
+		Provider:          shipping_provider.GHN,
 		ProviderServiceID: providerServiceID,
 
-		ExpectedPickAt:     shipping.CalcPickTime(model.TypeGHN, time.Now()),
+		ExpectedPickAt:     shipping.CalcPickTime(shipping_provider.GHN, time.Now()),
 		ExpectedDeliveryAt: s.ExpectedDeliveryTime.ToTime(),
 	}
 }

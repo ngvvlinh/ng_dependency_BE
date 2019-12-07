@@ -5,6 +5,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/try_on"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -97,15 +99,15 @@ type DeliveryPoint struct {
 	ShippingAddress *ordermodel.OrderAddress `json:"shipping_address"`
 	Items           []*ordermodel.OrderLine  `json:"items"`
 
-	OrderID          dot.ID      `json:"order_id"`
-	OrderCode        string      `json:"order_code"`
-	GrossWeight      int         `json:"gross_weight"`
-	ChargeableWeight int         `json:"chargeable_weight"`
-	Length           int         `json:"lenght"`
-	Width            int         `json:"width"`
-	Height           int         `json:"height"`
-	BasketValue      int         `json:"basket_value"`
-	CODAmount        int         `json:"cod_amount"`
-	TryOn            model.TryOn `json:"try_on"`
-	ShippingNote     string      `json:"shipping_note"`
+	OrderID          dot.ID           `json:"order_id"`
+	OrderCode        string           `json:"order_code"`
+	GrossWeight      int              `json:"gross_weight"`
+	ChargeableWeight int              `json:"chargeable_weight"`
+	Length           int              `json:"lenght"`
+	Width            int              `json:"width"`
+	Height           int              `json:"height"`
+	BasketValue      int              `json:"basket_value"`
+	CODAmount        int              `json:"cod_amount"`
+	TryOn            try_on.TryOnCode `json:"try_on"`
+	ShippingNote     string           `json:"shipping_note"`
 }

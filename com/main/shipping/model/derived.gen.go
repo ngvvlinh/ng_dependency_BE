@@ -113,11 +113,11 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.MoneyTransactionID,
 		m.MoneyTransactionShippingExternalID,
 		core.String(m.CancelReason),
-		core.String(m.ShippingProvider),
+		m.ShippingProvider,
 		core.String(m.ProviderServiceID),
 		core.String(m.ShippingCode),
 		core.String(m.ShippingNote),
-		core.String(m.TryOn),
+		m.TryOn,
 		core.Bool(m.IncludeInsurance),
 		core.String(m.ExternalShippingName),
 		core.String(m.ExternalShippingID),
@@ -134,7 +134,7 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ExternalShippingNote),
 		core.String(m.ExternalShippingSubState),
 		core.JSON{m.ExternalShippingData},
-		core.String(m.ShippingState),
+		m.ShippingState,
 		m.ShippingStatus,
 		m.EtopPaymentStatus,
 		m.Status,
@@ -208,11 +208,11 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.MoneyTransactionID,
 		&m.MoneyTransactionShippingExternalID,
 		(*core.String)(&m.CancelReason),
-		(*core.String)(&m.ShippingProvider),
+		&m.ShippingProvider,
 		(*core.String)(&m.ProviderServiceID),
 		(*core.String)(&m.ShippingCode),
 		(*core.String)(&m.ShippingNote),
-		(*core.String)(&m.TryOn),
+		&m.TryOn,
 		(*core.Bool)(&m.IncludeInsurance),
 		(*core.String)(&m.ExternalShippingName),
 		(*core.String)(&m.ExternalShippingID),
@@ -229,7 +229,7 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExternalShippingNote),
 		(*core.String)(&m.ExternalShippingSubState),
 		core.JSON{&m.ExternalShippingData},
-		(*core.String)(&m.ShippingState),
+		&m.ShippingState,
 		&m.ShippingStatus,
 		&m.EtopPaymentStatus,
 		&m.Status,
@@ -773,13 +773,13 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CancelReason)
 	}
-	if m.ShippingProvider != "" {
+	if m.ShippingProvider != 0 {
 		flag = true
 		w.WriteName("shipping_provider")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.ShippingProvider))
+		w.WriteArg(m.ShippingProvider)
 	}
 	if m.ProviderServiceID != "" {
 		flag = true
@@ -805,13 +805,13 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShippingNote)
 	}
-	if m.TryOn != "" {
+	if m.TryOn != 0 {
 		flag = true
 		w.WriteName("try_on")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.TryOn))
+		w.WriteArg(m.TryOn)
 	}
 	if m.IncludeInsurance {
 		flag = true
@@ -941,13 +941,13 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ExternalShippingData})
 	}
-	if m.ShippingState != "" {
+	if m.ShippingState != 0 {
 		flag = true
 		w.WriteName("shipping_state")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.ShippingState))
+		w.WriteArg(m.ShippingState)
 	}
 	if m.ShippingStatus != 0 {
 		flag = true

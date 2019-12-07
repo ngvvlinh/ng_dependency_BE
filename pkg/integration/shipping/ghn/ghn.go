@@ -7,6 +7,8 @@ import (
 	"strings"
 	"sync"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
@@ -24,7 +26,7 @@ const (
 var ll = l.New()
 
 func init() {
-	model.GetShippingServiceRegistry().RegisterNameFunc(model.TypeGHN, DecodeShippingServiceName)
+	model.GetShippingServiceRegistry().RegisterNameFunc(shipping_provider.GHN, DecodeShippingServiceName)
 }
 
 func (c ClientType) String() string {
@@ -151,7 +153,7 @@ func (c *Carrier) FindAvailableServices(ctx context.Context, cmd *RequestFindAva
 			shippingservice.ServiceFee += insuranceFee
 		}
 	}
-	res = shipping.CalcServicesTime(model.TypeGHN, cmd.FromDistrict, cmd.ToDistrict, res)
+	res = shipping.CalcServicesTime(shipping_provider.GHN, cmd.FromDistrict, cmd.ToDistrict, res)
 	cmd.Result = res
 	return nil
 }

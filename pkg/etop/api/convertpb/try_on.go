@@ -2,31 +2,17 @@ package convertpb
 
 import (
 	"etop.vn/api/top/types/etc/try_on"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-func TryOnCodeToModel(x *try_on.TryOnCode) model.TryOn {
-	if x == nil || *x == 0 {
-		return ""
-	}
-	return model.TryOn(x.String())
+func PbPtrTryOn(m try_on.TryOnCode) try_on.NullTryOnCode {
+	return m.Wrap()
 }
 
-func PbTryOn(m model.TryOn) try_on.TryOnCode {
-	value, _ := try_on.ParseTryOnCode(string(m))
-	return value
-}
-
-func PbPtrTryOn(m model.TryOn) *try_on.TryOnCode {
-	res := PbTryOn(m)
-	return &res
-}
-
-func PbTryOnPtr(m dot.NullString) *try_on.TryOnCode {
+func PbTryOnPtr(m dot.NullString) try_on.NullTryOnCode {
 	if m.Apply("") == "" {
-		return nil
+		return try_on.NullTryOnCode{}
 	}
-	res := PbTryOn(model.TryOn(m.String))
-	return &res
+	code, _ := try_on.ParseTryOnCode(m.String)
+	return code.Wrap()
 }

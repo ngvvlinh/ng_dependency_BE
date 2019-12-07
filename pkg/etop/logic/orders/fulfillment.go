@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -220,7 +222,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	// automatically cancel orders on sandbox for ghn and vtpost
 	if cm.Env() == cm.EnvSandbox {
 		if order.ShopShipping != nil &&
-			order.ShopShipping.ShippingProvider != model.TypeGHTK {
+			order.ShopShipping.ShippingProvider != shipping_provider2.GHTK {
 			go func() {
 				time.Sleep(5 * time.Minute)
 				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", "")
@@ -301,7 +303,7 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 }
 
 func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) (*shipmodel.Fulfillment, error) {
-	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == model.TypeGHN {
+	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == shipping_provider2.GHN {
 		if order.GhnNoteCode == "" {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
 		}
@@ -642,11 +644,11 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 			// TODO
 			var shippingProviderErr error
 			switch ffm.ShippingProvider {
-			case model.TypeGHN:
+			case shipping_provider2.GHN:
 				shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, action)
-			case model.TypeGHTK:
+			case shipping_provider2.GHTK:
 				shippingProviderErr = ctrl.GHTK.CancelFulfillment(ctx, ffm, 0)
-			case model.TypeVTPost:
+			case shipping_provider2.VTPost:
 				shippingProviderErr = ctrl.VTPost.CancelFulfillment(ctx, ffm, 0)
 			default:
 				panic("Shipping provider was not supported.")

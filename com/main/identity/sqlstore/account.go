@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -106,7 +108,7 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 		ID:       id,
 		OwnerID:  args.OwnerID,
 		Name:     args.Name,
-		Type:     model.TypeAffiliate,
+		Type:     account_type.Affiliate,
 		ImageURL: "",
 		URLSlug:  "",
 	}

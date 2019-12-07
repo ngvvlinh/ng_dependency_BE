@@ -5,12 +5,15 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -1016,22 +1019,22 @@ func (ft *FulfillmentFilters) ByCancelReasonPtr(CancelReason *string) *sq.Column
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingProvider(ShippingProvider model.ShippingProvider) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByShippingProvider(ShippingProvider shipping_provider.ShippingProvider) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_provider",
 		Value:  ShippingProvider,
-		IsNil:  ShippingProvider == "",
+		IsNil:  ShippingProvider == 0,
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingProviderPtr(ShippingProvider *model.ShippingProvider) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByShippingProviderPtr(ShippingProvider *shipping_provider.ShippingProvider) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_provider",
 		Value:  ShippingProvider,
 		IsNil:  ShippingProvider == nil,
-		IsZero: ShippingProvider != nil && (*ShippingProvider) == "",
+		IsZero: ShippingProvider != nil && (*ShippingProvider) == 0,
 	}
 }
 
@@ -1092,22 +1095,22 @@ func (ft *FulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.Column
 	}
 }
 
-func (ft *FulfillmentFilters) ByTryOn(TryOn model.TryOn) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByTryOn(TryOn try_on.TryOnCode) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
-		IsNil:  TryOn == "",
+		IsNil:  TryOn == 0,
 	}
 }
 
-func (ft *FulfillmentFilters) ByTryOnPtr(TryOn *model.TryOn) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByTryOnPtr(TryOn *try_on.TryOnCode) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
 		IsNil:  TryOn == nil,
-		IsZero: TryOn != nil && (*TryOn) == "",
+		IsZero: TryOn != nil && (*TryOn) == 0,
 	}
 }
 
@@ -1396,22 +1399,22 @@ func (ft *FulfillmentFilters) ByExternalShippingSubStatePtr(ExternalShippingSubS
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingState(ShippingState model.ShippingState) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByShippingState(ShippingState shipping.State) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
-		IsNil:  ShippingState == "",
+		IsNil:  ShippingState == 0,
 	}
 }
 
-func (ft *FulfillmentFilters) ByShippingStatePtr(ShippingState *model.ShippingState) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByShippingStatePtr(ShippingState *shipping.State) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
 		IsNil:  ShippingState == nil,
-		IsZero: ShippingState != nil && (*ShippingState) == "",
+		IsZero: ShippingState != nil && (*ShippingState) == 0,
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -28,6 +29,25 @@ var enumFeeTypeValue = map[string]int{
 func ParseFeeType(s string) (FeeType, bool) {
 	val, ok := enumFeeTypeValue[s]
 	return FeeType(val), ok
+}
+
+func ParseFeeTypeWithDefault(s string, d FeeType) FeeType {
+	val, ok := enumFeeTypeValue[s]
+	if !ok {
+		return d
+	}
+	return FeeType(val)
+}
+
+func ParseFeeTypeWithNull(s dot.NullString, d FeeType) NullFeeType {
+	if !s.Valid {
+		return NullFeeType{}
+	}
+	val, ok := enumFeeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return FeeType(val).Wrap()
 }
 
 func (e FeeType) Enum() int {

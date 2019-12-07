@@ -8,40 +8,60 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
 
 var enumShippingFeeTypeName = map[int]string{
-	0:   "main",
-	1:   "return",
-	2:   "adjustment",
-	3:   "insurance",
-	4:   "tax",
-	5:   "other",
-	6:   "cods",
-	7:   "address_change",
-	8:   "discount",
-	127: "unknown",
+	0: "unknown",
+	1: "main",
+	2: "return",
+	3: "adjustment",
+	4: "insurance",
+	5: "tax",
+	6: "other",
+	7: "cods",
+	8: "address_change",
+	9: "discount",
 }
 
 var enumShippingFeeTypeValue = map[string]int{
-	"main":           0,
-	"return":         1,
-	"adjustment":     2,
-	"insurance":      3,
-	"tax":            4,
-	"other":          5,
-	"cods":           6,
-	"address_change": 7,
-	"discount":       8,
-	"unknown":        127,
+	"unknown":        0,
+	"main":           1,
+	"return":         2,
+	"adjustment":     3,
+	"insurance":      4,
+	"tax":            5,
+	"other":          6,
+	"cods":           7,
+	"address_change": 8,
+	"discount":       9,
 }
 
 func ParseShippingFeeType(s string) (ShippingFeeType, bool) {
 	val, ok := enumShippingFeeTypeValue[s]
 	return ShippingFeeType(val), ok
+}
+
+func ParseShippingFeeTypeWithDefault(s string, d ShippingFeeType) ShippingFeeType {
+	val, ok := enumShippingFeeTypeValue[s]
+	if !ok {
+		return d
+	}
+	return ShippingFeeType(val)
+}
+
+func ParseShippingFeeTypeWithNull(s dot.NullString, d ShippingFeeType) NullShippingFeeType {
+	if !s.Valid {
+		return NullShippingFeeType{}
+	}
+	val, ok := enumShippingFeeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ShippingFeeType(val).Wrap()
 }
 
 func (e ShippingFeeType) Enum() int {

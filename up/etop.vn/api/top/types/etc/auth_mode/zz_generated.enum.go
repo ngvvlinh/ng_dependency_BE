@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -26,6 +27,25 @@ var enumAuthModeValue = map[string]int{
 func ParseAuthMode(s string) (AuthMode, bool) {
 	val, ok := enumAuthModeValue[s]
 	return AuthMode(val), ok
+}
+
+func ParseAuthModeWithDefault(s string, d AuthMode) AuthMode {
+	val, ok := enumAuthModeValue[s]
+	if !ok {
+		return d
+	}
+	return AuthMode(val)
+}
+
+func ParseAuthModeWithNull(s dot.NullString, d AuthMode) NullAuthMode {
+	if !s.Valid {
+		return NullAuthMode{}
+	}
+	val, ok := enumAuthModeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return AuthMode(val).Wrap()
 }
 
 func (e AuthMode) Enum() int {

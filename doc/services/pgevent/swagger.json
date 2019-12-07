@@ -27,7 +27,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/adGenerateEventsRequest"
+              "$ref": "#/definitions/rxGenerateEventsRequest"
             }
           }
         ],
@@ -69,23 +69,6 @@
     }
   },
   "definitions": {
-    "adGenerateEventsRequest": {
-      "type": "object",
-      "properties": {
-        "items_per_batch": {
-          "type": "integer"
-        },
-        "raw_events": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "raw_events_pg": {
-          "type": "string"
-        }
-      }
-    },
     "ktEmpty": {
       "type": "object"
     },
@@ -100,6 +83,23 @@
           "format": "date-time"
         },
         "version": {
+          "type": "string"
+        }
+      }
+    },
+    "rxGenerateEventsRequest": {
+      "type": "object",
+      "properties": {
+        "items_per_batch": {
+          "type": "integer"
+        },
+        "raw_events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "raw_events_pg": {
           "type": "string"
         }
       }

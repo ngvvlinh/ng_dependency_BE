@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -30,6 +31,25 @@ var enumChangeTypeValue = map[string]int{
 func ParseChangeType(s string) (ChangeType, bool) {
 	val, ok := enumChangeTypeValue[s]
 	return ChangeType(val), ok
+}
+
+func ParseChangeTypeWithDefault(s string, d ChangeType) ChangeType {
+	val, ok := enumChangeTypeValue[s]
+	if !ok {
+		return d
+	}
+	return ChangeType(val)
+}
+
+func ParseChangeTypeWithNull(s dot.NullString, d ChangeType) NullChangeType {
+	if !s.Valid {
+		return NullChangeType{}
+	}
+	val, ok := enumChangeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ChangeType(val).Wrap()
 }
 
 func (e ChangeType) Enum() int {

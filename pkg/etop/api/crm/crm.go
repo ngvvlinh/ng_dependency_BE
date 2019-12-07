@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/supporting/crm/vht"
 	"etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/api/top/services/crm"
@@ -16,7 +18,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
@@ -92,7 +93,7 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *Refre
 	var ffmUpdate *shipmodel.Fulfillment
 	var err error
 	switch ffm.ShippingProvider {
-	case model.TypeGHN:
+	case shipping_provider.GHN:
 		ghnCmd := &ghn.RequestGetOrderCommand{
 			ServiceID: ffm.ProviderServiceID,
 			Request: &ghnclient.OrderCodeRequest{

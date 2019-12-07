@@ -3,6 +3,10 @@ package client
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	"etop.vn/api/top/types/etc/shipping"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	cm "etop.vn/backend/pkg/common"
@@ -98,7 +102,7 @@ var SubStateMapping = map[StateID]string{
 	StateIDShipperDelayDelivering: "Shipper báo delay giao hàng",
 }
 
-func (sID StateID) ToModel() model.ShippingState {
+func (sID StateID) ToModel() shipping.State {
 	switch sID {
 	case StateIDCanceled, StateIDNotTake:
 		return model.StateCancelled
@@ -174,7 +178,7 @@ func (s *ShippingFee) ToShippingService(providerServiceID string, transport Tran
 		Name:              transport.Name(),
 		ServiceFee:        int(s.Fee),
 		ShippingFeeMain:   int(s.Fee - s.InsuranceFee),
-		Provider:          model.TypeGHTK,
+		Provider:          shipping_provider.GHTK,
 		ProviderServiceID: providerServiceID,
 
 		ExpectedPickAt:     expectedPickTime,

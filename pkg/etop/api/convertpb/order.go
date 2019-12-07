@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/main/location"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
@@ -224,7 +226,7 @@ func PbOrderShipping(m *ordermodel.Order) *types.OrderShipping {
 		ShippingProvider:    PbShippingProviderType(item.ShippingProvider),
 		Carrier:             PbShippingProviderType(item.ShippingProvider),
 		IncludeInsurance:    item.IncludeInsurance,
-		TryOn:               PbTryOn(m.GetTryOn()),
+		TryOn:               m.GetTryOn(),
 		ShippingNote:        m.ShippingNote,
 		CodAmount:           dot.Int(m.ShopCOD),
 		Weight:              dot.Int(m.TotalWeight),
@@ -463,15 +465,14 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 		}
 	}
 
-	carrierName := ShippingProviderToModel(&carrier)
 	shippingServiceCode := cm.Coalesce(m.ShippingServiceCode, m.XServiceId)
 
 	// check ETOP service
-	shippingServiceName, ok := model.GetShippingServiceRegistry().GetName(model.TypeShippingETOP, shippingServiceCode)
+	shippingServiceName, ok := model.GetShippingServiceRegistry().GetName(shipping_provider.Etop, shippingServiceCode)
 	if !ok {
-		shippingServiceName, ok = model.GetShippingServiceRegistry().GetName(carrierName, shippingServiceCode)
+		shippingServiceName, ok = model.GetShippingServiceRegistry().GetName(carrier, shippingServiceCode)
 	}
-	if carrierName != "" && !ok {
+	if carrier != 0 && !ok {
 		return cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ hotro@etop.vn")
 	}
 
@@ -481,7 +482,7 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 		ExternalServiceID:   shippingServiceCode,
 		ExternalShippingFee: cm.CoalesceInt(m.ShippingServiceFee, m.XShippingFee),
 		ExternalServiceName: shippingServiceName,
-		ShippingProvider:    carrierName,
+		ShippingProvider:    carrier,
 		ProviderServiceID:   cm.Coalesce(shippingServiceCode, m.XServiceId),
 		IncludeInsurance:    m.IncludeInsurance,
 		Length:              m.Length.Apply(0),
@@ -497,8 +498,8 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 	mo.TotalWeight = chargeableWeight
 
 	if m.TryOn != 0 {
-		mo.TryOn = TryOnCodeToModel(&m.TryOn)
-		mo.GhnNoteCode = model.GHNNoteCodeFromTryOn(TryOnCodeToModel(&m.TryOn))
+		mo.TryOn = m.TryOn
+		mo.GhnNoteCode = model.GHNNoteCodeFromTryOn(m.TryOn)
 	} else if mo.GhnNoteCode != "" {
 		mo.TryOn = model.TryOnFromGHNNoteCode(mo.GhnNoteCode)
 	}
@@ -716,10 +717,10 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *
 		ShippingServiceCode:                m.ProviderServiceID,
 		ShippingCode:                       m.ShippingCode,
 		ShippingNote:                       m.ShippingNote,
-		TryOn:                              PbTryOn(m.TryOn),
+		TryOn:                              m.TryOn,
 		IncludeInsurance:                   m.IncludeInsurance,
 		ShConfirm:                          m.ShopConfirm,
-		ShippingState:                      PbShippingState(m.ShippingState),
+		ShippingState:                      m.ShippingState,
 		Status:                             m.Status,
 		ShippingStatus:                     m.ShippingStatus,
 		EtopPaymentStatus:                  m.EtopPaymentStatus,
@@ -1058,7 +1059,7 @@ func PbPublicFulfillment(item *shipmodel.Fulfillment) *types.PublicFulfillment {
 
 	return &types.PublicFulfillment{
 		Id:                 item.ID,
-		ShippingState:      PbShippingState(item.ShippingState),
+		ShippingState:      item.ShippingState,
 		Status:             item.Status,
 		ExpectedDeliveryAt: cmapi.PbTime(item.ExpectedDeliveryAt),
 		DeliveredAt:        cmapi.PbTime(item.ShippingDeliveredAt),

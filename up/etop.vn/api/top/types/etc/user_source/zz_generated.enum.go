@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -38,6 +39,25 @@ var enumUserSourceValue = map[string]int{
 func ParseUserSource(s string) (UserSource, bool) {
 	val, ok := enumUserSourceValue[s]
 	return UserSource(val), ok
+}
+
+func ParseUserSourceWithDefault(s string, d UserSource) UserSource {
+	val, ok := enumUserSourceValue[s]
+	if !ok {
+		return d
+	}
+	return UserSource(val)
+}
+
+func ParseUserSourceWithNull(s dot.NullString, d UserSource) NullUserSource {
+	if !s.Valid {
+		return NullUserSource{}
+	}
+	val, ok := enumUserSourceValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return UserSource(val).Wrap()
 }
 
 func (e UserSource) Enum() int {

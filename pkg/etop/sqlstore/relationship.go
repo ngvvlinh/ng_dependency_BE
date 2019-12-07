@@ -53,7 +53,7 @@ func GetAllAccountRoles(ctx context.Context, query *model.GetAllAccountRolesQuer
 	s := x.Table("account_user").
 		Where("au.user_id = ? AND au.deleted_at is NULL", query.UserID)
 
-	if query.Type != "" {
+	if query.Type.Valid {
 		s = s.Where("type = ?", query.Type)
 	}
 	return s.Find((*model.AccountUserExtendeds)(&query.Result))
@@ -233,7 +233,7 @@ func GetAllAccountUsers(ctx context.Context, query *model.GetAllAccountUsersQuer
 			var _res []*model.AccountUser
 			s := x.Table("account_user").
 				Where("au.user_id = ? AND au.deleted_at is NULL", uID)
-			if query.Type != "" {
+			if query.Type.Valid {
 				s = s.Where("type = ?", query.Type)
 			}
 			if err := s.Find((*model.AccountUsers)(&_res)); err == nil {

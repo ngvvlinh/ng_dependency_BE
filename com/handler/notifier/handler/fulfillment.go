@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -148,6 +150,6 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 	}
 }
 
-func Uppercase(provider model.ShippingProvider) string {
+func Uppercase(provider shipping_provider.ShippingProvider) string {
 	return strings.ToUpper(string(provider))
 }

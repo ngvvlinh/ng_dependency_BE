@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/backend/pkg/common/imcsv"
@@ -141,7 +143,10 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if provider == nil || provider[0] == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Provider", nil)
 	}
-	shippingProvider := model.ShippingProvider(provider[0])
+	shippingProvider, ok := shipping_provider.ParseShippingProvider(provider[0])
+	if !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "invalid carrier %v", provider[0])
+	}
 
 	var externalPaidAt time.Time
 	if externalPaidAtStr != nil {
@@ -305,8 +310,8 @@ func checkHeaderIndex(headerIndexMap map[string]int) error {
 	return nil
 }
 
-func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider model.ShippingProvider) ([]*shipmodel.Fulfillment, error) {
-	if shippingProvider != model.TypeGHTK {
+func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider shipping_provider.ShippingProvider) ([]*shipmodel.Fulfillment, error) {
+	if shippingProvider != shipping_provider.GHTK {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển phải là GHTK.").WithMeta("shipping_provider", string(shippingProvider))
 	}
 	ffmShippingCodes := make([]string, len(lines))

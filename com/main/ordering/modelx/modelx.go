@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"etop.vn/api/top/types/etc/try_on"
+
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
@@ -120,7 +122,7 @@ type UpdateOrderCommand struct {
 	ShopNote        string
 	ShippingNote    string
 	ShopShipping    *ordermodel.OrderShipping
-	TryOn           model.TryOn
+	TryOn           try_on.TryOnCode
 	OrderDiscount   dot.NullInt
 	Lines           []*ordermodel.OrderLine
 	BasketValue     int

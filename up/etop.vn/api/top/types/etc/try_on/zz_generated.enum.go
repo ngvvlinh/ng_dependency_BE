@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -30,6 +31,25 @@ var enumTryOnCodeValue = map[string]int{
 func ParseTryOnCode(s string) (TryOnCode, bool) {
 	val, ok := enumTryOnCodeValue[s]
 	return TryOnCode(val), ok
+}
+
+func ParseTryOnCodeWithDefault(s string, d TryOnCode) TryOnCode {
+	val, ok := enumTryOnCodeValue[s]
+	if !ok {
+		return d
+	}
+	return TryOnCode(val)
+}
+
+func ParseTryOnCodeWithNull(s dot.NullString, d TryOnCode) NullTryOnCode {
+	if !s.Valid {
+		return NullTryOnCode{}
+	}
+	val, ok := enumTryOnCodeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return TryOnCode(val).Wrap()
 }
 
 func (e TryOnCode) Enum() int {

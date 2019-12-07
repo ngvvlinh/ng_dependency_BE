@@ -109,7 +109,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.ShopShipping},
 		core.Bool(m.IsOutsideEtop),
 		core.String(m.GhnNoteCode),
-		core.String(m.TryOn),
+		m.TryOn,
 		core.String(m.CustomerNameNorm),
 		core.String(m.ProductNameNorm),
 		core.Int(m.FulfillmentType),
@@ -181,7 +181,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.ShopShipping},
 		(*core.Bool)(&m.IsOutsideEtop),
 		(*core.String)(&m.GhnNoteCode),
-		(*core.String)(&m.TryOn),
+		&m.TryOn,
 		(*core.String)(&m.CustomerNameNorm),
 		(*core.String)(&m.ProductNameNorm),
 		(*core.Int)(&m.FulfillmentType),
@@ -695,13 +695,13 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.GhnNoteCode)
 	}
-	if m.TryOn != "" {
+	if m.TryOn != 0 {
 		flag = true
 		w.WriteName("try_on")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.TryOn))
+		w.WriteArg(m.TryOn)
 	}
 	if m.CustomerNameNorm != "" {
 		flag = true

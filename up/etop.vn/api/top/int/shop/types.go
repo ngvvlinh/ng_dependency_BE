@@ -220,9 +220,9 @@ type UpdateShopRequest struct {
 	Email              string            `json:"email"`
 	AutoCreateFfm      dot.NullBool      `json:"auto_create_ffm"`
 	// @deprecated use try_on instead
-	GhnNoteCode *ghn_note_code.GHNNoteCode `json:"ghn_note_code"`
-	TryOn       *try_on.TryOnCode          `json:"try_on"`
-	CompanyInfo *etop.CompanyInfo          `json:"company_info"`
+	GhnNoteCode ghn_note_code.NullGHNNoteCode `json:"ghn_note_code"`
+	TryOn       try_on.NullTryOnCode          `json:"try_on"`
+	CompanyInfo *etop.CompanyInfo             `json:"company_info"`
 	// referrence: https://icalendar.org/rrule-tool.html
 	MoneyTransactionRrule         string                                    `json:"money_transaction_rrule"`
 	SurveyInfo                    []*etop.SurveyInfo                        `json:"survey_info"`

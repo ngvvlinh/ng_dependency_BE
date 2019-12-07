@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/backend/pkg/common/imcsv"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -82,8 +84,12 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if provider == nil || provider[0] == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Provider", nil)
 	}
-	shippingProvider := model.ShippingProvider(provider[0])
-	if shippingProvider != model.TypeVTPost {
+	shippingProvider, ok := shipping_provider.ParseShippingProvider(provider[0])
+	if !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "invalid carrier %v", provider[0])
+	}
+
+	if shippingProvider != shipping_provider.VTPost {
 		return cm.Error(cm.InvalidArgument, "Đơn vị vận chuyển phải là vtpost.", nil)
 	}
 

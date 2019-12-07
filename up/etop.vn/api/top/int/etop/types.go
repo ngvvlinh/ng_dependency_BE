@@ -2,33 +2,13 @@ package etop
 
 import (
 	common "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/account_type"
 	address_type "etop.vn/api/top/types/etc/address_type"
 	status3 "etop.vn/api/top/types/etc/status3"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	user_source "etop.vn/api/top/types/etc/user_source"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
-)
-
-// Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
-// +enum
-type AccountType int
-
-const (
-	// +enum=unknown
-	AccountTypeUnknown AccountType = 0
-
-	// +enum=partner
-	AccountTypePartner AccountType = 21
-
-	// +enum=shop
-	AccountTypeShop AccountType = 33
-
-	// +enum=affiliate
-	AccountTypeAffiliate AccountType = 35
-
-	// +enum=etop
-	AccountTypeEtop AccountType = 101
 )
 
 type Authorization struct {
@@ -264,23 +244,23 @@ func (m *Partner) Reset()         { *m = Partner{} }
 func (m *Partner) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicAccountInfo struct {
-	Id       dot.ID      `json:"id"`
-	Name     string      `json:"name"`
-	Type     AccountType `json:"type"`
-	ImageUrl string      `json:"image_url"`
-	Website  string      `json:"website"`
+	Id       dot.ID                   `json:"id"`
+	Name     string                   `json:"name"`
+	Type     account_type.AccountType `json:"type"`
+	ImageUrl string                   `json:"image_url"`
+	Website  string                   `json:"website"`
 }
 
 func (m *PublicAccountInfo) Reset()         { *m = PublicAccountInfo{} }
 func (m *PublicAccountInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicAuthorizedPartnerInfo struct {
-	Id          dot.ID      `json:"id"`
-	Name        string      `json:"name"`
-	Type        AccountType `json:"type"`
-	ImageUrl    string      `json:"image_url"`
-	Website     string      `json:"website"`
-	RedirectUrl string      `json:"redirect_url"`
+	Id          dot.ID                   `json:"id"`
+	Name        string                   `json:"name"`
+	Type        account_type.AccountType `json:"type"`
+	ImageUrl    string                   `json:"image_url"`
+	Website     string                   `json:"website"`
+	RedirectUrl string                   `json:"redirect_url"`
 }
 
 func (m *PublicAuthorizedPartnerInfo) Reset()         { *m = PublicAuthorizedPartnerInfo{} }
@@ -461,7 +441,7 @@ type LoginRequest struct {
 	// Automatically switch to the only account of this account type if available.
 	//
 	// It's *ignored* if the user *does not* have any account of this account type, or if the user *has more than one* account of this account type.
-	AccountType AccountType `json:"account_type"`
+	AccountType account_type.AccountType `json:"account_type"`
 	// Not implemented.
 	AccountKey string `json:"account_key"`
 }
@@ -477,7 +457,7 @@ type LoginAccount struct {
 	// @required
 	Name string `json:"name"`
 	// @required
-	Type AccountType `json:"type"`
+	Type account_type.AccountType `json:"type"`
 	// Associated token for the account. It's returned when calling Login or
 	// SwitchAccount with regenerate_tokens set to true.
 	AccessToken string `json:"access_token"`
@@ -644,8 +624,8 @@ type UserAccountInfo struct {
 	// @required
 	AccountName string `json:"account_name"`
 	// @required
-	AccountType AccountType `json:"account_type"`
-	Position    string      `json:"position"`
+	AccountType account_type.AccountType `json:"account_type"`
+	Position    string                   `json:"position"`
 	// @required
 	Permission           *Permission    `json:"permission"`
 	Status               status3.Status `json:"status"`

@@ -3,6 +3,8 @@ package convertpb
 import (
 	"context"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
@@ -135,9 +137,8 @@ func PbUser(m *model.User) *etop.User {
 	}
 }
 
-func PbAccountType(t model.AccountType) etop.AccountType {
-	accountType, _ := etop.ParseAccountType(string(t))
-	return accountType
+func PbAccountType(t account_type.AccountType) account_type.AccountType {
+	return t
 }
 
 func PbLoginAccount(m *model.AccountUserExtended) *etop.LoginAccount {
@@ -242,7 +243,7 @@ func PbPublicAccountInfo(m model.AccountInterface) *etop.PublicAccountInfo {
 		return &etop.PublicAccountInfo{
 			Id:       m.ID,
 			Name:     m.PublicName, // public name here!
-			Type:     PbAccountType(model.TypePartner),
+			Type:     PbAccountType(account_type.Partner),
 			ImageUrl: m.ImageURL,
 			Website:  m.WebsiteURL,
 		}
@@ -269,7 +270,7 @@ func PbShop(m *model.Shop) *etop.Shop {
 		ImageUrl:    m.ImageURL,
 		Email:       m.Email,
 		OwnerId:     m.OwnerID,
-		TryOn:       PbTryOn(m.TryOn),
+		TryOn:       m.TryOn,
 	}
 }
 
@@ -288,7 +289,7 @@ func PbShopExtended(m *model.ShopExtended) *etop.Shop {
 		ShipToAddressId:               m.ShipToAddressID,
 		ShipFromAddressId:             m.ShipFromAddressID,
 		AutoCreateFfm:                 m.AutoCreateFFM,
-		TryOn:                         PbTryOn(m.TryOn),
+		TryOn:                         m.TryOn,
 		GhnNoteCode:                   m.GhnNoteCode,
 		OwnerId:                       m.OwnerID,
 		User:                          PbUser(m.User),

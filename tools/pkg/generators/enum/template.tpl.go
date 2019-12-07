@@ -21,6 +21,25 @@ func Parse{{.Name}}(s string) ({{.Name}}, bool) {
 	return {{.Name}}(val), ok
 }
 
+func Parse{{.Name}}WithDefault(s string, d {{.Name}}) {{.Name}} {
+	val, ok := enum{{.Name}}Value[s]
+	if !ok {
+		return d
+	}
+	return {{.Name}}(val)
+}
+
+func Parse{{.Name}}WithNull(s dot.NullString, d {{.Name}}) Null{{.Name}} {
+	if !s.Valid {
+		return Null{{.Name}}{}
+	}
+	val, ok := enum{{.Name}}Value[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return {{.Name}}(val).Wrap()
+}
+
 func (e {{.Name}}) Enum() {{$enum|valueType}} {
 	return {{$enum|valueType}}(e)
 }

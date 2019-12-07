@@ -829,7 +829,7 @@ func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.OwnerID,
 		core.String(m.Name),
-		core.String(m.Type),
+		m.Type,
 		core.String(m.ImageURL),
 		core.String(m.URLSlug),
 	}
@@ -840,7 +840,7 @@ func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.OwnerID,
 		(*core.String)(&m.Name),
-		(*core.String)(&m.Type),
+		&m.Type,
 		(*core.String)(&m.ImageURL),
 		(*core.String)(&m.URLSlug),
 	}
@@ -929,13 +929,13 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Name)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Type))
+		w.WriteArg(m.Type)
 	}
 	if m.ImageURL != "" {
 		flag = true
@@ -1090,7 +1090,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.DeletedAt),
 		core.Array{m.RecognizedHosts, opts},
 		core.String(m.GhnNoteCode),
-		core.String(m.TryOn),
+		m.TryOn,
 		core.JSON{m.CompanyInfo},
 		core.String(m.MoneyTransactionRRule),
 		core.JSON{m.SurveyInfo},
@@ -1122,7 +1122,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.DeletedAt),
 		core.Array{&m.RecognizedHosts, opts},
 		(*core.String)(&m.GhnNoteCode),
-		(*core.String)(&m.TryOn),
+		&m.TryOn,
 		core.JSON{&m.CompanyInfo},
 		(*core.String)(&m.MoneyTransactionRRule),
 		core.JSON{&m.SurveyInfo},
@@ -1358,13 +1358,13 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.GhnNoteCode)
 	}
-	if m.TryOn != "" {
+	if m.TryOn != 0 {
 		flag = true
 		w.WriteName("try_on")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.TryOn))
+		w.WriteArg(m.TryOn)
 	}
 	if m.CompanyInfo != nil {
 		flag = true

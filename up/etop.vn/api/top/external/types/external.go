@@ -1,9 +1,9 @@
 package types
 
 import (
-	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/account_type"
 	gender "etop.vn/api/top/types/etc/gender"
 	shipping "etop.vn/api/top/types/etc/shipping"
 	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
@@ -16,11 +16,11 @@ import (
 )
 
 type Partner struct {
-	Id         dot.ID           `json:"id"`
-	Name       string           `json:"name"`
-	PublicName string           `json:"public_name"`
-	Type       etop.AccountType `json:"type"`
-	Phone      string           `json:"phone"`
+	Id         dot.ID                   `json:"id"`
+	Name       string                   `json:"name"`
+	PublicName string                   `json:"public_name"`
+	Type       account_type.AccountType `json:"type"`
+	Phone      string                   `json:"phone"`
 	// only domain, no scheme
 	Website         string   `json:"website"`
 	WebsiteUrl      string   `json:"website_url"`
@@ -220,21 +220,21 @@ func (m *Order) Reset()         { *m = Order{} }
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderShipping struct {
-	PickupAddress       *OrderAddress                       `json:"pickup_address"`
-	ReturnAddress       *OrderAddress                       `json:"return_address"`
-	ShippingServiceName dot.NullString                      `json:"shipping_service_name"`
-	ShippingServiceCode dot.NullString                      `json:"shipping_service_code"`
-	ShippingServiceFee  dot.NullInt                         `json:"shipping_service_fee"`
-	Carrier             *shipping_provider.ShippingProvider `json:"carrier"`
-	IncludeInsurance    dot.NullBool                        `json:"include_insurance"`
-	TryOn               *try_on.TryOnCode                   `json:"try_on"`
-	ShippingNote        dot.NullString                      `json:"shipping_note"`
-	CodAmount           dot.NullInt                         `json:"cod_amount"`
-	GrossWeight         dot.NullInt                         `json:"gross_weight"`
-	Length              dot.NullInt                         `json:"length"`
-	Width               dot.NullInt                         `json:"width"`
-	Height              dot.NullInt                         `json:"height"`
-	ChargeableWeight    dot.NullInt                         `json:"chargeable_weight"`
+	PickupAddress       *OrderAddress                      `json:"pickup_address"`
+	ReturnAddress       *OrderAddress                      `json:"return_address"`
+	ShippingServiceName dot.NullString                     `json:"shipping_service_name"`
+	ShippingServiceCode dot.NullString                     `json:"shipping_service_code"`
+	ShippingServiceFee  dot.NullInt                        `json:"shipping_service_fee"`
+	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
+	IncludeInsurance    dot.NullBool                       `json:"include_insurance"`
+	TryOn               try_on.TryOnCode                   `json:"try_on"`
+	ShippingNote        dot.NullString                     `json:"shipping_note"`
+	CodAmount           dot.NullInt                        `json:"cod_amount"`
+	GrossWeight         dot.NullInt                        `json:"gross_weight"`
+	Length              dot.NullInt                        `json:"length"`
+	Width               dot.NullInt                        `json:"width"`
+	Height              dot.NullInt                        `json:"height"`
+	ChargeableWeight    dot.NullInt                        `json:"chargeable_weight"`
 }
 
 func (m *OrderShipping) Reset()         { *m = OrderShipping{} }
@@ -280,39 +280,39 @@ func (m *OrderLine) Reset()         { *m = OrderLine{} }
 func (m *OrderLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type Fulfillment struct {
-	Id                       dot.ID                              `json:"id"`
-	OrderId                  dot.ID                              `json:"order_id"`
-	ShopId                   dot.ID                              `json:"shop_id"`
-	SelfUrl                  dot.NullString                      `json:"self_url"`
-	TotalItems               dot.NullInt                         `json:"total_items"`
-	BasketValue              dot.NullInt                         `json:"basket_value"`
-	CreatedAt                dot.Time                            `json:"created_at"`
-	UpdatedAt                dot.Time                            `json:"updated_at"`
-	ClosedAt                 dot.Time                            `json:"closed_at"`
-	CancelledAt              dot.Time                            `json:"cancelled_at"`
-	CancelReason             dot.NullString                      `json:"cancel_reason"`
-	Carrier                  *shipping_provider.ShippingProvider `json:"carrier"`
-	ShippingServiceName      dot.NullString                      `json:"shipping_service_name"`
-	ShippingServiceFee       dot.NullInt                         `json:"shipping_service_fee"`
-	ActualShippingServiceFee dot.NullInt                         `json:"actual_shipping_service_fee"`
-	ShippingServiceCode      dot.NullString                      `json:"shipping_service_code"`
-	ShippingCode             dot.NullString                      `json:"shipping_code"`
-	ShippingNote             dot.NullString                      `json:"shipping_note"`
-	TryOn                    *try_on.TryOnCode                   `json:"try_on"`
-	IncludeInsurance         dot.NullBool                        `json:"include_insurance"`
-	ConfirmStatus            status3.NullStatus                  `json:"confirm_status"`
-	ShippingState            *shipping.State                     `json:"shipping_state"`
-	ShippingStatus           status5.NullStatus                  `json:"shipping_status"`
-	Status                   status5.NullStatus                  `json:"status"`
-	CodAmount                dot.NullInt                         `json:"cod_amount"`
-	ActualCodAmount          dot.NullInt                         `json:"actual_cod_amount"`
-	ChargeableWeight         dot.NullInt                         `json:"chargeable_weight"`
-	PickupAddress            *OrderAddress                       `json:"pickup_address"`
-	ReturnAddress            *OrderAddress                       `json:"return_address"`
-	ShippingAddress          *OrderAddress                       `json:"shipping_address"`
-	EtopPaymentStatus        status4.NullStatus                  `json:"etop_payment_status"`
-	EstimatedDeliveryAt      dot.Time                            `json:"estimated_delivery_at"`
-	EstimatedPickupAt        dot.Time                            `json:"estimated_pickup_at"`
+	Id                       dot.ID                             `json:"id"`
+	OrderId                  dot.ID                             `json:"order_id"`
+	ShopId                   dot.ID                             `json:"shop_id"`
+	SelfUrl                  dot.NullString                     `json:"self_url"`
+	TotalItems               dot.NullInt                        `json:"total_items"`
+	BasketValue              dot.NullInt                        `json:"basket_value"`
+	CreatedAt                dot.Time                           `json:"created_at"`
+	UpdatedAt                dot.Time                           `json:"updated_at"`
+	ClosedAt                 dot.Time                           `json:"closed_at"`
+	CancelledAt              dot.Time                           `json:"cancelled_at"`
+	CancelReason             dot.NullString                     `json:"cancel_reason"`
+	Carrier                  shipping_provider.ShippingProvider `json:"carrier"`
+	ShippingServiceName      dot.NullString                     `json:"shipping_service_name"`
+	ShippingServiceFee       dot.NullInt                        `json:"shipping_service_fee"`
+	ActualShippingServiceFee dot.NullInt                        `json:"actual_shipping_service_fee"`
+	ShippingServiceCode      dot.NullString                     `json:"shipping_service_code"`
+	ShippingCode             dot.NullString                     `json:"shipping_code"`
+	ShippingNote             dot.NullString                     `json:"shipping_note"`
+	TryOn                    try_on.TryOnCode                   `json:"try_on"`
+	IncludeInsurance         dot.NullBool                       `json:"include_insurance"`
+	ConfirmStatus            status3.NullStatus                 `json:"confirm_status"`
+	ShippingState            shipping.NullState                 `json:"shipping_state"`
+	ShippingStatus           status5.NullStatus                 `json:"shipping_status"`
+	Status                   status5.NullStatus                 `json:"status"`
+	CodAmount                dot.NullInt                        `json:"cod_amount"`
+	ActualCodAmount          dot.NullInt                        `json:"actual_cod_amount"`
+	ChargeableWeight         dot.NullInt                        `json:"chargeable_weight"`
+	PickupAddress            *OrderAddress                      `json:"pickup_address"`
+	ReturnAddress            *OrderAddress                      `json:"return_address"`
+	ShippingAddress          *OrderAddress                      `json:"shipping_address"`
+	EtopPaymentStatus        status4.NullStatus                 `json:"etop_payment_status"`
+	EstimatedDeliveryAt      dot.Time                           `json:"estimated_delivery_at"`
+	EstimatedPickupAt        dot.Time                           `json:"estimated_pickup_at"`
 }
 
 func (m *Fulfillment) Reset()         { *m = Fulfillment{} }
@@ -434,7 +434,7 @@ func (m *Order) HasChanged() bool {
 
 func (m *Fulfillment) HasChanged() bool {
 	return m.Status.Valid ||
-		m.ShippingState != nil ||
+		m.ShippingState.Valid ||
 		m.EtopPaymentStatus.Valid ||
 		m.ActualShippingServiceFee.Valid ||
 		m.CodAmount.Valid ||

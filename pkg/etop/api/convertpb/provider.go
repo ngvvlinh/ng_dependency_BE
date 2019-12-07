@@ -2,31 +2,21 @@ package convertpb
 
 import (
 	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-func ShippingProviderToModel(s *shipping_provider.ShippingProvider) model.ShippingProvider {
-	if s == nil || *s == 0 {
-		return ""
-	}
-	return model.ShippingProvider(s.String())
+func PbShippingProviderType(sp shipping_provider.ShippingProvider) shipping_provider.ShippingProvider {
+	return sp
 }
 
-func PbShippingProviderType(sp model.ShippingProvider) shipping_provider.ShippingProvider {
-	p, _ := shipping_provider.ParseShippingProvider(string(sp))
-	return p
+func PbPtrShippingProvider(sp shipping_provider.ShippingProvider) shipping_provider.NullShippingProvider {
+	return sp.Wrap()
 }
 
-func PbPtrShippingProvider(sp model.ShippingProvider) *shipping_provider.ShippingProvider {
-	res := PbShippingProviderType(sp)
-	return &res
-}
-
-func PbShippingProviderPtr(s dot.NullString) *shipping_provider.ShippingProvider {
+func PbShippingProviderPtr(s dot.NullString) shipping_provider.NullShippingProvider {
 	if s.Apply("") == "" {
-		return nil
+		return shipping_provider.NullShippingProvider{}
 	}
-	sp := PbShippingProviderType(model.ShippingProvider(s.String))
-	return &sp
+	sp, _ := shipping_provider.ParseShippingProvider(s.String)
+	return sp.Wrap()
 }

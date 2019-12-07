@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
@@ -16,7 +18,7 @@ import (
 )
 
 type ESPriceRule struct {
-	Carrier  model.ShippingProvider
+	Carrier  shipping_provider.ShippingProvider
 	Pricings []*ESPricing
 }
 
@@ -59,11 +61,11 @@ type ESPricingDetailOverweightPrice struct {
 
 var (
 	ll             = l.New()
-	priceRuleIndex = make(map[model.ShippingProvider][]*ESPricing)
+	priceRuleIndex = make(map[shipping_provider.ShippingProvider][]*ESPricing)
 )
 
 func init() {
-	model.GetShippingServiceRegistry().RegisterNameFunc(model.TypeShippingETOP, DecodeShippingServiceName)
+	model.GetShippingServiceRegistry().RegisterNameFunc(shipping_provider.Etop, DecodeShippingServiceName)
 	for _, rule := range ESPriceRules {
 		key := rule.Carrier
 		if priceRuleIndex[key] != nil {
@@ -76,7 +78,7 @@ func init() {
 
 type GetEtopShippingServicesArgs struct {
 	ArbitraryID  dot.ID
-	Carrier      model.ShippingProvider
+	Carrier      shipping_provider.ShippingProvider
 	FromProvince *location.Province
 	ToProvince   *location.Province
 	ToDistrict   *location.District
@@ -161,7 +163,7 @@ func ContainRouteType(types []model.ShippingRouteType, routeType model.ShippingR
 	return false
 }
 
-func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, carrier model.ShippingProvider) (*model.AvailableShippingService, error) {
+func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, carrier shipping_provider.ShippingProvider) (*model.AvailableShippingService, error) {
 	pRuleDetail := GetPriceRuleDetail(weight, pricing.Details)
 	if pRuleDetail == nil {
 		return nil, cm.Error(cm.Internal, "Không có bảng giá phù hợp", nil)
@@ -238,12 +240,12 @@ type serviceIDGenerator struct {
 	rd *rand.Rand
 }
 
-func newServiceIDGenerator(seed int64, carrier model.ShippingProvider) serviceIDGenerator {
+func newServiceIDGenerator(seed int64, carrier shipping_provider.ShippingProvider) serviceIDGenerator {
 	// make sure generate difference code with difference carrier
 	switch carrier {
-	case model.TypeGHTK:
+	case shipping_provider.GHTK:
 		seed += 1
-	case model.TypeVTPost:
+	case shipping_provider.VTPost:
 		seed += 2
 	default:
 

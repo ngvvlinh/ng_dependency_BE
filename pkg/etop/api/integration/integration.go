@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/top/types/etc/status3"
 
 	"etop.vn/api/top/types/etc/user_source"
@@ -583,7 +585,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	// we map from all accounts to partner relations and generate tokens for each one
 	availableAccounts := make([]*integration.PartnerShopLoginAccount, 0, len(accQuery.Result))
 	for _, acc := range accQuery.Result {
-		if acc.Account.Type != model.TypeShop {
+		if acc.Account.Type != account_type.Shop {
 			continue
 		}
 
@@ -930,7 +932,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 		account := &integration.PartnerShopLoginAccount{
 			Id:          shop.ID,
 			Name:        shop.Name,
-			Type:        convertpb.PbAccountType(model.TypeShop),
+			Type:        convertpb.PbAccountType(account_type.Shop),
 			AccessToken: accessToken,
 			ExpiresIn:   expiresIn,
 			ImageUrl:    shop.ImageURL,

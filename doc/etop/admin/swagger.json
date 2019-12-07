@@ -953,14 +953,14 @@
     }
   },
   "definitions": {
-    "baAccountType": {
+    "adAddressType": {
       "type": "string",
       "enum": [
         "unknown",
-        "partner",
-        "shop",
-        "affiliate",
-        "etop"
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
       ]
     },
     "baAddress": {
@@ -1022,7 +1022,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/jjAddressType"
+          "$ref": "#/definitions/adAddressType"
         },
         "ward": {
           "type": "string"
@@ -1226,7 +1226,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         },
         "url_slug": {
           "type": "string"
@@ -1519,7 +1519,7 @@
           "type": "string"
         },
         "account_type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         },
         "disable_reason": {
           "type": "string"
@@ -1620,7 +1620,8 @@
         "manual",
         "ghn",
         "ghtk",
-        "vtpost"
+        "vtpost",
+        "etop"
       ]
     },
     "csTryOnCode": {
@@ -1645,14 +1646,14 @@
         "partner"
       ]
     },
-    "jjAddressType": {
+    "jjAccountType": {
       "type": "string",
       "enum": [
         "unknown",
-        "general",
-        "warehouse",
-        "shipto",
-        "shipfrom"
+        "partner",
+        "shop",
+        "affiliate",
+        "etop"
       ]
     },
     "ktDeletedResponse": {
@@ -3345,6 +3346,7 @@
     "sdShippingFeeType": {
       "type": "string",
       "enum": [
+        "unknown",
         "main",
         "return",
         "adjustment",
@@ -3353,13 +3355,13 @@
         "other",
         "cods",
         "address_change",
-        "discount",
-        "unknown"
+        "discount"
       ]
     },
     "sfState": {
       "type": "string",
       "enum": [
+        "unknown",
         "default",
         "created",
         "confirmed",
@@ -3370,9 +3372,8 @@
         "returned",
         "delivering",
         "delivered",
-        "unknown",
-        "undeliverable",
-        "cancelled"
+        "cancelled",
+        "undeliverable"
       ]
     },
     "wdNotifierEntity": {

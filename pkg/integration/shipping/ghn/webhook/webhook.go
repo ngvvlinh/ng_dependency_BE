@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/capi/dot"
 
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
@@ -13,7 +15,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
@@ -54,7 +55,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		enc.SetEscapeHTML(false)
 		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:                    cm.NewID(),
-			ShippingProvider:      model.TypeGHN.ToString(),
+			ShippingProvider:      shipping_provider.GHN.String(),
 			ShippingCode:          msg.OrderCode.String(),
 			ExternalShippingState: msg.CurrentStatus.String(),
 		}

@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -28,6 +29,25 @@ var enumProductTypeValue = map[string]int{
 func ParseProductType(s string) (ProductType, bool) {
 	val, ok := enumProductTypeValue[s]
 	return ProductType(val), ok
+}
+
+func ParseProductTypeWithDefault(s string, d ProductType) ProductType {
+	val, ok := enumProductTypeValue[s]
+	if !ok {
+		return d
+	}
+	return ProductType(val)
+}
+
+func ParseProductTypeWithNull(s dot.NullString, d ProductType) NullProductType {
+	if !s.Valid {
+		return NullProductType{}
+	}
+	val, ok := enumProductTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ProductType(val).Wrap()
 }
 
 func (e ProductType) Enum() int {

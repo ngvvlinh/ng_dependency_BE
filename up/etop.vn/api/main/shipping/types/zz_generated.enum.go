@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -38,6 +39,25 @@ var enumFeeLineTypeValue = map[string]int{
 func ParseFeeLineType(s string) (FeeLineType, bool) {
 	val, ok := enumFeeLineTypeValue[s]
 	return FeeLineType(val), ok
+}
+
+func ParseFeeLineTypeWithDefault(s string, d FeeLineType) FeeLineType {
+	val, ok := enumFeeLineTypeValue[s]
+	if !ok {
+		return d
+	}
+	return FeeLineType(val)
+}
+
+func ParseFeeLineTypeWithNull(s dot.NullString, d FeeLineType) NullFeeLineType {
+	if !s.Valid {
+		return NullFeeLineType{}
+	}
+	val, ok := enumFeeLineTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return FeeLineType(val).Wrap()
 }
 
 func (e FeeLineType) Enum() int {
@@ -148,6 +168,25 @@ var enumTryOnValue = map[string]int{
 func ParseTryOn(s string) (TryOn, bool) {
 	val, ok := enumTryOnValue[s]
 	return TryOn(val), ok
+}
+
+func ParseTryOnWithDefault(s string, d TryOn) TryOn {
+	val, ok := enumTryOnValue[s]
+	if !ok {
+		return d
+	}
+	return TryOn(val)
+}
+
+func ParseTryOnWithNull(s dot.NullString, d TryOn) NullTryOn {
+	if !s.Valid {
+		return NullTryOn{}
+	}
+	val, ok := enumTryOnValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return TryOn(val).Wrap()
 }
 
 func (e TryOn) Enum() int {

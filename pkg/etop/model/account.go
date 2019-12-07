@@ -1,6 +1,9 @@
 package model
 
-import "etop.vn/capi/dot"
+import (
+	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/capi/dot"
+)
 
 type UpdateAccountURLSlugCommand struct {
 	AccountID dot.ID
@@ -9,7 +12,7 @@ type UpdateAccountURLSlugCommand struct {
 
 type GetAccountAuthQuery struct {
 	AuthKey     string
-	AccountType AccountType
+	AccountType account_type.AccountType
 	AccountID   dot.ID
 
 	Result struct {

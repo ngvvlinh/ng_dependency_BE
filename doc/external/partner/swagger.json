@@ -381,16 +381,6 @@
     }
   },
   "definitions": {
-    "baAccountType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "partner",
-        "shop",
-        "affiliate",
-        "etop"
-      ]
-    },
     "baPublicAccountInfo": {
       "type": "object",
       "properties": {
@@ -405,7 +395,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         },
         "website": {
           "type": "string"
@@ -447,7 +437,8 @@
         "manual",
         "ghn",
         "ghtk",
-        "vtpost"
+        "vtpost",
+        "etop"
       ]
     },
     "csTryOnCode": {
@@ -505,6 +496,16 @@
           "type": "string"
         }
       }
+    },
+    "jjAccountType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "partner",
+        "shop",
+        "affiliate",
+        "etop"
+      ]
     },
     "ktEmpty": {
       "type": "object"
@@ -1241,7 +1242,7 @@
           }
         },
         "type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         },
         "website": {
           "type": "string"
@@ -1421,6 +1422,7 @@
     "sfState": {
       "type": "string",
       "enum": [
+        "unknown",
         "default",
         "created",
         "confirmed",
@@ -1431,9 +1433,8 @@
         "returned",
         "delivering",
         "delivered",
-        "unknown",
-        "undeliverable",
-        "cancelled"
+        "cancelled",
+        "undeliverable"
       ]
     }
   },

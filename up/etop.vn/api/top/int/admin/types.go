@@ -136,10 +136,10 @@ func (m *GetCreditsRequest) Reset()         { *m = GetCreditsRequest{} }
 func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCreditRequest struct {
-	Amount dot.ID                  `json:"amount"`
-	ShopId dot.ID                  `json:"shop_id"`
-	Type   *credit_type.CreditType `json:"type"`
-	PaidAt dot.Time                `json:"paid_at"`
+	Amount dot.ID                 `json:"amount"`
+	ShopId dot.ID                 `json:"shop_id"`
+	Type   credit_type.CreditType `json:"type"`
+	PaidAt dot.Time               `json:"paid_at"`
 }
 
 func (m *CreateCreditRequest) Reset()         { *m = CreateCreditRequest{} }
@@ -172,14 +172,14 @@ func (m *CreatePartnerRequest) Reset()         { *m = CreatePartnerRequest{} }
 func (m *CreatePartnerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentRequest struct {
-	Id                       dot.ID          `json:"id"`
-	FullName                 string          `json:"full_name"`
-	Phone                    string          `json:"phone"`
-	TotalCodAmount           dot.NullInt     `json:"total_cod_amount"`
-	IsPartialDelivery        bool            `json:"is_partial_delivery"`
-	AdminNote                string          `json:"admin_note"`
-	ActualCompensationAmount int             `json:"actual_compensation_amount"`
-	ShippingState            *shipping.State `json:"shipping_state"`
+	Id                       dot.ID             `json:"id"`
+	FullName                 string             `json:"full_name"`
+	Phone                    string             `json:"phone"`
+	TotalCodAmount           dot.NullInt        `json:"total_cod_amount"`
+	IsPartialDelivery        bool               `json:"is_partial_delivery"`
+	AdminNote                string             `json:"admin_note"`
+	ActualCompensationAmount int                `json:"actual_compensation_amount"`
+	ShippingState            shipping.NullState `json:"shipping_state"`
 }
 
 func (m *UpdateFulfillmentRequest) Reset()         { *m = UpdateFulfillmentRequest{} }

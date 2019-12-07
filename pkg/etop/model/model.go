@@ -7,9 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/api/top/types/etc/user_source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
@@ -21,12 +25,10 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 type (
-	AccountType         string
-	SubjectType         string
-	ProcessingStatus    string
-	ShippingState       string
+	SubjectType string
+
 	FulfillmentEndpoint string
-	ShippingProvider    string
+
 	ShippingPriceSource string
 	OrderSourceType     string
 	ShippingFeeLineType string
@@ -34,7 +36,6 @@ type (
 	RoleType            string
 	FfmAction           int
 	CodeType            string
-	TryOn               string
 
 	ShippingRouteType    string
 	ShippingDistrictType string
@@ -42,28 +43,13 @@ type (
 	EtopPaymentStatus    status4.Status
 )
 
-func (s ShippingProvider) ToString() string {
-	return string(s)
-}
-
 // Type constants
 const (
 	DBMain     DBName = "main"
 	DBNotifier DBName = "notifier"
 
-	TypePartner   AccountType = "partner"
-	TypeShop      AccountType = "shop"
-	TypeEtop      AccountType = "etop"
-	TypeAffiliate AccountType = "affiliate"
-
 	SubjectTypeAccount SubjectType = "account"
 	SubjectTypeUser    SubjectType = "user"
-
-	TypeGHN                    ShippingProvider = "ghn"
-	TypeGHTK                   ShippingProvider = "ghtk"
-	TypeVTPost                 ShippingProvider = "vtpost"
-	TypeShippingProviderManual ShippingProvider = "manual"
-	TypeShippingETOP           ShippingProvider = "etop"
 
 	TypeShippingSourceEtop    ShippingPriceSource = "etop"
 	TypeShippingSourceCarrier ShippingPriceSource = "carrier"
@@ -106,23 +92,19 @@ const (
 	StatusCreated         = 0
 	StatusDisabled        = -1
 
-	StateDefault    ShippingState = "default"    //  0
-	StateCreated    ShippingState = "created"    //  2
-	StatePicking    ShippingState = "picking"    //  2
-	StateHolding    ShippingState = "holding"    //  2
-	StateDelivering ShippingState = "delivering" //  2
-	StateReturning  ShippingState = "returning"  //  2
-	StateDelivered  ShippingState = "delivered"  //  0
-	StateReturned   ShippingState = "returned"   // -1
-	StateCancelled  ShippingState = "cancelled"  // -1
-	StateClosed     ShippingState = "closed"     //  1
+	StateDefault    = shipping.Default
+	StateCreated    = shipping.Created
+	StatePicking    = shipping.Picking
+	StateHolding    = shipping.Holding
+	StateDelivering = shipping.Delivering
+	StateReturning  = shipping.Returning
+	StateDelivered  = shipping.Delivered
+	StateReturned   = shipping.Returned
+	StateCancelled  = shipping.Cancelled
 
 	// Trạng thái Bồi hoàn
-	StateUndeliverable ShippingState = "undeliverable" //  2
-	StateUnknown       ShippingState = "unknown"       //  2
-
-	//StateConfirmed     ShippingState = "confirmed"     //  0
-	//StateProcessing    ShippingState = "processing"    //  2
+	StateUndeliverable = shipping.Undeliverable
+	StateUnknown       = shipping.Unknown
 
 	ShippingFeeTypeMain         ShippingFeeLineType = "main"           // phí dịch vụ
 	ShippingFeeTypeReturn       ShippingFeeLineType = "return"         // phí trả hàng
@@ -167,9 +149,9 @@ const (
 	GHNNoteCodeChoXemHang   = "CHOXEMHANGKHONGTHU"
 	GHNNoteCodeKhongXemHang = "KHONGCHOXEMHANG"
 
-	TryOnNone TryOn = "none"
-	TryOnOpen TryOn = "open"
-	TryOnTry  TryOn = "try"
+	TryOnNone = try_on.None
+	TryOnOpen = try_on.Open
+	TryOnTry  = try_on.Try
 
 	FfmActionNothing FfmAction = iota
 	FfmActionCancel
@@ -199,7 +181,7 @@ var ShippingFeeShopTypes = []ShippingFeeLineType{
 //    LastSyncAt: updated when querying external data source successfully
 // LastTrySypkg/etop/model/model.go:18:ncAt: updated when querying external data source (may unsuccessfully)
 
-var ShippingStateMap = map[ShippingState]string{
+var ShippingStateMap = map[shipping.State]string{
 	StateDefault:       "Mặc định",
 	StateCreated:       "Mới",
 	StatePicking:       "Đang lấy hàng",
@@ -209,17 +191,8 @@ var ShippingStateMap = map[ShippingState]string{
 	StateDelivered:     "Đã giao hàng",
 	StateReturned:      "Đã trả hàng",
 	StateCancelled:     "Hủy",
-	StateClosed:        "Hoàn tất",
 	StateUndeliverable: "Bồi hoàn",
 	StateUnknown:       "Không xác định",
-}
-
-func (s ShippingState) Text() string {
-	res := ShippingStateMap[s]
-	if res == "" {
-		return "Không xác định"
-	}
-	return res
 }
 
 func EtopPaymentStatusLabel(s status4.Status) string {
@@ -267,13 +240,13 @@ func PaymentStatusLabel(s status4.Status) string {
 	}
 }
 
-func (t AccountType) Label() string {
+func AccountTypeLabel(t account_type.AccountType) string {
 	switch t {
-	case TypeShop:
+	case account_type.Shop:
 		return "cửa hàng"
-	case TypePartner:
+	case account_type.Partner:
 		return "tài khoản"
-	case TypeEtop:
+	case account_type.Etop:
 		return "tài khoản"
 	default:
 		return "tài khoản"
@@ -313,30 +286,15 @@ func VerifyOrderSource(s OrderSourceType) bool {
 	return false
 }
 
-func (s ShippingProvider) Label() string {
+func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
 	switch s {
-	case TypeGHN:
-		return "Giao Hàng Nhanh"
-	case TypeGHTK:
-		return "Giao Hàng Tiết Kiệm"
-	case TypeVTPost:
-		return "Viettel Post"
-	case TypeShippingProviderManual:
-		return "Tự giao"
-	default:
-		return ""
-	}
-}
-
-func VerifyShippingProvider(s ShippingProvider) bool {
-	switch s {
-	case TypeGHN, TypeGHTK, TypeVTPost, TypeShippingProviderManual:
+	case shipping_provider.GHN, shipping_provider.GHTK, shipping_provider.VTPost, shipping_provider.Manual:
 		return true
 	}
 	return false
 }
 
-func TryOnFromGHNNoteCode(c string) TryOn {
+func TryOnFromGHNNoteCode(c string) try_on.TryOnCode {
 	switch c {
 	case GHNNoteCodeKhongXemHang:
 		return TryOnNone
@@ -345,11 +303,11 @@ func TryOnFromGHNNoteCode(c string) TryOn {
 	case GHNNoteCodeChoThuHang:
 		return TryOnTry
 	default:
-		return ""
+		return 0
 	}
 }
 
-func GHNNoteCodeFromTryOn(to TryOn) string {
+func GHNNoteCodeFromTryOn(to try_on.TryOnCode) string {
 	switch to {
 	case TryOnNone:
 		return GHNNoteCodeKhongXemHang
@@ -368,7 +326,7 @@ type Account struct {
 	ID       dot.ID
 	OwnerID  dot.ID
 	Name     string
-	Type     AccountType
+	Type     account_type.AccountType
 	ImageURL string
 	URLSlug  string
 }
@@ -382,7 +340,7 @@ func (s *Shop) GetAccount() *Account {
 		ID:       s.ID,
 		OwnerID:  s.OwnerID,
 		Name:     s.Name,
-		Type:     TypeShop,
+		Type:     account_type.Shop,
 		ImageURL: s.ImageURL,
 		URLSlug:  "",
 	}
@@ -393,7 +351,7 @@ func (s *Partner) GetAccount() *Account {
 		ID:       s.ID,
 		OwnerID:  s.OwnerID,
 		Name:     s.Name,
-		Type:     TypePartner,
+		Type:     account_type.Partner,
 		ImageURL: s.ImageURL,
 		URLSlug:  "",
 	}
@@ -431,7 +389,7 @@ type Shop struct {
 
 	// @deprecated use try_on instead
 	GhnNoteCode string
-	TryOn       TryOn
+	TryOn       try_on.TryOnCode
 	CompanyInfo *CompanyInfo
 	// MoneyTransactionRRule format:
 	// FREQ=DAILY
@@ -484,8 +442,8 @@ func (s *Shop) GetShopName() string {
 	return s.Name
 }
 
-func (s *Shop) GetTryOn() TryOn {
-	if s.TryOn != "" {
+func (s *Shop) GetTryOn() try_on.TryOnCode {
+	if s.TryOn != 0 {
 		return s.TryOn
 	}
 	return TryOnFromGHNNoteCode(s.GhnNoteCode)
@@ -527,7 +485,7 @@ type Partner struct {
 	ContactPersons  []*ContactPerson
 	RecognizedHosts []string
 	RedirectURLs    []string
-	// AvailableFromEtop: dùng để xác định `partner` này có thể xác thực shop trực tiếp từ client của ETOP hay không
+	// AvailableFromEtop: dùng để xác định `partner` này có thể xác thực shop trực tiếp từ client của Etop hay không
 	// Sau khi xác thực xong sẽ trỏ trực tiếp về `redirect_url` trong field AvailableFromEtopConfig để về trang xác thực của `partner`
 	AvailableFromEtop       bool
 	AvailableFromEtopConfig *AvailableFromEtopConfig
@@ -805,17 +763,17 @@ type FulfillmentSyncStates struct {
 	TrySyncAt time.Time `json:"try_sync_at"`
 	Error     *Error    `json:"error"`
 
-	NextShippingState ShippingState `json:"next_shipping_state"`
+	NextShippingState shipping.State `json:"next_shipping_state"`
 }
 
-func (f FfmAction) ToShippingState() ShippingState {
+func (f FfmAction) ToShippingState() shipping.State {
 	switch f {
 	case FfmActionCancel:
 		return StateCancelled
 	case FfmActionReturn:
 		return StateReturning
 	default:
-		return ""
+		return shipping.Unknown
 	}
 }
 
@@ -1204,34 +1162,6 @@ type ShippingSourceSecret struct {
 	GroupAddressID int `json:"GroupAddressID"`
 }
 
-func (s ShippingState) ToStatus4() status4.Status {
-	switch s {
-	case StateDefault:
-		return status4.Z
-	case StateCancelled,
-		StateReturned:
-		return status4.N
-	case StateClosed:
-		return status4.P
-	}
-	return status4.S
-}
-
-func (s ShippingState) ToShippingStatus5() status5.Status {
-	switch s {
-	case StateDefault:
-		return status5.Z
-	case StateCancelled:
-		return status5.N
-	case StateReturning, StateReturned:
-		return status5.NS
-	case StateDelivered:
-		return status5.P
-	default:
-		return status5.S
-	}
-}
-
 type AvailableShippingService struct {
 	Name string
 
@@ -1240,7 +1170,7 @@ type AvailableShippingService struct {
 
 	// ShippingFeeMain: Phí chính giao hàng
 	ShippingFeeMain   int
-	Provider          ShippingProvider
+	Provider          shipping_provider.ShippingProvider
 	ProviderServiceID string
 
 	ExpectedPickAt     time.Time

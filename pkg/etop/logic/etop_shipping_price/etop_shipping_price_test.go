@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"github.com/stretchr/testify/assert"
 
 	"etop.vn/api/main/location"
@@ -206,7 +208,7 @@ func TestGetEtopShippingServices(t *testing.T) {
 	_longxuyen := ag.District
 
 	for _, tt := range []struct {
-		carrier            model.ShippingProvider
+		carrier            shipping_provider.ShippingProvider
 		fromProvince       *location.Province
 		toProvince         *location.Province
 		toDistrict         *location.District
@@ -214,23 +216,23 @@ func TestGetEtopShippingServices(t *testing.T) {
 		expectServiceTypes []string
 		expectPrices       []int
 	}{
-		{model.TypeGHTK, _hcm, _hn, _bavi, 100, nil, nil},
-		{model.TypeGHTK, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{24000}},
-		{model.TypeGHTK, _hcm, _dn, _camle, 400, nil, nil},
-		{model.TypeGHTK, _hcm, _dn, _camle, 1400, nil, nil},
-		{model.TypeGHTK, _hcm, _hcm, _binhthanh, 3400, nil, nil},
-		{model.TypeGHTK, _dn, _hcm, _quan10, 700, nil, nil},
-		{model.TypeGHTK, _dn, _hn, _bavi, 200, nil, nil},
-		{model.TypeGHTK, _ag, _dn, _longxuyen, 400, nil, nil},
-		{model.TypeGHTK, _ag, _hn, _bavi, 400, nil, nil},
-		{model.TypeGHTK, _hn, _dn, _camle, 3400, nil, nil},
-		{model.TypeGHTK, _hn, _ag, _longxuyen, 100, []string{model.ShippingServiceNameStandard}, []int{24000}},
+		{shipping_provider.GHTK, _hcm, _hn, _bavi, 100, nil, nil},
+		{shipping_provider.GHTK, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{24000}},
+		{shipping_provider.GHTK, _hcm, _dn, _camle, 400, nil, nil},
+		{shipping_provider.GHTK, _hcm, _dn, _camle, 1400, nil, nil},
+		{shipping_provider.GHTK, _hcm, _hcm, _binhthanh, 3400, nil, nil},
+		{shipping_provider.GHTK, _dn, _hcm, _quan10, 700, nil, nil},
+		{shipping_provider.GHTK, _dn, _hn, _bavi, 200, nil, nil},
+		{shipping_provider.GHTK, _ag, _dn, _longxuyen, 400, nil, nil},
+		{shipping_provider.GHTK, _ag, _hn, _bavi, 400, nil, nil},
+		{shipping_provider.GHTK, _hn, _dn, _camle, 3400, nil, nil},
+		{shipping_provider.GHTK, _hn, _ag, _longxuyen, 100, []string{model.ShippingServiceNameStandard}, []int{24000}},
 
-		{model.TypeGHN, _hn, _dn, _camle, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
-		{model.TypeGHN, _dn, _hcm, _quan10, 700, []string{model.ShippingServiceNameStandard}, []int{32000}},
-		{model.TypeGHN, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
-		{model.TypeGHN, _hn, _dn, _camle, 2200, []string{model.ShippingServiceNameStandard}, []int{47000}},
-		{model.TypeGHN, _hcm, _hcm, _quan10, 2200, []string{model.ShippingServiceNameStandard}, []int{15500}},
+		{shipping_provider.GHN, _hn, _dn, _camle, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{shipping_provider.GHN, _dn, _hcm, _quan10, 700, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{shipping_provider.GHN, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{shipping_provider.GHN, _hn, _dn, _camle, 2200, []string{model.ShippingServiceNameStandard}, []int{47000}},
+		{shipping_provider.GHN, _hcm, _hcm, _quan10, 2200, []string{model.ShippingServiceNameStandard}, []int{15500}},
 	} {
 		t.Run("GetEtopShippingServices", func(t *testing.T) {
 			args := &GetEtopShippingServicesArgs{

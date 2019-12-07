@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sq"
@@ -81,7 +83,7 @@ func CreatePartner(ctx context.Context, cmd *model.CreatePartnerCommand) error {
 		ID:       partner.ID,
 		OwnerID:  partner.OwnerID,
 		Name:     partner.Name,
-		Type:     model.TypePartner,
+		Type:     account_type.Partner,
 		ImageURL: partner.ImageURL,
 		URLSlug:  "",
 	}

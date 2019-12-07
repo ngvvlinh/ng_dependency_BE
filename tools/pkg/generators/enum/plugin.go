@@ -80,14 +80,14 @@ func parseDirectives(ng generator.Engine, enum *defs.Enum) error {
 		}
 	}
 	{
-		zeroType := ds.GetArg("enum:sql:zero")
+		zeroType := ds.GetArg("enum:zero")
 		switch zeroType {
 		case "":
 		// no-op
 		case "null":
 			currentInfo.Set(enum, keyModelZero{}, true)
 		default:
-			return generator.Errorf(nil, "invalid enum:sql:zero for %v.%v", obj.Pkg().Path(), obj.Name())
+			return generator.Errorf(nil, "invalid enum:zero for %v.%v", obj.Pkg().Path(), obj.Name())
 		}
 	}
 	return nil

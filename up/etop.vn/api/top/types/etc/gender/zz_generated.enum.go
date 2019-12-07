@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -30,6 +31,25 @@ var enumGenderValue = map[string]int{
 func ParseGender(s string) (Gender, bool) {
 	val, ok := enumGenderValue[s]
 	return Gender(val), ok
+}
+
+func ParseGenderWithDefault(s string, d Gender) Gender {
+	val, ok := enumGenderValue[s]
+	if !ok {
+		return d
+	}
+	return Gender(val)
+}
+
+func ParseGenderWithNull(s dot.NullString, d Gender) NullGender {
+	if !s.Valid {
+		return NullGender{}
+	}
+	val, ok := enumGenderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Gender(val).Wrap()
 }
 
 func (e Gender) Enum() int {

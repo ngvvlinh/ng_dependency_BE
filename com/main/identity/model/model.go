@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/top/types/etc/status3"
 
 	"etop.vn/backend/pkg/etop/model"
@@ -63,6 +65,6 @@ func (s *Affiliate) GetAccount() *model.Account {
 		ID:      s.ID,
 		OwnerID: s.OwnerID,
 		Name:    s.Name,
-		Type:    model.TypeAffiliate,
+		Type:    account_type.Affiliate,
 	}
 }

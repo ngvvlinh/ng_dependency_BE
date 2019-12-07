@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	exttypes "etop.vn/api/top/external/types"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
@@ -39,13 +41,13 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	if !shipping.CodAmount.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.cod_amount")
 	}
-	if shipping.Carrier == nil {
+	if shipping.Carrier == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.carrier")
 	}
 	if !shipping.IncludeInsurance.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.include_insurance")
 	}
-	if shipping.TryOn == nil {
+	if shipping.TryOn == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.try_on")
 	}
 
@@ -105,9 +107,9 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 			ShippingServiceCode: shipping.ShippingServiceCode.Apply(""),
 			ShippingServiceFee:  shipping.ShippingServiceFee.Apply(0),
 			ShippingProvider:    0,
-			Carrier:             *shipping.Carrier,
+			Carrier:             shipping.Carrier,
 			IncludeInsurance:    shipping.IncludeInsurance.Apply(false),
-			TryOn:               *shipping.TryOn,
+			TryOn:               shipping.TryOn,
 			ShippingNote:        shipping.ShippingNote.Apply(""),
 			CodAmount:           shipping.CodAmount,
 			GrossWeight:         shipping.GrossWeight,
@@ -118,13 +120,13 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		},
 		GhnNoteCode: 0, // will be over-written by try_on
 	}
-	if err := validateAddress(req.CustomerAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
+	if err := validateAddress(req.CustomerAddress, shipping.Carrier); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.ShippingAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
+	if err := validateAddress(req.ShippingAddress, shipping.Carrier); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ người nhận không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.Shipping.PickupAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
+	if err := validateAddress(req.Shipping.PickupAddress, shipping.Carrier); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
 
@@ -247,7 +249,7 @@ func GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentI
 	return convertpb.PbFulfillment(ffm), nil
 }
 
-func validateAddress(address *types.OrderAddress, shippingProvider model.ShippingProvider) error {
+func validateAddress(address *types.OrderAddress, shippingProvider shipping_provider.ShippingProvider) error {
 	if address == nil {
 		return errors.New("Thiếu thông tin địa chỉ")
 	}
@@ -274,7 +276,7 @@ func validateAddress(address *types.OrderAddress, shippingProvider model.Shippin
 		address.FullName = s
 	}
 
-	if shippingProvider == model.TypeVTPost {
+	if shippingProvider == shipping_provider.VTPost {
 		// required Ward
 		_address, err := convertpbint.OrderAddressToModel(address)
 		if err != nil {

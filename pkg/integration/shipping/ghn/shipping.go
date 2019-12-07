@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -50,7 +52,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 		}
 		cmd := &model.CreateShippingSource{
 			Name: GetShippingSourceName(cName, c.ClientID()),
-			Type: model.TypeGHN,
+			Type: shipping_provider2.GHN,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
@@ -128,7 +130,7 @@ func (c *Carrier) CreateFulfillment(
 	r := ghnCmd.Result
 
 	now := time.Now()
-	expectedDeliveryAt := shipping.CalcDeliveryTime(model.TypeGHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
+	expectedDeliveryAt := shipping.CalcDeliveryTime(shipping_provider2.GHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
 	updateFfm := &shipmodel.Fulfillment{
 		ID:                ffm.ID,
 		ProviderServiceID: service.ProviderServiceID,
@@ -264,10 +266,10 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	}
 	providerServices := cmd.Result
 
-	// get ETOP services
+	// get Etop services
 	etopServiceArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
 		ArbitraryID:  args.AccountID,
-		Carrier:      model.TypeGHN,
+		Carrier:      shipping_provider2.GHN,
 		FromProvince: fromProvince,
 		ToProvince:   toProvince,
 		ToDistrict:   toDistrict,

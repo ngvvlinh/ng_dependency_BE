@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/main/identity"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -134,12 +136,12 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	var err error
 	var account model.AccountInterface
 	if q.RequireAPIKey {
-		var expectType model.AccountType
+		var expectType account_type.AccountType
 		switch {
 		case q.RequireShop:
-			expectType = model.TypeShop
+			expectType = account_type.Shop
 		case q.RequirePartner:
-			expectType = model.TypePartner
+			expectType = account_type.Partner
 		default:
 			ll.Panic("unexpected account type")
 		}
@@ -336,7 +338,7 @@ func startSessionEtopAdmin(ctx context.Context, require bool, s *Session) bool {
 	return true
 }
 
-func verifyAPIKey(ctx context.Context, apikey string, expectType model.AccountType) (*claims.Claim, model.AccountInterface, error) {
+func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, model.AccountInterface, error) {
 	info, ok := authkey.ValidateAuthKeyWithType(authkey.TypeAPIKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
@@ -354,7 +356,7 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType model.AccountTy
 	}
 
 	switch expectType {
-	case model.TypePartner:
+	case account_type.Partner:
 		partner := query.Result.Account.(*model.Partner)
 		claim := &claims.Claim{
 			ClaimInfo: claims.ClaimInfo{
@@ -370,7 +372,7 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType model.AccountTy
 		}
 		return claim, partner, nil
 
-	case model.TypeShop:
+	case account_type.Shop:
 		shop := query.Result.Account.(*model.Shop)
 		claim := &claims.Claim{
 			ClaimInfo: claims.ClaimInfo{

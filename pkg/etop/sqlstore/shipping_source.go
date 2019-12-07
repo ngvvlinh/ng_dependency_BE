@@ -20,7 +20,7 @@ func init() {
 
 func GetShippingSources(ctx context.Context, query *model.GetShippingSources) error {
 	s := x.Table("shipping_source")
-	if query.Type != "" {
+	if query.Type != 0 {
 		s = s.Where("type = ?", query.Type)
 	}
 	if len(query.Names) != 0 {
@@ -41,7 +41,7 @@ func GetShippingSource(ctx context.Context, query *model.GetShippingSource) erro
 	if query.Username != "" {
 		s = s.Where("username = ?", query.Username)
 	}
-	if query.Type != "" {
+	if query.Type != 0 {
 		s = s.Where("type = ?", query.Type)
 	}
 	var shippingSource = new(model.ShippingSource)
@@ -63,7 +63,7 @@ func CreateShippingSource(ctx context.Context, cmd *model.CreateShippingSource) 
 	if cmd.Name == "" {
 		return cm.Error(cm.InvalidArgument, "Missing name", nil)
 	}
-	if cmd.Type == "" {
+	if cmd.Type == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing shipping provider type", nil)
 	}
 

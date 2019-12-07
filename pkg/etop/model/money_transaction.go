@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -10,7 +12,7 @@ import (
 type CreateCreditCommand struct {
 	Amount int
 	ShopID dot.ID
-	Type   AccountType
+	Type   account_type.AccountType
 	PaidAt time.Time
 
 	Result *CreditExtended

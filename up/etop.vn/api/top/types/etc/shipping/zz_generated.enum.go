@@ -8,46 +8,66 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
 var __jsonNull = []byte("null")
 
 var enumStateName = map[int]string{
-	0:   "default",
-	1:   "created",
-	2:   "confirmed",
-	3:   "processing",
-	4:   "picking",
-	5:   "holding",
-	6:   "returning",
-	7:   "returned",
-	8:   "delivering",
-	9:   "delivered",
-	101: "unknown",
-	126: "undeliverable",
-	127: "cancelled",
+	0:  "unknown",
+	1:  "default",
+	2:  "created",
+	3:  "confirmed",
+	4:  "processing",
+	5:  "picking",
+	6:  "holding",
+	7:  "returning",
+	8:  "returned",
+	9:  "delivering",
+	10: "delivered",
+	-1: "cancelled",
+	-2: "undeliverable",
 }
 
 var enumStateValue = map[string]int{
-	"default":       0,
-	"created":       1,
-	"confirmed":     2,
-	"processing":    3,
-	"picking":       4,
-	"holding":       5,
-	"returning":     6,
-	"returned":      7,
-	"delivering":    8,
-	"delivered":     9,
-	"unknown":       101,
-	"undeliverable": 126,
-	"cancelled":     127,
+	"unknown":       0,
+	"default":       1,
+	"created":       2,
+	"confirmed":     3,
+	"processing":    4,
+	"picking":       5,
+	"holding":       6,
+	"returning":     7,
+	"returned":      8,
+	"delivering":    9,
+	"delivered":     10,
+	"cancelled":     -1,
+	"undeliverable": -2,
 }
 
 func ParseState(s string) (State, bool) {
 	val, ok := enumStateValue[s]
 	return State(val), ok
+}
+
+func ParseStateWithDefault(s string, d State) State {
+	val, ok := enumStateValue[s]
+	if !ok {
+		return d
+	}
+	return State(val)
+}
+
+func ParseStateWithNull(s dot.NullString, d State) NullState {
+	if !s.Valid {
+		return NullState{}
+	}
+	val, ok := enumStateValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return State(val).Wrap()
 }
 
 func (e State) Enum() int {

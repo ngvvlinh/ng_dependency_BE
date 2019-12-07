@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/main/authorization"
 
 	cm "etop.vn/backend/pkg/common"
@@ -50,7 +52,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 		account := &model.Account{
 			ID:       id,
 			Name:     cmd.Name,
-			Type:     model.TypeShop,
+			Type:     account_type.Shop,
 			ImageURL: cmd.ImageURL,
 			URLSlug:  cmd.URLSlug,
 		}
@@ -334,7 +336,7 @@ func GetAccountAuth(ctx context.Context, query *model.GetAccountAuthQuery) error
 		Where("aa.status = 1 AND aa.deleted_at IS NULL")
 
 	switch query.AccountType {
-	case model.TypePartner:
+	case account_type.Partner:
 		if cm.GetTag(query.AccountID) != model.TagPartner {
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
@@ -348,7 +350,7 @@ func GetAccountAuth(ctx context.Context, query *model.GetAccountAuthQuery) error
 		query.Result.Account = res.Partner
 		return nil
 
-	case model.TypeShop:
+	case account_type.Shop:
 		if cm.GetTag(query.AccountID) != model.TagShop {
 			return cm.Errorf(cm.NotFound, nil, "")
 		}

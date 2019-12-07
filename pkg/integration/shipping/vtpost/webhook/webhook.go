@@ -3,6 +3,8 @@ package vtpostWebhook
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -10,7 +12,6 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
@@ -61,7 +62,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		data, _ := jsonx.Marshal(orderData)
 		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:                       logID,
-			ShippingProvider:         model.TypeVTPost.ToString(),
+			ShippingProvider:         shipping_provider.VTPost.String(),
 			Data:                     data,
 			ShippingCode:             orderData.OrderNumber,
 			ExternalShippingState:    orderData.StatusName,
@@ -73,7 +74,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 
 	query := &modelx.GetFulfillmentQuery{
-		ShippingProvider:     model.TypeVTPost,
+		ShippingProvider:     shipping_provider.VTPost,
 		ExternalShippingCode: orderData.OrderNumber,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

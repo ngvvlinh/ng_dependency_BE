@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -44,6 +45,25 @@ var enumStateValue = map[string]int{
 func ParseState(s string) (State, bool) {
 	val, ok := enumStateValue[s]
 	return State(val), ok
+}
+
+func ParseStateWithDefault(s string, d State) State {
+	val, ok := enumStateValue[s]
+	if !ok {
+		return d
+	}
+	return State(val)
+}
+
+func ParseStateWithNull(s dot.NullString, d State) NullState {
+	if !s.Valid {
+		return NullState{}
+	}
+	val, ok := enumStateValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return State(val).Wrap()
 }
 
 func (e State) Enum() int {

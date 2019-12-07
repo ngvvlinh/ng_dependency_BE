@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -24,6 +25,25 @@ var enumCreditTypeValue = map[string]int{
 func ParseCreditType(s string) (CreditType, bool) {
 	val, ok := enumCreditTypeValue[s]
 	return CreditType(val), ok
+}
+
+func ParseCreditTypeWithDefault(s string, d CreditType) CreditType {
+	val, ok := enumCreditTypeValue[s]
+	if !ok {
+		return d
+	}
+	return CreditType(val)
+}
+
+func ParseCreditTypeWithNull(s dot.NullString, d CreditType) NullCreditType {
+	if !s.Valid {
+		return NullCreditType{}
+	}
+	val, ok := enumCreditTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return CreditType(val).Wrap()
 }
 
 func (e CreditType) Enum() int {

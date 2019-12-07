@@ -167,7 +167,7 @@ func DeliveryPointToModel(in *shipnowtypes.DeliveryPoint) (out *shipnowmodel.Del
 		Height:           in.Height,
 		BasketValue:      in.BasketValue,
 		CODAmount:        in.CodAmount,
-		TryOn:            "",
+		TryOn:            0,
 		ShippingNote:     in.ShippingNote,
 		OrderID:          in.OrderId,
 		OrderCode:        in.OrderCode,

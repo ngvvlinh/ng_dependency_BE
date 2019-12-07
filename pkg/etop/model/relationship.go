@@ -1,6 +1,7 @@
 package model
 
 import (
+	"etop.vn/api/top/types/etc/account_type"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -89,14 +90,14 @@ type DeleteAccountUserCommand struct {
 
 type GetAllAccountRolesQuery struct {
 	UserID dot.ID
-	Type   AccountType
+	Type   account_type.NullAccountType
 
 	Result []*AccountUserExtended
 }
 
 type GetAllAccountUsersQuery struct {
 	UserIDs []dot.ID
-	Type    AccountType
+	Type    account_type.NullAccountType
 
 	Result []*AccountUser
 }

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
 	"etop.vn/api/top/types/etc/status3"
 
 	"etop.vn/api/top/int/etop"
@@ -705,9 +707,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		account := accUserX.Account
 		switch {
 		case preferAccountID == account.ID,
-			preferAccountType == model.TagShop && account.Type == model.TypeShop,
-			preferAccountType == model.TagEtop && account.Type == model.TypeEtop,
-			preferAccountType == model.TagAffiliate && account.Type == model.TypeAffiliate:
+			preferAccountType == model.TagShop && account.Type == account_type.Shop,
+			preferAccountType == model.TagEtop && account.Type == account_type.Etop,
+			preferAccountType == model.TagAffiliate && account.Type == account_type.Affiliate:
 			currentAccount = availableAccounts[i]
 			currentAccountID = currentAccount.Id
 		}
@@ -1215,9 +1217,9 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 		"AccountName": account.Name,
 	}
 	switch account.Type {
-	case model.TypeShop:
-		emailData["AccountType"] = account.Type.Label()
-	case model.TypeEtop:
+	case account_type.Shop:
+		emailData["AccountType"] = model.AccountTypeLabel(account.Type)
+	case account_type.Etop:
 		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name, account).WithMeta("type", string(account.Type))
 	default:
 		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("type", string(account.Type))

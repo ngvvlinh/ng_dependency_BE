@@ -5,11 +5,12 @@ import (
 	"math/rand"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/scheduler"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/l"
@@ -64,8 +65,8 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 
 	ctx := context.Background()
 	cmd := &shipmodelx.GetUnCompleteFulfillmentsQuery{
-		ShippingProviders: []model.ShippingProvider{
-			model.TypeGHN, model.TypeGHTK,
+		ShippingProviders: []shipping_provider.ShippingProvider{
+			shipping_provider.GHN, shipping_provider.GHTK,
 		},
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -75,9 +76,9 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 	ll.S.Info("uncomplete order :: ", len(cmd.Result))
 	for _, ffm := range cmd.Result {
 		switch ffm.ShippingProvider {
-		case model.TypeGHN:
+		case shipping_provider.GHN:
 			updateFfmsGHN = append(updateFfmsGHN, ffm)
-		case model.TypeGHTK:
+		case shipping_provider.GHTK:
 			updateFfmsGHTK = append(updateFfmsGHTK, ffm)
 			// TODO
 		default:

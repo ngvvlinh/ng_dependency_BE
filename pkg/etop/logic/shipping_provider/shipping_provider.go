@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status4"
 
 	"etop.vn/capi/dot"
@@ -70,13 +72,13 @@ func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *orde
 	return err
 }
 
-func (ctrl *ProviderManager) GetShippingProviderDriver(provider model.ShippingProvider) ShippingProvider {
+func (ctrl *ProviderManager) GetShippingProviderDriver(provider shipping_provider.ShippingProvider) ShippingProvider {
 	switch provider {
-	case model.TypeGHN:
+	case shipping_provider.GHN:
 		return ctrl.GHN
-	case model.TypeGHTK:
+	case shipping_provider.GHTK:
 		return ctrl.GHTK
-	case model.TypeVTPost:
+	case shipping_provider.VTPost:
 		return ctrl.VTPost
 	default:
 		return nil
@@ -350,13 +352,13 @@ func (ctrl *ProviderManager) VerifyAddress(addr *model.Address, requireWard bool
 	return loc.Province, loc.District, loc.Ward, nil
 }
 
-func (ctrl *ProviderManager) ParseServiceCode(carrier model.ShippingProvider, code string) (serviceName string, ok bool) {
+func (ctrl *ProviderManager) ParseServiceCode(carrier shipping_provider.ShippingProvider, code string) (serviceName string, ok bool) {
 	switch carrier {
-	case model.TypeGHN:
+	case shipping_provider.GHN:
 		return ctrl.GHN.ParseServiceCode(code)
-	case model.TypeGHTK:
+	case shipping_provider.GHTK:
 		return ctrl.GHTK.ParseServiceCode(code)
-	case model.TypeVTPost:
+	case shipping_provider.VTPost:
 		return ctrl.VTPost.ParseServiceCode(code)
 	default:
 		return "", false

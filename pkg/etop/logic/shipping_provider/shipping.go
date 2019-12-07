@@ -91,19 +91,19 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 	}
 
 	switch q.Provider {
-	case pbsp.Ghn:
+	case pbsp.GHN:
 		services, err := ctrl.GHN.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, services...)
-	case pbsp.Ghtk:
+	case pbsp.GHTK:
 		services, err := ctrl.GHTK.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, services...)
-	case pbsp.Vtpost:
+	case pbsp.VTPost:
 		services, err := ctrl.VTPost.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err

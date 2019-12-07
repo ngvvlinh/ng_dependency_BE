@@ -199,14 +199,14 @@
     }
   },
   "definitions": {
-    "baAccountType": {
+    "adAddressType": {
       "type": "string",
       "enum": [
         "unknown",
-        "partner",
-        "shop",
-        "affiliate",
-        "etop"
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
       ]
     },
     "baAddress": {
@@ -268,7 +268,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/jjAddressType"
+          "$ref": "#/definitions/adAddressType"
         },
         "ward": {
           "type": "string"
@@ -325,7 +325,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         },
         "website": {
           "type": "string"
@@ -555,7 +555,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/baAccountType"
+          "$ref": "#/definitions/jjAccountType"
         }
       }
     },
@@ -642,14 +642,14 @@
         }
       }
     },
-    "jjAddressType": {
+    "jjAccountType": {
       "type": "string",
       "enum": [
         "unknown",
-        "general",
-        "warehouse",
-        "shipto",
-        "shipfrom"
+        "partner",
+        "shop",
+        "affiliate",
+        "etop"
       ]
     },
     "ktEmpty": {

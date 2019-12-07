@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/try_on"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status3"
@@ -53,7 +55,7 @@ func CreateOrder(
 		shipping.Carrier = shipping.ShippingProvider
 	}
 	if (r.Shipping != nil || r.ShopShipping != nil) &&
-		!model.VerifyShippingProvider(convertpb.ShippingProviderToModel(&shipping.Carrier)) {
+		!model.VerifyShippingProvider(shipping.Carrier) {
 		return nil, cm.Error(cm.InvalidArgument, "Nhà vận chuyển không hợp lệ", nil)
 	}
 	if r.ExternalUrl != "" {
@@ -891,7 +893,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		shipping = m.ShopShipping
 	}
 	paymentMethod := m.PaymentMethod
-	var tryOn model.TryOn
+	var tryOn try_on.TryOnCode
 	if shipping != nil {
 		// return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping/shop_shipping")
 		if m.PaymentMethod == "" {
@@ -900,7 +902,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 				paymentMethod = model.PaymentMethodOther
 			}
 		}
-		tryOn = convertpb.TryOnCodeToModel(&shipping.TryOn)
+		tryOn = shipping.TryOn
 	}
 	if !model.VerifyPaymentMethod(paymentMethod) {
 		return nil, cm.Error(cm.InvalidArgument, "Phương thức thanh toán không hợp lệ", nil)
@@ -982,16 +984,16 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 
 	if order.ShopShipping != nil {
 		shippingServiceCode := order.ShopShipping.GetShippingServiceCode()
-		carrierName := order.ShopShipping.GetShippingProvider()
+		carrier := order.ShopShipping.GetShippingProvider()
 
 		// handle etop custom service code here
 		// TODO: refactor, move to shipping_provider
 		// check ETOP service
 		shippingServiceName, ok := etop_shipping_price.ParseEtopServiceCode(shippingServiceCode)
 		if !ok {
-			shippingServiceName, ok = ctrl.ParseServiceCode(carrierName, shippingServiceCode)
+			shippingServiceName, ok = ctrl.ParseServiceCode(carrier, shippingServiceCode)
 		}
-		if carrierName != "" && !ok {
+		if carrier != 0 && !ok {
 			return nil, cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ hotro@etop.vn")
 		}
 		order.ShopShipping.ExternalServiceName = shippingServiceName

@@ -4,33 +4,33 @@ package shipping_fee_type
 type ShippingFeeType int
 
 const (
+	// +enum=unknown
+	Unknown ShippingFeeType = 0
+
 	// +enum=main
-	Main ShippingFeeType = 0
+	Main ShippingFeeType = 1
 
 	// +enum=return
-	Return ShippingFeeType = 1
+	Return ShippingFeeType = 2
 
 	// +enum=adjustment
-	Adjustment ShippingFeeType = 2
+	Adjustment ShippingFeeType = 3
 
 	// +enum=insurance
-	Insurance ShippingFeeType = 3
+	Insurance ShippingFeeType = 4
 
 	// +enum=tax
-	Tax ShippingFeeType = 4
+	Tax ShippingFeeType = 5
 
 	// +enum=other
-	Other ShippingFeeType = 5
+	Other ShippingFeeType = 6
 
 	// +enum=cods
-	Cods ShippingFeeType = 6
+	Cods ShippingFeeType = 7
 
 	// +enum=address_change
-	AddressChange ShippingFeeType = 7
+	AddressChange ShippingFeeType = 8
 
 	// +enum=discount
-	Discount ShippingFeeType = 8
-
-	// +enum=unknown
-	Unknown ShippingFeeType = 127
+	Discount ShippingFeeType = 9
 )

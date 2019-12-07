@@ -399,7 +399,7 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 	cmd := &shipmodelx.UpdateFulfillmentsShippingStateCommand{
 		ShopID:        shopID,
 		IDs:           q.Ids,
-		ShippingState: convertpb.ShippingStateToModel(&q.ShippingState),
+		ShippingState: q.ShippingState,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

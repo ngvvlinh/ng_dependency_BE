@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -44,7 +46,7 @@ func New(cfg Config, locationBus location.QueryBus) *Carrier {
 func (c *Carrier) InitAllClients(ctx context.Context) error {
 	for code, client := range c.clients {
 		if err := client.Ping(); err != nil {
-			return cm.Errorf(cm.ExternalServiceError, err, "Vtpost: can not init client").
+			return cm.Errorf(cm.ExternalServiceError, err, "VTPost: can not init client").
 				WithMetap("client", code)
 		}
 		err := CreateShippingSource(code, client)
@@ -66,7 +68,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 
 	cmd := &model.CreateShippingSource{
 		Name:     clientName,
-		Type:     model.TypeVTPost,
+		Type:     shipping_provider2.VTPost,
 		Username: client.GetUserName(),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {

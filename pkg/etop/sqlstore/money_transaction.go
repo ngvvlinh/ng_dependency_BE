@@ -6,6 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/top/types/etc/account_type"
+
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status3"
 
 	"etop.vn/api/main/receipting"
@@ -1030,7 +1034,7 @@ func mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfi
 	return res
 }
 
-func getExtraFfms(provider model.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*shipmodel.Fulfillment, error) {
+func getExtraFfms(provider shipping_provider.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*shipmodel.Fulfillment, error) {
 	// find all ffms has state: "returned" and cod_etop_transfered_at is NULL of this provider
 	// find all ffms has state "delivered" and total_cod_amount = 0
 	var ffms []*shipmodel.Fulfillment
@@ -1055,7 +1059,7 @@ func combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
 	var ffmAdditionals []*shipmodel.Fulfillment
 	shopFfmMap := make(map[dot.ID][]*shipmodel.Fulfillment)
 	// merge with GHN's ffms returned or (ffm delivered and total_cod_amount = 0)
-	GHNFfms, _ := getExtraFfms(model.TypeGHN, true, true)
+	GHNFfms, _ := getExtraFfms(shipping_provider.GHN, true, true)
 	ffmAdditionals = append(ffmAdditionals, GHNFfms...)
 
 	// merge with VTPOST's ffms
@@ -1077,7 +1081,7 @@ func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
 	var ffms []*shipmodel.Fulfillment
 	{
 		s := x.Table("fulfillment").
-			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(model.TypeVTPost)).
+			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(shipping_provider.VTPost)).
 			Where("shipping_state in (?, ?)", model.StateReturned, model.StateReturning)
 		if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err == nil {
 			UpdateVtpostShippingFeeReturned(ffms)
@@ -1085,7 +1089,7 @@ func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
 	}
 	{
 		// merge with VTPOST's ffms delivered and total_cod_amount = 0
-		VTPOSTFfms, _ := getExtraFfms(model.TypeVTPost, true, false)
+		VTPOSTFfms, _ := getExtraFfms(shipping_provider.VTPost, true, false)
 		ffms = append(ffms, VTPOSTFfms...)
 	}
 	return ffms
@@ -1190,11 +1194,8 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 }
 
 func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
-	if cmd.Type == "" {
-		return cm.Error(cm.InvalidArgument, "Missing credit type", nil)
-	}
 	switch cmd.Type {
-	case model.TypeShop:
+	case account_type.Shop:
 		if cmd.ShopID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 		}

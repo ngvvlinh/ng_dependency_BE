@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -20,6 +21,7 @@ var enumShippingProviderName = map[int]string{
 	19: "ghn",
 	21: "ghtk",
 	23: "vtpost",
+	24: "etop",
 }
 
 var enumShippingProviderValue = map[string]int{
@@ -29,11 +31,31 @@ var enumShippingProviderValue = map[string]int{
 	"ghn":     19,
 	"ghtk":    21,
 	"vtpost":  23,
+	"etop":    24,
 }
 
 func ParseShippingProvider(s string) (ShippingProvider, bool) {
 	val, ok := enumShippingProviderValue[s]
 	return ShippingProvider(val), ok
+}
+
+func ParseShippingProviderWithDefault(s string, d ShippingProvider) ShippingProvider {
+	val, ok := enumShippingProviderValue[s]
+	if !ok {
+		return d
+	}
+	return ShippingProvider(val)
+}
+
+func ParseShippingProviderWithNull(s dot.NullString, d ShippingProvider) NullShippingProvider {
+	if !s.Valid {
+		return NullShippingProvider{}
+	}
+	val, ok := enumShippingProviderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ShippingProvider(val).Wrap()
 }
 
 func (e ShippingProvider) Enum() int {

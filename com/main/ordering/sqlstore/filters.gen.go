@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	m "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
@@ -845,22 +846,22 @@ func (ft *OrderFilters) ByGhnNoteCodePtr(GhnNoteCode *string) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *OrderFilters) ByTryOn(TryOn model.TryOn) *sq.ColumnFilter {
+func (ft *OrderFilters) ByTryOn(TryOn try_on.TryOnCode) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
-		IsNil:  TryOn == "",
+		IsNil:  TryOn == 0,
 	}
 }
 
-func (ft *OrderFilters) ByTryOnPtr(TryOn *model.TryOn) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByTryOnPtr(TryOn *try_on.TryOnCode) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "try_on",
 		Value:  TryOn,
 		IsNil:  TryOn == nil,
-		IsZero: TryOn != nil && (*TryOn) == "",
+		IsZero: TryOn != nil && (*TryOn) == 0,
 	}
 }
 

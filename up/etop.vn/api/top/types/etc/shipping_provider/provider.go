@@ -14,11 +14,29 @@ const (
 	Manual ShippingProvider = 20
 
 	// +enum=ghn
-	Ghn ShippingProvider = 19
+	GHN ShippingProvider = 19
 
 	// +enum=ghtk
-	Ghtk ShippingProvider = 21
+	GHTK ShippingProvider = 21
 
 	// +enum=vtpost
-	Vtpost ShippingProvider = 23
+	VTPost ShippingProvider = 23
+
+	// +enum=etop
+	Etop ShippingProvider = 24
 )
+
+func (s ShippingProvider) Label() string {
+	switch s {
+	case GHN:
+		return "Giao Hàng Nhanh"
+	case GHTK:
+		return "Giao Hàng Tiết Kiệm"
+	case VTPost:
+		return "Viettel Post"
+	case Manual:
+		return "Tự giao"
+	default:
+		return ""
+	}
+}

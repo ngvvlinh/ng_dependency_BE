@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -30,6 +31,25 @@ var enumGHNNoteCodeValue = map[string]int{
 func ParseGHNNoteCode(s string) (GHNNoteCode, bool) {
 	val, ok := enumGHNNoteCodeValue[s]
 	return GHNNoteCode(val), ok
+}
+
+func ParseGHNNoteCodeWithDefault(s string, d GHNNoteCode) GHNNoteCode {
+	val, ok := enumGHNNoteCodeValue[s]
+	if !ok {
+		return d
+	}
+	return GHNNoteCode(val)
+}
+
+func ParseGHNNoteCodeWithNull(s dot.NullString, d GHNNoteCode) NullGHNNoteCode {
+	if !s.Valid {
+		return NullGHNNoteCode{}
+	}
+	val, ok := enumGHNNoteCodeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return GHNNoteCode(val).Wrap()
 }
 
 func (e GHNNoteCode) Enum() int {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/main/location"
@@ -15,7 +17,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Time {
+func CalcPickTime(shippingProvider shipping_provider.ShippingProvider, t time.Time) time.Time {
 	// VTPOST: thời gian lấy hàng dự kiến tạo trước 16h
 	// => lấy trong ngày (trước 18h), tạo sau 16h => lấy trước 18h ngày hôm sau
 	h, m := t.Hour(), t.Minute()
@@ -23,7 +25,7 @@ func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Tim
 	var res time.Time
 	switch {
 	case hm < cm.Clock(10, 0):
-		if shippingProvider == model.TypeVTPost {
+		if shippingProvider == shipping_provider.VTPost {
 			res = t.Add(-hm).Add(cm.Clock(18, 0))
 		} else {
 			res = t.Add(-hm).Add(cm.Clock(12, 0))
@@ -31,7 +33,7 @@ func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Tim
 	case hm < cm.Clock(16, 0):
 		res = t.Add(-hm).Add(cm.Clock(18, 0))
 	default:
-		if shippingProvider == model.TypeVTPost {
+		if shippingProvider == shipping_provider.VTPost {
 			res = t.Add(-hm).Add(cm.Clock(18, 0) + 24*time.Hour)
 		} else {
 			res = t.Add(-hm).Add(cm.Clock(12, 0) + 24*time.Hour)
@@ -42,14 +44,14 @@ func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Tim
 	return res
 }
 
-func CalcServicesTime(shippingProvider model.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
+func CalcServicesTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
 	for _, service := range services {
 		_ = CalcServiceTime(shippingProvider, fromDistrict, toDistrict, service)
 	}
 	return services
 }
 
-func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, service *model.AvailableShippingService) *model.AvailableShippingService {
+func CalcServiceTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, service *model.AvailableShippingService) *model.AvailableShippingService {
 	// GHN, GHTK
 	// Thời gian lấy hàng dự kiến:
 	// Chỉ lấy vào chủ chủ nhật trường hợp nội thành HCM,HN.
@@ -66,7 +68,7 @@ func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *loca
 
 	weekDayPickAt := int(pickAt.Weekday())
 	if weekDayPickAt == 7 {
-		if shippingProvider == model.TypeVTPost {
+		if shippingProvider == shipping_provider.VTPost {
 			pickAt = pickAt.Add(time.Hour * 24)
 			service.ExpectedPickAt = pickAt
 			deliveryAt = deliveryAt.Add(time.Hour * 24)
@@ -86,7 +88,7 @@ func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *loca
 	}
 	weekDayDeliveryAt := int(deliveryAt.Weekday())
 	if weekDayDeliveryAt == 7 {
-		if shippingProvider == model.TypeVTPost || !locationutil.CheckUrbanHCMHN(toDistrict) {
+		if shippingProvider == shipping_provider.VTPost || !locationutil.CheckUrbanHCMHN(toDistrict) {
 			deliveryAt = deliveryAt.Add(time.Hour * 24)
 			service.ExpectedDeliveryAt = deliveryAt
 		}
@@ -94,7 +96,7 @@ func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *loca
 	return service
 }
 
-func CalcDeliveryTime(shippingProvider model.ShippingProvider, toDistrict *location.District, deliveryAt time.Time) time.Time {
+func CalcDeliveryTime(shippingProvider shipping_provider.ShippingProvider, toDistrict *location.District, deliveryAt time.Time) time.Time {
 	// Thời gian giao hàng dự kiến của NVC nếu sau 19h => chuyển qua 12h ngày hôm sau
 	// Chủ nhật chỉ giao nội thành HCM, HN
 	// VTPOST: Chủ nhật ko giao
@@ -104,7 +106,7 @@ func CalcDeliveryTime(shippingProvider model.ShippingProvider, toDistrict *locat
 	}
 	weekDayDeliveryAt := int(deliveryAt.Weekday())
 	if weekDayDeliveryAt == 7 {
-		if shippingProvider == model.TypeVTPost || !locationutil.CheckUrbanHCMHN(toDistrict) {
+		if shippingProvider == shipping_provider.VTPost || !locationutil.CheckUrbanHCMHN(toDistrict) {
 			deliveryAt = deliveryAt.Add(time.Hour * 24)
 		}
 	}

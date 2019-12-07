@@ -5,6 +5,10 @@ import (
 	"math"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
+	"etop.vn/api/top/types/etc/shipping"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	cm "etop.vn/backend/pkg/common"
@@ -177,7 +181,7 @@ func (s StateShipping) ToStatus5() status5.Status {
 	return status5.S
 }
 
-func (s StateShipping) ToShippingStatus5(old model.ShippingState) status5.Status {
+func (s StateShipping) ToShippingStatus5(old shipping.State) status5.Status {
 	switch s {
 	case StateCanceled:
 		return status5.N
@@ -196,7 +200,7 @@ func (s StateShipping) ToShippingStatus5(old model.ShippingState) status5.Status
 	return status5.S
 }
 
-func (s StateShipping) ToModel(old model.ShippingState) model.ShippingState {
+func (s StateShipping) ToModel(old shipping.State) shipping.State {
 	switch s {
 	case StateCanceled:
 		return model.StateCancelled
@@ -379,7 +383,7 @@ func ToShippingService(lines []*model.ShippingFeeLine, providerServiceID string,
 	return &model.AvailableShippingService{
 		Name:               orderService.Name(),
 		ServiceFee:         shippingFeeShop,
-		Provider:           model.TypeVTPost,
+		Provider:           shipping_provider.VTPost,
 		ProviderServiceID:  providerServiceID,
 		ExpectedPickAt:     expectedPickTime,
 		ExpectedDeliveryAt: expectedDeliveryTime,
@@ -391,7 +395,7 @@ func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string
 	return &model.AvailableShippingService{
 		Name:               serviceCode.Name(),
 		ServiceFee:         s.GiaCuoc,
-		Provider:           model.TypeVTPost,
+		Provider:           shipping_provider.VTPost,
 		ProviderServiceID:  providerServiceID,
 		ExpectedPickAt:     expectedPickTime,
 		ExpectedDeliveryAt: expectedDeliveryTime,

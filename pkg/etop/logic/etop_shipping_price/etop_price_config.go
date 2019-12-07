@@ -1,10 +1,13 @@
 package etop_shipping_price
 
-import "etop.vn/backend/pkg/etop/model"
+import (
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/backend/pkg/etop/model"
+)
 
 var ESPriceRules = []*ESPriceRule{
 	{
-		Carrier: model.TypeGHTK,
+		Carrier: shipping_provider.GHTK,
 		Pricings: []*ESPricing{
 			{
 				// gói chuẩn nội miền và toàn quốc: 200g
@@ -27,7 +30,7 @@ var ESPriceRules = []*ESPriceRule{
 	},
 
 	{
-		Carrier: model.TypeGHN,
+		Carrier: shipping_provider.GHN,
 		Pricings: []*ESPricing{
 			{
 				Type: model.ShippingServiceNameStandard,

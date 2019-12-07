@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -47,7 +49,7 @@ func New(carrier *ghn.Carrier) *Synchronizer {
 func (s *Synchronizer) InitStatesFromDatabase(ctx context.Context) error {
 	shippingSourceNames := s.carrier.GetShippingSourceNames()
 	query := &model.GetShippingSources{
-		Type:  model.TypeGHN,
+		Type:  shipping_provider.GHN,
 		Names: shippingSourceNames,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

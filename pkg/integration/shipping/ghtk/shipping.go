@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -170,7 +172,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	// ExpectedDeliveryAt
 	expectedDeliveryAt, err := cm.FormatDateTimeEdgeCase(r.Order.EstimatedDeliverTime.String())
 	if err == nil {
-		updateFfm.ExpectedDeliveryAt = shipping.CalcDeliveryTime(model.TypeGHTK, toDistrict, *expectedDeliveryAt)
+		updateFfm.ExpectedDeliveryAt = shipping.CalcDeliveryTime(shipping_provider2.GHTK, toDistrict, *expectedDeliveryAt)
 	}
 
 	// prepare info to calc providerShippingFeeLines
@@ -252,10 +254,10 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	}
 	providerServices := cmd.Result
 
-	// get ETOP services
+	// get Etop services
 	etopServicesArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
 		ArbitraryID:  args.AccountID,
-		Carrier:      model.TypeGHTK,
+		Carrier:      shipping_provider2.GHTK,
 		FromProvince: fromProvince,
 		ToProvince:   toProvince,
 		ToDistrict:   toDistrict,

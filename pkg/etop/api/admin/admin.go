@@ -3,12 +3,11 @@ package admin
 import (
 	"context"
 
-	"etop.vn/api/top/int/etop"
-
 	"etop.vn/api/top/int/admin"
+	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
-
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/account_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -316,15 +315,13 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 }
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoint) error {
-
 	cmd := &model.CreateCreditCommand{
 		Amount: int(q.Amount),
 		ShopID: q.ShopId,
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
+		Type:   account_type.AccountType(q.Type),
 	}
-	if q.Type != nil {
-		cmd.Type = model.AccountType(etop.AccountType(*q.Type).Name())
-	}
+
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
@@ -421,7 +418,7 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 		IsPartialDelivery:        q.IsPartialDelivery,
 		AdminNote:                q.AdminNote,
 		ActualCompensationAmount: q.ActualCompensationAmount,
-		ShippingState:            convertpb.ShippingStateToModel(q.ShippingState),
+		ShippingState:            q.ShippingState,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

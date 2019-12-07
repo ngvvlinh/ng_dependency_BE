@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	"etop.vn/api/top/types/etc/status5"
 
 	"etop.vn/capi/dot"
@@ -116,7 +118,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 	generator := newServiceIDGenerator(int64(cmd.ArbitraryID))
 
 	now := time.Now()
-	expectedPickTime := shipping.CalcPickTime(model.TypeGHTK, now)
+	expectedPickTime := shipping.CalcPickTime(shipping_provider.GHTK, now)
 	var res []*model.AvailableShippingService
 	for _, result := range results {
 		// always generate service id, even if the result is error
@@ -134,7 +136,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 			result.Transport, expectedPickTime, expectedDeliveryTime)
 		res = append(res, resItem)
 	}
-	res = shipping.CalcServicesTime(model.TypeGHTK, fromDistrict, toDistrict, res)
+	res = shipping.CalcServicesTime(shipping_provider.GHTK, fromDistrict, toDistrict, res)
 	cmd.Result = res
 	return nil
 }
@@ -163,12 +165,12 @@ func (c *Carrier) CalcSingleShippingFee(ctx context.Context, cmd *CalcSingleShip
 		return err
 	}
 	now := time.Now()
-	expectedPickTime := shipping.CalcPickTime(model.TypeGHTK, now)
+	expectedPickTime := shipping.CalcPickTime(shipping_provider.GHTK, now)
 	expectedDeliveryDuration := CalcDeliveryDuration(transport, fromProvince, toProvince)
 	expectedDeliveryTime := expectedPickTime.Add(expectedDeliveryDuration)
 	service := resp.Fee.ToShippingService(cmd.ServiceID,
 		transport, expectedPickTime, expectedDeliveryTime)
-	cmd.Result = shipping.CalcServiceTime(model.TypeGHTK, fromDistrict, toDistrict, service)
+	cmd.Result = shipping.CalcServiceTime(shipping_provider.GHTK, fromDistrict, toDistrict, service)
 
 	return nil
 }
@@ -355,7 +357,7 @@ func DecodeShippingServiceName(code string) (name string, ok bool) {
 }
 
 func init() {
-	model.GetShippingServiceRegistry().RegisterNameFunc(model.TypeGHTK, DecodeShippingServiceName)
+	model.GetShippingServiceRegistry().RegisterNameFunc(shipping_provider.GHTK, DecodeShippingServiceName)
 }
 
 func (c *Carrier) ParseServiceCode(code string) (serviceName string, ok bool) {

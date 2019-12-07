@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -28,6 +29,25 @@ var enumNotifierEntityValue = map[string]int{
 func ParseNotifierEntity(s string) (NotifierEntity, bool) {
 	val, ok := enumNotifierEntityValue[s]
 	return NotifierEntity(val), ok
+}
+
+func ParseNotifierEntityWithDefault(s string, d NotifierEntity) NotifierEntity {
+	val, ok := enumNotifierEntityValue[s]
+	if !ok {
+		return d
+	}
+	return NotifierEntity(val)
+}
+
+func ParseNotifierEntityWithNull(s dot.NullString, d NotifierEntity) NullNotifierEntity {
+	if !s.Valid {
+		return NullNotifierEntity{}
+	}
+	val, ok := enumNotifierEntityValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return NotifierEntity(val).Wrap()
 }
 
 func (e NotifierEntity) Enum() int {

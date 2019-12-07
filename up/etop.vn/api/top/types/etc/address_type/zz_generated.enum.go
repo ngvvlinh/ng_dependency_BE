@@ -8,6 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
+	"etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 
@@ -32,6 +33,25 @@ var enumAddressTypeValue = map[string]int{
 func ParseAddressType(s string) (AddressType, bool) {
 	val, ok := enumAddressTypeValue[s]
 	return AddressType(val), ok
+}
+
+func ParseAddressTypeWithDefault(s string, d AddressType) AddressType {
+	val, ok := enumAddressTypeValue[s]
+	if !ok {
+		return d
+	}
+	return AddressType(val)
+}
+
+func ParseAddressTypeWithNull(s dot.NullString, d AddressType) NullAddressType {
+	if !s.Valid {
+		return NullAddressType{}
+	}
+	val, ok := enumAddressTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return AddressType(val).Wrap()
 }
 
 func (e AddressType) Enum() int {

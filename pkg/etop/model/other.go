@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -30,7 +32,7 @@ type GetBalanceShopCommand struct {
 }
 
 type GetShippingSources struct {
-	Type   ShippingProvider
+	Type   shipping_provider.ShippingProvider
 	Names  []string
 	Result []*ShippingSource
 }
@@ -39,7 +41,7 @@ type GetShippingSource struct {
 	ID       dot.ID
 	Name     string
 	Username string
-	Type     ShippingProvider
+	Type     shipping_provider.ShippingProvider
 
 	Result struct {
 		ShippingSource         *ShippingSource
@@ -49,7 +51,7 @@ type GetShippingSource struct {
 
 type CreateShippingSource struct {
 	Name     string
-	Type     ShippingProvider
+	Type     shipping_provider.ShippingProvider
 	Username string
 	Password string
 
