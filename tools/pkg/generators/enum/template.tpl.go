@@ -56,7 +56,7 @@ func (e *{{.Name}}) UnmarshalJSON(data []byte) error {
 
 {{if $enum|modelType }}
 func (e {{.Name}}) Value() (driver.Value, error) {
-	return {{$enum|modelType}}(e), nil
+	return int64(e), nil
 }
 {{else}}
 func (e {{.Name}}) Value() (driver.Value, error) {

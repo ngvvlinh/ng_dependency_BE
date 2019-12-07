@@ -64,7 +64,7 @@ func (e *Status) UnmarshalJSON(data []byte) error {
 }
 
 func (e Status) Value() (driver.Value, error) {
-	return int(e), nil
+	return int64(e), nil
 }
 
 func (e *Status) Scan(src interface{}) error {
