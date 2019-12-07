@@ -7,15 +7,30 @@ import (
 )
 
 func (id ID) Value() (driver.Value, error) {
+	if id == 0 {
+		return nil, nil
+	}
 	return int64(id), nil
 }
 
 func (id *ID) Scan(src interface{}) error {
 	var ni sql.NullInt64
 	err := ni.Scan(src)
-	if err == nil && ni.Valid {
-		*id = ID(ni.Int64)
+	*id = ID(ni.Int64)
+	return err
+}
+
+func (id NullID) Value() (driver.Value, error) {
+	if !id.Valid || id.ID == 0 {
+		return nil, nil
 	}
+	return int64(id.ID), nil
+}
+
+func (id *NullID) Scan(src interface{}) error {
+	var ni sql.NullInt64
+	err := ni.Scan(src)
+	id.Valid, id.ID = ni.Int64 != 0, ID(ni.Int64)
 	return err
 }
 

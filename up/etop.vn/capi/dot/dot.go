@@ -55,6 +55,7 @@ type NullID struct {
 	Valid bool
 }
 
+func (id ID) Wrap() NullID          { return NullID{ID: id, Valid: true} }
 func WrapID(id ID) NullID           { return NullID{ID: id, Valid: true} }
 func Bool(b bool) NullBool          { return NullBool{Bool: b, Valid: true} }
 func String(s string) NullString    { return NullString{String: s, Valid: true} }
