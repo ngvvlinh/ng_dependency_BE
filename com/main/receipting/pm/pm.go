@@ -11,7 +11,9 @@ import (
 	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status5"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/backend/com/main/moneytx/modelx"
@@ -61,10 +63,10 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		fulfillments     []*modely.FulfillmentExtended
 		orderIDs         []dot.ID
 	)
-
 	mapOrderAndTotalAmount := make(map[dot.ID]int)
 	mapOrderAndReceivedAmount := make(map[dot.ID]int)
 	mapOrder := make(map[dot.ID]ordermodelx.OrderWithFulfillments)
+	mapOrderFulfillment := make(map[dot.ID]*modely.FulfillmentExtended)
 
 	getMoneyTransaction := &modelx.GetMoneyTransaction{
 		ID:     event.MoneyTransactionID,
@@ -77,12 +79,13 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		fulfillments = append(fulfillments, fulfillment)
 		orderIDs = append(orderIDs, fulfillment.OrderID)
 		totalShippingFee += fulfillment.ShippingFeeShop
+		mapOrderFulfillment[fulfillment.OrderID] = fulfillment
 	}
 
 	if len(orderIDs) == 0 {
 		return nil
 	}
-
+	// số tiền thực tế của mỗi đơn hàng
 	getOrdersQuery := &ordermodelx.GetOrdersQuery{
 		IDs: orderIDs,
 	}
@@ -94,7 +97,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		mapOrderAndReceivedAmount[order.ID] = 0
 		mapOrder[order.ID] = order
 	}
-
+	// Tính ReceivedAmount cho mỗi Order
 	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  event.ShopID,
 		RefIDs:  orderIDs,
@@ -131,7 +134,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		return err
 	}
 
-	if err := createReceipts(mapOrderAndTotalAmount, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID, m, ctx); err != nil {
+	if err := createReceipts(mapOrderFulfillment, mapOrderAndTotalAmount, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID, m, ctx); err != nil {
 		return err
 	}
 
@@ -154,7 +157,6 @@ func (m *ProcessManager) createPayment(
 				Amount: fulfillment.ShippingFeeShop,
 			})
 		}
-
 		cmd := &receipting.CreateReceiptCommand{
 			ShopID:      shopID,
 			TraderID:    model.TopShipID,
@@ -164,7 +166,6 @@ func (m *ProcessManager) createPayment(
 			Status:      int(status3.P),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
-			RefType:     receipt_ref.Fulfillment,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
 			Mode:        receipt_mode.Auto,
@@ -178,18 +179,50 @@ func (m *ProcessManager) createPayment(
 }
 
 func createReceipts(
+	mapOrderFulfillment map[dot.ID]*modely.FulfillmentExtended,
 	mapOrderAndTotalAmount map[dot.ID]int, mapOrderAndReceivedAmount map[dot.ID]int,
 	mapOrder map[dot.ID]ordermodelx.OrderWithFulfillments, shopID, ledgerID dot.ID,
 	m *ProcessManager, ctx context.Context) error {
 	for key, value := range mapOrderAndTotalAmount {
-		if value-mapOrderAndReceivedAmount[key] == 0 {
+		// số tiền thu thực tế
+		receiptCOD := 0
+		title := ""
+		amountReceiptLines := value - mapOrderAndReceivedAmount[key]
+		if amountReceiptLines == 0 {
 			continue
 		}
-
+		if mapOrderFulfillment[key].TotalCODAmount == 0 {
+			continue
+		}
+		switch mapOrderFulfillment[key].Status {
+		case status5.P:
+			receiptCOD = mapOrderFulfillment[key].TotalCODAmount
+			title = "Nhận thu hộ đơn hàng giao thành công"
+		case status5.N:
+			continue
+		case status5.NS:
+			if mapOrderFulfillment[key].ShippingState == shipping.Undeliverable {
+				receiptCOD = mapOrderFulfillment[key].ActualCompensationAmount
+				title = "Nhận bồi hoàn đơn giao hàng không giao được"
+			} else {
+				continue
+			}
+		default:
+			continue
+		}
 		receiptLines := []*receipting.ReceiptLine{}
+		// TH: Tiền thu thực tế > số tiền cần thu -> cộng lại vào tài khoản của khách số tiền = Tiền thu thực tế - số tiền cần thu
+		if mapOrderFulfillment[key].TotalAmount > amountReceiptLines {
+			receiptLines = append(receiptLines, &receipting.ReceiptLine{
+				Amount: mapOrderFulfillment[key].TotalAmount - amountReceiptLines,
+				Title:  "Cộng vào tài khoản khách hàng",
+			})
+			receiptCOD = mapOrderFulfillment[key].TotalAmount
+		}
+		// Số tiền cần thu
 		receiptLines = append(receiptLines, &receipting.ReceiptLine{
 			RefID:  key,
-			Amount: value - mapOrderAndReceivedAmount[key],
+			Amount: amountReceiptLines,
 		})
 
 		traderID := mapOrder[key].CustomerID
@@ -200,11 +233,11 @@ func createReceipts(
 		cmd := &receipting.CreateReceiptCommand{
 			ShopID:      shopID,
 			TraderID:    traderID,
-			Title:       "Thanh toán đơn hàng",
+			Title:       title,
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipt_type.Receipt,
 			Status:      int(status3.P),
-			Amount:      value - mapOrderAndReceivedAmount[key],
+			Amount:      receiptCOD,
 			LedgerID:    ledgerID,
 			RefIDs:      []dot.ID{key},
 			RefType:     receipt_ref.Order,
