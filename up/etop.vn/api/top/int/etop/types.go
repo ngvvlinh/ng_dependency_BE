@@ -566,7 +566,6 @@ func (m *VerifyEmailUsingTokenRequest) String() string { return jsonx.MustMarsha
 type VerifyPhoneUsingTokenRequest struct {
 	// @required
 	VerificationToken string `json:"verification_token"`
-	Code              string `json:"code"`
 }
 
 func (m *VerifyPhoneUsingTokenRequest) Reset()         { *m = VerifyPhoneUsingTokenRequest{} }

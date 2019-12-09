@@ -2952,9 +2952,6 @@
     "baVerifyPhoneUsingTokenRequest": {
       "type": "object",
       "properties": {
-        "code": {
-          "type": "string"
-        },
         "verification_token": {
           "type": "string"
         }

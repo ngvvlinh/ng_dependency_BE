@@ -1037,7 +1037,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	if r.VerificationToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
-	if r.Context.Extra[keyRequestVerifyCode] != r.Code {
+	if r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
 		r.Result = cmapi.Message("fail", "Mã xác thực không chính xác.")
 		return r, nil
 	}
