@@ -755,8 +755,12 @@ func pTime(t time.Time) *time.Time {
 
 // Value implements the driver Valuer interface.
 func (a Array) Value() (driver.Value, error) {
-	v, err := pq.Array(a.V).Value()
-	return v, err
+	value := a.V
+	switch v := value.(type) {
+	case []dot.ID:
+		value = util.IDsToInt64(v)
+	}
+	return pq.Array(value).Value()
 }
 
 // Map ...
