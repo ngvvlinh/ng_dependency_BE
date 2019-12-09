@@ -201,7 +201,8 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/invitation:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/invitation:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:create", "|")
@@ -255,7 +256,8 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/invitation:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/invitation:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:delete", "|")
@@ -309,7 +311,8 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/invitation:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/invitation:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:view", "|")
@@ -363,7 +366,8 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/relationship:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/relationship:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:view", "|")
@@ -417,7 +421,8 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/user:remove", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/user:remove", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/user:remove", "|")
@@ -471,7 +476,8 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/permission:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/permission:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/permission:update", "|")
@@ -525,7 +531,8 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "relationship/relationship:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/relationship:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:update", "|")

@@ -68,7 +68,8 @@ func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -122,7 +123,8 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/account:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/account:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/account:delete", "|")
@@ -176,7 +178,8 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/balance:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/balance:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/balance:view", "|")
@@ -321,7 +324,8 @@ func (s wrapAccountService) RequestVerifyExternalAccountAhamove(ctx context.Cont
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -375,7 +379,8 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
@@ -429,7 +434,8 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -483,7 +489,8 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -537,7 +544,8 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
@@ -599,7 +607,8 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *api.Aut
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -751,7 +760,8 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *api.CreateBrandR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
@@ -805,7 +815,8 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
@@ -859,7 +870,8 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -916,7 +928,8 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -970,7 +983,8 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -1024,7 +1038,8 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -1086,7 +1101,8 @@ func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *api.CreateCa
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:create", "|")
@@ -1140,7 +1156,8 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:delete", "|")
@@ -1194,7 +1211,8 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
@@ -1248,7 +1266,8 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *api.GetCarrier
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
@@ -1302,7 +1321,8 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
@@ -1356,7 +1376,8 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/carrier:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/carrier:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:update", "|")
@@ -1418,7 +1439,8 @@ func (s wrapCategoryService) CreateCategory(ctx context.Context, req *api.Create
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/category:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/category:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:create", "|")
@@ -1472,7 +1494,8 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/category:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/category:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:delete", "|")
@@ -1526,7 +1549,8 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *api.GetCate
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
@@ -1580,7 +1604,8 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
@@ -1634,7 +1659,8 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/category:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/category:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:update", "|")
@@ -1696,7 +1722,8 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *api.Cr
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/collection:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/collection:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:create", "|")
@@ -1750,7 +1777,8 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
@@ -1804,7 +1832,8 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *api.GetC
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
@@ -1858,7 +1887,8 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
@@ -1912,7 +1942,8 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/collection:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/collection:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:update", "|")
@@ -1974,7 +2005,8 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *api.A
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
@@ -2028,7 +2060,8 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *a
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
@@ -2082,7 +2115,8 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *api.Create
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:create", "|")
@@ -2136,7 +2170,8 @@ func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:create|shop/customer:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:create|shop/customer:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:create|shop/customer:update", "|")
@@ -2190,7 +2225,8 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *cm.IDReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:delete", "|")
@@ -2244,7 +2280,8 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:update|shop/customer:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:update|shop/customer:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update|shop/customer:delete", "|")
@@ -2298,7 +2335,8 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2352,7 +2390,8 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *api.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2406,7 +2445,8 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2460,7 +2500,8 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *api.GetCusto
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2514,7 +2555,8 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2568,7 +2610,8 @@ func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
@@ -2622,7 +2665,8 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
@@ -2676,7 +2720,8 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *api.Update
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
@@ -2730,7 +2775,8 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
@@ -2792,7 +2838,8 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
@@ -2846,7 +2893,8 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2900,7 +2948,8 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
@@ -2954,7 +3003,8 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
@@ -3114,7 +3164,8 @@ func (s wrapExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -3168,7 +3219,8 @@ func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Con
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -3222,7 +3274,8 @@ func (s wrapExternalAccountService) DeleteConnectedCarrierServiceExternalAccount
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -3321,7 +3374,8 @@ func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
@@ -3386,7 +3440,8 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/fulfillment:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
@@ -3443,7 +3498,8 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
@@ -3500,7 +3556,8 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
@@ -3723,7 +3780,8 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
@@ -3777,7 +3835,8 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *a
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:cancel", "|")
@@ -3831,7 +3890,8 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
@@ -3885,7 +3945,8 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *a
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:create", "|")
@@ -3939,7 +4000,8 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -3993,7 +4055,8 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4047,7 +4110,8 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4101,7 +4165,8 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4155,7 +4220,8 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4209,7 +4275,8 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4263,7 +4330,8 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
@@ -4317,7 +4385,8 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/cost_price:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/cost_price:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/cost_price:update", "|")
@@ -4371,7 +4440,8 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/inventory:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/inventory:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:update", "|")
@@ -4433,7 +4503,8 @@ func (s wrapLedgerService) CreateLedger(ctx context.Context, req *api.CreateLedg
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/ledger:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/ledger:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:create", "|")
@@ -4487,7 +4558,8 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/ledger:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/ledger:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:delete", "|")
@@ -4541,7 +4613,8 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
@@ -4595,7 +4668,8 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *api.GetLedgersRe
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
@@ -4649,7 +4723,8 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/ledger:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/ledger:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:update", "|")
@@ -4749,7 +4824,8 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
@@ -4803,7 +4879,8 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
@@ -5101,7 +5178,8 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:cancel", "|")
@@ -5158,7 +5236,8 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrde
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
@@ -5215,7 +5294,8 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
@@ -5272,7 +5352,8 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateO
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:create", "|")
@@ -5329,7 +5410,8 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
@@ -5386,7 +5468,8 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
@@ -5443,7 +5526,8 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
@@ -5500,7 +5584,8 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.Get
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
@@ -5557,7 +5642,8 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateO
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
@@ -5614,7 +5700,8 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
@@ -5671,7 +5758,8 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
@@ -5728,7 +5816,8 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
@@ -5790,7 +5879,8 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *api
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/payment:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/payment:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/payment:view", "|")
@@ -5844,7 +5934,8 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/payment:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/payment:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/payment:create", "|")
@@ -5906,7 +5997,8 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *api.A
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -5960,7 +6052,8 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *api.CreatePr
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
@@ -6014,7 +6107,8 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *api.CreateVa
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
@@ -6071,7 +6165,8 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6128,7 +6223,8 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariant
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6185,7 +6281,8 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6242,7 +6339,8 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6299,7 +6397,8 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6353,7 +6452,8 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -6407,7 +6507,8 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
@@ -6461,7 +6562,8 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
@@ -6515,7 +6617,8 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *api.RemoveV
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
@@ -6569,7 +6672,8 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *api.RemoveV
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
@@ -6623,7 +6727,8 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *api.UpdatePr
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6677,7 +6782,8 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *api.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6731,7 +6837,8 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *api.Up
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6785,7 +6892,8 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6839,7 +6947,8 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *api.U
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6893,7 +7002,8 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *api.Upd
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -6947,7 +7057,8 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *api.UpdateVa
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -7001,7 +7112,8 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -7055,7 +7167,8 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *api.Up
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -7109,7 +7222,8 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
@@ -7171,7 +7285,8 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -7225,7 +7340,8 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -7282,7 +7398,8 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.De
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -7339,7 +7456,8 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -7396,7 +7514,8 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -7453,7 +7572,8 @@ func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
@@ -7507,7 +7627,8 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
@@ -7561,7 +7682,8 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -7615,7 +7737,8 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
@@ -7677,7 +7800,8 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:cancel", "|")
@@ -7731,7 +7855,8 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:confirm", "|")
@@ -7785,7 +7910,8 @@ func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:create", "|")
@@ -7884,7 +8010,8 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
@@ -7938,7 +8065,8 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
@@ -7992,7 +8120,8 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
@@ -8046,7 +8175,8 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
@@ -8100,7 +8230,8 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/purchase_order:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/purchase_order:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:update", "|")
@@ -8162,7 +8293,8 @@ func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *api.CancelRe
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:cancel", "|")
@@ -8216,7 +8348,8 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:confirm", "|")
@@ -8270,7 +8403,8 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *api.CreateRe
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:create", "|")
@@ -8324,7 +8458,8 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
@@ -8378,7 +8513,8 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *api.GetReceipt
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
@@ -8432,7 +8568,8 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *ap
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
@@ -8486,7 +8623,8 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/receipt:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/receipt:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:update", "|")
@@ -8548,7 +8686,8 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *i
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:cancel", "|")
@@ -8602,7 +8741,8 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:confirm", "|")
@@ -8656,7 +8796,8 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *i
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
@@ -8710,7 +8851,8 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
@@ -8764,7 +8906,8 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *int
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
@@ -8818,7 +8961,8 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *inttype
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
@@ -8872,7 +9016,8 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *i
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/shipnow:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:update", "|")
@@ -8934,7 +9079,8 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.Canc
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:cancel", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:cancel", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:cancel", "|")
@@ -8988,7 +9134,8 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.Con
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:confirm", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:confirm", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:confirm", "|")
@@ -9049,7 +9196,8 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.Crea
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:create", "|")
@@ -9103,7 +9251,8 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
@@ -9157,7 +9306,8 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetSto
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
@@ -9211,7 +9361,8 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
@@ -9265,7 +9416,8 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/stocktake:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:update", "|")
@@ -9330,7 +9482,8 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
@@ -9384,7 +9537,8 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *api.
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
@@ -9438,7 +9592,8 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.Summarize
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
@@ -9500,7 +9655,8 @@ func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *api.Create
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:create", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:create", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:create", "|")
@@ -9554,7 +9710,8 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:delete", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:delete", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:delete", "|")
@@ -9608,7 +9765,8 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
@@ -9662,7 +9820,8 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *api.GetSuppl
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
@@ -9716,7 +9875,8 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
@@ -9770,7 +9930,8 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *a
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
@@ -9824,7 +9985,8 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "shop/supplier:update", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/supplier:update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:update", "|")

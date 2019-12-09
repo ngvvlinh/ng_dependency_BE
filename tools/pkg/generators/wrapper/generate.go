@@ -281,7 +281,8 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 		isTest = query.Context.Shop.IsTest
 	}
 	authorization := auth.New()
-	if !authorization.Check(query.Context.Roles, "{{$m|requireActions}}", isTest) {
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "{{$m|requireActions}}", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("{{$m|requireActions}}", "|")
