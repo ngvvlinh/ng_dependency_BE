@@ -18,7 +18,7 @@ type Aggregate interface {
 
 	UpdateCustomer(ctx context.Context, _ *UpdateCustomerArgs) (*ShopCustomer, error)
 
-	DeleteCustomer(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
+	DeleteCustomer(ctx context.Context, _ *DeleteCustomerArgs) (deleted int, _ error)
 
 	BatchSetCustomersStatus(ctx context.Context, IDs []dot.ID, shopID dot.ID, status int) (*meta.UpdatedResponse, error)
 
@@ -32,6 +32,8 @@ type Aggregate interface {
 }
 
 type QueryService interface {
+	GetCustomer(context.Context, *GetCustomerArgs) (*ShopCustomer, error)
+
 	GetCustomerByID(context.Context, *shopping.IDQueryShopArg) (*ShopCustomer, error)
 
 	// unused
@@ -53,6 +55,13 @@ type QueryService interface {
 }
 
 //-- queries --//
+type GetCustomerArgs struct {
+	ID         dot.ID
+	ShopID     dot.ID
+	Code       string
+	ExternalID string
+}
+
 type GetCustomerGroupArgs struct {
 	ID dot.ID
 }
@@ -81,6 +90,14 @@ type CustomersResponse struct {
 
 //-- commands --//
 
+type DeleteCustomerArgs struct {
+	ID     dot.ID
+	ShopID dot.ID
+
+	ExternalID string
+	Code       string
+}
+
 type CreateCustomerGroupArgs struct {
 	Name   string
 	ShopID dot.ID
@@ -88,6 +105,11 @@ type CreateCustomerGroupArgs struct {
 
 // +convert:create=ShopCustomer
 type CreateCustomerArgs struct {
+	// @Optional
+	ExternalID   string
+	ExternalCode string
+	PartnerID    dot.ID
+
 	ShopID   dot.ID
 	FullName string
 	Gender   gender.Gender

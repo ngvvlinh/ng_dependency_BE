@@ -135,6 +135,25 @@ func (ft *ShopCustomerFilters) ByExternalCodePtr(ExternalCode *string) *sq.Colum
 	}
 }
 
+func (ft *ShopCustomerFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopCustomerFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
+	}
+}
+
 func (ft *ShopCustomerFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -678,6 +697,25 @@ func (ft *ShopTraderAddressFilters) ByWardCodePtr(WardCode *string) *sq.ColumnFi
 		Value:  WardCode,
 		IsNil:  WardCode == nil,
 		IsZero: WardCode != nil && (*WardCode) == "",
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByPosition(Position string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "position",
+		Value:  Position,
+		IsNil:  Position == "",
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByPositionPtr(Position *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "position",
+		Value:  Position,
+		IsNil:  Position == nil,
+		IsZero: Position != nil && (*Position) == "",
 	}
 }
 

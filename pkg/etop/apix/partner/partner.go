@@ -7,6 +7,9 @@ import (
 	"strings"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/location"
+	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	extpartner "etop.vn/api/top/external/partner"
 	pbcm "etop.vn/api/top/types/common"
@@ -27,11 +30,17 @@ import (
 )
 
 var (
-	idempgroup    *idemp.RedisGroup
-	authStore     auth.Generator
-	authURL       string
-	customerQuery *customering.QueryBus
-	catalogQuery  *catalog.QueryBus
+	idempgroup        *idemp.RedisGroup
+	authStore         auth.Generator
+	authURL           string
+	locationQuery     location.QueryBus
+	customerQuery     *customering.QueryBus
+	customerAggregate *customering.CommandBus
+	addressQuery      *addressing.QueryBus
+	addressAggregate  *addressing.CommandBus
+	inventoryQuery    *inventory.QueryBus
+	catalogAggregate  *catalog.CommandBus
+	catalogQuery      *catalog.QueryBus
 
 	ll = l.New()
 )
@@ -57,6 +66,10 @@ type WebhookService struct{}
 type HistoryService struct{}
 type ShippingService struct{}
 type CustomerService struct{}
+type CustomerGroupService struct{}
+type InventoryService struct{}
+type OrderService struct{}
+type FulfillmentService struct{}
 type ProductService struct{}
 type VariantService struct{}
 
@@ -66,13 +79,27 @@ var webhookService = &WebhookService{}
 var historyService = &HistoryService{}
 var shippingService = &ShippingService{}
 var customerService = &CustomerService{}
+var customerGroupService = &CustomerGroupService{}
+var inventoryService = &InventoryService{}
+var orderService = &OrderService{}
+var fulfillmentService = &FulfillmentService{}
 var productService = &ProductService{}
 var variantService = &VariantService{}
 
 func Init(
-	sd cmService.Shutdowner, rd redis.Store,
-	s auth.Generator, _authURL string,
-	customerQ *customering.QueryBus, catalogQ *catalog.QueryBus) {
+	sd cmService.Shutdowner,
+	rd redis.Store,
+	s auth.Generator,
+	_authURL string,
+	locationQ location.QueryBus,
+	customerQ *customering.QueryBus,
+	customerA *customering.CommandBus,
+	addressQ *addressing.QueryBus,
+	addressA *addressing.CommandBus,
+	inventoryQ *inventory.QueryBus,
+	catalogA *catalog.CommandBus,
+	catalogQ *catalog.QueryBus,
+) {
 	if _authURL == "" {
 		ll.Panic("no auth_url")
 	}
@@ -85,7 +112,14 @@ func Init(
 
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerAPI, 0)
 	sd.Register(idempgroup.Shutdown)
+
+	locationQuery = locationQ
 	customerQuery = customerQ
+	customerAggregate = customerA
+	addressQuery = addressQ
+	addressAggregate = addressA
+	inventoryQuery = inventoryQ
+	catalogAggregate = catalogA
 	catalogQuery = catalogQ
 }
 

@@ -96,7 +96,7 @@ func (s *CustomerGroupStore) GetShopCustomerGroup() (*customering.ShopCustomerGr
 func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGroup, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	if len(s.Paging.Sort) == 0 {
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
 	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroup, s.ft.prefix)
@@ -110,6 +110,10 @@ func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGr
 
 	var customerGroups model.ShopCustomerGroups
 	err = query.Find(&customerGroups)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(customerGroups)
 	return customerGroups, err
 }
 

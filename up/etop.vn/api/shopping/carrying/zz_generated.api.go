@@ -93,6 +93,7 @@ func (h QueryServiceHandler) HandleListCarriers(ctx context.Context, msg *ListCa
 type ListCarriersByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *CarriersResponse `json:"-"`
 }
@@ -185,12 +186,14 @@ func (q *ListCarriersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *ListCarriersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

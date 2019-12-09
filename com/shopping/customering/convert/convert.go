@@ -52,16 +52,19 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 		return nil
 	}
 	result := &model.ShopCustomer{
-		ID:       cm.NewID(),
-		ShopID:   args.ShopID,
-		FullName: args.FullName,
-		Gender:   args.Gender,
-		Type:     args.Type,
-		Birthday: args.Birthday,
-		Note:     args.Note,
-		Phone:    args.Phone,
-		Email:    args.Email,
-		Status:   1,
+		ExternalID:   args.ExternalID,
+		ExternalCode: args.ExternalCode,
+		PartnerID:    args.PartnerID,
+		ID:           cm.NewID(),
+		ShopID:       args.ShopID,
+		FullName:     args.FullName,
+		Gender:       args.Gender,
+		Type:         args.Type,
+		Birthday:     args.Birthday,
+		Note:         args.Note,
+		Phone:        args.Phone,
+		Email:        args.Email,
+		Status:       1,
 	}
 	result.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
 	result.FullNameNorm = validate.NormalizeSearch(args.FullName)

@@ -18,7 +18,7 @@ func (ft *ShopCustomerGroupFilters) NotDeleted() sq.WriterTo {
 }
 
 var SortShopCustomerGroup = map[string]string{
-	"group_id":   "",
+	"id":         "",
 	"created_at": "",
 	"updated_at": "",
 }
@@ -36,6 +36,7 @@ var SortCustomer = map[string]string{
 var FilterCustomer = sqlstore.FilterWhitelist{
 	Contains: []string{"full_name", "phone"},
 	Equals:   []string{"type", "code", "email"},
+	Numbers:  []string{"id"},
 }
 
 var SortShopCustomerGroupCustomer = map[string]string{
@@ -46,3 +47,10 @@ var SortShopCustomerGroupCustomer = map[string]string{
 }
 
 var FilterCustomerGroupCustomer = sqlstore.FilterWhitelist{}
+
+var SortShopTraderAddress = map[string]string{
+	"id":         "",
+	"updated_at": "",
+	"created_at": "",
+	"trader_id":  "",
+}

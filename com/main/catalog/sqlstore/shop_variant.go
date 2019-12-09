@@ -2,12 +2,14 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/catalog/model"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
@@ -64,6 +66,11 @@ func (s *ShopVariantStore) ID(id dot.ID) *ShopVariantStore {
 }
 func (s *ShopVariantStore) Code(code string) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByCode(code))
+	return s
+}
+
+func (s *ShopVariantStore) ExternalID(externalID string) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtShopVariant.ByExternalID(externalID))
 	return s
 }
 
@@ -233,4 +240,17 @@ func (s *ShopVariantStore) UpdateImageShopVariant(variant *catalog.ShopVariant) 
 	}
 	err := query.ShouldUpdate(variantDB)
 	return err
+}
+
+func CheckShopVariantExternalError(e error, externalID, externalCode string) error {
+	if e != nil {
+		errMsg := e.Error()
+		switch {
+		case strings.Contains(errMsg, "shop_variant_shop_id_external_id_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_id %v đã tồn tại", externalID)
+		case strings.Contains(errMsg, "shop_variant_shop_id_external_code_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_code %v đã tồn tại", externalCode)
+		}
+	}
+	return e
 }

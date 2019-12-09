@@ -38,8 +38,11 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err != nil {
 		return nil, err
 	}
-	if err := q.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
-		return nil, err
+
+	if args.IsDefault {
+		if err := q.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
+			return nil, err
+		}
 	}
 
 	addr := &addressing.ShopTraderAddress{}

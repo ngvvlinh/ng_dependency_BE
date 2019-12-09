@@ -29,7 +29,7 @@ type QueryService interface {
 
 	GetAddressByTraderID(ctx context.Context, traderID, shopID dot.ID) (*ShopTraderAddress, error)
 
-	ListAddressesByTraderID(ctx context.Context, ShopID dot.ID, TraderID dot.ID) ([]*ShopTraderAddress, error)
+	ListAddressesByTraderID(ctx context.Context, _ *ListAddressesByTraderIDArgs) (*ShopTraderAddressesResponse, error)
 }
 
 type ShopTraderAddress struct {
@@ -45,9 +45,16 @@ type ShopTraderAddress struct {
 	DistrictCode string
 	WardCode     string
 	IsDefault    bool
+	Position     string
 	Coordinates  *ordertypes.Coordinates
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+type ShopTraderAddressesResponse struct {
+	ShopTraderAddresses []*ShopTraderAddress
+	Count               int
+	Paging              meta.PageInfo
 }
 
 // +convert:create=ShopTraderAddress
@@ -62,6 +69,7 @@ type CreateAddressArgs struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
+	Position     string
 	IsDefault    bool
 	Coordinates  *ordertypes.Coordinates
 }
@@ -76,6 +84,14 @@ type UpdateAddressArgs struct {
 	Address2     NullString
 	DistrictCode NullString
 	WardCode     NullString
+	Position     NullString
 	IsDefault    NullBool
 	Coordinates  *ordertypes.Coordinates
+}
+
+type ListAddressesByTraderIDArgs struct {
+	ShopID   dot.ID
+	TraderID dot.ID
+
+	Paging meta.Paging
 }

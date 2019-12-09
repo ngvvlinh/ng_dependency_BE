@@ -13,6 +13,7 @@ type IDQueryShopArg struct {
 type IDsQueryShopArgs struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 }
 
 type ListQueryShopArgs struct {

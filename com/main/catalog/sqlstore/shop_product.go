@@ -101,6 +101,16 @@ func (s *ShopProductStore) Code(code string) *ShopProductStore {
 	return s
 }
 
+func (s *ShopProductStore) ExternalID(externalID string) *ShopProductStore {
+	s.preds = append(s.preds, s.FtShopProduct.ByExternalID(externalID))
+	return s
+}
+
+func (s *ShopProductStore) ExternalCode(externalCode string) *ShopProductStore {
+	s.preds = append(s.preds, s.FtShopProduct.ByExternalCode(externalCode))
+	return s
+}
+
 func (s *ShopProductStore) Codes(codes ...string) *ShopProductStore {
 	s.preds = append(s.preds, sq.In("code", codes))
 	return s
@@ -327,4 +337,17 @@ func (s *ShopProductStore) RemoveShopProductCategory() (int, error) {
 		"category_id": nil,
 	})
 	return _deleted, err
+}
+
+func CheckProductExternalError(e error, externalID, externalCode string) error {
+	if e != nil {
+		errMsg := e.Error()
+		switch {
+		case strings.Contains(errMsg, "shop_product_shop_id_external_id_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_id %v đã tồn tại", externalID)
+		case strings.Contains(errMsg, "shop_product_shop_id_external_code_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_code %v đã tồn tại", externalCode)
+		}
+	}
+	return e
 }

@@ -2,6 +2,8 @@ package types
 
 import (
 	catalogtypes "etop.vn/api/main/catalog/types"
+	"etop.vn/api/shopping/customering/customer_type"
+	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
@@ -13,6 +15,7 @@ import (
 	status5 "etop.vn/api/top/types/etc/status5"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
+	"etop.vn/capi/filter"
 	"etop.vn/common/jsonx"
 )
 
@@ -175,6 +178,14 @@ type FulfillmentIDRequest struct {
 func (m *FulfillmentIDRequest) Reset()         { *m = FulfillmentIDRequest{} }
 func (m *FulfillmentIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type ListFulfillmentsRequest struct {
+	OrderID dot.ID               `json:"order_id"`
+	Paging  *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListFulfillmentsRequest) Reset()         { *m = ListFulfillmentsRequest{} }
+func (m *ListFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type OrderAndFulfillments struct {
 	Order             *Order          `json:"order"`
 	Fulfillments      []*Fulfillment  `json:"fulfillments"`
@@ -320,6 +331,14 @@ type Fulfillment struct {
 
 func (m *Fulfillment) Reset()         { *m = Fulfillment{} }
 func (m *Fulfillment) String() string { return jsonx.MustMarshalToString(m) }
+
+type FulfillmentsResponse struct {
+	Fulfillments []*Fulfillment         `json:"fulfillments"`
+	Paging       *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *FulfillmentsResponse) Reset()         { *m = FulfillmentsResponse{} }
+func (m *FulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Ward struct {
 	Name string `json:"name"`
@@ -488,13 +507,251 @@ type CustomersResponse struct {
 func (m *CustomersResponse) Reset()         { *m = CustomersResponse{} }
 func (m *CustomersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetCustomersRequest struct {
-	Ids    []dot.ID             `json:"ids"`
+type CreateCustomerRequest struct {
+	ExternalId   string `json:"external_id"`
+	ExternalCode string `json:"external_code"`
+
+	// @required
+	FullName string        `json:"full_name"`
+	Gender   gender.Gender `json:"gender"`
+	Birthday string        `json:"birthday"`
+	// enum ('independent', 'individual', 'organization')
+	Type customer_type.CustomerType `json:"type"`
+	Note string                     `json:"note"`
+	// @required
+	Phone string `json:"phone"`
+	Email string `json:"email"`
+}
+
+func (m *CreateCustomerRequest) Reset()         { *m = CreateCustomerRequest{} }
+func (m *CreateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateCustomerRequest struct {
+	Id       dot.ID            `json:"id"`
+	FullName dot.NullString    `json:"full_name"`
+	Gender   gender.NullGender `json:"gender"`
+	Birthday dot.NullString    `json:"birthday"`
+	// enum ('individual', 'organization','independent')
+	Type  dot.NullString `json:"type"`
+	Note  dot.NullString `json:"note"`
+	Phone dot.NullString `json:"phone"`
+	Email dot.NullString `json:"email"`
+}
+
+func (m *UpdateCustomerRequest) Reset()         { *m = UpdateCustomerRequest{} }
+func (m *UpdateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteCustomerRequest struct {
+	Id         dot.ID `json:"id"`
+	Code       string `json:"code"`
+	ExternalId string `json:"external_id"`
+}
+
+func (m *DeleteCustomerRequest) Reset()         { *m = DeleteCustomerRequest{} }
+func (m *DeleteCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetCustomerRequest struct {
+	Id         dot.ID `json:"id"`
+	Code       string `json:"code"`
+	ExternalId string `json:"external_id"`
+}
+
+func (m *GetCustomerRequest) Reset()         { *m = GetCustomerRequest{} }
+func (m *GetCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerFilter struct {
+	ID filter.IDs `json:"id"`
+}
+
+func (m *CustomerFilter) Reset()         { *m = CustomerFilter{} }
+func (m *CustomerFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCustomersRequest struct {
+	Filter CustomerFilter       `json:"filter"`
 	Paging *common.CursorPaging `json:"paging"`
 }
 
-func (m *GetCustomersRequest) Reset()         { *m = GetCustomersRequest{} }
-func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ListCustomersRequest) Reset()         { *m = ListCustomersRequest{} }
+func (m *ListCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerAddress struct {
+	Id           dot.ID            `json:"id"`
+	Province     string            `json:"province"`
+	ProvinceCode string            `json:"province_code"`
+	District     string            `json:"district"`
+	DistrictCode string            `json:"district_code"`
+	Ward         string            `json:"ward"`
+	WardCode     string            `json:"ward_code"`
+	Address1     string            `json:"address1"`
+	Address2     string            `json:"address2"`
+	FullName     string            `json:"full_name"`
+	Company      string            `json:"company"`
+	Phone        string            `json:"phone"`
+	Email        string            `json:"email"`
+	Position     string            `json:"position"`
+	Coordinates  *etop.Coordinates `json:"coordinates"`
+}
+
+func (m *CustomerAddress) Reset()         { *m = CustomerAddress{} }
+func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerAddressesResponse struct {
+	CustomerAddresses []*CustomerAddress `json:"addresses"`
+}
+
+func (m *CustomerAddressesResponse) Reset()         { *m = CustomerAddressesResponse{} }
+func (m *CustomerAddressesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCustomerAddressesRequest struct {
+	CustomerId dot.ID `json:"customer_id"`
+}
+
+func (m *ListCustomerAddressesRequest) Reset()         { *m = ListCustomerAddressesRequest{} }
+func (m *ListCustomerAddressesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Coordinates struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+}
+
+func (m *Coordinates) Reset()         { *m = Coordinates{} }
+func (m *Coordinates) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateCustomerAddressRequest struct {
+	CustomerId   dot.ID       `json:"customer_id"`
+	ProvinceCode string       `json:"province_code"`
+	DistrictCode string       `json:"district_code"`
+	WardCode     string       `json:"ward_code"`
+	Address1     string       `json:"address1"`
+	Address2     string       `json:"address2"`
+	Country      string       `json:"country"`
+	FullName     string       `json:"full_name"`
+	Company      string       `json:"company"`
+	Phone        string       `json:"phone"`
+	Email        string       `json:"email"`
+	Position     string       `json:"position"`
+	Coordinates  *Coordinates `json:"coordinates"`
+}
+
+func (m *CreateCustomerAddressRequest) Reset()         { *m = CreateCustomerAddressRequest{} }
+func (m *CreateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateCustomerAddressRequest struct {
+	Id           dot.ID            `json:"id"`
+	ProvinceCode dot.NullString    `json:"province_code"`
+	DistrictCode dot.NullString    `json:"district_code"`
+	WardCode     dot.NullString    `json:"ward_code"`
+	Address1     dot.NullString    `json:"address1"`
+	Address2     dot.NullString    `json:"address2"`
+	Country      dot.NullString    `json:"country"`
+	FullName     dot.NullString    `json:"full_name"`
+	Phone        dot.NullString    `json:"phone"`
+	Email        dot.NullString    `json:"email"`
+	Position     dot.NullString    `json:"position"`
+	Company      dot.NullString    `json:"company"`
+	Coordinates  *etop.Coordinates `json:"coordinates"`
+}
+
+func (m *UpdateCustomerAddressRequest) Reset()         { *m = UpdateCustomerAddressRequest{} }
+func (m *UpdateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AddCustomersRequest struct {
+	GroupId     dot.ID   `json:"id"`
+	CustomerIds []dot.ID `json:"customer_ids"`
+}
+
+func (m *AddCustomersRequest) Reset()         { *m = AddCustomersRequest{} }
+func (m *AddCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RemoveCustomersRequest struct {
+	GroupId     dot.ID   `json:"id"`
+	CustomerIds []dot.ID `json:"customer_ids"`
+}
+
+func (m *RemoveCustomersRequest) Reset()         { *m = RemoveCustomersRequest{} }
+func (m *RemoveCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerGroup struct {
+	Id   dot.ID `json:"id"`
+	Name string `json:"name"`
+}
+
+func (m *CustomerGroup) Reset()         { *m = CustomerGroup{} }
+func (m *CustomerGroup) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerGroupsResponse struct {
+	CustomerGroups []*CustomerGroup       `json:"customer_groups"`
+	Paging         *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *CustomerGroupsResponse) Reset()         { *m = CustomerGroupsResponse{} }
+func (m *CustomerGroupsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerGroupFilter struct {
+	ID filter.IDs `json:"id"`
+}
+
+func (m *CustomerGroupFilter) Reset()         { *m = CustomerGroupFilter{} }
+func (m *CustomerGroupFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCustomerGroupsRequest struct {
+	Filter CustomerGroupFilter  `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListCustomerGroupsRequest) Reset()         { *m = ListCustomerGroupsRequest{} }
+func (m *ListCustomerGroupsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateCustomerGroupRequest struct {
+	Name string `json:"name"`
+}
+
+func (m *CreateCustomerGroupRequest) Reset()         { *m = CreateCustomerGroupRequest{} }
+func (m *CreateCustomerGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateCustomerGroupRequest struct {
+	GroupId dot.ID         `json:"id"`
+	Name    dot.NullString `json:"name"`
+}
+
+func (m *UpdateCustomerGroupRequest) Reset()         { *m = UpdateCustomerGroupRequest{} }
+func (m *UpdateCustomerGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListInventoryLevelsRequest struct {
+	VariantIds []dot.ID `json:"variant_ids"`
+}
+
+func (m *ListInventoryLevelsRequest) Reset()         { *m = ListInventoryLevelsRequest{} }
+func (m *ListInventoryLevelsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type InventoryLevel struct {
+	VariantId         dot.ID   `json:"variant_id"`
+	AvailableQuantity int      `json:"available_quantity"`
+	ReservedQuantity  int      `json:"reserved_quantity"`
+	PickedQuantity    int      `json:"picked_quantity"`
+	UpdatedAt         dot.Time `json:"updated_at"`
+}
+
+func (m *InventoryLevel) Reset()         { *m = InventoryLevel{} }
+func (m *InventoryLevel) String() string { return jsonx.MustMarshalToString(m) }
+
+type InventoryLevelsResponse struct {
+	InventoryLevels []*InventoryLevel `json:"inventory_levels"`
+}
+
+func (m *InventoryLevelsResponse) Reset()         { *m = InventoryLevelsResponse{} }
+func (m *InventoryLevelsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ConfirmOrderRequest struct {
+	OrderId dot.ID `json:"order_id"`
+	// enum ('create', 'confirm')
+	AutoInventoryVoucher dot.NullString `json:"auto_inventory_voucher"`
+	// enum ('obey', 'ignore')
+	InventoryPolicy bool `json:"inventory_policy"`
+}
+
+func (m *ConfirmOrderRequest) Reset()         { *m = ConfirmOrderRequest{} }
+func (m *ConfirmOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type EtopProduct struct {
 	Id          dot.ID   `json:"id"`
@@ -609,18 +866,181 @@ type ShopProductsResponse struct {
 func (m *ShopProductsResponse) Reset()         { *m = ShopProductsResponse{} }
 func (m *ShopProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetProductsRequest struct {
-	Ids    []dot.ID             `json:"ids"`
+type GetProductRequest struct {
+	Id         dot.ID `json:"id"`
+	Code       string `json:"code"`
+	ExternalId string `json:"external_id"`
+}
+
+func (m *GetProductRequest) Reset()         { *m = GetProductRequest{} }
+func (m *GetProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ProductFilter struct {
+	ID filter.IDs `json:"id"`
+}
+
+func (m *ProductFilter) Reset()         { *m = ProductFilter{} }
+func (m *ProductFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListProductsRequest struct {
+	Filter ProductFilter        `json:"filter"`
 	Paging *common.CursorPaging `json:"paging"`
 }
 
-func (m *GetProductsRequest) Reset()         { *m = GetProductsRequest{} }
-func (m *GetProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ListProductsRequest) Reset()         { *m = ListProductsRequest{} }
+func (m *ListProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetVariantsRequest struct {
-	Ids    []dot.ID             `json:"ids"`
+type CreateProductRequest struct {
+	ExternalId   string `json:"external_id"`
+	ExternalCode string `json:"external_code"`
+
+	Code        string   `json:"code"`
+	Name        string   `json:"name"`
+	Unit        string   `json:"unit"`
+	Note        string   `json:"note"`
+	Description string   `json:"description"`
+	ShortDesc   string   `json:"short_desc"`
+	DescHtml    string   `json:"desc_html"`
+	ImageUrls   []string `json:"image_urls"`
+	CostPrice   int      `json:"cost_price"`
+	ListPrice   int      `json:"list_price"`
+	RetailPrice int      `json:"retail_price"`
+	BrandId     dot.ID   `json:"brand_id"`
+}
+
+func (m *CreateProductRequest) Reset()         { *m = CreateProductRequest{} }
+func (m *CreateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateProductRequest struct {
+	// @required
+	Id          dot.ID         `json:"id"`
+	Name        dot.NullString `json:"name"`
+	Note        dot.NullString `json:"note"`
+	Unit        dot.NullString `json:"unit"`
+	Description dot.NullString `json:"description"`
+	ShortDesc   dot.NullString `json:"short_desc"`
+	DescHtml    dot.NullString `json:"desc_html"`
+	CostPrice   dot.NullInt    `json:"cost_price"`
+	ListPrice   dot.NullInt    `json:"list_price"`
+	RetailPrice dot.NullInt    `json:"retail_price"`
+	BrandId     dot.NullID     `json:"brand_id"`
+}
+
+func (m *UpdateProductRequest) Reset()         { *m = UpdateProductRequest{} }
+func (m *UpdateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type BatchUpdateProductsRequest struct {
+	ProductIds   []dot.ID `json:"product_ids"`
+	CollectionId dot.ID   `json:"collection_id"`
+
+	// tags
+	Adds       []string `json:"adds"`
+	Deletes    []string `json:"deletes"`
+	ReplaceAll []string `json:"replace_all"`
+	DeleteAll  bool     `json:"delete_all"`
+
+	Status status3.Status `json:"status"`
+}
+
+func (m *BatchUpdateProductsRequest) Reset()         { *m = BatchUpdateProductsRequest{} }
+func (m *BatchUpdateProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RemoveProductsRequest struct {
+	Ids []dot.ID `json:"ids"`
+}
+
+func (m *RemoveProductsRequest) Reset()         { *m = RemoveProductsRequest{} }
+func (m *RemoveProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AddProductCollectionRequest struct {
+	ProductId     dot.ID   `json:"product_id"`
+	CollectionIds []dot.ID `json:"collection_ids"`
+}
+
+func (m *AddProductCollectionRequest) Reset()         { *m = AddProductCollectionRequest{} }
+func (m *AddProductCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RemoveProductCollectionRequest struct {
+	ProductId     dot.ID   `json:"product_id"`
+	CollectionIds []dot.ID `json:"collection_ids"`
+}
+
+func (m *RemoveProductCollectionRequest) Reset()         { *m = RemoveProductCollectionRequest{} }
+func (m *RemoveProductCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetVariantRequest struct {
+	Id         dot.ID `json:"id"`
+	Code       string `json:"code"`
+	ExternalId string `json:"external_id"`
+}
+
+func (m *GetVariantRequest) Reset()         { *m = GetVariantRequest{} }
+func (m *GetVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type VariantFilter struct {
+	ID filter.IDs `json:"id"`
+}
+
+func (m *VariantFilter) Reset()         { *m = VariantFilter{} }
+func (m *VariantFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListVariantsRequest struct {
+	Filter VariantFilter        `json:"filter"`
 	Paging *common.CursorPaging `json:"paging"`
 }
 
-func (m *GetVariantsRequest) Reset()         { *m = GetVariantsRequest{} }
-func (m *GetVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ListVariantsRequest) Reset()         { *m = ListVariantsRequest{} }
+func (m *ListVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateVariantRequest struct {
+	ExternalId   string `json:"external_id"`
+	ExternalCode string `json:"external_code"`
+
+	Code        string                    `json:"code"`
+	Name        string                    `json:"name"`
+	ProductId   dot.ID                    `json:"product_id"`
+	Note        string                    `json:"note"`
+	Description string                    `json:"description"`
+	ShortDesc   string                    `json:"short_desc"`
+	DescHtml    string                    `json:"desc_html"`
+	ImageUrls   []string                  `json:"image_urls"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
+	CostPrice   int                       `json:"cost_price"`
+	ListPrice   int                       `json:"list_price"`
+	RetailPrice int                       `json:"retail_price"`
+}
+
+func (m *CreateVariantRequest) Reset()         { *m = CreateVariantRequest{} }
+func (m *CreateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateVariantRequest struct {
+	// @required
+	Id          dot.ID                    `json:"id"`
+	Name        dot.NullString            `json:"name"`
+	Note        dot.NullString            `json:"note"`
+	Code        dot.NullString            `json:"code"`
+	CostPrice   dot.NullInt               `json:"cost_price"`
+	ListPrice   dot.NullInt               `json:"list_price"`
+	RetailPrice dot.NullInt               `json:"retail_price"`
+	Description dot.NullString            `json:"description"`
+	ShortDesc   dot.NullString            `json:"short_desc"`
+	DescHtml    dot.NullString            `json:"desc_html"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
+
+	// images
+	Adds       []string `json:"adds"`
+	Deletes    []string `json:"deletes"`
+	ReplaceAll []string `json:"replace_all"`
+	DeleteAll  bool     `json:"delete_all"`
+}
+
+func (m *UpdateVariantRequest) Reset()         { *m = UpdateVariantRequest{} }
+func (m *UpdateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type BatchUpdateVariantsRequest struct {
+	Ids    []dot.ID       `json:"ids"`
+	Status status3.Status `json:"status"`
+}
+
+func (m *BatchUpdateVariantsRequest) Reset()         { *m = BatchUpdateVariantsRequest{} }
+func (m *BatchUpdateVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }

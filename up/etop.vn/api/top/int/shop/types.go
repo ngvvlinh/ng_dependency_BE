@@ -2346,8 +2346,8 @@ func (m *ImportProductsResponse) HasErrors() []*common.Error {
 }
 
 type GetVariantRequest struct {
-	Code dot.NullString `json:"code"`
-	ID   dot.NullID     `json:"id"`
+	Code string `json:"code"`
+	ID   dot.ID `json:"id"`
 }
 
 func (m *GetVariantRequest) Reset()         { *m = GetVariantRequest{} }

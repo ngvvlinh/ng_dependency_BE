@@ -62,6 +62,10 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		}
 	}
 	product := &catalog.ShopProduct{
+		ExternalID:   args.ExternalID,
+		ExternalCode: args.ExternalCode,
+		PartnerID:    args.PartnerID,
+
 		ProductID:   cm.NewID(),
 		ShopID:      args.ShopID,
 		Code:        args.Code,
@@ -80,7 +84,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		BrandID:     args.BrandID,
 	}
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
-		return nil, err
+		return nil, sqlstore.CheckProductExternalError(err, args.ExternalID, args.ExternalCode)
 	}
 	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(product.ProductID).GetShopProductWithVariants()
 	return result, err
@@ -157,24 +161,27 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	}
 
 	variant := &catalog.ShopVariant{
-		ShopID:      args.ShopID,
-		ProductID:   args.ProductID,
-		VariantID:   cm.NewID(),
-		Code:        args.Code,
-		Name:        args.Name,
-		ShortDesc:   args.ShortDesc,
-		Description: args.Description,
-		DescHTML:    args.DescHTML,
-		ImageURLs:   args.ImageURLs,
-		Status:      0,
-		Attributes:  args.Attributes,
-		CostPrice:   args.CostPrice,
-		ListPrice:   args.ListPrice,
-		RetailPrice: args.RetailPrice,
-		Note:        args.Note,
+		ExternalID:   args.ExternalID,
+		ExternalCode: args.ExternalCode,
+		PartnerID:    args.PartnerID,
+		ShopID:       args.ShopID,
+		ProductID:    args.ProductID,
+		VariantID:    cm.NewID(),
+		Code:         args.Code,
+		Name:         args.Name,
+		ShortDesc:    args.ShortDesc,
+		Description:  args.Description,
+		DescHTML:     args.DescHTML,
+		ImageURLs:    args.ImageURLs,
+		Status:       0,
+		Attributes:   args.Attributes,
+		CostPrice:    args.CostPrice,
+		ListPrice:    args.ListPrice,
+		RetailPrice:  args.RetailPrice,
+		Note:         args.Note,
 	}
 	if err = a.shopVariant(ctx).CreateShopVariant(variant); err != nil {
-		return nil, err
+		return nil, sqlstore.CheckShopVariantExternalError(err, args.ExternalID, args.ExternalCode)
 	}
 	return variant, nil
 }

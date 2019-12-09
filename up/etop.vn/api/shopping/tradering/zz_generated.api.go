@@ -7,6 +7,7 @@ package tradering
 import (
 	context "context"
 
+	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -64,6 +65,7 @@ func (h QueryServiceHandler) HandleGetTraderInfoByID(ctx context.Context, msg *G
 type ListTradersByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *TradersResponse `json:"-"`
 }
@@ -113,12 +115,14 @@ func (q *ListTradersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *ListTradersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

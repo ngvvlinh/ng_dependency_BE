@@ -257,11 +257,51 @@ var ACL = map[string]*permission.PermissionDecl{
 	"ext/partner.Shipping/GetOrder":              {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Shipping/GetFulfillment":        {Type: Shop, Auth: APIPartnerShopKey},
 
-	"ext/partner.Customer/GetCustomers": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Order/CreateAndConfirmOrder": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Order/CreateOrder":           {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Order/ConfirmOrder":          {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Order/CancelOrder":           {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Order/GetOrder":              {Type: Shop, Auth: APIPartnerShopKey},
 
-	"ext/partner.Product/GetProducts": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/GetCustomer":    {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/ListCustomers":  {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/CreateCustomer": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/UpdateCustomer": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/DeleteCustomer": {Type: Shop, Auth: APIPartnerShopKey},
 
-	"ext/partner.Variant/GetVariants": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/ListAddresses":     {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/CreateAddress":     {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/UpdateAddress":     {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/DeleteAddress":     {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Customer/SetDefaultAddress": {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.CustomerGroup/CreateCustomerGroup": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.CustomerGroup/GetCustomerGroup":    {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.CustomerGroup/ListCustomerGroups":  {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.CustomerGroup/UpdateCustomerGroup": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.CustomerGroup/AddCustomers":        {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.CustomerGroup/RemoveCustomers":     {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.Fulfillment/GetFulfillment":   {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Fulfillment/ListFulfillments": {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.Inventory/ListInventoryLevels": {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.Product/GetProduct":    {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Product/ListProducts":  {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Product/CreateProduct": {Type: Shop, Auth: APIPartnerShopKey},
+	// (status, tag, images, metaFields, category)
+	"ext/partner.Product/UpdateProduct": {Type: Shop, Auth: APIPartnerShopKey},
+	// (tags, status)
+	"ext/partner.Product/BatchUpdateProducts":     {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Product/AddProductCollection":    {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Product/RemoveProductCollection": {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.Variant/GetVariant":          {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Variant/ListVariants":        {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Variant/CreateVariant":       {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Variant/UpdateVariant":       {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Variant/BatchUpdateVariants": {Type: Shop, Auth: APIPartnerShopKey},
 
 	//-- external: shop --//
 

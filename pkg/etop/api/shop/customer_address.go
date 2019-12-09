@@ -42,6 +42,7 @@ func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCu
 		Address2:     r.Address2,
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
+		Position:     r.Position,
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 		IsDefault:    true,
 	}
@@ -76,7 +77,7 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustom
 	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	addrs, err := convertpb.PbShopAddresses(ctx, query.Result, locationQuery)
+	addrs, err := convertpb.PbShopAddresses(ctx, query.Result.ShopTraderAddresses, locationQuery)
 	if err != nil {
 		return err
 	}
@@ -107,6 +108,7 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 		Address2:     r.Address2,
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
+		Position:     r.Position,
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {

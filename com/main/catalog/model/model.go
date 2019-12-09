@@ -71,6 +71,7 @@ var _ = sqlgenShopVariant(&ShopVariant{})
 type ShopVariant struct {
 	ExternalID   string
 	ExternalCode string
+	PartnerID    dot.ID
 
 	ShopID    dot.ID
 	VariantID dot.ID `paging:"id"`
@@ -113,6 +114,7 @@ var _ = sqlgenShopProduct(&ShopProduct{})
 type ShopProduct struct {
 	ExternalID   string
 	ExternalCode string
+	PartnerID    dot.ID
 
 	ShopID        dot.ID
 	ProductID     dot.ID   `paging:"id"`

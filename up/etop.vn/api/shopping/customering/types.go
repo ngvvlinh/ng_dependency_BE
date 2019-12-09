@@ -12,6 +12,7 @@ import (
 type ShopCustomer struct {
 	ExternalID   string
 	ExternalCode string
+	PartnerID    dot.ID
 
 	ID        dot.ID
 	ShopID    dot.ID

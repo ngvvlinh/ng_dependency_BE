@@ -34,6 +34,44 @@ func (q *CustomerQuery) MessageBus() customering.QueryBus {
 	return customering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
+func (q *CustomerQuery) GetCustomer(
+	ctx context.Context, args *customering.GetCustomerArgs,
+) (*customering.ShopCustomer, error) {
+	query := q.store(ctx).ShopID(args.ShopID)
+
+	counter := 0
+	if args.ID.Int64() != 0 {
+		query.ID(args.ID)
+		counter++
+	}
+	if args.Code != "" {
+		query.Code(args.Code)
+		counter++
+	}
+	if args.ExternalID != "" {
+		query.ExternalID(args.ExternalID)
+		counter++
+	}
+	if counter == 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Arguments are invalid", nil)
+	}
+
+	customer, err := query.GetCustomer()
+	if err != nil {
+		return nil, err
+	}
+
+	customerGroups, err := q.customerGroupCustomerStore(ctx).CustomerID(customer.ID).ListShopCustomerGroupsCustomerByCustomerID()
+	if err != nil {
+		return nil, err
+	}
+	for _, customerGroup := range customerGroups {
+		customer.GroupIDs = append(customer.GroupIDs, customerGroup.GroupID)
+	}
+	return customer, nil
+
+}
+
 func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
@@ -126,6 +164,7 @@ func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.
 	}
 	return customerGroup, err
 }
+
 func (q *CustomerQuery) GetCustomerIndependentByShop(
 	ctx context.Context, args *customering.GetCustomerIndependentByShop,
 ) (*customering.ShopCustomer, error) {

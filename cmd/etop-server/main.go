@@ -524,7 +524,20 @@ func main() {
 		refundQuery,
 		connectionQuery,
 	)
-	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth, &customerQuery, &catalogQuery)
+	partner.Init(
+		shutdowner,
+		redisStore,
+		authStore,
+		cfg.URL.Auth,
+		locationBus,
+		&customerQuery,
+		&customerAggr,
+		&traderAddressQuery,
+		&traderAddressAggr,
+		&inventoryQuery,
+		&catalogAggr,
+		&catalogQuery,
+	)
 	xshop.Init(shutdowner, redisStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)

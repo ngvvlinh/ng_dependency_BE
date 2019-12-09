@@ -1,9 +1,14 @@
 package convertpb
 
 import (
+	"context"
+
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/etop"
@@ -556,6 +561,90 @@ func PbCoordinates(in *ordertypes.Coordinates) *etop.Coordinates {
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
+}
+
+func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) *exttypes.CustomerAddress {
+	query := &location.GetLocationQuery{
+		DistrictCode: in.DistrictCode,
+		WardCode:     in.WardCode,
+	}
+	if err := locationBus.Dispatch(ctx, query); err != nil {
+		panic("Internal: " + err.Error())
+	}
+	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
+	out := &exttypes.CustomerAddress{
+		Id:           in.ID,
+		District:     "",
+		DistrictCode: in.DistrictCode,
+		Ward:         "",
+		Company:      in.Company,
+		WardCode:     in.WardCode,
+		Address1:     in.Address1,
+		Address2:     in.Address2,
+		FullName:     in.FullName,
+		Phone:        in.Phone,
+		Email:        in.Email,
+		Position:     in.Position,
+		Coordinates:  PbCoordinates(in.Coordinates),
+	}
+	if ward != nil {
+		out.Ward = ward.Name
+	}
+	if district != nil {
+		out.District = district.Name
+	}
+	if province != nil {
+		out.Province = province.Name
+		out.ProvinceCode = province.Code
+	}
+	return out
+}
+
+func PbShopTraderAddresses(ctx context.Context, ins []*addressing.ShopTraderAddress, locationBus location.QueryBus) []*exttypes.CustomerAddress {
+	out := make([]*exttypes.CustomerAddress, len(ins))
+	for i, trader := range ins {
+		out[i] = PbShopTraderAddress(ctx, trader, locationBus)
+	}
+	return out
+}
+
+func PbCustomerGroup(arg *customering.ShopCustomerGroup) *exttypes.CustomerGroup {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.CustomerGroup{
+		Id:   arg.ID,
+		Name: arg.Name,
+	}
+}
+
+func PbCustomerGroups(args []*customering.ShopCustomerGroup) []*exttypes.CustomerGroup {
+	out := make([]*exttypes.CustomerGroup, len(args))
+	for i, arg := range args {
+		out[i] = PbCustomerGroup(arg)
+	}
+	return out
+}
+
+func PbInventoryLevel(arg *inventory.InventoryVariant) *exttypes.InventoryLevel {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.InventoryLevel{
+		VariantId:         arg.VariantID,
+		AvailableQuantity: arg.QuantityOnHand,
+		ReservedQuantity:  0,
+		PickedQuantity:    arg.QuantityPicked,
+		UpdatedAt:         dot.Time{},
+	}
+}
+
+func PbInventoryLevels(args []*inventory.InventoryVariant) []*exttypes.InventoryLevel {
+	out := make([]*exttypes.InventoryLevel, len(args))
+	for i, arg := range args {
+		out[i] = PbInventoryLevel(arg)
+	}
+	return out
 }
 
 func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {

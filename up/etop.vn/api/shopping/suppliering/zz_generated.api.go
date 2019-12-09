@@ -103,6 +103,7 @@ func (h QueryServiceHandler) HandleListSuppliers(ctx context.Context, msg *ListS
 type ListSuppliersByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *SuppliersResponse `json:"-"`
 }
@@ -215,12 +216,14 @@ func (q *ListSuppliersByIDsQuery) GetArgs(ctx context.Context) (_ context.Contex
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *ListSuppliersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

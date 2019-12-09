@@ -27,6 +27,7 @@ var _ = sqlgenShopCustomer(&ShopCustomer{})
 type ShopCustomer struct {
 	ExternalID   string
 	ExternalCode string
+	PartnerID    dot.ID
 
 	ID           dot.ID `paging:"id"`
 	ShopID       dot.ID
@@ -63,6 +64,7 @@ type ShopTraderAddress struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
+	Position     string
 	IsDefault    bool
 	Coordinates  *addressmodel.Coordinates
 	CreatedAt    time.Time `sq:"create"`

@@ -15,20 +15,183 @@
     "version": "v1"
   },
   "paths": {
-    "/v1/partner.Customer/GetCustomers": {
+    "/v1/partner.Customer/CreateAddress": {
       "post": {
         "tags": [
           "Customer"
         ],
-        "summary": "GetCustomers",
-        "operationId": "partner.Customer-GetCustomers",
+        "summary": "CreateAddress",
+        "operationId": "partner.Customer-CreateAddress",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrGetCustomersRequest"
+              "$ref": "#/definitions/mrCreateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/CreateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "CreateCustomer",
+        "operationId": "partner.Customer-CreateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/DeleteAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "DeleteAddress",
+        "operationId": "partner.Customer-DeleteAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/DeleteCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "DeleteCustomer",
+        "operationId": "partner.Customer-DeleteCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrDeleteCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/GetCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomer",
+        "operationId": "partner.Customer-GetCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/ListAddresses": {
+      "post": {
+        "description": "-- address --//\n",
+        "tags": [
+          "Customer"
+        ],
+        "summary": "ListAddresses",
+        "operationId": "partner.Customer-ListAddresses",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerAddressesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddressesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/ListCustomers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "ListCustomers",
+        "operationId": "partner.Customer-ListCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomersRequest"
             }
           }
         ],
@@ -37,6 +200,276 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrCustomersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/UpdateAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "UpdateAddress",
+        "operationId": "partner.Customer-UpdateAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Customer/UpdateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "UpdateCustomer",
+        "operationId": "partner.Customer-UpdateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/AddCustomers": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "AddCustomers",
+        "operationId": "partner.CustomerGroup-AddCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrAddCustomersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/CreateCustomerGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "CreateCustomerGroup",
+        "operationId": "partner.CustomerGroup-CreateCustomerGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCustomerGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/GetCustomerGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "GetCustomerGroup",
+        "operationId": "partner.CustomerGroup-GetCustomerGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/ListCustomerGroups": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "ListCustomerGroups",
+        "operationId": "partner.CustomerGroup-ListCustomerGroups",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerGroupsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroupsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/RemoveCustomers": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "RemoveCustomers",
+        "operationId": "partner.CustomerGroup-RemoveCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveCustomersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroup/UpdateCustomerGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "UpdateCustomerGroup",
+        "operationId": "partner.CustomerGroup-UpdateCustomerGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Fulfillment/GetFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillment",
+        "operationId": "partner.Fulfillment-GetFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Fulfillment/ListFulfillments": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "ListFulfillments",
+        "operationId": "partner.Fulfillment-ListFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListFulfillmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentsResponse"
             }
           }
         }
@@ -64,6 +497,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrCallback"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Inventory/ListInventoryLevels": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "ListInventoryLevels",
+        "operationId": "partner.Inventory-ListInventoryLevels",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListInventoryLevelsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrInventoryLevelsResponse"
             }
           }
         }
@@ -150,20 +610,157 @@
         }
       }
     },
-    "/v1/partner.Product/GetProducts": {
+    "/v1/partner.Order/CancelOrder": {
       "post": {
         "tags": [
-          "Product"
+          "Order"
         ],
-        "summary": "GetProducts",
-        "operationId": "partner.Product-GetProducts",
+        "summary": "CancelOrder",
+        "operationId": "partner.Order-CancelOrder",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrGetProductsRequest"
+              "$ref": "#/definitions/mrCancelOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrderAndFulfillments"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Order/ConfirmOrder": {
+      "post": {
+        "description": "**TODO:**\n",
+        "tags": [
+          "Order"
+        ],
+        "summary": "ConfirmOrder",
+        "operationId": "partner.Order-ConfirmOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrConfirmOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Order/CreateOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CreateOrder",
+        "operationId": "partner.Order-CreateOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrder"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Order/GetOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrder",
+        "operationId": "partner.Order-GetOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrderAndFulfillments"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/AddProductCollection": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "AddProductCollection",
+        "operationId": "partner.Product-AddProductCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrAddProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/BatchUpdateProducts": {
+      "post": {
+        "description": "**TODO:**\n",
+        "tags": [
+          "Product"
+        ],
+        "summary": "BatchUpdateProducts",
+        "operationId": "partner.Product-BatchUpdateProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrBatchUpdateProductsRequest"
             }
           }
         ],
@@ -172,6 +769,141 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrShopProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/CreateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "CreateProduct",
+        "operationId": "partner.Product-CreateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/GetProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetProduct",
+        "operationId": "partner.Product-GetProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/ListProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "ListProducts",
+        "operationId": "partner.Product-ListProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListProductsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/RemoveProductCollection": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "RemoveProductCollection",
+        "operationId": "partner.Product-RemoveProductCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Product/UpdateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProduct",
+        "operationId": "partner.Product-UpdateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
             }
           }
         }
@@ -366,20 +1098,21 @@
         }
       }
     },
-    "/v1/partner.Variant/GetVariants": {
+    "/v1/partner.Variant/BatchUpdateVariants": {
       "post": {
+        "description": "**TODO:**\n",
         "tags": [
           "Variant"
         ],
-        "summary": "GetVariants",
-        "operationId": "partner.Variant-GetVariants",
+        "summary": "BatchUpdateVariants",
+        "operationId": "partner.Variant-BatchUpdateVariants",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrGetVariantsRequest"
+              "$ref": "#/definitions/mrBatchUpdateVariantsRequest"
             }
           }
         ],
@@ -388,6 +1121,114 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrShopVariantsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Variant/CreateVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "CreateVariant",
+        "operationId": "partner.Variant-CreateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Variant/GetVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "GetVariant",
+        "operationId": "partner.Variant-GetVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Variant/ListVariants": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "ListVariants",
+        "operationId": "partner.Variant-ListVariants",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListVariantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariantsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Variant/UpdateVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "UpdateVariant",
+        "operationId": "partner.Variant-UpdateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
             }
           }
         }
@@ -476,6 +1317,19 @@
     }
   },
   "definitions": {
+    "baCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
     "baPublicAccountInfo": {
       "type": "object",
       "properties": {
@@ -625,6 +1479,10 @@
         "shipment"
       ]
     },
+    "kfIDs": {
+      "description": "Filter by id value\n",
+      "type": "string"
+    },
     "ktCursorPageInfo": {
       "type": "object",
       "properties": {
@@ -708,6 +1566,18 @@
         }
       }
     },
+    "ktIDRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ktVersionInfoResponse": {
       "type": "object",
       "properties": {
@@ -720,6 +1590,94 @@
         },
         "version": {
           "type": "string"
+        }
+      }
+    },
+    "mrAddCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrAddProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrBatchUpdateProductsRequest": {
+      "type": "object",
+      "properties": {
+        "adds": {
+          "description": "tags\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "delete_all": {
+          "type": "boolean"
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "mrBatchUpdateVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
         }
       }
     },
@@ -799,6 +1757,126 @@
         }
       }
     },
+    "mrConfirmOrderRequest": {
+      "type": "object",
+      "properties": {
+        "auto_inventory_voucher": {
+          "description": "enum ('create', 'confirm')\n",
+          "type": "string"
+        },
+        "inventory_policy": {
+          "description": "enum ('obey', 'ignore')\n",
+          "type": "boolean"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "mrCreateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/mrCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateCustomerRequest": {
+      "type": "object",
+      "required": [
+        "full_name",
+        "phone"
+      ],
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "description": "enum ('independent', 'individual', 'organization')\n",
+          "$ref": "#/definitions/spCustomerType"
+        }
+      }
+    },
     "mrCreateOrderRequest": {
       "type": "object",
       "properties": {
@@ -859,6 +1937,111 @@
         },
         "total_items": {
           "type": "integer"
+        }
+      }
+    },
+    "mrCreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
         }
       }
     },
@@ -946,6 +2129,110 @@
         }
       }
     },
+    "mrCustomerAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCustomerAddressesResponse": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerAddress"
+          }
+        }
+      }
+    },
+    "mrCustomerFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCustomerGroupFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "customer_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerGroup"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "mrCustomersResponse": {
       "type": "object",
       "properties": {
@@ -957,6 +2244,21 @@
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrDeleteCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1150,6 +2452,20 @@
         }
       }
     },
+    "mrFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrFulfillment"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "mrGetChangesRequest": {
       "type": "object",
       "properties": {
@@ -1164,33 +2480,33 @@
         }
       }
     },
-    "mrGetCustomersRequest": {
+    "mrGetCustomerRequest": {
       "type": "object",
       "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
+        "code": {
+          "type": "string"
         },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
-    "mrGetProductsRequest": {
+    "mrGetProductRequest": {
       "type": "object",
       "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
+        "code": {
+          "type": "string"
         },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1252,18 +2568,51 @@
         }
       }
     },
-    "mrGetVariantsRequest": {
+    "mrGetVariantRequest": {
       "type": "object",
       "properties": {
-        "ids": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrInventoryLevel": {
+      "type": "object",
+      "properties": {
+        "available_quantity": {
+          "type": "integer"
+        },
+        "picked_quantity": {
+          "type": "integer"
+        },
+        "reserved_quantity": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrInventoryLevelsResponse": {
+      "type": "object",
+      "properties": {
+        "inventory_levels": {
           "type": "array",
           "items": {
-            "type": "string",
-            "format": "int64"
+            "$ref": "#/definitions/mrInventoryLevel"
           }
-        },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -1275,6 +2624,83 @@
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
+        }
+      }
+    },
+    "mrListCustomerAddressesRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrListCustomerGroupsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerGroupFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListInventoryLevelsRequest": {
+      "type": "object",
+      "properties": {
+        "variant_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "mrListProductsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrProductFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrVariantFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -1615,6 +3041,14 @@
         }
       }
     },
+    "mrProductFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
     "mrProvince": {
       "type": "object",
       "properties": {
@@ -1626,6 +3060,38 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "mrRemoveCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrRemoveProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1839,6 +3305,212 @@
         }
       }
     },
+    "mrUpdateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "description": "enum ('individual', 'organization','independent')\n",
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateProductRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateVariantRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "adds": {
+          "description": "images\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "delete_all": {
+          "type": "boolean"
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "mrVariantFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
     "mrWard": {
       "type": "object",
       "properties": {
@@ -1936,6 +3608,15 @@
         "tax"
       ]
     },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ]
+    },
     "qdOrderFeeLine": {
       "type": "object",
       "required": [
@@ -1977,6 +3658,15 @@
         "cancelled",
         "undeliverable"
       ]
+    },
+    "spCustomerType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "independent"
+      ]
     }
   },
   "tags": [
@@ -1984,10 +3674,22 @@
       "name": "Customer"
     },
     {
+      "name": "CustomerGroup"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
       "name": "History"
     },
     {
+      "name": "Inventory"
+    },
+    {
       "name": "Misc"
+    },
+    {
+      "name": "Order"
     },
     {
       "name": "Product"

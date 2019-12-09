@@ -285,6 +285,18 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByRefIDs(ctx context.Cont
 	return err
 }
 
+type ListInventoryVariantsByVariantIDsQuery struct {
+	ShopID     dot.ID
+	VariantIDs []dot.ID
+
+	Result *GetInventoryVariantsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListInventoryVariantsByVariantIDs(ctx context.Context, msg *ListInventoryVariantsByVariantIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListInventoryVariantsByVariantIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *AdjustInventoryQuantityCommand) command()                {}
@@ -298,14 +310,15 @@ func (q *CreateInventoryVoucherByReferenceCommand) command()      {}
 func (q *UpdateInventoryVariantCostPriceCommand) command()        {}
 func (q *UpdateInventoryVoucherCommand) command()                 {}
 
-func (q *GetInventoryVariantQuery) query()              {}
-func (q *GetInventoryVariantsQuery) query()             {}
-func (q *GetInventoryVariantsByVariantIDsQuery) query() {}
-func (q *GetInventoryVoucherQuery) query()              {}
-func (q *GetInventoryVoucherByReferenceQuery) query()   {}
-func (q *GetInventoryVouchersQuery) query()             {}
-func (q *GetInventoryVouchersByIDsQuery) query()        {}
-func (q *GetInventoryVouchersByRefIDsQuery) query()     {}
+func (q *GetInventoryVariantQuery) query()               {}
+func (q *GetInventoryVariantsQuery) query()              {}
+func (q *GetInventoryVariantsByVariantIDsQuery) query()  {}
+func (q *GetInventoryVoucherQuery) query()               {}
+func (q *GetInventoryVoucherByReferenceQuery) query()    {}
+func (q *GetInventoryVouchersQuery) query()              {}
+func (q *GetInventoryVouchersByIDsQuery) query()         {}
+func (q *GetInventoryVouchersByRefIDsQuery) query()      {}
+func (q *ListInventoryVariantsByVariantIDsQuery) query() {}
 
 // implement conversion
 
@@ -600,6 +613,19 @@ func (q *GetInventoryVouchersByRefIDsQuery) GetArgs(ctx context.Context) (_ cont
 		q.ShopID
 }
 
+func (q *ListInventoryVariantsByVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListInventoryVariantsByVariantIDsArgs) {
+	return ctx,
+		&ListInventoryVariantsByVariantIDsArgs{
+			ShopID:     q.ShopID,
+			VariantIDs: q.VariantIDs,
+		}
+}
+
+func (q *ListInventoryVariantsByVariantIDsQuery) SetListInventoryVariantsByVariantIDsArgs(args *ListInventoryVariantsByVariantIDsArgs) {
+	q.ShopID = args.ShopID
+	q.VariantIDs = args.VariantIDs
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -645,5 +671,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetInventoryVouchers)
 	b.AddHandler(h.HandleGetInventoryVouchersByIDs)
 	b.AddHandler(h.HandleGetInventoryVouchersByRefIDs)
+	b.AddHandler(h.HandleListInventoryVariantsByVariantIDs)
 	return QueryBus{b}
 }

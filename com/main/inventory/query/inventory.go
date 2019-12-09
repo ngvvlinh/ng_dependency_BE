@@ -142,3 +142,13 @@ func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Conte
 		Status:            status,
 	}, nil
 }
+
+func (q *InventoryQueryService) ListInventoryVariantsByVariantIDs(
+	ctx context.Context, args *inventory.ListInventoryVariantsByVariantIDsArgs,
+) (*inventory.GetInventoryVariantsResponse, error) {
+	inventoryVariants, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(args.VariantIDs...).ListInventory()
+	if err != nil {
+		return nil, err
+	}
+	return &inventory.GetInventoryVariantsResponse{InventoryVariants: inventoryVariants}, nil
+}

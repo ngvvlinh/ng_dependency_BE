@@ -86,6 +86,7 @@ type Aggregate interface {
 }
 
 type QueryService interface {
+	GetShopProduct(context.Context, *GetShopProductArgs) (*ShopProduct, error)
 	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProduct, error)
 	GetShopProductWithVariantsByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductWithVariants, error)
 	ListShopProducts(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsResponse, error)
@@ -131,6 +132,13 @@ type GetShopCategoryArgs struct {
 	ShopID dot.ID
 }
 
+type GetShopProductArgs struct {
+	ExternalID string
+	Code       string
+	ProductID  dot.ID
+	ShopID     dot.ID
+}
+
 type GetShopProductByIDQueryArgs struct {
 	ProductID dot.ID
 	ShopID    dot.ID
@@ -154,9 +162,10 @@ type GetShopVariantByIDQueryArgs struct {
 }
 
 type GetShopVariantQueryArgs struct {
-	VariantID NullID
-	ShopID    dot.ID
-	Code      NullString
+	ExternalID string
+	VariantID  dot.ID
+	ShopID     dot.ID
+	Code       string
 }
 
 type GetShopVariantByCodeArgs struct {
@@ -213,6 +222,10 @@ type ShopCollectionsResponse struct {
 //-- command --//
 
 type CreateShopProductArgs struct {
+	ExternalID   string
+	ExternalCode string
+	PartnerID    dot.ID
+
 	ShopID dot.ID
 
 	Code      string
@@ -299,6 +312,10 @@ type DeleteShopCategoryArgs struct {
 }
 
 type CreateShopVariantArgs struct {
+	ExternalID   string
+	ExternalCode string
+	PartnerID    dot.ID
+
 	ShopID    dot.ID
 	ProductID dot.ID
 

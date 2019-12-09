@@ -55,14 +55,17 @@ func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, msg
 }
 
 type CreateCustomerCommand struct {
-	ShopID   dot.ID
-	FullName string
-	Gender   gender.Gender
-	Type     customer_type.CustomerType
-	Birthday string
-	Note     string
-	Phone    string
-	Email    string
+	ExternalID   string
+	ExternalCode string
+	PartnerID    dot.ID
+	ShopID       dot.ID
+	FullName     string
+	Gender       gender.Gender
+	Type         customer_type.CustomerType
+	Birthday     string
+	Note         string
+	Phone        string
+	Email        string
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -85,8 +88,10 @@ func (h AggregateHandler) HandleCreateCustomerGroup(ctx context.Context, msg *Cr
 }
 
 type DeleteCustomerCommand struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID         dot.ID
+	ShopID     dot.ID
+	ExternalID string
+	Code       string
 
 	Result int `json:"-"`
 }
@@ -137,6 +142,20 @@ type UpdateCustomerGroupCommand struct {
 
 func (h AggregateHandler) HandleUpdateCustomerGroup(ctx context.Context, msg *UpdateCustomerGroupCommand) (err error) {
 	msg.Result, err = h.inner.UpdateCustomerGroup(msg.GetArgs(ctx))
+	return err
+}
+
+type GetCustomerQuery struct {
+	ID         dot.ID
+	ShopID     dot.ID
+	Code       string
+	ExternalID string
+
+	Result *ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomer(ctx context.Context, msg *GetCustomerQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomer(msg.GetArgs(ctx))
 	return err
 }
 
@@ -260,6 +279,7 @@ func (q *RemoveCustomersFromGroupCommand) command() {}
 func (q *UpdateCustomerCommand) command()           {}
 func (q *UpdateCustomerGroupCommand) command()      {}
 
+func (q *GetCustomerQuery) query()                  {}
 func (q *GetCustomerByCodeQuery) query()            {}
 func (q *GetCustomerByEmailQuery) query()           {}
 func (q *GetCustomerByIDQuery) query()              {}
@@ -297,18 +317,24 @@ func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context
 func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerArgs) {
 	return ctx,
 		&CreateCustomerArgs{
-			ShopID:   q.ShopID,
-			FullName: q.FullName,
-			Gender:   q.Gender,
-			Type:     q.Type,
-			Birthday: q.Birthday,
-			Note:     q.Note,
-			Phone:    q.Phone,
-			Email:    q.Email,
+			ExternalID:   q.ExternalID,
+			ExternalCode: q.ExternalCode,
+			PartnerID:    q.PartnerID,
+			ShopID:       q.ShopID,
+			FullName:     q.FullName,
+			Gender:       q.Gender,
+			Type:         q.Type,
+			Birthday:     q.Birthday,
+			Note:         q.Note,
+			Phone:        q.Phone,
+			Email:        q.Email,
 		}
 }
 
 func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) {
+	q.ExternalID = args.ExternalID
+	q.ExternalCode = args.ExternalCode
+	q.PartnerID = args.PartnerID
 	q.ShopID = args.ShopID
 	q.FullName = args.FullName
 	q.Gender = args.Gender
@@ -332,10 +358,21 @@ func (q *CreateCustomerGroupCommand) SetCreateCustomerGroupArgs(args *CreateCust
 	q.ShopID = args.ShopID
 }
 
-func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
+func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteCustomerArgs) {
 	return ctx,
-		q.ID,
-		q.ShopID
+		&DeleteCustomerArgs{
+			ID:         q.ID,
+			ShopID:     q.ShopID,
+			ExternalID: q.ExternalID,
+			Code:       q.Code,
+		}
+}
+
+func (q *DeleteCustomerCommand) SetDeleteCustomerArgs(args *DeleteCustomerArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.ExternalID = args.ExternalID
+	q.Code = args.Code
 }
 
 func (q *RemoveCustomersFromGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveCustomerOutOfGroupArgs) {
@@ -391,6 +428,23 @@ func (q *UpdateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Con
 func (q *UpdateCustomerGroupCommand) SetUpdateCustomerGroupArgs(args *UpdateCustomerGroupArgs) {
 	q.ID = args.ID
 	q.Name = args.Name
+}
+
+func (q *GetCustomerQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerArgs) {
+	return ctx,
+		&GetCustomerArgs{
+			ID:         q.ID,
+			ShopID:     q.ShopID,
+			Code:       q.Code,
+			ExternalID: q.ExternalID,
+		}
+}
+
+func (q *GetCustomerQuery) SetGetCustomerArgs(args *GetCustomerArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Code = args.Code
+	q.ExternalID = args.ExternalID
 }
 
 func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID dot.ID) {
@@ -526,6 +580,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetCustomer)
 	b.AddHandler(h.HandleGetCustomerByCode)
 	b.AddHandler(h.HandleGetCustomerByEmail)
 	b.AddHandler(h.HandleGetCustomerByID)

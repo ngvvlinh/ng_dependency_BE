@@ -56,6 +56,10 @@ var reCode = regexp.MustCompile(codeRegex)
 func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (_ *customering.ShopCustomer, err error) {
+	if args.Type == customer_type.Unknown {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Argument is invalid (type unknown)")
+	}
+
 	if args.Type == customer_type.Independent {
 		cust, err := a.store(ctx).ShopID(args.ShopID).Type(args.Type).GetCustomer()
 		// khách lẻ là duy nhất, nếu có lỗi khác lỗi "NotFound" thì trả về lỗi
@@ -190,15 +194,35 @@ func (a *CustomerAggregate) UpdateCustomer(
 }
 
 func (a *CustomerAggregate) DeleteCustomer(
-	ctx context.Context, id dot.ID, shopID dot.ID,
+	ctx context.Context, args *customering.DeleteCustomerArgs,
 ) (deleted int, _ error) {
-	customer, err := a.store(ctx).ShopID(shopID).ID(id).GetCustomerDB()
+	query := a.store(ctx).ShopID(args.ShopID)
+
+	counter := 0
+	if args.ID.Int64() != 0 {
+		query.ID(args.ID)
+		counter++
+	}
+	if args.ExternalID != "" {
+		query.ExternalID(args.ExternalID)
+		counter++
+	}
+	if args.Code != "" {
+		query.Code(args.Code)
+		counter++
+	}
+	if counter == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Arguments are invalid")
+	}
+
+	customer, err := query.GetCustomerDB()
 	if err != nil {
 		return 0, err
 	}
 	if customer.Type == customer_type.Independent {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể xoá khách lẻ")
 	}
+	id, shopID := customer.ID, customer.ShopID
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		var errTr error
@@ -277,7 +301,18 @@ func (a *CustomerAggregate) AddCustomersToGroup(ctx context.Context, args *custo
 		return 0, err
 	}
 	if len(customers) != len(args.CustomerIDs) {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Thành viên không tồn tại")
+		mapCustomers := make(map[dot.ID]bool)
+		for _, customer := range customers {
+			mapCustomers[customer.ID] = true
+		}
+		listCustomerIdsNotExists := make([]dot.ID, 0, len(args.CustomerIDs)-len(customers))
+
+		for _, customerID := range args.CustomerIDs {
+			if _, ok := mapCustomers[customerID]; !ok {
+				listCustomerIdsNotExists = append(listCustomerIdsNotExists, customerID)
+			}
+		}
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Thành viên không tồn tại %v", listCustomerIdsNotExists)
 	}
 	err = a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
 		for _, customerID := range args.CustomerIDs {

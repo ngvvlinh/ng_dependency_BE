@@ -83,6 +83,11 @@ func (s *CustomerStore) Code(code string) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) ExternalID(externalID string) *CustomerStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
 func (s *CustomerStore) CodeNorm(codeNorm int) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByCodeNorm(codeNorm))
 	return s
@@ -103,9 +108,13 @@ func (s *CustomerStore) OptionalShopID(id dot.ID) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) Count() (int, error) {
+func (s *CustomerStore) Count() (_ int, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query, _, err = sqlstore.Filters(query, s.filters, FilterCustomer)
+	if err != nil {
+		return 0, err
+	}
 	return query.Count((*model.ShopCustomer)(nil))
 }
 
@@ -117,7 +126,7 @@ func (s *CustomerStore) CreateCustomer(customer *model.ShopCustomer) error {
 		Type:   tradering.CustomerType,
 	}
 	_, err := s.query().Insert(trader, customer)
-	return CheckErrorCustomer(err, customer.Email, customer.Phone)
+	return CheckErrorCustomer(err, customer.Email, customer.Phone, customer.ExternalID, customer.ExternalCode)
 }
 
 func (s *CustomerStore) UpdateCustomerDB(customer *model.ShopCustomer) error {
@@ -210,7 +219,7 @@ func (s *CustomerStore) ListCustomers() (result []*customering.ShopCustomer, err
 	return
 }
 
-func CheckErrorCustomer(e error, email string, phone string) error {
+func CheckErrorCustomer(e error, email, phone, externalID, externalCode string) error {
 	if e != nil {
 		errMsg := e.Error()
 		switch {
@@ -218,6 +227,10 @@ func CheckErrorCustomer(e error, email string, phone string) error {
 			e = cm.Errorf(cm.FailedPrecondition, e, "Khách hàng với email %v đã tồn tại", email)
 		case strings.Contains(errMsg, "shop_customer_shop_id_phone_idx"):
 			e = cm.Errorf(cm.FailedPrecondition, e, "Khách hàng với số điện thoại %v đã tồn tại", phone)
+		case strings.Contains(errMsg, "shop_customer_shop_id_external_id_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_id %v đã tồn tại", externalID)
+		case strings.Contains(errMsg, "shop_customer_shop_id_external_code_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "external_code %v đa tồn tại", externalCode)
 		}
 	}
 	return e

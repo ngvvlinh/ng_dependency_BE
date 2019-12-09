@@ -61,6 +61,35 @@ func (s *QueryService) GetShopProductWithVariantsByID(
 	return product, nil
 }
 
+func (s *QueryService) GetShopProduct(
+	ctx context.Context, args *catalog.GetShopProductArgs,
+) (*catalog.ShopProduct, error) {
+	q := s.shopProduct(ctx).OptionalShopID(args.ShopID)
+
+	count := 0
+	if args.ProductID.Int64() != 0 {
+		q.ID(args.ProductID)
+		count++
+	}
+	if args.Code != "" {
+		q.Code(args.Code)
+		count++
+	}
+	if args.ExternalID != "" {
+		q.ExternalID(args.ExternalID)
+		count++
+	}
+	if count == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Arguments are invalid")
+	}
+
+	product, err := q.GetShopProduct()
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
+}
+
 func (s *QueryService) GetShopProductByID(
 	ctx context.Context, args *catalog.GetShopProductByIDQueryArgs,
 ) (*catalog.ShopProduct, error) {
@@ -101,11 +130,23 @@ func (s *QueryService) GetShopVariant(
 	ctx context.Context, args *catalog.GetShopVariantQueryArgs,
 ) (*catalog.ShopVariant, error) {
 	q := s.shopVariant(ctx).OptionalShopID(args.ShopID)
-	if args.VariantID.Valid {
-		q = q.ID(args.VariantID.ID)
-	} else {
-		q = q.Code(args.Code.String)
+	counter := 0
+	if args.VariantID != 0 {
+		q = q.ID(args.VariantID)
+		counter++
 	}
+	if args.Code != "" {
+		q = q.Code(args.Code)
+		counter++
+	}
+	if args.ExternalID != "" {
+		q = q.ExternalID(args.ExternalID)
+		counter++
+	}
+	if counter == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Arguments are invalid (Don't allow id equals 0 and code is empty as the same time)")
+	}
+
 	variant, err := q.GetShopVariant()
 	if err != nil {
 		return nil, err

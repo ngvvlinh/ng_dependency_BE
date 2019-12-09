@@ -86,6 +86,9 @@ func (h AggregateHandler) HandleCreateShopCollection(ctx context.Context, msg *C
 }
 
 type CreateShopProductCommand struct {
+	ExternalID      string
+	ExternalCode    string
+	PartnerID       dot.ID
 	ShopID          dot.ID
 	Code            string
 	Name            string
@@ -107,6 +110,9 @@ func (h AggregateHandler) HandleCreateShopProduct(ctx context.Context, msg *Crea
 }
 
 type CreateShopVariantCommand struct {
+	ExternalID      string
+	ExternalCode    string
+	PartnerID       dot.ID
 	ShopID          dot.ID
 	ProductID       dot.ID
 	Code            string
@@ -178,6 +184,7 @@ func (h AggregateHandler) HandleDeleteShopCategory(ctx context.Context, msg *Del
 type DeleteShopProductsCommand struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result int `json:"-"`
 }
@@ -190,6 +197,7 @@ func (h AggregateHandler) HandleDeleteShopProducts(ctx context.Context, msg *Del
 type DeleteShopVariantsCommand struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result int `json:"-"`
 }
@@ -466,6 +474,20 @@ func (h QueryServiceHandler) HandleGetShopCollection(ctx context.Context, msg *G
 	return err
 }
 
+type GetShopProductQuery struct {
+	ExternalID string
+	Code       string
+	ProductID  dot.ID
+	ShopID     dot.ID
+
+	Result *ShopProduct `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopProduct(ctx context.Context, msg *GetShopProductQuery) (err error) {
+	msg.Result, err = h.inner.GetShopProduct(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopProductByIDQuery struct {
 	ProductID dot.ID
 	ShopID    dot.ID
@@ -491,9 +513,10 @@ func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Co
 }
 
 type GetShopVariantQuery struct {
-	VariantID dot.NullID
-	ShopID    dot.ID
-	Code      dot.NullString
+	ExternalID string
+	VariantID  dot.ID
+	ShopID     dot.ID
+	Code       string
 
 	Result *ShopVariant `json:"-"`
 }
@@ -631,6 +654,7 @@ func (h QueryServiceHandler) HandleListShopProductsWithVariants(ctx context.Cont
 type ListShopProductsWithVariantsByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
 }
@@ -669,6 +693,7 @@ func (h QueryServiceHandler) HandleListShopVariantsByIDs(ctx context.Context, ms
 type ListShopVariantsWithProductByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *ShopVariantsWithProductResponse `json:"-"`
 }
@@ -724,6 +749,7 @@ func (q *GetBrandByIDQuery) query()                      {}
 func (q *GetBrandsByIDsQuery) query()                    {}
 func (q *GetShopCategoryQuery) query()                   {}
 func (q *GetShopCollectionQuery) query()                 {}
+func (q *GetShopProductQuery) query()                    {}
 func (q *GetShopProductByIDQuery) query()                {}
 func (q *GetShopProductWithVariantsByIDQuery) query()    {}
 func (q *GetShopVariantQuery) query()                    {}
@@ -818,6 +844,9 @@ func (q *CreateShopCollectionCommand) SetCreateShopCollectionArgs(args *CreateSh
 func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopProductArgs) {
 	return ctx,
 		&CreateShopProductArgs{
+			ExternalID:      q.ExternalID,
+			ExternalCode:    q.ExternalCode,
+			PartnerID:       q.PartnerID,
 			ShopID:          q.ShopID,
 			Code:            q.Code,
 			Name:            q.Name,
@@ -833,6 +862,9 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 }
 
 func (q *CreateShopProductCommand) SetCreateShopProductArgs(args *CreateShopProductArgs) {
+	q.ExternalID = args.ExternalID
+	q.ExternalCode = args.ExternalCode
+	q.PartnerID = args.PartnerID
 	q.ShopID = args.ShopID
 	q.Code = args.Code
 	q.Name = args.Name
@@ -849,6 +881,9 @@ func (q *CreateShopProductCommand) SetCreateShopProductArgs(args *CreateShopProd
 func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopVariantArgs) {
 	return ctx,
 		&CreateShopVariantArgs{
+			ExternalID:      q.ExternalID,
+			ExternalCode:    q.ExternalCode,
+			PartnerID:       q.PartnerID,
 			ShopID:          q.ShopID,
 			ProductID:       q.ProductID,
 			Code:            q.Code,
@@ -862,6 +897,9 @@ func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Conte
 }
 
 func (q *CreateShopVariantCommand) SetCreateShopVariantArgs(args *CreateShopVariantArgs) {
+	q.ExternalID = args.ExternalID
+	q.ExternalCode = args.ExternalCode
+	q.PartnerID = args.PartnerID
 	q.ShopID = args.ShopID
 	q.ProductID = args.ProductID
 	q.Code = args.Code
@@ -927,12 +965,14 @@ func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *DeleteShopProductsCommand) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
@@ -940,12 +980,14 @@ func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *DeleteShopVariantsCommand) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *DeleteVariantSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, variantID dot.ID, supplierID dot.ID, shopID dot.ID) {
@@ -1251,6 +1293,23 @@ func (q *GetShopCollectionQuery) SetGetShopCollectionArgs(args *GetShopCollectio
 	q.ShopID = args.ShopID
 }
 
+func (q *GetShopProductQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductArgs) {
+	return ctx,
+		&GetShopProductArgs{
+			ExternalID: q.ExternalID,
+			Code:       q.Code,
+			ProductID:  q.ProductID,
+			ShopID:     q.ShopID,
+		}
+}
+
+func (q *GetShopProductQuery) SetGetShopProductArgs(args *GetShopProductArgs) {
+	q.ExternalID = args.ExternalID
+	q.Code = args.Code
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
+}
+
 func (q *GetShopProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
 	return ctx,
 		&GetShopProductByIDQueryArgs{
@@ -1280,13 +1339,15 @@ func (q *GetShopProductWithVariantsByIDQuery) SetGetShopProductByIDQueryArgs(arg
 func (q *GetShopVariantQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantQueryArgs) {
 	return ctx,
 		&GetShopVariantQueryArgs{
-			VariantID: q.VariantID,
-			ShopID:    q.ShopID,
-			Code:      q.Code,
+			ExternalID: q.ExternalID,
+			VariantID:  q.VariantID,
+			ShopID:     q.ShopID,
+			Code:       q.Code,
 		}
 }
 
 func (q *GetShopVariantQuery) SetGetShopVariantQueryArgs(args *GetShopVariantQueryArgs) {
+	q.ExternalID = args.ExternalID
 	q.VariantID = args.VariantID
 	q.ShopID = args.ShopID
 	q.Code = args.Code
@@ -1416,12 +1477,14 @@ func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs(ctx context.Context) (_
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *ListShopProductsWithVariantsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *ListShopVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -1459,12 +1522,14 @@ func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ 
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
 func (q *ListShopVariantsWithProductByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId dot.ID, shopVariantIds []dot.ID) {
@@ -1531,6 +1596,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetBrandsByIDs)
 	b.AddHandler(h.HandleGetShopCategory)
 	b.AddHandler(h.HandleGetShopCollection)
+	b.AddHandler(h.HandleGetShopProduct)
 	b.AddHandler(h.HandleGetShopProductByID)
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopVariant)

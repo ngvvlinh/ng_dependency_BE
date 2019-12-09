@@ -37,6 +37,7 @@ type CreateAddressCommand struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
+	Position     string
 	IsDefault    bool
 	Coordinates  *orderingtypes.Coordinates
 
@@ -84,6 +85,7 @@ type UpdateAddressCommand struct {
 	Address2     dot.NullString
 	DistrictCode dot.NullString
 	WardCode     dot.NullString
+	Position     dot.NullString
 	IsDefault    dot.NullBool
 	Coordinates  *orderingtypes.Coordinates
 
@@ -134,8 +136,9 @@ func (h QueryServiceHandler) HandleGetAddressByTraderID(ctx context.Context, msg
 type ListAddressesByTraderIDQuery struct {
 	ShopID   dot.ID
 	TraderID dot.ID
+	Paging   meta.Paging
 
-	Result []*ShopTraderAddress `json:"-"`
+	Result *ShopTraderAddressesResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, msg *ListAddressesByTraderIDQuery) (err error) {
@@ -170,6 +173,7 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Address2:     q.Address2,
 			DistrictCode: q.DistrictCode,
 			WardCode:     q.WardCode,
+			Position:     q.Position,
 			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
 		}
@@ -186,6 +190,7 @@ func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
 	q.Address2 = args.Address2
 	q.DistrictCode = args.DistrictCode
 	q.WardCode = args.WardCode
+	q.Position = args.Position
 	q.IsDefault = args.IsDefault
 	q.Coordinates = args.Coordinates
 }
@@ -216,6 +221,7 @@ func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Address2:     q.Address2,
 			DistrictCode: q.DistrictCode,
 			WardCode:     q.WardCode,
+			Position:     q.Position,
 			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
 		}
@@ -230,6 +236,7 @@ func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
 	q.Address2 = args.Address2
 	q.DistrictCode = args.DistrictCode
 	q.WardCode = args.WardCode
+	q.Position = args.Position
 	q.IsDefault = args.IsDefault
 	q.Coordinates = args.Coordinates
 }
@@ -252,10 +259,19 @@ func (q *GetAddressByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Cont
 		q.ShopID
 }
 
-func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, TraderID dot.ID) {
+func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAddressesByTraderIDArgs) {
 	return ctx,
-		q.ShopID,
-		q.TraderID
+		&ListAddressesByTraderIDArgs{
+			ShopID:   q.ShopID,
+			TraderID: q.TraderID,
+			Paging:   q.Paging,
+		}
+}
+
+func (q *ListAddressesByTraderIDQuery) SetListAddressesByTraderIDArgs(args *ListAddressesByTraderIDArgs) {
+	q.ShopID = args.ShopID
+	q.TraderID = args.TraderID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

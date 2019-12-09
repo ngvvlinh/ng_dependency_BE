@@ -26,7 +26,7 @@ var _ = sqlgenFulfillment(&Fulfillment{})
 
 // +convert:type=shipping.Fulfillment
 type Fulfillment struct {
-	ID        dot.ID
+	ID        dot.ID `paging:"id"`
 	OrderID   dot.ID
 	ShopID    dot.ID
 	PartnerID dot.ID
@@ -82,7 +82,7 @@ type Fulfillment struct {
 	AddressToWardCode     string
 
 	CreatedAt                   time.Time `sq:"create"`
-	UpdatedAt                   time.Time `sq:"update"`
+	UpdatedAt                   time.Time `sq:"update" paging:"updated_at"`
 	ClosedAt                    time.Time
 	ExpectedDeliveryAt          time.Time
 	ExpectedPickAt              time.Time

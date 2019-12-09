@@ -36,7 +36,7 @@ func (v *VtigerContactStore) SortBy(order string) *VtigerContactStore {
 }
 
 func (v *VtigerContactStore) WithPaging(paging meta.Paging) *VtigerContactStore {
-	v.WithPaging(paging)
+	v.Paging.WithPaging(paging)
 	return v
 }
 

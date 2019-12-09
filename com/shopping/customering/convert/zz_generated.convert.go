@@ -172,6 +172,7 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
+	out.Position = arg.Position         // simple assign
 	out.Coordinates = addressconvert.Convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg.Coordinates, nil)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
@@ -209,6 +210,7 @@ func convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg
 	out.Address2 = arg.Address2         // simple assign
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
+	out.Position = arg.Position         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
 	out.Coordinates = addressconvert.Convert_orderingtypes_Coordinates_addressmodel_Coordinates(arg.Coordinates, nil)
 	out.CreatedAt = arg.CreatedAt // simple assign
@@ -250,6 +252,7 @@ func apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
+	out.Position = arg.Position         // simple assign
 	out.Coordinates = arg.Coordinates   // simple assign
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
@@ -279,6 +282,7 @@ func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.DistrictCode = arg.DistrictCode.Apply(out.DistrictCode) // apply change
 	out.WardCode = arg.WardCode.Apply(out.WardCode)             // apply change
 	out.IsDefault = arg.IsDefault.Apply(out.IsDefault)          // apply change
+	out.Position = arg.Position.Apply(out.Position)             // apply change
 	out.Coordinates = arg.Coordinates                           // simple assign
 	out.CreatedAt = out.CreatedAt                               // no change
 	out.UpdatedAt = out.UpdatedAt                               // no change
@@ -300,6 +304,7 @@ func Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *customeringmodel.ShopCustomer, out *customering.ShopCustomer) {
 	out.ExternalID = arg.ExternalID         // simple assign
 	out.ExternalCode = arg.ExternalCode     // simple assign
+	out.PartnerID = arg.PartnerID           // simple assign
 	out.ID = arg.ID                         // simple assign
 	out.ShopID = arg.ShopID                 // simple assign
 	out.GroupIDs = arg.GroupIDs             // simple assign
@@ -340,6 +345,7 @@ func Convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *customering.ShopCustomer, out *customeringmodel.ShopCustomer) {
 	out.ExternalID = arg.ExternalID     // simple assign
 	out.ExternalCode = arg.ExternalCode // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.ID = arg.ID                     // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.Code = arg.Code                 // simple assign
@@ -381,23 +387,24 @@ func Apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 }
 
 func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customering.CreateCustomerArgs, out *customering.ShopCustomer) {
-	out.ExternalID = ""         // zero value
-	out.ExternalCode = ""       // zero value
-	out.ID = 0                  // zero value
-	out.ShopID = arg.ShopID     // simple assign
-	out.GroupIDs = nil          // zero value
-	out.Code = ""               // zero value
-	out.CodeNorm = 0            // zero value
-	out.FullName = arg.FullName // simple assign
-	out.Gender = arg.Gender     // simple assign
-	out.Type = arg.Type         // simple assign
-	out.Birthday = arg.Birthday // simple assign
-	out.Note = arg.Note         // simple assign
-	out.Phone = arg.Phone       // simple assign
-	out.Email = arg.Email       // simple assign
-	out.Status = 0              // zero value
-	out.CreatedAt = time.Time{} // zero value
-	out.UpdatedAt = time.Time{} // zero value
+	out.ExternalID = arg.ExternalID     // simple assign
+	out.ExternalCode = arg.ExternalCode // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
+	out.ID = 0                          // zero value
+	out.ShopID = arg.ShopID             // simple assign
+	out.GroupIDs = nil                  // zero value
+	out.Code = ""                       // zero value
+	out.CodeNorm = 0                    // zero value
+	out.FullName = arg.FullName         // simple assign
+	out.Gender = arg.Gender             // simple assign
+	out.Type = arg.Type                 // simple assign
+	out.Birthday = arg.Birthday         // simple assign
+	out.Note = arg.Note                 // simple assign
+	out.Phone = arg.Phone               // simple assign
+	out.Email = arg.Email               // simple assign
+	out.Status = 0                      // zero value
+	out.CreatedAt = time.Time{}         // zero value
+	out.UpdatedAt = time.Time{}         // zero value
 }
 
 func Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) *customering.ShopCustomer {
@@ -407,6 +414,7 @@ func Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) {
 	out.ExternalID = out.ExternalID                 // no change
 	out.ExternalCode = out.ExternalCode             // no change
+	out.PartnerID = out.PartnerID                   // no change
 	out.ID = out.ID                                 // identifier
 	out.ShopID = out.ShopID                         // identifier
 	out.GroupIDs = out.GroupIDs                     // no change

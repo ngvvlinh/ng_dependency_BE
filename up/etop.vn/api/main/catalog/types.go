@@ -17,6 +17,8 @@ type ShopProduct struct {
 
 	ExternalCode string
 
+	PartnerID dot.ID
+
 	ShopID dot.ID
 
 	ProductID dot.ID
@@ -68,6 +70,8 @@ type ShopVariant struct {
 	ExternalID string
 
 	ExternalCode string
+
+	PartnerID dot.ID
 
 	ShopID dot.ID
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -28,8 +29,14 @@ type AddressStore struct {
 
 	query cmsql.QueryFactory
 	preds []interface{}
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *AddressStore) WithPaging(paging meta.Paging) *AddressStore {
+	s.Paging.WithPaging(paging)
+	return s
 }
 
 func (s *AddressStore) ID(id dot.ID) *AddressStore {
@@ -56,6 +63,12 @@ func (s *AddressStore) ShopTraderID(shopID, traderID dot.ID) *AddressStore {
 func (s *AddressStore) IsDefault(isDefault bool) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByIsDefault(isDefault))
 	return s
+}
+
+func (s *AddressStore) Count() (_ int, err error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	return query.Count((*model.ShopTraderAddress)(nil))
 }
 
 func (s *AddressStore) UpdateStatusAddresses(shopID, traderID dot.ID, isDefault bool) error {
@@ -135,8 +148,19 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopTraderAddress, s.ft.prefix)
+	if err != nil {
+		return nil, err
+	}
+
 	var addrs model.ShopTraderAddresses
-	err := query.Find(&addrs)
+	err = query.Find(&addrs)
+	if err != nil {
+		return nil, err
+	}
 	return addrs, err
 }
 

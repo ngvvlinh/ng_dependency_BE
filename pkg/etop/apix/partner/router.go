@@ -16,9 +16,13 @@ func NewPartnerServer(m httprpc.Muxer) {
 		service.NewWebhookServiceServer(WrapWebhookService(webhookService)),
 		service.NewHistoryServiceServer(WrapHistoryService(historyService)),
 		service.NewShippingServiceServer(WrapShippingService(shippingService)),
+		service.NewOrderServiceServer(WrapOrderService(orderService)),
+		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService)),
 		service.NewCustomerServiceServer(WrapCustomerService(customerService)),
-		service.NewProductServiceServer(WrapProductService(productService)),
+		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService)),
+		service.NewInventoryServiceServer(WrapInventoryService(inventoryService)),
 		service.NewVariantServiceServer(WrapVariantService(variantService)),
+		service.NewProductServiceServer(WrapProductService(productService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

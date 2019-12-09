@@ -42,7 +42,20 @@ func (q *AddressQuery) GetAddressActiveByTraderID(ctx context.Context, traderID,
 	return addr, err
 }
 
-func (q *AddressQuery) ListAddressesByTraderID(ctx context.Context, ShopID dot.ID, TraderID dot.ID) ([]*addressing.ShopTraderAddress, error) {
-	addrs, err := q.store(ctx).ShopTraderID(ShopID, TraderID).ListAddresses()
-	return addrs, err
+func (q *AddressQuery) ListAddressesByTraderID(ctx context.Context, args *addressing.ListAddressesByTraderIDArgs) (*addressing.ShopTraderAddressesResponse, error) {
+	query := q.store(ctx).ShopTraderID(args.ShopID, args.TraderID)
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	addrs, err := query.WithPaging(args.Paging).ListAddresses()
+	if err != nil {
+		return nil, err
+	}
+	return &addressing.ShopTraderAddressesResponse{
+		ShopTraderAddresses: addrs,
+		Count:               count,
+		Paging:              query.GetPaging(),
+	}, err
 }

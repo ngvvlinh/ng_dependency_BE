@@ -273,6 +273,7 @@ func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locati
 		FullName:     in.FullName,
 		Phone:        in.Phone,
 		Email:        in.Email,
+		Position:     in.Position,
 		Coordinates:  PbCoordinates(in.Coordinates),
 	}
 	if ward != nil {

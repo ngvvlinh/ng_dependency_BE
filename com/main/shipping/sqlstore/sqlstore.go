@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/shipping"
+	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/shipping/convert"
 	"etop.vn/backend/com/main/shipping/model"
@@ -12,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -33,8 +35,14 @@ type FulfillmentStore struct {
 
 	query cmsql.QueryFactory
 	preds []interface{}
+	sqlstore.Paging
 
 	includeDeleted bool
+}
+
+func (s *FulfillmentStore) WithPaging(paging meta.Paging) *FulfillmentStore {
+	s.Paging.WithPaging(paging)
+	return s
 }
 
 func (s *FulfillmentStore) ID(id dot.ID) *FulfillmentStore {
@@ -93,8 +101,17 @@ func (s *FulfillmentStore) GetFulfillment() (*shipping.Fulfillment, error) {
 
 func (s *FulfillmentStore) ListFfmsDB() ([]*model.Fulfillment, error) {
 	var ffms model.Fulfillments
-	err := s.query().Where(s.preds...).Find(&ffms)
-	return ffms, err
+	query := s.query().Where(s.preds...)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFulfillment)
+	if err != nil {
+		return nil, err
+	}
+	err = query.Find(&ffms)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(ffms)
+	return ffms, nil
 }
 
 func (s *FulfillmentStore) CreateFulfillmentDB(ctx context.Context, ffm *model.Fulfillment) (*model.Fulfillment, error) {

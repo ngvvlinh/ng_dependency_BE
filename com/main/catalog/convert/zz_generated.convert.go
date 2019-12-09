@@ -545,6 +545,7 @@ func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
 	out.ExternalID = arg.ExternalID       // simple assign
 	out.ExternalCode = arg.ExternalCode   // simple assign
+	out.PartnerID = arg.PartnerID         // simple assign
 	out.ShopID = arg.ShopID               // simple assign
 	out.ProductID = arg.ProductID         // simple assign
 	out.Code = arg.Code                   // simple assign
@@ -593,6 +594,7 @@ func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
 	out.ExternalID = arg.ExternalID       // simple assign
 	out.ExternalCode = arg.ExternalCode   // simple assign
+	out.PartnerID = arg.PartnerID         // simple assign
 	out.ShopID = arg.ShopID               // simple assign
 	out.ProductID = arg.ProductID         // simple assign
 	out.CollectionIDs = arg.CollectionIDs // simple assign
@@ -636,6 +638,7 @@ func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) {
 	out.ExternalID = out.ExternalID       // no change
 	out.ExternalCode = out.ExternalCode   // no change
+	out.PartnerID = out.PartnerID         // no change
 	out.ShopID = arg.ShopID               // simple assign
 	out.ProductID = arg.ProductID         // simple assign
 	out.Code = out.Code                   // no change
@@ -668,6 +671,7 @@ func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) {
 	out.ExternalID = out.ExternalID                          // no change
 	out.ExternalCode = out.ExternalCode                      // no change
+	out.PartnerID = out.PartnerID                            // no change
 	out.ShopID = arg.ShopID                                  // simple assign
 	out.ProductID = arg.ProductID                            // simple assign
 	out.Code = arg.Code.Apply(out.Code)                      // apply change
@@ -767,6 +771,7 @@ func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.Shop
 func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
 	out.ExternalID = arg.ExternalID     // simple assign
 	out.ExternalCode = arg.ExternalCode // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.ProductID = arg.ProductID       // simple assign
 	out.VariantID = arg.VariantID       // simple assign
@@ -810,6 +815,7 @@ func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVaria
 func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
 	out.ExternalID = arg.ExternalID     // simple assign
 	out.ExternalCode = arg.ExternalCode // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.VariantID = arg.VariantID       // simple assign
 	out.ProductID = arg.ProductID       // simple assign
@@ -849,6 +855,7 @@ func Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) {
 	out.ExternalID = out.ExternalID                          // no change
 	out.ExternalCode = out.ExternalCode                      // no change
+	out.PartnerID = out.PartnerID                            // no change
 	out.ShopID = arg.ShopID                                  // simple assign
 	out.ProductID = out.ProductID                            // no change
 	out.VariantID = arg.VariantID                            // simple assign

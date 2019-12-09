@@ -51,6 +51,8 @@ type QueryService interface {
 	GetInventoryVouchersByRefIDs(_ context.Context, RefIDs []dot.ID, ShopID dot.ID) (*GetInventoryVouchersResponse, error)
 
 	GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType InventoryRefType) (*GetInventoryVoucherByReferenceResponse, error)
+
+	ListInventoryVariantsByVariantIDs(context.Context, *ListInventoryVariantsByVariantIDsArgs) (*GetInventoryVariantsResponse, error)
 }
 
 // +convert:update=InventoryVoucher
@@ -275,4 +277,9 @@ type UpdateInventoryVariantCostPriceRequest struct {
 	ShopID    dot.ID
 	VariantID dot.ID
 	CostPrice int
+}
+
+type ListInventoryVariantsByVariantIDsArgs struct {
+	ShopID     dot.ID
+	VariantIDs []dot.ID
 }
