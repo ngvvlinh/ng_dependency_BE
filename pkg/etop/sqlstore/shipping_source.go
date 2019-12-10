@@ -80,7 +80,7 @@ func CreateShippingSource(ctx context.Context, cmd *model.CreateShippingSource) 
 			ID:       newID,
 			Name:     cmd.Name,
 			Username: cmd.Username,
-			Type:     string(cmd.Type),
+			Type:     cmd.Type.String(),
 		}
 		if query.Result.ShippingSource != nil {
 			ss.ID = query.Result.ShippingSource.ID
