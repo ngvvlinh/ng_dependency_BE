@@ -370,14 +370,17 @@ func (m *RegisterResponse) String() string { return jsonx.MustMarshalToString(m)
 
 // Exactly one of phone or email must be provided.
 type ResetPasswordRequest struct {
-	// Phone number to send reset password instruction.
-	Phone string `json:"phone"`
 	// Email address to send reset password instruction.
-	Email string `json:"email"`
+	Email          string `json:"email"`
+	Phone          string `json:"phone"`
+	RecaptchaToken string `json:"recaptcha_token"`
 }
 
 func (m *ResetPasswordRequest) Reset()         { *m = ResetPasswordRequest{} }
 func (m *ResetPasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ResetPasswordRequest) RequireCaptcha() bool {
+	return m.Phone != ""
+}
 
 // Exactly one of current_password or reset_password_token must be provided.
 type ChangePasswordRequest struct {
@@ -394,8 +397,6 @@ func (m *ChangePasswordRequest) String() string { return jsonx.MustMarshalToStri
 
 // Exactly one of email or phone must be provided.
 type ChangePasswordUsingTokenRequest struct {
-	Email string `json:"email"`
-	Phone string `json:"phone"`
 	// @required
 	ResetPasswordToken string `json:"reset_password_token"`
 	// @required
@@ -406,6 +407,18 @@ type ChangePasswordUsingTokenRequest struct {
 
 func (m *ChangePasswordUsingTokenRequest) Reset()         { *m = ChangePasswordUsingTokenRequest{} }
 func (m *ChangePasswordUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ChangePasswordForPhoneUsingTokenRequest struct {
+	// @required
+	NewPassword string `json:"new_password"`
+	// @required
+	ConfirmPassword string `json:"confirm_password"`
+}
+
+func (m *ChangePasswordForPhoneUsingTokenRequest) Reset() {
+	*m = ChangePasswordForPhoneUsingTokenRequest{}
+}
+func (m *ChangePasswordForPhoneUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // Represents permission of the current user relation with an account.
 type Permission struct {
@@ -745,6 +758,18 @@ type ParseLocationResponse struct {
 
 func (m *ParseLocationResponse) Reset()         { *m = ParseLocationResponse{} }
 func (m *ParseLocationResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ResetPasswordResponse struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+	// @required
+	AccessToken string `json:"access_token"`
+	// @required
+	ExpiresIn int `json:"expires_in"`
+}
+
+func (m *ResetPasswordResponse) Reset()         { *m = ResetPasswordResponse{} }
+func (m *ResetPasswordResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Bank struct {
 	Code string `json:"code"`

@@ -34,6 +34,7 @@ type RefreshFulfillmentFromCarrierEndpoint struct {
 
 func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *api.RefreshFulfillmentFromCarrierRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "crm.Crm/RefreshFulfillmentFromCarrier"
 	defer func() {
@@ -41,7 +42,17 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &RefreshFulfillmentFromCarrierEndpoint{RefreshFulfillmentFromCarrierRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
@@ -68,6 +79,7 @@ type SendNotificationEndpoint struct {
 
 func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotificationRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "crm.Crm/SendNotification"
 	defer func() {
@@ -75,7 +87,17 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &SendNotificationEndpoint{SendNotificationRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
@@ -111,6 +133,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "crm.Misc/VersionInfo"
 	defer func() {
@@ -118,7 +141,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
@@ -171,7 +204,9 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateCallHistoryByCallIDEndpoint{VHTCallLog: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -215,7 +250,9 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateCallHistoryBySDKCallIDEndpoint{VHTCallLog: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -259,7 +296,9 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	}
 	session = sessionQuery.Result
 	query := &GetCallHistoriesEndpoint{GetCallHistoriesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -311,7 +350,9 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.C
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateContactEndpoint{ContactRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -355,7 +396,9 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.Lead
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateLeadEndpoint{LeadRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -399,7 +442,9 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUp
 	}
 	session = sessionQuery.Result
 	query := &CreateTicketEndpoint{CreateOrUpdateTicketRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -443,7 +488,9 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 	}
 	session = sessionQuery.Result
 	query := &GetCategoriesEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -487,7 +534,9 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContacts
 	}
 	session = sessionQuery.Result
 	query := &GetContactsEndpoint{GetContactsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -531,7 +580,9 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 	}
 	session = sessionQuery.Result
 	query := &GetTicketStatusCountEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -575,7 +626,9 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRe
 	}
 	session = sessionQuery.Result
 	query := &GetTicketsEndpoint{GetTicketsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -619,7 +672,9 @@ func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUp
 	}
 	session = sessionQuery.Result
 	query := &UpdateTicketEndpoint{CreateOrUpdateTicketRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles

@@ -54,7 +54,9 @@ func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantA
 	}
 	session = sessionQuery.Result
 	query := &GrantAccessEndpoint{GrantAccessRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
@@ -79,6 +81,7 @@ type InitEndpoint struct {
 
 func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "integration.Integration/Init"
 	defer func() {
@@ -86,7 +89,17 @@ func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) 
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &InitEndpoint{InitRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Init(ctx, query)
 	resp = query.Result
@@ -127,7 +140,9 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.Lo
 	}
 	session = sessionQuery.Result
 	query := &LoginUsingTokenEndpoint{LoginUsingTokenRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginUsingToken(ctx, query)
@@ -169,7 +184,9 @@ func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterR
 	}
 	session = sessionQuery.Result
 	query := &RegisterEndpoint{RegisterRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
@@ -211,7 +228,9 @@ func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.Reque
 	}
 	session = sessionQuery.Result
 	query := &RequestLoginEndpoint{RequestLoginRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.CtxPartner = session.CtxPartner
 	// Verify captcha token
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
@@ -257,7 +276,9 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 	}
 	session = sessionQuery.Result
 	query := &SessionInfoEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SessionInfo(ctx, query)
@@ -288,6 +309,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "integration.Misc/VersionInfo"
 	defer func() {
@@ -295,7 +317,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result

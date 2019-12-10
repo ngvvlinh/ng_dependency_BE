@@ -63,6 +63,7 @@ const (
 	keyRequestVerifyCode                string = "request_phone_verification_code"
 	keyRequestVerifyPhone               string = "request_phone_verification"
 	keyRequestPhoneVerificationVerified string = "request_phone_verification_verified"
+	keyRequestAuthUsage                 string = "request_auth_usage"
 )
 
 func init() {
@@ -131,8 +132,6 @@ func Init(
 	}
 }
 
-type authKey struct{}
-
 // Register
 // 1a. If the user does not exist in the system, create a new user.
 // 1b. If any email or phone is activated -> AlreadyExists.
@@ -141,6 +140,19 @@ type authKey struct{}
 func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	if err := validateRegister(r.CreateUserRequest); err != nil {
 		return err
+	}
+	if r.Context.Claim != nil {
+		if r.Context.Extra[keyRequestVerifyPhone] != "" || r.Context.Extra[keyRequestPhoneVerificationVerified] != "" {
+			phoneNorm, _ := validate.NormalizePhone(r.Phone)
+			if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
+				return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
+			}
+
+			resp, err := s.register(ctx, r.Context, r.CreateUserRequest, true)
+			r.Result = resp
+			authStore.Revoke(auth.UsageAccessToken, r.Context.Token)
+			return err
+		}
 	}
 	resp, err := s.register(ctx, r.Context, r.CreateUserRequest, false)
 	r.Result = resp
@@ -381,8 +393,8 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 }
 
 func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoint) error {
-	key := fmt.Sprintf("ResetPassword %v", r.Email)
-	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
+	key := fmt.Sprintf("ResetPassword %v-%v", r.Email, r.Phone)
+	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
 		func() (interface{}, error) {
 			return s.resetPassword(ctx, r)
 		}, "gửi email khôi phục mật khẩu")
@@ -395,11 +407,58 @@ func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoin
 }
 
 func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
+	// không thể gửi cùng 1 lúc cả phone và email
+	if r.Email == "" && r.Phone == "" {
+		return r, cm.Error(cm.FailedPrecondition, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+	}
+	if r.Email != "" && r.Phone != "" {
+		return r, cm.Error(cm.FailedPrecondition, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+	}
+	if r.Phone != "" {
+		return s.resetPasswordUsingPhone(ctx, r)
+	}
+	if r.Email != "" {
+		return s.resetPasswordUsingEmail(ctx, r)
+	}
+	return r, nil
+}
+
+func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
+	user, err := getUserByPhone(ctx, r.Phone)
+	if err != nil {
+		return r, err
+	}
+	exprisesIn := 0
+	if r.Context.Claim == nil {
+		tokenCmd := &tokens.GenerateTokenCommand{
+			ClaimInfo: claims.ClaimInfo{},
+		}
+		if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+			return r, cm.Errorf(cm.Internal, err, "")
+		}
+		r.Context.Claim = &claims.Claim{
+			ClaimInfo: claims.ClaimInfo{
+				Token: tokenCmd.Result.TokenStr,
+			},
+		}
+		exprisesIn = tokenCmd.Result.ExpiresIn
+	}
+	if err := verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, smsResetPassword, r.Context, false); err != nil {
+		return r, err
+	}
+	r.Result = &etop.ResetPasswordResponse{
+		AccessToken: r.Context.Token,
+		ExpiresIn:   exprisesIn,
+		Code:        "ok",
+		Msg: fmt.Sprintf(
+			"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", r.Phone),
+	}
+	return r, nil
+}
+
+func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
 	if !enabledEmail {
 		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
-	}
-	if r.Email == "" {
-		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin email. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
 	if !strings.Contains(r.Email, "@") {
 		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
@@ -454,11 +513,13 @@ func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoin
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
+	r.Result = &etop.ResetPasswordResponse{
+		Code: "ok",
+		Msg: fmt.Sprintf(
+			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address),
+	}
 	return r, nil
 }
-
 func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpoint) error {
 	if r.CurrentPassword == "" {
 		return cm.Error(cm.InvalidArgument, "Missing current_password", nil)
@@ -508,54 +569,84 @@ func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *ChangePas
 }
 
 func (s *UserService) changePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) (*ChangePasswordUsingTokenEndpoint, error) {
+	if r.Context.Claim != nil && r.Context.Claim.Extra[keyRequestAuthUsage] == auth.UsageResetPassword {
+		request := &etop.ChangePasswordForPhoneUsingTokenRequest{
+			NewPassword:     r.NewPassword,
+			ConfirmPassword: r.ConfirmPassword,
+		}
+		if err := changePasswordUsingTokenForPhone(ctx, request, r.Context); err != nil {
+			return r, err
+		}
+		r.Result = &pbcm.Empty{}
+		return r, nil
+	}
+	return changePasswordUsingTokenForEmail(ctx, r)
+}
+
+func changePasswordUsingTokenForEmail(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) (*ChangePasswordUsingTokenEndpoint, error) {
 	if r.ResetPasswordToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing reset_password_token", nil)
 	}
-
 	var v map[string]string
 	tok, err := authStore.Validate(auth.UsageResetPassword, r.ResetPasswordToken, &v)
 	if err != nil {
 		return r, cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", err)
 	}
 
-	query := &identitymodelx.GetUserByLoginQuery{
-		PhoneOrEmail: v["email"],
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
 		return r, err
 	}
-	user := query.Result.User
-
-	if tok.UserID != user.ID {
-		return r, cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil).WithMeta("reason", "user is not correct")
-	}
-
-	emailNorm, ok := validate.NormalizeEmail(r.Email)
-	if !ok {
-		return r, cm.Error(cm.InvalidArgument, "Email không hợp lệ. Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
-	}
-	if emailNorm.String() != user.Email {
-		return r, cm.Error(cm.InvalidArgument, "Email không đúng. Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
-	}
-
-	if len(r.NewPassword) < 8 {
-		return r, cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
-	}
-	if r.NewPassword != r.ConfirmPassword {
-		return r, cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
-	}
-
-	cmd := &identitymodelx.SetPasswordCommand{
-		UserID:   user.ID,
-		Password: r.NewPassword,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return r, err
-	}
-
 	authStore.Revoke(auth.UsageResetPassword, r.ResetPasswordToken)
 	r.Result = &pbcm.Empty{}
 	return r, nil
+}
+
+func changePasswordUsingTokenForPhone(ctx context.Context, request *etop.ChangePasswordForPhoneUsingTokenRequest, r claims.EmptyClaim) error {
+	if r.Claim == nil {
+		return cm.Error(cm.FailedPrecondition, "Token không hợp lệ", nil)
+	}
+	if r.Extra[keyRequestVerifyPhone] == "" || r.Extra[keyRequestPhoneVerificationVerified] == "" {
+		return cm.Error(cm.FailedPrecondition, "Token không hợp lệ", nil)
+	}
+	userByPhone := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: r.Extra[keyRequestVerifyPhone],
+	}
+	if err := bus.Dispatch(ctx, userByPhone); err != nil {
+		return err
+	}
+	if err := changePassword(userByPhone.Result.Phone, "", userByPhone.Result.ID, ctx, request.NewPassword, request.ConfirmPassword); err != nil {
+		return err
+	}
+	authStore.Revoke(auth.UsageAccessToken, r.Token)
+	return nil
+}
+
+func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
+	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: phone,
+		Email: email,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	user := query.Result
+	if tokUserID != user.ID {
+		return cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil).WithMeta("reason", "user is not correct")
+	}
+	if len(newPassword) < 8 {
+		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
+	}
+	if newPassword != confirmPassword {
+		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
+	}
+	cmd := &identitymodelx.SetPasswordCommand{
+		UserID:   user.ID,
+		Password: newPassword,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *UserService) SessionInfo(ctx context.Context, r *SessionInfoEndpoint) error {
@@ -884,38 +975,15 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 		return r, err
 	}
 	user := getUserByID.Result
-	phoneNorm, ok := validate.NormalizePhone(r.Phone)
-
-	if !ok || user.Phone != phoneNorm.String() {
-		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+	_, ok := validate.NormalizePhone(r.Phone)
+	if !ok {
+		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-	if !user.PhoneVerifiedAt.IsZero() {
-		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
-		return r, nil
-	}
-	_, code, _, err := generateToken(auth.UsagePhoneVerification, user.ID, true, 2*60*60, user.Phone)
-	if err != nil {
-		return r, err
-	}
-	msg := fmt.Sprintf(smsVerificationTpl, code, user.Phone)
-	phone := user.Phone
-	cmd := &sms.SendSMSCommand{
-		Phone:   phone,
-		Content: msg,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, smsVerificationTpl, r.Context, true); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
-
-	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
-		UserID:                  user.ID,
-		PhoneVerificationSentAt: time.Now(),
-	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
-		return r, err
-	}
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", r.Phone))
 	return r, nil
 }
 func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) error {
@@ -1006,9 +1074,8 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 		return r, err
 	}
 	var v map[string]string
-	tok, _ := authStore.Validate(auth.UsagePhoneVerification, r.VerificationToken, &v)
 	user := getUserByID.Result
-	tok, code, v := getToken(auth.UsagePhoneVerification, user.ID, user.Phone)
+	tok, code, v := getToken(r.Context.Extra[keyRequestAuthUsage], user.ID, user.Phone)
 	if tok == nil || code == "" || v == nil {
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
 	}
@@ -1297,61 +1364,94 @@ func generateShopLoginResponse(accessToken string, expiresIn int) *etop.LoginRes
 	return resp
 }
 
-func getTokenValid(ctx context.Context, token string) string {
-	if token != "" {
-		return token
-	}
-	return getBearerTokenFromCtx(ctx)
-}
-
-func getBearerTokenFromCtx(ctx context.Context) string {
-	authHeader, ok := ctx.Value(authKey{}).(string)
-	if !ok {
-		return ""
-	}
-	token, _ := auth.FromHeaderString(authHeader)
-	return token
-}
-
 func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificationEndpoint) (*SendPhoneVerificationEndpoint, error) {
-	token := getTokenValid(ctx, r.Context.Token)
-	claim, err := tokens.Store.Validate(token)
-
-	if err != nil {
-		return r, nil
-	}
-	phoneNorm, ok := validate.NormalizePhone(r.Phone)
-
+	phone, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
-		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
 	}
-	_, code, _, err := generateToken(auth.UsagePhoneVerification, 0, true, 2*60*60, r.Phone)
-	if err != nil {
-		return r, err
-	}
-	msg := fmt.Sprintf(smsVerificationTpl, code, r.Phone)
-	phone := r.Phone
-	cmd := &sms.SendSMSCommand{
-		Phone:   phone,
-		Content: msg,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return r, err
-	}
-	if claim.Extra == nil || claim.Extra[keyRequestPhoneVerificationVerified] != "" {
-		claim.Extra = map[string]string{}
-	}
-	claim.Extra[keyRequestVerifyPhone] = phoneNorm.String()
-	claim.Extra[keyRequestVerifyCode] = code
-
-	updateSessionCmd := &tokens.UpdateSessionCommand{
-		Token:  r.Context.Claim.Token,
-		Values: claim.Extra,
-	}
-	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+	if err := sendPhoneVerification(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, r.Context, smsVerificationTpl, false); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
 	return r, nil
+}
+
+func sendPhoneVerification(ctx context.Context, user *identitymodel.User, ttl int, usage string,
+	phone string, r claims.EmptyClaim, msg string, checkVerifyPhoneForUser bool) error {
+	var userIDUse dot.ID
+	userIDUse = 0
+	if user != nil {
+		userIDUse = user.ID
+	}
+	phoneUse := phone
+	_, code, _, err := generateToken(usage, userIDUse, true, ttl, phoneUse)
+	if err != nil {
+		return err
+	}
+	msgUser := fmt.Sprintf(msg, code)
+	cmd := &sms.SendSMSCommand{
+		Phone:   phoneUse,
+		Content: msgUser,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	extra := make(map[string]string)
+	if r.Claim.Extra != nil {
+		extra = r.Extra
+	}
+	if !checkVerifyPhoneForUser {
+		extra[keyRequestVerifyPhone] = phoneUse
+		extra[keyRequestVerifyCode] = code
+	}
+	extra[keyRequestAuthUsage] = usage
+	updateSessionCmd := &tokens.UpdateSessionCommand{
+		Token:  r.Token,
+		Values: extra,
+	}
+	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, error) {
+	_, ok := validate.NormalizePhone(phone)
+	if !ok {
+		return nil, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
+	}
+	userByPhone := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: phone,
+	}
+	if err := bus.Dispatch(ctx, userByPhone); err != nil {
+		return nil, cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
+	}
+	return userByPhone.Result, nil
+}
+
+func verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, msg string, r claims.EmptyClaim, checkVerifyPhoneForUser bool) error {
+	if user != nil && user.Phone != phone {
+		return cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
+	}
+	if checkVerifyPhoneForUser {
+		if !user.PhoneVerifiedAt.IsZero() {
+			return nil
+		}
+		if err := sendPhoneVerification(ctx, user, ttl, usage, user.Phone, r, msg, true); err != nil {
+			return err
+		}
+		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
+			UserID:                  user.ID,
+			PhoneVerificationSentAt: time.Now(),
+		}
+		if err := bus.Dispatch(ctx, updateCmd); err != nil {
+			return err
+		}
+		return nil
+	}
+	if err := sendPhoneVerification(ctx, user, ttl, usage, user.Phone, r, msg, false); err != nil {
+		return err
+	}
+	return nil
 }

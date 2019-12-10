@@ -53,7 +53,9 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản %v của bạn trên eTop.vn. Mã có hiệu lực trong 2 giờ.`
+var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản của bạn trên eTop.vn. Mã có hiệu lực trong 2 giờ.`
+
+var smsResetPassword = `Mã xác nhận thông tin để lấy lại mật khẩu của bạn trên eTop.vn là %v. Mã có hiệu lực trong vong 1 giờ.`
 
 var RequestLoginEmailTpl = template.Must(template.New("request-login-email").Parse(`
 {{.Hello}},<br><br>

@@ -880,7 +880,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ktMessageResponse"
+              "$ref": "#/definitions/baResetPasswordResponse"
             }
           }
         }
@@ -1588,13 +1588,7 @@
         "confirm_password": {
           "type": "string"
         },
-        "email": {
-          "type": "string"
-        },
         "new_password": {
-          "type": "string"
-        },
-        "phone": {
           "type": "string"
         },
         "reset_password_token": {
@@ -2388,7 +2382,30 @@
           "type": "string"
         },
         "phone": {
-          "description": "Phone number to send reset password instruction.\n",
+          "type": "string"
+        },
+        "recaptcha_token": {
+          "type": "string"
+        }
+      }
+    },
+    "baResetPasswordResponse": {
+      "type": "object",
+      "required": [
+        "access_token",
+        "expires_in"
+      ],
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "integer"
+        },
+        "msg": {
           "type": "string"
         }
       }

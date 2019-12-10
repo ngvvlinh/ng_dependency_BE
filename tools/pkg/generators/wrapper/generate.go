@@ -206,9 +206,7 @@ type {{$s.EndpointPrefix}}{{$m|methodName}}Endpoint struct {
 
 func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type}}) (resp {{.Resp|type}}, err error) {
 	t0 := time.Now()
-{{if requireAuth $m -}}
 	var session *middleware.Session
-{{end -}}
 	var errs []*cm.Error
 	const rpcName = "{{$.PackageName}}.{{$s.Name}}/{{$m|methodName}}"
 	defer func() {
@@ -216,7 +214,6 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-{{- if requireAuth $m}}
 	sessionQuery := &middleware.StartSessionQuery{
 		Context: ctx,
 		{{if requireAuth       $m}}RequireAuth: 	  true,
@@ -235,11 +232,10 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 		return nil, err
 	}
 	session = sessionQuery.Result
-{{- end}}
 	query := &{{$s.EndpointPrefix}}{{$m|methodName}}Endpoint{ {{$m.Req|baseName}}: req }
-	{{if requireAuth $m -}}
-	query.Context.Claim = session.Claim
-	{{end -}}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	{{if requireUser $m -}}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin

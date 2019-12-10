@@ -52,7 +52,9 @@ func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &AffiliateGetProductsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -96,7 +98,9 @@ func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx conte
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateAffiliateCommissionSettingEndpoint{CreateOrUpdateCommissionSettingRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -140,7 +144,9 @@ func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *api.C
 	}
 	session = sessionQuery.Result
 	query := &CreateReferralCodeEndpoint{CreateReferralCodeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -184,7 +190,9 @@ func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.Common
 	}
 	session = sessionQuery.Result
 	query := &GetCommissionsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -228,7 +236,9 @@ func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &GetProductPromotionByProductIDEndpoint{GetProductPromotionByProductIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -272,7 +282,9 @@ func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.Comm
 	}
 	session = sessionQuery.Result
 	query := &GetReferralCodesEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -316,7 +328,9 @@ func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonLi
 	}
 	session = sessionQuery.Result
 	query := &GetReferralsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -360,7 +374,9 @@ func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.Commo
 	}
 	session = sessionQuery.Result
 	query := &GetTransactionsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -386,6 +402,7 @@ type NotifyNewShopPurchaseEndpoint struct {
 
 func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *api.NotifyNewShopPurchaseRequest) (resp *api.NotifyNewShopPurchaseResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "affiliate.Affiliate/NotifyNewShopPurchase"
 	defer func() {
@@ -393,7 +410,17 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &NotifyNewShopPurchaseEndpoint{NotifyNewShopPurchaseRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
@@ -446,7 +473,9 @@ func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *api.Ch
 	}
 	session = sessionQuery.Result
 	query := &CheckReferralCodeValidEndpoint{CheckReferralCodeValidRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -490,7 +519,9 @@ func (s wrapShopService) GetProductPromotion(ctx context.Context, req *api.GetPr
 	}
 	session = sessionQuery.Result
 	query := &GetProductPromotionEndpoint{GetProductPromotionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -534,7 +565,9 @@ func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonList
 	}
 	session = sessionQuery.Result
 	query := &ShopGetProductsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -586,7 +619,9 @@ func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.C
 	}
 	session = sessionQuery.Result
 	query := &CreateOrUpdateTradingCommissionSettingEndpoint{CreateOrUpdateTradingCommissionSettingRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -630,7 +665,9 @@ func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, r
 	}
 	session = sessionQuery.Result
 	query := &CreateTradingProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -674,7 +711,9 @@ func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.C
 	}
 	session = sessionQuery.Result
 	query := &GetTradingProductPromotionByProductIDsEndpoint{GetTradingProductPromotionByIDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -718,7 +757,9 @@ func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req
 	}
 	session = sessionQuery.Result
 	query := &GetTradingProductPromotionsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -762,7 +803,9 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	}
 	session = sessionQuery.Result
 	query := &TradingGetProductsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -806,7 +849,9 @@ func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, r
 	}
 	session = sessionQuery.Result
 	query := &UpdateTradingProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -858,7 +903,9 @@ func (s wrapUserService) UpdateReferral(ctx context.Context, req *api.UpdateRefe
 	}
 	session = sessionQuery.Result
 	query := &UpdateReferralEndpoint{UpdateReferralRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type

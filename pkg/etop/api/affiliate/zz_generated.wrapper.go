@@ -52,7 +52,9 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &DeleteAffiliateEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -96,7 +98,9 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	}
 	session = sessionQuery.Result
 	query := &RegisterAffiliateEndpoint{RegisterAffiliateRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -142,7 +146,9 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.Update
 	}
 	session = sessionQuery.Result
 	query := &UpdateAffiliateEndpoint{UpdateAffiliateRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -186,7 +192,9 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &UpdateAffiliateBankAccountEndpoint{UpdateAffiliateBankAccountRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Affiliate = session.Affiliate
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -220,6 +228,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "affiliate.Misc/VersionInfo"
 	defer func() {
@@ -227,7 +236,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result

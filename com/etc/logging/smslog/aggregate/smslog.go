@@ -45,6 +45,5 @@ func (a *SmsLogAggregate) CreateSmsLog(
 	if err := scheme.Convert(sms, out); err != nil {
 		return err
 	}
-
 	return a.store(ctx).CreateSmsLog(out)
 }

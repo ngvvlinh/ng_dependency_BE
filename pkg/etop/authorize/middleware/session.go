@@ -113,6 +113,16 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	// TODO: check UserID, ShopID, etc. correctly. Because InitSession now
 	// responses token without any credential.
 	if !q.RequireAuth {
+		token := getToken(ctx, q)
+		if token != "" {
+			claim, err := tokens.Store.Validate(token)
+			if err != nil {
+				return cm.ErrUnauthenticated
+			}
+			q.Result = &Session{
+				Claim: claim,
+			}
+		}
 		return nil
 	}
 

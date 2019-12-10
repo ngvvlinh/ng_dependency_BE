@@ -48,8 +48,7 @@ type UserService interface {
 	// ResetPassword
 	//
 	// Send email or sms to allow the user reset their password.
-	ResetPassword(context.Context, *ResetPasswordRequest) (*cm.MessageResponse, error)
-
+	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	// ChangePassword
 	//
 	// Change the user password

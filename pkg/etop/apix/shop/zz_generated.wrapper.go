@@ -54,7 +54,9 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.G
 	}
 	session = sessionQuery.Result
 	query := &GetChangesEndpoint{GetChangesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -107,7 +109,9 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 	}
 	session = sessionQuery.Result
 	query := &CurrentAccountEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -152,7 +156,9 @@ func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (re
 	}
 	session = sessionQuery.Result
 	query := &GetLocationListEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -197,7 +203,9 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}
 	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Partner = session.Partner
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -250,7 +258,9 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 	}
 	session = sessionQuery.Result
 	query := &CancelOrderEndpoint{CancelOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -295,7 +305,9 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 	}
 	session = sessionQuery.Result
 	query := &CreateAndConfirmOrderEndpoint{CreateOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -340,7 +352,9 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externalty
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentEndpoint{FulfillmentIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -385,7 +399,9 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.Or
 	}
 	session = sessionQuery.Result
 	query := &GetOrderEndpoint{OrderIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -430,7 +446,9 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	}
 	session = sessionQuery.Result
 	query := &GetShippingServicesEndpoint{GetShippingServicesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -483,7 +501,9 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltype
 	}
 	session = sessionQuery.Result
 	query := &CreateWebhookEndpoint{CreateWebhookRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -528,7 +548,9 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltype
 	}
 	session = sessionQuery.Result
 	query := &DeleteWebhookEndpoint{DeleteWebhookRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -573,7 +595,9 @@ func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (res
 	}
 	session = sessionQuery.Result
 	query := &GetWebhooksEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles

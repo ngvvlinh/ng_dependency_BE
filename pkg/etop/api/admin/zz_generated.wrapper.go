@@ -53,7 +53,9 @@ func (s wrapAccountService) CreatePartner(ctx context.Context, req *api.CreatePa
 	}
 	session = sessionQuery.Result
 	query := &CreatePartnerEndpoint{CreatePartnerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -97,7 +99,9 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	}
 	session = sessionQuery.Result
 	query := &GenerateAPIKeyEndpoint{GenerateAPIKeyRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -149,7 +153,9 @@ func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *api.ConfirmCr
 	}
 	session = sessionQuery.Result
 	query := &ConfirmCreditEndpoint{ConfirmCreditRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -193,7 +199,9 @@ func (s wrapCreditService) CreateCredit(ctx context.Context, req *api.CreateCred
 	}
 	session = sessionQuery.Result
 	query := &CreateCreditEndpoint{CreateCreditRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -237,7 +245,9 @@ func (s wrapCreditService) DeleteCredit(ctx context.Context, req *cm.IDRequest) 
 	}
 	session = sessionQuery.Result
 	query := &DeleteCreditEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -281,7 +291,9 @@ func (s wrapCreditService) GetCredit(ctx context.Context, req *api.GetCreditRequ
 	}
 	session = sessionQuery.Result
 	query := &GetCreditEndpoint{GetCreditRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -325,7 +337,9 @@ func (s wrapCreditService) GetCredits(ctx context.Context, req *api.GetCreditsRe
 	}
 	session = sessionQuery.Result
 	query := &GetCreditsEndpoint{GetCreditsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -369,7 +383,9 @@ func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCred
 	}
 	session = sessionQuery.Result
 	query := &UpdateCreditEndpoint{UpdateCreditRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -421,7 +437,9 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -465,7 +483,9 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentsEndpoint{GetFulfillmentsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -509,7 +529,9 @@ func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &UpdateFulfillmentEndpoint{UpdateFulfillmentRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -553,7 +575,9 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &UpdateFulfillmentShippingFeeEndpoint{UpdateFulfillmentShippingFeeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -597,7 +621,9 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingState(ctx context.Conte
 	}
 	session = sessionQuery.Result
 	query := &UpdateFulfillmentShippingStateEndpoint{UpdateFulfillmentShippingStateRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -649,7 +675,9 @@ func (s wrapMiscService) AdminLoginAsAccount(ctx context.Context, req *api.Login
 	}
 	session = sessionQuery.Result
 	query := &AdminLoginAsAccountEndpoint{LoginAsAccountRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -675,6 +703,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "admin.Misc/VersionInfo"
 	defer func() {
@@ -682,7 +711,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -730,7 +769,9 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &ConfirmMoneyTransactionEndpoint{ConfirmMoneyTransactionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -774,7 +815,9 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx con
 	}
 	session = sessionQuery.Result
 	query := &ConfirmMoneyTransactionShippingEtopEndpoint{ConfirmMoneyTransactionShippingEtopRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -818,7 +861,9 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternal(ctx
 	}
 	session = sessionQuery.Result
 	query := &ConfirmMoneyTransactionShippingExternalEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -862,7 +907,9 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ct
 	}
 	session = sessionQuery.Result
 	query := &ConfirmMoneyTransactionShippingExternalsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -906,7 +953,9 @@ func (s wrapMoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx cont
 	}
 	session = sessionQuery.Result
 	query := &CreateMoneyTransactionShippingEtopEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -950,7 +999,9 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx cont
 	}
 	session = sessionQuery.Result
 	query := &DeleteMoneyTransactionShippingEtopEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -994,7 +1045,9 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx 
 	}
 	session = sessionQuery.Result
 	query := &DeleteMoneyTransactionShippingExternalEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1038,7 +1091,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1082,7 +1137,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionShippingEtopEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1126,7 +1183,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx contex
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionShippingEtopsEndpoint{GetMoneyTransactionShippingEtopsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1170,7 +1229,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx con
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionShippingExternalEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1214,7 +1275,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx co
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionShippingExternalsEndpoint{GetMoneyTransactionShippingExternalsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1258,7 +1321,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionsEndpoint{GetMoneyTransactionsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1302,7 +1367,9 @@ func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines
 	}
 	session = sessionQuery.Result
 	query := &RemoveMoneyTransactionShippingExternalLinesEndpoint{RemoveMoneyTransactionShippingExternalLinesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1346,7 +1413,9 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context,
 	}
 	session = sessionQuery.Result
 	query := &UpdateMoneyTransactionEndpoint{UpdateMoneyTransactionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1390,7 +1459,9 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx cont
 	}
 	session = sessionQuery.Result
 	query := &UpdateMoneyTransactionShippingEtopEndpoint{UpdateMoneyTransactionShippingEtopRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1434,7 +1505,9 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx 
 	}
 	session = sessionQuery.Result
 	query := &UpdateMoneyTransactionShippingExternalEndpoint{UpdateMoneyTransactionShippingExternalRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1486,7 +1559,9 @@ func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &CreateNotificationsEndpoint{CreateNotificationsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1538,7 +1613,9 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	}
 	session = sessionQuery.Result
 	query := &GetOrderEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1582,7 +1659,9 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersEndpoint{GetOrdersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1626,7 +1705,9 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1678,7 +1759,9 @@ func (s wrapShopService) GetShop(ctx context.Context, req *cm.IDRequest) (resp *
 	}
 	session = sessionQuery.Result
 	query := &GetShopEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1722,7 +1805,9 @@ func (s wrapShopService) GetShops(ctx context.Context, req *api.GetShopsRequest)
 	}
 	session = sessionQuery.Result
 	query := &GetShopsEndpoint{GetShopsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles

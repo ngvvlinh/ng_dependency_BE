@@ -159,6 +159,7 @@ func Default() Config {
 		ResetPasswordURL:     "https://etop.d.etop.vn/reset-password",
 		EmailVerificationURL: "https://etop.d.etop.vn/verify-email",
 	}
+
 	cfg.URL.Auth = "http://localhost:8080"
 	cfg.URL.MainSite = "http://localhost:8080"
 	return cfg

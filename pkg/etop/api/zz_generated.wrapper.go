@@ -53,7 +53,9 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 	}
 	session = sessionQuery.Result
 	query := &GetPublicPartnerInfoEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicPartnerInfo(ctx, query)
 	resp = query.Result
@@ -92,7 +94,9 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 	}
 	session = sessionQuery.Result
 	query := &GetPublicPartnersEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicPartners(ctx, query)
 	resp = query.Result
@@ -132,7 +136,9 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	}
 	session = sessionQuery.Result
 	query := &UpdateURLSlugEndpoint{UpdateURLSlugRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -186,7 +192,9 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipCreateInvitationEndpoint{CreateInvitationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -240,7 +248,9 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipDeleteInvitationEndpoint{DeleteInvitationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -294,7 +304,9 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipGetInvitationsEndpoint{GetInvitationsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -348,7 +360,9 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipGetRelationshipsEndpoint{GetRelationshipsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -402,7 +416,9 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipRemoveUserEndpoint{RemoveUserRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -456,7 +472,9 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipUpdatePermissionEndpoint{UpdateAccountUserPermissionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -510,7 +528,9 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 	}
 	session = sessionQuery.Result
 	query := &AccountRelationshipUpdateRelationshipEndpoint{UpdateRelationshipRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -572,7 +592,9 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	}
 	session = sessionQuery.Result
 	query := &CreateAddressEndpoint{CreateAddressRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -620,7 +642,9 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	}
 	session = sessionQuery.Result
 	query := &GetAddressesEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
@@ -663,7 +687,9 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	}
 	session = sessionQuery.Result
 	query := &RemoveAddressEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -709,7 +735,9 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	}
 	session = sessionQuery.Result
 	query := &UpdateAddressEndpoint{UpdateAddressRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -763,7 +791,9 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	}
 	session = sessionQuery.Result
 	query := &GetBanksEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -809,7 +839,9 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &GetBranchesByBankProvinceEndpoint{GetBranchesByBankProvinceResquest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -855,7 +887,9 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	}
 	session = sessionQuery.Result
 	query := &GetProvincesByBankEndpoint{GetProvincesByBankResquest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -891,6 +925,7 @@ type GetDistrictsEndpoint struct {
 
 func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (resp *api.GetDistrictsResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetDistricts"
 	defer func() {
@@ -898,7 +933,17 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetDistrictsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetDistricts(ctx, query)
 	resp = query.Result
@@ -920,6 +965,7 @@ type GetDistrictsByProvinceEndpoint struct {
 
 func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *api.GetDistrictsByProvinceRequest) (resp *api.GetDistrictsResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetDistrictsByProvince"
 	defer func() {
@@ -927,7 +973,17 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetDistrictsByProvinceEndpoint{GetDistrictsByProvinceRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetDistrictsByProvince(ctx, query)
 	resp = query.Result
@@ -949,6 +1005,7 @@ type GetProvincesEndpoint struct {
 
 func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (resp *api.GetProvincesResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetProvinces"
 	defer func() {
@@ -956,7 +1013,17 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetProvincesEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProvinces(ctx, query)
 	resp = query.Result
@@ -978,6 +1045,7 @@ type GetWardsEndpoint struct {
 
 func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp *api.GetWardsResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetWards"
 	defer func() {
@@ -985,7 +1053,17 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetWardsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetWards(ctx, query)
 	resp = query.Result
@@ -1007,6 +1085,7 @@ type GetWardsByDistrictEndpoint struct {
 
 func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.GetWardsByDistrictRequest) (resp *api.GetWardsResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Location/GetWardsByDistrict"
 	defer func() {
@@ -1014,7 +1093,17 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetWardsByDistrictEndpoint{GetWardsByDistrictRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetWardsByDistrict(ctx, query)
 	resp = query.Result
@@ -1053,7 +1142,9 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	}
 	session = sessionQuery.Result
 	query := &ParseLocationEndpoint{ParseLocationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ParseLocation(ctx, query)
 	resp = query.Result
@@ -1083,6 +1174,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.Misc/VersionInfo"
 	defer func() {
@@ -1090,7 +1182,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -1138,7 +1240,9 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	}
 	session = sessionQuery.Result
 	query := &ChangePasswordEndpoint{ChangePasswordRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1166,6 +1270,7 @@ type ChangePasswordUsingTokenEndpoint struct {
 
 func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.ChangePasswordUsingTokenRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/ChangePasswordUsingToken"
 	defer func() {
@@ -1173,7 +1278,17 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &ChangePasswordUsingTokenEndpoint{ChangePasswordUsingTokenRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ChangePasswordUsingToken(ctx, query)
 	resp = query.Result
@@ -1195,6 +1310,7 @@ type CheckUserRegistrationEndpoint struct {
 
 func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.GetUserByPhoneRequest) (resp *api.GetUserByPhoneResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/CheckUserRegistration"
 	defer func() {
@@ -1202,7 +1318,17 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &CheckUserRegistrationEndpoint{GetUserByPhoneRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify captcha token
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
 		return nil, err
@@ -1228,6 +1354,7 @@ type InitSessionEndpoint struct {
 
 func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/InitSession"
 	defer func() {
@@ -1235,7 +1362,17 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &InitSessionEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.InitSession(ctx, query)
 	resp = query.Result
@@ -1257,6 +1394,7 @@ type LoginEndpoint struct {
 
 func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/Login"
 	defer func() {
@@ -1264,7 +1402,17 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &LoginEndpoint{LoginRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Login(ctx, query)
 	resp = query.Result
@@ -1286,6 +1434,7 @@ type RegisterEndpoint struct {
 
 func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserRequest) (resp *api.RegisterResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/Register"
 	defer func() {
@@ -1293,7 +1442,17 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &RegisterEndpoint{CreateUserRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
 	resp = query.Result
@@ -1320,19 +1479,20 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 	const rpcName = "etop.User/RegisterUsingToken"
 	defer func() {
 		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
+		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
 	query := &RegisterUsingTokenEndpoint{CreateUserRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterUsingToken(ctx, query)
 	resp = query.Result
@@ -1348,12 +1508,13 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 
 type ResetPasswordEndpoint struct {
 	*api.ResetPasswordRequest
-	Result  *cm.MessageResponse
+	Result  *api.ResetPasswordResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswordRequest) (resp *cm.MessageResponse, err error) {
+func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswordRequest) (resp *api.ResetPasswordResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/ResetPassword"
 	defer func() {
@@ -1361,7 +1522,23 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &ResetPasswordEndpoint{ResetPasswordRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	// Verify captcha token
+	if req.RecaptchaToken != "" || req.RequireCaptcha() {
+		if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
+			return nil, err
+		}
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ResetPassword(ctx, query)
 	resp = query.Result
@@ -1401,7 +1578,9 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	}
 	session = sessionQuery.Result
 	query := &SendEmailVerificationEndpoint{SendEmailVerificationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1446,7 +1625,9 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	}
 	session = sessionQuery.Result
 	query := &SendPhoneVerificationEndpoint{SendPhoneVerificationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendPhoneVerification(ctx, query)
 	resp = query.Result
@@ -1486,7 +1667,9 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	}
 	session = sessionQuery.Result
 	query := &SendSTokenEmailEndpoint{SendSTokenEmailRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1532,7 +1715,9 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}
 	session = sessionQuery.Result
 	query := &SessionInfoEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1578,7 +1763,9 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	}
 	session = sessionQuery.Result
 	query := &SwitchAccountEndpoint{SwitchAccountRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1624,7 +1811,9 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	}
 	session = sessionQuery.Result
 	query := &UpdatePermissionEndpoint{UpdatePermissionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1670,7 +1859,9 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateReferenceSaleEndpoint{UpdateReferenceSaleRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1716,7 +1907,9 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateReferenceUserEndpoint{UpdateReferenceUserRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1762,7 +1955,9 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	}
 	session = sessionQuery.Result
 	query := &UpgradeAccessTokenEndpoint{UpgradeAccessTokenRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1808,7 +2003,9 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	}
 	session = sessionQuery.Result
 	query := &VerifyEmailUsingTokenEndpoint{VerifyEmailUsingTokenRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1853,7 +2050,9 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	}
 	session = sessionQuery.Result
 	query := &VerifyPhoneUsingTokenEndpoint{VerifyPhoneUsingTokenRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyPhoneUsingToken(ctx, query)
 	resp = query.Result
@@ -1901,7 +2100,9 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &UserRelationshipAcceptInvitationEndpoint{AcceptInvitationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -1929,6 +2130,7 @@ type UserRelationshipGetInvitationByTokenEndpoint struct {
 
 func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, req *api.GetInvitationByTokenRequest) (resp *api.Invitation, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.UserRelationship/GetInvitationByToken"
 	defer func() {
@@ -1936,7 +2138,17 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &UserRelationshipGetInvitationByTokenEndpoint{GetInvitationByTokenRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInvitationByToken(ctx, query)
 	resp = query.Result
@@ -1976,7 +2188,9 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &UserRelationshipGetInvitationsEndpoint{GetInvitationsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -2022,7 +2236,9 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &UserRelationshipLeaveAccountEndpoint{UserRelationshipLeaveAccountRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type
@@ -2068,7 +2284,9 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &UserRelationshipRejectInvitationEndpoint{RejectInvitationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	// Verify that the user has correct service type

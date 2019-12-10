@@ -56,7 +56,9 @@ func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &CreateExternalAccountAhamoveEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -110,7 +112,9 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 	}
 	session = sessionQuery.Result
 	query := &DeleteShopEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -164,7 +168,9 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 	}
 	session = sessionQuery.Result
 	query := &GetBalanceShopEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -218,7 +224,9 @@ func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &GetExternalAccountAhamoveEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -264,7 +272,9 @@ func (s wrapAccountService) RegisterShop(ctx context.Context, req *api.RegisterS
 	}
 	session = sessionQuery.Result
 	query := &RegisterShopEndpoint{RegisterShopRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
@@ -307,7 +317,9 @@ func (s wrapAccountService) RequestVerifyExternalAccountAhamove(ctx context.Cont
 	}
 	session = sessionQuery.Result
 	query := &RequestVerifyExternalAccountAhamoveEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -361,7 +373,9 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 	}
 	session = sessionQuery.Result
 	query := &SetDefaultAddressEndpoint{SetDefaultAddressRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -415,7 +429,9 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 	}
 	session = sessionQuery.Result
 	query := &UpdateExternalAccountAhamoveVerificationEndpoint{UpdateXAccountAhamoveVerificationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -469,7 +485,9 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 	}
 	session = sessionQuery.Result
 	query := &UpdateExternalAccountAhamoveVerificationImagesEndpoint{UpdateXAccountAhamoveVerificationRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -523,7 +541,9 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 	}
 	session = sessionQuery.Result
 	query := &UpdateShopEndpoint{UpdateShopRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -585,7 +605,9 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *api.Aut
 	}
 	session = sessionQuery.Result
 	query := &AuthorizePartnerEndpoint{AuthorizePartnerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -639,7 +661,9 @@ func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm
 	}
 	session = sessionQuery.Result
 	query := &GetAuthorizedPartnersEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -683,7 +707,9 @@ func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &GetAvailablePartnersEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -735,7 +761,9 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *api.CreateBrandR
 	}
 	session = sessionQuery.Result
 	query := &CreateBrandEndpoint{CreateBrandRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -789,7 +817,9 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 	}
 	session = sessionQuery.Result
 	query := &DeleteBrandEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -843,7 +873,9 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 	}
 	session = sessionQuery.Result
 	query := &GetBrandByIDEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -899,7 +931,9 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsReque
 	}
 	session = sessionQuery.Result
 	query := &GetBrandsEndpoint{GetBrandsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -954,7 +988,9 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 	}
 	session = sessionQuery.Result
 	query := &GetBrandsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1008,7 +1044,9 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 	}
 	session = sessionQuery.Result
 	query := &UpdateBrandInfoEndpoint{UpdateBrandRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1070,7 +1108,9 @@ func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *api.CreateCa
 	}
 	session = sessionQuery.Result
 	query := &CreateCarrierEndpoint{CreateCarrierRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1124,7 +1164,9 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 	}
 	session = sessionQuery.Result
 	query := &DeleteCarrierEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1178,7 +1220,9 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 	}
 	session = sessionQuery.Result
 	query := &GetCarrierEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1232,7 +1276,9 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *api.GetCarrier
 	}
 	session = sessionQuery.Result
 	query := &GetCarriersEndpoint{GetCarriersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1286,7 +1332,9 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	session = sessionQuery.Result
 	query := &GetCarriersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1340,7 +1388,9 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 	}
 	session = sessionQuery.Result
 	query := &UpdateCarrierEndpoint{UpdateCarrierRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1402,7 +1452,9 @@ func (s wrapCategoryService) CreateCategory(ctx context.Context, req *api.Create
 	}
 	session = sessionQuery.Result
 	query := &CreateCategoryEndpoint{CreateCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1456,7 +1508,9 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &DeleteCategoryEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1510,7 +1564,9 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *api.GetCate
 	}
 	session = sessionQuery.Result
 	query := &GetCategoriesEndpoint{GetCategoriesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1564,7 +1620,9 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 	}
 	session = sessionQuery.Result
 	query := &GetCategoryEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1618,7 +1676,9 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 	}
 	session = sessionQuery.Result
 	query := &UpdateCategoryEndpoint{UpdateCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1680,7 +1740,9 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *api.Cr
 	}
 	session = sessionQuery.Result
 	query := &CreateCollectionEndpoint{CreateCollectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1734,7 +1796,9 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 	}
 	session = sessionQuery.Result
 	query := &GetCollectionEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1788,7 +1852,9 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *api.GetC
 	}
 	session = sessionQuery.Result
 	query := &GetCollectionsEndpoint{GetCollectionsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1842,7 +1908,9 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &GetCollectionsByProductIDEndpoint{GetShopCollectionsByProductIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1896,7 +1964,9 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 	}
 	session = sessionQuery.Result
 	query := &UpdateCollectionEndpoint{UpdateCollectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -1958,7 +2028,9 @@ func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &GetAvailableConnectionsEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2002,7 +2074,9 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 	}
 	session = sessionQuery.Result
 	query := &GetConnectionsEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2046,7 +2120,9 @@ func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.E
 	}
 	session = sessionQuery.Result
 	query := &GetShopConnectionsEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2090,7 +2166,9 @@ func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &LoginShopConnectionEndpoint{LoginShopConnectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2134,7 +2212,9 @@ func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &RegisterShopConnectionEndpoint{RegisterShopConnectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2186,7 +2266,9 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *api.A
 	}
 	session = sessionQuery.Result
 	query := &AddCustomersToGroupEndpoint{AddCustomerToGroupRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2240,7 +2322,9 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &BatchSetCustomersStatusEndpoint{SetCustomersStatusRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2294,7 +2378,9 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *api.Create
 	}
 	session = sessionQuery.Result
 	query := &CreateCustomerEndpoint{CreateCustomerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2348,7 +2434,9 @@ func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &CreateCustomerAddressEndpoint{CreateCustomerAddressRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2402,7 +2490,9 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &DeleteCustomerEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2456,7 +2546,9 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &DeleteCustomerAddressEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2510,7 +2602,9 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 	}
 	session = sessionQuery.Result
 	query := &GetCustomerEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2564,7 +2658,9 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &GetCustomerAddressesEndpoint{GetCustomerAddressesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2618,7 +2714,9 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 	}
 	session = sessionQuery.Result
 	query := &GetCustomerDetailsEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2672,7 +2770,9 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *api.GetCusto
 	}
 	session = sessionQuery.Result
 	query := &GetCustomersEndpoint{GetCustomersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2726,7 +2826,9 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 	}
 	session = sessionQuery.Result
 	query := &GetCustomersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2780,7 +2882,9 @@ func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &RemoveCustomersFromGroupEndpoint{RemoveCustomerOutOfGroupRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2834,7 +2938,9 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &SetDefaultCustomerAddressEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2888,7 +2994,9 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *api.Update
 	}
 	session = sessionQuery.Result
 	query := &UpdateCustomerEndpoint{UpdateCustomerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -2942,7 +3050,9 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &UpdateCustomerAddressEndpoint{UpdateCustomerAddressRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3004,7 +3114,9 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &CreateCustomerGroupEndpoint{CreateCustomerGroupRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3058,7 +3170,9 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &GetCustomerGroupEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3112,7 +3226,9 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &GetCustomerGroupsEndpoint{GetCustomerGroupsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3166,7 +3282,9 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &UpdateCustomerGroupEndpoint{UpdateCustomerGroupRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3228,7 +3346,9 @@ func (s wrapExportService) GetExports(ctx context.Context, req *api.GetExportsRe
 	}
 	session = sessionQuery.Result
 	query := &GetExportsEndpoint{GetExportsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3272,7 +3392,9 @@ func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestEx
 	}
 	session = sessionQuery.Result
 	query := &RequestExportEndpoint{RequestExportRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3324,7 +3446,9 @@ func (s wrapExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(
 	}
 	session = sessionQuery.Result
 	query := &ConnectCarrierServiceExternalAccountHaravanEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3378,7 +3502,9 @@ func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Con
 	}
 	session = sessionQuery.Result
 	query := &CreateExternalAccountHaravanEndpoint{ExternalAccountHaravanRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3432,7 +3558,9 @@ func (s wrapExternalAccountService) DeleteConnectedCarrierServiceExternalAccount
 	}
 	session = sessionQuery.Result
 	query := &DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3486,7 +3614,9 @@ func (s wrapExternalAccountService) GetExternalAccountHaravan(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &GetExternalAccountHaravanEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3530,7 +3660,9 @@ func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx contex
 	}
 	session = sessionQuery.Result
 	query := &UpdateExternalAccountHaravanTokenEndpoint{ExternalAccountHaravanRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3594,7 +3726,9 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 	}
 	session = sessionQuery.Result
 	query := &GetExternalShippingServicesEndpoint{GetExternalShippingServicesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -3651,7 +3785,9 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -3708,7 +3844,9 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentsEndpoint{GetFulfillmentsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -3745,6 +3883,7 @@ type GetPublicExternalShippingServicesEndpoint struct {
 
 func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Context, req *inttypes.GetExternalShippingServicesRequest) (resp *inttypes.GetExternalShippingServicesResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "shop.Fulfillment/GetPublicExternalShippingServices"
 	defer func() {
@@ -3752,7 +3891,17 @@ func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Co
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetPublicExternalShippingServicesEndpoint{GetExternalShippingServicesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicExternalShippingServices(ctx, query)
 	resp = query.Result
@@ -3774,6 +3923,7 @@ type GetPublicFulfillmentEndpoint struct {
 
 func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *api.GetPublicFulfillmentRequest) (resp *inttypes.PublicFulfillment, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "shop.Fulfillment/GetPublicFulfillment"
 	defer func() {
@@ -3781,7 +3931,17 @@ func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *a
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &GetPublicFulfillmentEndpoint{GetPublicFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicFulfillment(ctx, query)
 	resp = query.Result
@@ -3821,7 +3981,9 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	}
 	session = sessionQuery.Result
 	query := &UpdateFulfillmentsShippingStateEndpoint{UpdateFulfillmentsShippingStateRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3875,7 +4037,9 @@ func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &GetFulfillmentHistoryEndpoint{GetFulfillmentHistoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -3928,7 +4092,9 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &AdjustInventoryQuantityEndpoint{AdjustInventoryQuantityRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -3982,7 +4148,9 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &CancelInventoryVoucherEndpoint{CancelInventoryVoucherRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4036,7 +4204,9 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &ConfirmInventoryVoucherEndpoint{ConfirmInventoryVoucherRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4090,7 +4260,9 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &CreateInventoryVoucherEndpoint{CreateInventoryVoucherRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4144,7 +4316,9 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVariantEndpoint{GetInventoryVariantRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4198,7 +4372,9 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVariantsEndpoint{GetInventoryVariantsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4252,7 +4428,9 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVariantsByVariantIDsEndpoint{GetInventoryVariantsByVariantIDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4306,7 +4484,9 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVoucherEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4360,7 +4540,9 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVouchersEndpoint{GetInventoryVouchersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4414,7 +4596,9 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVouchersByIDsEndpoint{GetInventoryVouchersByIDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4468,7 +4652,9 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &GetInventoryVouchersByReferenceEndpoint{GetInventoryVouchersByReferenceRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4522,7 +4708,9 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &UpdateInventoryVariantCostPriceEndpoint{UpdateInventoryVariantCostPriceRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4576,7 +4764,9 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &UpdateInventoryVoucherEndpoint{UpdateInventoryVoucherRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4638,7 +4828,9 @@ func (s wrapLedgerService) CreateLedger(ctx context.Context, req *api.CreateLedg
 	}
 	session = sessionQuery.Result
 	query := &CreateLedgerEndpoint{CreateLedgerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4692,7 +4884,9 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 	}
 	session = sessionQuery.Result
 	query := &DeleteLedgerEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4746,7 +4940,9 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 	}
 	session = sessionQuery.Result
 	query := &GetLedgerEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4800,7 +4996,9 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *api.GetLedgersRe
 	}
 	session = sessionQuery.Result
 	query := &GetLedgersEndpoint{GetLedgersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4854,7 +5052,9 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 	}
 	session = sessionQuery.Result
 	query := &UpdateLedgerEndpoint{UpdateLedgerRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -4898,6 +5098,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "shop.Misc/VersionInfo"
 	defer func() {
@@ -4905,7 +5106,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -4953,7 +5164,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5007,7 +5220,9 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	}
 	session = sessionQuery.Result
 	query := &GetMoneyTransactionsEndpoint{GetMoneyTransactionsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5069,7 +5284,9 @@ func (s wrapNotificationService) CreateDevice(ctx context.Context, req *etop.Cre
 	}
 	session = sessionQuery.Result
 	query := &CreateDeviceEndpoint{CreateDeviceRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5113,7 +5330,9 @@ func (s wrapNotificationService) DeleteDevice(ctx context.Context, req *etop.Del
 	}
 	session = sessionQuery.Result
 	query := &DeleteDeviceEndpoint{DeleteDeviceRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5157,7 +5376,9 @@ func (s wrapNotificationService) GetNotification(ctx context.Context, req *cm.ID
 	}
 	session = sessionQuery.Result
 	query := &GetNotificationEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5201,7 +5422,9 @@ func (s wrapNotificationService) GetNotifications(ctx context.Context, req *etop
 	}
 	session = sessionQuery.Result
 	query := &GetNotificationsEndpoint{GetNotificationsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5245,7 +5468,9 @@ func (s wrapNotificationService) UpdateNotifications(ctx context.Context, req *e
 	}
 	session = sessionQuery.Result
 	query := &UpdateNotificationsEndpoint{UpdateNotificationsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -5299,7 +5524,9 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderR
 	}
 	session = sessionQuery.Result
 	query := &CancelOrderEndpoint{CancelOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5356,7 +5583,9 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrde
 	}
 	session = sessionQuery.Result
 	query := &ConfirmOrderEndpoint{ConfirmOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5413,7 +5642,9 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 	}
 	session = sessionQuery.Result
 	query := &ConfirmOrderAndCreateFulfillmentsEndpoint{OrderIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5470,7 +5701,9 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateO
 	}
 	session = sessionQuery.Result
 	query := &CreateOrderEndpoint{CreateOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5527,7 +5760,9 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	}
 	session = sessionQuery.Result
 	query := &GetOrderEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5584,7 +5819,9 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersEndpoint{GetOrdersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5641,7 +5878,9 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5698,7 +5937,9 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.Get
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersByReceiptIDEndpoint{GetOrdersByReceiptIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5755,7 +5996,9 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateO
 	}
 	session = sessionQuery.Result
 	query := &UpdateOrderEndpoint{UpdateOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5812,7 +6055,9 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &UpdateOrderPaymentStatusEndpoint{UpdateOrderPaymentStatusRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5869,7 +6114,9 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &UpdateOrderShippingInfoEndpoint{UpdateOrderShippingInfoRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5926,7 +6173,9 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateOrdersStatusEndpoint{UpdateOrdersStatusRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -5989,7 +6238,9 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *api
 	}
 	session = sessionQuery.Result
 	query := &PaymentCheckReturnDataEndpoint{PaymentCheckReturnDataRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6043,7 +6294,9 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 	}
 	session = sessionQuery.Result
 	query := &PaymentTradingOrderEndpoint{PaymentTradingOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6105,7 +6358,9 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *api.A
 	}
 	session = sessionQuery.Result
 	query := &AddProductCollectionEndpoint{AddShopProductCollectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6159,7 +6414,9 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *api.CreatePr
 	}
 	session = sessionQuery.Result
 	query := &CreateProductEndpoint{CreateProductRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6213,7 +6470,9 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *api.CreateVa
 	}
 	session = sessionQuery.Result
 	query := &CreateVariantEndpoint{CreateVariantRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6269,7 +6528,9 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 	}
 	session = sessionQuery.Result
 	query := &GetProductEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -6326,7 +6587,9 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariant
 	}
 	session = sessionQuery.Result
 	query := &GetProductsEndpoint{GetVariantsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -6383,7 +6646,9 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	session = sessionQuery.Result
 	query := &GetProductsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -6440,7 +6705,9 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *api.GetVariantR
 	}
 	session = sessionQuery.Result
 	query := &GetVariantEndpoint{GetVariantRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -6497,7 +6764,9 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	session = sessionQuery.Result
 	query := &GetVariantsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -6552,7 +6821,9 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &GetVariantsBySupplierIDEndpoint{GetVariantsBySupplierIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6606,7 +6877,9 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 	}
 	session = sessionQuery.Result
 	query := &RemoveProductCategoryEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6660,7 +6933,9 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &RemoveProductCollectionEndpoint{RemoveShopProductCollectionRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6714,7 +6989,9 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *api.RemoveV
 	}
 	session = sessionQuery.Result
 	query := &RemoveProductsEndpoint{RemoveVariantsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6768,7 +7045,9 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *api.RemoveV
 	}
 	session = sessionQuery.Result
 	query := &RemoveVariantsEndpoint{RemoveVariantsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6822,7 +7101,9 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *api.UpdatePr
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductEndpoint{UpdateProductRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6876,7 +7157,9 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductCategoryEndpoint{UpdateProductCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6930,7 +7213,9 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *api.Up
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductImagesEndpoint{UpdateVariantImagesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -6984,7 +7269,9 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductMetaFieldsEndpoint{UpdateProductMetaFieldsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7038,7 +7325,9 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *api.U
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductsStatusEndpoint{UpdateProductStatusRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7092,7 +7381,9 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *api.Upd
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductsTagsEndpoint{UpdateProductsTagsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7146,7 +7437,9 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *api.UpdateVa
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantEndpoint{UpdateVariantRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7200,7 +7493,9 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantAttributesEndpoint{UpdateVariantAttributesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7254,7 +7549,9 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *api.Up
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantImagesEndpoint{UpdateVariantImagesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7308,7 +7605,9 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantsStatusEndpoint{UpdateProductStatusRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7370,7 +7669,9 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &CreateProductSourceEndpoint{CreateProductSourceRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7424,7 +7725,9 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &CreateProductSourceCategoryEndpoint{CreatePSCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7480,7 +7783,9 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.De
 	}
 	session = sessionQuery.Result
 	query := &DeprecatedCreateVariantEndpoint{DeprecatedCreateVariantRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -7537,7 +7842,9 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 	}
 	session = sessionQuery.Result
 	query := &GetProductSourceCategoriesEndpoint{GetProductSourceCategoriesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -7594,7 +7901,9 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 	}
 	session = sessionQuery.Result
 	query := &GetProductSourceCategoryEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -7651,7 +7960,9 @@ func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req
 	}
 	session = sessionQuery.Result
 	query := &GetShopProductSourcesEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -7706,7 +8017,9 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &RemoveProductSourceCategoryEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7760,7 +8073,9 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductSourceCategoryEndpoint{UpdateProductSourceCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7814,7 +8129,9 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 	}
 	session = sessionQuery.Result
 	query := &UpdateProductsPSCategoryEndpoint{UpdateProductsPSCategoryRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7876,7 +8193,9 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &CancelPurchaseOrderEndpoint{CancelPurchaseOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7930,7 +8249,9 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 	}
 	session = sessionQuery.Result
 	query := &ConfirmPurchaseOrderEndpoint{ConfirmPurchaseOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -7984,7 +8305,9 @@ func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &CreatePurchaseOrderEndpoint{CreatePurchaseOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8038,7 +8361,9 @@ func (s wrapPurchaseOrderService) DeletePurchaseOrder(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &DeletePurchaseOrderEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8082,7 +8407,9 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 	}
 	session = sessionQuery.Result
 	query := &GetPurchaseOrderEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8136,7 +8463,9 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &GetPurchaseOrdersEndpoint{GetPurchaseOrdersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8190,7 +8519,9 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &GetPurchaseOrdersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8244,7 +8575,9 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 	}
 	session = sessionQuery.Result
 	query := &GetPurchaseOrdersByReceiptIDEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8298,7 +8631,9 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &UpdatePurchaseOrderEndpoint{UpdatePurchaseOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8360,7 +8695,9 @@ func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *api.CancelRe
 	}
 	session = sessionQuery.Result
 	query := &CancelReceiptEndpoint{CancelReceiptRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8414,7 +8751,9 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 	}
 	session = sessionQuery.Result
 	query := &ConfirmReceiptEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8468,7 +8807,9 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *api.CreateRe
 	}
 	session = sessionQuery.Result
 	query := &CreateReceiptEndpoint{CreateReceiptRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8522,7 +8863,9 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 	}
 	session = sessionQuery.Result
 	query := &GetReceiptEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8576,7 +8919,9 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *api.GetReceipt
 	}
 	session = sessionQuery.Result
 	query := &GetReceiptsEndpoint{GetReceiptsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8630,7 +8975,9 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *ap
 	}
 	session = sessionQuery.Result
 	query := &GetReceiptsByLedgerTypeEndpoint{GetReceiptsByLedgerTypeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8684,7 +9031,9 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 	}
 	session = sessionQuery.Result
 	query := &UpdateReceiptEndpoint{UpdateReceiptRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8746,7 +9095,9 @@ func (s wrapRefundService) CancelRefund(ctx context.Context, req *api.CancelRefu
 	}
 	session = sessionQuery.Result
 	query := &CancelRefundEndpoint{CancelRefundRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8800,7 +9151,9 @@ func (s wrapRefundService) ConfirmRefund(ctx context.Context, req *api.ConfirmRe
 	}
 	session = sessionQuery.Result
 	query := &ConfirmRefundEndpoint{ConfirmRefundRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8854,7 +9207,9 @@ func (s wrapRefundService) CreateRefund(ctx context.Context, req *api.CreateRefu
 	}
 	session = sessionQuery.Result
 	query := &CreateRefundEndpoint{CreateRefundRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8908,7 +9263,9 @@ func (s wrapRefundService) GetRefund(ctx context.Context, req *cm.IDRequest) (re
 	}
 	session = sessionQuery.Result
 	query := &GetRefundEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -8962,7 +9319,9 @@ func (s wrapRefundService) GetRefunds(ctx context.Context, req *api.GetRefundsRe
 	}
 	session = sessionQuery.Result
 	query := &GetRefundsEndpoint{GetRefundsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9016,7 +9375,9 @@ func (s wrapRefundService) GetRefundsByIDs(ctx context.Context, req *cm.IDsReque
 	}
 	session = sessionQuery.Result
 	query := &GetRefundsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9070,7 +9431,9 @@ func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefu
 	}
 	session = sessionQuery.Result
 	query := &UpdateRefundEndpoint{UpdateRefundRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9132,7 +9495,9 @@ func (s wrapShipmentService) CreateFulfillments(ctx context.Context, req *api.Cr
 	}
 	session = sessionQuery.Result
 	query := &CreateFulfillmentsEndpoint{CreateFulfillmentsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9186,7 +9551,9 @@ func (s wrapShipmentService) GetShippingServices(ctx context.Context, req *intty
 	}
 	session = sessionQuery.Result
 	query := &GetShippingServicesEndpoint{GetShippingServicesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9248,7 +9615,9 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *i
 	}
 	session = sessionQuery.Result
 	query := &CancelShipnowFulfillmentEndpoint{CancelShipnowFulfillmentRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9302,7 +9671,9 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 	}
 	session = sessionQuery.Result
 	query := &ConfirmShipnowFulfillmentEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9356,7 +9727,9 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *i
 	}
 	session = sessionQuery.Result
 	query := &CreateShipnowFulfillmentEndpoint{CreateShipnowFulfillmentRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9410,7 +9783,9 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 	}
 	session = sessionQuery.Result
 	query := &GetShipnowFulfillmentEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9464,7 +9839,9 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *int
 	}
 	session = sessionQuery.Result
 	query := &GetShipnowFulfillmentsEndpoint{GetShipnowFulfillmentsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9518,7 +9895,9 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *inttype
 	}
 	session = sessionQuery.Result
 	query := &GetShipnowServicesEndpoint{GetShipnowServicesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9572,7 +9951,9 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *i
 	}
 	session = sessionQuery.Result
 	query := &UpdateShipnowFulfillmentEndpoint{UpdateShipnowFulfillmentRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9634,7 +10015,9 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.Canc
 	}
 	session = sessionQuery.Result
 	query := &CancelStocktakeEndpoint{CancelStocktakeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9688,7 +10071,9 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.Con
 	}
 	session = sessionQuery.Result
 	query := &ConfirmStocktakeEndpoint{ConfirmStocktakeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9743,7 +10128,9 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.Crea
 	}
 	session = sessionQuery.Result
 	query := &CreateStocktakeEndpoint{CreateStocktakeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.Context.Shop = session.Shop
@@ -9803,7 +10190,9 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 	}
 	session = sessionQuery.Result
 	query := &GetStocktakeEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9857,7 +10246,9 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetSto
 	}
 	session = sessionQuery.Result
 	query := &GetStocktakesEndpoint{GetStocktakesRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9911,7 +10302,9 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 	}
 	session = sessionQuery.Result
 	query := &GetStocktakesByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -9965,7 +10358,9 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 	}
 	session = sessionQuery.Result
 	query := &UpdateStocktakeEndpoint{UpdateStocktakeRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10029,7 +10424,9 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 	}
 	session = sessionQuery.Result
 	query := &CalcBalanceShopEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
 	query.Context.IsOwner = session.IsOwner
@@ -10084,7 +10481,9 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *api.
 	}
 	session = sessionQuery.Result
 	query := &SummarizeFulfillmentsEndpoint{SummarizeFulfillmentsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10138,7 +10537,9 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.Summarize
 	}
 	session = sessionQuery.Result
 	query := &SummarizePOSEndpoint{SummarizePOSRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10192,7 +10593,9 @@ func (s wrapSummaryService) SummarizeTopShip(ctx context.Context, req *api.Summa
 	}
 	session = sessionQuery.Result
 	query := &SummarizeTopShipEndpoint{SummarizeTopShipRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10244,7 +10647,9 @@ func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *api.Create
 	}
 	session = sessionQuery.Result
 	query := &CreateSupplierEndpoint{CreateSupplierRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10298,7 +10703,9 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &DeleteSupplierEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10352,7 +10759,9 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 	}
 	session = sessionQuery.Result
 	query := &GetSupplierEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10406,7 +10815,9 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *api.GetSuppl
 	}
 	session = sessionQuery.Result
 	query := &GetSuppliersEndpoint{GetSuppliersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10460,7 +10871,9 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 	}
 	session = sessionQuery.Result
 	query := &GetSuppliersByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10514,7 +10927,9 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *a
 	}
 	session = sessionQuery.Result
 	query := &GetSuppliersByVariantIDEndpoint{GetSuppliersByVariantIDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10568,7 +10983,9 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 	}
 	session = sessionQuery.Result
 	query := &UpdateSupplierEndpoint{UpdateSupplierRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10630,7 +11047,9 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *inttype
 	}
 	session = sessionQuery.Result
 	query := &TradingCreateOrderEndpoint{TradingCreateOrderRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10684,7 +11103,9 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 	}
 	session = sessionQuery.Result
 	query := &TradingGetOrderEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10738,7 +11159,9 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *api.GetOr
 	}
 	session = sessionQuery.Result
 	query := &TradingGetOrdersEndpoint{GetOrdersRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10792,7 +11215,9 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 	}
 	session = sessionQuery.Result
 	query := &TradingGetProductEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
@@ -10846,7 +11271,9 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	}
 	session = sessionQuery.Result
 	query := &TradingGetProductsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles

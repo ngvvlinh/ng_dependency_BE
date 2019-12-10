@@ -34,6 +34,7 @@ type VersionInfoEndpoint struct {
 
 func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.VersionInfoResponse, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "handler.Misc/VersionInfo"
 	defer func() {
@@ -41,7 +42,17 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
@@ -77,6 +88,7 @@ type ResetStateEndpoint struct {
 
 func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
+	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "handler.Webhook/ResetState"
 	defer func() {
@@ -84,7 +96,17 @@ func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateR
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context: ctx,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
 	query := &ResetStateEndpoint{ResetStateRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {

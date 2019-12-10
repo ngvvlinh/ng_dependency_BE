@@ -28,6 +28,7 @@ const (
 	UsageEmailVerification = "EV"
 	UsagePhoneVerification = "PV"
 	UsageRequestLogin      = "RL"
+	UsageRegister          = "RT"
 
 	UsagePartnerIntegration = "PI"
 )
