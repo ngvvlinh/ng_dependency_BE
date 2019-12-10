@@ -10,7 +10,7 @@ func UnmarshalJSONEnum(m map[string]int, data []byte, enumName string) (int, err
 }
 
 func UnmarshalJSONEnumInt(m map[string]int, data []byte, enumName string) (int, error) {
-	if string(data) == "null" {
+	if string(data) == "null" || string(data) == `""` {
 		return 0, nil
 	}
 
@@ -34,7 +34,7 @@ func UnmarshalJSONEnumInt(m map[string]int, data []byte, enumName string) (int, 
 }
 
 func UnmarshalJSONEnumUint64(m map[string]uint64, data []byte, enumName string) (uint64, error) {
-	if string(data) == "null" {
+	if string(data) == "null" || string(data) == `""` {
 		return 0, nil
 	}
 
@@ -63,6 +63,9 @@ func ScanEnumInt(m map[string]int, src interface{}, enumName string) (int, error
 		return 0, nil
 
 	case []byte:
+		if len(src) == 0 {
+			return 0, nil
+		}
 		value, ok := m[string(src)]
 		if !ok {
 			return 0, fmt.Errorf("can not read value %v into enum %v", string(src), enumName)
@@ -70,6 +73,9 @@ func ScanEnumInt(m map[string]int, src interface{}, enumName string) (int, error
 		return value, nil
 
 	case string:
+		if len(src) == 0 {
+			return 0, nil
+		}
 		value, ok := m[src]
 		if !ok {
 			return 0, fmt.Errorf("can not read value %v into enum %v", src, enumName)
@@ -90,6 +96,9 @@ func ScanEnumUint64(m map[string]uint64, src interface{}, enumName string) (uint
 		return 0, nil
 
 	case []byte:
+		if len(src) == 0 {
+			return 0, nil
+		}
 		value, ok := m[string(src)]
 		if !ok {
 			return 0, fmt.Errorf("can not read value %v into enum %v", string(src), enumName)
@@ -97,6 +106,9 @@ func ScanEnumUint64(m map[string]uint64, src interface{}, enumName string) (uint
 		return value, nil
 
 	case string:
+		if len(src) == 0 {
+			return 0, nil
+		}
 		value, ok := m[src]
 		if !ok {
 			return 0, fmt.Errorf("can not read value %v into enum %v", src, enumName)
