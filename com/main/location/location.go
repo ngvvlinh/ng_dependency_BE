@@ -44,7 +44,7 @@ var (
 	wardsIndexDistrictCode = make(map[string][]*types.Ward)
 
 	reNumber           = regexp.MustCompile(`[01-9]+`)
-	urbanTypeIndexNamN = make(map[string]types.UrbanType)
+	urbanTypeIndexNamN = make(map[string]location.UrbanType)
 
 	GroupProvinceCodes = []string{BinhDuongProvinceCode, DongNaiProvinceCode, VungTauProvinceCode}
 )
@@ -220,7 +220,7 @@ func init() {
 			ll.S.Fatal("Invalid urban district code: ", code)
 			panic("unexpected")
 		}
-		district.UrbanType = types.Urban
+		district.UrbanType = location.Urban
 	}
 	for _, code := range strings.Split(HCMSuburban1Codes, ",") {
 		district := districtIndexCode[code]
@@ -228,7 +228,7 @@ func init() {
 			ll.S.Fatal("Invalid suburban 1 district code: ", code)
 			panic("unexpected")
 		}
-		district.UrbanType = types.Suburban1
+		district.UrbanType = location.Suburban1
 	}
 	for _, code := range strings.Split(HCMSuburban2Codes, ",") {
 		district := districtIndexCode[code]
@@ -236,7 +236,7 @@ func init() {
 			ll.S.Fatal("Invalid suburban 2 district code: ", code)
 			panic("unexpected")
 		}
-		district.UrbanType = types.Suburban2
+		district.UrbanType = location.Suburban2
 	}
 }
 
@@ -642,7 +642,7 @@ func GetWardsByDistrictCode(code string) ([]*types.Ward, bool) {
 	return wards, ok
 }
 
-func GetUrbanType(s string) types.UrbanType {
+func GetUrbanType(s string) location.UrbanType {
 	namN := validate.NormalizeSearchSimple(s)
 	return urbanTypeIndexNamN[namN]
 }

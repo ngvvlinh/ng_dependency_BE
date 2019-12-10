@@ -114,7 +114,7 @@ func (c *Client) UpdateShippingState(ctx context.Context, req *UpdateShippingSta
 	if !req.State.CanUpdate() {
 		return cm.Errorf(cm.InvalidArgument, nil, "API Haravan không hỗ trợ cập nhật trạng thái vận chuyển (%v).", req.State)
 	}
-	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/carrier_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, string(req.State))
+	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/carrier_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, req.State.String())
 
 	if err := c.SendPutRequest(ctx, req.Connection, url, req, nil, "Không thể cập nhật trạng thái giao hàng"); err != nil {
 		return err
@@ -126,7 +126,7 @@ func (c *Client) UpdatePaymentStatus(ctx context.Context, req *UpdatePaymentStat
 	if !req.Status.CanUpdate() {
 		return cm.Errorf(cm.InvalidArgument, nil, "API Haravan không hỗ trợ cập nhật trạng thái thanh toán (%v).", req.Status)
 	}
-	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/cod_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, string(req.Status))
+	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/cod_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, req.Status.String())
 
 	if err := c.SendPutRequest(ctx, req.Connection, url, req, nil, "Không thể cập nhật trạng thái thanh toán"); err != nil {
 		return err

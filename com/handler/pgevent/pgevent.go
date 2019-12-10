@@ -29,6 +29,8 @@ const (
 	OpDelete = "DELETE"
 )
 
+func (op TGOP) String() string { return string(op) }
+
 func (op TGOP) ToEventName(name string) (string, error) {
 	switch op {
 	case OpInsert:

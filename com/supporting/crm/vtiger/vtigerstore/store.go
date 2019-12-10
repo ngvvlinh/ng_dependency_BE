@@ -117,12 +117,12 @@ func (v *VtigerStore) CreateOrUpdateVtiger(
 		}
 	}
 
-	etop2VtigerString, err := jsonx.Marshal(etop2Vtiger)
+	etop2VtigerString, err := jsonx.MarshalToString(etop2Vtiger)
 	if err != nil {
 		return nil, err
 	}
 
-	bodyRequestVtiger.Element = string(etop2VtigerString)
+	bodyRequestVtiger.Element = etop2VtigerString
 
 	// request update or create
 	requestBody := url.Values{}

@@ -8,7 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 	mix "etop.vn/capi/mix"
 )
 

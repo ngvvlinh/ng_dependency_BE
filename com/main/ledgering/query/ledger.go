@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/shopping"
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/com/main/ledgering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -77,9 +78,9 @@ func (q *LedgerQuery) ListLedgersByIDs(
 }
 
 func (q *LedgerQuery) ListLedgersByType(
-	ctx context.Context, ledgerType ledgering.LedgerType, shopID dot.ID,
+	ctx context.Context, ledgerType ledger_type.LedgerType, shopID dot.ID,
 ) (*ledgering.ShopLedgersResponse, error) {
-	query := q.store(ctx).ShopID(shopID).Type(string(ledgerType))
+	query := q.store(ctx).ShopID(shopID).Type(ledgerType.String())
 	ledgers, err := query.ListLedgers()
 	if err != nil {
 		return nil, err

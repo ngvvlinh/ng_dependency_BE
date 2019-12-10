@@ -1,6 +1,7 @@
 package etop_shipping_price
 
 import (
+	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -17,7 +18,7 @@ var ESPriceRules = []*ESPriceRule{
 					Include: model.RouteNationWide,
 					Exclude: []model.ShippingRouteType{model.RouteSameProvince},
 				},
-				DistrictTypes: []model.ShippingDistrictType{model.ShippingDistrictTypeUrban, model.ShippingDistrictTypeSubUrban1},
+				DistrictTypes: []location.UrbanType{location.Urban, location.Suburban1},
 				Details: map[int]*ESPricingDetail{
 					200: {
 						ID:     200,
@@ -38,8 +39,8 @@ var ESPriceRules = []*ESPriceRule{
 					Include: model.RouteSameProvince,
 					Exclude: nil,
 				},
-				DistrictTypes: []model.ShippingDistrictType{
-					model.ShippingDistrictTypeUrban,
+				DistrictTypes: []location.UrbanType{
+					location.Urban,
 				},
 				Details: map[int]*ESPricingDetail{
 					3000: {
@@ -69,8 +70,8 @@ var ESPriceRules = []*ESPriceRule{
 					Include: model.RouteSameProvince,
 					Exclude: nil,
 				},
-				DistrictTypes: []model.ShippingDistrictType{
-					model.ShippingDistrictTypeSubUrban1, model.ShippingDistrictTypeSubUrban2,
+				DistrictTypes: []location.UrbanType{
+					location.Suburban1, location.Suburban2,
 				},
 				Details: map[int]*ESPricingDetail{
 					3000: {

@@ -7,7 +7,6 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
-	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/authorization"
@@ -34,6 +33,8 @@ import (
 	"etop.vn/api/top/int/shop"
 	apitypes "etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_source"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
@@ -1494,7 +1495,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 	}
 
 	argGenCode := &paymentmanager.GenerateCodeCommand{
-		PaymentSource: payment.PaymentSourceOrder,
+		PaymentSource: payment_source.PaymentSourceOrder,
 		ID:            q.OrderId.String(),
 	}
 	if err := paymentCtrl.Dispatch(ctx, argGenCode); err != nil {
@@ -1505,7 +1506,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 		Desc:              q.Desc,
 		ReturnURL:         q.ReturnUrl,
 		TransactionAmount: q.Amount,
-		Provider:          payment.PaymentProvider(q.PaymentProvider),
+		Provider:          payment_provider.PaymentProvider(q.PaymentProvider),
 	}
 
 	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
@@ -1530,7 +1531,7 @@ func (s *PaymentService) PaymentCheckReturnData(ctx context.Context, q *PaymentC
 		PaymentStatus:         q.PaymentStatus,
 		Amount:                q.Amount,
 		ExternalTransactionID: q.ExternalTransactionId,
-		Provider:              payment.PaymentProvider(q.PaymentProvider),
+		Provider:              payment_provider.PaymentProvider(q.PaymentProvider),
 	}
 	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
 		return err

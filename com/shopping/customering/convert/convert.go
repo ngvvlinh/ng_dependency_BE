@@ -8,6 +8,7 @@ import (
 
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/status3"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
@@ -84,7 +85,7 @@ func shopCustomerDB(args *customering.ShopCustomer, out *model.ShopCustomer) {
 
 func shopCustomer(args *model.ShopCustomer, out *customering.ShopCustomer) {
 	convert_customeringmodel_ShopCustomer_customering_ShopCustomer(args, out)
-	if out.Type == customering.CustomerTypeIndependent {
+	if out.Type == customer_type.Independent {
 		out.FullName = "Khách lẻ"
 	}
 }

@@ -1572,17 +1572,20 @@
         }
       }
     },
-    "bjSource": {
+    "bjState": {
       "type": "string",
       "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
         "unknown",
-        "self",
-        "import",
-        "api",
-        "etop_pos",
-        "etop_pxs",
-        "etop_cmx",
-        "ts_app"
+        "undeliverable",
+        "cancelled"
       ]
     },
     "blStatus": {
@@ -2018,7 +2021,7 @@
           "type": "string"
         },
         "shipping_provider": {
-          "type": "string"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
           "type": "string"
@@ -2126,7 +2129,7 @@
           "$ref": "#/definitions/ktError"
         },
         "next_shipping_state": {
-          "type": "string"
+          "$ref": "#/definitions/sfState"
         },
         "sync_at": {
           "type": "string",
@@ -2556,7 +2559,7 @@
           "format": "int64"
         },
         "payment_method": {
-          "type": "string"
+          "$ref": "#/definitions/yiPaymentMethod"
         },
         "payment_status": {
           "$ref": "#/definitions/bmStatus"
@@ -2606,7 +2609,7 @@
           "type": "integer"
         },
         "source": {
-          "$ref": "#/definitions/bjSource"
+          "$ref": "#/definitions/xjSource"
         },
         "status": {
           "$ref": "#/definitions/bnStatus"
@@ -2725,7 +2728,7 @@
           "type": "string"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/spCustomerType"
         }
       }
     },
@@ -3017,7 +3020,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "type": "string"
+          "$ref": "#/definitions/bjState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -3251,7 +3254,7 @@
           "type": "string"
         },
         "shipping_provider": {
-          "type": "string"
+          "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
           "type": "string"
@@ -3385,12 +3388,34 @@
         "undeliverable"
       ]
     },
+    "spCustomerType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "independent"
+      ]
+    },
     "wdNotifierEntity": {
       "type": "string",
       "enum": [
         "unknown",
         "fulfillment",
         "money_transaction_shipping"
+      ]
+    },
+    "xjSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "self",
+        "import",
+        "api",
+        "etop_pos",
+        "etop_pxs",
+        "etop_cmx",
+        "ts_app"
       ]
     },
     "xuConfirmCreditRequest": {
@@ -3860,6 +3885,16 @@
           "type": "string"
         }
       }
+    },
+    "yiPaymentMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod",
+        "bank",
+        "other",
+        "vtpay"
+      ]
     }
   },
   "tags": [

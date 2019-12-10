@@ -3,27 +3,26 @@ package convert
 import (
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/backend/pkg/etop/model"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 )
 
 func ToFulfillmentState(in shipping.State) haravanclient.FulfillmentState {
 	switch in {
-	case model.StateCreated:
+	case shipping.Created:
 		return haravanclient.PendingState
-	case model.StatePicking:
+	case shipping.Picking:
 		return haravanclient.PickingState
-	case model.StateHolding:
+	case shipping.Holding:
 		return haravanclient.DeliveringState
-	case model.StateDelivering:
+	case shipping.Delivering:
 		return haravanclient.DeliveringState
-	case model.StateDelivered:
+	case shipping.Delivered:
 		return haravanclient.DeliveredState
-	case model.StateReturning:
+	case shipping.Returning:
 		return haravanclient.WaitingForReturnState
-	case model.StateReturned:
+	case shipping.Returned:
 		return haravanclient.ReturnState
-	case model.StateCancelled:
+	case shipping.Cancelled:
 		return haravanclient.CancelState
 	default:
 		return ""

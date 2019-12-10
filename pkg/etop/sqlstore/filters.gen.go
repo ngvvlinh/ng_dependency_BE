@@ -1947,25 +1947,6 @@ func (ft *UserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserFilters) ByIdentifying(Identifying m.UserIdentifying) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "identifying",
-		Value:  Identifying,
-		IsNil:  Identifying == "",
-	}
-}
-
-func (ft *UserFilters) ByIdentifyingPtr(Identifying *m.UserIdentifying) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "identifying",
-		Value:  Identifying,
-		IsNil:  Identifying == nil,
-		IsZero: Identifying != nil && (*Identifying) == "",
-	}
-}
-
 func (ft *UserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	customer_type "etop.vn/api/shopping/customering/customer_type"
 	gender "etop.vn/api/top/types/etc/gender"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -56,7 +57,7 @@ type CreateCustomerCommand struct {
 	ShopID   dot.ID
 	FullName string
 	Gender   gender.Gender
-	Type     CustomerType
+	Type     customer_type.CustomerType
 	Birthday string
 	Note     string
 	Phone    string
@@ -110,7 +111,7 @@ type UpdateCustomerCommand struct {
 	ShopID   dot.ID
 	FullName dot.NullString
 	Gender   gender.NullGender
-	Type     CustomerType
+	Type     customer_type.CustomerType
 	Birthday dot.NullString
 	Note     dot.NullString
 	Phone    dot.NullString

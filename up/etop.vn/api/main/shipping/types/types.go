@@ -4,61 +4,10 @@ import (
 	"time"
 
 	orderingtypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/try_on"
 )
-
-// +enum
-type TryOn int
-
-const (
-	// +enum=unknown
-	TryOnUnknown TryOn = 0
-
-	// +enum=none
-	TryOnNone TryOn = 1
-
-	// +enum=open
-	TryOnOpen TryOn = 2
-
-	// +enum=try
-	TryOnTry TryOn = 3
-)
-
-// +enum
-type FeeLineType int
-
-const (
-	// +enum=other
-	FeeLineTypeOther FeeLineType = 0
-
-	// +enum=main
-	FeeLineTypeMain FeeLineType = 1
-
-	// +enum=return
-	FeeLineTypeReturn FeeLineType = 2
-
-	// +enum=adjustment
-	FeeLineTypeAdjustment FeeLineType = 3
-
-	// +enum=cods
-	FeeLineTypeCods FeeLineType = 4
-
-	// +enum=insurance
-	FeeLineTypeInsurance FeeLineType = 5
-
-	// +enum=address_change
-	FeeLineTypeAddressChange FeeLineType = 6
-
-	// +enum=discount
-	FeeLineTypeDiscount FeeLineType = 7
-)
-
-func FeelineTypeFromString(s string) FeeLineType {
-	f, ok := enumFeeLineTypeValue[s]
-	if !ok {
-		f = 0
-	}
-	return FeeLineType(f)
-}
 
 type ShippingInfo struct {
 	PickupAddress       *orderingtypes.Address
@@ -66,9 +15,9 @@ type ShippingInfo struct {
 	ShippingServiceName string
 	ShippingServiceCode string
 	ShippingServiceFee  int
-	Carrier             string
+	Carrier             shipping_provider.ShippingProvider
 	IncludeInsurance    bool
-	TryOn               TryOn
+	TryOn               try_on.TryOnCode
 	ShippingNote        string
 	CODAmount           int
 	GrossWeight         int
@@ -101,7 +50,7 @@ type ValueInfo struct {
 }
 
 type FeeLine struct {
-	ShippingFeeType     FeeLineType
+	ShippingFeeType     shipping_fee_type.ShippingFeeType
 	Cost                int
 	ExternalServiceName string
 	ExternalServiceType string

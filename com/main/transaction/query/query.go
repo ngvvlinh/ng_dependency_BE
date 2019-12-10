@@ -53,5 +53,5 @@ func (q QueryService) GetBalance(ctx context.Context, args *transaction.GetBalan
 	if args.AccountID == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing AccountID")
 	}
-	return q.store(ctx).AccountID(args.AccountID).OptionalTransactionType(string(args.TransactionType)).ByConfirmedTransaction().GetBalance()
+	return q.store(ctx).AccountID(args.AccountID).OptionalTransactionType(args.TransactionType).ByConfirmedTransaction().GetBalance()
 }

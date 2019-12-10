@@ -13,7 +13,6 @@ func NewEtopServer(m httprpc.Muxer) {
 		service.NewMiscServiceServer(WrapMiscService(miscService)),
 		service.NewUserServiceServer(WrapUserService(userService)),
 		service.NewAccountServiceServer(WrapAccountService(accountService)),
-		service.NewRelationshipServiceServer(WrapRelationshipService(relationshipService)),
 		service.NewLocationServiceServer(WrapLocationService(locationService)),
 		service.NewBankServiceServer(WrapBankService(bankService)),
 		service.NewAddressServiceServer(WrapAddressService(addressService)),

@@ -118,7 +118,7 @@ func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
 }
 
 func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType inventory.InventoryRefType) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
-	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(string(refType)).ListInventoryVoucher()
+	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(refType.String()).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}

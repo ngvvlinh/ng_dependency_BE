@@ -165,7 +165,7 @@ func OrderLines(ins []*model.OrderLine) (outs []*types.ItemLine) {
 func FeeLines(ins []model.OrderFeeLine) (outs []ordering.OrderFeeLine) {
 	for _, in := range ins {
 		outs = append(outs, ordering.OrderFeeLine{
-			Type:   string(in.Type),
+			Type:   in.Type,
 			Name:   in.Name,
 			Code:   in.Code,
 			Desc:   in.Desc,
@@ -180,7 +180,6 @@ func OrderToShippingInfo(in *model.Order) (out *shiptypes.ShippingInfo) {
 		return nil
 	}
 	shopShipping := in.ShopShipping
-	tryOn, _ := shiptypes.ParseTryOn(string(in.TryOn))
 
 	return &shiptypes.ShippingInfo{
 		PickupAddress:       Address(shopShipping.ShopAddress),
@@ -188,9 +187,9 @@ func OrderToShippingInfo(in *model.Order) (out *shiptypes.ShippingInfo) {
 		ShippingServiceName: shopShipping.ExternalServiceName,
 		ShippingServiceCode: shopShipping.ProviderServiceID,
 		ShippingServiceFee:  shopShipping.ExternalShippingFee,
-		Carrier:             string(shopShipping.ShippingProvider),
+		Carrier:             shopShipping.ShippingProvider,
 		IncludeInsurance:    shopShipping.IncludeInsurance,
-		TryOn:               tryOn,
+		TryOn:               in.TryOn,
 		ShippingNote:        in.ShippingNote,
 		CODAmount:           in.ShopCOD,
 		GrossWeight:         shopShipping.GrossWeight,

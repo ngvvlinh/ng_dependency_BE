@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/top/types/etc/payment_provider"
 	"etop.vn/capi/dot"
 )
 
@@ -23,7 +24,7 @@ type Payment struct {
 	Data json.RawMessage
 	// Mã từ eTop gửi sang đối tác
 	OrderID         string
-	PaymentProvider string
+	PaymentProvider payment_provider.PaymentProvider
 	Action          PaymentAction
 	CreatedAt       time.Time `sq:"create"`
 	UpdatedAt       time.Time `sq:"update"`

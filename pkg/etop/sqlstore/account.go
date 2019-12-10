@@ -7,6 +7,8 @@ import (
 
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/try_on"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -57,7 +59,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 		permission := &model.AccountUser{
 			AccountID: id,
 			UserID:    cmd.OwnerID,
-			Status:    model.StatusActive,
+			Status:    status3.P,
 			Permission: model.Permission{
 				Roles: []string{string(authorization.RoleShopOwner)},
 			},
@@ -85,7 +87,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 			ID:                            id,
 			Name:                          cmd.Name,
 			OwnerID:                       cmd.OwnerID,
-			Status:                        model.StatusActive,
+			Status:                        status3.P,
 			AddressID:                     cmd.AddressID,
 			Phone:                         phoneNorm.String(),
 			Email:                         emailNorm.String(),
@@ -93,7 +95,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 			WebsiteURL:                    cmd.WebsiteURL,
 			ImageURL:                      cmd.ImageURL,
 			Code:                          code,
-			TryOn:                         model.TryOnOpen,
+			TryOn:                         try_on.Open,
 			CompanyInfo:                   cmd.CompanyInfo,
 			MoneyTransactionRRule:         cmd.MoneyTransactionRRule,
 			SurveyInfo:                    cmd.SurveyInfo,

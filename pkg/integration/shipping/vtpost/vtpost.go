@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -101,9 +102,9 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		}
 		// ignore this service
 		ignoreServices := []string{
-			string(vtpostclient.OrderServiceCodeV60),
+			vtpostclient.OrderServiceCodeV60.String(),
 		}
-		if cm.StringsContain(ignoreServices, string(serviceCode)) {
+		if cm.StringsContain(ignoreServices, serviceCode.String()) {
 			continue
 		}
 
@@ -241,14 +242,14 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 		// keep all shipping fee lines except shippingFeeMain
 		mainFee := orderMsg.MoneyTotal
 		for _, line := range ffm.ProviderShippingFeeLines {
-			if line.ShippingFeeType == model.ShippingFeeTypeMain {
+			if line.ShippingFeeType == shipping_fee_type.Main {
 				continue
 			}
 			mainFee = mainFee - line.Cost
 		}
 		if mainFee >= 0 {
 			for _, line := range ffm.ProviderShippingFeeLines {
-				if line.ShippingFeeType == model.ShippingFeeTypeMain {
+				if line.ShippingFeeType == shipping_fee_type.Main {
 					line.Cost = mainFee
 				}
 			}

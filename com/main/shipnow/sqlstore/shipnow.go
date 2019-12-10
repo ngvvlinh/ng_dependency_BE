@@ -7,9 +7,9 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -171,7 +171,7 @@ type UpdateStateArgs struct {
 	ID             dot.ID
 	SyncStatus     status4.Status
 	Status         status5.Status
-	ShippingState  shipnowtypes.State
+	ShippingState  shipnow_state.State
 	SyncStates     *shipnow.SyncStates
 	ConfirmStatus  status3.Status
 	ShippingStatus status5.Status
@@ -182,7 +182,7 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFu
 		SyncStatus:     args.SyncStatus,
 		Status:         args.Status,
 		ConfirmStatus:  args.ConfirmStatus,
-		ShippingState:  shipnowtypes.StateToString(args.ShippingState),
+		ShippingState:  args.ShippingState,
 		SyncStates:     convert.SyncStateToModel(args.SyncStates),
 		ShippingStatus: args.ShippingStatus,
 	}
@@ -198,14 +198,14 @@ type UpdateCancelArgs struct {
 	ID            dot.ID
 	ConfirmStatus status3.Status
 	Status        status5.Status
-	ShippingState shipnowtypes.State
+	ShippingState shipnow_state.State
 	CancelReason  string
 }
 
 func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
 		ConfirmStatus: args.ConfirmStatus,
-		ShippingState: shipnowtypes.StateToString(args.ShippingState),
+		ShippingState: args.ShippingState,
 		Status:        args.Status,
 		CancelReason:  args.CancelReason,
 	}
@@ -224,7 +224,7 @@ type UpdateCarrierInfoArgs struct {
 	TotalFee            int
 	ShippingCode        string
 	ShippingCreatedAt   time.Time
-	ShippingState       shipnowtypes.State
+	ShippingState       shipnow_state.State
 	ShippingStatus      status5.Status
 	EtopPaymentStatus   status4.Status
 	CODEtopTransferedAt time.Time
@@ -242,7 +242,7 @@ type UpdateCarrierInfoArgs struct {
 
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
-		ShippingState:       shipnowtypes.StateToString(args.ShippingState),
+		ShippingState:       args.ShippingState,
 		ShippingStatus:      args.ShippingStatus,
 		ShippingCreatedAt:   args.ShippingCreatedAt,
 		ShippingCode:        args.ShippingCode,

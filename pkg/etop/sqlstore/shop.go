@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/status3"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -144,7 +145,7 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 			CostPrice:   cmd.CostPrice,
 			ListPrice:   cmd.ListPrice,
 			RetailPrice: cmd.RetailPrice,
-			Status:      model.StatusActive,
+			Status:      status3.P,
 			Attributes:  cmd.Attributes,
 			CreatedAt:   time.Time{},
 			UpdatedAt:   time.Time{},

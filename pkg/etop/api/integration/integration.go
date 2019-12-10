@@ -718,7 +718,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 			Email:     string(emailNorm),
 		},
 		Password:       generatedPassword,
-		Status:         model.StatusActive,
+		Status:         status3.P,
 		AgreeTOS:       r.AgreeTos,
 		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
 		Source:         source,

@@ -13,6 +13,7 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
+	shipnow_state "etop.vn/api/top/types/etc/shipnow_state"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
 	status5 "etop.vn/api/top/types/etc/status5"
@@ -112,7 +113,7 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, ms
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	Id                         dot.ID
 	ShippingCode               string
-	ShippingState              shipnowtypes.State
+	ShippingState              shipnow_state.State
 	TotalFee                   int
 	FeeLines                   []*shippingtypes.FeeLine
 	CarrierFeeLines            []*shippingtypes.FeeLine
@@ -145,7 +146,7 @@ type UpdateShipnowFulfillmentStateCommand struct {
 	ConfirmStatus  status3.Status
 	ShippingStatus status5.Status
 	SyncStates     *SyncStates
-	ShippingState  shipnowtypes.State
+	ShippingState  shipnow_state.State
 
 	Result *ShipnowFulfillment `json:"-"`
 }

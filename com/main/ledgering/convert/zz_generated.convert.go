@@ -72,7 +72,7 @@ func convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 	out.Name = arg.Name           // simple assign
 	out.BankAccount = nil         // types do not match
 	out.Note = arg.Note           // simple assign
-	out.Type = arg.Type           // simple assign
+	out.Type = 0                  // types do not match
 	out.Status = arg.Status       // simple assign
 	out.CreatedBy = arg.CreatedBy // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
@@ -105,7 +105,7 @@ func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	out.Name = arg.Name           // simple assign
 	out.BankAccount = nil         // types do not match
 	out.Note = arg.Note           // simple assign
-	out.Type = arg.Type           // simple assign
+	out.Type = ""                 // types do not match
 	out.Status = arg.Status       // simple assign
 	out.CreatedBy = arg.CreatedBy // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
@@ -139,7 +139,7 @@ func apply_ledgering_CreateLedgerArgs_ledgering_ShopLedger(arg *ledgering.Create
 	out.Name = arg.Name               // simple assign
 	out.BankAccount = arg.BankAccount // simple assign
 	out.Note = arg.Note               // simple assign
-	out.Type = string(arg.Type)       // simple conversion
+	out.Type = arg.Type               // simple assign
 	out.Status = 0                    // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.CreatedAt = time.Time{}       // zero value

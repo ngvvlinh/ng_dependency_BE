@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 
 	"etop.vn/api/external/payment"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_state"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/com/external/payment/payment/convert"
 	"etop.vn/backend/com/external/payment/payment/model"
@@ -40,7 +42,7 @@ func (s *PaymentStore) ExternalTransactionID(id string) *PaymentStore {
 	return s
 }
 
-func (s *PaymentStore) PaymentProvider(provider string) *PaymentStore {
+func (s *PaymentStore) PaymentProvider(provider payment_provider.PaymentProvider) *PaymentStore {
 	s.preds = append(s.preds, s.ft.ByPaymentProvider(provider))
 	return s
 }
@@ -62,8 +64,8 @@ func (s *PaymentStore) GetPayment() (*payment.Payment, error) {
 type CreatePaymentArgs struct {
 	Amount          int
 	Status          status4.Status
-	State           payment.PaymentState
-	PaymentProvider payment.PaymentProvider
+	State           payment_state.PaymentState
+	PaymentProvider payment_provider.PaymentProvider
 	ExternalTransID string
 	ExternalData    json.RawMessage
 }
@@ -73,9 +75,9 @@ func (s *PaymentStore) CreatePayment(args *CreatePaymentArgs) (*payment.Payment,
 	payment := &model.Payment{
 		ID:              id,
 		Amount:          args.Amount,
-		Status:          int(args.Status),
-		State:           string(args.State),
-		PaymentProvider: string(args.PaymentProvider),
+		Status:          args.Status,
+		State:           args.State,
+		PaymentProvider: args.PaymentProvider,
 		ExternalTransID: args.ExternalTransID,
 		ExternalData:    args.ExternalData,
 	}
@@ -89,7 +91,7 @@ type UpdateExternalPaymentInfoArgs struct {
 	ID              dot.ID
 	Amount          int
 	Status          status4.Status
-	State           payment.PaymentState
+	State           payment_state.PaymentState
 	ExternalData    json.RawMessage
 	ExternalTransID string
 }
@@ -100,8 +102,8 @@ func (s *PaymentStore) UpdateExternalPaymentInfo(args *UpdateExternalPaymentInfo
 	}
 	update := &model.Payment{
 		Amount:          args.Amount,
-		Status:          int(args.Status),
-		State:           string(args.State),
+		Status:          args.Status,
+		State:           args.State,
 		ExternalData:    args.ExternalData,
 		ExternalTransID: args.ExternalTransID,
 	}

@@ -110,7 +110,7 @@ func (s *ReceiptStore) RefIDs(ids ...dot.ID) *ReceiptStore {
 }
 
 func (s *ReceiptStore) RefType(refType receipting.ReceiptRefType) *ReceiptStore {
-	s.preds = append(s.preds, s.ft.ByRefType(string(refType)))
+	s.preds = append(s.preds, s.ft.ByRefType(refType.String()))
 	return s
 }
 

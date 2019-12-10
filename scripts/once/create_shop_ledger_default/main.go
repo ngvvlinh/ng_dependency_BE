@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	"etop.vn/api/main/ledgering"
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/cmd/etop-server/config"
 	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
 	cm "etop.vn/backend/pkg/common"
@@ -98,7 +98,7 @@ func main() {
 						Name:        "Tiền mặt",
 						BankAccount: nil,
 						Note:        "Số quỹ mặc định",
-						Type:        string(ledgering.LedgerTypeCash),
+						Type:        ledger_type.LedgerTypeCash.String(),
 						Status:      0,
 						CreatedBy:   ownerID,
 						CreatedAt:   time.Now(),
@@ -130,7 +130,7 @@ func scanShops(fromID dot.ID) (shops model.Shops, err error) {
 
 func scanShopLedgersTypeCash(fromID dot.ID) (shopLedgers ledgeringmodel.ShopLedgers, err error) {
 	err = db.
-		Where("id > ? and type = ?", fromID, string(ledgering.LedgerTypeCash)).
+		Where("id > ? and type = ?", fromID, string(ledger_type.LedgerTypeCash)).
 		OrderBy("id").
 		Limit(1000).
 		Find(&shopLedgers)

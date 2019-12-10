@@ -8,6 +8,8 @@ import (
 
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/top/types/etc/credit_type"
+	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
@@ -61,7 +63,7 @@ func init() {
 var zeroTime = time.Unix(0, 0)
 
 var acceptStates = []string{
-	string(model.StateReturned), string(model.StateReturning), string(model.StateDelivered), string(model.StateUndeliverable),
+	shipping.Returned.String(), shipping.Returning.String(), shipping.Delivered.String(), shipping.Undeliverable.String(),
 }
 
 var filterMoneyTransactionShippingWhitelist = FilterWhitelist{
@@ -136,10 +138,10 @@ func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, 
 	for i, ffm := range fulfillments {
 		ffmIDs[i] = ffm.ID
 		amount := ffm.TotalCODAmount
-		if ffm.ShippingState == model.StateReturned || ffm.ShippingState == model.StateReturning {
+		if ffm.ShippingState == shipping.Returned || ffm.ShippingState == shipping.Returning {
 			// make sure COD = 0
 			amount = 0
-		} else if ffm.ShippingState == model.StateUndeliverable {
+		} else if ffm.ShippingState == shipping.Undeliverable {
 			// trường hợp đơn bồi hoàn
 			amount = ffm.ActualCompensationAmount
 		}
@@ -469,7 +471,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 	}
 	var ffms = make([]*shipmodel.Fulfillment, len(fulfillments))
 	for i, ffm := range fulfillments {
-		if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
+		if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
 			return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
 		}
 		ffms[i] = ffm.Fulfillment
@@ -666,17 +668,17 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 					Code: "ffm_exist_money_transaction_shipping_external",
 					Msg:  "Vận đơn nằm trong phiên thanh toán nhà vận chuyển khác: " + strconv.Itoa(int(ffm.MoneyTransactionShippingExternalID)),
 				}
-			} else if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
+			} else if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
 				line.ImportError = &model.Error{
 					Code: "ffm_not_done",
 					Msg:  "Vận đơn chưa hoàn thành trên Etop",
 				}
-			} else if ffm.ShippingState == model.StateDelivered && ffm.TotalCODAmount != line.ExternalTotalCOD {
+			} else if ffm.ShippingState == shipping.Delivered && ffm.TotalCODAmount != line.ExternalTotalCOD {
 				line.ImportError = &model.Error{
 					Code: "ffm_not_balance",
 					Msg:  "Giá trị vận đơn không đúng",
 				}
-			} else if ffm.ShippingState == model.StateUndeliverable && line.ExternalTotalCOD != ffm.ActualCompensationAmount {
+			} else if ffm.ShippingState == shipping.Undeliverable && line.ExternalTotalCOD != ffm.ActualCompensationAmount {
 				line.ImportError = &model.Error{
 					Code: "ffm_not_balance",
 					Msg:  "Giá trị bồi hoàn không đúng",
@@ -1036,14 +1038,14 @@ func getExtraFfms(provider shipping_provider.ShippingProvider, isNoneCOD bool, i
 	// find all ffms has state "delivered" and total_cod_amount = 0
 	var ffms []*shipmodel.Fulfillment
 	s := x.Table("fulfillment").
-		Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(provider))
+		Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", provider.String())
 
 	if isNoneCOD && isReturned {
-		s = s.Where("shipping_state = ? OR (shipping_state = ? AND total_cod_amount = 0)", model.StateReturned, model.StateDelivered)
+		s = s.Where("shipping_state = ? OR (shipping_state = ? AND total_cod_amount = 0)", shipping.Returned, shipping.Delivered)
 	} else if isReturned {
-		s = s.Where("shipping_state = ?", model.StateReturned)
+		s = s.Where("shipping_state = ?", shipping.Returned)
 	} else if isNoneCOD {
-		s = s.Where("shipping_state = ? AND total_cod_amount = 0", model.StateDelivered)
+		s = s.Where("shipping_state = ? AND total_cod_amount = 0", shipping.Delivered)
 	}
 
 	if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err != nil {
@@ -1078,8 +1080,8 @@ func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
 	var ffms []*shipmodel.Fulfillment
 	{
 		s := x.Table("fulfillment").
-			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(shipping_provider.VTPost)).
-			Where("shipping_state in (?, ?)", model.StateReturned, model.StateReturning)
+			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", shipping_provider.VTPost.String()).
+			Where("shipping_state in (?, ?)", shipping.Returned, shipping.Returning)
 		if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err == nil {
 			UpdateVtpostShippingFeeReturned(ffms)
 		}
@@ -1178,7 +1180,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 }
 
 func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
-	if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
+	if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
 		return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
 	}
 	if ffm.MoneyTransactionID != 0 {
@@ -1757,7 +1759,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 		}
 		var _ffms = make([]*shipmodel.Fulfillment, len(mt.Fulfillments))
 		for j, ffm := range mt.Fulfillments {
-			if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
+			if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
 				return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
 			}
 			_ffms[j] = ffm.Fulfillment
@@ -1852,7 +1854,7 @@ func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 	var updateFFms []*shipmodel.Fulfillment
 	for _, ffm := range ffms {
-		if ffm.ShippingState != model.StateReturned && ffm.ShippingState != model.StateReturning {
+		if ffm.ShippingState != shipping.Returned && ffm.ShippingState != shipping.Returning {
 			continue
 		}
 		returnedFee := model.GetReturnedFee(ffm.ShippingFeeShopLines)
@@ -1861,7 +1863,7 @@ func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 			continue
 		}
 		lines := ffm.ProviderShippingFeeLines
-		ffm.ProviderShippingFeeLines = model.UpdateShippingFees(lines, newReturnedFee, model.ShippingFeeTypeReturn)
+		ffm.ProviderShippingFeeLines = model.UpdateShippingFees(lines, newReturnedFee, shipping_fee_type.Return)
 		ffm.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		updateFFms = append(updateFFms, &shipmodel.Fulfillment{
 			ID:                       ffm.ID,

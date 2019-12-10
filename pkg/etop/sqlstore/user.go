@@ -133,29 +133,23 @@ func GetUserByLogin(ctx context.Context, query *model.GetUserByLoginQuery) error
 }
 
 func CreateUser(ctx context.Context, cmd *model.CreateUserCommand) error {
-	if cmd.IsStub {
-		if cmd.Email == "" && cmd.Phone == "" {
-			return cm.Error(cm.InvalidArgument, "Missing email and phone", nil)
-		}
-	} else {
-		if cmd.Email == "" {
-			return cm.Error(cm.InvalidArgument, "Vui lòng nhập email", nil)
-		}
-		if cmd.Phone == "" {
-			return cm.Error(cm.InvalidArgument, "Vui lòng nhập số điện thoại", nil)
-		}
-		if cmd.FullName == "" {
-			return cm.Error(cm.InvalidArgument, "Vui lòng nhập tên", nil)
-		}
-		if cmd.Password == "" {
-			return cm.Error(cm.InvalidArgument, "Vui lòng nhập mật khẩu", nil)
-		}
-		if len(cmd.Password) < 8 {
-			return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
-		}
-		if !cmd.AgreeTOS {
-			return cm.Error(cm.InvalidArgument, "Must agree tos", nil)
-		}
+	if cmd.Email == "" {
+		return cm.Error(cm.InvalidArgument, "Vui lòng nhập email", nil)
+	}
+	if cmd.Phone == "" {
+		return cm.Error(cm.InvalidArgument, "Vui lòng nhập số điện thoại", nil)
+	}
+	if cmd.FullName == "" {
+		return cm.Error(cm.InvalidArgument, "Vui lòng nhập tên", nil)
+	}
+	if cmd.Password == "" {
+		return cm.Error(cm.InvalidArgument, "Vui lòng nhập mật khẩu", nil)
+	}
+	if len(cmd.Password) < 8 {
+		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
+	}
+	if !cmd.AgreeTOS {
+		return cm.Error(cm.InvalidArgument, "Must agree tos", nil)
 	}
 
 	var ok bool
@@ -219,31 +213,18 @@ const (
 func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 	switch cmd.Status {
 	case status3.P:
-	case status3.Z:
 	default:
 		return cm.Error(cm.InvalidArgument, "Invalid status", nil)
-	}
-	if cmd.IsStub != (cmd.Status == status3.Z) {
-		return cm.Error(cm.InvalidArgument, "Mismatch status", nil)
 	}
 
 	now := time.Now()
 	userID := cm.NewIDWithTag(model.TagUser)
 	user := &model.User{
-		ID:        userID,
-		UserInner: cmd.UserInner,
-		Status:    cmd.Status,
-		Source:    cmd.Source,
-	}
-	if cmd.IsStub {
-		user.Identifying = model.UserIdentifyingStub
-	} else {
-		user.AgreedTOSAt = now
-		if user.Email != "" && user.Phone != "" {
-			user.Identifying = model.UserIdentifyingFull
-		} else {
-			user.Identifying = model.UserIdentifyingHalf
-		}
+		ID:          userID,
+		UserInner:   cmd.UserInner,
+		Status:      cmd.Status,
+		Source:      cmd.Source,
+		AgreedTOSAt: now,
 	}
 	if cmd.AgreeEmailInfo {
 		user.AgreedEmailInfoAt = now
@@ -352,7 +333,6 @@ func UpdateUserIdentifier(ctx context.Context, cmd *model.UpdateUserIdentifierCo
 
 	var user model.User
 	user.UserInner = cmd.UserInner
-	user.Identifying = cmd.Identifying
 	user.Status = cmd.Status
 	user.CreatedAt = cmd.CreatedAt
 

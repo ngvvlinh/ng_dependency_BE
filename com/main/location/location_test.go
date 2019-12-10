@@ -11,7 +11,6 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/backend/com/main/location/list"
-	"etop.vn/backend/com/main/location/types"
 )
 
 func TestNormalizeDistrict(t *testing.T) {
@@ -205,7 +204,7 @@ func TestUrban(t *testing.T) {
 	districts := districtsIndexProvinceCode["79"] // HCM
 	for _, d := range districts {
 		assert.Equal(t, "79", d.ProvinceCode)
-		assert.NotEqual(t, types.UrbanType(0), d.UrbanType)
+		assert.NotEqual(t, location.UrbanType(0), d.UrbanType)
 	}
 
 	assert.Equal(t, 15, len(strings.Split(HCMUrbanCodes, ",")))

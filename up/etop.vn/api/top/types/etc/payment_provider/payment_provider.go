@@ -9,5 +9,5 @@ const (
 	Unknown PaymentProvider = 0
 
 	// +enum=vtpay
-	Vtpay PaymentProvider = 1
+	VTPay PaymentProvider = 1
 )

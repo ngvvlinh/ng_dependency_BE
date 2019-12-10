@@ -73,7 +73,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		Code:                      m.Code,
 		EdCode:                    m.EdCode,
 		ExternalCode:              m.EdCode,
-		Source:                    PbSource(m.OrderSourceType),
+		Source:                    m.OrderSourceType,
 		PartnerId:                 m.PartnerID,
 		ExternalId:                m.ExternalOrderID,
 		ExternalUrl:               m.ExternalURL,
@@ -139,7 +139,7 @@ func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accT
 		Code:                      m.Code,
 		EdCode:                    m.EdCode,
 		ExternalCode:              m.EdCode,
-		Source:                    PbSource(m.OrderSourceType),
+		Source:                    m.OrderSourceType,
 		PartnerId:                 m.PartnerID,
 		ExternalId:                m.ExternalOrderID,
 		ExternalUrl:               m.ExternalURL,
@@ -709,7 +709,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *
 		ClosedAt:                           cmapi.PbTime(m.ClosedAt),
 		CancelledAt:                        cmapi.PbTime(m.ShippingCancelledAt),
 		CancelReason:                       m.CancelReason,
-		ShippingProvider:                   string(m.ShippingProvider),
+		ShippingProvider:                   m.ShippingProvider,
 		Carrier:                            PbShippingProviderType(m.ShippingProvider),
 		ShippingServiceName:                m.ExternalShippingName,
 		ShippingServiceFee:                 m.ExternalShippingFee,
@@ -920,7 +920,7 @@ func PbFulfillmentSyncStates(m *model.FulfillmentSyncStates) *types.FulfillmentS
 	}
 	return &types.FulfillmentSyncStates{
 		SyncAt:            cmapi.PbTime(m.SyncAt),
-		NextShippingState: string(m.NextShippingState),
+		NextShippingState: m.NextShippingState,
 		Error:             cmapi.PbError(m.Error),
 	}
 }

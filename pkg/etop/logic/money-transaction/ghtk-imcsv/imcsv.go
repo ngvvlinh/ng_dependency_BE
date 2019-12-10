@@ -10,6 +10,7 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
@@ -332,7 +333,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 		feeLines := ffm.ProviderShippingFeeLines
 		var newFeeLines []*model.ShippingFeeLine
 		for _, feeLine := range feeLines {
-			if feeLine.ShippingFeeType == model.ShippingFeeTypeMain {
+			if feeLine.ShippingFeeType == shipping_fee_type.Main {
 				// keep the shipping fee type main (phí dịch vụ)
 				newFeeLines = append(newFeeLines, feeLine)
 				break
@@ -354,28 +355,28 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 		}
 		if line.InsuranceFee != 0 {
 			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
-				ShippingFeeType:      model.ShippingFeeTypeInsurance,
+				ShippingFeeType:      shipping_fee_type.Insurance,
 				Cost:                 line.InsuranceFee,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
 		if line.ReturnFee != 0 {
 			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
-				ShippingFeeType:      model.ShippingFeeTypeReturn,
+				ShippingFeeType:      shipping_fee_type.Return,
 				Cost:                 line.ReturnFee,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
 		if line.Discount != 0 {
 			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
-				ShippingFeeType:      model.ShippingFeeTypeDiscount,
+				ShippingFeeType:      shipping_fee_type.Discount,
 				Cost:                 -line.Discount,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
 		if line.ChangeAddressFee != 0 {
 			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
-				ShippingFeeType:      model.ShippingFeeTypeAddessChange,
+				ShippingFeeType:      shipping_fee_type.AddressChange,
 				Cost:                 line.ChangeAddressFee,
 				ExternalShippingCode: line.ExternalCode,
 			})

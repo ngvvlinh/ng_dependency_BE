@@ -86,18 +86,6 @@ type AccountService interface {
 	GetPublicPartners(context.Context, *cm.IDsRequest) (*PublicAccountsResponse, error)
 }
 
-// +apix:path=/etop.Relationship
-type RelationshipService interface {
-	InviteUserToAccount(context.Context, *InviteUserToAccountRequest) (*UserAccountInfo, error)
-	AnswerInvitation(context.Context, *AnswerInvitationRequest) (*UserAccountInfo, error)
-
-	GetUsersInCurrentAccounts(context.Context, *GetUsersInCurrentAccountsRequest) (*ProtectedUsersResponse, error)
-
-	LeaveAccount(context.Context, *LeaveAccountRequest) (*cm.Empty, error)
-
-	RemoveUserFromCurrentAccount(context.Context, *RemoveUserFromCurrentAccountRequest) (*cm.Empty, error)
-}
-
 // +apix:path=/etop.Location
 type LocationService interface {
 	GetProvinces(context.Context, *cm.Empty) (*GetProvincesResponse, error)

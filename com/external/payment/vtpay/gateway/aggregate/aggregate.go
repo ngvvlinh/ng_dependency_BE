@@ -4,10 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	"etop.vn/api/external/payment"
 	"etop.vn/api/external/payment/vtpay"
 	vtpaygateway "etop.vn/api/external/payment/vtpay/gateway"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/top/types/etc/payment_source"
 	"etop.vn/api/top/types/etc/status4"
 	paymentutil "etop.vn/backend/com/external/payment"
 	"etop.vn/backend/pkg/common/bus"
@@ -52,14 +52,14 @@ func (a *Aggregate) MessageBus() vtpaygateway.CommandBus {
 }
 
 func (a *Aggregate) ValidateTransaction(ctx context.Context, args *vtpaygateway.ValidateTransactionArgs) (*vtpaygateway.ValidateTransactionResult, error) {
-	paymentSource, id, err := paymentutil.ParseCode(args.OrderID)
+	paymentSource, id, err := paymentutil.ParsePaymentCode(args.OrderID)
 	if err != nil {
 		return &vtpaygateway.ValidateTransactionResult{
 			ErrorCode: vtpaygateway.ErrorCodeInvalidData,
 		}, nil
 	}
 	switch paymentSource {
-	case payment.PaymentSourceOrder:
+	case payment_source.PaymentSourceOrder:
 		return a.HandleValiDateTransactionOrder(ctx, id, args)
 	default:
 		return &vtpaygateway.ValidateTransactionResult{

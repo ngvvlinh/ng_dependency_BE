@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
@@ -15,6 +16,10 @@ import (
 type VTPostOrderServiceCode string
 type VTPostShippingFeeType string
 type VTPostProductType string
+
+func (c VTPostOrderServiceCode) String() string { return string(c) }
+func (c VTPostShippingFeeType) String() string  { return string(c) }
+func (c VTPostProductType) String() string      { return string(c) }
 
 const (
 	// Nhanh - SCOD Giao hàng thu tiền
@@ -68,10 +73,6 @@ const (
 	IncludeVAT = 1.1
 )
 
-func ToShippingType(s string) VTPostShippingFeeType {
-	return VTPostShippingFeeType(s)
-}
-
 func (s VTPostOrderServiceCode) Name() string {
 	switch s {
 	case OrderServiceCodeVTK, OrderServiceCodePHS, OrderServiceCodeVBE, OrderServiceCodeVVT:
@@ -80,10 +81,12 @@ func (s VTPostOrderServiceCode) Name() string {
 		OrderServiceCodePHT, OrderServiceCodeVBS, OrderServiceCodeV60:
 		return model.ShippingServiceNameFaster
 	}
-	return string(s)
+	return s.String()
 }
 
 type StateShipping string
+
+func (s StateShipping) String() string { return string(s) }
 
 var (
 	// reference link: https://docs.google.com/document/d/1FhQE45QC0kkzkJFaoom9Oz5VJfiC-ZzhCzomqw84bjQ/edit#
@@ -96,7 +99,7 @@ var (
 	StateStored     StateShipping = "Đang vận chuyển" // []int{-109, -110, 200, 202, 300, 320, 400, 301}
 	StatePicked     StateShipping = "Đã lấy hàng"     // []int{105}
 	StateDelivering StateShipping = "Đang giao hàng"  // []int{500, 506, 570, 508, 509, 550}
-	// StateUndeliverable             StateShipping = "Giao hàng thất bại"   // []int{507}
+	// Undeliverable             StateShipping = "Giao hàng thất bại"   // []int{507}
 	StateReturning StateShipping = "Duyệt hoàn"      // []int{505, 502, 515}
 	StateReturned  StateShipping = "Hoàn thành công" // []int{504}
 	// StateWaitingToConfirmReturning StateShipping = "Chờ duyệt hoàn"       // []int{505}
@@ -188,7 +191,7 @@ func (s StateShipping) ToShippingStatus5(old shipping.State) status5.Status {
 		return status5.P
 	case StateStored, StatePicked, StateDelivering:
 		switch old {
-		case model.StateReturned, model.StateReturning:
+		case shipping.Returned, shipping.Returning:
 			return status5.NS
 		default:
 			return status5.S
@@ -200,33 +203,33 @@ func (s StateShipping) ToShippingStatus5(old shipping.State) status5.Status {
 func (s StateShipping) ToModel(old shipping.State) shipping.State {
 	switch s {
 	case StateCanceled:
-		return model.StateCancelled
+		return shipping.Cancelled
 	case StateNotConfirm, StateConfirmed:
-		return model.StateCreated
+		return shipping.Created
 	case StatePicking:
-		return model.StatePicking
+		return shipping.Picking
 	case StateStored, StatePicked:
 		switch old {
-		case model.StateReturned, model.StateReturning:
+		case shipping.Returned, shipping.Returning:
 			return old
 		default:
-			return model.StateHolding
+			return shipping.Holding
 		}
 	case StateDelivering:
 		switch old {
-		case model.StateReturned, model.StateReturning:
+		case shipping.Returned, shipping.Returning:
 			return old
 		default:
-			return model.StateDelivering
+			return shipping.Delivering
 		}
 	case StateDelivered:
-		return model.StateDelivered
+		return shipping.Delivered
 	case StateReturning:
-		return model.StateReturning
+		return shipping.Returning
 	case StateReturned:
-		return model.StateReturned
+		return shipping.Returned
 	default:
-		return model.StateUnknown
+		return shipping.Unknown
 	}
 }
 
@@ -406,7 +409,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 	if sf.MoneyCollectionFee != 0 {
 		fee := sf.MoneyCollectionFee
 		shippingFeeLine := &model.ShippingFeeLine{
-			ShippingFeeType:     model.ShippingFeeTypeCODS,
+			ShippingFeeType:     shipping_fee_type.Cods,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí thu hộ",
 		}
@@ -417,7 +420,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 		// xem như phí bảo hiểm
 		fee := sf.MoneyOtherFee
 		shippingFeeLine := &model.ShippingFeeLine{
-			ShippingFeeType:     model.ShippingFeeTypeInsurance,
+			ShippingFeeType:     shipping_fee_type.Insurance,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí bảo hiểm",
 		}
@@ -427,7 +430,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 	if sf.MoneyFee != 0 {
 		fee := sf.MoneyFee
 		shippingFeeLine := &model.ShippingFeeLine{
-			ShippingFeeType:     model.ShippingFeeTypeOther,
+			ShippingFeeType:     shipping_fee_type.Other,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí xăng dầu",
 		}
@@ -441,7 +444,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 			return nil, cm.Error(cm.FailedPrecondition, "VTPOST: Total shipping does not match", nil)
 		}
 		shippingFeeLine := &model.ShippingFeeLine{
-			ShippingFeeType:     model.ShippingFeeTypeMain,
+			ShippingFeeType:     shipping_fee_type.Main,
 			Cost:                fee,
 			ExternalServiceName: "Cước chính",
 		}

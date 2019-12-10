@@ -5,6 +5,7 @@ import (
 	"flag"
 
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/cmd/etop-server/config"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	cm "etop.vn/backend/pkg/common"
@@ -73,7 +74,7 @@ func main() {
 					createCustomerCmd := &customering.CreateCustomerCommand{
 						ShopID:   shopID,
 						FullName: "Khách lẻ",
-						Type:     customering.CustomerTypeIndependent,
+						Type:     customer_type.Independent,
 					}
 					_err = customerAggr.Dispatch(ctx, createCustomerCmd)
 

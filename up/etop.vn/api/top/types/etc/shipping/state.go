@@ -46,6 +46,7 @@ const (
 	// +enum=cancelled
 	Cancelled State = -1
 
+	// Trạng thái Bồi hoàn
 	// +enum=undeliverable
 	Undeliverable State = -2
 )

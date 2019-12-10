@@ -1,12 +1,14 @@
 package shop
 
 import (
+	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
 	common "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/gender"
 	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/ledger_type"
 	payment_provider "etop.vn/api/top/types/etc/payment_provider"
 	product_type "etop.vn/api/top/types/etc/product_type"
 	shipping "etop.vn/api/top/types/etc/shipping"
@@ -172,10 +174,10 @@ type Ledger struct {
 	BankAccount *etop.BankAccount `json:"bank_account"`
 	Note        string            `json:"note"`
 	// enum: cash, bank
-	Type      string   `json:"type"`
-	CreatedBy dot.ID   `json:"created_by"`
-	CreatedAt dot.Time `json:"created_at"`
-	UpdatedAt dot.Time `json:"updated_at"`
+	Type      ledger_type.LedgerType `json:"type"`
+	CreatedBy dot.ID                 `json:"created_by"`
+	CreatedAt dot.Time               `json:"created_at"`
+	UpdatedAt dot.Time               `json:"updated_at"`
 }
 
 func (m *Ledger) Reset()         { *m = Ledger{} }
@@ -1234,8 +1236,8 @@ type CreateCustomerRequest struct {
 	Gender   gender.Gender `json:"gender"`
 	Birthday string        `json:"birthday"`
 	// enum ('individual', 'organization')
-	Type string `json:"type"`
-	Note string `json:"note"`
+	Type customer_type.CustomerType `json:"type"`
+	Note string                     `json:"note"`
 	// @required
 	Phone string `json:"phone"`
 	Email string `json:"email"`
@@ -1250,10 +1252,10 @@ type UpdateCustomerRequest struct {
 	Gender   gender.NullGender `json:"gender"`
 	Birthday dot.NullString    `json:"birthday"`
 	// enum ('individual', 'organization','independent')
-	Type  dot.NullString `json:"type"`
-	Note  dot.NullString `json:"note"`
-	Phone dot.NullString `json:"phone"`
-	Email dot.NullString `json:"email"`
+	Type  customer_type.NullCustomerType `json:"type"`
+	Note  dot.NullString                 `json:"note"`
+	Phone dot.NullString                 `json:"phone"`
+	Email dot.NullString                 `json:"email"`
 }
 
 func (m *UpdateCustomerRequest) Reset()         { *m = UpdateCustomerRequest{} }
@@ -1707,9 +1709,9 @@ func (m *GetReceiptsRequest) Reset()         { *m = GetReceiptsRequest{} }
 func (m *GetReceiptsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetReceiptsByLedgerTypeRequest struct {
-	Type    string           `json:"type"`
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+	Type    ledger_type.LedgerType `json:"type"`
+	Paging  *common.Paging         `json:"paging"`
+	Filters []*common.Filter       `json:"filters"`
 }
 
 func (m *GetReceiptsByLedgerTypeRequest) Reset()         { *m = GetReceiptsByLedgerTypeRequest{} }

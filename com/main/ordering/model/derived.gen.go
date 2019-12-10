@@ -62,7 +62,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.VariantIDs, opts},
 		m.PartnerID,
 		core.String(m.Currency),
-		core.String(m.PaymentMethod),
+		m.PaymentMethod,
 		core.JSON{m.Customer},
 		core.JSON{m.CustomerAddress},
 		core.JSON{m.BillingAddress},
@@ -101,7 +101,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.OrderNote),
 		core.String(m.ShopNote),
 		core.String(m.ShippingNote),
-		core.String(m.OrderSourceType),
+		m.OrderSourceType,
 		m.OrderSourceID,
 		core.String(m.ExternalOrderID),
 		core.String(m.ReferenceURL),
@@ -134,7 +134,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.VariantIDs, opts},
 		&m.PartnerID,
 		(*core.String)(&m.Currency),
-		(*core.String)(&m.PaymentMethod),
+		&m.PaymentMethod,
 		core.JSON{&m.Customer},
 		core.JSON{&m.CustomerAddress},
 		core.JSON{&m.BillingAddress},
@@ -173,7 +173,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.OrderNote),
 		(*core.String)(&m.ShopNote),
 		(*core.String)(&m.ShippingNote),
-		(*core.String)(&m.OrderSourceType),
+		&m.OrderSourceType,
 		&m.OrderSourceID,
 		(*core.String)(&m.ExternalOrderID),
 		(*core.String)(&m.ReferenceURL),
@@ -319,7 +319,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Currency)
 	}
-	if m.PaymentMethod != "" {
+	if m.PaymentMethod != 0 {
 		flag = true
 		w.WriteName("payment_method")
 		w.WriteByte('=')
@@ -631,13 +631,13 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShippingNote)
 	}
-	if m.OrderSourceType != "" {
+	if m.OrderSourceType != 0 {
 		flag = true
 		w.WriteName("order_source_type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.OrderSourceType))
+		w.WriteArg(m.OrderSourceType)
 	}
 	if m.OrderSourceID != 0 {
 		flag = true

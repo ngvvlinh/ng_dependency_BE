@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/capi/dot"
 )
 
@@ -45,7 +46,7 @@ type ExternalShipnow struct {
 	UserID     string
 	Duration   int
 	Distance   float32
-	State      shipnowtypes.State
+	State      shipnow_state.State
 	TotalFee   int
 	FeeLines   []*shippingtypes.FeeLine
 	CreatedAt  time.Time

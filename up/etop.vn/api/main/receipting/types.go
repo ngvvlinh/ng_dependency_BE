@@ -14,6 +14,10 @@ type ReceiptType string
 type ReceiptCreatedType string
 type ReceiptRefType string
 
+func (t ReceiptType) String() string        { return string(t) }
+func (t ReceiptCreatedType) String() string { return string(t) }
+func (t ReceiptRefType) String() string     { return string(t) }
+
 const (
 	ReceiptTypeReceipt ReceiptType = "receipt"
 	ReceiptTypePayment ReceiptType = "payment"

@@ -7,7 +7,8 @@ package manager
 import (
 	context "context"
 
-	payment "etop.vn/api/external/payment"
+	payment_provider "etop.vn/api/top/types/etc/payment_provider"
+	payment_source "etop.vn/api/top/types/etc/payment_source"
 	capi "etop.vn/capi"
 )
 
@@ -25,7 +26,7 @@ type BuildUrlConnectPaymentGatewayCommand struct {
 	ReturnURL         string
 	CancelURL         string
 	TransactionAmount int
-	Provider          payment.PaymentProvider
+	Provider          payment_provider.PaymentProvider
 
 	Result string `json:"-"`
 }
@@ -40,7 +41,7 @@ type CancelTransactionCommand struct {
 	ExternalTransactionID string
 	TransactionAmount     int
 	Reason                string
-	Provider              payment.PaymentProvider
+	Provider              payment_provider.PaymentProvider
 
 	Result *CancelTransactionResult `json:"-"`
 }
@@ -56,7 +57,7 @@ type CheckReturnDataCommand struct {
 	PaymentStatus         string
 	Amount                int
 	ExternalTransactionID string
-	Provider              payment.PaymentProvider
+	Provider              payment_provider.PaymentProvider
 
 	Result *CheckReturnDataResult `json:"-"`
 }
@@ -67,7 +68,7 @@ func (h AggregateHandler) HandleCheckReturnData(ctx context.Context, msg *CheckR
 }
 
 type GenerateCodeCommand struct {
-	PaymentSource payment.PaymentSource
+	PaymentSource payment_source.PaymentSource
 	ID            string
 
 	Result string `json:"-"`
@@ -80,7 +81,7 @@ func (h AggregateHandler) HandleGenerateCode(ctx context.Context, msg *GenerateC
 
 type GetTransactionCommand struct {
 	OrderID  string
-	Provider payment.PaymentProvider
+	Provider payment_provider.PaymentProvider
 
 	Result *GetTransactionResult `json:"-"`
 }

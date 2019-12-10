@@ -169,7 +169,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetReceiptsByLedgerTypeEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
 	listLedgersByType := &ledgering.ListLedgersByTypeQuery{
-		LedgerType: ledgering.LedgerType(q.Type),
+		LedgerType: q.Type,
 		ShopID:     q.Context.Shop.ID,
 	}
 	if err := ledgerQuery.Dispatch(ctx, listLedgersByType); err != nil {

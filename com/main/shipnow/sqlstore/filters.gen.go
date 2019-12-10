@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -388,22 +389,22 @@ func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *s
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingState(ShippingState shipnow_state.State) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
-		IsNil:  ShippingState == "",
+		IsNil:  ShippingState == 0,
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *shipnow_state.State) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
 		IsNil:  ShippingState == nil,
-		IsZero: ShippingState != nil && (*ShippingState) == "",
+		IsZero: ShippingState != nil && (*ShippingState) == 0,
 	}
 }
 

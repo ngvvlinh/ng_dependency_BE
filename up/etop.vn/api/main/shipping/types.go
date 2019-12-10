@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 )
@@ -180,7 +180,7 @@ type CreateFulfillmentArgs struct {
 
 	ValueInfo
 
-	TryOn types.TryOn
+	TryOn try_on.TryOnCode
 
 	ShippingNote string
 }

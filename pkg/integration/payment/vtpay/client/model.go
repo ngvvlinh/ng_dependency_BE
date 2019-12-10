@@ -3,7 +3,7 @@ package client
 import (
 	"strconv"
 
-	"etop.vn/api/external/payment"
+	"etop.vn/api/top/types/etc/payment_state"
 	"etop.vn/api/top/types/etc/status4"
 	cm "etop.vn/backend/pkg/common"
 )
@@ -32,22 +32,22 @@ var PaymentStatusMap = map[PaymentStatus]string{
 	PaymentStatusCancelled: "Khách hàng hủy không thanh toán",
 }
 
-func (s PaymentStatus) ToState() payment.PaymentState {
+func (s PaymentStatus) ToState() payment_state.PaymentState {
 	switch s {
 	case PaymentStatusNotCreate:
-		return payment.PaymentStateDefault
+		return payment_state.Default
 	case PaymentStatusPending:
-		return payment.PaymentStatePending
+		return payment_state.Pending
 	case PaymentStatusSuccess:
-		return payment.PaymentStateSuccess
+		return payment_state.Success
 	case PaymentStatusFailed:
-		return payment.PaymentStateFailed
+		return payment_state.Failed
 	case PaymentStatusUnknown:
-		return payment.PaymentStateUnknown
+		return payment_state.Unknown
 	case PaymentStatusCancelled:
-		return payment.PaymentStateCancelled
+		return payment_state.Cancelled
 	default:
-		return payment.PaymentStateUnknown
+		return payment_state.Unknown
 	}
 }
 

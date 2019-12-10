@@ -32,7 +32,7 @@ func ConvertStringsToRoles(args []string) (roles []authorization.Role) {
 
 func ConvertRolesToStrings(roles []authorization.Role) (outs []string) {
 	for _, role := range roles {
-		outs = append(outs, string(role))
+		outs = append(outs, role.String())
 	}
 	return
 }

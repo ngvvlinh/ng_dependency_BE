@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/shipping"
 	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
@@ -476,7 +477,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 		ExternalShippingNote:        "",
 		ExternalShippingSubState:    "",
 		ExternalShippingData:        nil,
-		ShippingState:               model.StateDefault,
+		ShippingState:               shipping.Default,
 		ShippingStatus:              0,
 		EtopPaymentStatus:           0,
 		Status:                      0,
@@ -568,14 +569,14 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}
 
 		switch ffm.ShippingState {
-		case model.StateCreated, model.StatePicking:
+		case shipping.Created, shipping.Picking:
 			ffmSendToProvider[i] = model.FfmActionCancel
 			count++
 
-		case model.StateHolding,
-			model.StateDelivering,
-			model.StateUndeliverable,
-			model.StateReturning:
+		case shipping.Holding,
+			shipping.Delivering,
+			shipping.Undeliverable,
+			shipping.Returning:
 			ffmSendToProvider[i] = model.FfmActionReturn
 			count++
 
@@ -679,7 +680,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 					SyncAt: time.Now(),
 				},
 			}
-			if update2.ShippingState == model.StateCancelled {
+			if update2.ShippingState == shipping.Cancelled {
 				update2.Status = status5.N
 			}
 			update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}

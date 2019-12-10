@@ -15,6 +15,7 @@ import (
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
@@ -102,7 +103,7 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 
 	feelines := []*shippingtypes.FeeLine{
 		{
-			ShippingFeeType:     shippingtypes.FeeLineTypeMain,
+			ShippingFeeType:     shipping_fee_type.Main,
 			Cost:                int(response.Order.TotalFee),
 			ExternalServiceName: "",
 			ExternalServiceType: "",

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
@@ -18,7 +19,7 @@ import (
 	"etop.vn/common/l"
 )
 
-var acceptNotifyStates = []string{string(model.StateReturning), string(model.StateReturned), string(model.StateUndeliverable)}
+var acceptNotifyStates = []string{shipping.Returning.String(), shipping.Returned.String(), shipping.Undeliverable.String()}
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history shipmodel.FulfillmentHistory
@@ -110,19 +111,19 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	switch ffm.ShippingState {
-	case model.StatePicking, model.StateHolding:
+	case shipping.Picking, shipping.Holding:
 		content = fmt.Sprintf("Dự kiến giao vào %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatDateVN(ffm.ExpectedDeliveryAt), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case model.StateDelivering, model.StateDelivered, model.StateReturned:
+	case shipping.Delivering, shipping.Delivered, shipping.Returned:
 		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case model.StateReturning:
+	case shipping.Returning:
 		content = fmt.Sprintf("Dự kiến trả hàng trong vòng 3-5 ngày tới. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case model.StateUndeliverable:
+	case shipping.Undeliverable:
 		compensationAmount := ffm.ActualCompensationAmount
 		if compensationAmount == 0 {
 			compensationAmount = ffm.BasketValue
 		}
 		content = fmt.Sprintf("Giá trị bồi hoàn %vđ. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatCurrency(compensationAmount), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case model.StateCancelled:
+	case shipping.Cancelled:
 		var order = new(ordermodel.Order)
 		_ = x.Table("order").Where("id = ?", ffm.OrderID).ShouldGet(order)
 		cancelReason := ffm.CancelReason
@@ -136,7 +137,7 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 	title := fmt.Sprintf("%v - %v %v - %v", model.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 
 	sendNotification := false
-	if cm.StringsContain(acceptNotifyStates, string(ffm.ShippingState)) {
+	if cm.StringsContain(acceptNotifyStates, ffm.ShippingState.String()) {
 		sendNotification = true
 	}
 	return &notifiermodel.CreateNotificationArgs{
@@ -150,5 +151,5 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 }
 
 func Uppercase(provider shipping_provider.ShippingProvider) string {
-	return strings.ToUpper(string(provider))
+	return strings.ToUpper(provider.String())
 }

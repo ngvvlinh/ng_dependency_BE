@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_source"
 	paymentutil "etop.vn/backend/com/external/payment"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -32,9 +33,9 @@ func (ctrl *PaymentManager) MesssageBus() paymentmanager.CommandBus {
 	return paymentmanager.NewAggregateHandler(ctrl).RegisterHandlers(b)
 }
 
-func (ctrl *PaymentManager) GetPaymentProviderDriver(provider payment.PaymentProvider) (PaymentProvider, error) {
+func (ctrl *PaymentManager) GetPaymentProviderDriver(provider payment_provider.PaymentProvider) (PaymentProvider, error) {
 	switch provider {
-	case payment.PaymentProviderVTPay:
+	case payment_provider.VTPay:
 		return ctrl.vtpay, nil
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ (%v)", provider)
@@ -43,7 +44,7 @@ func (ctrl *PaymentManager) GetPaymentProviderDriver(provider payment.PaymentPro
 
 func (ctrl *PaymentManager) GenerateCode(ctx context.Context, args *paymentmanager.GenerateCodeArgs) (string, error) {
 	switch args.PaymentSource {
-	case payment.PaymentSourceOrder:
+	case payment_source.PaymentSourceOrder:
 		// nothing
 	default:
 		return "", cm.Errorf(cm.InvalidArgument, nil, "PaymentSource không hợp lệ. Vui lòng kiểm tra lại.")
@@ -51,7 +52,7 @@ func (ctrl *PaymentManager) GenerateCode(ctx context.Context, args *paymentmanag
 	if args.ID == "" {
 		return "", cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
-	return fmt.Sprintf("%v_%v", string(args.PaymentSource), args.ID), nil
+	return fmt.Sprintf("%v_%v", args.PaymentSource.String(), args.ID), nil
 }
 
 func (ctrl *PaymentManager) BuildUrlConnectPaymentGateway(ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs) (string, error) {
@@ -82,12 +83,12 @@ func (ctrl *PaymentManager) CheckReturnData(ctx context.Context, args *paymentma
 	if args.Code == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "'Code' không được để trống")
 	}
-	paymentSource, id, err := paymentutil.ParseCode(args.ID)
+	paymentSource, id, err := paymentutil.ParsePaymentCode(args.ID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không hợp lệ (order_id = %v)", args.ID)
 	}
 	switch paymentSource {
-	case payment.PaymentSourceOrder:
+	case payment_source.PaymentSourceOrder:
 		return ctrl.HandlerCheckReturnOrderData(ctx, id, args)
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không hợp lệ (order_id = %v)", args.ID)

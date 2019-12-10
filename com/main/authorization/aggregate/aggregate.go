@@ -137,7 +137,7 @@ func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args
 	}
 	for _, role := range rolesAccountUser {
 		if !authorization.IsRole(role) {
-			return model.AccountUserExtended{}, cm.Errorf(cm.InvalidArgument, nil, "role %v không hợp lệ", string(role))
+			return model.AccountUserExtended{}, cm.Errorf(cm.InvalidArgument, nil, "role %v không hợp lệ", role)
 		}
 	}
 	if !currAccountUserHasOwner && authorization.IsContainsRole(args.Roles, authorization.RoleStaffManagement) {

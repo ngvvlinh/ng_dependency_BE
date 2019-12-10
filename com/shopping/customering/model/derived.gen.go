@@ -263,7 +263,7 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.CodeNorm),
 		core.String(m.FullName),
 		m.Gender,
-		core.String(m.Type),
+		m.Type,
 		core.String(m.Birthday),
 		core.String(m.Note),
 		core.String(m.Phone),
@@ -285,7 +285,7 @@ func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.FullName),
 		&m.Gender,
-		(*core.String)(&m.Type),
+		&m.Type,
 		(*core.String)(&m.Birthday),
 		(*core.String)(&m.Note),
 		(*core.String)(&m.Phone),
@@ -406,13 +406,13 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Gender)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Type))
+		w.WriteArg(m.Type)
 	}
 	if m.Birthday != "" {
 		flag = true

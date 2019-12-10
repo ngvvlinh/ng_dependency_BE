@@ -26,7 +26,7 @@ type ESPricing struct {
 	Type          string
 	FromProvince  *FromProvinceDetail
 	RouteType     RouteTypeDetail
-	DistrictTypes []model.ShippingDistrictType
+	DistrictTypes []location.UrbanType
 	Details       map[int]*ESPricingDetail
 }
 
@@ -336,15 +336,15 @@ func GetShippingRouteTypes(fromProvince *location.Province, toProvince *location
 	return res
 }
 
-func GetShippingDistrictType(district *location.District) model.ShippingDistrictType {
+func GetShippingDistrictType(district *location.District) location.UrbanType {
 	switch district.UrbanType {
 	case location.Urban:
-		return model.ShippingDistrictTypeUrban
+		return location.Urban
 	case location.Suburban1:
-		return model.ShippingDistrictTypeSubUrban1
+		return location.Suburban1
 	case location.Suburban2:
-		return model.ShippingDistrictTypeSubUrban2
+		return location.Suburban2
 	default:
-		return model.ShippingDistrictTypeSubUrban2
+		return location.Suburban2
 	}
 }

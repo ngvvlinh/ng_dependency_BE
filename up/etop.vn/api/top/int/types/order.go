@@ -1,16 +1,19 @@
 package types
 
 import (
+	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
 	common "etop.vn/api/top/types/common"
 	fee "etop.vn/api/top/types/etc/fee"
 	gender "etop.vn/api/top/types/etc/gender"
 	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	source "etop.vn/api/top/types/etc/order_source"
+	"etop.vn/api/top/types/etc/payment_method"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	shipping "etop.vn/api/top/types/etc/shipping"
 	shipping_fee_type "etop.vn/api/top/types/etc/shipping_fee_type"
 	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
-	source "etop.vn/api/top/types/etc/source"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
 	status5 "etop.vn/api/top/types/etc/status5"
@@ -45,26 +48,26 @@ type Order struct {
 	ShopName       string   `json:"shop_name"`
 	Code           string   `json:"code"`
 	// the same as external_code
-	EdCode          string         `json:"ed_code"`
-	ExternalCode    string         `json:"external_code"`
-	Source          source.Source  `json:"source"`
-	PartnerId       dot.ID         `json:"partner_id"`
-	ExternalId      string         `json:"external_id"`
-	ExternalUrl     string         `json:"external_url"`
-	SelfUrl         string         `json:"self_url"`
-	PaymentMethod   string         `json:"payment_method"`
-	Customer        *OrderCustomer `json:"customer"`
-	CustomerAddress *OrderAddress  `json:"customer_address"`
-	BillingAddress  *OrderAddress  `json:"billing_address"`
-	ShippingAddress *OrderAddress  `json:"shipping_address"`
-	CreatedAt       dot.Time       `json:"created_at"`
-	ProcessedAt     dot.Time       `json:"processed_at"`
-	UpdatedAt       dot.Time       `json:"updated_at"`
-	ClosedAt        dot.Time       `json:"closed_at"`
-	ConfirmedAt     dot.Time       `json:"confirmed_at"`
-	CancelledAt     dot.Time       `json:"cancelled_at"`
-	CancelReason    string         `json:"cancel_reason"`
-	ShConfirm       status3.Status `json:"sh_confirm"`
+	EdCode          string                       `json:"ed_code"`
+	ExternalCode    string                       `json:"external_code"`
+	Source          source.Source                `json:"source"`
+	PartnerId       dot.ID                       `json:"partner_id"`
+	ExternalId      string                       `json:"external_id"`
+	ExternalUrl     string                       `json:"external_url"`
+	SelfUrl         string                       `json:"self_url"`
+	PaymentMethod   payment_method.PaymentMethod `json:"payment_method"`
+	Customer        *OrderCustomer               `json:"customer"`
+	CustomerAddress *OrderAddress                `json:"customer_address"`
+	BillingAddress  *OrderAddress                `json:"billing_address"`
+	ShippingAddress *OrderAddress                `json:"shipping_address"`
+	CreatedAt       dot.Time                     `json:"created_at"`
+	ProcessedAt     dot.Time                     `json:"processed_at"`
+	UpdatedAt       dot.Time                     `json:"updated_at"`
+	ClosedAt        dot.Time                     `json:"closed_at"`
+	ConfirmedAt     dot.Time                     `json:"confirmed_at"`
+	CancelledAt     dot.Time                     `json:"cancelled_at"`
+	CancelReason    string                       `json:"cancel_reason"`
+	ShConfirm       status3.Status               `json:"sh_confirm"`
 	// @deprecated replaced by confirm_status
 	Confirm       status3.Status `json:"confirm"`
 	ConfirmStatus status3.Status `json:"confirm_status"`
@@ -170,14 +173,14 @@ func (m *CreateOrderLine) Reset()         { *m = CreateOrderLine{} }
 func (m *CreateOrderLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderCustomer struct {
-	ExportedFields []string      `json:"exported_fields"`
-	FirstName      string        `json:"first_name"`
-	LastName       string        `json:"last_name"`
-	FullName       string        `json:"full_name"`
-	Email          string        `json:"email"`
-	Phone          string        `json:"phone"`
-	Gender         gender.Gender `json:"gender"`
-	Type           string        `json:"type"`
+	ExportedFields []string                   `json:"exported_fields"`
+	FirstName      string                     `json:"first_name"`
+	LastName       string                     `json:"last_name"`
+	FullName       string                     `json:"full_name"`
+	Email          string                     `json:"email"`
+	Phone          string                     `json:"phone"`
+	Gender         gender.Gender              `json:"gender"`
+	Type           customer_type.CustomerType `json:"type"`
 }
 
 func (m *OrderCustomer) Reset()         { *m = OrderCustomer{} }
@@ -218,11 +221,11 @@ func (m *OrderDiscount) Reset()         { *m = OrderDiscount{} }
 func (m *OrderDiscount) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateOrderRequest struct {
-	Source        source.Source `json:"source"`
-	ExternalId    string        `json:"external_id"`
-	ExternalCode  string        `json:"external_code"`
-	ExternalUrl   string        `json:"external_url"`
-	PaymentMethod string        `json:"payment_method"`
+	Source        source.Source                `json:"source"`
+	ExternalId    string                       `json:"external_id"`
+	ExternalCode  string                       `json:"external_code"`
+	ExternalUrl   string                       `json:"external_url"`
+	PaymentMethod payment_method.PaymentMethod `json:"payment_method"`
 	// If order_source is self, customer must be shop information
 	// and customer_address, shipping_address must be shop address.
 	Customer        *OrderCustomer `json:"customer"`
@@ -355,7 +358,7 @@ type Fulfillment struct {
 	CancelledAt      dot.Time `json:"cancelled_at"`
 	CancelReason     string   `json:"cancel_reason"`
 	// @deprecated use carrier instead
-	ShippingProvider     string                             `json:"shipping_provider"`
+	ShippingProvider     shipping_provider.ShippingProvider `json:"shipping_provider"`
 	Carrier              shipping_provider.ShippingProvider `json:"carrier"`
 	ShippingServiceName  string                             `json:"shipping_service_name"`
 	ShippingServiceFee   int                                `json:"shipping_service_fee"`
@@ -525,9 +528,9 @@ func (m *ExternalShippingService) Reset()         { *m = ExternalShippingService
 func (m *ExternalShippingService) String() string { return jsonx.MustMarshalToString(m) }
 
 type FulfillmentSyncStates struct {
-	SyncAt            dot.Time      `json:"sync_at"`
-	NextShippingState string        `json:"next_shipping_state"`
-	Error             *common.Error `json:"error"`
+	SyncAt            dot.Time       `json:"sync_at"`
+	NextShippingState shipping.State `json:"next_shipping_state"`
+	Error             *common.Error  `json:"error"`
 }
 
 func (m *FulfillmentSyncStates) Reset()         { *m = FulfillmentSyncStates{} }
@@ -689,26 +692,26 @@ type ShipnowFulfillment struct {
 	ShippingServiceName        string           `json:"shipping_service_name"`
 	ShippingServiceDescription string           `json:"shipping_service_description"`
 	WeightInfo                 `json:"weight_info"`
-	ValueInfo                  ValueInfo      `json:"value_info"`
-	ShippingNote               string         `json:"shipping_note"`
-	RequestPickupAt            dot.Time       `json:"request_pickup_at"`
-	CreatedAt                  dot.Time       `json:"created_at"`
-	UpdatedAt                  dot.Time       `json:"updated_at"`
-	Status                     status5.Status `json:"status"`
-	ShippingStatus             status5.Status `json:"shipping_status"`
-	ShippingState              string         `json:"shipping_state"`
-	ConfirmStatus              status3.Status `json:"confirm_status"`
-	OrderIds                   []dot.ID       `json:"order_ids"`
-	ShippingCreatedAt          dot.Time       `json:"shipping_created_at"`
-	ShippingCode               string         `json:"shipping_code"`
-	EtopPaymentStatus          status4.Status `json:"etop_payment_status"`
-	CodEtopTransferedAt        dot.Time       `json:"cod_etop_transfered_at"`
-	ShippingPickingAt          dot.Time       `json:"shipping_picking_at"`
-	ShippingDeliveringAt       dot.Time       `json:"shipping_delivering_at"`
-	ShippingDeliveredAt        dot.Time       `json:"shipping_delivered_at"`
-	ShippingCancelledAt        dot.Time       `json:"shipping_cancelled_at"`
-	ShippingSharedLink         string         `json:"shipping_shared_link"`
-	CancelReason               string         `json:"cancel_reason"`
+	ValueInfo                  ValueInfo           `json:"value_info"`
+	ShippingNote               string              `json:"shipping_note"`
+	RequestPickupAt            dot.Time            `json:"request_pickup_at"`
+	CreatedAt                  dot.Time            `json:"created_at"`
+	UpdatedAt                  dot.Time            `json:"updated_at"`
+	Status                     status5.Status      `json:"status"`
+	ShippingStatus             status5.Status      `json:"shipping_status"`
+	ShippingState              shipnow_state.State `json:"shipping_state"`
+	ConfirmStatus              status3.Status      `json:"confirm_status"`
+	OrderIds                   []dot.ID            `json:"order_ids"`
+	ShippingCreatedAt          dot.Time            `json:"shipping_created_at"`
+	ShippingCode               string              `json:"shipping_code"`
+	EtopPaymentStatus          status4.Status      `json:"etop_payment_status"`
+	CodEtopTransferedAt        dot.Time            `json:"cod_etop_transfered_at"`
+	ShippingPickingAt          dot.Time            `json:"shipping_picking_at"`
+	ShippingDeliveringAt       dot.Time            `json:"shipping_delivering_at"`
+	ShippingDeliveredAt        dot.Time            `json:"shipping_delivered_at"`
+	ShippingCancelledAt        dot.Time            `json:"shipping_cancelled_at"`
+	ShippingSharedLink         string              `json:"shipping_shared_link"`
+	CancelReason               string              `json:"cancel_reason"`
 }
 
 func (m *ShipnowFulfillment) Reset()         { *m = ShipnowFulfillment{} }
@@ -860,7 +863,7 @@ type XFulfillment struct {
 	CancelledAt      dot.Time `json:"cancelled_at"`
 	CancelReason     string   `json:"cancel_reason"`
 	// @deprecated use carrier instead
-	ShippingProvider     string                             `json:"shipping_provider"`
+	ShippingProvider     shipping_provider.ShippingProvider `json:"shipping_provider"`
 	Carrier              shipping_provider.ShippingProvider `json:"carrier"`
 	ShippingServiceName  string                             `json:"shipping_service_name"`
 	ShippingServiceFee   int                                `json:"shipping_service_fee"`
@@ -923,22 +926,22 @@ func (m *XFulfillment) String() string { return jsonx.MustMarshalToString(m) }
 type TradingCreateOrderRequest struct {
 	// Customer should be shop's information
 	// and customer_address, shipping_address must be shop address.
-	Customer        *OrderCustomer     `json:"customer"`
-	CustomerAddress *OrderAddress      `json:"customer_address"`
-	BillingAddress  *OrderAddress      `json:"billing_address"`
-	ShippingAddress *OrderAddress      `json:"shipping_address"`
-	Lines           []*CreateOrderLine `json:"lines"`
-	Discounts       []*OrderDiscount   `json:"discounts"`
-	TotalItems      int                `json:"total_items"`
-	BasketValue     int                `json:"basket_value"`
-	OrderDiscount   int                `json:"order_discount"`
-	TotalFee        int                `json:"total_fee"`
-	FeeLines        []*OrderFeeLine    `json:"fee_lines"`
-	TotalDiscount   dot.NullInt        `json:"total_discount"`
-	TotalAmount     int                `json:"total_amount"`
-	OrderNote       string             `json:"order_note"`
-	PaymentMethod   string             `json:"payment_method"`
-	ReferralMeta    map[string]string  `json:"referral_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Customer        *OrderCustomer               `json:"customer"`
+	CustomerAddress *OrderAddress                `json:"customer_address"`
+	BillingAddress  *OrderAddress                `json:"billing_address"`
+	ShippingAddress *OrderAddress                `json:"shipping_address"`
+	Lines           []*CreateOrderLine           `json:"lines"`
+	Discounts       []*OrderDiscount             `json:"discounts"`
+	TotalItems      int                          `json:"total_items"`
+	BasketValue     int                          `json:"basket_value"`
+	OrderDiscount   int                          `json:"order_discount"`
+	TotalFee        int                          `json:"total_fee"`
+	FeeLines        []*OrderFeeLine              `json:"fee_lines"`
+	TotalDiscount   dot.NullInt                  `json:"total_discount"`
+	TotalAmount     int                          `json:"total_amount"`
+	OrderNote       string                       `json:"order_note"`
+	PaymentMethod   payment_method.PaymentMethod `json:"payment_method"`
+	ReferralMeta    map[string]string            `json:"referral_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
 func (m *TradingCreateOrderRequest) Reset()         { *m = TradingCreateOrderRequest{} }

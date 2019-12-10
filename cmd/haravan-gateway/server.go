@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -93,8 +92,7 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 		// Restore the io.ReadCloser to its original state
 		c.Req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
-		hash := generateAuthorizeCode(string(body), cfg.Haravan.Secret)
-		ll.Info("hash ::", l.String("author", hash))
+		hash := generateAuthorizeCode(body, cfg.Haravan.Secret)
 		if hash != haravanHMAC {
 			return cm.Errorf(cm.Unauthenticated, nil, "Xác thực không hợp lệ. Vui lòng kiểm tra lại.")
 		}
@@ -103,9 +101,9 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 	}
 }
 
-func generateAuthorizeCode(data string, key string) string {
+func generateAuthorizeCode(data []byte, key string) string {
 	hash := hmac.New(sha256.New, []byte(key))
-	_, err := io.WriteString(hash, data)
+	_, err := hash.Write(data)
 	if err != nil {
 		panic(err)
 	}

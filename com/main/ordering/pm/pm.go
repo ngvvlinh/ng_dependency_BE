@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/services/affiliate"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/com/main/ordering/modelx"
@@ -226,7 +227,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	if err := p.customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
 		return err
 	}
-	if getCustomerQuery.Result.Type == customering.CustomerTypeIndependent {
+	if getCustomerQuery.Result.Type == customer_type.Independent {
 		isIndependentCustomer = true
 	}
 

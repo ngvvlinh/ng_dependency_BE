@@ -1,4 +1,4 @@
-package source
+package order_source
 
 // +enum
 // +enum:zero=null
@@ -15,17 +15,17 @@ const (
 	Import Source = 2
 
 	// +enum=api
-	Api Source = 3
+	API Source = 3
 
 	// +enum=etop_pos
-	EtopPos Source = 5
+	EtopPOS Source = 5
 
 	// +enum=etop_pxs
-	EtopPxs Source = 6
+	EtopPXS Source = 6
 
 	// +enum=etop_cmx
-	EtopCmx Source = 7
+	EtopCMX Source = 7
 
 	// +enum=ts_app
-	TsApp Source = 8
+	TSApp Source = 8
 )

@@ -8,23 +8,7 @@ import (
 
 const CountryVietnam = "Việt Nam"
 
-type Region = location.VietnamRegion
-
-const (
-	North  = location.North
-	Middle = location.Middle
-	South  = location.South
-)
-
-type UrbanType = location.UrbanType
-
-const (
-	Urban     = location.Urban
-	Suburban1 = location.Suburban1
-	Suburban2 = location.Suburban2
-)
-
-var UrbanTypes = []UrbanType{Urban, Suburban1, Suburban2}
+var UrbanTypes = []location.UrbanType{location.Urban, location.Suburban1, location.Suburban2}
 
 type Country struct {
 	Name     string
@@ -38,7 +22,7 @@ type Province struct {
 	Special  bool
 
 	Code        string
-	Region      Region
+	Region      location.VietnamRegion
 	VTPostID    int
 	HaravanCode string
 }
@@ -51,7 +35,7 @@ type District struct {
 	Code         string
 	ProvinceCode string
 	GhnID        int
-	UrbanType    UrbanType
+	UrbanType    location.UrbanType
 	VTPostID     int
 	HaravanCode  string
 }

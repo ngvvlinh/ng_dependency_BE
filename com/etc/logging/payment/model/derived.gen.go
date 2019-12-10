@@ -57,7 +57,7 @@ func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		core.JSON{m.Data},
 		core.String(m.OrderID),
-		core.String(m.PaymentProvider),
+		m.PaymentProvider,
 		core.String(m.Action),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -69,7 +69,7 @@ func (m *Payment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		core.JSON{&m.Data},
 		(*core.String)(&m.OrderID),
-		(*core.String)(&m.PaymentProvider),
+		&m.PaymentProvider,
 		(*core.String)(&m.Action),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -159,7 +159,7 @@ func (m *Payment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.OrderID)
 	}
-	if m.PaymentProvider != "" {
+	if m.PaymentProvider != 0 {
 		flag = true
 		w.WriteName("payment_provider")
 		w.WriteByte('=')

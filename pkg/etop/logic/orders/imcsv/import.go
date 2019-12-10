@@ -16,7 +16,10 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/order_source"
+	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/try_on"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -700,11 +703,11 @@ func parseAsGHNNoteCode(v string) (ghn_note_code.GHNNoteCode, error) {
 	switch ghnNote {
 	case "":
 		return 0, nil
-	case model.GHNNoteChoXemHang:
+	case try_on.NoteChoXemHang:
 		return ghn_note_code.CHOXEMHANGKHONGTHU, nil
-	case model.GHNNoteChoThuHang:
+	case try_on.NoteChoThuHang:
 		return ghn_note_code.CHOTHUHANG, nil
-	case model.GHNNoteKhongXemHang:
+	case try_on.NoteKhongXemHang:
 		return ghn_note_code.KHONGCHOXEMHANG, nil
 	default:
 		return 0, errors.New("Ghi chú xem hàng không hợp lệ, cần một trong các giá trị: 'Cho thử hàng', 'Cho xem hàng không thử', 'Không cho xem hàng'.")
@@ -746,7 +749,7 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		ProductIDs:                nil, // will be filled later
 		VariantIDs:                nil, // will be filled later
 		Currency:                  model.CurrencyVND,
-		PaymentMethod:             "",
+		PaymentMethod:             0,
 		Customer:                  parseCustomer(rowOrder),
 		CustomerAddress:           address,
 		BillingAddress:            address,
@@ -781,7 +784,7 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		OrderNote:                 "",
 		ShopNote:                  "",
 		ShippingNote:              rowOrder.ShippingNote,
-		OrderSourceType:           model.OrderSourceImport,
+		OrderSourceType:           order_source.Import,
 		OrderSourceID:             0,
 		ExternalOrderID:           "",
 		ReferenceURL:              "",
@@ -791,9 +794,9 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		TryOn:                     model.TryOnFromGHNNoteCode(rowOrder.GHNNoteCode),
 	}
 	if rowOrder.ShopCOD != 0 {
-		order.PaymentMethod = model.PaymentMethodCOD
+		order.PaymentMethod = payment_method.COD
 	} else {
-		order.PaymentMethod = model.PaymentMethodOther
+		order.PaymentMethod = payment_method.Other
 	}
 	return order, _errs
 }

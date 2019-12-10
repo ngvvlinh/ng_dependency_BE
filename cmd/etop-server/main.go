@@ -198,8 +198,8 @@ func main() {
 	var uploader *upload.Uploader
 	if !*flNoUpload {
 		uploader, err = upload.NewUploader(map[string]string{
-			string(model.ImportTypeShopOrder):   cfg.Upload.DirImportShopOrder,
-			string(model.ImportTypeShopProduct): cfg.Upload.DirImportShopProduct,
+			model.ImportTypeShopOrder.String():   cfg.Upload.DirImportShopOrder,
+			model.ImportTypeShopProduct.String(): cfg.Upload.DirImportShopProduct,
 		})
 		if err != nil {
 			ll.Fatal("Unable to init uploader", l.Error(err))

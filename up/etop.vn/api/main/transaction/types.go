@@ -12,6 +12,9 @@ type (
 	ReferralType    string
 )
 
+func (t TransactionType) String() string { return string(t) }
+func (t ReferralType) String() string    { return string(t) }
+
 var (
 	TransactionTypeAffiliate TransactionType = "affiliate"
 

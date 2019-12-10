@@ -9,7 +9,7 @@ import (
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/etc/logging/webhook/model"
@@ -25,7 +25,7 @@ import (
 )
 
 var ll = l.New()
-var PaymentStates = []shipnowtypes.State{shipnowtypes.StateDelivering, shipnowtypes.StateDelivered, shipnowtypes.StateReturning, shipnowtypes.StateReturned}
+var PaymentStates = []shipnow_state.State{shipnow_state.StateDelivering, shipnow_state.StateDelivered, shipnow_state.StateReturning, shipnow_state.StateReturned}
 
 type Webhook struct {
 	db           cmsql.Transactioner
@@ -70,7 +70,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		enc.SetEscapeHTML(false)
 		webhookData := &model.ShippingProviderWebhook{
 			ID:                    cm.NewID(),
-			ShippingProvider:      shipnowmodel.Ahamove.ToString(),
+			ShippingProvider:      shipnowmodel.Ahamove.String(),
 			ShippingCode:          msg.ID,
 			ExternalShippingState: msg.Status,
 			ShippingState:         shippingState,
@@ -125,7 +125,7 @@ func (wh *Webhook) ProcessAhamoveWebhook(ctx context.Context, ffm *shipnow.Shipn
 	return err
 }
 
-func IsPaymentState(s shipnowtypes.State) bool {
+func IsPaymentState(s shipnow_state.State) bool {
 	for _, state := range PaymentStates {
 		if state == s {
 			return true
@@ -144,7 +144,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 	update := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
 		Id:                   ffm.Id,
 		ShippingState:        shippingState,
-		ShippingStatus:       shipnowtypes.StateToStatus5(shippingState),
+		ShippingStatus:       shippingState.ToStatus5(),
 		TotalFee:             int(orderMsg.TotalFee),
 		ShippingPickingAt:    shipnowTimestamp.ShippingPickingAt,
 		ShippingDeliveringAt: shipnowTimestamp.ShippingDeliveringAt,
@@ -168,7 +168,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 	return update.Result, nil
 }
 
-func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint, shippingState shipnowtypes.State, paymentStatus status4.Status) error {
+func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint, shippingState shipnow_state.State, paymentStatus status4.Status) error {
 	trackingNumber := point.TrackingNumber
 	if trackingNumber == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing tracking number (order_code)").WithMeta("result", "ignore")
@@ -186,7 +186,7 @@ func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint
 
 	// case shipnow does not assign to any driver
 	// => release order (ETOP)
-	if point.Status == "" && shippingState == shipnowtypes.StateCancelled {
+	if point.Status == "" && shippingState == shipnow_state.StateCancelled {
 		cmd := &ordering.ReleaseOrdersForFfmCommand{
 			OrderIDs: []dot.ID{orderID},
 		}

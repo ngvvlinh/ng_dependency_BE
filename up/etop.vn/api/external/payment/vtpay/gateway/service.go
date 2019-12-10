@@ -45,7 +45,7 @@ type ValidateTransactionResult struct {
 }
 
 func (r *ValidateTransactionResult) DataCheckSum() string {
-	return r.BillCode + string(r.ErrorCode) + r.MerchantCode + r.OrderID + r.TransAmount
+	return r.BillCode + r.ErrorCode.String() + r.MerchantCode + r.OrderID + r.TransAmount
 }
 
 type ErrorCode string
@@ -56,6 +56,8 @@ var (
 	ErrorCodeCheckSum    ErrorCode = "02"
 	ErrorCodeInternal    ErrorCode = "03"
 )
+
+func (c ErrorCode) String() string { return string(c) }
 
 type GetResultArgs struct {
 	BillCode string `json:"billcode"`
@@ -88,5 +90,5 @@ type GetResultResult struct {
 }
 
 func (r *GetResultResult) DataCheckSum() string {
-	return string(r.ErrorCode) + r.MerchantCode + r.OrderID
+	return r.ErrorCode.String() + r.MerchantCode + r.OrderID
 }

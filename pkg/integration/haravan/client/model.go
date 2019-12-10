@@ -33,6 +33,9 @@ func DefaultConfig() Config {
 type FulfillmentState string
 type PaymentStatus string
 
+func (s FulfillmentState) String() string { return string(s) }
+func (s PaymentStatus) String() string    { return string(s) }
+
 var FulfillmentStateUpdateList = []FulfillmentState{
 	PickingState, DeliveringState, DeliveredState,
 	CancelState, ReturnState, NotMeetCustomerState,

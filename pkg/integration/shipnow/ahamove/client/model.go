@@ -1,7 +1,7 @@
 package client
 
 import (
-	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
@@ -65,22 +65,22 @@ const (
 	PaymentMethodCash = "CASH"
 )
 
-func (orderState OrderState) ToCoreState() shipnowtypes.State {
+func (orderState OrderState) ToCoreState() shipnow_state.State {
 	switch orderState {
 	case StateConfirmed:
-		return shipnowtypes.StateCreated
+		return shipnow_state.StateCreated
 	case StateAssigning:
-		return shipnowtypes.StateAssigning
+		return shipnow_state.StateAssigning
 	case StateAccepted:
-		return shipnowtypes.StatePicking
+		return shipnow_state.StatePicking
 	case StateInProcess:
-		return shipnowtypes.StateDelivering
+		return shipnow_state.StateDelivering
 	case StateCompleted:
-		return shipnowtypes.StateDelivered
+		return shipnow_state.StateDelivered
 	case StateCancelled:
-		return shipnowtypes.StateCancelled
+		return shipnow_state.StateCancelled
 	default:
-		return shipnowtypes.StateDefault
+		return shipnow_state.StateDefault
 	}
 }
 
@@ -95,12 +95,12 @@ func (orderState OrderState) ToStatus5() status5.Status {
 	}
 }
 
-func (s DeliveryStatus) ToCoreState(currentState shipnowtypes.State) shipnowtypes.State {
+func (s DeliveryStatus) ToCoreState(currentState shipnow_state.State) shipnow_state.State {
 	switch s {
 	case StateDeliveryCompleted:
-		return shipnowtypes.StateDelivered
+		return shipnow_state.StateDelivered
 	case StateDeliveryFailed:
-		return shipnowtypes.StateReturned
+		return shipnow_state.StateReturned
 	default:
 		return currentState
 	}
@@ -150,11 +150,7 @@ type DeliveryPointRequest struct {
 }
 
 func ConvertDeliveryPointsRequestToString(points []*DeliveryPointRequest) string {
-	path, err := jsonx.Marshal(points)
-	if err != nil {
-		return ""
-	}
-	return string(path)
+	return jsonx.MustMarshalToString(points)
 }
 
 type DeliveryPoint struct {

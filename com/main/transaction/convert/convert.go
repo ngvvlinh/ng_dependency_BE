@@ -20,7 +20,7 @@ func TransactionMetadataDB(in *transaction.TransactionMetadata) *transactionmode
 		return nil
 	}
 	return &transactionmodel.TransactionMetadata{
-		ReferralType: string(in.ReferralType),
+		ReferralType: in.ReferralType.String(),
 		ReferralIDs:  in.ReferralIDs,
 	}
 }
@@ -34,7 +34,7 @@ func Transaction(in *transactionmodel.Transaction) *transaction.Transaction {
 		Amount:    in.Amount,
 		AccountID: in.AccountID,
 		Status:    in.Status,
-		Type:      transaction.TransactionType(in.Type),
+		Type:      in.Type,
 		Note:      in.Note,
 		Metadata:  TransactionMetadata(in.Metadata),
 		CreatedAt: in.CreatedAt,
@@ -58,7 +58,7 @@ func TransactionDB(in *transaction.Transaction) *transactionmodel.Transaction {
 		Amount:    in.Amount,
 		AccountID: in.AccountID,
 		Status:    in.Status,
-		Type:      string(in.Type),
+		Type:      in.Type,
 		Note:      in.Note,
 		Metadata:  TransactionMetadataDB(in.Metadata),
 		CreatedAt: in.CreatedAt,

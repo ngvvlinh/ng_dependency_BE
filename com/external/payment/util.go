@@ -4,20 +4,24 @@ import (
 	"strconv"
 	"strings"
 
-	"etop.vn/api/external/payment"
+	"etop.vn/api/top/types/etc/payment_source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
 
-func ParseCode(code string) (payment.PaymentSource, dot.ID, error) {
+func ParsePaymentCode(code string) (payment_source.PaymentSource, dot.ID, error) {
 	// Format: order_1092423469033452748
-	args := strings.Split(code, "_")
-	if len(args) < 2 {
-		return "", 0, cm.Errorf(cm.InvalidArgument, nil, "Wrong format")
+	parts := strings.Split(code, "_")
+	if len(parts) < 2 {
+		return 0, 0, cm.Errorf(cm.InvalidArgument, nil, "Wrong format")
 	}
-	id, err := strconv.ParseInt(args[1], 10, 64)
+	id, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
-		return "", 0, cm.Errorf(cm.InvalidArgument, err, "ID does not exist")
+		return 0, 0, cm.Errorf(cm.InvalidArgument, err, "ID does not exist")
 	}
-	return payment.PaymentSource(args[0]), dot.ID(id), nil
+	source, ok := payment_source.ParsePaymentSource(parts[0])
+	if !ok {
+		return 0, 0, cm.Errorf(cm.InvalidArgument, nil, "Invalid payment source (%v)", parts[0])
+	}
+	return source, dot.ID(id), nil
 }

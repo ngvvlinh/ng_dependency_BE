@@ -30,22 +30,7 @@ func (m Meta) _meta() Meta { return m }
 func ToMeta(e *pgevent.PgEvent) Meta {
 	return Meta{
 		RID: strconv.FormatInt(e.RID, 10),
-		Op:  string(e.Op),
+		Op:  e.Op.String(),
 		Env: cm.Env(),
 	}
 }
-
-type IdentifyType string
-
-type Identifier interface {
-	identifyType() IdentifyType
-}
-
-func (t IdentifyType) identifyType() IdentifyType {
-	return t
-}
-
-const (
-	TypeUser IdentifyType = "user"
-	TypeShop IdentifyType = "shop"
-)

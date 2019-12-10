@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -249,7 +250,7 @@ func createUser(ctx context.Context, r *etop.CreateUserRequest) (*model.User, er
 			Email:     info.Email,
 		},
 		Password:       info.Password,
-		Status:         model.StatusActive,
+		Status:         status3.P,
 		AgreeTOS:       r.AgreeTos,
 		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
 		Source:         r.Source,
@@ -1193,8 +1194,8 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	return r, nil
 }
 
-func getToken(usage string, userID dot.ID, phone string) (*auth.Token, string, map[string]string) {
-	tokStr := fmt.Sprintf("%v-%v", userID, phone)
+func getToken(usage string, userID dot.ID, extra string) (*auth.Token, string, map[string]string) {
+	tokStr := fmt.Sprintf("%v-%v", userID, extra)
 	var v map[string]string
 	var code string
 

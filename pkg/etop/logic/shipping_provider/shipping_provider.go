@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -98,7 +99,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 			SyncStatus: status4.S,
 			SyncStates: &model.FulfillmentSyncStates{
 				TrySyncAt:         time.Now(),
-				NextShippingState: model.StateCreated,
+				NextShippingState: shipping.Created,
 			},
 		}
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm}
@@ -119,7 +120,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),
 
-				NextShippingState: model.StateCreated,
+				NextShippingState: shipping.Created,
 			},
 		}
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm2}

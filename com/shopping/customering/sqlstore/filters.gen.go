@@ -5,7 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
@@ -211,22 +211,22 @@ func (ft *ShopCustomerFilters) ByGenderPtr(Gender *gender.Gender) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShopCustomerFilters) ByType(Type customering.CustomerType) *sq.ColumnFilter {
+func (ft *ShopCustomerFilters) ByType(Type customer_type.CustomerType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *ShopCustomerFilters) ByTypePtr(Type *customering.CustomerType) *sq.ColumnFilterPtr {
+func (ft *ShopCustomerFilters) ByTypePtr(Type *customer_type.CustomerType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 

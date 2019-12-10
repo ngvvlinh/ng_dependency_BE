@@ -8,6 +8,7 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -34,7 +35,7 @@ type ShipnowFulfillment struct {
 	Status               status5.Status
 	ShippingStatus       status5.Status
 	ShippingCode         string
-	ShippingState        shipnowtypes.State
+	ShippingState        shipnow_state.State
 	ConfirmStatus        status3.Status
 	OrderIds             []dot.ID
 	ShippingCreatedAt    time.Time
@@ -96,17 +97,17 @@ type ShipnowCreateExternalEvent struct {
 	ShipnowFulfillmentId dot.ID
 }
 
-func ShipnowStatus(state shipnowtypes.State, paymentStatus status4.Status) status5.Status {
+func ShipnowStatus(state shipnow_state.State, paymentStatus status4.Status) status5.Status {
 	switch state {
-	case shipnowtypes.StateDefault:
-	case shipnowtypes.StateCreated:
-	case shipnowtypes.StateAssigning:
-	case shipnowtypes.StatePicking:
-	case shipnowtypes.StateDelivering:
+	case shipnow_state.StateDefault:
+	case shipnow_state.StateCreated:
+	case shipnow_state.StateAssigning:
+	case shipnow_state.StatePicking:
+	case shipnow_state.StateDelivering:
 		return status5.S
-	case shipnowtypes.StateCancelled:
+	case shipnow_state.StateCancelled:
 		return status5.N
-	case shipnowtypes.StateDelivered:
+	case shipnow_state.StateDelivered:
 		if paymentStatus == status4.P {
 			return status5.P
 		}

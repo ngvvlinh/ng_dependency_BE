@@ -5,6 +5,9 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_state"
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 )
@@ -61,7 +64,7 @@ func (ft *PaymentFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PaymentFilters) ByStatus(Status int) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByStatus(Status status4.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -70,7 +73,7 @@ func (ft *PaymentFilters) ByStatus(Status int) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PaymentFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByStatusPtr(Status *status4.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -80,41 +83,41 @@ func (ft *PaymentFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PaymentFilters) ByState(State string) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByState(State payment_state.PaymentState) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "state",
 		Value:  State,
-		IsNil:  State == "",
+		IsNil:  State == 0,
 	}
 }
 
-func (ft *PaymentFilters) ByStatePtr(State *string) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByStatePtr(State *payment_state.PaymentState) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "state",
 		Value:  State,
 		IsNil:  State == nil,
-		IsZero: State != nil && (*State) == "",
+		IsZero: State != nil && (*State) == 0,
 	}
 }
 
-func (ft *PaymentFilters) ByPaymentProvider(PaymentProvider string) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByPaymentProvider(PaymentProvider payment_provider.PaymentProvider) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "payment_provider",
 		Value:  PaymentProvider,
-		IsNil:  PaymentProvider == "",
+		IsNil:  PaymentProvider == 0,
 	}
 }
 
-func (ft *PaymentFilters) ByPaymentProviderPtr(PaymentProvider *string) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByPaymentProviderPtr(PaymentProvider *payment_provider.PaymentProvider) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "payment_provider",
 		Value:  PaymentProvider,
 		IsNil:  PaymentProvider == nil,
-		IsZero: PaymentProvider != nil && (*PaymentProvider) == "",
+		IsZero: PaymentProvider != nil && (*PaymentProvider) == 0,
 	}
 }
 

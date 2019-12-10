@@ -3,12 +3,12 @@ package manager
 import (
 	"context"
 
-	"etop.vn/api/external/payment"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_source"
+	"etop.vn/api/top/types/etc/payment_state"
 )
 
 // +gen:api
-
-type PaymentState = payment.PaymentState
 
 type Aggregate interface {
 	BuildUrlConnectPaymentGateway(context.Context, *ConnectPaymentGatewayArgs) (string, error)
@@ -30,18 +30,18 @@ type ConnectPaymentGatewayArgs struct {
 	ReturnURL         string
 	CancelURL         string
 	TransactionAmount int
-	Provider          payment.PaymentProvider
+	Provider          payment_provider.PaymentProvider
 }
 
 type GetTransactionArgs struct {
 	OrderID  string
-	Provider payment.PaymentProvider
+	Provider payment_provider.PaymentProvider
 }
 
 type GetTransactionResult struct {
 	OrderID                   string
 	ExternalTransactionID     string
-	PaymentState              PaymentState
+	PaymentState              payment_state.PaymentState
 	ExternalPaymentStatus     string
 	ExternalPaymentStatusText string
 }
@@ -51,14 +51,14 @@ type CancelTransactionArgs struct {
 	ExternalTransactionID string
 	TransactionAmount     int
 	Reason                string
-	Provider              payment.PaymentProvider
+	Provider              payment_provider.PaymentProvider
 }
 
 type CancelTransactionResult struct {
 }
 
 type GenerateCodeArgs struct {
-	PaymentSource payment.PaymentSource
+	PaymentSource payment_source.PaymentSource
 	ID            string
 }
 
@@ -68,7 +68,7 @@ type CheckReturnDataArgs struct {
 	PaymentStatus         string
 	Amount                int
 	ExternalTransactionID string
-	Provider              payment.PaymentProvider
+	Provider              payment_provider.PaymentProvider
 }
 
 type CheckReturnDataResult struct {

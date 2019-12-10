@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 
 	"etop.vn/api/shopping/tradering"
@@ -15,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/capi/dot"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -182,15 +182,12 @@ func getTrader(traderID dot.ID) (trader *model.Trader, err error) {
 }
 
 func updateTraderForReceipt(ID dot.ID, trader *model.Trader) (err error) {
-	traderJSON, err := json.Marshal(trader)
-	if err != nil {
-		return err
-	}
+	traderJSON := jsonx.MustMarshalToString(trader)
 	_, err = db.
 		Table("receipt").
 		Where("id=?", ID).
 		UpdateMap(map[string]interface{}{
-			"trader": string(traderJSON),
+			"trader": traderJSON,
 		})
 	return err
 }

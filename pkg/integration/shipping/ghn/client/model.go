@@ -7,6 +7,7 @@ import (
 	"time"
 
 	shipping2 "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
@@ -65,40 +66,40 @@ const (
 func (s State) ToModel(old shipping2.State, callbackOrder *CallbackOrder) shipping2.State {
 	switch s {
 	case StateReadyToPick:
-		return model.StateCreated
+		return shipping2.Created
 	case StatePicking:
-		return model.StatePicking
+		return shipping2.Picking
 	case StateStoring:
-		return model.StateHolding
+		return shipping2.Holding
 	case StateDelivering:
-		return model.StateDelivering
+		return shipping2.Delivering
 	case StateDelivered:
-		return model.StateDelivered
+		return shipping2.Delivered
 	case StateReturn:
-		return model.StateReturning
+		return shipping2.Returning
 	case StateReturned:
-		return model.StateReturned
+		return shipping2.Returned
 	case StateCancel:
-		return model.StateCancelled
+		return shipping2.Cancelled
 	case StateLostOrder:
-		return model.StateUndeliverable
+		return shipping2.Undeliverable
 	case StateWaitingToFinish, StateFinish:
 		switch old {
-		case model.StateReturning, model.StateReturned:
-			return model.StateReturned
-		case model.StateCancelled, model.StateDelivered, model.StateUndeliverable:
+		case shipping2.Returning, shipping2.Returned:
+			return shipping2.Returned
+		case shipping2.Cancelled, shipping2.Delivered, shipping2.Undeliverable:
 			return old
-		case model.StateDelivering:
+		case shipping2.Delivering:
 			if callbackOrder.ReturnInfo != "" {
-				return model.StateReturned
+				return shipping2.Returned
 			} else {
-				return model.StateDelivered
+				return shipping2.Delivered
 			}
 		default:
-			return model.StateUnknown
+			return shipping2.Unknown
 		}
 	default:
-		return model.StateUnknown
+		return shipping2.Unknown
 	}
 }
 
@@ -112,9 +113,9 @@ func (s State) ToStatus5(old shipping2.State) status5.Status {
 
 	case StateFinish:
 		switch old {
-		case model.StateCancelled:
+		case shipping2.Cancelled:
 			return status5.N
-		case model.StateReturned, model.StateReturning:
+		case shipping2.Returned, shipping2.Returning:
 			return status5.NS
 		default:
 			return status5.P
@@ -134,9 +135,9 @@ func (s State) ToShippingStatus5(old shipping2.State) status5.Status {
 
 	case StateWaitingToFinish, StateFinish:
 		switch old {
-		case model.StateCancelled:
+		case shipping2.Cancelled:
 			return status5.N
-		case model.StateReturned, model.StateReturning:
+		case shipping2.Returned, shipping2.Returning:
 			return status5.NS
 		default:
 			return status5.P
@@ -146,22 +147,22 @@ func (s State) ToShippingStatus5(old shipping2.State) status5.Status {
 	return status5.S
 }
 
-func (id ServiceFeeID) ToModel() model.ShippingFeeLineType {
+func (id ServiceFeeID) ToModel() shipping_fee_type.ShippingFeeType {
 	switch id {
 	// case ServiceFee6Hours, ServiceFee1Day, ServiceFee2Days,
 	// 	ServiceFee3Days, ServiceFee4Days, ServiceFee5Days,
 	// 	ServiceFee6Days, ServiceFeeExtend:
-	// 	return model.ShippingFeeTypeMain
+	// 	return model.Main
 	case ServiceFeeInsurance, ServiceFeeCostDeclaration:
-		return model.ShippingFeeTypeInsurance
+		return shipping_fee_type.Insurance
 	case ServiceFeeReturnType1, ServiceFeeReturnType2, ServiceFeeReturnType3, ServiceFeeReturnType4:
-		return model.ShippingFeeTypeReturn
+		return shipping_fee_type.Return
 	case ServiceFeeAdjustment:
-		return model.ShippingFeeTypeAdjustment
+		return shipping_fee_type.Adjustment
 	case ServiceFeeAddressChange:
-		return model.ShippingFeeTypeAddessChange
+		return shipping_fee_type.AddressChange
 	default:
-		return model.ShippingFeeTypeOther
+		return shipping_fee_type.Other
 	}
 }
 
@@ -175,13 +176,13 @@ func (s *ShippingOrderCost) CalcAndConvertShippingFee() *model.ShippingFeeLine {
 		cost = 0
 	}
 
-	var shippingType model.ShippingFeeLineType
+	var shippingType shipping_fee_type.ShippingFeeType
 	sType := ServiceFeeType(s.ServiceType)
 	sID := ServiceFeeID(s.ServiceID)
 	if sType == ServiceFeeTypeMain {
-		shippingType = model.ShippingFeeTypeMain
+		shippingType = shipping_fee_type.Main
 	} else if cost < 0 {
-		shippingType = model.ShippingFeeTypeDiscount
+		shippingType = shipping_fee_type.Discount
 	} else {
 		shippingType = sID.ToModel()
 	}
@@ -607,7 +608,7 @@ func GetInsuranceFee(orderCosts []*OrderCost) int {
 	for _, orderCost := range orderCosts {
 		sID := ServiceFeeID(strconv.Itoa(orderCost.ServiceID))
 		shippingType := sID.ToModel()
-		if shippingType == model.ShippingFeeTypeInsurance {
+		if shippingType == shipping_fee_type.Insurance {
 			insuranceFee = orderCost.Cost
 			break
 		}

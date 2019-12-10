@@ -6,6 +6,8 @@ import (
 	"etop.vn/api/external/payment"
 	"etop.vn/api/external/payment/vtpay"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/payment_source"
 	paymentutil "etop.vn/backend/com/external/payment"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -39,12 +41,12 @@ func (a *Aggregate) MessageBus() vtpay.CommandBus {
 }
 
 func (a *Aggregate) HandleExternalDataResponse(ctx context.Context, args *vtpay.HandleExternalDataResponseArgs) error {
-	paymentSource, id, err := paymentutil.ParseCode(args.OrderID)
+	paymentSource, id, err := paymentutil.ParsePaymentCode(args.OrderID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không hợp lệ (order_id = %v)", args.OrderID)
 	}
 	switch paymentSource {
-	case payment.PaymentSourceOrder:
+	case payment_source.PaymentSourceOrder:
 		return a.HandleExternalDataOrderResponse(ctx, id, args)
 	default:
 		return cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không hợp lệ (order_id = %v)", args.OrderID)
@@ -66,7 +68,7 @@ func (a *Aggregate) HandleExternalDataOrderResponse(ctx context.Context, orderID
 			Amount:          args.TransAmount,
 			Status:          paymentStatus.ToStatus(),
 			State:           paymentStatus.ToState(),
-			PaymentProvider: payment.PaymentProviderVTPay,
+			PaymentProvider: payment_provider.VTPay,
 			ExternalTransID: args.VtTransactionID,
 			ExternalData:    data,
 		}

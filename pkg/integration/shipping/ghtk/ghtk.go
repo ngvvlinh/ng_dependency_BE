@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -277,14 +278,14 @@ func CalcAndConvertShippingFeeLines(order *ghtkclient.OrderInfo) []*model.Shippi
 
 	// shipping fee
 	res = append(res, &model.ShippingFeeLine{
-		ShippingFeeType:      model.ShippingFeeTypeMain,
+		ShippingFeeType:      shipping_fee_type.Main,
 		Cost:                 shippingFeeMain,
 		ExternalShippingCode: order.LabelID.String(),
 	})
 	// insurance fee
 	if insuranceFee > 0 {
 		res = append(res, &model.ShippingFeeLine{
-			ShippingFeeType:      model.ShippingFeeTypeInsurance,
+			ShippingFeeType:      shipping_fee_type.Insurance,
 			Cost:                 insuranceFee,
 			ExternalShippingCode: order.LabelID.String(),
 		})

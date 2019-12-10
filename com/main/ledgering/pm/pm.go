@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
 )
@@ -35,7 +36,7 @@ func (m *ProcessManager) AccountCreated(ctx context.Context, event *identity.Acc
 		Name:        "Tiền mặt",
 		BankAccount: nil,
 		Note:        "Số quỹ mặc định",
-		Type:        ledgering.LedgerTypeCash,
+		Type:        ledger_type.LedgerTypeCash,
 		CreatedBy:   event.UserID,
 	}
 	if err := m.ledgerAggregate.Dispatch(ctx, cmd); err != nil {

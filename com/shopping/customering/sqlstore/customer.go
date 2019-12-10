@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"
@@ -71,7 +72,7 @@ func (s *CustomerStore) ShopID(id dot.ID) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) Type(typ customering.CustomerType) *CustomerStore {
+func (s *CustomerStore) Type(typ customer_type.CustomerType) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByType(typ))
 	return s
 }

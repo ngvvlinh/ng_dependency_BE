@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	shipping2 "etop.vn/api/top/types/etc/shipping"
 	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -144,7 +145,7 @@ func (c *Carrier) CreateFulfillment(
 		ExternalShippingUpdatedAt: now,
 		ShippingCreatedAt:         now,
 		ExternalShippingFee:       int(r.TotalServiceFee),
-		ShippingState:             model.StateCreated,
+		ShippingState:             shipping2.Created,
 		SyncStatus:                status4.P,
 		SyncStates: &model.FulfillmentSyncStates{
 			SyncAt:    now,

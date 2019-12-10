@@ -640,136 +640,6 @@
         }
       }
     },
-    "/api/etop.Relationship/AnswerInvitation": {
-      "post": {
-        "tags": [
-          "Relationship"
-        ],
-        "operationId": "AnswerInvitation",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baAnswerInvitationRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baUserAccountInfo"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Relationship/GetUsersInCurrentAccounts": {
-      "post": {
-        "tags": [
-          "Relationship"
-        ],
-        "operationId": "GetUsersInCurrentAccounts",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baGetUsersInCurrentAccountsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baProtectedUsersResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Relationship/InviteUserToAccount": {
-      "post": {
-        "tags": [
-          "Relationship"
-        ],
-        "operationId": "InviteUserToAccount",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baInviteUserToAccountRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baUserAccountInfo"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Relationship/LeaveAccount": {
-      "post": {
-        "tags": [
-          "Relationship"
-        ],
-        "operationId": "LeaveAccount",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baLeaveAccountRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Relationship/RemoveUserFromCurrentAccount": {
-      "post": {
-        "tags": [
-          "Relationship"
-        ],
-        "operationId": "RemoveUserFromCurrentAccount",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baRemoveUserFromCurrentAccountRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/api/etop.User/ChangePassword": {
       "post": {
         "tags": [
@@ -1560,18 +1430,6 @@
         }
       }
     },
-    "baAnswerInvitationRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "response": {
-          "$ref": "#/definitions/blStatus"
-        }
-      }
-    },
     "baBank": {
       "type": "object",
       "properties": {
@@ -2026,23 +1884,6 @@
         }
       }
     },
-    "baGetUsersInCurrentAccountsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ktFilter"
-          }
-        },
-        "mixed": {
-          "$ref": "#/definitions/baMixedAccount"
-        },
-        "paging": {
-          "$ref": "#/definitions/ktPaging"
-        }
-      }
-    },
     "baGetWardsByDistrictRequest": {
       "type": "object",
       "properties": {
@@ -2147,24 +1988,6 @@
         }
       }
     },
-    "baInviteUserToAccountRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "invitee_identifier": {
-          "type": "string"
-        },
-        "permission": {
-          "$ref": "#/definitions/baPermission"
-        }
-      }
-    },
-    "baLeaveAccountRequest": {
-      "type": "object"
-    },
     "baLoginAccount": {
       "type": "object",
       "properties": {
@@ -2264,24 +2087,6 @@
         }
       }
     },
-    "baMixedAccount": {
-      "type": "object",
-      "properties": {
-        "all": {
-          "type": "boolean"
-        },
-        "all_shops": {
-          "type": "boolean"
-        },
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
     "baParseLocationRequest": {
       "type": "object",
       "properties": {
@@ -2323,20 +2128,6 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
-        }
-      }
-    },
-    "baProtectedUsersResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/ktPageInfo"
-        },
-        "users": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/baUserAccountInfo"
           }
         }
       }
@@ -2456,9 +2247,6 @@
           }
         }
       }
-    },
-    "baRemoveUserFromCurrentAccountRequest": {
-      "type": "object"
     },
     "baRemoveUserRequest": {
       "type": "object",
@@ -3168,9 +2956,6 @@
     },
     {
       "name": "Misc"
-    },
-    {
-      "name": "Relationship"
     },
     {
       "name": "User"

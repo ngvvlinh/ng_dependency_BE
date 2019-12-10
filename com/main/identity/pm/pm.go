@@ -73,7 +73,6 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 	default:
 		return err
 	}
-
 	return nil
 }
 

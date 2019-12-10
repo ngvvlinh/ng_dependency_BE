@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/order_source"
+	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	m "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -144,22 +145,22 @@ func (ft *OrderFilters) ByCurrencyPtr(Currency *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *OrderFilters) ByPaymentMethod(PaymentMethod string) *sq.ColumnFilter {
+func (ft *OrderFilters) ByPaymentMethod(PaymentMethod payment_method.PaymentMethod) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "payment_method",
 		Value:  PaymentMethod,
-		IsNil:  PaymentMethod == "",
+		IsNil:  PaymentMethod == 0,
 	}
 }
 
-func (ft *OrderFilters) ByPaymentMethodPtr(PaymentMethod *string) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByPaymentMethodPtr(PaymentMethod *payment_method.PaymentMethod) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "payment_method",
 		Value:  PaymentMethod,
 		IsNil:  PaymentMethod == nil,
-		IsZero: PaymentMethod != nil && (*PaymentMethod) == "",
+		IsZero: PaymentMethod != nil && (*PaymentMethod) == 0,
 	}
 }
 
@@ -714,22 +715,22 @@ func (ft *OrderFilters) ByShippingNotePtr(ShippingNote *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderFilters) ByOrderSourceType(OrderSourceType model.OrderSourceType) *sq.ColumnFilter {
+func (ft *OrderFilters) ByOrderSourceType(OrderSourceType order_source.Source) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_source_type",
 		Value:  OrderSourceType,
-		IsNil:  OrderSourceType == "",
+		IsNil:  OrderSourceType == 0,
 	}
 }
 
-func (ft *OrderFilters) ByOrderSourceTypePtr(OrderSourceType *model.OrderSourceType) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByOrderSourceTypePtr(OrderSourceType *order_source.Source) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_source_type",
 		Value:  OrderSourceType,
 		IsNil:  OrderSourceType == nil,
-		IsZero: OrderSourceType != nil && (*OrderSourceType) == "",
+		IsZero: OrderSourceType != nil && (*OrderSourceType) == 0,
 	}
 }
 

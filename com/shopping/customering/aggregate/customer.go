@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
@@ -55,7 +56,7 @@ var reCode = regexp.MustCompile(codeRegex)
 func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (_ *customering.ShopCustomer, err error) {
-	if args.Type == customering.CustomerTypeIndependent {
+	if args.Type == customer_type.Independent {
 		cust, err := a.store(ctx).ShopID(args.ShopID).Type(args.Type).GetCustomer()
 		// khách lẻ là duy nhất, nếu có lỗi khác lỗi "NotFound" thì trả về lỗi
 		if err == nil {
@@ -68,7 +69,7 @@ func (a *CustomerAggregate) CreateCustomer(
 			ID:       cm.NewID(),
 			FullName: "Khách Lẻ",
 			ShopID:   args.ShopID,
-			Type:     customering.CustomerTypeIndependent,
+			Type:     customer_type.Independent,
 		}
 		err = a.store(ctx).CreateCustomer(ct)
 		customerResult, err := a.store(ctx).ShopID(ct.ShopID).ID(ct.ID).GetCustomer()
@@ -137,10 +138,10 @@ func (a *CustomerAggregate) UpdateCustomer(
 		return nil, err
 	}
 
-	if customer.Type == customering.CustomerTypeIndependent {
+	if customer.Type == customer_type.Independent {
 		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi khách lẻ", nil)
 	}
-	if args.Type == customering.CustomerTypeIndependent {
+	if args.Type == customer_type.Independent {
 		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi thành khách lẻ", nil)
 	}
 	// Verify phone
@@ -195,7 +196,7 @@ func (a *CustomerAggregate) DeleteCustomer(
 	if err != nil {
 		return 0, err
 	}
-	if customer.Type == customering.CustomerTypeIndependent {
+	if customer.Type == customer_type.Independent {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể xoá khách lẻ")
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	paymentmanager "etop.vn/api/external/payment/manager"
+	"etop.vn/api/top/types/etc/payment_state"
 	"etop.vn/api/top/types/etc/status4"
 )
 
@@ -25,7 +26,7 @@ type CheckReturnDataArgs struct {
 
 type CheckReturnDataResult struct {
 	Message                   string
-	PaymentState              paymentmanager.PaymentState
+	PaymentState              payment_state.PaymentState
 	PaymentStatus             status4.Status
 	ExternalPaymentStatusText string
 }

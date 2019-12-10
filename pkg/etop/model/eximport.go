@@ -15,6 +15,8 @@ const (
 	ImportTypeShopProduct ImportType = "shop_product"
 )
 
+func (t ImportType) String() string { return string(t) }
+
 var _ = sqlgenImportAttempt(&ImportAttempt{})
 
 type ImportAttempt struct {

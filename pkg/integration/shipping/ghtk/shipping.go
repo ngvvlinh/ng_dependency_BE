@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	shipping2 "etop.vn/api/top/types/etc/shipping"
 	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -156,7 +157,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ExternalShippingUpdatedAt: now,
 		ShippingCreatedAt:         now,
 		ExternalShippingFee:       int(r.Order.Fee),
-		ShippingState:             model.StateCreated,
+		ShippingState:             shipping2.Created,
 		SyncStatus:                status4.P,
 		SyncStates: &model.FulfillmentSyncStates{
 			SyncAt:    now,

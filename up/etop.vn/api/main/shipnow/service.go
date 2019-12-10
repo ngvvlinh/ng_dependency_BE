@@ -9,6 +9,7 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -76,7 +77,7 @@ type UpdateShipnowFulfillmentArgs struct {
 type UpdateShipnowFulfillmentCarrierInfoArgs struct {
 	Id                         dot.ID
 	ShippingCode               string
-	ShippingState              shipnowtypes.State
+	ShippingState              shipnow_state.State
 	TotalFee                   int
 	FeeLines                   []*shippingtypes.FeeLine
 	CarrierFeeLines            []*shippingtypes.FeeLine
@@ -102,7 +103,7 @@ type UpdateShipnowFulfillmentStateArgs struct {
 	ConfirmStatus  status3.Status
 	ShippingStatus status5.Status
 	SyncStates     *SyncStates
-	ShippingState  shipnowtypes.State
+	ShippingState  shipnow_state.State
 }
 
 type GetShipnowServicesCommandResult struct {

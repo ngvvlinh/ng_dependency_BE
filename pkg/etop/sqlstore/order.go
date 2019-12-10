@@ -1350,8 +1350,8 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	}
 
 	if cmd.ActualCompensationAmount != 0 {
-		if ffm.ShippingState != model.StateUndeliverable &&
-			cmd.ShippingState.Apply(shipping.Unknown) != model.StateUndeliverable {
+		if ffm.ShippingState != shipping.Undeliverable &&
+			cmd.ShippingState.Apply(shipping.Unknown) != shipping.Undeliverable {
 			return cm.Error(cm.FailedPrecondition, "Chỉ cập nhật ActualCompensationAmount khi đơn vận chuyển không giao được hàng.", nil)
 		} else {
 			updateFfm.ActualCompensationAmount = cmd.ActualCompensationAmount
@@ -1359,7 +1359,7 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	}
 	if cmd.ShippingState.Valid {
 		state := cmd.ShippingState.Apply(shipping.Unknown)
-		if ffm.ShippingState != model.StateUndeliverable && state != model.StateUndeliverable {
+		if ffm.ShippingState != shipping.Undeliverable && state != shipping.Undeliverable {
 			return cm.Error(cm.PermissionDenied, "Chỉ được cập nhật sang trạng thái không giao được hàng", nil)
 		}
 		updateFfm.ShippingState = state

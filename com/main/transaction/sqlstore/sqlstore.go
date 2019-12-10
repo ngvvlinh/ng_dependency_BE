@@ -53,8 +53,8 @@ func (s *TransactionStore) ByConfirmedTransaction() *TransactionStore {
 	return s
 }
 
-func (s *TransactionStore) OptionalTransactionType(transactionType string) *TransactionStore {
-	s.preds = append(s.preds, s.ft.ByType(transactionType).Optional())
+func (s *TransactionStore) OptionalTransactionType(transactionType transaction.TransactionType) *TransactionStore {
+	s.preds = append(s.preds, s.ft.ByType(transactionType.String()).Optional())
 	return s
 }
 

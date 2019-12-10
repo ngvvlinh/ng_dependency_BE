@@ -5,6 +5,9 @@ import "etop.vn/capi/dot"
 type Role string
 type Action string
 
+func (r Role) String() string   { return string(r) }
+func (a Action) String() string { return string(a) }
+
 const (
 	RoleAdmin                Role = "admin"
 	RoleInventoryManagement  Role = "inventory_management"

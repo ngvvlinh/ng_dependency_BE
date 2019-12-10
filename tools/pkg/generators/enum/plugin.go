@@ -53,6 +53,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 	}
 	sort.Slice(enums, func(i, j int) bool { return enums[i].Name < enums[j].Name })
 
+	printer.Import("dot", "etop.vn/capi/dot")
 	printer.Import("driver", "database/sql/driver")
 	printer.Import("fmt", "fmt")
 	printer.Import("mix", "etop.vn/capi/mix")

@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/top/types/etc/ledger_type"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/ledgering/convert"
 	"etop.vn/backend/com/main/ledgering/model"
@@ -40,14 +41,14 @@ func (a *LedgerAggregate) MessageBus() ledgering.CommandBus {
 func (a *LedgerAggregate) CreateLedger(
 	ctx context.Context, args *ledgering.CreateLedgerArgs,
 ) (*ledgering.ShopLedger, error) {
-	if args.Type != ledgering.LedgerTypeCash && args.Type != ledgering.LedgerTypeBank {
+	if args.Type != ledger_type.LedgerTypeCash && args.Type != ledger_type.LedgerTypeBank {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "type %v không hợp lệ", args.Type)
 	}
 	if args.Name == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "name không được bỏ trống")
 	}
 
-	if args.Type == ledgering.LedgerTypeCash {
+	if args.Type == ledger_type.LedgerTypeCash {
 		args.BankAccount = nil
 	} else {
 		if args.BankAccount == nil {
@@ -77,7 +78,7 @@ func (a *LedgerAggregate) UpdateLedger(
 	}
 
 	// ignore bankAccount where type equal "cash"
-	if shopLedger.Type == string(ledgering.LedgerTypeCash) {
+	if shopLedger.Type == ledger_type.LedgerTypeCash {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "bạn không được sửa tài khoản thanh toán mặc định")
 	} else {
 		if err := a.verifyBankAccount(ctx, args.ID, args.ShopID, args.BankAccount); err != nil {
@@ -139,7 +140,7 @@ func (a *LedgerAggregate) DeleteLedger(
 			Wrap(cm.NotFound, "không tìm thấy số quỹ").
 			Throw()
 	}
-	if shopLedger.Type == string(ledgering.LedgerTypeCash) {
+	if shopLedger.Type == ledger_type.LedgerTypeCash {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "không thể xóa số quỹ mặc định")
 	}
 

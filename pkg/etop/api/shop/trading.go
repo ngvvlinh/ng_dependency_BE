@@ -11,7 +11,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
-	pbsource "etop.vn/api/top/types/etc/source"
+	pbsource "etop.vn/api/top/types/etc/order_source"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/pkg/common/bus"
@@ -83,7 +83,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 	}()
 	req := &types.CreateOrderRequest{
 		PaymentMethod:   r.PaymentMethod,
-		Source:          pbsource.EtopPos,
+		Source:          pbsource.EtopPOS,
 		Customer:        r.Customer,
 		CustomerAddress: r.CustomerAddress,
 		BillingAddress:  r.BillingAddress,

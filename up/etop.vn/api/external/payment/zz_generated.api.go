@@ -9,6 +9,8 @@ import (
 	json "encoding/json"
 	time "time"
 
+	payment_provider "etop.vn/api/top/types/etc/payment_provider"
+	payment_state "etop.vn/api/top/types/etc/payment_state"
 	status4 "etop.vn/api/top/types/etc/status4"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -30,8 +32,8 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 type CreateOrUpdatePaymentCommand struct {
 	Amount          int
 	Status          status4.Status
-	State           PaymentState
-	PaymentProvider PaymentProvider
+	State           payment_state.PaymentState
+	PaymentProvider payment_provider.PaymentProvider
 	ExternalTransID string
 	ExternalData    json.RawMessage
 	CreatedAt       time.Time `sq:"create"`
@@ -49,7 +51,7 @@ type UpdateExternalPaymentInfoCommand struct {
 	ID              dot.ID
 	Amount          int
 	Status          status4.Status
-	State           PaymentState
+	State           payment_state.PaymentState
 	ExternalData    json.RawMessage
 	ExternalTransID string
 

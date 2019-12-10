@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/api/top/types/etc/status3"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/moneytx/modelx"
@@ -226,7 +227,7 @@ func (m *ProcessManager) getOrCreateBankAccount(
 	// Get default ledger (cash) when haven't bankAccount
 	if !haveBankAccount {
 		query := &ledgering.ListLedgersByTypeQuery{
-			LedgerType: ledgering.LedgerTypeCash,
+			LedgerType: ledger_type.LedgerTypeCash,
 			ShopID:     shopID,
 		}
 		if err := m.ledgerQuery.Dispatch(ctx, query); err != nil {
@@ -249,7 +250,7 @@ func (m *ProcessManager) getOrCreateBankAccount(
 				Name:        fmt.Sprintf("[%v] %v", bankAccount.Branch, bankAccount.AccountName),
 				BankAccount: identityconvert.BankAccount(bankAccount),
 				Note:        "Sổ quỹ tự tạo",
-				Type:        ledgering.LedgerTypeBank,
+				Type:        ledger_type.LedgerTypeBank,
 			}
 			if err := m.ledgerAggr.Dispatch(ctx, cmd); err != nil {
 				return 0, err

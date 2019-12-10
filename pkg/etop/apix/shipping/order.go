@@ -10,8 +10,8 @@ import (
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
+	pbsource "etop.vn/api/top/types/etc/order_source"
 	"etop.vn/api/top/types/etc/shipping_provider"
-	pbsource "etop.vn/api/top/types/etc/source"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -67,12 +67,12 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	}
 
 	req := &types.CreateOrderRequest{
-		Source:          pbsource.Api,
+		Source:          pbsource.API,
 		ExternalId:      r.ExternalId,
 		ExternalCode:    externalCode,
 		ExternalMeta:    r.ExternalMeta,
 		ExternalUrl:     r.ExternalUrl,
-		PaymentMethod:   "", // will be set automatically
+		PaymentMethod:   0, // will be set automatically
 		Customer:        convertpb.OrderAddressToPbCustomer(r.CustomerAddress),
 		CustomerAddress: convertpb.OrderAddressToPbOrder(r.CustomerAddress),
 		BillingAddress:  convertpb.OrderAddressToPbOrder(r.CustomerAddress),

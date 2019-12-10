@@ -5,6 +5,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -26,9 +27,7 @@ const (
 	Ahamove Carrier = "ahamove"
 )
 
-func (c Carrier) ToString() string {
-	return string(c)
-}
+func (c Carrier) String() string { return string(c) }
 
 type ShipnowFulfillment struct {
 	ID dot.ID
@@ -61,7 +60,7 @@ type ShipnowFulfillment struct {
 	ShippingStatus    status5.Status
 	EtopPaymentStatus status4.Status
 
-	ShippingState        string
+	ShippingState        shipnow_state.State
 	ShippingCode         string
 	FeeLines             []*model.ShippingFeeLine
 	CarrierFeeLines      []*model.ShippingFeeLine

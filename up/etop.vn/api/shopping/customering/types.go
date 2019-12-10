@@ -3,17 +3,10 @@ package customering
 import (
 	"time"
 
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
-)
-
-type CustomerType string
-
-const (
-	CustomerTypeIndividual   CustomerType = "individual"
-	CustomerTypeOrganization CustomerType = "organization"
-	CustomerTypeIndependent  CustomerType = "independent"
 )
 
 type ShopCustomer struct {
@@ -24,7 +17,7 @@ type ShopCustomer struct {
 	CodeNorm  int
 	FullName  string
 	Gender    gender.Gender
-	Type      CustomerType
+	Type      customer_type.CustomerType
 	Birthday  string
 	Note      string
 	Phone     string

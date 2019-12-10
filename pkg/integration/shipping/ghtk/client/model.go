@@ -102,25 +102,25 @@ var SubStateMapping = map[StateID]string{
 func (sID StateID) ToModel() shipping.State {
 	switch sID {
 	case StateIDCanceled, StateIDNotTake:
-		return model.StateCancelled
+		return shipping.Cancelled
 	case StateIDNotConfirm, StateIDConfirmed:
-		return model.StateCreated
+		return shipping.Created
 	case StateIDPicking, StateIDDelayPicking, StateIDShipperCanNotPick, StateIDShipperDelayPicking:
-		return model.StatePicking
+		return shipping.Picking
 	case StateIDStored, StateIDShipperPicked:
-		return model.StateHolding
+		return shipping.Holding
 	case StateIDDelivering, StateIDDelayDelivering, StateIDShipperCanNotDelivery, StateIDShipperDelayDelivering:
-		return model.StateDelivering
+		return shipping.Delivering
 	case StateIDDelivered, StateIDCrossChecked, StateIDShipperDelivered:
-		return model.StateDelivered
+		return shipping.Delivered
 	case StateIDReturning, StateIDNotDeliver, StateIDCrossCheckedReturned:
-		return model.StateReturning
+		return shipping.Returning
 	case StateIDReturned:
-		return model.StateReturned
+		return shipping.Returned
 	case StateIDBoiHoan:
-		return model.StateUndeliverable
+		return shipping.Undeliverable
 	default:
-		return model.StateUnknown
+		return shipping.Unknown
 	}
 }
 

@@ -6,9 +6,7 @@ import (
 	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
@@ -37,9 +35,9 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ShippingNote:               in.ShippingNote,
 		RequestPickupAt:            in.RequestPickupAt,
 		DeliveryPoints:             DeliveryPointsToModel(in.DeliveryPoints),
-		ConfirmStatus:              status3.Status(in.ConfirmStatus),
-		Status:                     status5.Status(in.Status),
-		ShippingState:              in.ShippingState.String(),
+		ConfirmStatus:              in.ConfirmStatus,
+		Status:                     in.Status,
+		ShippingState:              in.ShippingState,
 		ShippingCode:               in.ShippingCode,
 		ShippingCreatedAt:          in.ShippingCreatedAt,
 		ShippingPickingAt:          in.ShippingPickingAt,
@@ -49,7 +47,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		CreatedAt:                  in.CreatedAt,
 		UpdatedAt:                  in.UpdatedAt,
 		CODEtopTransferedAt:        in.CodEtopTransferedAt,
-		EtopPaymentStatus:          status4.Status(in.EtopPaymentStatus),
+		EtopPaymentStatus:          in.EtopPaymentStatus,
 		ShippingServiceName:        in.ShippingServiceName,
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,
@@ -69,7 +67,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 }
 
 func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillment) {
-	_carrier, _ := carrier.ParseCarrier(string(in.Carrier))
+	_carrier, _ := carrier.ParseCarrier(in.Carrier.String())
 	out = &shipnow.ShipnowFulfillment{
 		Id:                  in.ID,
 		ShopId:              in.ShopID,
@@ -95,7 +93,7 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		RequestPickupAt:            in.RequestPickupAt,
 		ConfirmStatus:              in.ConfirmStatus,
 		Status:                     in.Status,
-		ShippingState:              shipnowtypes.StateFromString(in.ShippingState),
+		ShippingState:              in.ShippingState,
 		ShippingCode:               in.ShippingCode,
 		OrderIds:                   in.OrderIDs,
 		ShippingCreatedAt:          in.ShippingCreatedAt,
@@ -185,7 +183,7 @@ func DeliveryPointsToModel(ins []*shipnowtypes.DeliveryPoint) (outs []*shipnowmo
 
 func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 	grossWeight, chargeableWeight, lenght, height, codAmount := 0, 0, 0, 0, 0
-	tryOn := shippingtypes.TryOnNone
+	tryOn := try_on.None
 	shippingNote := ""
 	if in.Shipping != nil {
 		grossWeight = in.Shipping.GrossWeight
@@ -247,7 +245,7 @@ func FeelineToModel(in *shippingtypes.FeeLine) (out *model.ShippingFeeLine) {
 		return nil
 	}
 	return &model.ShippingFeeLine{
-		ShippingFeeType:     model.ShippingFeeLineType(in.ShippingFeeType.String()),
+		ShippingFeeType:     in.ShippingFeeType,
 		Cost:                in.Cost,
 		ExternalServiceName: in.ExternalServiceName,
 		ExternalServiceType: in.ExternalServiceType,
@@ -266,7 +264,7 @@ func Feeline(in *model.ShippingFeeLine) (out *shippingtypes.FeeLine) {
 		return nil
 	}
 	return &shippingtypes.FeeLine{
-		ShippingFeeType:     shippingtypes.FeelineTypeFromString(string(in.ShippingFeeType)),
+		ShippingFeeType:     in.ShippingFeeType,
 		Cost:                in.Cost,
 		ExternalServiceName: in.ExternalServiceName,
 		ExternalServiceType: in.ExternalServiceType,

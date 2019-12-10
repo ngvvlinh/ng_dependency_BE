@@ -12,7 +12,9 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
@@ -64,8 +66,7 @@ func CreateOrder(
 		}
 	}
 
-	src := convertpb.SourceToModel(r.Source)
-	if !model.VerifyOrderSource(src) {
+	if !model.VerifyOrderSource(r.Source) {
 		return nil, cm.Error(cm.InvalidArgument, "Invalid source", nil)
 	}
 
@@ -158,7 +159,7 @@ func CreateOrder(
 				createCustomerCmd := &customering.CreateCustomerCommand{
 					ShopID:   claim.Shop.ID,
 					FullName: shippingAddress.FullName,
-					Type:     "individual",
+					Type:     customer_type.Individual,
 					Phone:    shippingAddress.Phone,
 					Email:    shippingAddress.Email,
 				}
@@ -170,7 +171,7 @@ func CreateOrder(
 				createCustomerCmd := &customering.CreateCustomerCommand{
 					ShopID:   claim.Shop.ID,
 					FullName: shippingAddress.FullName,
-					Type:     "individual",
+					Type:     customer_type.Individual,
 					Phone:    shippingAddress.Phone,
 				}
 				if err := customerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
@@ -216,7 +217,7 @@ func CreateOrder(
 			r.CustomerId = q.Result.ID
 			r.Customer = &types.OrderCustomer{
 				FullName: q.Result.FullName,
-				Type:     string(customering.CustomerTypeIndependent),
+				Type:     customer_type.Independent,
 			}
 		}
 	}
@@ -234,7 +235,7 @@ func CreateOrder(
 	}
 
 	order.ShopID = shop.ID
-	order.OrderSourceType = src
+	order.OrderSourceType = r.Source
 	// fulfillment_type will be filled after create fulfillment
 	order.FulfillmentType = ordermodel.FulfillManual
 	if tradingShopID != nil {
@@ -308,7 +309,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.Orde
 		FullName: getCustomer.Result.FullName,
 		Email:    getCustomer.Result.Email,
 		Phone:    getCustomer.Result.Phone,
-		Type:     string(getCustomer.Result.Type),
+		Type:     getCustomer.Result.Type,
 		Gender:   getCustomer.Result.Gender,
 	}
 	return customer
@@ -600,7 +601,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			Email:    query.Result.Email,
 			Phone:    query.Result.Phone,
 			Gender:   query.Result.Gender,
-			Type:     string(query.Result.Type),
+			Type:     query.Result.Type,
 		}
 
 		isHaveAddress := true
@@ -892,10 +893,10 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 	var tryOn try_on.TryOnCode
 	if shipping != nil {
 		// return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping/shop_shipping")
-		if m.PaymentMethod == "" {
-			paymentMethod = model.PaymentMethodCOD
+		if m.PaymentMethod == 0 {
+			paymentMethod = payment_method.COD
 			if m.ShopCod == 0 && shipping.CodAmount.Apply(0) == 0 {
-				paymentMethod = model.PaymentMethodOther
+				paymentMethod = payment_method.Other
 			}
 		}
 		tryOn = shipping.TryOn
@@ -959,7 +960,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		OrderNote:                  m.OrderNote,
 		ShopNote:                   "",
 		ShippingNote:               m.ShippingNote,
-		OrderSourceType:            "",
+		OrderSourceType:            0,
 		OrderSourceID:              0,
 		ExternalOrderID:            m.ExternalId,
 		ReferenceURL:               m.ReferenceUrl,

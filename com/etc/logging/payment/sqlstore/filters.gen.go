@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/payment_provider"
 	m "etop.vn/backend/com/etc/logging/payment/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
@@ -62,22 +63,22 @@ func (ft *PaymentFilters) ByOrderIDPtr(OrderID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PaymentFilters) ByPaymentProvider(PaymentProvider string) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByPaymentProvider(PaymentProvider payment_provider.PaymentProvider) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "payment_provider",
 		Value:  PaymentProvider,
-		IsNil:  PaymentProvider == "",
+		IsNil:  PaymentProvider == 0,
 	}
 }
 
-func (ft *PaymentFilters) ByPaymentProviderPtr(PaymentProvider *string) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByPaymentProviderPtr(PaymentProvider *payment_provider.PaymentProvider) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "payment_provider",
 		Value:  PaymentProvider,
 		IsNil:  PaymentProvider == nil,
-		IsZero: PaymentProvider != nil && (*PaymentProvider) == "",
+		IsZero: PaymentProvider != nil && (*PaymentProvider) == 0,
 	}
 }
 

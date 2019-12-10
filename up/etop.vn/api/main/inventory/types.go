@@ -26,6 +26,8 @@ const (
 	RefNameCancelOrder   InventoryVoucherRefName = "Hủy đơn hàng"
 )
 
+func (s InventoryVoucherRefName) String() string { return string(s) }
+
 type InventoryRefType string
 
 const (
@@ -35,7 +37,11 @@ const (
 	RefTypeOrder         InventoryRefType = "order"
 )
 
+func (s InventoryRefType) String() string { return string(s) }
+
 type InventoryVoucherType string
+
+func (s InventoryVoucherType) String() string { return string(s) }
 
 const (
 	InventoryVoucherTypeIn  InventoryVoucherType = "in"
@@ -43,6 +49,8 @@ const (
 )
 
 type AutoInventoryVoucher string
+
+func (s AutoInventoryVoucher) String() string { return string(s) }
 
 const (
 	AutoCreateInventory           AutoInventoryVoucher = "create"

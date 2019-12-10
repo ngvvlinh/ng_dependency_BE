@@ -10,6 +10,7 @@ import (
 	identity "etop.vn/api/main/identity"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	ledger_type "etop.vn/api/top/types/etc/ledger_type"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -32,7 +33,7 @@ type CreateLedgerCommand struct {
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
-	Type        LedgerType
+	Type        ledger_type.LedgerType
 	CreatedBy   dot.ID
 
 	Result *ShopLedger `json:"-"`
@@ -120,7 +121,7 @@ func (h QueryServiceHandler) HandleListLedgersByIDs(ctx context.Context, msg *Li
 }
 
 type ListLedgersByTypeQuery struct {
-	LedgerType LedgerType
+	LedgerType ledger_type.LedgerType
 	ShopID     dot.ID
 
 	Result *ShopLedgersResponse `json:"-"`
@@ -231,7 +232,7 @@ func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		q.IDs
 }
 
-func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType LedgerType, shopID dot.ID) {
+func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType ledger_type.LedgerType, shopID dot.ID) {
 	return ctx,
 		q.LedgerType,
 		q.ShopID

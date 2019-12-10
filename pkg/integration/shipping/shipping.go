@@ -6,7 +6,8 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/top/types/etc/shipnow_state"
+	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	locationutil "etop.vn/backend/com/main/location/util"
@@ -114,41 +115,41 @@ func CalcDeliveryTime(shippingProvider shipping_provider.ShippingProvider, toDis
 func CalcOtherTimeBaseOnState(update *shipmodel.Fulfillment, oldFfm *shipmodel.Fulfillment, t time.Time) *shipmodel.Fulfillment {
 	state := update.ShippingState
 	switch state {
-	case model.StateCreated:
+	case shipping.Created:
 		if oldFfm.ShippingCreatedAt.IsZero() {
 			update.ShippingCreatedAt = t
 		}
-	case model.StatePicking:
+	case shipping.Picking:
 		if oldFfm.ShippingPickingAt.IsZero() {
 			update.ShippingPickingAt = t
 		}
-	case model.StateHolding:
+	case shipping.Holding:
 		if oldFfm.ShippingHoldingAt.IsZero() {
 			update.ShippingHoldingAt = t
 		}
-	case model.StateDelivering:
+	case shipping.Delivering:
 		if oldFfm.ShippingDeliveringAt.IsZero() {
 			update.ShippingDeliveringAt = t
 		}
-	case model.StateDelivered:
+	case shipping.Delivered:
 		if oldFfm.ExternalShippingDeliveredAt.IsZero() {
 			update.ExternalShippingDeliveredAt = t
 		}
 		if oldFfm.ShippingDeliveredAt.IsZero() {
 			update.ShippingDeliveredAt = t
 		}
-	case model.StateReturning:
+	case shipping.Returning:
 		if oldFfm.ShippingReturningAt.IsZero() {
 			update.ShippingReturningAt = t
 		}
-	case model.StateReturned:
+	case shipping.Returned:
 		if oldFfm.ExternalShippingReturnedAt.IsZero() {
 			update.ExternalShippingReturnedAt = t
 		}
 		if oldFfm.ShippingReturnedAt.IsZero() {
 			update.ShippingReturnedAt = t
 		}
-	case model.StateCancelled:
+	case shipping.Cancelled:
 		if oldFfm.ExternalShippingCancelledAt.IsZero() {
 			update.ExternalShippingCancelledAt = t
 		}
@@ -165,7 +166,7 @@ func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
 		ffm.Status == status5.S ||
 
 		// returning has status -2 (NS) and we allow updating it via webhook
-		ffm.ShippingState == model.StateReturning
+		ffm.ShippingState == shipping.Returning
 }
 
 func CanUpdateFulfillmentFeelines(ffm *shipmodel.Fulfillment) bool {
@@ -184,25 +185,25 @@ type ShipnowTimestamp struct {
 	ShippingCancelledAt  time.Time
 }
 
-func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnowtypes.State, t time.Time) (res ShipnowTimestamp) {
+func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnow_state.State, t time.Time) (res ShipnowTimestamp) {
 	switch state {
-	case shipnowtypes.StateCreated:
+	case shipnow_state.StateCreated:
 		if ffm.ShippingCreatedAt.IsZero() {
 			res.ShippingCreatedAt = t
 		}
-	case shipnowtypes.StatePicking:
+	case shipnow_state.StatePicking:
 		if ffm.ShippingPickingAt.IsZero() {
 			res.ShippingPickingAt = t
 		}
-	case shipnowtypes.StateDelivering:
+	case shipnow_state.StateDelivering:
 		if ffm.ShippingDeliveringAt.IsZero() {
 			res.ShippingDeliveringAt = t
 		}
-	case shipnowtypes.StateDelivered:
+	case shipnow_state.StateDelivered:
 		if ffm.ShippingDeliveredAt.IsZero() {
 			res.ShippingDeliveredAt = t
 		}
-	case shipnowtypes.StateCancelled:
+	case shipnow_state.StateCancelled:
 		if ffm.ShippingCancelledAt.IsZero() {
 			res.ShippingCancelledAt = t
 		}

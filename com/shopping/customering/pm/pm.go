@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
 )
@@ -33,7 +34,7 @@ func (m *ProcessManager) AccountCreated(ctx context.Context, event *identity.Acc
 	cmd := &customering.CreateCustomerCommand{
 		ShopID:   event.ShopID,
 		FullName: "Khách lẻ",
-		Type:     customering.CustomerTypeIndependent,
+		Type:     customer_type.Independent,
 	}
 	if err := m.customerAggregate.Dispatch(ctx, cmd); err != nil {
 		return err

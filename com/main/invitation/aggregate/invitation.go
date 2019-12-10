@@ -236,7 +236,7 @@ func (a *InvitationAggregate) havePermissionToInvite(ctx context.Context, args *
 
 func (a *InvitationAggregate) checkRoles(roles []authorization.Role) bool {
 	for _, role := range roles {
-		if string(role) == string(authorization.RoleShopOwner) || string(role) == string(authorization.RoleAdmin) {
+		if role == authorization.RoleShopOwner || role == authorization.RoleAdmin {
 			return false
 		}
 		if !authorization.IsRole(role) {

@@ -9,6 +9,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -108,7 +109,7 @@ type Order struct {
 }
 
 type OrderFeeLine struct {
-	Type   string
+	Type   fee.FeeType
 	Name   string
 	Code   string
 	Desc   string

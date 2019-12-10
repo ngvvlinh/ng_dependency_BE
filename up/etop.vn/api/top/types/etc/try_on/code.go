@@ -17,3 +17,7 @@ const (
 	// +enum=try
 	Try TryOnCode = 3
 )
+
+const NoteChoThuHang = "cho thu hang"
+const NoteChoXemHang = "cho xem hang khong thu"
+const NoteKhongXemHang = "khong cho xem hang"

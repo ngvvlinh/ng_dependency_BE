@@ -34,7 +34,7 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		UpdatedAt:                  cmapi.PbTime(in.UpdatedAt),
 		Status:                     in.Status,
 		ShippingStatus:             in.ShippingStatus,
-		ShippingState:              shipnowtypes.StateToString(in.ShippingState),
+		ShippingState:              in.ShippingState,
 		ConfirmStatus:              in.ConfirmStatus,
 		OrderIds:                   in.OrderIds,
 		ShippingCreatedAt:          cmapi.PbTime(in.ShippingCreatedAt),

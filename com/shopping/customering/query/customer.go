@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -110,7 +111,7 @@ func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.
 func (q *CustomerQuery) GetCustomerIndependentByShop(
 	ctx context.Context, args *customering.GetCustomerIndependentByShop,
 ) (*customering.ShopCustomer, error) {
-	customer, err := q.store(ctx).ShopID(args.ShopID).Type(customering.CustomerTypeIndependent).GetCustomer()
+	customer, err := q.store(ctx).ShopID(args.ShopID).Type(customer_type.Independent).GetCustomer()
 	if err != nil {
 		return nil, err
 	}

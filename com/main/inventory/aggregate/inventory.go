@@ -60,7 +60,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	if inventoryVoucher.RefID != 0 {
-		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).Type(string(inventoryVoucher.Type)).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
+		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).Type(inventoryVoucher.Type.String()).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
 		if err != nil {
 			return nil, err
 		}
@@ -395,9 +395,9 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 		if err != nil {
 			return nil, err
 		}
-		if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeOut) {
+		if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut.String() {
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
-		} else if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeIn) {
+		} else if inventoryVoucher.Type == inventory.InventoryVoucherTypeIn.String() {
 			if inventoryVoucher.TraderID != 0 {
 				if data.QuantityOnHand < 0 {
 					data.CostPrice = value.Price
@@ -440,7 +440,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
-	if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeOut) {
+	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut.String() {
 		for _, value := range inventoryVoucher.Lines {
 			var data *inventory.InventoryVariant
 			data, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
@@ -623,7 +623,7 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 	if args.ShopID == 0 || args.VariantID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id")
 	}
-	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(string(inventory.RefTypePurchaseOrder)).VariantID(args.VariantID).ListInventoryVoucher()
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(inventory.RefTypePurchaseOrder.String()).VariantID(args.VariantID).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}

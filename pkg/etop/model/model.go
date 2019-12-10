@@ -9,7 +9,10 @@ import (
 
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/order_source"
+	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
@@ -26,22 +29,17 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 type (
-	SubjectType string
-
+	SubjectType         string
 	FulfillmentEndpoint string
-
 	ShippingPriceSource string
-	OrderSourceType     string
-	ShippingFeeLineType string
-	UserIdentifying     string
-	RoleType            string
-	FfmAction           int
-	CodeType            string
 
-	ShippingRouteType    string
-	ShippingDistrictType string
-	DBName               string
-	EtopPaymentStatus    status4.Status
+	RoleType  string
+	FfmAction int
+	CodeType  string
+
+	ShippingRouteType string
+
+	DBName string
 )
 
 // Type constants
@@ -64,19 +62,6 @@ const (
 	FFShop     FulfillmentEndpoint = "shop"
 	FFCustomer FulfillmentEndpoint = "customer"
 
-	OrderSourceUnknown OrderSourceType = "unknown"
-	OrderSourceImport  OrderSourceType = "import"
-	OrderSourceAPI     OrderSourceType = "api"
-	OrderSourceSelf    OrderSourceType = "self"
-	OrderSourcePOS     OrderSourceType = "etop_pos"
-	OrderSourcePXS     OrderSourceType = "etop_pxs"
-	OrderSourceCMX     OrderSourceType = "etop_cmx"
-	OrderSourceTSApp   OrderSourceType = "ts_app"
-
-	UserIdentifyingFull UserIdentifying = "full"
-	UserIdentifyingHalf UserIdentifying = "half"
-	UserIdentifyingStub UserIdentifying = "stub"
-
 	// Don't change these values
 	TagUser      = 17
 	TagPartner   = 21
@@ -89,43 +74,6 @@ const (
 	EtopTradingAccountID  = 1000015764575267699
 	TopShipID             = 1000030662086749358
 	IndependentCustomerID = 1000080135776788835
-	StatusActive          = 1
-	StatusCreated         = 0
-	StatusDisabled        = -1
-
-	StateDefault    = shipping.Default
-	StateCreated    = shipping.Created
-	StatePicking    = shipping.Picking
-	StateHolding    = shipping.Holding
-	StateDelivering = shipping.Delivering
-	StateReturning  = shipping.Returning
-	StateDelivered  = shipping.Delivered
-	StateReturned   = shipping.Returned
-	StateCancelled  = shipping.Cancelled
-
-	// Trạng thái Bồi hoàn
-	StateUndeliverable = shipping.Undeliverable
-	StateUnknown       = shipping.Unknown
-
-	ShippingFeeTypeMain         ShippingFeeLineType = "main"           // phí dịch vụ
-	ShippingFeeTypeReturn       ShippingFeeLineType = "return"         // phí trả hàng
-	ShippingFeeTypeAdjustment   ShippingFeeLineType = "adjustment"     // phí chênh lệnh giá
-	ShippingFeeTypeCODS         ShippingFeeLineType = "cods"           // phí thu hộ (CODS) - VTPOST tính
-	ShippingFeeTypeInsurance    ShippingFeeLineType = "insurance"      // phí khai giá / phí bảo hiểm
-	ShippingFeeTypeAddessChange ShippingFeeLineType = "address_change" // Phí thay đổi địa chỉ giao
-	ShippingFeeTypeDiscount     ShippingFeeLineType = "discount"       // giảm giá
-	ShippingFeeTypeOther        ShippingFeeLineType = "other"          // phí khác
-
-	RoleOwner  RoleType = "owner"
-	RoleAdmin  RoleType = "admin"
-	RoleStaff  RoleType = "staff"
-	Role3rd    RoleType = "3rd" // Delegate to third party API, which can only update/cancel itself orders
-	RoleViewer RoleType = "viewer"
-
-	PaymentMethodCOD   = "cod"
-	PaymentMethodBank  = "bank"
-	PaymentMethodOther = "other"
-	PaymentMethodVtpay = "vtpay"
 
 	CurrencyVND = "vnd"
 
@@ -142,39 +90,22 @@ const (
 	CodeTypeMoneyTransactionExternal = "money_transaction_external"
 
 	// For import
-	GHNNoteChoThuHang   = "cho thu hang"
-	GHNNoteChoXemHang   = "cho xem hang khong thu"
-	GHNNoteKhongXemHang = "khong cho xem hang"
-
-	GHNNoteCodeChoThuHang   = ghn_note_code.CHOTHUHANG
-	GHNNoteCodeChoXemHang   = ghn_note_code.CHOXEMHANGKHONGTHU
-	GHNNoteCodeKhongXemHang = ghn_note_code.KHONGCHOXEMHANG
-
-	TryOnNone = try_on.None
-	TryOnOpen = try_on.Open
-	TryOnTry  = try_on.Try
 
 	FfmActionNothing FfmAction = iota
 	FfmActionCancel
 	FfmActionReturn
 
-	ProductSourceTypeCustom = "custom"
-
 	RouteSameProvince ShippingRouteType = "noi_tinh"
 	RouteSameRegion   ShippingRouteType = "noi_mien"
 	RouteNationWide   ShippingRouteType = "toan_quoc"
-
-	ShippingDistrictTypeUrban     ShippingDistrictType = "noi_thanh"
-	ShippingDistrictTypeSubUrban1 ShippingDistrictType = "ngoai_thanh_1"
-	ShippingDistrictTypeSubUrban2 ShippingDistrictType = "ngoai_thanh_2"
 )
 
 type NormalizedPhone = validate.NormalizedPhone
 type NormalizedEmail = validate.NormalizedEmail
 
-var ShippingFeeShopTypes = []ShippingFeeLineType{
-	ShippingFeeTypeMain, ShippingFeeTypeReturn, ShippingFeeTypeAdjustment,
-	ShippingFeeTypeAddessChange, ShippingFeeTypeCODS, ShippingFeeTypeInsurance, ShippingFeeTypeOther, ShippingFeeTypeDiscount,
+var ShippingFeeShopTypes = []shipping_fee_type.ShippingFeeType{
+	shipping_fee_type.Main, shipping_fee_type.Return, shipping_fee_type.Adjustment,
+	shipping_fee_type.AddressChange, shipping_fee_type.Cods, shipping_fee_type.Insurance, shipping_fee_type.Other, shipping_fee_type.Discount,
 }
 
 //        SyncAt: updated when sending data to external service successfully
@@ -183,17 +114,17 @@ var ShippingFeeShopTypes = []ShippingFeeLineType{
 // LastTrySypkg/etop/model/model.go:18:ncAt: updated when querying external data source (may unsuccessfully)
 
 var ShippingStateMap = map[shipping.State]string{
-	StateDefault:       "Mặc định",
-	StateCreated:       "Mới",
-	StatePicking:       "Đang lấy hàng",
-	StateHolding:       "Đã lấy hàng",
-	StateDelivering:    "Đang giao hàng",
-	StateReturning:     "Đang trả hàng",
-	StateDelivered:     "Đã giao hàng",
-	StateReturned:      "Đã trả hàng",
-	StateCancelled:     "Hủy",
-	StateUndeliverable: "Bồi hoàn",
-	StateUnknown:       "Không xác định",
+	shipping.Default:       "Mặc định",
+	shipping.Created:       "Mới",
+	shipping.Picking:       "Đang lấy hàng",
+	shipping.Holding:       "Đã lấy hàng",
+	shipping.Delivering:    "Đang giao hàng",
+	shipping.Returning:     "Đang trả hàng",
+	shipping.Delivered:     "Đã giao hàng",
+	shipping.Returned:      "Đã trả hàng",
+	shipping.Cancelled:     "Hủy",
+	shipping.Undeliverable: "Bồi hoàn",
+	shipping.Unknown:       "Không xác định",
 }
 
 func EtopPaymentStatusLabel(s status4.Status) string {
@@ -270,18 +201,18 @@ func (t CodeType) Validate() error {
 	return nil
 }
 
-func VerifyPaymentMethod(s string) bool {
+func VerifyPaymentMethod(s payment_method.PaymentMethod) bool {
 	switch s {
-	case PaymentMethodCOD, PaymentMethodBank,
-		PaymentMethodOther, PaymentMethodVtpay:
+	case payment_method.COD, payment_method.Bank,
+		payment_method.Other, payment_method.VTPay:
 		return true
 	}
 	return false
 }
 
-func VerifyOrderSource(s OrderSourceType) bool {
+func VerifyOrderSource(s order_source.Source) bool {
 	switch s {
-	case OrderSourcePOS, OrderSourcePXS, OrderSourceCMX, OrderSourceTSApp, OrderSourceAPI, OrderSourceImport:
+	case order_source.EtopPOS, order_source.EtopPXS, order_source.EtopCMX, order_source.TSApp, order_source.API, order_source.Import:
 		return true
 	}
 	return false
@@ -297,12 +228,12 @@ func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
 
 func TryOnFromGHNNoteCode(c ghn_note_code.GHNNoteCode) try_on.TryOnCode {
 	switch c {
-	case GHNNoteCodeKhongXemHang:
-		return TryOnNone
-	case GHNNoteCodeChoXemHang:
-		return TryOnOpen
-	case GHNNoteCodeChoThuHang:
-		return TryOnTry
+	case ghn_note_code.KHONGCHOXEMHANG:
+		return try_on.None
+	case ghn_note_code.CHOXEMHANGKHONGTHU:
+		return try_on.Open
+	case ghn_note_code.CHOTHUHANG:
+		return try_on.Try
 	default:
 		return 0
 	}
@@ -310,12 +241,12 @@ func TryOnFromGHNNoteCode(c ghn_note_code.GHNNoteCode) try_on.TryOnCode {
 
 func GHNNoteCodeFromTryOn(to try_on.TryOnCode) ghn_note_code.GHNNoteCode {
 	switch to {
-	case TryOnNone:
-		return GHNNoteCodeKhongXemHang
-	case TryOnOpen:
-		return GHNNoteCodeChoXemHang
-	case TryOnTry:
-		return GHNNoteCodeChoThuHang
+	case try_on.None:
+		return ghn_note_code.KHONGCHOXEMHANG
+	case try_on.Open:
+		return ghn_note_code.CHOXEMHANGKHONGTHU
+	case try_on.Try:
+		return ghn_note_code.CHOTHUHANG
 	default:
 		return 0
 	}
@@ -629,8 +560,7 @@ type User struct {
 
 	UserInner `sq:"inline"`
 
-	Status      status3.Status // 1: actual user, 0: stub, -1: disabled
-	Identifying UserIdentifying
+	Status status3.Status // 1: actual user, 0: stub, -1: disabled
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -658,22 +588,6 @@ type UserExtended struct {
 type Permission struct {
 	Roles       []string
 	Permissions []string
-}
-
-func (p *Permission) Validate() error {
-	if len(p.Permissions) != 0 {
-		return cm.Error(cm.InvalidArgument, "list of permissions is not supported yet", nil)
-	}
-	if len(p.Roles) != 1 {
-		return cm.Error(cm.InvalidArgument, "only single role is supported", nil)
-	}
-	role := RoleType(p.Roles[0])
-	switch role {
-	case RoleOwner, RoleAdmin, RoleStaff, RoleViewer:
-		return nil
-	default:
-		return cm.Error(cm.InvalidArgument, "invalid role", nil)
-	}
 }
 
 var _ = sqlgenAccountUser(&AccountUser{})
@@ -770,9 +684,9 @@ type FulfillmentSyncStates struct {
 func (f FfmAction) ToShippingState() shipping.State {
 	switch f {
 	case FfmActionCancel:
-		return StateCancelled
+		return shipping.Cancelled
 	case FfmActionReturn:
-		return StateReturning
+		return shipping.Returning
 	default:
 		return shipping.Unknown
 	}
@@ -1038,14 +952,14 @@ type CreditExtended struct {
 }
 
 type ShippingFeeLine struct {
-	ShippingFeeType          ShippingFeeLineType `json:"shipping_fee_type"`
-	Cost                     int                 `json:"cost"`
-	ExternalServiceID        string              `json:"external_service_id"`
-	ExternalServiceName      string              `json:"external_service_name"`
-	ExternalServiceType      string              `json:"external_service_type"`
-	ExternalShippingOrderID  string              `json:"external_order_id"`
-	ExternalPaymentChannelID string              `json:"external_payment_channel_id"`
-	ExternalShippingCode     string              `json:"external_shipping_code"`
+	ShippingFeeType          shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
+	Cost                     int                               `json:"cost"`
+	ExternalServiceID        string                            `json:"external_service_id"`
+	ExternalServiceName      string                            `json:"external_service_name"`
+	ExternalServiceType      string                            `json:"external_service_type"`
+	ExternalShippingOrderID  string                            `json:"external_order_id"`
+	ExternalPaymentChannelID string                            `json:"external_payment_channel_id"`
+	ExternalShippingCode     string                            `json:"external_shipping_code"`
 }
 
 func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) []*ShippingFeeLine {
@@ -1063,7 +977,7 @@ func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainF
 }
 
 func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) *ShippingFeeLine {
-	if item.ShippingFeeType == ShippingFeeTypeMain && etopPriceRule {
+	if item.ShippingFeeType == shipping_fee_type.Main && etopPriceRule {
 		item.Cost = mainFee.Apply(item.Cost)
 	}
 	if contains(ShippingFeeShopTypes, item.ShippingFeeType) {
@@ -1075,7 +989,7 @@ func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee do
 func GetReturnedFee(items []*ShippingFeeLine) int {
 	result := 0
 	for _, item := range items {
-		if item.ShippingFeeType == ShippingFeeTypeReturn {
+		if item.ShippingFeeType == shipping_fee_type.Return {
 			result = item.Cost
 			break
 		}
@@ -1086,7 +1000,7 @@ func GetReturnedFee(items []*ShippingFeeLine) int {
 func GetMainFee(items []*ShippingFeeLine) int {
 	result := 0
 	for _, item := range items {
-		if item.ShippingFeeType == ShippingFeeTypeMain {
+		if item.ShippingFeeType == shipping_fee_type.Main {
 			result = item.Cost
 			break
 		}
@@ -1102,7 +1016,7 @@ func GetTotalShippingFee(items []*ShippingFeeLine) int {
 	return result
 }
 
-func UpdateShippingFees(items []*ShippingFeeLine, fee int, shippingFeeType ShippingFeeLineType) []*ShippingFeeLine {
+func UpdateShippingFees(items []*ShippingFeeLine, fee int, shippingFeeType shipping_fee_type.ShippingFeeType) []*ShippingFeeLine {
 	if fee == 0 {
 		return items
 	}
@@ -1122,7 +1036,7 @@ func UpdateShippingFees(items []*ShippingFeeLine, fee int, shippingFeeType Shipp
 	return items
 }
 
-func contains(lines []ShippingFeeLineType, feeType ShippingFeeLineType) bool {
+func contains(lines []shipping_fee_type.ShippingFeeType, feeType shipping_fee_type.ShippingFeeType) bool {
 	for _, line := range lines {
 		if feeType == line {
 			return true

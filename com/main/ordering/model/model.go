@@ -8,6 +8,8 @@ import (
 
 	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/order_source"
+	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
@@ -48,7 +50,7 @@ type Order struct {
 	PartnerID  dot.ID
 
 	Currency      string
-	PaymentMethod string
+	PaymentMethod payment_method.PaymentMethod
 
 	Customer        *OrderCustomer
 	CustomerAddress *OrderAddress
@@ -102,7 +104,7 @@ type Order struct {
 	OrderNote       string
 	ShopNote        string
 	ShippingNote    string
-	OrderSourceType model.OrderSourceType
+	OrderSourceType order_source.Source
 	OrderSourceID   dot.ID
 	ExternalOrderID string
 	ReferenceURL    string

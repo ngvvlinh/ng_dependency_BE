@@ -57,9 +57,9 @@ func (s *SyncVht) SyncVhtCallHistory(ctx context.Context, lasTimeSync time.Time)
 				if oldData.SyncStatus == "Done" {
 					continue
 				}
-				var oldDataMarshal []byte
-				oldDataMarshal, err = jsonx.Marshal(oldData)
-				data.OData = string(oldDataMarshal)
+
+				oldDataMarshal := jsonx.MustMarshalToString(oldData)
+				data.OData = oldDataMarshal
 				err = s.VhtCallHistoryStore(ctx).ByCallID(data.CallID).UpdateVhtCallHistory(data)
 			} else {
 				return err

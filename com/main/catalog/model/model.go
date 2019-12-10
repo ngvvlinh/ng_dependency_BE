@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"etop.vn/api/top/types/etc/product_type"
@@ -23,7 +24,8 @@ func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string
 	}
 
 	normAttrs := make([]*ProductAttribute, 0, len(attrs))
-	b := make([]byte, 0, 256)
+	var b strings.Builder
+	b.Grow(256)
 	for _, attr := range attrs {
 		attr.Name, _ = validate.NormalizeName(attr.Name)
 		attr.Value, _ = validate.NormalizeName(attr.Value)
@@ -37,14 +39,14 @@ func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string
 		}
 
 		normAttrs = append(normAttrs, &ProductAttribute{Name: attr.Name, Value: attr.Value})
-		if len(b) > 0 {
-			b = append(b, ' ')
+		if b.Len() > 0 {
+			b.WriteByte(' ')
 		}
-		b = append(b, nameNorm...)
-		b = append(b, '=')
-		b = append(b, valueNorm...)
+		b.WriteString(nameNorm)
+		b.WriteByte('=')
+		b.WriteString(valueNorm)
 	}
-	s := string(b)
+	s := b.String()
 	if s == "" {
 		s = "_"
 	}
@@ -185,17 +187,18 @@ func (attrs ProductAttributes) ShortLabel() string {
 	if len(attrs) == 0 {
 		return "Mặc định"
 	}
-	b := make([]byte, 0, 64)
+	var b strings.Builder
+	b.Grow(64)
 	for _, attr := range attrs {
 		if attr.Name == "" || attr.Value == "" {
 			continue
 		}
-		if len(b) > 0 {
-			b = append(b, ' ')
+		if b.Len() > 0 {
+			b.WriteByte(' ')
 		}
-		b = append(b, attr.Value...)
+		b.WriteString(attr.Value)
 	}
-	return string(b)
+	return b.String()
 }
 
 // +convert:type=catalog.Attribute

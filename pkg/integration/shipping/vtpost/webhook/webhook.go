@@ -93,7 +93,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		// update database etop_log
 		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:            logID,
-			ShippingState: string(vtpostStatus.ToModel(ffm.ShippingState)),
+			ShippingState: vtpostStatus.ToModel(ffm.ShippingState).String(),
 		}
 		_, _ = wh.dbLogs.Where("id = ?", logID).Update(webhookData)
 	}

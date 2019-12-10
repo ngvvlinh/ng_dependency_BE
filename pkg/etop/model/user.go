@@ -52,7 +52,6 @@ type CreateUserCommand struct {
 	AgreeTOS       bool
 	AgreeEmailInfo bool
 	IsTest         bool
-	IsStub         bool
 	Source         user_source.UserSource
 	Result         struct {
 		User         *User
@@ -80,8 +79,7 @@ type UpdateUserIdentifierCommand struct {
 	Status    status3.Status // We don't allow update status to 0
 	UserInner                // Must be normalized identifier
 
-	Password    string
-	Identifying UserIdentifying
+	Password string
 
 	CreatedAt       time.Time
 	PhoneVerifiedAt time.Time // Automatically verify phone if the user register from phone

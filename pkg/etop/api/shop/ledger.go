@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -57,7 +58,7 @@ func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint
 		Name:        r.Name,
 		BankAccount: convertpb.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
 		Note:        r.Note,
-		Type:        ledgering.LedgerTypeBank,
+		Type:        ledger_type.LedgerTypeBank,
 		CreatedBy:   r.Context.UserID,
 	}
 	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {

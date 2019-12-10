@@ -100,15 +100,15 @@ func ParseServiceID(id string) (clientCode byte, orderService vtpostclient.VTPos
 	case getLast3Character(vtpostclient.OrderServiceCodeSCOD):
 		orderService = vtpostclient.OrderServiceCodeSCOD
 
-	case string(vtpostclient.OrderServiceCodeVCN),
-		string(vtpostclient.OrderServiceCodeVTK),
-		string(vtpostclient.OrderServiceCodePHS),
-		string(vtpostclient.OrderServiceCodeVVT),
-		string(vtpostclient.OrderServiceCodeVHT),
-		string(vtpostclient.OrderServiceCodePTN),
-		string(vtpostclient.OrderServiceCodePHT),
-		string(vtpostclient.OrderServiceCodeVBS),
-		string(vtpostclient.OrderServiceCodeVBE):
+	case vtpostclient.OrderServiceCodeVCN.String(),
+		vtpostclient.OrderServiceCodeVTK.String(),
+		vtpostclient.OrderServiceCodePHS.String(),
+		vtpostclient.OrderServiceCodeVVT.String(),
+		vtpostclient.OrderServiceCodeVHT.String(),
+		vtpostclient.OrderServiceCodePTN.String(),
+		vtpostclient.OrderServiceCodePHT.String(),
+		vtpostclient.OrderServiceCodeVBS.String(),
+		vtpostclient.OrderServiceCodeVBE.String():
 		orderService = vtpostclient.VTPostOrderServiceCode(code)
 
 	default:

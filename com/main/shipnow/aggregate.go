@@ -11,9 +11,9 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/shipnow/convert"
@@ -165,12 +165,12 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		}
 
 		switch ffm.ShippingState {
-		case shipnowtypes.StateCancelled:
+		case shipnow_state.StateCancelled:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã bị hủy")
-		case shipnowtypes.StateDelivering:
+		case shipnow_state.StateDelivering:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đang giao. Không thể hủy đơn.")
-		case shipnowtypes.StateDelivered,
-			shipnowtypes.StateReturning, shipnowtypes.StateReturned:
+		case shipnow_state.StateDelivered,
+			shipnow_state.StateReturning, shipnow_state.StateReturned:
 			return cm.Errorf(cm.FailedPrecondition, nil, "Không thể hủy đơn.")
 		}
 
@@ -186,7 +186,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 
 		updateArgs := sqlstore.UpdateCancelArgs{
 			ID:            ffm.Id,
-			ShippingState: shipnowtypes.StateCancelled,
+			ShippingState: shipnow_state.StateCancelled,
 			Status:        status5.N,
 			ConfirmStatus: status3.N,
 			CancelReason:  cmd.CancelReason,
