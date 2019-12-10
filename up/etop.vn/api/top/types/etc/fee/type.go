@@ -1,6 +1,7 @@
 package fee
 
 // +enum
+// +enum:zero=null
 type FeeType int
 
 const (

@@ -1,6 +1,7 @@
 package notifier_entity
 
 // +enum
+// +enum:zero=null
 type NotifierEntity int
 
 const (

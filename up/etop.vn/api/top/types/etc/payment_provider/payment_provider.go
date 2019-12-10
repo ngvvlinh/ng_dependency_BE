@@ -1,6 +1,7 @@
 package payment_provider
 
 // +enum
+// +enum:zero=null
 type PaymentProvider int
 
 const (

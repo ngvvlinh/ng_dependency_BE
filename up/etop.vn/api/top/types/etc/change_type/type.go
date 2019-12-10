@@ -1,6 +1,7 @@
 package change_type
 
 // +enum
+// +enum:zero=null
 type ChangeType int
 
 const (

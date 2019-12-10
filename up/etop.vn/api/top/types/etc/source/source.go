@@ -1,6 +1,7 @@
 package source
 
 // +enum
+// +enum:zero=null
 type Source int
 
 const (

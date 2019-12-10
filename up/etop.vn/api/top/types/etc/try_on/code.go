@@ -1,6 +1,7 @@
 package try_on
 
 // +enum
+// +enum:zero=null
 type TryOnCode int
 
 const (

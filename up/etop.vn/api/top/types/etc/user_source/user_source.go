@@ -1,6 +1,7 @@
 package user_source
 
 // +enum
+// +enum:zero=null
 type UserSource int
 
 const (

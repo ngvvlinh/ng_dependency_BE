@@ -88,6 +88,9 @@ func (e *AccountType) UnmarshalJSON(data []byte) error {
 }
 
 func (e AccountType) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

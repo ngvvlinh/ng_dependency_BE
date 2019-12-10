@@ -84,6 +84,9 @@ func (e *ProductType) UnmarshalJSON(data []byte) error {
 }
 
 func (e ProductType) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

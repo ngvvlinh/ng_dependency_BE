@@ -82,6 +82,9 @@ func (e *PaymentProvider) UnmarshalJSON(data []byte) error {
 }
 
 func (e PaymentProvider) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

@@ -1,6 +1,7 @@
 package ghn_note_code
 
 // +enum
+// +enum:zero=null
 type GHNNoteCode int
 
 const (

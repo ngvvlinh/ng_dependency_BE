@@ -1,6 +1,7 @@
 package shipping_provider
 
 // +enum
+// +enum:zero=null
 type ShippingProvider int
 
 const (

@@ -104,6 +104,9 @@ func (e *State) UnmarshalJSON(data []byte) error {
 }
 
 func (e State) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

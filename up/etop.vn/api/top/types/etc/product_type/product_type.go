@@ -1,6 +1,7 @@
 package product_type
 
 // +enum
+// +enum:zero=null
 type ProductType int
 
 const (

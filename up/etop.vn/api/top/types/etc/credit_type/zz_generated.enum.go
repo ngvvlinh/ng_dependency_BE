@@ -80,6 +80,9 @@ func (e *CreditType) UnmarshalJSON(data []byte) error {
 }
 
 func (e CreditType) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

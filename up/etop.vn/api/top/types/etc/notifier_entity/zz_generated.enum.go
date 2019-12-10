@@ -84,6 +84,9 @@ func (e *NotifierEntity) UnmarshalJSON(data []byte) error {
 }
 
 func (e NotifierEntity) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

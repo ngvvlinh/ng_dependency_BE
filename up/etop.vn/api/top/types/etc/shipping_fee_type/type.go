@@ -1,6 +1,7 @@
 package shipping_fee_type
 
 // +enum
+// +enum:zero=null
 type ShippingFeeType int
 
 const (

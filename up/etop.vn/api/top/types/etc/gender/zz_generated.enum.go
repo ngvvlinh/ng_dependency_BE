@@ -86,6 +86,9 @@ func (e *Gender) UnmarshalJSON(data []byte) error {
 }
 
 func (e Gender) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
 	return e.String(), nil
 }
 

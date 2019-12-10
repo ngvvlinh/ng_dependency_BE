@@ -1,6 +1,7 @@
 package gender
 
 // +enum
+// +enum:zero=null
 type Gender int
 
 const (

@@ -6,6 +6,7 @@ import (
 )
 
 // +enum
+// +enum:zero=null
 type State int
 
 const (

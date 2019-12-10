@@ -2,6 +2,7 @@ package account_type
 
 // Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
 // +enum
+// +enum:zero=null
 type AccountType int
 
 const (

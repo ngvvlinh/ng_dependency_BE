@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"strings"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
 	exttypes "etop.vn/api/top/external/types"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	pbsource "etop.vn/api/top/types/etc/source"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"

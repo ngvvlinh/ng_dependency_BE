@@ -1,6 +1,7 @@
 package address_type
 
 // +enum
+// +enum:zero=null
 type AddressType int
 
 const (
