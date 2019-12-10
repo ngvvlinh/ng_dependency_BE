@@ -122,7 +122,8 @@ type CommonErrorResponse struct {
 }
 
 type CalcShippingFeeRequest struct {
-	OrderTime int `url:"order_time"`
+	Token     string `url:"token"`
+	OrderTime int    `url:"order_time"`
 	// IdleUntil: always set IdleUntil = OrderTime
 	IdleUntil      int                     `url:"idle_until"`
 	Path           string                  `url:"path"`

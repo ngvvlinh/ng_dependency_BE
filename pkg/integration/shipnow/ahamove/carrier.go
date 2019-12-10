@@ -146,11 +146,25 @@ func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.Cancel
 }
 
 func (c *Carrier) GetShippingServices(ctx context.Context, args shipnowcarrier.GetShippingServiceArgs) ([]*shipnowtypes.ShipnowService, error) {
+	queryShop := &identity.GetShopByIDQuery{
+		ID: args.ShopID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+		return nil, err
+	}
+	userID := queryShop.Result.OwnerID
+
+	token, err := getToken(ctx, userID)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
+	}
+
 	deliveryPoints, err := c.PrepareDeliveryPoints(ctx, args.PickupAddress, args.DeliveryPoints)
 	if err != nil {
 		return nil, err
 	}
 	request := &client.CalcShippingFeeRequest{
+		Token:          token,
 		OrderTime:      0,
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
