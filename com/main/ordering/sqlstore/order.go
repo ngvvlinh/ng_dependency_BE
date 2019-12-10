@@ -118,6 +118,7 @@ func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering
 	if args.ShopID != 0 {
 		x = x.Where("shop_id = ?", args.ShopID)
 	}
+
 	var results model.Orders
 	err = x.Find(&results)
 	return convert.Orders(results), err

@@ -51,6 +51,7 @@ type InventoryVoucher struct {
 	ConfirmedAt  time.Time
 	CancelledAt  time.Time
 	CancelReason string
+	ProductIDs   []dot.ID
 }
 
 type InventoryVoucherItem struct {

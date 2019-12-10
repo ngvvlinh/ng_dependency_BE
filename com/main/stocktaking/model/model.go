@@ -28,6 +28,7 @@ type ShopStocktake struct {
 	CancelledAt   time.Time
 	Lines         []*StocktakeLine
 	Note          string
+	ProductIDs    []dot.ID
 }
 
 type StocktakeLine struct {

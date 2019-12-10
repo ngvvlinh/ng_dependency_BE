@@ -161,6 +161,8 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.TraderFullNameNorm = ""       // zero value
+	out.TraderPhoneNorm = ""          // zero value
+	out.TraderType = ""               // zero value
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
 	out.RefIDs = arg.RefIDs           // simple assign

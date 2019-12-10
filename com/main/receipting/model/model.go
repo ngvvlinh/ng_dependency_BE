@@ -23,6 +23,8 @@ type Receipt struct {
 	Type               receipt_type.ReceiptType
 	Description        string
 	TraderFullNameNorm string
+	TraderPhoneNorm    string
+	TraderType         string
 
 	Amount          int
 	Status          status3.Status

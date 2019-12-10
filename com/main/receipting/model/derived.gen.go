@@ -30,7 +30,7 @@ func sqlgenReceipt(_ *Receipt) bool { return true }
 type Receipts []*Receipt
 
 const __sqlReceipt_Table = "receipt"
-const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"code_norm\",\"title\",\"type\",\"description\",\"trader_full_name_norm\",\"amount\",\"status\",\"ref_ids\",\"ref_type\",\"lines\",\"ledger_id\",\"trader\",\"cancelled_reason\",\"created_type\",\"created_by\",\"paid_at\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"code_norm\",\"title\",\"type\",\"description\",\"trader_full_name_norm\",\"trader_type\",\"amount\",\"status\",\"ref_ids\",\"ref_type\",\"lines\",\"ledger_id\",\"trader\",\"cancelled_reason\",\"created_type\",\"created_by\",\"paid_at\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlReceipt_Insert = "INSERT INTO \"receipt\" (" + __sqlReceipt_ListCols + ") VALUES"
 const __sqlReceipt_Select = "SELECT " + __sqlReceipt_ListCols + " FROM \"receipt\""
 const __sqlReceipt_Select_history = "SELECT " + __sqlReceipt_ListCols + " FROM history.\"receipt\""
@@ -63,6 +63,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Type,
 		core.String(m.Description),
 		core.String(m.TraderFullNameNorm),
+		core.String(m.TraderType),
 		core.Int(m.Amount),
 		m.Status,
 		core.Array{m.RefIDs, opts},
@@ -93,6 +94,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Type,
 		(*core.String)(&m.Description),
 		(*core.String)(&m.TraderFullNameNorm),
+		(*core.String)(&m.TraderType),
 		(*core.Int)(&m.Amount),
 		&m.Status,
 		core.Array{&m.RefIDs, opts},
@@ -146,7 +148,7 @@ func (_ *Receipts) SQLSelect(w SQLWriter) error {
 func (m *Receipt) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -156,7 +158,7 @@ func (ms Receipts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -242,6 +244,14 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.TraderFullNameNorm)
+	}
+	if m.TraderType != "" {
+		flag = true
+		w.WriteName("trader_type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TraderType)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -381,7 +391,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 func (m *Receipt) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -414,6 +424,7 @@ func (m ReceiptHistory) Description() core.Interface { return core.Interface{m["
 func (m ReceiptHistory) TraderFullNameNorm() core.Interface {
 	return core.Interface{m["trader_full_name_norm"]}
 }
+func (m ReceiptHistory) TraderType() core.Interface      { return core.Interface{m["trader_type"]} }
 func (m ReceiptHistory) Amount() core.Interface          { return core.Interface{m["amount"]} }
 func (m ReceiptHistory) Status() core.Interface          { return core.Interface{m["status"]} }
 func (m ReceiptHistory) RefIDs() core.Interface          { return core.Interface{m["ref_ids"]} }
@@ -432,15 +443,15 @@ func (m ReceiptHistory) UpdatedAt() core.Interface       { return core.Interface
 func (m ReceiptHistory) DeletedAt() core.Interface       { return core.Interface{m["deleted_at"]} }
 
 func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ReceiptHistory, 25)
+	res := make(ReceiptHistory, 26)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["trader_id"] = data[2]
@@ -450,30 +461,31 @@ func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["type"] = data[6]
 	res["description"] = data[7]
 	res["trader_full_name_norm"] = data[8]
-	res["amount"] = data[9]
-	res["status"] = data[10]
-	res["ref_ids"] = data[11]
-	res["ref_type"] = data[12]
-	res["lines"] = data[13]
-	res["ledger_id"] = data[14]
-	res["trader"] = data[15]
-	res["cancelled_reason"] = data[16]
-	res["created_type"] = data[17]
-	res["created_by"] = data[18]
-	res["paid_at"] = data[19]
-	res["confirmed_at"] = data[20]
-	res["cancelled_at"] = data[21]
-	res["created_at"] = data[22]
-	res["updated_at"] = data[23]
-	res["deleted_at"] = data[24]
+	res["trader_type"] = data[9]
+	res["amount"] = data[10]
+	res["status"] = data[11]
+	res["ref_ids"] = data[12]
+	res["ref_type"] = data[13]
+	res["lines"] = data[14]
+	res["ledger_id"] = data[15]
+	res["trader"] = data[16]
+	res["cancelled_reason"] = data[17]
+	res["created_type"] = data[18]
+	res["created_by"] = data[19]
+	res["paid_at"] = data[20]
+	res["confirmed_at"] = data[21]
+	res["cancelled_at"] = data[22]
+	res["created_at"] = data[23]
+	res["updated_at"] = data[24]
+	res["deleted_at"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ReceiptHistories, 0, 128)
@@ -491,22 +503,23 @@ func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["type"] = data[6]
 		m["description"] = data[7]
 		m["trader_full_name_norm"] = data[8]
-		m["amount"] = data[9]
-		m["status"] = data[10]
-		m["ref_ids"] = data[11]
-		m["ref_type"] = data[12]
-		m["lines"] = data[13]
-		m["ledger_id"] = data[14]
-		m["trader"] = data[15]
-		m["cancelled_reason"] = data[16]
-		m["created_type"] = data[17]
-		m["created_by"] = data[18]
-		m["paid_at"] = data[19]
-		m["confirmed_at"] = data[20]
-		m["cancelled_at"] = data[21]
-		m["created_at"] = data[22]
-		m["updated_at"] = data[23]
-		m["deleted_at"] = data[24]
+		m["trader_type"] = data[9]
+		m["amount"] = data[10]
+		m["status"] = data[11]
+		m["ref_ids"] = data[12]
+		m["ref_type"] = data[13]
+		m["lines"] = data[14]
+		m["ledger_id"] = data[15]
+		m["trader"] = data[16]
+		m["cancelled_reason"] = data[17]
+		m["created_type"] = data[18]
+		m["created_by"] = data[19]
+		m["paid_at"] = data[20]
+		m["confirmed_at"] = data[21]
+		m["cancelled_at"] = data[22]
+		m["created_at"] = data[23]
+		m["updated_at"] = data[24]
+		m["deleted_at"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

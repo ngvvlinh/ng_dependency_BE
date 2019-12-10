@@ -182,7 +182,6 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	if err != nil {
 		return resp, err
 	}
-
 	// Compare fulfillments for retry/update
 	creates, updates, err := compareFulfillments(order, query.Result.Fulfillments, ffm)
 	if err != nil {
@@ -361,6 +360,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	if order.ShopShipping == nil {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng chọn dịch vụ giao hàng.", nil)
 	}
+	ffm.CreatedBy = order.CreatedBy
 	return ffm, nil
 }
 

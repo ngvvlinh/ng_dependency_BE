@@ -175,6 +175,25 @@ func (ft *ShopSupplierFilters) ByCompanyNamePtr(CompanyName *string) *sq.ColumnF
 	}
 }
 
+func (ft *ShopSupplierFilters) ByCompanyNameNorm(CompanyNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "company_name_norm",
+		Value:  CompanyNameNorm,
+		IsNil:  CompanyNameNorm == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCompanyNameNormPtr(CompanyNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "company_name_norm",
+		Value:  CompanyNameNorm,
+		IsNil:  CompanyNameNorm == nil,
+		IsZero: CompanyNameNorm != nil && (*CompanyNameNorm) == "",
+	}
+}
+
 func (ft *ShopSupplierFilters) ByTaxNumber(TaxNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

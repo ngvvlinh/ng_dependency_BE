@@ -106,6 +106,7 @@ func (s *SupplierStore) CreateSupplier(supplier *suppliering.ShopSupplier) error
 	}
 	supplierDB.PhoneNorm = validate.NormalizeSearchPhone(supplierDB.Phone)
 	supplierDB.FullNameNorm = validate.NormalizeSearch(supplierDB.FullName)
+	supplierDB.CompanyNameNorm = validate.NormalizeSearch(supplierDB.CompanyName)
 	if _, err := s.query().Insert(trader, supplierDB); err != nil {
 		return err
 	}
@@ -125,6 +126,7 @@ func (s *SupplierStore) UpdateSupplierDB(supplier *model.ShopSupplier) error {
 	sqlstore.MustNoPreds(s.preds)
 	supplier.PhoneNorm = validate.NormalizeSearchPhone(supplier.Phone)
 	supplier.FullNameNorm = validate.NormalizeSearch(supplier.FullName)
+	supplier.CompanyNameNorm = validate.NormalizeSearch(supplier.CompanyNameNorm)
 	err := s.query().Where(s.ft.ByID(supplier.ID)).UpdateAll().ShouldUpdate(supplier)
 	return err
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	st "etop.vn/api/main/stocktaking"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/stocktaking/convert"
 	"etop.vn/backend/com/main/stocktaking/model"
 	cm "etop.vn/backend/pkg/common"
@@ -33,14 +34,23 @@ func NewStocktakeStore(db *cmsql.Database) ShopStocktakeFactory {
 }
 
 type ShopStocktakeStore struct {
-	query  cmsql.QueryFactory
-	ft     ShopStocktakeFilters
-	paging *cm.Paging
-	preds  []interface{}
+	query   cmsql.QueryFactory
+	ft      ShopStocktakeFilters
+	paging  *cm.Paging
+	filters meta.Filters
+	preds   []interface{}
 }
 
 func (s *ShopStocktakeStore) Paging(page *cm.Paging) *ShopStocktakeStore {
 	s.paging = page
+	return s
+}
+func (s *ShopStocktakeStore) Filters(filters meta.Filters) *ShopStocktakeStore {
+	if s.filters == nil {
+		s.filters = filters
+	} else {
+		s.filters = append(s.filters, filters...)
+	}
 	return s
 }
 
@@ -75,6 +85,10 @@ func (s *ShopStocktakeStore) Update(stocktake *st.ShopStocktake) error {
 	if err != nil {
 		return err
 	}
+	var productIDs []dot.ID
+	for _, value := range stocktake.Lines {
+		productIDs = append(productIDs, value.ProductID)
+	}
 	if err = s.query().Where(s.preds).ShouldUpdate(stocktakeDB); err != nil {
 		return err
 	}
@@ -87,11 +101,21 @@ func (s *ShopStocktakeStore) UpdateAll(stocktake *st.ShopStocktake) error {
 	if err != nil {
 		return err
 	}
+	var productIDs []dot.ID
+	for _, value := range stocktake.Lines {
+		productIDs = append(productIDs, value.ProductID)
+	}
+	stocktakeDB.ProductIDs = productIDs
 	return s.query().Where(s.preds).UpdateAll().ShouldUpdate(stocktakeDB)
 }
 
 func (s *ShopStocktakeStore) CreateStocktakeDB(stocktake *model.ShopStocktake) error {
 	query := s.query().Where(s.preds)
+	var productIDs []dot.ID
+	for _, value := range stocktake.Lines {
+		productIDs = append(productIDs, value.ProductID)
+	}
+	stocktake.ProductIDs = productIDs
 	return query.ShouldInsert(stocktake)
 }
 
@@ -131,7 +155,10 @@ func (s *ShopStocktakeStore) ListShopStocktakeDB() ([]*model.ShopStocktake, erro
 	if err != nil {
 		return nil, err
 	}
-
+	query, _, err = sqlstore.Filters(query, s.filters, FilterStocktake)
+	if err != nil {
+		return nil, err
+	}
 	var stocktakes model.ShopStocktakes
 	err = query.Find(&stocktakes)
 	return stocktakes, err

@@ -164,7 +164,7 @@ func (c *Carrier) CreateFulfillment(
 	if err := c.GetOrder(ctx, ghnGetOrderCmd); err == nil {
 		updateFfm.ProviderShippingFeeLines = ghnclient.CalcAndConvertShippingFeeLines(ghnGetOrderCmd.Result.ShippingOrderCosts)
 	}
-
+	updateFfm.CreatedBy = order.CreatedBy
 	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, dot.Int(updateFfm.EtopAdjustedShippingFeeMain))
 	return updateFfm, nil
 }

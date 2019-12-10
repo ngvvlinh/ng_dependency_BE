@@ -232,6 +232,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.ConfirmedAt = arg.ConfirmedAt   // simple assign
 	out.CancelledAt = arg.CancelledAt   // simple assign
 	out.CancelReason = arg.CancelReason // simple assign
+	out.ProductIDs = nil                // zero value
 }
 
 func Convert_inventory_InventoryVouchers_inventorymodel_InventoryVouchers(args []*inventory.InventoryVoucher) (outs []*inventorymodel.InventoryVoucher) {

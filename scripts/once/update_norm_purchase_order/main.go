@@ -68,7 +68,7 @@ func main() {
 				Where("id = ?", purchaseOrder.ID).
 				ShouldUpdateMap(update)
 			if err != nil {
-				ll.S.Fatalf("can't update receipt id=%v", purchaseOrder.ID)
+				ll.S.Fatalf("can't update purchase_order id=%v", purchaseOrder.ID)
 			}
 			updated++
 		}

@@ -17,6 +17,6 @@ var SortSupplier = map[string]string{
 }
 
 var FilterSupplier = sqlstore.FilterWhitelist{
-	Contains: []string{"full_name", "phone"},
-	Equals:   []string{"email"},
+	Contains: []string{"full_name", "phone", "company_name"},
+	Equals:   []string{"email", "code"},
 }

@@ -19,6 +19,7 @@ type ShopSupplier struct {
 	Code              string
 	CodeNorm          int
 	CompanyName       string
+	CompanyNameNorm   string
 	TaxNumber         string
 	HeadquaterAddress string
 	Note              string

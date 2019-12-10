@@ -68,9 +68,9 @@ var SortShopBrand = map[string]string{
 var FilterShopProduct = sqlstore.FilterWhitelist{
 	Arrays:   []string{"tags"},
 	Contains: []string{"external_name", "name"},
-	Equals:   []string{"external_code", "external_base_id", "external_id", "collection_id"},
+	Equals:   []string{"external_code", "external_base_id", "external_id", "collection_id", "code"},
 	Status:   []string{"external_status", "ed_status", "status", "etop_status"},
-	Numbers:  []string{"retail_price"},
+	Numbers:  []string{"retail_price", "list_price"},
 	Dates:    []string{"created_at", "updated_at"},
 	Unaccent: []string{"product.name"},
 

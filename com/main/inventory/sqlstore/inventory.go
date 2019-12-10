@@ -103,6 +103,7 @@ func (s *InventoryStore) ListInventoryDB() ([]*model.InventoryVariant, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	var addrs model.InventoryVariants
 	err = query.Find(&addrs)
 	return addrs, err

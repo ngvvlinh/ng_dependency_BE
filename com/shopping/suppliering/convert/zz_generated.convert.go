@@ -114,6 +114,7 @@ func convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *supplie
 	out.Code = arg.Code                           // simple assign
 	out.CodeNorm = arg.CodeNorm                   // simple assign
 	out.CompanyName = arg.CompanyName             // simple assign
+	out.CompanyNameNorm = ""                      // zero value
 	out.TaxNumber = arg.TaxNumber                 // simple assign
 	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
 	out.Note = arg.Note                           // simple assign

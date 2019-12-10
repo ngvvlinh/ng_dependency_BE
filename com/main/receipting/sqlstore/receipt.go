@@ -188,6 +188,8 @@ func (s *ReceiptStore) CreateReceipt(receipt *receipting.Receipt) error {
 	receiptDB.Lines = convert.Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(receipt.Lines)
 	if receiptDB.Trader != nil {
 		receiptDB.TraderFullNameNorm = validate.NormalizeSearch(receiptDB.Trader.FullName)
+		receiptDB.TraderType = receiptDB.Trader.Type
+		receiptDB.TraderPhoneNorm = validate.NormalizeSearchPhone(receiptDB.Trader.Phone)
 	}
 	if _, err := s.query().Insert(receiptDB); err != nil {
 		return err
@@ -207,6 +209,8 @@ func (s *ReceiptStore) UpdateReceiptDB(receipt *model.Receipt) error {
 	sqlstore.MustNoPreds(s.preds)
 	if receipt.Trader != nil {
 		receipt.TraderFullNameNorm = validate.NormalizeSearch(receipt.Trader.FullName)
+		receipt.TraderType = receipt.Trader.Type
+		receipt.TraderPhoneNorm = validate.NormalizeSearchPhone(receipt.Trader.Phone)
 	}
 	err := s.query().Where(
 		s.ft.ByID(receipt.ID),
