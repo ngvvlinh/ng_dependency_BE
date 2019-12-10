@@ -7,6 +7,8 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
+
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/int/types"
 	pbsheet "etop.vn/api/top/int/types/spreadsheet"
@@ -89,7 +91,7 @@ type Importer struct {
 	Schema      imcsv.Schema
 	Mode        Mode
 	CodeMode    Mode
-	GHNNoteCode string // postcheck_note
+	GHNNoteCode ghn_note_code.GHNNoteCode // postcheck_note
 
 	Rows    [][]string
 	LastRow int

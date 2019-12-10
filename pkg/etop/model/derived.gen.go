@@ -1089,7 +1089,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
 		core.Array{m.RecognizedHosts, opts},
-		core.String(m.GhnNoteCode),
+		m.GhnNoteCode,
 		m.TryOn,
 		core.JSON{m.CompanyInfo},
 		core.String(m.MoneyTransactionRRule),
@@ -1121,7 +1121,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
 		core.Array{&m.RecognizedHosts, opts},
-		(*core.String)(&m.GhnNoteCode),
+		&m.GhnNoteCode,
 		&m.TryOn,
 		core.JSON{&m.CompanyInfo},
 		(*core.String)(&m.MoneyTransactionRRule),
@@ -1350,7 +1350,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.RecognizedHosts, opts})
 	}
-	if m.GhnNoteCode != "" {
+	if m.GhnNoteCode != 0 {
 		flag = true
 		w.WriteName("ghn_note_code")
 		w.WriteByte('=')

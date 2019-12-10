@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
+
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
@@ -145,9 +147,9 @@ const (
 	GHNNoteChoXemHang   = "cho xem hang khong thu"
 	GHNNoteKhongXemHang = "khong cho xem hang"
 
-	GHNNoteCodeChoThuHang   = "CHOTHUHANG"
-	GHNNoteCodeChoXemHang   = "CHOXEMHANGKHONGTHU"
-	GHNNoteCodeKhongXemHang = "KHONGCHOXEMHANG"
+	GHNNoteCodeChoThuHang   = ghn_note_code.CHOTHUHANG
+	GHNNoteCodeChoXemHang   = ghn_note_code.CHOXEMHANGKHONGTHU
+	GHNNoteCodeKhongXemHang = ghn_note_code.KHONGCHOXEMHANG
 
 	TryOnNone = try_on.None
 	TryOnOpen = try_on.Open
@@ -294,7 +296,7 @@ func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
 	return false
 }
 
-func TryOnFromGHNNoteCode(c string) try_on.TryOnCode {
+func TryOnFromGHNNoteCode(c ghn_note_code.GHNNoteCode) try_on.TryOnCode {
 	switch c {
 	case GHNNoteCodeKhongXemHang:
 		return TryOnNone
@@ -307,7 +309,7 @@ func TryOnFromGHNNoteCode(c string) try_on.TryOnCode {
 	}
 }
 
-func GHNNoteCodeFromTryOn(to try_on.TryOnCode) string {
+func GHNNoteCodeFromTryOn(to try_on.TryOnCode) ghn_note_code.GHNNoteCode {
 	switch to {
 	case TryOnNone:
 		return GHNNoteCodeKhongXemHang
@@ -316,7 +318,7 @@ func GHNNoteCodeFromTryOn(to try_on.TryOnCode) string {
 	case TryOnTry:
 		return GHNNoteCodeChoThuHang
 	default:
-		return ""
+		return 0
 	}
 }
 
@@ -388,7 +390,7 @@ type Shop struct {
 	RecognizedHosts []string
 
 	// @deprecated use try_on instead
-	GhnNoteCode string
+	GhnNoteCode ghn_note_code.GHNNoteCode
 	TryOn       try_on.TryOnCode
 	CompanyInfo *CompanyInfo
 	// MoneyTransactionRRule format:

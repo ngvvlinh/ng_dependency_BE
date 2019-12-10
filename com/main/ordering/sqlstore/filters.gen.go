@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
@@ -827,22 +828,22 @@ func (ft *OrderFilters) ByIsOutsideEtopPtr(IsOutsideEtop *bool) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderFilters) ByGhnNoteCode(GhnNoteCode string) *sq.ColumnFilter {
+func (ft *OrderFilters) ByGhnNoteCode(GhnNoteCode ghn_note_code.GHNNoteCode) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ghn_note_code",
 		Value:  GhnNoteCode,
-		IsNil:  GhnNoteCode == "",
+		IsNil:  GhnNoteCode == 0,
 	}
 }
 
-func (ft *OrderFilters) ByGhnNoteCodePtr(GhnNoteCode *string) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByGhnNoteCodePtr(GhnNoteCode *ghn_note_code.GHNNoteCode) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ghn_note_code",
 		Value:  GhnNoteCode,
 		IsNil:  GhnNoteCode == nil,
-		IsZero: GhnNoteCode != nil && (*GhnNoteCode) == "",
+		IsZero: GhnNoteCode != nil && (*GhnNoteCode) == 0,
 	}
 }
 

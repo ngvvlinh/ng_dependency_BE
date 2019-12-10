@@ -107,7 +107,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 			Email:                         q.Email,
 			Address:                       address,
 			TryOn:                         q.TryOn.Apply(0),
-			GhnNoteCode:                   q.GhnNoteCode.Apply(0).String(),
+			GhnNoteCode:                   q.GhnNoteCode.Apply(0),
 			CompanyInfo:                   convertpb.CompanyInfoToModel(q.CompanyInfo),
 			MoneyTransactionRRule:         q.MoneyTransactionRrule,
 			SurveyInfo:                    convertpb.SurveyInfosToModel(q.SurveyInfo),

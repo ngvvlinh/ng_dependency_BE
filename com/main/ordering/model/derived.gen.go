@@ -108,7 +108,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ExternalURL),
 		core.JSON{m.ShopShipping},
 		core.Bool(m.IsOutsideEtop),
-		core.String(m.GhnNoteCode),
+		m.GhnNoteCode,
 		m.TryOn,
 		core.String(m.CustomerNameNorm),
 		core.String(m.ProductNameNorm),
@@ -180,7 +180,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExternalURL),
 		core.JSON{&m.ShopShipping},
 		(*core.Bool)(&m.IsOutsideEtop),
-		(*core.String)(&m.GhnNoteCode),
+		&m.GhnNoteCode,
 		&m.TryOn,
 		(*core.String)(&m.CustomerNameNorm),
 		(*core.String)(&m.ProductNameNorm),
@@ -687,7 +687,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IsOutsideEtop)
 	}
-	if m.GhnNoteCode != "" {
+	if m.GhnNoteCode != 0 {
 		flag = true
 		w.WriteName("ghn_note_code")
 		w.WriteByte('=')

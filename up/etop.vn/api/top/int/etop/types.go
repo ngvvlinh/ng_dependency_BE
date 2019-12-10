@@ -4,6 +4,7 @@ import (
 	common "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
 	address_type "etop.vn/api/top/types/etc/address_type"
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	status3 "etop.vn/api/top/types/etc/status3"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	user_source "etop.vn/api/top/types/etc/user_source"
@@ -291,11 +292,11 @@ type Shop struct {
 	ShipToAddressId    dot.ID         `json:"ship_to_address_id"`
 	ShipFromAddressId  dot.ID         `json:"ship_from_address_id"`
 	// @deprecated use try_on instead
-	GhnNoteCode string           `json:"ghn_note_code"`
-	TryOn       try_on.TryOnCode `json:"try_on"`
-	OwnerId     dot.ID           `json:"owner_id"`
-	User        *User            `json:"user"`
-	CompanyInfo *CompanyInfo     `json:"company_info"`
+	GhnNoteCode ghn_note_code.GHNNoteCode `json:"ghn_note_code,omitempty"`
+	TryOn       try_on.TryOnCode          `json:"try_on"`
+	OwnerId     dot.ID                    `json:"owner_id"`
+	User        *User                     `json:"user"`
+	CompanyInfo *CompanyInfo              `json:"company_info"`
 	// referrence: https://icalendar.org/rrule-tool.html
 	MoneyTransactionRrule         string                               `json:"money_transaction_rrule"`
 	SurveyInfo                    []*SurveyInfo                        `json:"survey_info"`

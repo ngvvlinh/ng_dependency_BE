@@ -32,7 +32,7 @@ func ShopDB(in *identity.Shop) (out *model.Shop) {
 		DeletedAt:                     in.DeletedAt,
 		Address:                       nil,
 		RecognizedHosts:               nil,
-		GhnNoteCode:                   "",
+		GhnNoteCode:                   0,
 		TryOn:                         0,
 		CompanyInfo:                   nil,
 		MoneyTransactionRRule:         "",

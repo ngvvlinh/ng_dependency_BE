@@ -500,7 +500,7 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 	if m.TryOn != 0 {
 		mo.TryOn = m.TryOn
 		mo.GhnNoteCode = model.GHNNoteCodeFromTryOn(m.TryOn)
-	} else if mo.GhnNoteCode != "" {
+	} else if mo.GhnNoteCode != 0 {
 		mo.TryOn = model.TryOnFromGHNNoteCode(mo.GhnNoteCode)
 	}
 

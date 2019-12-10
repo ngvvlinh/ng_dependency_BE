@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
+
 	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
 
 	"etop.vn/api/top/types/etc/status5"
@@ -71,9 +73,9 @@ func (c *Carrier) CreateFulfillment(
 
 	note := shipping_provider.GetShippingProviderNote(order, ffm)
 	noteCode := order.GhnNoteCode
-	if noteCode == "" {
+	if noteCode == 0 {
 		// harcode
-		noteCode = "CHOXEMHANGKHONGTHU"
+		noteCode = ghn_note_code.CHOXEMHANGKHONGTHU
 	}
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
@@ -98,7 +100,7 @@ func (c *Carrier) CreateFulfillment(
 			CustomerPhone:      ffm.AddressTo.Phone,
 			ShippingAddress:    ffm.AddressTo.GetFullAddress(),
 			CoDAmount:          ffm.TotalCODAmount,
-			NoteCode:           noteCode,
+			NoteCode:           noteCode.String(), // TODO: convert to try on code
 			Weight:             args.ChargeableWeight,
 			Length:             args.Length,
 			Width:              args.Width,

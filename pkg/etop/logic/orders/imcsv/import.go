@@ -412,7 +412,7 @@ func checkOrderRowNLines(idx imcsv.Indexer, r int, rows [][]string, idxCode, idx
 	return nil
 }
 
-func parseRows(idx imcsv.Indexer, mode Mode, ghnNoteCode string, rows [][]string) (orders []*RowOrder, _errs []error, _ error) {
+func parseRows(idx imcsv.Indexer, mode Mode, ghnNoteCode ghn_note_code.GHNNoteCode, rows [][]string) (orders []*RowOrder, _errs []error, _ error) {
 	var currentRowOrder, rowOrder *RowOrder
 
 	// Skip the first row
@@ -427,7 +427,7 @@ func parseRows(idx imcsv.Indexer, mode Mode, ghnNoteCode string, rows [][]string
 	return orders, _errs, nil
 }
 
-func parseRow(idx imcsv.Indexer, mode Mode, ghnNoteCode string, r int, row []string, currentRowOrder *RowOrder, _errs []error) (*RowOrder, []error) {
+func parseRow(idx imcsv.Indexer, mode Mode, ghnNoteCode ghn_note_code.GHNNoteCode, r int, row []string, currentRowOrder *RowOrder, _errs []error) (*RowOrder, []error) {
 	code := idx.GetCell(row, idxOrderEdCode)
 	if code == "" {
 		return nil, _errs
@@ -461,7 +461,7 @@ func parseRow(idx imcsv.Indexer, mode Mode, ghnNoteCode string, r int, row []str
 	}
 }
 
-func parseRowAsOrder(idx imcsv.Indexer, mode Mode, ghnNoteCode string, r int, row []string) (_ *RowOrder, errs []error) {
+func parseRowAsOrder(idx imcsv.Indexer, mode Mode, ghnNoteCode ghn_note_code.GHNNoteCode, r int, row []string) (_ *RowOrder, errs []error) {
 	var col int
 	var rowOrder RowOrder
 
@@ -485,7 +485,7 @@ func parseRowAsOrder(idx imcsv.Indexer, mode Mode, ghnNoteCode string, r int, ro
 	}
 
 	col = idxShippingNoteGhn
-	if ghnNoteCode == "" {
+	if ghnNoteCode == 0 {
 		ghnNoteCode, err = parseAsGHNNoteCode(idx.GetCell(row, col))
 		if err != nil {
 			err = imcsv.CellError(idx, r, col, err.Error())
@@ -682,33 +682,33 @@ func parseRowAsOrderLine(idx imcsv.Indexer, mode Mode, r int, row []string) (_ *
 	return line, errs
 }
 
-func parseAsGHNNoteCode(v string) (string, error) {
+func parseAsGHNNoteCode(v string) (ghn_note_code.GHNNoteCode, error) {
 	switch v {
 	case "":
-		return "", nil
+		return 0, nil
 	case "Cho xem hàng không thử",
 		ghn_note_code.CHOXEMHANGKHONGTHU.String():
-		return ghn_note_code.CHOXEMHANGKHONGTHU.String(), nil
+		return ghn_note_code.CHOXEMHANGKHONGTHU, nil
 	case "Cho thử hàng",
 		ghn_note_code.CHOTHUHANG.String():
-		return ghn_note_code.CHOTHUHANG.String(), nil
+		return ghn_note_code.CHOTHUHANG, nil
 	case "Không cho xem hàng",
 		ghn_note_code.KHONGCHOXEMHANG.String():
-		return ghn_note_code.KHONGCHOXEMHANG.String(), nil
+		return ghn_note_code.KHONGCHOXEMHANG, nil
 	}
 
 	ghnNote := validate.NormalizeSearchSimple(v)
 	switch ghnNote {
 	case "":
-		return "", nil
+		return 0, nil
 	case model.GHNNoteChoXemHang:
-		return ghn_note_code.CHOXEMHANGKHONGTHU.String(), nil
+		return ghn_note_code.CHOXEMHANGKHONGTHU, nil
 	case model.GHNNoteChoThuHang:
-		return ghn_note_code.CHOTHUHANG.String(), nil
+		return ghn_note_code.CHOTHUHANG, nil
 	case model.GHNNoteKhongXemHang:
-		return ghn_note_code.KHONGCHOXEMHANG.String(), nil
+		return ghn_note_code.KHONGCHOXEMHANG, nil
 	default:
-		return "", errors.New("Ghi chú xem hàng không hợp lệ, cần một trong các giá trị: 'Cho thử hàng', 'Cho xem hàng không thử', 'Không cho xem hàng'.")
+		return 0, errors.New("Ghi chú xem hàng không hợp lệ, cần một trong các giá trị: 'Cho thử hàng', 'Cho xem hàng không thử', 'Không cho xem hàng'.")
 	}
 }
 

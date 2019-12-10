@@ -969,7 +969,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ExternalURL:                m.ExternalUrl,
 		ShopShipping:               nil, // will be filled later
 		IsOutsideEtop:              false,
-		GhnNoteCode:                m.GhnNoteCode.String(),
+		GhnNoteCode:                m.GhnNoteCode,
 		TryOn:                      tryOn,
 		CustomerNameNorm:           "",
 		ProductNameNorm:            "",

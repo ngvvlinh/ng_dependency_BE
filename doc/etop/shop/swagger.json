@@ -5239,7 +5239,7 @@
           }
         },
         "ghn_note_code": {
-          "type": "string"
+          "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
           "type": "string",
@@ -10538,7 +10538,7 @@
           }
         },
         "ghn_note_code": {
-          "type": "string"
+          "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
           "type": "string",

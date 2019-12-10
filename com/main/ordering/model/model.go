@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
+
 	"etop.vn/api/top/types/etc/shipping_provider"
 
 	"etop.vn/api/top/types/etc/try_on"
@@ -115,7 +117,7 @@ type Order struct {
 	IsOutsideEtop   bool
 
 	// @deprecated: use try_on instead
-	GhnNoteCode string
+	GhnNoteCode ghn_note_code.GHNNoteCode
 	TryOn       try_on.TryOnCode
 
 	CustomerNameNorm string
@@ -180,7 +182,7 @@ func (m *Order) GetTryOn() try_on.TryOnCode {
 }
 
 func (m *Order) BeforeInsert() error {
-	if m.TryOn == 0 && m.GhnNoteCode != "" {
+	if m.TryOn == 0 && m.GhnNoteCode != 0 {
 		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
 	if m.ShopShipping != nil {
@@ -203,7 +205,7 @@ func (m *Order) BeforeInsert() error {
 }
 
 func (m *Order) BeforeUpdate() error {
-	if m.TryOn == 0 && m.GhnNoteCode != "" {
+	if m.TryOn == 0 && m.GhnNoteCode != 0 {
 		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
 	if m.ShopShipping != nil && m.ShopShipping.ShippingProvider != 0 {

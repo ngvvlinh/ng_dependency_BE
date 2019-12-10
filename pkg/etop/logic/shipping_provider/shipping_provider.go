@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/top/types/etc/ghn_note_code"
+
 	"etop.vn/api/top/types/etc/shipping_provider"
 
 	"etop.vn/api/top/types/etc/status4"
@@ -148,9 +150,9 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 
 	// note := GetShippingProviderNote(order, ffm)
 	noteCode := order.GhnNoteCode
-	if noteCode == "" {
+	if noteCode == 0 {
 		// harcode
-		noteCode = "CHOXEMHANGKHONGTHU"
+		noteCode = ghn_note_code.CHOXEMHANGKHONGTHU
 	}
 
 	args := GetShippingServicesArgs{

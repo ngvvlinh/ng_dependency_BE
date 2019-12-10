@@ -494,7 +494,7 @@
           }
         },
         "ghn_note_code": {
-          "type": "string"
+          "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
           "type": "string",
@@ -743,6 +743,15 @@
           "type": "string"
         }
       }
+    },
+    "pjGHNNoteCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "CHOTHUHANG",
+        "CHOXEMHANGKHONGTHU",
+        "KHONGCHOXEMHANG"
+      ]
     },
     "puLoginAsAccountRequest": {
       "type": "object",

@@ -304,7 +304,7 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 
 func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) (*shipmodel.Fulfillment, error) {
 	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == shipping_provider2.GHN {
-		if order.GhnNoteCode == "" {
+		if order.TryOn == 0 && order.GhnNoteCode == 0 {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
 		}
 	}

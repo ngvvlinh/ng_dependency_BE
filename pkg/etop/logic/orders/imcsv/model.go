@@ -2,6 +2,7 @@ package imcsv
 
 import (
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/imcsv"
 )
@@ -227,7 +228,7 @@ type RowOrder struct {
 	ShippingDistrict string
 	ShippingWard     string
 	ShippingNote     string
-	GHNNoteCode      string
+	GHNNoteCode      ghn_note_code.GHNNoteCode
 
 	BasketValue           int
 	BasketValueDiscounted int
@@ -293,7 +294,7 @@ func (m *RowOrder) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {
 	// }
 
 	col = idxShippingNoteGhn
-	if mode == ModeFulfillment && m.GHNNoteCode == "" {
+	if mode == ModeFulfillment && m.GHNNoteCode == 0 {
 		errs = append(errs, imcsv.CellError(idx, r, col, "%v không được để trống.", schema[col].Display))
 	}
 

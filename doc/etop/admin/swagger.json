@@ -1380,7 +1380,7 @@
           }
         },
         "ghn_note_code": {
-          "type": "string"
+          "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
           "type": "string",
@@ -1793,6 +1793,15 @@
         "other",
         "shipping",
         "tax"
+      ]
+    },
+    "pjGHNNoteCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "CHOTHUHANG",
+        "CHOXEMHANGKHONGTHU",
+        "KHONGCHOXEMHANG"
       ]
     },
     "pwGender": {
@@ -2524,7 +2533,7 @@
           }
         },
         "ghn_note_code": {
-          "type": "string"
+          "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
           "type": "string",

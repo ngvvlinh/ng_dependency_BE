@@ -99,9 +99,9 @@ type Order struct {
 	ShopShipping *OrderShipping `json:"shop_shipping"`
 	Shipping     *OrderShipping `json:"shipping"`
 	// @deprecated use try_on_code instead
-	GhnNoteCode     string   `json:"ghn_note_code"`
-	FulfillmentType string   `json:"fulfillment_type"`
-	FulfillmentIds  []dot.ID `json:"fulfillment_ids"`
+	GhnNoteCode     ghn_note_code.GHNNoteCode `json:"ghn_note_code,omitempty"`
+	FulfillmentType string                    `json:"fulfillment_type"`
+	FulfillmentIds  []dot.ID                  `json:"fulfillment_ids"`
 	// received_amount get from receipt
 	ReceivedAmount int            `json:"received_amount"`
 	CustomerId     dot.ID         `json:"customer_id"`
