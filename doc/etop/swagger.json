@@ -926,6 +926,32 @@
         }
       }
     },
+    "/api/etop.User/RegisterUsingToken": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "RegisterUsingToken",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baCreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baRegisterResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/ResetPassword": {
       "post": {
         "tags": [

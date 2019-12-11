@@ -22,6 +22,8 @@ type UserService interface {
 	// Register a new user or after a user has login using generated password.
 	Register(context.Context, *CreateUserRequest) (*RegisterResponse, error)
 
+	RegisterUsingToken(context.Context, *CreateUserRequest) (*RegisterResponse, error)
+
 	// Login
 	//
 	// Log the user in and generate access token.

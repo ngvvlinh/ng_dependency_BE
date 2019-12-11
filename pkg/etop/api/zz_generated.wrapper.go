@@ -1559,9 +1559,39 @@ type RegisterEndpoint struct {
 
 func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserRequest) (resp *api.RegisterResponse, err error) {
 	t0 := time.Now()
-	var session *middleware.Session
 	var errs []*cm.Error
 	const rpcName = "etop.User/Register"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	query := &RegisterEndpoint{CreateUserRequest: req}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.Register(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type RegisterUsingTokenEndpoint struct {
+	*api.CreateUserRequest
+	Result  *api.RegisterResponse
+	Context claims.EmptyClaim
+}
+
+func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.CreateUserRequest) (resp *api.RegisterResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/RegisterUsingToken"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -1576,10 +1606,10 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &RegisterEndpoint{CreateUserRequest: req}
+	query := &RegisterUsingTokenEndpoint{CreateUserRequest: req}
 	query.Context.Claim = session.Claim
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Register(ctx, query)
+	err = s.s.RegisterUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

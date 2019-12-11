@@ -3,9 +3,8 @@ package identity
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 
@@ -112,10 +111,17 @@ type UserCreatedEvent struct {
 	Email     string
 	FullName  string
 	ShortName string
-	Position  string
 
-	InvitationToken      string
-	AutoAcceptInvitation bool
+	Invitation *UserInvitation
+}
+
+type UserInvitation struct {
+	Token      string
+	AutoAccept bool
+
+	FullName  string
+	ShortName string
+	Position  string
 }
 
 type GetCustomersByShop struct {

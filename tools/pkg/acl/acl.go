@@ -179,7 +179,8 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"admin.Misc/AdminLoginAsAccount": {Type: EtopAdmin},
 
-	"etop.User/Register":                 {Type: Custom},
+	"etop.User/Register":                 {Type: Public},
+	"etop.User/RegisterUsingToken":       {Type: Custom},
 	"etop.User/Login":                    {Type: Public},
 	"etop.User/ResetPassword":            {Type: Public},
 	"etop.User/ChangePasswordUsingToken": {Type: Public},

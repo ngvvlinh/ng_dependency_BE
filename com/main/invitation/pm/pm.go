@@ -5,8 +5,6 @@ import (
 
 	"etop.vn/api/top/types/etc/status3"
 
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	cm "etop.vn/backend/pkg/common"
@@ -39,14 +37,16 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 }
 
 func (m *ProcessManager) UserCreated(ctx context.Context, event *identity.UserCreatedEvent) error {
-	if event.AutoAcceptInvitation {
-		cmd := &invitation.AcceptInvitationCommand{
-			UserID: event.UserID,
-			Token:  event.InvitationToken,
-		}
-		if err := m.invitationAggr.Dispatch(ctx, cmd); err != nil {
-			return err
-		}
+	if event.Invitation == nil || !event.Invitation.AutoAccept {
+		return nil
+	}
+
+	cmd := &invitation.AcceptInvitationCommand{
+		UserID: event.UserID,
+		Token:  event.Invitation.Token,
+	}
+	if err := m.invitationAggr.Dispatch(ctx, cmd); err != nil {
+		return err
 	}
 
 	query := &invitation.ListInvitationsAcceptedByEmailQuery{
@@ -56,75 +56,39 @@ func (m *ProcessManager) UserCreated(ctx context.Context, event *identity.UserCr
 		return err
 	}
 
-	for _, invitation := range query.Result.Invitations {
+	for _, invitationItem := range query.Result.Invitations {
 		query := &model.GetAccountUserQuery{
 			UserID:    event.UserID,
-			AccountID: invitation.AccountID,
+			AccountID: invitationItem.AccountID,
 		}
 		err := bus.Dispatch(ctx, query)
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			var roles []string
-			for _, role := range invitation.Roles {
+			for _, role := range invitationItem.Roles {
 				roles = append(roles, string(role))
 			}
-
 			cmd := &model.CreateAccountUserCommand{
 				AccountUser: &model.AccountUser{
-					AccountID: invitation.AccountID,
+					AccountID: invitationItem.AccountID,
 					UserID:    event.UserID,
 					Status:    status3.Z,
 					Permission: model.Permission{
 						Roles: roles,
 					},
-					FullName:  event.FullName,
-					ShortName: event.ShortName,
+					FullName:  event.Invitation.FullName,
+					ShortName: event.Invitation.ShortName,
+					Position:  event.Invitation.Position,
 				},
 			}
 			if err := bus.Dispatch(ctx, cmd); err != nil {
 				return err
 			}
 		case cm.NoError:
-			accountUser := query.Result
-			mapRole := make(map[string]bool)
-			for _, role := range accountUser.Permission.Roles {
-				mapRole[role] = true
-			}
-			for _, role := range invitation.Roles {
-				mapRole[string(role)] = true
-			}
-
-			var roles []string
-			for key := range mapRole {
-				roles = append(roles, key)
-			}
-
-			cmd := &model.UpdateRoleCommand{
-				AccountID: invitation.AccountID,
-				UserID:    event.UserID,
-				Permission: model.Permission{
-					Roles:       roles,
-					Permissions: accountUser.Permission.Permissions,
-				},
-			}
-			if err := bus.Dispatch(ctx, cmd); err != nil {
-				return err
-			}
-
-			updateInfosCmd := &model.UpdateInfosCommand{
-				AccountID: invitation.AccountID,
-				UserID:    event.UserID,
-				FullName:  dot.String(event.FullName),
-				ShortName: dot.String(event.ShortName),
-				Position:  dot.String(event.Position),
-			}
-			if err := bus.Dispatch(ctx, updateInfosCmd); err != nil {
-				return err
-			}
+			return cm.Errorf(cm.Internal, nil, "unexpected (invitation exists)")
 		default:
 			return err
 		}
 	}
-
 	return nil
 }

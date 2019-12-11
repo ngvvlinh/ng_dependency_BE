@@ -604,6 +604,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 			return s.inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/etop.User/RegisterUsingToken":
+		msg := &CreateUserRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.RegisterUsingToken(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/etop.User/ResetPassword":
 		msg := &ResetPasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

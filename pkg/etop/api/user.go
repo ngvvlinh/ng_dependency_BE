@@ -7,17 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-
-	"etop.vn/api/top/types/etc/status3"
-
-	"etop.vn/api/top/int/etop"
-
 	apisms "etop.vn/api/etc/logging/smslog"
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
+	"etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -35,7 +31,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/logic/usering"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/capi"
@@ -62,9 +57,9 @@ var (
 const PrefixIdempUser = "IdempUser"
 
 const (
-	keyRequestVerifyCode  string = "request_phone_verification_code"
-	keyRequestVerifyPhone string = "request_phone_verification"
-	IsVerifyPhone         string = "request_phone_verification_verified"
+	keyRequestVerifyCode                string = "request_phone_verification_code"
+	keyRequestVerifyPhone               string = "request_phone_verification"
+	keyRequestPhoneVerificationVerified string = "request_phone_verification_verified"
 )
 
 func init() {
@@ -86,6 +81,7 @@ func init() {
 		userService.UpdateReferenceUser,
 		userService.UpdateReferenceSale,
 		userService.CheckUserRegistration,
+		userService.RegisterUsingToken,
 	)
 }
 
@@ -140,6 +136,143 @@ type authKey struct{}
 //   - If both email and phone exist (but not activated) -> Merge them.
 //   - Otherwise, update existing user with the other identifier.
 func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
+	if err := validateRegister(r.CreateUserRequest); err != nil {
+		return err
+	}
+	resp, err := s.register(ctx, r.Context, r.CreateUserRequest, false)
+	r.Result = resp
+	return err
+}
+
+func (s *UserService) RegisterUsingToken(ctx context.Context, r *RegisterUsingTokenEndpoint) error {
+	if r.Context.Extra[keyRequestVerifyPhone] == "" || r.Context.Extra[keyRequestPhoneVerificationVerified] == "" {
+		return cm.Error(cm.InvalidArgument, "Bạn vui lòng xác nhận só điện thoại trước khi đăng kí", nil)
+	}
+	if err := validateRegister(r.CreateUserRequest); err != nil {
+		return err
+	}
+
+	phoneNorm, _ := validate.NormalizePhone(r.Phone)
+	if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
+		return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
+	}
+
+	resp, err := s.register(ctx, r.Context, r.CreateUserRequest, true)
+	r.Result = resp
+	return err
+}
+
+func (s *UserService) register(
+	ctx context.Context,
+	claim claims.EmptyClaim,
+	r *etop.CreateUserRequest,
+	usingToken bool,
+) (*etop.RegisterResponse, error) {
+	phoneNorm, _ := validate.NormalizePhone(r.Phone)
+	emailNorm, _ := validate.NormalizeEmail(r.Email)
+	userByPhone, userByEmail, err := s.getUserByPhoneAndByEmail(ctx, phoneNorm.String(), emailNorm.String())
+	if err != nil {
+		return nil, err
+	}
+
+	switch {
+	case userByPhone.User != nil:
+		return nil, cm.Errorf(cm.AlreadyExists, nil, "Số điện thoại đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác")
+	case userByEmail.User != nil:
+		return nil, cm.Errorf(cm.AlreadyExists, nil, "Email đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác")
+	}
+
+	var invitationTemp *invitation.Invitation
+	if strings.HasPrefix(r.RegisterToken, "iv:") {
+		invitationTemp, err = getInvitation(ctx, r)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user, err := createUser(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	{
+		now := time.Now()
+		shouldUpdate := false
+		updateCmd := &model.UpdateUserVerificationCommand{
+			UserID: user.ID,
+		}
+		// auto verify email when accept invitation from email
+		if invitationTemp != nil {
+			if invitationTemp.Email != "" && user.EmailVerifiedAt.IsZero() {
+				updateCmd.EmailVerifiedAt = now
+				shouldUpdate = true
+			}
+		}
+		// auto verify phone when register using token
+		if usingToken {
+			if user.PhoneVerificationSentAt.IsZero() {
+				updateCmd.PhoneVerifiedAt = now
+				shouldUpdate = true
+			}
+		}
+		if shouldUpdate {
+			if err := bus.Dispatch(ctx, updateCmd); err != nil {
+				return nil, err
+			}
+		}
+	}
+	{
+		event := &identity.UserCreatedEvent{
+			UserID:    user.ID,
+			Email:     user.Email,
+			FullName:  user.FullName,
+			ShortName: user.ShortName,
+		}
+		if invitationTemp != nil {
+			event.Invitation = &identity.UserInvitation{
+				Token:      r.RegisterToken,
+				AutoAccept: r.AutoAcceptInvitation,
+				FullName:   invitationTemp.FullName,
+				ShortName:  invitationTemp.ShortName,
+				Position:   invitationTemp.Position,
+			}
+		}
+		if err := eventBus.Publish(ctx, event); err != nil {
+			return nil, err
+		}
+	}
+	return &etop.RegisterResponse{
+		User: convertpb.PbUser(user),
+	}, nil
+}
+
+func createUser(ctx context.Context, r *etop.CreateUserRequest) (*model.User, error) {
+	info := r
+	cmd := &usering.CreateUserCommand{
+		UserInner: model.UserInner{
+			FullName:  info.FullName,
+			ShortName: info.ShortName,
+			Phone:     info.Phone,
+			Email:     info.Email,
+		},
+		Password:       info.Password,
+		Status:         model.StatusActive,
+		AgreeTOS:       r.AgreeTos,
+		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
+		Source:         r.Source,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	query := &model.GetUserByIDQuery{
+		UserID: cmd.Result.User.ID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return query.Result, nil
+}
+
+func validateRegister(r *etop.CreateUserRequest) error {
 	if !r.AgreeTos {
 		return cm.Error(cm.InvalidArgument, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
 	}
@@ -152,218 +285,34 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	if r.Email == "" && r.RegisterToken == "" {
 		return cm.Error(cm.InvalidArgument, "Vui lòng cung cấp địa chỉ email", nil)
 	}
-
-	now := time.Now()
-	var phoneNorm model.NormalizedPhone
-	var emailNorm model.NormalizedEmail
-	var ok bool
-	phoneNorm, ok = validate.NormalizePhone(r.Phone)
+	_, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
 		return cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
-	if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
-		return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
-	}
 	if r.Email != "" {
-		emailNorm, ok = validate.NormalizeEmail(r.Email)
+		_, ok := validate.NormalizeEmail(r.Email)
 		if !ok {
 			return cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
 		}
 	}
-	var invitationTemp *invitation.Invitation
-	if strings.HasPrefix(r.RegisterToken, "iv:") {
-		getInvitationByToken := &invitation.GetInvitationByTokenQuery{
-			Token:  r.RegisterToken,
-			Result: nil,
-		}
-		if err := invitationQuery.Dispatch(ctx, getInvitationByToken); err != nil {
-			return cm.MapError(err).
-				Wrap(cm.NotFound, "Token không hợp lệ").
-				Throw()
-		}
-		invitationTemp = getInvitationByToken.Result
-		if r.Email != invitationTemp.Email {
-			return cm.Errorf(cm.InvalidArgument, nil, "Email gửi lên và email trong token không khớp nhau")
-		}
-	}
-
-	// If no identifier exists, create new user
-	if r.Context.Extra[IsVerifyPhone] != "" && r.Context.UserID == 0 {
-		info := r.CreateUserRequest
-		cmd := &usering.CreateUserCommand{
-			UserInner: model.UserInner{
-				FullName:  info.FullName,
-				ShortName: info.ShortName,
-				Phone:     info.Phone,
-				Email:     info.Email,
-			},
-			Password:       info.Password,
-			Status:         model.StatusActive,
-			AgreeTOS:       r.AgreeTos,
-			AgreeEmailInfo: r.AgreeEmailInfo.Bool,
-			Source:         r.Source,
-		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return err
-		}
-
-		if err := s.publishUserCreatedEvent(ctx, cmd.Result.User, invitationTemp, r.RegisterToken, r.AutoAcceptInvitation); err != nil {
-			return err
-		}
-
-		r.Result = &etop.RegisterResponse{
-			User: convertpb.PbUser(cmd.Result.User),
-		}
-		return nil
-	}
-	userByPhone, userByEmail, err := s.getUserByPhoneAndByEmail(ctx, phoneNorm.String(), emailNorm.String())
-	if err != nil {
-		return err
-	}
-
-	// If any identifier is activated -> AlreadyExists
-	if userByPhone.User != nil && userByPhone.User.Status != status3.Z {
-		return cm.Error(cm.FailedPrecondition, sqlstore.MsgCreateUserDuplicatedPhone, nil)
-	}
-	if userByEmail.User != nil && userByEmail.User.Status != status3.Z {
-		return cm.Error(cm.FailedPrecondition, sqlstore.MsgCreateUserDuplicatedEmail, nil)
-	}
-
-	// If both one identifier exists, merge them and activate the user
-	if userByPhone.User != nil && userByEmail.User != nil {
-		resp, err := s.mergeUserByPhoneAndEmail(ctx, userByPhone, userByEmail)
-		r.Result = resp
-		return err
-	}
-
-	// Lastly, update one identifier with the other and activate the user
-	updateUserCmd := &model.UpdateUserIdentifierCommand{}
-	var user *model.User
-	var inner model.UserInner
-	var hashpwd string
-	switch {
-	case userByPhone.User != nil && userByPhone.User.Status == status3.Z:
-		user = userByPhone.User
-		if user.Email != "" {
-			// unexpected: if both identifier exist, it must not be a stub!
-			return cm.Error(cm.Internal, "", nil).
-				Log("unexpected condition (1)", l.ID("user_id", user.ID))
-		}
-		hashpwd = userByPhone.UserInternal.Hashpwd
-
-		inner = user.UserInner
-		inner.Email = emailNorm.String()
-		updateUserCmd.UserID = user.ID
-		updateUserCmd.Status = status3.P
-		updateUserCmd.CreatedAt = now
-		updateUserCmd.Identifying = "full"
-		if emailNorm == "" {
-			updateUserCmd.Identifying = "half"
-		}
-
-	case userByEmail.User != nil && userByEmail.User.Status == status3.Z:
-		user = userByEmail.User
-		if user.Phone != "" {
-			// unexpected: if both identifier exist, it must not be a stub!
-			return cm.Error(cm.Internal, "", nil).
-				Log("unexpected condition (2)", l.ID("user_id", user.ID))
-		}
-		hashpwd = userByPhone.UserInternal.Hashpwd
-
-		inner = user.UserInner
-		inner.Phone = phoneNorm.String()
-		updateUserCmd.UserID = user.ID
-		updateUserCmd.Status = status3.P
-		updateUserCmd.CreatedAt = now
-		updateUserCmd.Identifying = "full"
-
-	default:
-		return cm.Error(cm.Internal, "", nil).
-			Log("unexpected condition (3)")
-	}
-
-	inner.FullName, inner.ShortName, err = sqlstore.NormalizeFullName(r.FullName, r.ShortName)
-	if err != nil {
-		return err
-	}
-	updateUserCmd.UserInner = inner
-	updateUserCmd.Password = r.Password
-
-	// Automatically verify phone number
-	if r.RegisterToken != "" && hashpwd != "" {
-		if !login.VerifyPassword(r.RegisterToken, hashpwd) {
-			return cm.Error(cm.Internal, "Mã số không hợp lệ. Vui lòng liên hệ hotro@etop.vn.", nil)
-		}
-		if user.PhoneVerifiedAt.IsZero() &&
-			!user.PhoneVerificationSentAt.IsZero() &&
-			now.Add(-24*time.Hour).Before(user.PhoneVerificationSentAt) {
-			updateUserCmd.PhoneVerifiedAt = now
-		}
-	}
-
-	if err := bus.Dispatch(ctx, updateUserCmd); err != nil {
-		return cm.Error(cm.Internal, "", err)
-	}
-
-	if err := s.publishUserCreatedEvent(ctx, updateUserCmd.Result.User, invitationTemp, r.RegisterToken, r.AutoAcceptInvitation); err != nil {
-		return err
-	}
-
-	r.Result = createRegisterResponse(updateUserCmd.Result.User)
 	return nil
 }
 
-func (s *UserService) publishUserCreatedEvent(
-	ctx context.Context, user *model.User, invitationArg *invitation.Invitation,
-	invitationToken string, autoAcceptInvitation bool) error {
-	if autoAcceptInvitation {
-		query := &model.GetUserByIDQuery{
-			UserID: user.ID,
-		}
-		if err := bus.Dispatch(ctx, query); err != nil {
-			return err
-		}
-
-		if query.Result.EmailVerifiedAt.IsZero() {
-			cmd := &model.UpdateUserVerificationCommand{
-				UserID: user.ID,
-
-				EmailVerifiedAt: time.Now(),
-			}
-			if err := bus.Dispatch(ctx, cmd); err != nil {
-				return err
-			}
-		}
+func getInvitation(ctx context.Context, r *etop.CreateUserRequest) (*invitation.Invitation, error) {
+	getInvitationByToken := &invitation.GetInvitationByTokenQuery{
+		Token:  r.RegisterToken,
+		Result: nil,
 	}
-
-	fullName := user.FullName
-	shortName := user.ShortName
-	position := ""
-	if invitationArg != nil {
-		fullName = invitationArg.FullName
-		shortName = invitationArg.ShortName
-		position = invitationArg.Position
+	if err := invitationQuery.Dispatch(ctx, getInvitationByToken); err != nil {
+		return nil, cm.MapError(err).
+			Wrap(cm.NotFound, "Token không hợp lệ").
+			Throw()
 	}
-	event := &identity.UserCreatedEvent{
-		UserID:    user.ID,
-		Email:     user.Email,
-		FullName:  fullName,
-		ShortName: shortName,
-		Position:  position,
-
-		InvitationToken:      invitationToken,
-		AutoAcceptInvitation: autoAcceptInvitation,
+	invitationTemp := getInvitationByToken.Result
+	if r.Email != invitationTemp.Email {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email gửi lên và email trong token không khớp nhau")
 	}
-	if err := eventBus.Publish(ctx, event); err != nil {
-		return err
-	}
-	return nil
-}
-
-func createRegisterResponse(user *model.User) *etop.RegisterResponse {
-	return &etop.RegisterResponse{
-		User: convertpb.PbUser(user),
-	}
+	return invitationTemp, nil
 }
 
 func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserRegistrationEndpoint) error {
@@ -409,10 +358,6 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 		userByEmail = userByEmailQuery.Result
 	}
 	return
-}
-
-func (s *UserService) mergeUserByPhoneAndEmail(ctx context.Context, userByPhone, userByEmail model.UserExtended) (*etop.RegisterResponse, error) {
-	return nil, cm.ErrTODO
 }
 
 func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
@@ -909,7 +854,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 
 func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
 	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
-	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
+	res, err := idempgroup.DoAndWrap(key, 2*time.Hour,
 		func() (interface{}, error) {
 			return s.sendPhoneVerification(ctx, r)
 		}, "gửi tin nhắn xác nhận số điện thoại")
@@ -1037,11 +982,20 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	if r.VerificationToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
-	if r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
+	if r.Context.Extra[keyRequestVerifyCode] != "" && r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
 		r.Result = cmapi.Message("fail", "Mã xác thực không chính xác.")
 		return r, nil
 	}
-	if r.Context.UserID == 0 {
+	if r.Context.UserID == 0 && r.Context.Extra != nil {
+		extra := r.Context.Extra
+		extra[keyRequestPhoneVerificationVerified] = "1"
+		updateSessionCmd := &tokens.UpdateSessionCommand{
+			Token:  r.Context.Claim.Token,
+			Values: extra,
+		}
+		if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+			return r, err
+		}
 		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
 		return r, nil
 	}
@@ -1371,7 +1325,7 @@ func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificat
 	if !ok {
 		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-	_, code, _, err := generateToken(auth.UsagePhoneVerification, 0, true, 2*60*60, r.Phone)
+	_, code, _, err := generateToken(auth.UsagePhoneVerification, cm.NewID(), true, 2*60*60, r.Phone)
 	if err != nil {
 		return r, err
 	}
@@ -1384,12 +1338,11 @@ func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificat
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	if claim.Extra == nil {
+	if claim.Extra == nil || claim.Extra[keyRequestPhoneVerificationVerified] != "" {
 		claim.Extra = map[string]string{}
 	}
 	claim.Extra[keyRequestVerifyPhone] = phoneNorm.String()
 	claim.Extra[keyRequestVerifyCode] = code
-	claim.Extra[IsVerifyPhone] = "1"
 
 	updateSessionCmd := &tokens.UpdateSessionCommand{
 		Token:  r.Context.Claim.Token,
