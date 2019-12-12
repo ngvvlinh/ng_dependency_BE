@@ -7,7 +7,6 @@ import (
 	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/account_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -319,7 +318,7 @@ func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoin
 		Amount: int(q.Amount),
 		ShopID: q.ShopId,
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
-		Type:   account_type.AccountType(q.Type),
+		Type:   q.Type,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {

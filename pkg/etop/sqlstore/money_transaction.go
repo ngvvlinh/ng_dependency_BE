@@ -6,13 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/top/types/etc/credit_type"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status3"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
@@ -1195,7 +1192,7 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 
 func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 	switch cmd.Type {
-	case account_type.Shop:
+	case credit_type.Shop:
 		if cmd.ShopID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 		}
@@ -1210,7 +1207,7 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 		ID:     cm.NewID(),
 		Amount: cmd.Amount,
 		ShopID: cmd.ShopID,
-		Type:   string(cmd.Type),
+		Type:   cmd.Type.String(),
 		PaidAt: cmd.PaidAt,
 	}
 	if err := x.Table("credit").ShouldInsert(credit); err != nil {
@@ -1249,7 +1246,7 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 		s = s.Where("c.shop_id = ?", query.ShopID)
 	}
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
-		query.Paging.Sort = []string{"-c.updated_at"}
+		query.Paging.Sort = []string{"-updated_at"}
 	}
 	{
 		s2 := s.Clone()
