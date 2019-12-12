@@ -139,9 +139,15 @@ const (
 	p, shop/supplier:update, admin, owner, purchasing_management
 	p, shop/supplier:delete, admin, owner, purchasing_management
 	p, shop/supplier:view, admin, owner, accountant, purchasing_management
+	# trading
+	p, trading/order:view, admin, owner
+	p, trading/order:create, admin, owner
+    p, shop/trading/product:view, admin, owner
+    p, shop/trading/order:create, admin, owner
+    p, shop/trading/order:view, admin, owner	
 	# payment
-	p, shop/payment:create , admin, owner
-	p, shop/payment:view , admin, owner`
+	p, shop/payment:create, admin, owner
+	p, shop/payment:view, admin, owner`
 )
 
 var (

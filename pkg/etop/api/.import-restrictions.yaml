@@ -23,3 +23,5 @@ rules:
   - etop.vn/backend/zexp/api
   - etop.vn/capi
   - etop.vn/common
+  # TODO: remove this
+  - etop.vn/backend/tools/pkg/acl

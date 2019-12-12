@@ -155,6 +155,12 @@ const (
 	ShopSupplierDelete permission.ActionType = "shop/supplier:delete"
 	ShopSupplierView   permission.ActionType = "shop/supplier:view"
 
+	TradingOrderView       permission.ActionType = "trading/order:view"
+	TradingOrderCreate     permission.ActionType = "trading/order:create"
+	ShopTradingProductView permission.ActionType = "shop/trading/product:view"
+	ShopTradingOrderCreate permission.ActionType = "shop/trading/order:create"
+	ShopTradingOrderView   permission.ActionType = "shop/trading/order:view"
+
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
 )
@@ -185,22 +191,19 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.User/ResetPassword":            {Type: Public},
 	"etop.User/ChangePasswordUsingToken": {Type: Public},
 	"etop.User/ChangePassword":           {Type: CurUsr},
-
-	"etop.User/InitSession": {Type: Public},
-
-	"etop.User/CheckUserRegistration": {Type: Public, Captcha: "1"},
-
-	"etop.User/SessionInfo":        {Type: CurUsr},
-	"etop.User/SwitchAccount":      {Type: CurUsr},
-	"etop.User/SendSTokenEmail":    {Type: CurUsr},
-	"etop.User/UpgradeAccessToken": {Type: CurUsr},
+	"etop.User/InitSession":              {Type: Public},
+	"etop.User/CheckUserRegistration":    {Type: Public, Captcha: "1"},
+	"etop.User/SessionInfo":              {Type: CurUsr},
+	"etop.User/SwitchAccount":            {Type: CurUsr},
+	"etop.User/SendSTokenEmail":          {Type: CurUsr},
+	"etop.User/UpgradeAccessToken":       {Type: CurUsr},
 
 	"etop.User/UpdatePermission": {Type: CurUsr},
 
 	"etop.User/SendEmailVerification": {Type: CurUsr},
-	"etop.User/SendPhoneVerification": {Type: Custom},
+	"etop.User/SendPhoneVerification": {Type: CurUsr},
 	"etop.User/VerifyEmailUsingToken": {Type: CurUsr},
-	"etop.User/VerifyPhoneUsingToken": {Type: Custom},
+	"etop.User/VerifyPhoneUsingToken": {Type: CurUsr},
 	"etop.User/UpdateReferenceUser":   {Type: CurUsr},
 	"etop.User/UpdateReferenceSale":   {Type: CurUsr},
 
@@ -484,10 +487,10 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.MoneyTransaction/GetMoneyTransaction":  {Type: Shop, Actions: actions(ShopMoneyTransactionView)},
 	"shop.MoneyTransaction/GetMoneyTransactions": {Type: Shop, Actions: actions(ShopMoneyTransactionView)},
 
-	"shop.Summary/SummarizeFulfillments": {Type: Shop},
-	"shop.Summary/SummarizePOS":          {Type: Shop},
+	"shop.Summary/SummarizeFulfillments": {Type: Shop, Actions: actions(ShopDashboardView)},
+	"shop.Summary/SummarizePOS":          {Type: Shop, Actions: actions(ShopDashboardView)},
 	"shop.Summary/SummarizeTopShip":      {Type: Shop},
-	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt},
+	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopDashboardView)},
 
 	"shop.Export/GetExports":    {Type: Shop},
 	"shop.Export/RequestExport": {Type: Shop},
@@ -511,14 +514,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Receipt/ConfirmReceipt":          {Type: Shop, Actions: actions(ShopReceiptConfirm)},
 	"shop.Receipt/CancelReceipt":           {Type: Shop, Actions: actions(ShopReceiptCancel)},
 
-	"shop.Trading/TradingGetProduct":  {Type: Shop},
-	"shop.Trading/TradingGetProducts": {Type: Shop},
-	"shop.Trading/TradingCreateOrder": {Type: Shop},
-	"shop.Trading/TradingGetOrder":    {Type: Shop},
-	"shop.Trading/TradingGetOrders":   {Type: Shop},
+	"shop.Trading/TradingGetProduct":  {Type: Shop, Actions: actions(ShopTradingProductView)},
+	"shop.Trading/TradingGetProducts": {Type: Shop, Actions: actions(ShopTradingProductView)},
+	"shop.Trading/TradingCreateOrder": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Trading/TradingGetOrder":    {Type: Shop, Actions: actions(ShopTradingOrderView)},
+	"shop.Trading/TradingGetOrders":   {Type: Shop, Actions: actions(ShopTradingOrderView)},
 
-	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopPaymentCreate)},
-	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopPaymentView)},
+	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 
 	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCreate)},
 	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},

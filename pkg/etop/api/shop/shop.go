@@ -45,9 +45,11 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	authorizeauth "etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/backend/tools/pkg/acl"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
@@ -1329,7 +1331,7 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *GetEx
 	}
 
 	var hideInfo bool
-	if !authorization.IsContainsActionString(q.Context.Actions, "shop/external_account:manage") {
+	if !authorization.IsContainsActionString(authorizeauth.ListActionsByRoles(q.Context.Roles), string(acl.ShopExternalAccountManage)) {
 		hideInfo = true
 	}
 	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account, hideInfo)
@@ -1422,7 +1424,7 @@ func (s *ExternalAccountService) GetExternalAccountHaravan(ctx context.Context, 
 	}
 
 	var hideInfo bool
-	if !authorization.IsContainsActionString(r.Context.Actions, "shop/external_account:manage") {
+	if !authorization.IsContainsActionString(authorizeauth.ListActionsByRoles(r.Context.Roles), string(acl.ShopExternalAccountManage)) {
 		hideInfo = true
 	}
 	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result, hideInfo)
