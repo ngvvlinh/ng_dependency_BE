@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/k0kubun/pp"
-
 	"etop.vn/api/summary"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -34,16 +32,14 @@ func (s SummaryStore) SummarizeTopship(ctx context.Context, req *summary.Summary
 	if err := s.execQuery(ctx, tablesFfm, shopID, "fulfillment"); err != nil {
 		return nil, err
 	}
-	pp.Println("----------------------------------", tablesFfm)
 	if err := s.execQuery(ctx, tablesShipnowFfm, shopID, "shipnow_fulfillment"); err != nil {
 		return nil, err
 	}
-
 	resTablesFfm := buildResponse(tablesFfm)
 	resTablesShipnowFfm := buildResponse(tablesShipnowFfm)
 	for key, value := range resTablesFfm {
 		for _, _value := range resTablesShipnowFfm {
-			if Contain(value.Tags, "fulfillment03") {
+			if Contain(value.Tags, "fulfillment03") && Contain(_value.Tags, "fulfillment03") {
 				resTablesFfm[key] = addCarrierShipNow(value, _value)
 				break
 			}
@@ -52,6 +48,7 @@ func (s SummaryStore) SummarizeTopship(ctx context.Context, req *summary.Summary
 				break
 			}
 		}
+
 	}
 	countShipnowFfm := 0
 	for _, value := range resTablesShipnowFfm {
@@ -91,8 +88,8 @@ func addCarrierShipNow(table1 *summary.SummaryTable, table2 *summary.SummaryTabl
 }
 
 func mergeData(table1 *summary.SummaryTable, table2 *summary.SummaryTable) *summary.SummaryTable {
-	for key, data := range table1.Data {
-		table1.Data[key].Value = data.Value + table2.Data[key].Value
+	for key, _ := range table1.Data {
+		table1.Data[key].Value = table1.Data[key].Value + table2.Data[key].Value
 	}
 	return table1
 }
@@ -161,14 +158,20 @@ func buildData(data []smry.Cell) []summary.SummaryItem {
 
 func (s SummaryStore) execQuery(ctx context.Context, tables []*smry.Table, shopID dot.ID, tableName string) error {
 	builder := smry.NewSummaryQueryBuilder(tableName)
+	count := 1
 	for _, table := range tables {
 		for i := range table.Data {
+			count++
 			// must always use [i] because we want to take the address
 			builder.AddCell(&table.Data[i].Subject, (*core.Int)(&table.Data[i].Value))
 		}
 	}
-	return s.db.SQL(builder).WithContext(ctx).
-		Where("shop_id = ?", shopID).Scan(builder.ScanArgs...)
+	q := s.db.SQL(builder).WithContext(ctx).
+		Where("shop_id = ?", shopID).Clone()
+	err := q.Scan(builder.ScanArgs...)
+	q.Clone()
+
+	return err
 }
 
 func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []*smry.Table, shipnowFfm []*smry.Table) {
@@ -178,10 +181,16 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 		Spec: "status=N",
 		Expr: sq.NewExpr("status=?", status5.N),
 	}
+
 	pred_chưa_hủy := smry.Predicate{
 		Spec: "status!=-1",
 		Expr: sq.NewExpr("status!=?", status5.N),
 	}
+	pre_tính_cod := smry.Predicate{
+		Spec: "shipping_state!=returned,returning|status!=-1",
+		Expr: sq.NewExpr("shipping_state not in ('returned','returning') and status!=?", status5.N),
+	}
+
 	pred_đã_lấy := smry.Predicate{
 		Spec: "shipping_state=holding,delivering,delivered,underliverable,returning,returned",
 		Expr: sq.NewExpr("shipping_state IN ('holding','delivering','delivered','undeliverable','returning','returned')"),
@@ -208,7 +217,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 
 	pred_khoảng_thời_gian := smry.Predicate{
 		Spec: "datefrom-dateto",
-		Expr: sq.NewExpr("created_at >= ? and ? < created_at ", dateFrom, dateTo),
+		Expr: sq.NewExpr("created_at >= ? and ? > created_at ", dateFrom, dateTo),
 	}
 
 	pred_đang_xử_lý := smry.Predicate{
@@ -261,7 +270,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	}
 
 	rows03 := []smry.Subject{
-		row_tổng_đơn.Combine(""),
+		row_tổng_đơn.Combine("", pred_chưa_hủy),
 		row_tổng_đơn.Combine("", pred_giao_hàng_nhanh, pred_chưa_hủy),
 		row_tổng_đơn.Combine("", pred_giao_hàng_tiết_kiệm, pred_chưa_hủy),
 		row_tổng_đơn.Combine("", pred_viettel_post, pred_chưa_hủy),
@@ -290,7 +299,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	}
 
 	pred_ngoại_miền := smry.Predicate{
-		Spec: "delivery_route=ngoai_mien",
+		Spec: "delivery_route=toan_quoc",
 		Expr: sq.NewExpr("delivery_route=?", etopmodel.RouteNationWide),
 	}
 
@@ -312,8 +321,8 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	row_tổng_tiền_bồi_hoàn := smry.NewSubject("Tổng tiền bồi hoàn", "", "SUM(actual_compensation_amount)", "SUM(actual_compensation_amount)", nil)
 
 	rows05 := []smry.Subject{
-		row_tổng_thu_hộ.Combine("", pred_chưa_hủy),
-		row_tổng_phí_vận_chuyển.Combine("", pred_chưa_hủy),
+		row_tổng_thu_hộ.Combine("", pre_tính_cod),
+		row_tổng_phí_vận_chuyển.Combine("", pre_tính_cod),
 	}
 	cols05 := buildRowPerDate(dateFrom, dateTo)
 	table05 := smry.BuildTable(rows05, cols05, "Giá trị giao hàng theo ngày", "fulfillment05", "datefrom-dateto&&total_amount")
@@ -366,7 +375,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	pred_chưa_lên_phiên := smry.Predicate{
 		Label: "chưa lên phiên",
 		Spec:  "money_transaction_id=nil,cod_etop_transfered_at=nil",
-		Expr:  sq.NewExpr("money_transaction_id is null and cod_etop_transfered_at is null"),
+		Expr:  sq.NewExpr("money_transaction_id is null and cod_etop_transfered_at is null and shipping_state in ('delivered','returning','returned', 'undeliverable')"),
 	}
 	pred_không_bồi_hoàn := smry.Predicate{
 		Label: "Không bồi hoàn",
@@ -388,7 +397,8 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	var tablesShipnowFfm []*smry.Table
 	for _, value := range suryFfm {
 		if Contain(value.Tags, "shipnow_fulfillment") {
-			tablesShipnowFfm = append(tablesShipnowFfm, value)
+			var tablesSn = smry.BuildTable(value.Rows, value.Cols, value.Label, value.Tags...)
+			tablesShipnowFfm = append(tablesShipnowFfm, tablesSn)
 		}
 	}
 	tablesShipnowFfm = append(tablesShipnowFfm, table08)
@@ -405,7 +415,7 @@ func buildRowPerDate(dateFrom time.Time, dateTo time.Time) []smry.Predicator {
 		result = append(result, smry.Predicate{
 			Spec:  timeStart.Format("2006-01-02"),
 			Label: timeStart.Format("2006-01-02"),
-			Expr:  sq.NewExpr("created_at >= ? and ? < created_at", timeStart, timeStart.Add(24*time.Hour)),
+			Expr:  sq.NewExpr("created_at >= ? and ? > created_at", timeStart, timeStart.Add(24*time.Hour)),
 		})
 		timeStart = timeStart.Add(24 * time.Hour)
 	}

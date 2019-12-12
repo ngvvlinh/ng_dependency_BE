@@ -73,6 +73,17 @@ func NewTable(row, col int, label string, tags ...string) *Table {
 	}
 }
 
+func (t *Table) Clone(lable string, tags ...string) *Table {
+	nt := NewTable(len(t.Rows), len(t.Cols), lable, tags...)
+	nt.Rows = make([]Subject, len(t.Rows))
+	nt.Cols = make([]Predicator, len(t.Cols))
+	nt.Data = make([]Cell, len(t.Data))
+	copy(nt.Rows, t.Rows)
+	copy(nt.Cols, t.Cols)
+	copy(nt.Data, t.Data)
+	return nt
+}
+
 func (t *Table) Cell(row, col int) *Cell {
 	return &t.Data[row*t.NCol+col]
 }

@@ -82,7 +82,7 @@ func (s *SummaryStore) buildSqlTotalPerDate(args []*TotalPerDate) *SummaryQueryB
 			Pred: &Predicate{
 				Label: "Day :" + strconv.Itoa(key),
 				Spec:  "Day :" + strconv.Itoa(key),
-				Expr:  sq.NewExpr("created_at BETWEEN ? AND ?", row.StartTime, row.EndTime),
+				Expr:  sq.NewExpr("created_at >= ? AND created_at < ?", row.StartTime, row.EndTime),
 			},
 		}, (*core.Int)(&row.TotalAmount))
 		builder.AddCell(&Subject{
@@ -91,7 +91,7 @@ func (s *SummaryStore) buildSqlTotalPerDate(args []*TotalPerDate) *SummaryQueryB
 			Pred: &Predicate{
 				Label: "Day :" + strconv.Itoa(key),
 				Spec:  "Day :" + strconv.Itoa(key),
-				Expr:  sq.NewExpr("created_at BETWEEN ? AND ?", row.StartTime, row.EndTime),
+				Expr:  sq.NewExpr("created_at >= ? AND created_at < ?", row.StartTime, row.EndTime),
 			},
 		}, (*core.Int)(&row.Count))
 	}
@@ -101,7 +101,7 @@ func (s *SummaryStore) buildSqlTotalPerDate(args []*TotalPerDate) *SummaryQueryB
 func (s *SummaryStore) GetAmoumtPerDay(shopID dot.ID, dateFrom time.Time, dateTo time.Time) ([]*TotalPerDate, error) {
 	totalPerDates := listTotalByDate(dateFrom, dateTo)
 	builder := s.buildSqlTotalPerDate(totalPerDates)
-	q := s.query().Where("shop_id = ?", shopID)
+	q := s.query().Where("shop_id = ?", shopID).Where("status!=?", -1)
 	err := q.SQL(builder).Scan(builder.ScanArgs...)
 	if err != nil {
 		return nil, err

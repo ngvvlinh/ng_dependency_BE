@@ -16,7 +16,7 @@ import (
 
 const currentVersion = "1"
 const dateLayout = "2016-01-02"
-const redisTime = 10
+const redisTime = 2 * 60
 
 var _ summary.QueryService = &DashboardQuery{}
 
@@ -114,7 +114,9 @@ func (q *DashboardQuery) SummaryPOS(ctx context.Context, req *summary.SummaryPOS
 	if err != nil {
 		return nil, err
 	}
-	timeLastMonthStart, timeLastMonthEnd := getLastMonthTime()
+	// Lay cach 30 ngay
+	timeLastMonthStart := getStartDayTime().Add(-30 * 24 * time.Hour)
+	timeLastMonthEnd := timeLastMonthStart.Add(24 * time.Hour)
 	resultSummaryADayLastMonth, err := q.factory(ctx).GetOrderSummary(req.ShopID, timeLastMonthStart, timeLastMonthEnd)
 	if err != nil {
 		return nil, err
@@ -502,7 +504,7 @@ func buildDiagramOrderTable(args []*sqlstore.TotalPerDate, dateFrom time.Time, d
 
 	for index, value := range args {
 		summaryRow := summary.SummaryColRow{
-			Spec:  "date(" + value.Day.Format("2006-01-02") + ")",
+			Spec:  "date(" + value.Day.Format("2006-01-02") + ")" + ",status!=-1",
 			Label: value.Day.Format("2006-01-02"),
 		}
 		summaryTable.Rows = append(summaryTable.Rows, summaryRow)
@@ -548,7 +550,7 @@ func buildTopSellTable(args []*sqlstore.TopSellItem) *summary.SummaryTable {
 	})
 	for index := range args {
 		summaryTable.Rows = append(summaryTable.Rows, summary.SummaryColRow{
-			Spec:  "groupby(product_id),orderby(sum(quantity)),row_number(" + strconv.Itoa(index) + ")",
+			Spec:  "groupby(product_id),orderby(sum(quantity)),row_number(" + strconv.Itoa(index) + ")" + "status!=-1",
 			Label: strconv.Itoa(index),
 		})
 	}
@@ -604,7 +606,7 @@ func buildStaffOrderTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
 			continue
 		}
 		summaryTable.Rows = append(summaryTable.Rows, summary.SummaryColRow{
-			Spec:  "STT-" + strconv.Itoa(index),
+			Spec:  "STT-" + strconv.Itoa(index) + "status!=-1",
 			Label: strconv.Itoa(index),
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
@@ -652,7 +654,7 @@ func buildOtherSourceTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
 			continue
 		}
 		summaryTable.Rows = append(summaryTable.Rows, summary.SummaryColRow{
-			Spec:  "groupby(other_source_id),orderby(sum(total_amount)),row_number(" + strconv.Itoa(index) + ")",
+			Spec:  "groupby(other_source_id),orderby(sum(total_amount)),row_number(" + strconv.Itoa(index) + ")" + "status!=-1",
 			Label: strconv.Itoa(index),
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
