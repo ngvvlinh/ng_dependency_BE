@@ -848,7 +848,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 
 func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
 	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
-	res, err := idempgroup.DoAndWrap(key, 2*time.Hour,
+	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
 		func() (interface{}, error) {
 			return s.sendPhoneVerification(ctx, r)
 		}, "gửi tin nhắn xác nhận số điện thoại")
@@ -1002,7 +1002,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	var v map[string]string
 	tok, _ := authStore.Validate(auth.UsagePhoneVerification, r.VerificationToken, &v)
 	user := getUserByID.Result
-	tok, code, v := getToken(auth.UsagePhoneVerification, user.ID)
+	tok, code, v := getToken(auth.UsagePhoneVerification, user.ID, user.Phone)
 	if tok == nil || code == "" || v == nil {
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
 	}
@@ -1061,7 +1061,7 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 	}
 
 	user := r.Context.User.User
-	tok, code, v := getToken(auth.UsageSToken, user.ID)
+	tok, code, v := getToken(auth.UsageSToken, user.ID, "")
 	if tok == nil || code == "" || v == nil {
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
 	}
@@ -1193,8 +1193,8 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	return r, nil
 }
 
-func getToken(usage string, userID dot.ID) (*auth.Token, string, map[string]string) {
-	tokStr := userID.String()
+func getToken(usage string, userID dot.ID, phone string) (*auth.Token, string, map[string]string) {
+	tokStr := fmt.Sprintf("%v-%v", userID, phone)
 	var v map[string]string
 	var code string
 
@@ -1209,8 +1209,8 @@ func getToken(usage string, userID dot.ID) (*auth.Token, string, map[string]stri
 }
 
 func generateToken(usage string, userID dot.ID, generate bool, ttl int, extra string) (*auth.Token, string, map[string]string, error) {
-	tokStr := userID.String()
-	tok, code, v := getToken(usage, userID)
+	tokStr := fmt.Sprintf("%v-%v", userID, extra)
+	tok, code, v := getToken(usage, userID, extra)
 	if code != "" {
 		return tok, code, v, nil
 	}
@@ -1319,7 +1319,7 @@ func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificat
 	if !ok {
 		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
-	_, code, _, err := generateToken(auth.UsagePhoneVerification, cm.NewID(), true, 2*60*60, r.Phone)
+	_, code, _, err := generateToken(auth.UsagePhoneVerification, 0, true, 2*60*60, r.Phone)
 	if err != nil {
 		return r, err
 	}

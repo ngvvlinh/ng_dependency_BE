@@ -132,7 +132,8 @@ func Default() Config {
 		Haravan:        haravanclient.DefaultConfig(),
 		VTPay:          vtpayclient.DefaultConfig(),
 		SMS: sms.Config{
-			Mock: true,
+			Mock:    true,
+			Enabled: true,
 		},
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 		ServeDoc:    true,
