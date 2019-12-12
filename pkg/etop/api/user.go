@@ -222,18 +222,12 @@ func (s *UserService) register(
 	}
 	{
 		event := &identity.UserCreatedEvent{
-			UserID:    user.ID,
-			Email:     user.Email,
-			FullName:  user.FullName,
-			ShortName: user.ShortName,
+			UserID: user.ID,
 		}
 		if invitationTemp != nil {
 			event.Invitation = &identity.UserInvitation{
 				Token:      r.RegisterToken,
 				AutoAccept: r.AutoAcceptInvitation,
-				FullName:   invitationTemp.FullName,
-				ShortName:  invitationTemp.ShortName,
-				Position:   invitationTemp.Position,
 			}
 		}
 		if err := eventBus.Publish(ctx, event); err != nil {

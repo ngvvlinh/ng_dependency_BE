@@ -107,10 +107,7 @@ type AccountCreatedEvent struct {
 
 type UserCreatedEvent struct {
 	meta.EventMeta
-	UserID    dot.ID
-	Email     string
-	FullName  string
-	ShortName string
+	UserID dot.ID
 
 	Invitation *UserInvitation
 }
@@ -118,10 +115,6 @@ type UserCreatedEvent struct {
 type UserInvitation struct {
 	Token      string
 	AutoAccept bool
-
-	FullName  string
-	ShortName string
-	Position  string
 }
 
 type GetCustomersByShop struct {

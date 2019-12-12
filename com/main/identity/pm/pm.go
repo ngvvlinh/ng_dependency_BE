@@ -70,39 +70,11 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 			return err
 		}
 	case cm.NoError:
-		err := m.updateAccountUserWithRoles(ctx, getAccountUserQuery.Result, currInvitation)
-		if err != nil {
-			return err
-		}
+		return cm.Errorf(cm.Internal, nil, "unexpected (account_user exists)")
 	default:
 		return err
 	}
 
-	return nil
-}
-
-func (m *ProcessManager) updateAccountUserWithRoles(
-	ctx context.Context, accountUser *model.AccountUser, currInvitation *invitation.Invitation,
-) error {
-	mapRole := make(map[string]bool)
-	roles := []string{}
-	for _, role := range accountUser.Roles {
-		mapRole[role] = true
-	}
-	for _, role := range currInvitation.Roles {
-		mapRole[string(role)] = true
-	}
-	for role := range mapRole {
-		roles = append(roles, role)
-	}
-	accountUser.Roles = roles
-	accountUser.Permission.Roles = roles
-	updateAccountUserCmd := &model.UpdateAccountUserCommand{
-		AccountUser: accountUser,
-	}
-	if err := bus.Dispatch(ctx, updateAccountUserCmd); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -119,8 +91,9 @@ func (m *ProcessManager) createAccountUserWithRoles(
 			Permission: model.Permission{
 				Roles: convert.ConvertRolesToStrings(currInvitation.Roles),
 			},
-			FullName:  currUser.FullName,
-			ShortName: currUser.ShortName,
+			FullName:  cm.Coalesce(currInvitation.FullName, currUser.FullName),
+			ShortName: cm.Coalesce(currInvitation.ShortName, currUser.ShortName),
+			Position:  currInvitation.Position,
 		},
 	}
 	if err := bus.Dispatch(ctx, createAccountUserCmd); err != nil {
