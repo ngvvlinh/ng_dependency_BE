@@ -1701,7 +1701,7 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 type SendPhoneVerificationEndpoint struct {
 	*api.SendPhoneVerificationRequest
 	Result  *cm.MessageResponse
-	Context claims.UserClaim
+	Context claims.EmptyClaim
 }
 
 func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.SendPhoneVerificationRequest) (resp *cm.MessageResponse, err error) {
@@ -1718,7 +1718,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:     ctx,
 		RequireAuth: true,
-		RequireUser: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
@@ -1726,12 +1725,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	session = sessionQuery.Result
 	query := &SendPhoneVerificationEndpoint{SendPhoneVerificationRequest: req}
 	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendPhoneVerification(ctx, query)
 	resp = query.Result
@@ -2124,7 +2117,7 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 type VerifyPhoneUsingTokenEndpoint struct {
 	*api.VerifyPhoneUsingTokenRequest
 	Result  *cm.MessageResponse
-	Context claims.UserClaim
+	Context claims.EmptyClaim
 }
 
 func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.VerifyPhoneUsingTokenRequest) (resp *cm.MessageResponse, err error) {
@@ -2141,7 +2134,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:     ctx,
 		RequireAuth: true,
-		RequireUser: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
@@ -2149,12 +2141,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	session = sessionQuery.Result
 	query := &VerifyPhoneUsingTokenEndpoint{VerifyPhoneUsingTokenRequest: req}
 	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyPhoneUsingToken(ctx, query)
 	resp = query.Result
