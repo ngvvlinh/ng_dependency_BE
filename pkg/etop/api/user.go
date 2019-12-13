@@ -1061,7 +1061,7 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 	}
 
 	user := r.Context.User.User
-	tok, code, v := getToken(auth.UsageSToken, user.ID, "")
+	tok, code, v := getToken(auth.UsageSToken, user.ID, user.Email)
 	if tok == nil || code == "" || v == nil {
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
 	}
