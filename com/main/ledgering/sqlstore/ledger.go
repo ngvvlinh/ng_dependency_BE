@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/ledger_type"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/ledgering/convert"
 	"etop.vn/backend/com/main/ledgering/model"
@@ -75,7 +76,7 @@ func (s *LedgerStore) ShopID(id dot.ID) *LedgerStore {
 	return s
 }
 
-func (s *LedgerStore) Type(ledgerType string) *LedgerStore {
+func (s *LedgerStore) Type(ledgerType ledger_type.LedgerType) *LedgerStore {
 	s.preds = append(s.preds, s.ft.ByType(ledgerType))
 	return s
 }

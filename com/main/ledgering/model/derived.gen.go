@@ -59,7 +59,7 @@ func (m *ShopLedger) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Name),
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
-		core.String(m.Type),
+		m.Type,
 		core.Int(m.Status),
 		m.CreatedBy,
 		core.Now(m.CreatedAt, now, create),
@@ -75,7 +75,7 @@ func (m *ShopLedger) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Name),
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
-		(*core.String)(&m.Type),
+		&m.Type,
 		(*core.Int)(&m.Status),
 		&m.CreatedBy,
 		(*core.Time)(&m.CreatedAt),
@@ -183,7 +183,7 @@ func (m *ShopLedger) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Note)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')

@@ -15,6 +15,8 @@ import (
 /*
 Custom conversions:
     createShopLedger    // in use
+    shopLedger          // in use
+    shopLedgerDB        // in use
     updateShopLedger    // in use
 
 Ignored functions: (none)
@@ -62,7 +64,7 @@ func Convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 	if out == nil {
 		out = &ledgering.ShopLedger{}
 	}
-	convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg, out)
+	shopLedger(arg, out)
 	return out
 }
 
@@ -72,7 +74,7 @@ func convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 	out.Name = arg.Name           // simple assign
 	out.BankAccount = nil         // types do not match
 	out.Note = arg.Note           // simple assign
-	out.Type = 0                  // types do not match
+	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign
 	out.CreatedBy = arg.CreatedBy // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
@@ -95,7 +97,7 @@ func Convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	if out == nil {
 		out = &ledgeringmodel.ShopLedger{}
 	}
-	convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg, out)
+	shopLedgerDB(arg, out)
 	return out
 }
 
@@ -105,7 +107,7 @@ func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	out.Name = arg.Name           // simple assign
 	out.BankAccount = nil         // types do not match
 	out.Note = arg.Note           // simple assign
-	out.Type = ""                 // types do not match
+	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign
 	out.CreatedBy = arg.CreatedBy // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign

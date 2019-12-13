@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -17,7 +18,7 @@ type ShopLedger struct {
 	Name        string
 	BankAccount *model.BankAccount
 	Note        string
-	Type        string
+	Type        ledger_type.LedgerType
 	Status      int
 	CreatedBy   dot.ID
 	CreatedAt   time.Time `sq:"create"`

@@ -80,7 +80,7 @@ func (q *LedgerQuery) ListLedgersByIDs(
 func (q *LedgerQuery) ListLedgersByType(
 	ctx context.Context, ledgerType ledger_type.LedgerType, shopID dot.ID,
 ) (*ledgering.ShopLedgersResponse, error) {
-	query := q.store(ctx).ShopID(shopID).Type(ledgerType.String())
+	query := q.store(ctx).ShopID(shopID).Type(ledgerType)
 	ledgers, err := query.ListLedgers()
 	if err != nil {
 		return nil, err

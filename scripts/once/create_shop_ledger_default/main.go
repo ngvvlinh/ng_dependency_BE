@@ -98,7 +98,7 @@ func main() {
 						Name:        "Tiền mặt",
 						BankAccount: nil,
 						Note:        "Số quỹ mặc định",
-						Type:        ledger_type.LedgerTypeCash.String(),
+						Type:        ledger_type.LedgerTypeCash,
 						Status:      0,
 						CreatedBy:   ownerID,
 						CreatedAt:   time.Now(),

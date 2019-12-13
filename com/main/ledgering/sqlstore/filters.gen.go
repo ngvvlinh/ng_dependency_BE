@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
 )
@@ -99,22 +100,22 @@ func (ft *ShopLedgerFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByType(Type string) *sq.ColumnFilter {
+func (ft *ShopLedgerFilters) ByType(Type ledger_type.LedgerType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *ShopLedgerFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+func (ft *ShopLedgerFilters) ByTypePtr(Type *ledger_type.LedgerType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 
