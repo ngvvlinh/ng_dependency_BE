@@ -76,7 +76,7 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		m.ConfirmStatus,
 		m.ShippingStatus,
 		m.EtopPaymentStatus,
-		core.Int(m.ShippingState),
+		m.ShippingState,
 		core.String(m.ShippingCode),
 		core.JSON{m.FeeLines},
 		core.JSON{m.CarrierFeeLines},
@@ -121,7 +121,7 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ConfirmStatus,
 		&m.ShippingStatus,
 		&m.EtopPaymentStatus,
-		(*core.Int)(&m.ShippingState),
+		&m.ShippingState,
 		(*core.String)(&m.ShippingCode),
 		core.JSON{&m.FeeLines},
 		core.JSON{&m.CarrierFeeLines},
@@ -383,7 +383,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int(m.ShippingState))
+		w.WriteArg(m.ShippingState)
 	}
 	if m.ShippingCode != "" {
 		flag = true

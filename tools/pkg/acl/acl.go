@@ -150,6 +150,12 @@ const (
 	ShopStocktakeCancel  permission.ActionType = "shop/stocktake:cancel"
 	ShopStocktakeView    permission.ActionType = "shop/stocktake:view"
 
+	ShopRefundCreate  permission.ActionType = "shop/refund:create"
+	ShopRefundUpdate  permission.ActionType = "shop/refund:update"
+	ShopRefundConfirm permission.ActionType = "shop/refund:confirm"
+	ShopRefundCancel  permission.ActionType = "shop/refund:cancel"
+	ShopRefundView    permission.ActionType = "shop/refund:view"
+
 	ShopSupplierCreate permission.ActionType = "shop/supplier:create"
 	ShopSupplierUpdate permission.ActionType = "shop/supplier:update"
 	ShopSupplierDelete permission.ActionType = "shop/supplier:delete"
@@ -673,6 +679,15 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.AccountRelationship/UpdateRelationship": {Type: Shop, Actions: actions(RelationshipRelationshipUpdate)},
 	"etop.AccountRelationship/GetRelationships":   {Type: Shop, Actions: actions(RelationshipRelationshipView)},
 	"etop.AccountRelationship/RemoveUser":         {Type: Shop, Actions: actions(RelationshipUserRemove)},
+
+	"shop.Refund/CreateRefund":  {Type: Shop, Actions: actions(ShopRefundCreate)},
+	"shop.Refund/UpdateRefund":  {Type: Shop, Actions: actions(ShopRefundUpdate)},
+	"shop.Refund/CancelRefund":  {Type: Shop, Actions: actions(ShopRefundCancel)},
+	"shop.Refund/ConfirmRefund": {Type: Shop, Actions: actions(ShopRefundConfirm)},
+
+	"shop.Refund/GetRefund":       {Type: Shop, Actions: actions(ShopRefundView)},
+	"shop.Refund/GetRefundsByIDs": {Type: Shop, Actions: actions(ShopRefundView)},
+	"shop.Refund/GetRefunds":      {Type: Shop, Actions: actions(ShopRefundView)},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

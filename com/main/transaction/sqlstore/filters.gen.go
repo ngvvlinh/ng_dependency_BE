@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/main/transaction"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
@@ -100,7 +101,7 @@ func (ft *TransactionFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilt
 	}
 }
 
-func (ft *TransactionFilters) ByType(Type string) *sq.ColumnFilter {
+func (ft *TransactionFilters) ByType(Type transaction.TransactionType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -109,7 +110,7 @@ func (ft *TransactionFilters) ByType(Type string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *TransactionFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+func (ft *TransactionFilters) ByTypePtr(Type *transaction.TransactionType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",

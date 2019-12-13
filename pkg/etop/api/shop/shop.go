@@ -18,6 +18,7 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/main/refund"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
@@ -211,6 +212,8 @@ var (
 	purchaseOrderQuery   purchaseorder.QueryBus
 	StocktakeQuery       st.QueryBus
 	StocktakeAggregate   st.CommandBus
+	RefundAggr           refund.CommandBus
+	RefundQuery          refund.QueryBus
 )
 
 func Init(
@@ -251,6 +254,8 @@ func Init(
 	summary summary.QueryBus,
 	StocktakeQ st.QueryBus,
 	StocktakeA st.CommandBus,
+	refundA refund.CommandBus,
+	refundQ refund.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -289,6 +294,8 @@ func Init(
 	purchaseOrderQuery = purchaseOrderQ
 	StocktakeQuery = StocktakeQ
 	StocktakeAggregate = StocktakeA
+	RefundAggr = refundA
+	RefundQuery = refundQ
 }
 
 type MiscService struct{}
@@ -319,6 +326,7 @@ type BrandService struct{}
 type LedgerService struct{}
 type PurchaseOrderService struct{}
 type StocktakeService struct{}
+type RefundService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -348,6 +356,7 @@ var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
 var purchaseOrderService = &PurchaseOrderService{}
 var stocktakeService = &StocktakeService{}
+var refundService = &RefundService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

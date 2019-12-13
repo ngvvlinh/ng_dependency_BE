@@ -339,3 +339,15 @@ type StocktakeService interface {
 	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*GetStocktakesByIDsResponse, error)
 	GetStocktakes(context.Context, *GetStocktakesRequest) (*GetStocktakesResponse, error)
 }
+
+// +apix:path=/shop.Refund
+type RefundService interface {
+	CreateRefund(context.Context, *CreateRefundRequest) (*Refund, error)
+	UpdateRefund(context.Context, *UpdateRefundRequest) (*Refund, error)
+	ConfirmRefund(context.Context, *ConfirmRefundRequest) (*Refund, error)
+	CancelRefund(context.Context, *CancelRefundRequest) (*Refund, error)
+
+	GetRefund(context.Context, *cm.IDRequest) (*Refund, error)
+	GetRefundsByIDs(context.Context, *cm.IDsRequest) (*GetRefundsByIDsResponse, error)
+	GetRefunds(context.Context, *GetRefundsRequest) (*GetRefundsResponse, error)
+}

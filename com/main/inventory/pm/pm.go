@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/purchaseorder"
+	"etop.vn/api/main/refund"
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
@@ -40,6 +41,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.OrderConfirmedEvent)
 	eventBus.AddEventListener(m.StocktakeConfirmed)
 	eventBus.AddEventListener(m.OrderCancelledEvent)
+	eventBus.AddEventListener(m.ConfirmedRefundEvent)
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
@@ -255,4 +257,44 @@ func (m *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 		err = m.inventoryAgg.Dispatch(ctx, cmdConfirm)
 	}
 	return err
+}
+
+func (m *ProcessManager) ConfirmedRefundEvent(ctx context.Context, event *refund.ConfirmedRefundEvent) error {
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
+	}
+	var isCreate, isConfirm bool
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory {
+		isCreate = true
+	}
+	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+		isCreate = true
+		isConfirm = true
+	}
+	var inventoryVoucherID dot.ID
+	if isCreate {
+		cmd := &inventory.CreateInventoryVoucherByReferenceCommand{
+			RefType:   inventory.RefTypeRefund,
+			RefID:     event.RefundID,
+			ShopID:    event.ShopID,
+			UserID:    event.UpdatedBy,
+			OverStock: false,
+		}
+		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		inventoryVoucherID = cmd.Result[0].ID
+	}
+
+	if isConfirm {
+		cmd := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID:    event.ShopID,
+			ID:        inventoryVoucherID,
+			UpdatedBy: event.UpdatedBy,
+		}
+		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+	}
+	return nil
 }

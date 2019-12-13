@@ -253,6 +253,9 @@ func (a *ReceiptAggregate) validateTypeAndRefType(receiptType receipting.Receipt
 	if receiptType == receipting.ReceiptTypePayment && receiptRefType == receipting.ReceiptRefTypeOrder {
 		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
 	}
+	if receiptRefType == receipting.ReceiptRefTypeRefund && receiptType == receipting.ReceiptTypeReceipt {
+		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
+	}
 	return nil
 }
 
@@ -342,7 +345,6 @@ func (a *ReceiptAggregate) validateReceiptLines(
 	if len(refIDs) == 0 {
 		return nil
 	}
-
 	event := &receipting.ReceiptCreatingEvent{
 		RefIDs:         refIDs,
 		MapRefIDAmount: mapRefIDAmount,
@@ -351,7 +353,6 @@ func (a *ReceiptAggregate) validateReceiptLines(
 	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return err
 	}
-
 	return nil
 }
 

@@ -31,7 +31,7 @@ func (s InventoryVoucherRefName) String() string { return string(s) }
 type InventoryRefType string
 
 const (
-	RefTypeReturns       InventoryRefType = "return"
+	RefTypeRefund        InventoryRefType = "refund"
 	RefTypeStockTake     InventoryRefType = "stocktake"
 	RefTypePurchaseOrder InventoryRefType = "purchase_order"
 	RefTypeOrder         InventoryRefType = "order"

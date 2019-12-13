@@ -177,7 +177,7 @@ func (m *Transaction) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Type)
+		w.WriteArg(string(m.Type))
 	}
 	if m.Note != "" {
 		flag = true

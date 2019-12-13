@@ -3,6 +3,7 @@ package shop
 import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
@@ -10,6 +11,53 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/capi/dot"
 )
+
+func PbRefunds(args []*refund.Refund) []*shop.Refund {
+	var result []*shop.Refund
+	for _, value := range args {
+		result = append(result, PbRefund(value))
+	}
+	return result
+}
+func PbRefund(args *refund.Refund) *shop.Refund {
+	var result = &shop.Refund{
+		ID:           args.ID,
+		ShopID:       args.ShopID,
+		OrderID:      args.OrderID,
+		Note:         args.Note,
+		Lines:        PbRefundLine(args.Lines),
+		CreatedAt:    cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(args.UpdatedAt),
+		ConfirmedAt:  cmapi.PbTime(args.ConfirmedAt),
+		CancelledAt:  cmapi.PbTime(args.CancelledAt),
+		Code:         args.Code,
+		Discount:     args.Discount,
+		CreatedBy:    args.CreatedBy,
+		UpdatedBy:    args.UpdatedBy,
+		Status:       args.Status,
+		CancelReason: args.CancelReason,
+		BasketValue:  args.BasketValue,
+		TotalAmount:  args.TotalAmount,
+	}
+	return result
+}
+
+func PbRefundLine(args []*refund.RefundLine) []*shop.RefundLine {
+	var result []*shop.RefundLine
+	for _, v := range args {
+		result = append(result, &shop.RefundLine{
+			VariantID:   v.VariantID,
+			ProductID:   v.ProductID,
+			Quantity:    v.Quantity,
+			Code:        v.Code,
+			ImageURL:    v.ImageURL,
+			Name:        v.ProductName,
+			RetailPrice: v.RetailPrice,
+			Attributes:  PbAttributes(v.Attributes),
+		})
+	}
+	return result
+}
 
 func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) (res []*shop.ShopProduct) {
 	for _, product := range shopProducts {
@@ -77,6 +125,17 @@ func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
 		Code:          args.Code,
 		Lines:         PbstocktakeLines(args.Lines),
 	}
+}
+
+func PbAttributes(args []*catalog.Attribute) []*shop.Attribute {
+	var attributes []*shop.Attribute
+	for _, attribute := range args {
+		attributes = append(attributes, &shop.Attribute{
+			Name:  attribute.Name,
+			Value: attribute.Value,
+		})
+	}
+	return attributes
 }
 
 func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*shop.StocktakeLine {

@@ -2703,6 +2703,9 @@
     "qdOrderCustomer": {
       "type": "object",
       "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
         "email": {
           "type": "string"
         },

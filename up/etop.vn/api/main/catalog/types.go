@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/api/top/types/etc/status3"
-	dot "etop.vn/capi/dot"
+	"etop.vn/capi/dot"
 	cmutil "etop.vn/capi/util"
 )
 

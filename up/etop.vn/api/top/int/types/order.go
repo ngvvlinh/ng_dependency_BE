@@ -181,6 +181,7 @@ type OrderCustomer struct {
 	Phone          string                     `json:"phone"`
 	Gender         gender.Gender              `json:"gender"`
 	Type           customer_type.CustomerType `json:"type"`
+	Deleted        bool                       `json:"deleted"`
 }
 
 func (m *OrderCustomer) Reset()         { *m = OrderCustomer{} }

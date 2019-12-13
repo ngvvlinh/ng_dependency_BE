@@ -29,6 +29,7 @@ const (
 	ReceiptRefTypeOrder         ReceiptRefType = "order"
 	ReceiptRefTypeFulfillment   ReceiptRefType = "fulfillment"
 	ReceiptRefTypePurchaseOrder ReceiptRefType = "purchase_order"
+	ReceiptRefTypeRefund        ReceiptRefType = "refund"
 )
 
 type Receipt struct {

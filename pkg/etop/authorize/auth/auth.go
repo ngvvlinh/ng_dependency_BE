@@ -139,6 +139,11 @@ const (
 	p, shop/supplier:update, admin, owner, purchasing_management
 	p, shop/supplier:delete, admin, owner, purchasing_management
 	p, shop/supplier:view, admin, owner, accountant, purchasing_management
+	# refund
+	p, shop/refund:create, admin, owner, salesman
+	p, shop/refund:update, admin, owner, salesman
+	p, shop/refund:delete, admin, owner, salesman
+	p, shop/refund:view, admin, owner, salesman
 	# trading
 	p, trading/order:view, admin, owner
 	p, trading/order:create, admin, owner

@@ -8641,6 +8641,399 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 	return resp, nil
 }
 
+func WrapRefundService(s *RefundService) api.RefundService {
+	return wrapRefundService{s: s}
+}
+
+type wrapRefundService struct {
+	s *RefundService
+}
+
+type CancelRefundEndpoint struct {
+	*api.CancelRefundRequest
+	Result  *api.Refund
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) CancelRefund(ctx context.Context, req *api.CancelRefundRequest) (resp *api.Refund, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/CancelRefund"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelRefundEndpoint{CancelRefundRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:cancel", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CancelRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ConfirmRefundEndpoint struct {
+	*api.ConfirmRefundRequest
+	Result  *api.Refund
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) ConfirmRefund(ctx context.Context, req *api.ConfirmRefundRequest) (resp *api.Refund, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/ConfirmRefund"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConfirmRefundEndpoint{ConfirmRefundRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:confirm", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ConfirmRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateRefundEndpoint struct {
+	*api.CreateRefundRequest
+	Result  *api.Refund
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) CreateRefund(ctx context.Context, req *api.CreateRefundRequest) (resp *api.Refund, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/CreateRefund"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateRefundEndpoint{CreateRefundRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetRefundEndpoint struct {
+	*cm.IDRequest
+	Result  *api.Refund
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) GetRefund(ctx context.Context, req *cm.IDRequest) (resp *api.Refund, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/GetRefund"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetRefundEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetRefundsEndpoint struct {
+	*api.GetRefundsRequest
+	Result  *api.GetRefundsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) GetRefunds(ctx context.Context, req *api.GetRefundsRequest) (resp *api.GetRefundsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/GetRefunds"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetRefundsEndpoint{GetRefundsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetRefunds(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetRefundsByIDsEndpoint struct {
+	*cm.IDsRequest
+	Result  *api.GetRefundsByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) GetRefundsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.GetRefundsByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/GetRefundsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetRefundsByIDsEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetRefundsByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateRefundEndpoint struct {
+	*api.UpdateRefundRequest
+	Result  *api.Refund
+	Context claims.ShopClaim
+}
+
+func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefundRequest) (resp *api.Refund, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Refund/UpdateRefund"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateRefundEndpoint{UpdateRefundRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/refund:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/refund:update", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateRefund(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapShipnowService(s *ShipnowService) api.ShipnowService {
 	return wrapShipnowService{s: s}
 }

@@ -143,7 +143,6 @@ type CreateLedgerRequest struct {
 	// required name, account_number, account_name
 	BankAccount *etop.BankAccount `json:"bank_account"`
 	Note        string            `json:"note"`
-	CreatedBy   string            `json:"created_by"`
 }
 
 func (m *CreateLedgerRequest) Reset()         { *m = CreateLedgerRequest{} }
@@ -2176,6 +2175,104 @@ type CancelStocktakeRequest struct {
 
 func (m *CancelStocktakeRequest) Reset()         { *m = CancelStocktakeRequest{} }
 func (m *CancelStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetRefundsByIDsResponse struct {
+	Refund []*Refund `json:"refunds"`
+}
+
+func (m *GetRefundsByIDsResponse) Reset()         { *m = GetRefundsByIDsResponse{} }
+func (m *GetRefundsByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetRefundsResponse struct {
+	Refunds []*Refund        `json:"refunds"`
+	Paging  *common.PageInfo `json:"paging"`
+}
+
+func (m *GetRefundsResponse) Reset()         { *m = GetRefundsResponse{} }
+func (m *GetRefundsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetRefundsRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetRefundsRequest) Reset()         { *m = GetRefundsRequest{} }
+func (m *GetRefundsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CancelRefundRequest struct {
+	ID           dot.ID `json:"id"`
+	CancelReason string `json:"cancel_reason"`
+}
+
+func (m *CancelRefundRequest) Reset()         { *m = CancelRefundRequest{} }
+func (m *CancelRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ConfirmRefundRequest struct {
+	ID                   dot.ID `json:"id"`
+	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
+}
+
+func (m *ConfirmRefundRequest) Reset()         { *m = ConfirmRefundRequest{} }
+func (m *ConfirmRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateRefundRequest struct {
+	Lines    []*RefundLine  `json:"lines"`
+	Note     dot.NullString `json:"note"`
+	ID       dot.ID         `json:"id"`
+	DisCount dot.NullInt    `json:"discount"`
+}
+
+func (m *UpdateRefundRequest) Reset()         { *m = UpdateRefundRequest{} }
+func (m *UpdateRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateRefundRequest struct {
+	Lines    []*RefundLine `json:"lines"`
+	OrderID  dot.ID        `json:"order_id"`
+	Note     string        `json:"note"`
+	Discount int           `json:"discount"`
+}
+
+func (m *CreateRefundRequest) Reset()         { *m = CreateRefundRequest{} }
+func (m *CreateRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Refund struct {
+	ID           dot.ID               `json:"id"`
+	ShopID       dot.ID               `json:"shop_id"`
+	OrderID      dot.ID               `json:"order_id"`
+	Note         string               `json:"note"`
+	Code         string               `json:"code"`
+	Discount     int                  `json:"discount"`
+	Lines        []*RefundLine        `json:"lines"`
+	CreatedAt    dot.Time             `json:"created_at"`
+	UpdatedAt    dot.Time             `json:"updated_at"`
+	CancelledAt  dot.Time             `json:"cancelled_at"`
+	ConfirmedAt  dot.Time             `json:"confirmed_at"`
+	CreatedBy    dot.ID               `json:"created_by"`
+	UpdatedBy    dot.ID               `json:"updated_by"`
+	CancelReason string               `json:"cancel_reason"`
+	Customer     *types.OrderCustomer `json:"customer"`
+	CustomerID   dot.ID               `json:"customer_id"`
+	Status       status3.Status       `json:"status"`
+	TotalAmount  int                  `json:"total_amount"`
+	BasketValue  int                  `json:"basket_value"`
+}
+
+func (m *Refund) Reset()         { *m = Refund{} }
+func (m *Refund) String() string { return jsonx.MustMarshalToString(m) }
+
+type RefundLine struct {
+	VariantID   dot.ID       `json:"variant_id"`
+	ProductID   dot.ID       `json:"product_id"`
+	Quantity    int          `json:"quantity"`
+	Code        string       `json:"code"`
+	ImageURL    string       `json:"image_url"`
+	Name        string       `json:"name"`
+	RetailPrice int          `json:"retail_price"`
+	Attributes  []*Attribute `json:"attributes"`
+}
+
+func (m *RefundLine) Reset()         { *m = RefundLine{} }
+func (m *RefundLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateInventoryVariantCostPriceResponse struct {
 	InventoryVariant *InventoryVariant `json:"inventory_variant"`

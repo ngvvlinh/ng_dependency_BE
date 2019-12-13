@@ -47,6 +47,9 @@ import (
 	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
 	receiptpm "etop.vn/backend/com/main/receipting/pm"
 	receiptquery "etop.vn/backend/com/main/receipting/query"
+	refundaggregate "etop.vn/backend/com/main/refund/aggregate"
+	refundpm "etop.vn/backend/com/main/refund/pm"
+	refundquery "etop.vn/backend/com/main/refund/query"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
@@ -396,8 +399,9 @@ func main() {
 	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
 	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
 	purchaseOrderPM.RegisterEventHandlers(eventBus)
-
-	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery).MessageBus()
+	refundAggr := refundaggregate.NewReceiptAggregate(db, eventBus).MessageBus()
+	refundQuery := refundquery.NewQueryRefund(eventBus, db).MessageBus()
+	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery, refundQuery).MessageBus()
 	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
 	inventoryPm.RegisterEventHandlers(eventBus)
 
@@ -415,7 +419,8 @@ func main() {
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
-
+	refundPm := refundpm.New(&refundQuery, &receiptQuery)
+	refundPm.RegisterEventHandlers(eventBus)
 	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg).MessageBus()
 	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
@@ -482,6 +487,8 @@ func main() {
 		summaryQuery,
 		stocktakeQuery,
 		stocktakeAggr,
+		refundAggr,
+		refundQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore)
