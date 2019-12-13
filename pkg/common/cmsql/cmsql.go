@@ -10,12 +10,11 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
+	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/proxy"
 	"github.com/lib/pq"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
-
-	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/proxy"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

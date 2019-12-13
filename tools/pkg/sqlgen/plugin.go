@@ -9,11 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	gen2 "etop.vn/backend/tools/pkg/gen"
-
 	"github.com/awalterschulze/goderive/derive"
 	"github.com/dustin/go-humanize/english"
 
+	gen2 "etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/goderive/substruct"
 	"etop.vn/backend/tools/pkg/sqlgen/filtergen"
 	"etop.vn/common/strs"

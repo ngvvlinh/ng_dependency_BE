@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"etop.vn/api/top/types/etc/shipping_provider"
-
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	ordermodel "etop.vn/backend/com/main/ordering/model"

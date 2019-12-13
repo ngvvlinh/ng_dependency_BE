@@ -3,10 +3,9 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"

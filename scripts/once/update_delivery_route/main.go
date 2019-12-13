@@ -3,15 +3,13 @@ package main
 import (
 	"flag"
 
-	"etop.vn/backend/pkg/common/bus"
-
 	"etop.vn/api/main/location"
-
 	"etop.vn/backend/cmd/etop-server/config"
 	servicelocation "etop.vn/backend/com/main/location"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	shipping "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	etopmodel "etop.vn/backend/pkg/etop/model"

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"etop.vn/api/top/types/etc/status3"
-
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	txmodel "etop.vn/backend/com/main/moneytx/model"

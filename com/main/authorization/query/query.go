@@ -3,13 +3,12 @@ package query
 import (
 	"context"
 
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/authorization"
 	"etop.vn/backend/com/main/authorization/convert"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var _ authorization.QueryService = &AuthorizationQuery{}

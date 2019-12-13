@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/top/types/etc/notifier_entity"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )

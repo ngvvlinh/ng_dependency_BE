@@ -5,10 +5,9 @@ import (
 	"net/url"
 	"regexp"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	extpartner "etop.vn/api/top/external/partner"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"

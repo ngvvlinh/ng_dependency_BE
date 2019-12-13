@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/account_type"
-
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

@@ -3,9 +3,8 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/transaction"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/transaction/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

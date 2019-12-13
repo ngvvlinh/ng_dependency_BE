@@ -7,9 +7,6 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/capi/dot"
-
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -19,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 

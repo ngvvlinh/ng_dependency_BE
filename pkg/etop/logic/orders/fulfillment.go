@@ -5,14 +5,6 @@ import (
 	"sync"
 	"time"
 
-	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/location"
@@ -22,6 +14,10 @@ import (
 	"etop.vn/api/shopping/customering"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"

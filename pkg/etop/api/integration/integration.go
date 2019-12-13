@@ -7,15 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-
-	"etop.vn/api/top/types/etc/status3"
-
-	"etop.vn/api/top/types/etc/user_source"
-
 	"etop.vn/api/top/int/integration"
-
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/user_source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"

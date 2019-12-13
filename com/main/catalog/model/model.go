@@ -3,9 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/top/types/etc/product_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"

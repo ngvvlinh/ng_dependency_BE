@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status5"
-
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status5"
 	locationutil "etop.vn/backend/com/main/location/util"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"

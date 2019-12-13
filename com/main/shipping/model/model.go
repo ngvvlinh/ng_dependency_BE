@@ -5,18 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/try_on"
-
 	"etop.vn/api/top/types/etc/shipping"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
-
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/top/int/types"
-
 	"etop.vn/api/main/location"
+	"etop.vn/api/top/int/types"
 	pbsp "etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"

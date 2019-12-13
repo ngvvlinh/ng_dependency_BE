@@ -3,10 +3,9 @@ package convert
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
+	"etop.vn/api/top/types/etc/status3"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"

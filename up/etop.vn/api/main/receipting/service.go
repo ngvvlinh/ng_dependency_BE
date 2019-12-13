@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	. "etop.vn/capi/dot"
 	dot "etop.vn/capi/dot"
 )

@@ -3,11 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
-	"etop.vn/api/top/types/etc/gender"
-
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/top/types/etc/gender"
+	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/capi/dot"
 )

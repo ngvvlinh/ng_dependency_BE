@@ -5,14 +5,10 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/try_on"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
 	"etop.vn/api/top/types/etc/status3"
-
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"

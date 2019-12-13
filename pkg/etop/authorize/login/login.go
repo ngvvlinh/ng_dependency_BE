@@ -9,7 +9,6 @@ import (
 	"io"
 
 	"etop.vn/api/top/types/etc/status3"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"

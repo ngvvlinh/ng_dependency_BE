@@ -6,10 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/api/top/external/types"
-
 	"github.com/Shopify/sarama"
 
+	"etop.vn/api/top/external/types"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"

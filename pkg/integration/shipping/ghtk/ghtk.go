@@ -9,13 +9,9 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/location"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -23,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status4"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )

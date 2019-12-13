@@ -6,12 +6,11 @@ import (
 	"os"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/generators/enum"
-
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/api"
 	"etop.vn/backend/tools/pkg/generators/apix"
 	"etop.vn/backend/tools/pkg/generators/convert"
+	"etop.vn/backend/tools/pkg/generators/enum"
 	"etop.vn/backend/tools/pkg/generators/event"
 	"etop.vn/backend/tools/pkg/generators/sample"
 	"etop.vn/backend/tools/pkg/generators/swagger"

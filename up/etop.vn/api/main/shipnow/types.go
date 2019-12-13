@@ -3,17 +3,14 @@ package shipnow
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/ordering/types"
 	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/capi/dot"
 )
 

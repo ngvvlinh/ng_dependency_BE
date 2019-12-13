@@ -3,14 +3,13 @@ package convertpb
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/account_type"
-
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
 	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/types/etc/account_type"
 	addresstype "etop.vn/api/top/types/etc/address_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"

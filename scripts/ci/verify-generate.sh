@@ -8,6 +8,7 @@ tidy() {
 
 scripts/install-tools.sh
 scripts/generate-all.sh
+scripts/clean-imports.sh
 
 # Generate go-bindata
 cd "${ETOPDIR}/backend/doc"

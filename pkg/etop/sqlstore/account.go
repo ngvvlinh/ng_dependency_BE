@@ -5,10 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-
 	"etop.vn/api/main/authorization"
-
+	"etop.vn/api/top/types/etc/account_type"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"

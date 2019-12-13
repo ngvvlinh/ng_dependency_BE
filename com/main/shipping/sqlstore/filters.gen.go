@@ -6,15 +6,14 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/capi/dot"
-
-	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type FulfillmentFilters struct{ prefix string }

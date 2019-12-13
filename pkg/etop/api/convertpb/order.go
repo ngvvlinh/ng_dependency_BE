@@ -4,12 +4,11 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
 	"etop.vn/api/main/location"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/gender"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"

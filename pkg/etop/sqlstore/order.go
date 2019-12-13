@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-
 	"github.com/lib/pq"
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"

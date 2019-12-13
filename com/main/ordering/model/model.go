@@ -6,19 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/ghn_note_code"
-
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/try_on"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/top/types/etc/fee"
+	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"

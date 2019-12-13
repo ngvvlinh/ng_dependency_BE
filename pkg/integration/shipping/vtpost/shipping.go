@@ -4,13 +4,10 @@ import (
 	"context"
 	"time"
 
-	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status4"
-
 	"etop.vn/api/main/location"
+	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"

@@ -3,10 +3,10 @@ package sq_test
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	. "etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 type A = []interface{}

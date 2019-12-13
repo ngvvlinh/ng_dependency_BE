@@ -3,12 +3,10 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

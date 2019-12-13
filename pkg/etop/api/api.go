@@ -3,13 +3,12 @@ package api
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	apietop "etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/status3"
 	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
 	"etop.vn/backend/com/main/invitation/convert"
 	servicelocation "etop.vn/backend/com/main/location"

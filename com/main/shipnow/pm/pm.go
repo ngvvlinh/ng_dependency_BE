@@ -4,15 +4,13 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowcarrier "etop.vn/api/main/shipnow/carrier"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"

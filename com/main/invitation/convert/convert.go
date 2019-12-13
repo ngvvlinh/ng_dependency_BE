@@ -3,17 +3,14 @@ package convert
 import (
 	"time"
 
-	"etop.vn/capi/dot"
-
-	"etop.vn/backend/com/main/authorization/convert"
-
-	"etop.vn/api/main/authorization"
-
 	"github.com/dgrijalva/jwt-go"
 
+	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/invitation"
+	"etop.vn/backend/com/main/authorization/convert"
 	"etop.vn/backend/com/main/invitation/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 // +gen:convert: etop.vn/backend/com/main/invitation/model -> etop.vn/api/main/invitation

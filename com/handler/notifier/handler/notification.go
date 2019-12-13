@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
-
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"

@@ -4,10 +4,6 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
@@ -18,6 +14,8 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/shipnow/convert"
 	"etop.vn/backend/com/main/shipnow/sqlstore"
 	cm "etop.vn/backend/pkg/common"

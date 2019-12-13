@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"etop.vn/api/top/int/etop"
-
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

@@ -3,9 +3,8 @@ package stocktaking
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 

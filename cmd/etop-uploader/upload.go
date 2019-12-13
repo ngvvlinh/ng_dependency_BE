@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"

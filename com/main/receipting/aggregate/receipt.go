@@ -3,8 +3,6 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/purchaseorder"
@@ -13,6 +11,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/receipting/convert"
 	"etop.vn/backend/com/main/receipting/model"
 	"etop.vn/backend/com/main/receipting/sqlstore"

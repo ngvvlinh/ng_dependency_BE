@@ -5,15 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/ghn_note_code"
-
-	"etop.vn/api/top/types/etc/shipping_provider"
-
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/location"
+	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status4"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -22,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 const MinShopBalance = -200000

@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/ghn_note_code"
-
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"

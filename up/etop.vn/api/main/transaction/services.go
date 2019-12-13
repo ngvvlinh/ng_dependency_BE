@@ -3,9 +3,8 @@ package transaction
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 

@@ -3,11 +3,10 @@ package types
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status5"
-
 	"etop.vn/api/main/ordering/types"
 	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/capi/dot"
 )
 

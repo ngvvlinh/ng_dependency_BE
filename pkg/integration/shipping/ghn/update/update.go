@@ -5,17 +5,15 @@ import (
 	"net/http"
 	"time"
 
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/capi/dot"
-
 	"github.com/PuerkitoBio/goquery"
 
+	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )

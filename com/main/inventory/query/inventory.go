@@ -3,11 +3,9 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/top/types/etc/status4"
-
-	"etop.vn/api/top/types/etc/status3"
-
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/sqlstore"
 	cm "etop.vn/backend/pkg/common"

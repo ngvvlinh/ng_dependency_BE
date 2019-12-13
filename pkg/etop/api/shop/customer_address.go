@@ -3,10 +3,9 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/top/int/shop"
-
 	"etop.vn/api/main/location"
 	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

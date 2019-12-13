@@ -7,19 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/try_on"
-
-	"etop.vn/api/top/types/etc/status5"
-
-	"etop.vn/api/top/types/etc/status3"
-
-	"etop.vn/api/top/int/types"
-
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
