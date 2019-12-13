@@ -8,7 +8,6 @@ import (
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/capi/dot"
 )
 
@@ -53,7 +52,7 @@ func PbRefundLine(args []*refund.RefundLine) []*shop.RefundLine {
 			ImageURL:    v.ImageURL,
 			Name:        v.ProductName,
 			RetailPrice: v.RetailPrice,
-			Attributes:  PbAttributes(v.Attributes),
+			Attributes:  v.Attributes,
 		})
 	}
 	return result
@@ -127,27 +126,9 @@ func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
 	}
 }
 
-func PbAttributes(args []*catalog.Attribute) []*shop.Attribute {
-	var attributes []*shop.Attribute
-	for _, attribute := range args {
-		attributes = append(attributes, &shop.Attribute{
-			Name:  attribute.Name,
-			Value: attribute.Value,
-		})
-	}
-	return attributes
-}
-
 func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*shop.StocktakeLine {
 	var lines []*shop.StocktakeLine
 	for _, value := range args {
-		var attributes []*shop.Attribute
-		for _, attribute := range value.Attributes {
-			attributes = append(attributes, &shop.Attribute{
-				Name:  attribute.Name,
-				Value: attribute.Value,
-			})
-		}
 		lines = append(lines, &shop.StocktakeLine{
 			VariantId:   value.VariantID,
 			OldQuantity: value.OldQuantity,
@@ -158,7 +139,7 @@ func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*shop.StocktakeLine {
 			ProductId:   value.ProductID,
 			Code:        value.Code,
 			ImageUrl:    value.ImageURL,
-			Attributes:  attributes,
+			Attributes:  value.Attributes,
 		})
 	}
 	return lines
@@ -211,13 +192,6 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 
 	var inventoryVoucherItem []*shop.InventoryVoucherLine
 	for _, value := range args.Lines {
-		var attributes []shop.Attribute
-		for _, attribute := range value.Attributes {
-			attributes = append(attributes, shop.Attribute{
-				Name:  attribute.Name,
-				Value: attribute.Value,
-			})
-		}
 		inventoryVoucherItem = append(inventoryVoucherItem, &shop.InventoryVoucherLine{
 			VariantId:   value.VariantID,
 			VariantName: value.VariantName,
@@ -225,7 +199,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 			Code:        value.Code,
 			ProductName: value.ProductName,
 			ImageUrl:    value.ImageURL,
-			Attributes:  attributes,
+			Attributes:  value.Attributes,
 			Price:       value.Price,
 			Quantity:    value.Quantity,
 		})
@@ -297,7 +271,7 @@ func PbShopVariant(m *catalog.ShopVariant) *shop.ShopVariant {
 			DescHtml:    m.DescHTML,
 			ImageUrls:   m.ImageURLs,
 			ListPrice:   m.ListPrice,
-			Attributes:  convertpb.PbAttributes(m.Attributes),
+			Attributes:  m.Attributes,
 		},
 		Code:        m.Code,
 		EdCode:      m.Code,
@@ -311,7 +285,7 @@ func PbShopVariant(m *catalog.ShopVariant) *shop.ShopVariant {
 		Status:      m.Status,
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
-		Attributes:  convertpb.PbAttributes(m.Attributes),
+		Attributes:  m.Attributes,
 	}
 	return res
 }
@@ -379,7 +353,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *shop.ShopVaria
 			ImageUrls:   m.ImageURLs,
 			ListPrice:   m.ListPrice,
 			CostPrice:   m.CostPrice,
-			Attributes:  convertpb.PbAttributes(m.Attributes),
+			Attributes:  m.Attributes,
 		},
 		Code:        m.Code,
 		EdCode:      m.Code,
@@ -393,7 +367,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *shop.ShopVaria
 		Status:      m.Status,
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
-		Attributes:  convertpb.PbAttributes(m.Attributes),
+		Attributes:  m.Attributes,
 	}
 	if m.ShopProduct != nil {
 		res.Product = &shop.ShopShortProduct{

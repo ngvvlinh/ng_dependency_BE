@@ -190,18 +190,10 @@ func fillPOLineInfo(line *purchaseorder.PurchaseOrderLine, variant *catalog.Shop
 		line.ProductName = product.Name
 	}
 	line.Code = variant.Code
-	var attributes []*catalog.Attribute
 	if line.ImageUrl == "" {
 		line.ImageUrl = getImage(variant, product)
 	}
-	for _, value := range variant.Attributes {
-		attribute := &catalog.Attribute{
-			Name:  value.Name,
-			Value: value.Value,
-		}
-		attributes = append(attributes, attribute)
-	}
-	line.Attributes = attributes
+	line.Attributes = variant.Attributes
 }
 
 func getImage(variant *catalog.ShopVariant, product *catalog.ShopProduct) string {

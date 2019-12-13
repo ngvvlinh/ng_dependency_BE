@@ -3,6 +3,7 @@ package stocktaking
 import (
 	"time"
 
+	catalogtype "etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
@@ -52,10 +53,5 @@ type StocktakeLine struct {
 	ImageURL    string
 
 	CostPrice  int
-	Attributes []*Attribute
-}
-
-type Attribute struct {
-	Name  string
-	Value string
+	Attributes []*catalogtype.Attribute
 }

@@ -749,7 +749,7 @@ func prepareOrderLine(
 		LineAmount:      m.Quantity * m.RetailPrice,
 		ImageURL:        m.ImageUrl,
 		ProductName:     productName,
-		Attributes:      convertpb.PbAttributesToModel(m.Attributes),
+		Attributes:      convert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(m.Attributes),
 		TotalDiscount:   0, // will be filled later
 		TotalLineAmount: 0, // will be filled later
 		MetaFields:      metaFields,

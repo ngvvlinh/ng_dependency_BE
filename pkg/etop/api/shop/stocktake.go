@@ -115,13 +115,6 @@ func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *
 	if inventoryVariant != nil {
 		stocktakeLine.CostPrice = inventoryVariant.CostPrice
 	}
-	var attributes []*stocktaking.Attribute
-	for _, value := range shopVariant.Attributes {
-		attributes = append(attributes, &stocktaking.Attribute{
-			Name:  value.Name,
-			Value: value.Value,
-		})
-	}
 	if len(shopVariant.ImageURLs) > 0 {
 		stocktakeLine.ImageURL = shopVariant.ImageURLs[0]
 	}
@@ -130,7 +123,7 @@ func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *
 			stocktakeLine.ImageURL = shopProduct.ImageURLs[0]
 		}
 	}
-	stocktakeLine.Attributes = attributes
+	stocktakeLine.Attributes = shopVariant.Attributes
 	return stocktakeLine
 }
 

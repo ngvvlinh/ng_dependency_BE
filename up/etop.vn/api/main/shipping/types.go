@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	catalogtype "etop.vn/api/main/catalog/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi"
@@ -87,17 +88,12 @@ type ItemLine struct {
 	VariantID   dot.ID
 	IsOutside   bool
 	ImageURL    string
-	Attribute   []Attribute
+	Attribute   []catalogtype.Attribute
 
 	Quantity     int
 	ListPrice    int
 	RetailPrice  int
 	PaymentPrice int
-}
-
-type Attribute struct {
-	Name  string
-	Value string
 }
 
 type WeightInfo struct {

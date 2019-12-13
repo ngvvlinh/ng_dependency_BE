@@ -70,7 +70,7 @@ type ShopVariant struct {
 
 	Status status3.Status
 
-	Attributes Attributes
+	Attributes types.Attributes
 
 	PriceInfo
 
@@ -141,9 +141,6 @@ type PriceInfo struct {
 
 	RetailPrice int
 }
-
-type Attribute = types.Attribute
-type Attributes = types.Attributes
 
 //-- extended --//
 

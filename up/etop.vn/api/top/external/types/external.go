@@ -1,6 +1,7 @@
 package types
 
 import (
+	catalogtypes "etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
@@ -271,9 +272,9 @@ type OrderLine struct {
 	ListPrice   int    `json:"list_price"`
 	RetailPrice int    `json:"retail_price"`
 	// payment_price = retail_price - discount_per_item
-	PaymentPrice dot.NullInt        `json:"payment_price"`
-	ImageUrl     string             `json:"image_url"`
-	Attributes   []*types.Attribute `json:"attributes"`
+	PaymentPrice dot.NullInt               `json:"payment_price"`
+	ImageUrl     string                    `json:"image_url"`
+	Attributes   []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *OrderLine) Reset()         { *m = OrderLine{} }

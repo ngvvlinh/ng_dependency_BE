@@ -1,9 +1,13 @@
 package types
 
+import "etop.vn/common/jsonx"
+
 type Attribute struct {
-	Name  string
-	Value string
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
+
+func (m *Attribute) String() string { return jsonx.MustMarshalToString(m) }
 
 type Attributes []*Attribute
 

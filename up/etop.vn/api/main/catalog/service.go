@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	"etop.vn/api/top/types/etc/product_type"
@@ -293,7 +294,7 @@ type CreateShopVariantArgs struct {
 	Name       string
 	ImageURLs  []string
 	Note       string
-	Attributes Attributes
+	Attributes types.Attributes
 	DescriptionInfo
 	PriceInfo
 }
@@ -334,7 +335,7 @@ type UpdateShopProductMetaFieldsArgs struct {
 type UpdateShopVariantAttributes struct {
 	ShopID     dot.ID
 	VariantID  dot.ID
-	Attributes Attributes
+	Attributes types.Attributes
 }
 
 type AddShopProductCollectionArgs struct {

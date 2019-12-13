@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	catalogtype "etop.vn/api/main/catalog/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
@@ -228,12 +229,7 @@ type InventoryVoucherItem struct {
 
 	Code       string
 	ImageURL   string
-	Attributes []*Attribute
-}
-
-type Attribute struct {
-	Name  string
-	Value string
+	Attributes []*catalogtype.Attribute
 }
 
 type CancelInventoryVoucherArgs struct {

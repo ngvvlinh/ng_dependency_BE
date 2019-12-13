@@ -5685,6 +5685,17 @@
         "partner"
       ]
     },
+    "dkAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -5933,17 +5944,6 @@
           "items": {
             "$ref": "#/definitions/paInventoryVoucher"
           }
-        }
-      }
-    },
-    "paAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
         }
       }
     },
@@ -6617,7 +6617,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -6867,7 +6867,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -6990,7 +6990,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -7908,7 +7908,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -8167,7 +8167,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -8441,7 +8441,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -8847,7 +8847,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -9006,7 +9006,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -9960,7 +9960,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "variant_id": {
@@ -10005,7 +10005,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/paAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {
@@ -10098,17 +10098,6 @@
         "other"
       ]
     },
-    "qdAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
     "qdCancelShipnowFulfillmentRequest": {
       "type": "object",
       "properties": {
@@ -10127,7 +10116,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "image_url": {
@@ -11250,7 +11239,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {

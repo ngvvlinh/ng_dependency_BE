@@ -3,7 +3,7 @@ package purchaseorder
 import (
 	"time"
 
-	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
@@ -44,7 +44,7 @@ type PurchaseOrderLine struct {
 	ProductName  string
 	Code         string
 	ImageUrl     string
-	Attributes   []*catalog.Attribute
+	Attributes   []*types.Attribute
 }
 
 type PurchaseOrderSupplier struct {

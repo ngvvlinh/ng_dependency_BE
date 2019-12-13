@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
@@ -14,7 +15,7 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 // Normalize attributes, do not sort them. Empty attributes is '_'.
-func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string) {
+func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) {
 	if len(attrs) == 0 {
 		return nil, "_"
 	}
@@ -23,7 +24,7 @@ func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string
 		attrs = attrs[:maxAttrs]
 	}
 
-	normAttrs := make([]*ProductAttribute, 0, len(attrs))
+	normAttrs := make([]*types.Attribute, 0, len(attrs))
 	var b strings.Builder
 	b.Grow(256)
 	for _, attr := range attrs {
@@ -38,7 +39,7 @@ func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string
 			continue
 		}
 
-		normAttrs = append(normAttrs, &ProductAttribute{Name: attr.Name, Value: attr.Value})
+		normAttrs = append(normAttrs, &types.Attribute{Name: attr.Name, Value: attr.Value})
 		if b.Len() > 0 {
 			b.WriteByte(' ')
 		}
@@ -201,7 +202,7 @@ func (attrs ProductAttributes) ShortLabel() string {
 	return b.String()
 }
 
-// +convert:type=catalog.Attribute
+// +convert:type=catalog/types.Attribute
 type ProductAttribute struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`

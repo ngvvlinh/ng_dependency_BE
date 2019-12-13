@@ -238,7 +238,9 @@ func ShopVariantDB(in *catalog.ShopVariant) (out *catalogmodel.ShopVariant) {
 		DeletedAt:   time.Time{},
 		NameNorm:    validate.NormalizeSearch(in.Name),
 	}
-	out.Attributes, out.AttrNormKv = catalogmodel.NormalizeAttributes(AttributesDB(in.Attributes))
+	attributes, attrNormKv := catalogmodel.NormalizeAttributes(in.Attributes)
+	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(attributes)
+	out.AttrNormKv = attrNormKv
 	return out
 }
 

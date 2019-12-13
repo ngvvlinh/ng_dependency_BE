@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/backend/com/main/catalog/convert"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -146,13 +147,13 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 			ListPrice:   cmd.ListPrice,
 			RetailPrice: cmd.RetailPrice,
 			Status:      status3.P,
-			Attributes:  cmd.Attributes,
 			CreatedAt:   time.Time{},
 			UpdatedAt:   time.Time{},
 			NameNorm:    validate.NormalizeSearch(cmd.Name),
 		}
-		variant.Attributes, variant.AttrNormKv = catalogmodel.NormalizeAttributes(cmd.Attributes)
-
+		attributes, attrNormKv := catalogmodel.NormalizeAttributes(cmd.Attributes)
+		variant.Attributes = convert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(attributes)
+		variant.AttrNormKv = attrNormKv
 		if cmd.ProductID != 0 {
 			_, err := shopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.ProductID).GetShopProductDB()
 			if err != nil {

@@ -405,7 +405,7 @@ func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *apishop.PurchaseOr
 		ImageUrl:     m.ImageUrl,
 		ProductId:    m.ProductID,
 		Code:         m.Code,
-		Attributes:   PbAttributes(m.Attributes),
+		Attributes:   m.Attributes,
 		VariantId:    m.VariantID,
 		Quantity:     m.Quantity,
 		PaymentPrice: m.PaymentPrice,

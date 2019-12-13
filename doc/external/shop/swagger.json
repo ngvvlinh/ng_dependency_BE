@@ -398,6 +398,17 @@
         "try"
       ]
     },
+    "dkAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -1027,7 +1038,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "image_url": {
@@ -1243,17 +1254,6 @@
         "shipping",
         "tax"
       ]
-    },
-    "qdAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
     },
     "qdOrderFeeLine": {
       "type": "object",

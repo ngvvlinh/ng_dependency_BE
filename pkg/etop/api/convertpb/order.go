@@ -9,7 +9,7 @@ import (
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/shipping_provider"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
@@ -612,43 +612,11 @@ func PbOrderLine(m *ordermodel.OrderLine) *types.OrderLine {
 		RetailPrice:    m.RetailPrice,
 		PaymentPrice:   m.PaymentPrice,
 		ImageUrl:       m.ImageURL,
-		Attributes:     PbAttributesFromModel(m.Attributes),
+		Attributes:     catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(m.Attributes),
 		ProductId:      m.ProductID,
 		TotalDiscount:  m.TotalDiscount,
 		MetaFields:     metaFields,
 	}
-}
-
-func PbAttributesToModel(items []*types.Attribute) []*catalogmodel.ProductAttribute {
-	if len(items) == 0 {
-		return nil
-	}
-	res := make([]*catalogmodel.ProductAttribute, 0, len(items))
-	for _, item := range items {
-		if item == nil {
-			continue
-		}
-		res = append(res, AttributeToModel(item))
-	}
-	return res
-}
-
-func AttributeToModel(m *types.Attribute) *catalogmodel.ProductAttribute {
-	return &catalogmodel.ProductAttribute{
-		Name:  m.Name,
-		Value: m.Value,
-	}
-}
-
-func PbAttributesFromModel(as []*catalogmodel.ProductAttribute) []*types.Attribute {
-	attrs := make([]*types.Attribute, len(as))
-	for i, a := range as {
-		attrs[i] = &types.Attribute{
-			Name:  a.Name,
-			Value: a.Value,
-		}
-	}
-	return attrs
 }
 
 func PbFulfillments(items []*shipmodel.Fulfillment, accType int) []*types.Fulfillment {

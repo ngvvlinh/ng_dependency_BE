@@ -15,8 +15,8 @@ import (
 
 /*
 Custom conversions:
-    Attribute                  // not use, no conversions between params
-    AttributeDB                // not use, no conversions between params
+    Attribute                  // in use
+    AttributeDB                // in use
     ShopCategory               // in use
     ShopCategoryDB             // in use
     ShopCollection             // in use
@@ -54,24 +54,6 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*catalogmodel.ProductAttribute)(nil), (*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
-		Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg.(*catalogmodel.ProductAttribute), out.(*catalogtypes.Attribute))
-		return nil
-	})
-	s.Register(([]*catalogmodel.ProductAttribute)(nil), (*[]*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
-		out0 := Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.([]*catalogmodel.ProductAttribute))
-		*out.(*[]*catalogtypes.Attribute) = out0
-		return nil
-	})
-	s.Register((*catalogtypes.Attribute)(nil), (*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
-		Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg.(*catalogtypes.Attribute), out.(*catalogmodel.ProductAttribute))
-		return nil
-	})
-	s.Register(([]*catalogtypes.Attribute)(nil), (*[]*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
-		out0 := Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.([]*catalogtypes.Attribute))
-		*out.(*[]*catalogmodel.ProductAttribute) = out0
-		return nil
-	})
 	s.Register((*catalogmodel.ShopBrand)(nil), (*catalog.ShopBrand)(nil), func(arg, out interface{}) error {
 		Convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg.(*catalogmodel.ShopBrand), out.(*catalog.ShopBrand))
 		return nil
@@ -210,51 +192,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg.(*catalog.CreateVariantSupplier), out.(*catalog.ShopVariantSupplier))
 		return nil
 	})
-}
-
-//-- convert etop.vn/api/main/catalog.Attribute --//
-
-func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
-	return Attribute(arg)
-}
-
-func convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) {
-	out.Name = arg.Name   // simple assign
-	out.Value = arg.Value // simple assign
-}
-
-func Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(args []*catalogmodel.ProductAttribute) (outs []*catalogtypes.Attribute) {
-	tmps := make([]catalogtypes.Attribute, len(args))
-	outs = make([]*catalogtypes.Attribute, len(args))
-	for i := range tmps {
-		outs[i] = Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) *catalogmodel.ProductAttribute {
-	if arg == nil {
+	s.Register((*catalogmodel.ProductAttribute)(nil), (*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg.(*catalogmodel.ProductAttribute), out.(*catalogtypes.Attribute))
 		return nil
-	}
-	if out == nil {
-		out = &catalogmodel.ProductAttribute{}
-	}
-	AttributeDB(arg, out)
-	return out
-}
-
-func convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) {
-	out.Name = arg.Name   // simple assign
-	out.Value = arg.Value // simple assign
-}
-
-func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(args []*catalogtypes.Attribute) (outs []*catalogmodel.ProductAttribute) {
-	tmps := make([]catalogmodel.ProductAttribute, len(args))
-	outs = make([]*catalogmodel.ProductAttribute, len(args))
-	for i := range tmps {
-		outs[i] = Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(args[i], &tmps[i])
-	}
-	return outs
+	})
+	s.Register(([]*catalogmodel.ProductAttribute)(nil), (*[]*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.([]*catalogmodel.ProductAttribute))
+		*out.(*[]*catalogtypes.Attribute) = out0
+		return nil
+	})
+	s.Register((*catalogtypes.Attribute)(nil), (*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
+		Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg.(*catalogtypes.Attribute), out.(*catalogmodel.ProductAttribute))
+		return nil
+	})
+	s.Register(([]*catalogtypes.Attribute)(nil), (*[]*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.([]*catalogtypes.Attribute))
+		*out.(*[]*catalogmodel.ProductAttribute) = out0
+		return nil
+	})
 }
 
 //-- convert etop.vn/api/main/catalog.ShopBrand --//
@@ -769,4 +724,49 @@ func apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg *catalo
 	out.VariantID = arg.VariantID   // simple assign
 	out.CreatedAt = time.Time{}     // zero value
 	out.UpdatedAt = time.Time{}     // zero value
+}
+
+//-- convert etop.vn/api/main/catalog/types.Attribute --//
+
+func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
+	return Attribute(arg)
+}
+
+func convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(args []*catalogmodel.ProductAttribute) (outs []*catalogtypes.Attribute) {
+	tmps := make([]catalogtypes.Attribute, len(args))
+	outs = make([]*catalogtypes.Attribute, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) *catalogmodel.ProductAttribute {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ProductAttribute{}
+	}
+	AttributeDB(arg, out)
+	return out
+}
+
+func convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(args []*catalogtypes.Attribute) (outs []*catalogmodel.ProductAttribute) {
+	tmps := make([]catalogmodel.ProductAttribute, len(args))
+	outs = make([]*catalogmodel.ProductAttribute, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(args[i], &tmps[i])
+	}
+	return outs
 }

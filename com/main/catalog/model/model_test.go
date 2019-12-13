@@ -3,20 +3,21 @@ package model
 import (
 	"testing"
 
+	"etop.vn/api/main/catalog/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNormalizeAttributes(t *testing.T) {
 	tests := []struct {
-		attrs  ProductAttributes
+		attrs  []*types.Attribute
 		expect string
 	}{
 		{
-			attrs:  ProductAttributes{},
+			attrs:  []*types.Attribute{},
 			expect: "_",
 		},
 		{
-			attrs: ProductAttributes{
+			attrs: []*types.Attribute{
 				{"Màu sắc", "XANH"},
 				{"Màu sắc", "Đỏ"},
 				{"Kích thước", ""},

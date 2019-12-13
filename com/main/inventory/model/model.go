@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/backend/com/main/catalog/model"
 	"etop.vn/capi/dot"
 )
 
@@ -61,9 +62,9 @@ type InventoryVoucherItem struct {
 	Price    int `json:"price"`
 	Quantity int `json:"quantity"`
 
-	Code       string       `json:"code"`
-	ImageURL   string       `json:"image_url"`
-	Attributes []*Attribute `json:"attributes"`
+	Code       string                    `json:"code"`
+	ImageURL   string                    `json:"image_url"`
+	Attributes []*model.ProductAttribute `json:"attributes"`
 }
 
 type Trader struct {
@@ -71,9 +72,4 @@ type Trader struct {
 	Type     string `json:"type"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`
-}
-
-type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
 }

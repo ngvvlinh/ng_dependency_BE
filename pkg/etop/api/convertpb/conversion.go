@@ -1,7 +1,6 @@
 package convertpb
 
 import (
-	catalogtypes "etop.vn/api/main/catalog/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -141,7 +140,7 @@ func Convert_api_OrderLine_To_core_OrderLine(in *types.OrderLine) (out *ordertyp
 		ProductInfo: ordertypes.ProductInfo{
 			ProductName: in.ProductName,
 			ImageUrl:    in.ImageUrl,
-			Attributes:  Convert_api_Attributes_To_core_Attributes(in.Attributes),
+			Attributes:  in.Attributes,
 		},
 	}
 }
@@ -162,7 +161,7 @@ func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *types.Ord
 		IsOutsideEtop: in.IsOutside,
 		Quantity:      in.Quantity,
 		ImageUrl:      in.ProductInfo.ImageUrl,
-		Attributes:    Convert_core_Attributes_To_api_Attributes(in.ProductInfo.Attributes),
+		Attributes:    in.ProductInfo.Attributes,
 		ProductId:     in.ProductId,
 	}
 }
@@ -170,27 +169,6 @@ func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *types.Ord
 func Convert_core_OrderLines_To_api_OrderLines(ins []*ordertypes.ItemLine) (outs []*types.OrderLine) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_OrderLine_To_api_OrderLine(in))
-	}
-	return
-}
-
-func Convert_api_Attributes_To_core_Attributes(ins []*types.Attribute) []*catalogtypes.Attribute {
-	res := make([]*catalogtypes.Attribute, len(ins))
-	for i, in := range ins {
-		res[i] = &catalogtypes.Attribute{
-			Name:  in.Name,
-			Value: in.Value,
-		}
-	}
-	return res
-}
-
-func Convert_core_Attributes_To_api_Attributes(ins []*catalogtypes.Attribute) (outs []*types.Attribute) {
-	for _, in := range ins {
-		outs = append(outs, &types.Attribute{
-			Name:  in.Name,
-			Value: in.Value,
-		})
 	}
 	return
 }

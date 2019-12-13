@@ -1,6 +1,7 @@
 package types
 
 import (
+	catalogtypes "etop.vn/api/main/catalog/types"
 	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
@@ -125,21 +126,21 @@ func (m *OrderLineMetaField) Reset()         { *m = OrderLineMetaField{} }
 func (m *OrderLineMetaField) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderLine struct {
-	ExportedFields []string              `json:"exported_fields"`
-	OrderId        dot.ID                `json:"order_id"`
-	VariantId      dot.ID                `json:"variant_id"`
-	ProductName    string                `json:"product_name"`
-	IsOutsideEtop  bool                  `json:"is_outside_etop"`
-	Quantity       int                   `json:"quantity"`
-	ListPrice      int                   `json:"list_price"`
-	RetailPrice    int                   `json:"retail_price"`
-	PaymentPrice   int                   `json:"payment_price"`
-	ImageUrl       string                `json:"image_url"`
-	Attributes     []*Attribute          `json:"attributes"`
-	ProductId      dot.ID                `json:"product_id"`
-	TotalDiscount  int                   `json:"total_discount"`
-	MetaFields     []*OrderLineMetaField `json:"meta_fields"`
-	Code           string                `json:"code"`
+	ExportedFields []string                  `json:"exported_fields"`
+	OrderId        dot.ID                    `json:"order_id"`
+	VariantId      dot.ID                    `json:"variant_id"`
+	ProductName    string                    `json:"product_name"`
+	IsOutsideEtop  bool                      `json:"is_outside_etop"`
+	Quantity       int                       `json:"quantity"`
+	ListPrice      int                       `json:"list_price"`
+	RetailPrice    int                       `json:"retail_price"`
+	PaymentPrice   int                       `json:"payment_price"`
+	ImageUrl       string                    `json:"image_url"`
+	Attributes     []*catalogtypes.Attribute `json:"attributes"`
+	ProductId      dot.ID                    `json:"product_id"`
+	TotalDiscount  int                       `json:"total_discount"`
+	MetaFields     []*OrderLineMetaField     `json:"meta_fields"`
+	Code           string                    `json:"code"`
 }
 
 func (m *OrderLine) Reset()         { *m = OrderLine{} }
@@ -159,15 +160,15 @@ func (m *OrderFeeLine) Reset()         { *m = OrderFeeLine{} }
 func (m *OrderFeeLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateOrderLine struct {
-	VariantId    dot.ID                `json:"variant_id"`
-	ProductName  string                `json:"product_name"`
-	Quantity     int                   `json:"quantity"`
-	ListPrice    int                   `json:"list_price"`
-	RetailPrice  int                   `json:"retail_price"`
-	PaymentPrice int                   `json:"payment_price"`
-	ImageUrl     string                `json:"image_url"`
-	Attributes   []*Attribute          `json:"attributes"`
-	MetaFields   []*OrderLineMetaField `json:"meta_fields"`
+	VariantId    dot.ID                    `json:"variant_id"`
+	ProductName  string                    `json:"product_name"`
+	Quantity     int                       `json:"quantity"`
+	ListPrice    int                       `json:"list_price"`
+	RetailPrice  int                       `json:"retail_price"`
+	PaymentPrice int                       `json:"payment_price"`
+	ImageUrl     string                    `json:"image_url"`
+	Attributes   []*catalogtypes.Attribute `json:"attributes"`
+	MetaFields   []*OrderLineMetaField     `json:"meta_fields"`
 }
 
 func (m *CreateOrderLine) Reset()         { *m = CreateOrderLine{} }
@@ -449,14 +450,6 @@ type FulfillmentsResponse struct {
 
 func (m *FulfillmentsResponse) Reset()         { *m = FulfillmentsResponse{} }
 func (m *FulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
-
-type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-func (m *Attribute) Reset()         { *m = Attribute{} }
-func (m *Attribute) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderWithErrorsResponse struct {
 	// @deprecated

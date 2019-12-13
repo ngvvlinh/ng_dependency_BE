@@ -1,6 +1,7 @@
 package shop
 
 import (
+	catalogtypes "etop.vn/api/main/catalog/types"
 	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
@@ -102,14 +103,14 @@ func (m *UpdatePurchaseOrderRequest) Reset()         { *m = UpdatePurchaseOrderR
 func (m *UpdatePurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseOrderLine struct {
-	VariantId    dot.ID       `json:"variant_id"`
-	Quantity     int          `json:"quantity"`
-	PaymentPrice int          `json:"payment_price"`
-	ProductId    dot.ID       `json:"product_id"`
-	ProductName  string       `json:"product_name"`
-	ImageUrl     string       `json:"image_url"`
-	Code         string       `json:"code"`
-	Attributes   []*Attribute `json:"attributes"`
+	VariantId    dot.ID                    `json:"variant_id"`
+	Quantity     int                       `json:"quantity"`
+	PaymentPrice int                       `json:"payment_price"`
+	ProductId    dot.ID                    `json:"product_id"`
+	ProductName  string                    `json:"product_name"`
+	ImageUrl     string                    `json:"image_url"`
+	Code         string                    `json:"code"`
+	Attributes   []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *PurchaseOrderLine) Reset()         { *m = PurchaseOrderLine{} }
@@ -318,16 +319,16 @@ func (m *RemoveProductsCollectionRequest) Reset()         { *m = RemoveProductsC
 func (m *RemoveProductsCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type EtopVariant struct {
-	Id          dot.ID       `json:"id"`
-	Code        string       `json:"code"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	ShortDesc   string       `json:"short_desc"`
-	DescHtml    string       `json:"desc_html"`
-	ImageUrls   []string     `json:"image_urls"`
-	ListPrice   int          `json:"list_price"`
-	CostPrice   int          `json:"cost_price"`
-	Attributes  []*Attribute `json:"attributes"`
+	Id          dot.ID                    `json:"id"`
+	Code        string                    `json:"code"`
+	Name        string                    `json:"name"`
+	Description string                    `json:"description"`
+	ShortDesc   string                    `json:"short_desc"`
+	DescHtml    string                    `json:"desc_html"`
+	ImageUrls   []string                  `json:"image_urls"`
+	ListPrice   int                       `json:"list_price"`
+	CostPrice   int                       `json:"cost_price"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *EtopVariant) Reset()         { *m = EtopVariant{} }
@@ -383,8 +384,8 @@ type ShopVariant struct {
 	Tags  []string `json:"tags"`
 	Stags []*Tag   `json:"stags"`
 
-	Attributes []*Attribute      `json:"attributes"`
-	Product    *ShopShortProduct `json:"product"`
+	Attributes []*catalogtypes.Attribute `json:"attributes"`
+	Product    *ShopShortProduct         `json:"product"`
 }
 
 func (m *ShopVariant) Reset()         { *m = ShopVariant{} }
@@ -496,17 +497,17 @@ func (m *ShopCategoriesResponse) String() string { return jsonx.MustMarshalToStr
 
 type UpdateVariantRequest struct {
 	// @required
-	Id          dot.ID         `json:"id"`
-	Name        dot.NullString `json:"name"`
-	Note        dot.NullString `json:"note"`
-	Code        dot.NullString `json:"code"`
-	CostPrice   dot.NullInt    `json:"cost_price"`
-	ListPrice   dot.NullInt    `json:"list_price"`
-	RetailPrice dot.NullInt    `json:"retail_price"`
-	Description dot.NullString `json:"description"`
-	ShortDesc   dot.NullString `json:"short_desc"`
-	DescHtml    dot.NullString `json:"desc_html"`
-	Attributes  []*Attribute   `json:"attributes"`
+	Id          dot.ID                    `json:"id"`
+	Name        dot.NullString            `json:"name"`
+	Note        dot.NullString            `json:"note"`
+	Code        dot.NullString            `json:"code"`
+	CostPrice   dot.NullInt               `json:"cost_price"`
+	ListPrice   dot.NullInt               `json:"list_price"`
+	RetailPrice dot.NullInt               `json:"retail_price"`
+	Description dot.NullString            `json:"description"`
+	ShortDesc   dot.NullString            `json:"short_desc"`
+	DescHtml    dot.NullString            `json:"desc_html"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 	// deprecated
 	Sku string `json:"sku"`
 }
@@ -720,18 +721,18 @@ func (m *CreateProductRequest) Reset()         { *m = CreateProductRequest{} }
 func (m *CreateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateVariantRequest struct {
-	Code        string       `json:"code"`
-	Name        string       `json:"name"`
-	ProductId   dot.ID       `json:"product_id"`
-	Note        string       `json:"note"`
-	Description string       `json:"description"`
-	ShortDesc   string       `json:"short_desc"`
-	DescHtml    string       `json:"desc_html"`
-	ImageUrls   []string     `json:"image_urls"`
-	Attributes  []*Attribute `json:"attributes"`
-	CostPrice   int          `json:"cost_price"`
-	ListPrice   int          `json:"list_price"`
-	RetailPrice int          `json:"retail_price"`
+	Code        string                    `json:"code"`
+	Name        string                    `json:"name"`
+	ProductId   dot.ID                    `json:"product_id"`
+	Note        string                    `json:"note"`
+	Description string                    `json:"description"`
+	ShortDesc   string                    `json:"short_desc"`
+	DescHtml    string                    `json:"desc_html"`
+	ImageUrls   []string                  `json:"image_urls"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
+	CostPrice   int                       `json:"cost_price"`
+	ListPrice   int                       `json:"list_price"`
+	RetailPrice int                       `json:"retail_price"`
 }
 
 func (m *CreateVariantRequest) Reset()         { *m = CreateVariantRequest{} }
@@ -744,22 +745,22 @@ type DeprecatedCreateVariantRequest struct {
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
 	ProductName string `json:"product_name"`
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, name is "Full Đỏ"
-	Name              string         `json:"name"`
-	Description       string         `json:"description"`
-	ShortDesc         string         `json:"short_desc"`
-	DescHtml          string         `json:"desc_html"`
-	ImageUrls         []string       `json:"image_urls"`
-	Tags              []string       `json:"tags"`
-	Status            status3.Status `json:"status"`
-	CostPrice         int            `json:"cost_price"`
-	ListPrice         int            `json:"list_price"`
-	RetailPrice       int            `json:"retail_price"`
-	Code              string         `json:"code"`
-	QuantityAvailable int            `json:"quantity_available"`
-	QuantityOnHand    int            `json:"quantity_on_hand"`
-	QuantityReserved  int            `json:"quantity_reserved"`
-	Attributes        []*Attribute   `json:"attributes"`
-	Unit              string         `json:"unit"`
+	Name              string                    `json:"name"`
+	Description       string                    `json:"description"`
+	ShortDesc         string                    `json:"short_desc"`
+	DescHtml          string                    `json:"desc_html"`
+	ImageUrls         []string                  `json:"image_urls"`
+	Tags              []string                  `json:"tags"`
+	Status            status3.Status            `json:"status"`
+	CostPrice         int                       `json:"cost_price"`
+	ListPrice         int                       `json:"list_price"`
+	RetailPrice       int                       `json:"retail_price"`
+	Code              string                    `json:"code"`
+	QuantityAvailable int                       `json:"quantity_available"`
+	QuantityOnHand    int                       `json:"quantity_on_hand"`
+	QuantityReserved  int                       `json:"quantity_reserved"`
+	Attributes        []*catalogtypes.Attribute `json:"attributes"`
+	Unit              string                    `json:"unit"`
 	// deprecated: use code instead
 	Sku string `json:"sku"`
 }
@@ -1076,14 +1077,6 @@ type GetAuthorizedPartnersResponse struct {
 
 func (m *GetAuthorizedPartnersResponse) Reset()         { *m = GetAuthorizedPartnersResponse{} }
 func (m *GetAuthorizedPartnersResponse) String() string { return jsonx.MustMarshalToString(m) }
-
-type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-func (m *Attribute) Reset()         { *m = Attribute{} }
-func (m *Attribute) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantImagesRequest struct {
 	// @required
@@ -1414,8 +1407,8 @@ func (m *PaymentTradingOrderResponse) String() string { return jsonx.MustMarshal
 
 type UpdateVariantAttributesRequest struct {
 	// @required
-	VariantId  dot.ID       `json:"variant_id"`
-	Attributes []*Attribute `json:"attributes"`
+	VariantId  dot.ID                    `json:"variant_id"`
+	Attributes []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *UpdateVariantAttributesRequest) Reset()         { *m = UpdateVariantAttributesRequest{} }
@@ -1746,15 +1739,15 @@ func (m *CreateInventoryVoucherRequest) Reset()         { *m = CreateInventoryVo
 func (m *CreateInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVoucherLine struct {
-	VariantId   dot.ID      `json:"variant_id"`
-	Code        string      `json:"code"`
-	VariantName string      `json:"variant_name"`
-	ProductId   dot.ID      `json:"product_id"`
-	ProductName string      `json:"product_name"`
-	ImageUrl    string      `json:"image_url"`
-	Attributes  []Attribute `json:"attributes"`
-	Price       int         `json:"price"`
-	Quantity    int         `json:"quantity"`
+	VariantId   dot.ID                    `json:"variant_id"`
+	Code        string                    `json:"code"`
+	VariantName string                    `json:"variant_name"`
+	ProductId   dot.ID                    `json:"product_id"`
+	ProductName string                    `json:"product_name"`
+	ImageUrl    string                    `json:"image_url"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
+	Price       int                       `json:"price"`
+	Quantity    int                       `json:"quantity"`
 }
 
 func (m *InventoryVoucherLine) Reset()         { *m = InventoryVoucherLine{} }
@@ -2133,16 +2126,16 @@ func (m *GetStocktakesResponse) Reset()         { *m = GetStocktakesResponse{} }
 func (m *GetStocktakesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type StocktakeLine struct {
-	ProductId   dot.ID       `json:"product_id"`
-	ProductName string       `json:"product_name"`
-	VariantName string       `json:"variant_name"`
-	VariantId   dot.ID       `json:"variant_id"`
-	OldQuantity int          `json:"old_quantity"`
-	NewQuantity int          `json:"new_quantity"`
-	Code        string       `json:"code"`
-	ImageUrl    string       `json:"image_url"`
-	CostPrice   int          `json:"cost_price"`
-	Attributes  []*Attribute `json:"attributes"`
+	ProductId   dot.ID                    `json:"product_id"`
+	ProductName string                    `json:"product_name"`
+	VariantName string                    `json:"variant_name"`
+	VariantId   dot.ID                    `json:"variant_id"`
+	OldQuantity int                       `json:"old_quantity"`
+	NewQuantity int                       `json:"new_quantity"`
+	Code        string                    `json:"code"`
+	ImageUrl    string                    `json:"image_url"`
+	CostPrice   int                       `json:"cost_price"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *StocktakeLine) Reset()         { *m = StocktakeLine{} }
@@ -2263,14 +2256,14 @@ func (m *Refund) Reset()         { *m = Refund{} }
 func (m *Refund) String() string { return jsonx.MustMarshalToString(m) }
 
 type RefundLine struct {
-	VariantID   dot.ID       `json:"variant_id"`
-	ProductID   dot.ID       `json:"product_id"`
-	Quantity    int          `json:"quantity"`
-	Code        string       `json:"code"`
-	ImageURL    string       `json:"image_url"`
-	Name        string       `json:"name"`
-	RetailPrice int          `json:"retail_price"`
-	Attributes  []*Attribute `json:"attributes"`
+	VariantID   dot.ID                    `json:"variant_id"`
+	ProductID   dot.ID                    `json:"product_id"`
+	Quantity    int                       `json:"quantity"`
+	Code        string                    `json:"code"`
+	ImageURL    string                    `json:"image_url"`
+	Name        string                    `json:"name"`
+	RetailPrice int                       `json:"retail_price"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
 func (m *RefundLine) Reset()         { *m = RefundLine{} }

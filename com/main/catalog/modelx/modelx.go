@@ -2,6 +2,7 @@ package modelx
 
 import (
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/types/etc/status3"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/etop/model"
@@ -105,7 +106,7 @@ type DeprecatedCreateVariantCommand struct {
 	RetailPrice int
 	CostPrice   int
 
-	Attributes []*catalogmodel.ProductAttribute
+	Attributes []*types.Attribute
 	DescHTML   string
 
 	Result *catalog.ShopProductWithVariants

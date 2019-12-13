@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/top/types/etc/status3"
+	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/com/main/inventory/sqlstore"
@@ -23,7 +25,7 @@ import (
 )
 
 var _ inventory.Aggregate = &InventoryAggregate{}
-var scheme = conversion.Build(convert.RegisterConversions)
+var scheme = conversion.Build(convert.RegisterConversions, catalogconvert.RegisterConversions)
 
 type InventoryAggregate struct {
 	InventoryStore        sqlstore.InventoryFactory
@@ -699,7 +701,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByRefund(ctx context.Context,
 			Quantity:    value.Quantity,
 			Code:        value.Code,
 			ImageURL:    value.ImageURL,
-			Attributes:  convert.ConvertAttributesPurchaseOrder(value.Attributes),
+			Attributes:  value.Attributes,
 		})
 	}
 	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
@@ -747,7 +749,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 			Price:       value.PaymentPrice,
 			Code:        value.Code,
 			ImageURL:    value.ImageUrl,
-			Attributes:  convert.ConvertAttributesPurchaseOrder(value.Attributes),
+			Attributes:  value.Attributes,
 		})
 	}
 	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
@@ -785,6 +787,11 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 	// GET info and put it to cmd
 	for _, value := range queryOrder.Result.Order.Lines {
 		if value.VariantID != 0 {
+			var attributes []*types.Attribute
+			err := scheme.Convert(value.Attributes, &attributes)
+			if err != nil {
+				return nil, err
+			}
 			items = append(items, &inventory.InventoryVoucherItem{
 				ProductID:   value.ProductID,
 				ProductName: value.ProductName,
@@ -792,7 +799,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 				Quantity:    value.Quantity,
 				Code:        value.Code,
 				ImageURL:    value.ImageURL,
-				Attributes:  convert.ConvertAttributesOrder(value.Attributes),
+				Attributes:  attributes,
 			})
 		}
 	}
@@ -852,7 +859,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 				Price:       value.CostPrice,
 				Code:        value.Code,
 				ImageURL:    value.ImageURL,
-				Attributes:  convert.ConvertAttributesStocktake(value.Attributes),
+				Attributes:  value.Attributes,
 			},
 			QuantityChange: value.NewQuantity - value.OldQuantity,
 		})

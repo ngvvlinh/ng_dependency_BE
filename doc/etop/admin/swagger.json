@@ -1649,6 +1649,17 @@
         "partner"
       ]
     },
+    "dkAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -1815,17 +1826,6 @@
         "female",
         "other"
       ]
-    },
-    "qdAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
     },
     "qdDeliveryPoint": {
       "type": "object",
@@ -2775,7 +2775,7 @@
         "attributes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdAttribute"
+            "$ref": "#/definitions/dkAttribute"
           }
         },
         "code": {

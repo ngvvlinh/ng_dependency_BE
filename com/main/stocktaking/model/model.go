@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/capi/dot"
 )
 
@@ -30,20 +31,15 @@ type ShopStocktake struct {
 }
 
 type StocktakeLine struct {
-	ProductName string       `json:"product_name"`
-	ProductID   dot.ID       `json:"product_id"`
-	VariantID   dot.ID       `json:"variant_id"`
-	OldQuantity int          `json:"old_quantity"`
-	NewQuantity int          `json:"new_quantity"`
-	VariantName string       `json:"variant_name"`
-	Name        string       `json:"name"`
-	Code        string       `json:"code"`
-	ImageURL    string       `json:"image_url"`
-	Attributes  []*Attribute `json:"attributes"`
-	CostPrice   int          `json:"cost_price"`
-}
-
-type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	ProductName string                           `json:"product_name"`
+	ProductID   dot.ID                           `json:"product_id"`
+	VariantID   dot.ID                           `json:"variant_id"`
+	OldQuantity int                              `json:"old_quantity"`
+	NewQuantity int                              `json:"new_quantity"`
+	VariantName string                           `json:"variant_name"`
+	Name        string                           `json:"name"`
+	Code        string                           `json:"code"`
+	ImageURL    string                           `json:"image_url"`
+	Attributes  []*catalogmodel.ProductAttribute `json:"attributes"`
+	CostPrice   int                              `json:"cost_price"`
 }

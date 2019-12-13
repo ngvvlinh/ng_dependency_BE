@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	stocktaking "etop.vn/api/main/stocktaking"
+	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	stocktakingmodel "etop.vn/backend/com/main/stocktaking/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -26,24 +27,6 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*stocktakingmodel.Attribute)(nil), (*stocktaking.Attribute)(nil), func(arg, out interface{}) error {
-		Convert_stocktakingmodel_Attribute_stocktaking_Attribute(arg.(*stocktakingmodel.Attribute), out.(*stocktaking.Attribute))
-		return nil
-	})
-	s.Register(([]*stocktakingmodel.Attribute)(nil), (*[]*stocktaking.Attribute)(nil), func(arg, out interface{}) error {
-		out0 := Convert_stocktakingmodel_Attributes_stocktaking_Attributes(arg.([]*stocktakingmodel.Attribute))
-		*out.(*[]*stocktaking.Attribute) = out0
-		return nil
-	})
-	s.Register((*stocktaking.Attribute)(nil), (*stocktakingmodel.Attribute)(nil), func(arg, out interface{}) error {
-		Convert_stocktaking_Attribute_stocktakingmodel_Attribute(arg.(*stocktaking.Attribute), out.(*stocktakingmodel.Attribute))
-		return nil
-	})
-	s.Register(([]*stocktaking.Attribute)(nil), (*[]*stocktakingmodel.Attribute)(nil), func(arg, out interface{}) error {
-		out0 := Convert_stocktaking_Attributes_stocktakingmodel_Attributes(arg.([]*stocktaking.Attribute))
-		*out.(*[]*stocktakingmodel.Attribute) = out0
-		return nil
-	})
 	s.Register((*stocktakingmodel.ShopStocktake)(nil), (*stocktaking.ShopStocktake)(nil), func(arg, out interface{}) error {
 		Convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg.(*stocktakingmodel.ShopStocktake), out.(*stocktaking.ShopStocktake))
 		return nil
@@ -88,58 +71,6 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*stocktakingmodel.StocktakeLine) = out0
 		return nil
 	})
-}
-
-//-- convert etop.vn/api/main/stocktaking.Attribute --//
-
-func Convert_stocktakingmodel_Attribute_stocktaking_Attribute(arg *stocktakingmodel.Attribute, out *stocktaking.Attribute) *stocktaking.Attribute {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &stocktaking.Attribute{}
-	}
-	convert_stocktakingmodel_Attribute_stocktaking_Attribute(arg, out)
-	return out
-}
-
-func convert_stocktakingmodel_Attribute_stocktaking_Attribute(arg *stocktakingmodel.Attribute, out *stocktaking.Attribute) {
-	out.Name = arg.Name   // simple assign
-	out.Value = arg.Value // simple assign
-}
-
-func Convert_stocktakingmodel_Attributes_stocktaking_Attributes(args []*stocktakingmodel.Attribute) (outs []*stocktaking.Attribute) {
-	tmps := make([]stocktaking.Attribute, len(args))
-	outs = make([]*stocktaking.Attribute, len(args))
-	for i := range tmps {
-		outs[i] = Convert_stocktakingmodel_Attribute_stocktaking_Attribute(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_stocktaking_Attribute_stocktakingmodel_Attribute(arg *stocktaking.Attribute, out *stocktakingmodel.Attribute) *stocktakingmodel.Attribute {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &stocktakingmodel.Attribute{}
-	}
-	convert_stocktaking_Attribute_stocktakingmodel_Attribute(arg, out)
-	return out
-}
-
-func convert_stocktaking_Attribute_stocktakingmodel_Attribute(arg *stocktaking.Attribute, out *stocktakingmodel.Attribute) {
-	out.Name = arg.Name   // simple assign
-	out.Value = arg.Value // simple assign
-}
-
-func Convert_stocktaking_Attributes_stocktakingmodel_Attributes(args []*stocktaking.Attribute) (outs []*stocktakingmodel.Attribute) {
-	tmps := make([]stocktakingmodel.Attribute, len(args))
-	outs = make([]*stocktakingmodel.Attribute, len(args))
-	for i := range tmps {
-		outs[i] = Convert_stocktaking_Attribute_stocktakingmodel_Attribute(args[i], &tmps[i])
-	}
-	return outs
 }
 
 //-- convert etop.vn/api/main/stocktaking.ShopStocktake --//
@@ -287,7 +218,7 @@ func convert_stocktakingmodel_StocktakeLine_stocktaking_StocktakeLine(arg *stock
 	out.Code = arg.Code               // simple assign
 	out.ImageURL = arg.ImageURL       // simple assign
 	out.CostPrice = arg.CostPrice     // simple assign
-	out.Attributes = Convert_stocktakingmodel_Attributes_stocktaking_Attributes(arg.Attributes)
+	out.Attributes = catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
 }
 
 func Convert_stocktakingmodel_StocktakeLines_stocktaking_StocktakeLines(args []*stocktakingmodel.StocktakeLine) (outs []*stocktaking.StocktakeLine) {
@@ -320,7 +251,7 @@ func convert_stocktaking_StocktakeLine_stocktakingmodel_StocktakeLine(arg *stock
 	out.Name = ""                     // zero value
 	out.Code = arg.Code               // simple assign
 	out.ImageURL = arg.ImageURL       // simple assign
-	out.Attributes = Convert_stocktaking_Attributes_stocktakingmodel_Attributes(arg.Attributes)
+	out.Attributes = catalogconvert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
 	out.CostPrice = arg.CostPrice // simple assign
 }
 

@@ -483,18 +483,10 @@ func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndp
 
 func (s *ProductService) UpdateVariantAttributes(ctx context.Context, q *UpdateVariantAttributesEndpoint) error {
 	shopID := q.Context.Shop.ID
-
-	var attributes catalog.Attributes
-	for _, value := range q.Attributes {
-		attributes = append(attributes, &catalog.Attribute{
-			Name:  value.Name,
-			Value: value.Value,
-		})
-	}
 	cmd := &catalog.UpdateShopVariantAttributesCommand{
 		ShopID:     shopID,
 		VariantID:  q.VariantId,
-		Attributes: attributes,
+		Attributes: q.Attributes,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -739,7 +731,7 @@ func (s *ProductService) CreateVariant(ctx context.Context, q *CreateVariantEndp
 		Name:       q.Name,
 		ImageURLs:  q.ImageUrls,
 		Note:       q.Note,
-		Attributes: convertpb.PbAttributesToDomain(q.Attributes),
+		Attributes: q.Attributes,
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   q.ShortDesc,
 			Description: q.Description,
@@ -780,7 +772,7 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 		QuantityOnHand:    q.QuantityOnHand,
 		QuantityReserved:  q.QuantityReserved,
 
-		Attributes: convertpb.AttributesToModel(q.Attributes),
+		Attributes: q.Attributes,
 		DescHTML:   q.DescHtml,
 	}
 

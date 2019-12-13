@@ -5,6 +5,7 @@ import (
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
+	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
@@ -256,7 +257,7 @@ func PbOrderLine(m *ordermodel.OrderLine) *exttypes.OrderLine {
 		RetailPrice:  m.RetailPrice,
 		PaymentPrice: cmapi.PbPtrInt(m.PaymentPrice),
 		ImageUrl:     m.ImageURL,
-		Attributes:   convertpb.PbAttributesFromModel(m.Attributes),
+		Attributes:   convert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(m.Attributes),
 	}
 }
 
