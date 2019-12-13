@@ -114,28 +114,36 @@ func (rg *RedisGroup) AcquireLock(groupKey, subkey string) (exec ExecFunc, err e
 
 		// key exists in Redis but subkey does not match
 		if storedKey != subkey {
-			return nil, ErrAnotherLock
+			// temporary set key and acquire lock
+			return rg.setKeyAndAquireLock(groupKey, subkey)
+
+			// TODO: handle lock in another instance
+			// return nil, ErrAnotherLock
 		}
 
 		// key exists in Redis, subkey matches - now wait
 		return rg.wait, nil
 
 	case redis.ErrNil:
-
 		// key does not exist in Redis, set key and acquire lock
-		rg.set(groupKey, subkey)
-		rg.Unlock()
-		return func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error) {
-			v, err, _ = rg.g.DoAndCleanup(taskKey, timeout, fn, func() {
-				rg.ReleaseKey(groupKey, subkey)
-			})
-			return v, err, nil
-		}, nil
+		return rg.setKeyAndAquireLock(groupKey, subkey)
 
 	default:
 		rg.Unlock()
 		return nil, err
 	}
+}
+
+func (rg *RedisGroup) setKeyAndAquireLock(groupKey, subkey string) (exec ExecFunc, err error) {
+	// key does not exist in Redis, set key and acquire lock
+	rg.set(groupKey, subkey)
+	rg.Unlock()
+	return func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error) {
+		v, err, _ = rg.g.DoAndCleanup(taskKey, timeout, fn, func() {
+			rg.ReleaseKey(groupKey, subkey)
+		})
+		return v, err, nil
+	}, nil
 }
 
 func (rg *RedisGroup) wait(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error) {
