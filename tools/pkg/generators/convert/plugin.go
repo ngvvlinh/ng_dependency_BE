@@ -148,11 +148,17 @@ func (p *plugin) Generate(ng generator.Engine) error {
 		}
 	}
 
+	// populate convPairs with auto convert functions
+	for _, gpkg := range generatingPackages {
+		gpkg.objList = prepareListObject(gpkg.objMap)
+		prepareConverts(convPairs, gpkg.objMap, gpkg.objList)
+	}
+
 	// generate
 	for _, gpkg := range generatingPackages {
 		currentPrinter = gpkg.gpkg.GetPrinter()
 		generateComments(currentPrinter, gpkg.customConvs, gpkg.ignoredFuncs)
-		_, err := generateConverts(currentPrinter, convPairs, gpkg.objMap)
+		_, err := generateConverts(currentPrinter, gpkg.objMap, gpkg.objList)
 		if err != nil {
 			return err
 		}
@@ -161,9 +167,10 @@ func (p *plugin) Generate(ng generator.Engine) error {
 }
 
 type generatingPackage struct {
-	gpkg   *generator.GeneratingPackage
-	objMap map[objName]*objMap
-	steps  []*generatingPackageStep
+	gpkg    *generator.GeneratingPackage
+	objList []objName
+	objMap  map[objName]*objMap
+	steps   []*generatingPackageStep
 
 	customConvs  []nameWithComment
 	ignoredFuncs []nameWithComment
@@ -608,11 +615,7 @@ func convInUse(apiObjMap map[objName]*objMap, pair pair) bool {
 	return false
 }
 
-func generateConverts(
-	p generator.Printer,
-	convPair map[pair]*conversionFunc,
-	apiObjMap map[objName]*objMap,
-) (count int, _ error) {
+func prepareListObject(apiObjMap map[objName]*objMap) []objName {
 	list := make([]objName, 0, len(apiObjMap))
 	for objName, obj := range apiObjMap {
 		if len(obj.gens) != 0 {
@@ -629,7 +632,14 @@ func generateConverts(
 		}
 		return list[i].name < list[j].name
 	})
+	return list
+}
 
+func prepareConverts(
+	convPairs map[pair]*conversionFunc,
+	apiObjMap map[objName]*objMap,
+	list []objName,
+) {
 	// populate convPair with auto conversions
 	for _, objName := range list {
 		m := apiObjMap[objName]
@@ -646,7 +656,13 @@ func generateConverts(
 			}
 		}
 	}
+}
 
+func generateConverts(
+	p generator.Printer,
+	apiObjMap map[objName]*objMap,
+	list []objName,
+) (count int, err error) {
 	var conversions []map[string]interface{}
 	for _, objName := range list {
 		m := apiObjMap[objName]

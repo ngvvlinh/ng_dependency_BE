@@ -10,13 +10,12 @@ import (
 	ledgering "etop.vn/api/main/ledgering"
 	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
+	etopconvert "etop.vn/backend/pkg/etop/convert"
 )
 
 /*
 Custom conversions:
     createShopLedger    // in use
-    shopLedger          // in use
-    shopLedgerDB        // in use
     updateShopLedger    // in use
 
 Ignored functions: (none)
@@ -64,15 +63,15 @@ func Convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 	if out == nil {
 		out = &ledgering.ShopLedger{}
 	}
-	shopLedger(arg, out)
+	convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg, out)
 	return out
 }
 
 func convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.ShopLedger, out *ledgering.ShopLedger) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.BankAccount = nil         // types do not match
+	out.ID = arg.ID         // simple assign
+	out.ShopID = arg.ShopID // simple assign
+	out.Name = arg.Name     // simple assign
+	out.BankAccount = etopconvert.Convert_etopmodel_BankAccount_identity_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note           // simple assign
 	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign
@@ -97,15 +96,15 @@ func Convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	if out == nil {
 		out = &ledgeringmodel.ShopLedger{}
 	}
-	shopLedgerDB(arg, out)
+	convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg, out)
 	return out
 }
 
 func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopLedger, out *ledgeringmodel.ShopLedger) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.BankAccount = nil         // types do not match
+	out.ID = arg.ID         // simple assign
+	out.ShopID = arg.ShopID // simple assign
+	out.Name = arg.Name     // simple assign
+	out.BankAccount = etopconvert.Convert_identity_BankAccount_etopmodel_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note           // simple assign
 	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign

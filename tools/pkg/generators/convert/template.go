@@ -3,18 +3,15 @@ package convert
 import (
 	"fmt"
 	"go/types"
-	"reflect"
 	"strings"
 	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/capi/dot"
 )
 
 var tplRegister, tplConvertType, tplUpdate, tplCreate *template.Template
 var currentPrinter generator.Printer
-var capiPkgPath = reflect.TypeOf(dot.NullString{}).PkgPath()
 var convPairs map[pair]*conversionFunc
 
 func init() {
