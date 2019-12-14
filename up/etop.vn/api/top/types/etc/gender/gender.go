@@ -4,6 +4,11 @@ package gender
 // +enum:zero=null
 type Gender int
 
+type NullGender struct {
+	Enum  Gender
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown Gender = 0

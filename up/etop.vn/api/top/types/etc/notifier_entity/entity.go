@@ -4,6 +4,11 @@ package notifier_entity
 // +enum:zero=null
 type NotifierEntity int
 
+type NullNotifierEntity struct {
+	Enum  NotifierEntity
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown NotifierEntity = 0

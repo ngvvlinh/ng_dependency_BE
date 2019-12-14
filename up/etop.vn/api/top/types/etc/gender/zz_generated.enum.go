@@ -41,23 +41,8 @@ func ParseGenderWithDefault(s string, d Gender) Gender {
 	return Gender(val)
 }
 
-func ParseGenderWithNull(s dot.NullString, d Gender) NullGender {
-	if !s.Valid {
-		return NullGender{}
-	}
-	val, ok := enumGenderValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return Gender(val).Wrap()
-}
-
 func (e Gender) Enum() int {
 	return int(e)
-}
-
-func (e Gender) Wrap() NullGender {
-	return WrapGender(e)
 }
 
 func (e Gender) Name() string {
@@ -98,9 +83,19 @@ func (e *Gender) Scan(src interface{}) error {
 	return err
 }
 
-type NullGender struct {
-	Enum  Gender
-	Valid bool
+func (e Gender) Wrap() NullGender {
+	return WrapGender(e)
+}
+
+func ParseGenderWithNull(s dot.NullString, d Gender) NullGender {
+	if !s.Valid {
+		return NullGender{}
+	}
+	val, ok := enumGenderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Gender(val).Wrap()
 }
 
 func WrapGender(enum Gender) NullGender {

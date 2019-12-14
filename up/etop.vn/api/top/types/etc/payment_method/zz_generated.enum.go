@@ -43,23 +43,8 @@ func ParsePaymentMethodWithDefault(s string, d PaymentMethod) PaymentMethod {
 	return PaymentMethod(val)
 }
 
-func ParsePaymentMethodWithNull(s dot.NullString, d PaymentMethod) NullPaymentMethod {
-	if !s.Valid {
-		return NullPaymentMethod{}
-	}
-	val, ok := enumPaymentMethodValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return PaymentMethod(val).Wrap()
-}
-
 func (e PaymentMethod) Enum() int {
 	return int(e)
-}
-
-func (e PaymentMethod) Wrap() NullPaymentMethod {
-	return WrapPaymentMethod(e)
 }
 
 func (e PaymentMethod) Name() string {
@@ -100,9 +85,19 @@ func (e *PaymentMethod) Scan(src interface{}) error {
 	return err
 }
 
-type NullPaymentMethod struct {
-	Enum  PaymentMethod
-	Valid bool
+func (e PaymentMethod) Wrap() NullPaymentMethod {
+	return WrapPaymentMethod(e)
+}
+
+func ParsePaymentMethodWithNull(s dot.NullString, d PaymentMethod) NullPaymentMethod {
+	if !s.Valid {
+		return NullPaymentMethod{}
+	}
+	val, ok := enumPaymentMethodValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return PaymentMethod(val).Wrap()
 }
 
 func WrapPaymentMethod(enum PaymentMethod) NullPaymentMethod {

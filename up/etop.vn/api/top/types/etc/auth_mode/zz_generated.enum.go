@@ -37,23 +37,8 @@ func ParseAuthModeWithDefault(s string, d AuthMode) AuthMode {
 	return AuthMode(val)
 }
 
-func ParseAuthModeWithNull(s dot.NullString, d AuthMode) NullAuthMode {
-	if !s.Valid {
-		return NullAuthMode{}
-	}
-	val, ok := enumAuthModeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return AuthMode(val).Wrap()
-}
-
 func (e AuthMode) Enum() int {
 	return int(e)
-}
-
-func (e AuthMode) Wrap() NullAuthMode {
-	return WrapAuthMode(e)
 }
 
 func (e AuthMode) Name() string {
@@ -91,9 +76,19 @@ func (e *AuthMode) Scan(src interface{}) error {
 	return err
 }
 
-type NullAuthMode struct {
-	Enum  AuthMode
-	Valid bool
+func (e AuthMode) Wrap() NullAuthMode {
+	return WrapAuthMode(e)
+}
+
+func ParseAuthModeWithNull(s dot.NullString, d AuthMode) NullAuthMode {
+	if !s.Valid {
+		return NullAuthMode{}
+	}
+	val, ok := enumAuthModeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return AuthMode(val).Wrap()
 }
 
 func WrapAuthMode(enum AuthMode) NullAuthMode {

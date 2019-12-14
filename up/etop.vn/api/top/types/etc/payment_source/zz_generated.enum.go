@@ -37,23 +37,8 @@ func ParsePaymentSourceWithDefault(s string, d PaymentSource) PaymentSource {
 	return PaymentSource(val)
 }
 
-func ParsePaymentSourceWithNull(s dot.NullString, d PaymentSource) NullPaymentSource {
-	if !s.Valid {
-		return NullPaymentSource{}
-	}
-	val, ok := enumPaymentSourceValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return PaymentSource(val).Wrap()
-}
-
 func (e PaymentSource) Enum() int {
 	return int(e)
-}
-
-func (e PaymentSource) Wrap() NullPaymentSource {
-	return WrapPaymentSource(e)
 }
 
 func (e PaymentSource) Name() string {
@@ -94,9 +79,19 @@ func (e *PaymentSource) Scan(src interface{}) error {
 	return err
 }
 
-type NullPaymentSource struct {
-	Enum  PaymentSource
-	Valid bool
+func (e PaymentSource) Wrap() NullPaymentSource {
+	return WrapPaymentSource(e)
+}
+
+func ParsePaymentSourceWithNull(s dot.NullString, d PaymentSource) NullPaymentSource {
+	if !s.Valid {
+		return NullPaymentSource{}
+	}
+	val, ok := enumPaymentSourceValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return PaymentSource(val).Wrap()
 }
 
 func WrapPaymentSource(enum PaymentSource) NullPaymentSource {

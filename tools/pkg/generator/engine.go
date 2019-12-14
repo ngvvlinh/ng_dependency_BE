@@ -30,7 +30,7 @@ type GeneratingPackage struct {
 func (g *GeneratingPackage) GetPrinter() Printer {
 	if g.printer == nil {
 		fileName := generateFileName(g.engine, g.plugin)
-		filePath := filepath.Join(filepath.Dir(g.GoFiles[0]), fileName)
+		filePath := filepath.Join(getPackageDir(g.Package), fileName)
 		g.printer = newPrinter(g.engine, g.plugin, g.Package.Types, "", filePath)
 	}
 	return g.printer
@@ -257,7 +257,7 @@ func (ng *wrapEngine) GeneratePackage(pkg *packages.Package, fileName string) (P
 	if fileName == "" {
 		fileName = generateFileName(ng.engine, ng.plugin)
 	}
-	filePath := filepath.Join(filepath.Dir(pkg.GoFiles[0]), fileName)
+	filePath := filepath.Join(getPackageDir(pkg), fileName)
 	printer := newPrinter(ng.engine, ng.plugin, pkg.Types, "", filePath)
 	return printer, nil
 }

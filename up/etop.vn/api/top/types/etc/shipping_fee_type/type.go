@@ -4,6 +4,11 @@ package shipping_fee_type
 // +enum:zero=null
 type ShippingFeeType int
 
+type NullShippingFeeType struct {
+	Enum  ShippingFeeType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown ShippingFeeType = 0

@@ -39,23 +39,8 @@ func ParseFeeTypeWithDefault(s string, d FeeType) FeeType {
 	return FeeType(val)
 }
 
-func ParseFeeTypeWithNull(s dot.NullString, d FeeType) NullFeeType {
-	if !s.Valid {
-		return NullFeeType{}
-	}
-	val, ok := enumFeeTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return FeeType(val).Wrap()
-}
-
 func (e FeeType) Enum() int {
 	return int(e)
-}
-
-func (e FeeType) Wrap() NullFeeType {
-	return WrapFeeType(e)
 }
 
 func (e FeeType) Name() string {
@@ -96,9 +81,19 @@ func (e *FeeType) Scan(src interface{}) error {
 	return err
 }
 
-type NullFeeType struct {
-	Enum  FeeType
-	Valid bool
+func (e FeeType) Wrap() NullFeeType {
+	return WrapFeeType(e)
+}
+
+func ParseFeeTypeWithNull(s dot.NullString, d FeeType) NullFeeType {
+	if !s.Valid {
+		return NullFeeType{}
+	}
+	val, ok := enumFeeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return FeeType(val).Wrap()
 }
 
 func WrapFeeType(enum FeeType) NullFeeType {

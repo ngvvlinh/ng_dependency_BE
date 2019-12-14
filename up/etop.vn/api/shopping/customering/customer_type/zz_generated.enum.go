@@ -41,23 +41,8 @@ func ParseCustomerTypeWithDefault(s string, d CustomerType) CustomerType {
 	return CustomerType(val)
 }
 
-func ParseCustomerTypeWithNull(s dot.NullString, d CustomerType) NullCustomerType {
-	if !s.Valid {
-		return NullCustomerType{}
-	}
-	val, ok := enumCustomerTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return CustomerType(val).Wrap()
-}
-
 func (e CustomerType) Enum() int {
 	return int(e)
-}
-
-func (e CustomerType) Wrap() NullCustomerType {
-	return WrapCustomerType(e)
 }
 
 func (e CustomerType) Name() string {
@@ -98,9 +83,19 @@ func (e *CustomerType) Scan(src interface{}) error {
 	return err
 }
 
-type NullCustomerType struct {
-	Enum  CustomerType
-	Valid bool
+func (e CustomerType) Wrap() NullCustomerType {
+	return WrapCustomerType(e)
+}
+
+func ParseCustomerTypeWithNull(s dot.NullString, d CustomerType) NullCustomerType {
+	if !s.Valid {
+		return NullCustomerType{}
+	}
+	val, ok := enumCustomerTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return CustomerType(val).Wrap()
 }
 
 func WrapCustomerType(enum CustomerType) NullCustomerType {

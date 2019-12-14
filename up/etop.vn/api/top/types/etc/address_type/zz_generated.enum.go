@@ -43,23 +43,8 @@ func ParseAddressTypeWithDefault(s string, d AddressType) AddressType {
 	return AddressType(val)
 }
 
-func ParseAddressTypeWithNull(s dot.NullString, d AddressType) NullAddressType {
-	if !s.Valid {
-		return NullAddressType{}
-	}
-	val, ok := enumAddressTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return AddressType(val).Wrap()
-}
-
 func (e AddressType) Enum() int {
 	return int(e)
-}
-
-func (e AddressType) Wrap() NullAddressType {
-	return WrapAddressType(e)
 }
 
 func (e AddressType) Name() string {
@@ -100,9 +85,19 @@ func (e *AddressType) Scan(src interface{}) error {
 	return err
 }
 
-type NullAddressType struct {
-	Enum  AddressType
-	Valid bool
+func (e AddressType) Wrap() NullAddressType {
+	return WrapAddressType(e)
+}
+
+func ParseAddressTypeWithNull(s dot.NullString, d AddressType) NullAddressType {
+	if !s.Valid {
+		return NullAddressType{}
+	}
+	val, ok := enumAddressTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return AddressType(val).Wrap()
 }
 
 func WrapAddressType(enum AddressType) NullAddressType {

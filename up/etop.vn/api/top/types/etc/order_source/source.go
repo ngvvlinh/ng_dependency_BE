@@ -4,6 +4,11 @@ package order_source
 // +enum:zero=null
 type Source int
 
+type NullSource struct {
+	Enum  Source
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown Source = 0

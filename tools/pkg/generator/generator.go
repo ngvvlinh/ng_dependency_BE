@@ -56,7 +56,10 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 	{
 		mode := packages.NeedName | packages.NeedImports | packages.NeedDeps |
 			packages.NeedFiles | packages.NeedCompiledGoFiles
-		ng.pkgcfg = packages.Config{Mode: mode}
+		ng.pkgcfg = packages.Config{
+			Mode:       mode,
+			BuildFlags: buildFlags,
+		}
 		pkgs, err := packages.Load(&ng.pkgcfg, patterns...)
 		if err != nil {
 			return Errorf(err, "can not load package: %v", err)
@@ -70,13 +73,12 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 			cleanedFileNames[filename] = true
 		}
 		for _, pkg := range pkgs {
-			for _, file := range pkg.GoFiles {
-				filename := filepath.Base(file)
-				if cleanedFileNames[filename] {
-					if err := os.Remove(file); err != nil {
-						return Errorf(err, "can not remove file %v: %v", file, err)
-					}
-				}
+			pkgDir := getPackageDir(pkg)
+			if pkgDir == "" {
+				return Errorf(nil, "no Go files found in package %v", pkg.PkgPath)
+			}
+			if err := cleanDir(cleanedFileNames, pkgDir); err != nil {
+				return err
 			}
 		}
 		ng.cleanedFileNames = cleanedFileNames
@@ -287,6 +289,27 @@ func collectPackages(
 		_err = newErrors("can not parse packages", errs)
 	}
 	return
+}
+
+func cleanDir(cleanedFileNames map[string]bool, pkgDir string) error {
+	dir, err := os.Open(pkgDir)
+	if err != nil {
+		return err
+	}
+	defer func() { must(dir.Close()) }()
+	names, err := dir.Readdirnames(0)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		if cleanedFileNames[name] {
+			absFileName := filepath.Join(pkgDir, name)
+			if err := os.Remove(absFileName); err != nil {
+				return Errorf(err, "can not remove file %v: %v", absFileName, err)
+			}
+		}
+	}
+	return nil
 }
 
 func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package, cleanedFileNames map[string]bool) (directives, inlineDirectives []Directive, _err error) {

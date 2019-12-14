@@ -42,6 +42,7 @@ type Info struct {
 	Meta
 	ng generator.Engine
 
+	typeBool    types.Type
 	typeError   types.Type
 	typeStdTime types.Type
 	typeDotTime types.Type
@@ -51,6 +52,7 @@ type Info struct {
 
 func NewInfo(ng generator.Engine) *Info {
 	inf := &Info{Meta: make(Meta), ng: ng}
+	populateType(ng, &inf.typeBool, "", "bool")
 	populateType(ng, &inf.typeError, "", "error")
 	populateType(ng, &inf.typeStdTime, "time", "Time")
 	populateType(ng, &inf.typeDotTime, dotPkgPath, "Time")
@@ -206,6 +208,27 @@ func (inf *Info) IsNamedInterface(typ types.Type, inner *types.Type) bool {
 	iface, ok := named.Underlying().(*types.Interface)
 	*inner = iface
 	return ok
+}
+
+func (inf *Info) IsNullStruct(typ types.Type, expectName string) bool {
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return false
+	}
+	st, ok := named.Underlying().(*types.Struct)
+	if !ok {
+		return false
+	}
+	if st.NumFields() != 2 {
+		return false
+	}
+	if expectName != "" && st.Field(0).Name() != expectName {
+		return false
+	}
+	if st.Field(1).Name() != "Valid" || st.Field(1).Type() != inf.typeBool {
+		return false
+	}
+	return true
 }
 
 func SkipPointer(typ types.Type) types.Type {

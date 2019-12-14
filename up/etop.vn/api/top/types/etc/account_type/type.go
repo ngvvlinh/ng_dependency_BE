@@ -5,6 +5,11 @@ package account_type
 // +enum:zero=null
 type AccountType int
 
+type NullAccountType struct {
+	Enum  AccountType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown AccountType = 0

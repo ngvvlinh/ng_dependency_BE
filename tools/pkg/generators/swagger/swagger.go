@@ -250,13 +250,18 @@ func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ t
 	}
 	id := getDefinitionID(inner)
 	if _, ok := definitions[id]; !ok {
-		parseSchema(ng, definitions, inner)
+		obj := inner.(*types.Named).Obj()
+		name := obj.Name()
+		if obj.Pkg() != nil {
+			name = obj.Pkg().Path() + "." + name
+		}
+		parseSchema(ng, name, definitions, inner)
 	}
 	return spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)}
 }
 
-func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ types.Type) spec.Schema {
-	ll.V(3).Debugf("parse schema for type %v", typ)
+func parseSchema(ng generator.Engine, path string, definitions map[string]spec.Schema, typ types.Type) spec.Schema {
+	ll.V(3).Debugf("parse schema for %v (type %v)", path, typ)
 	var inner types.Type
 	switch {
 	case info.IsTime(typ):
@@ -357,7 +362,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			case "-":
 				continue
 			}
-			fieldSchema := parseSchema(ng, definitions, field.Type())
+			fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
 			props[jsonTag] = fieldSchema
 		}
 		s := spec.Schema{
@@ -370,7 +375,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		return refSchema
 
 	case info.IsArray(typ, &inner):
-		refSchema := parseSchema(ng, definitions, inner)
+		refSchema := parseSchema(ng, path+"[]", definitions, inner)
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
 				Type: spec.StringOrArray{"array"},
@@ -383,7 +388,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 
 	case info.IsMap(typ):
 		m := typ.(*types.Map)
-		elemSchema := parseSchema(ng, definitions, m.Elem())
+		elemSchema := parseSchema(ng, path+"[]", definitions, m.Elem())
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
 				Type: spec.StringOrArray{"object"},
@@ -401,7 +406,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		panic(fmt.Sprintf("oneof is not supported"))
 	}
 
-	panic(fmt.Sprintf("unsupported %v", typ))
+	panic(fmt.Sprintf("unsupported %v (%v)", typ, path))
 }
 
 func simpleType(typ, format string) spec.Schema {

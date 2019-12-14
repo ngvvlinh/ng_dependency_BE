@@ -4,6 +4,11 @@ package change_type
 // +enum:zero=null
 type ChangeType int
 
+type NullChangeType struct {
+	Enum  ChangeType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown ChangeType = 0

@@ -37,23 +37,8 @@ func ParsePaymentProviderWithDefault(s string, d PaymentProvider) PaymentProvide
 	return PaymentProvider(val)
 }
 
-func ParsePaymentProviderWithNull(s dot.NullString, d PaymentProvider) NullPaymentProvider {
-	if !s.Valid {
-		return NullPaymentProvider{}
-	}
-	val, ok := enumPaymentProviderValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return PaymentProvider(val).Wrap()
-}
-
 func (e PaymentProvider) Enum() int {
 	return int(e)
-}
-
-func (e PaymentProvider) Wrap() NullPaymentProvider {
-	return WrapPaymentProvider(e)
 }
 
 func (e PaymentProvider) Name() string {
@@ -94,9 +79,19 @@ func (e *PaymentProvider) Scan(src interface{}) error {
 	return err
 }
 
-type NullPaymentProvider struct {
-	Enum  PaymentProvider
-	Valid bool
+func (e PaymentProvider) Wrap() NullPaymentProvider {
+	return WrapPaymentProvider(e)
+}
+
+func ParsePaymentProviderWithNull(s dot.NullString, d PaymentProvider) NullPaymentProvider {
+	if !s.Valid {
+		return NullPaymentProvider{}
+	}
+	val, ok := enumPaymentProviderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return PaymentProvider(val).Wrap()
 }
 
 func WrapPaymentProvider(enum PaymentProvider) NullPaymentProvider {

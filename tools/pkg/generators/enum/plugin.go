@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/types"
 	"sort"
+	"strings"
 	"text/template"
 
 	"golang.org/x/tools/go/packages"
@@ -13,6 +14,10 @@ import (
 	"etop.vn/backend/tools/pkg/generators/api/parse"
 	"etop.vn/backend/tools/pkg/genutil"
 )
+
+type keyWithNull struct{}
+type keyModelType struct{}
+type keyModelZero struct{}
 
 type plugin struct {
 	generator.Qualifier
@@ -44,6 +49,8 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 	if err != nil {
 		return err
 	}
+
+	// parse directives
 	enums := make([]*defs.Enum, 0, len(mapEnum))
 	for _, enum := range mapEnum {
 		if err := parseDirectives(ng, enum); err != nil {
@@ -52,6 +59,36 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 		enums = append(enums, enum)
 	}
 	sort.Slice(enums, func(i, j int) bool { return enums[i].Name < enums[j].Name })
+
+	// parse NullEnum
+	for _, obj := range ng.GetObjectsByPackage(pkg) {
+		_, ok := obj.(*types.TypeName)
+		if !ok {
+			continue
+		}
+		if !strings.HasPrefix(obj.Name(), "Null") {
+			continue
+		}
+		enumName := strings.TrimPrefix(obj.Name(), "Null")
+		if enumName == "" {
+			return generator.Errorf(nil, "invalid name (%v)", obj.Name())
+		}
+		if _, ok := ng.GetDirectives(obj).Get("enum"); ok {
+			return generator.Errorf(nil, "%v must not have enum directive", obj.Name())
+		}
+		enum := mapEnum[enumName]
+		if enum == nil {
+			return generator.Errorf(nil, "enum for %v not found", obj.Name())
+		}
+		if !currentInfo.IsNullStruct(obj.Type(), "Enum") {
+			return generator.Errorf(nil, "%v must be struct { Enum <Enum> ; Valid bool }", obj.Name())
+		}
+		st := obj.Type().Underlying().(*types.Struct)
+		if st.Field(0).Type() != enum.Type {
+			return generator.Errorf(nil, "%v must be struct { Enum <Enum> ; Valid bool }", obj.Name())
+		}
+		currentInfo.Set(enum, keyWithNull{}, true)
+	}
 
 	printer.Import("dot", "etop.vn/capi/dot")
 	printer.Import("driver", "database/sql/driver")
@@ -62,9 +99,6 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 	}
 	return tpl.Execute(printer, vars)
 }
-
-type keyModelType struct{}
-type keyModelZero struct{}
 
 func parseDirectives(ng generator.Engine, enum *defs.Enum) error {
 	obj := enum.Type.Obj()
@@ -103,6 +137,7 @@ var funcs = map[string]interface{}{
 	"zeroAsNull":   fnZeroAsNull,
 	"valueType":    fnValueType,
 	"valueTypeCap": fnValueTypeCap,
+	"withNull":     fnWithNull,
 }
 
 func fnModelType(enum *defs.Enum) string {
@@ -111,6 +146,10 @@ func fnModelType(enum *defs.Enum) string {
 		return modelType.(string)
 	}
 	return ""
+}
+
+func fnQuote(s string) string {
+	return fmt.Sprintf("%q", s)
 }
 
 func fnZeroAsNull(enum *defs.Enum) bool {
@@ -131,6 +170,7 @@ func fnValueTypeCap(enum *defs.Enum) string {
 	return mapCap[enum.Basic.Kind()]
 }
 
-func fnQuote(s string) string {
-	return fmt.Sprintf("%q", s)
+func fnWithNull(enum *defs.Enum) bool {
+	withNull := currentInfo.Get(enum, keyWithNull{})
+	return withNull != nil
 }

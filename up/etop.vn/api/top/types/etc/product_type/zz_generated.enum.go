@@ -39,23 +39,8 @@ func ParseProductTypeWithDefault(s string, d ProductType) ProductType {
 	return ProductType(val)
 }
 
-func ParseProductTypeWithNull(s dot.NullString, d ProductType) NullProductType {
-	if !s.Valid {
-		return NullProductType{}
-	}
-	val, ok := enumProductTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return ProductType(val).Wrap()
-}
-
 func (e ProductType) Enum() int {
 	return int(e)
-}
-
-func (e ProductType) Wrap() NullProductType {
-	return WrapProductType(e)
 }
 
 func (e ProductType) Name() string {
@@ -96,9 +81,19 @@ func (e *ProductType) Scan(src interface{}) error {
 	return err
 }
 
-type NullProductType struct {
-	Enum  ProductType
-	Valid bool
+func (e ProductType) Wrap() NullProductType {
+	return WrapProductType(e)
+}
+
+func ParseProductTypeWithNull(s dot.NullString, d ProductType) NullProductType {
+	if !s.Valid {
+		return NullProductType{}
+	}
+	val, ok := enumProductTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ProductType(val).Wrap()
 }
 
 func WrapProductType(enum ProductType) NullProductType {

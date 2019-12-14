@@ -37,23 +37,8 @@ func ParseCarrierWithDefault(s string, d Carrier) Carrier {
 	return Carrier(val)
 }
 
-func ParseCarrierWithNull(s dot.NullString, d Carrier) NullCarrier {
-	if !s.Valid {
-		return NullCarrier{}
-	}
-	val, ok := enumCarrierValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return Carrier(val).Wrap()
-}
-
 func (e Carrier) Enum() int {
 	return int(e)
-}
-
-func (e Carrier) Wrap() NullCarrier {
-	return WrapCarrier(e)
 }
 
 func (e Carrier) Name() string {
@@ -91,9 +76,19 @@ func (e *Carrier) Scan(src interface{}) error {
 	return err
 }
 
-type NullCarrier struct {
-	Enum  Carrier
-	Valid bool
+func (e Carrier) Wrap() NullCarrier {
+	return WrapCarrier(e)
+}
+
+func ParseCarrierWithNull(s dot.NullString, d Carrier) NullCarrier {
+	if !s.Valid {
+		return NullCarrier{}
+	}
+	val, ok := enumCarrierValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Carrier(val).Wrap()
 }
 
 func WrapCarrier(enum Carrier) NullCarrier {

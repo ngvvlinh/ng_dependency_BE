@@ -4,6 +4,11 @@ package product_type
 // +enum:zero=null
 type ProductType int
 
+type NullProductType struct {
+	Enum  ProductType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown ProductType = 0

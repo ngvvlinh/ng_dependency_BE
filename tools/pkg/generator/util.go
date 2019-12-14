@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/types"
 	"io"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -69,6 +70,13 @@ func parseBuiltinTypes(pkg *packages.Package) map[string]types.Type {
 		m[typ.String()] = typ
 	}
 	return m
+}
+
+func getPackageDir(pkg *packages.Package) string {
+	if len(pkg.GoFiles) > 0 {
+		return filepath.Dir(pkg.GoFiles[0])
+	}
+	return ""
 }
 
 // processDoc splits directive and text comment

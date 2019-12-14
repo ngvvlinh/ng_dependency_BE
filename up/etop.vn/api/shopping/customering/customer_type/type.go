@@ -4,6 +4,11 @@ package customer_type
 // +enum:zero=null
 type CustomerType int
 
+type NullCustomerType struct {
+	Enum  CustomerType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown CustomerType = 0

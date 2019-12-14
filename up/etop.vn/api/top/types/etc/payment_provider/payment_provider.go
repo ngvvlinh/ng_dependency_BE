@@ -4,6 +4,11 @@ package payment_provider
 // +enum:zero=null
 type PaymentProvider int
 
+type NullPaymentProvider struct {
+	Enum  PaymentProvider
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown PaymentProvider = 0

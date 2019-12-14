@@ -49,23 +49,8 @@ func ParseSourceWithDefault(s string, d Source) Source {
 	return Source(val)
 }
 
-func ParseSourceWithNull(s dot.NullString, d Source) NullSource {
-	if !s.Valid {
-		return NullSource{}
-	}
-	val, ok := enumSourceValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return Source(val).Wrap()
-}
-
 func (e Source) Enum() int {
 	return int(e)
-}
-
-func (e Source) Wrap() NullSource {
-	return WrapSource(e)
 }
 
 func (e Source) Name() string {
@@ -106,9 +91,19 @@ func (e *Source) Scan(src interface{}) error {
 	return err
 }
 
-type NullSource struct {
-	Enum  Source
-	Valid bool
+func (e Source) Wrap() NullSource {
+	return WrapSource(e)
+}
+
+func ParseSourceWithNull(s dot.NullString, d Source) NullSource {
+	if !s.Valid {
+		return NullSource{}
+	}
+	val, ok := enumSourceValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Source(val).Wrap()
 }
 
 func WrapSource(enum Source) NullSource {

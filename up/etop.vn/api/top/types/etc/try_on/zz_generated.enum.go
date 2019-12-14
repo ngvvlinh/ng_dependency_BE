@@ -41,23 +41,8 @@ func ParseTryOnCodeWithDefault(s string, d TryOnCode) TryOnCode {
 	return TryOnCode(val)
 }
 
-func ParseTryOnCodeWithNull(s dot.NullString, d TryOnCode) NullTryOnCode {
-	if !s.Valid {
-		return NullTryOnCode{}
-	}
-	val, ok := enumTryOnCodeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return TryOnCode(val).Wrap()
-}
-
 func (e TryOnCode) Enum() int {
 	return int(e)
-}
-
-func (e TryOnCode) Wrap() NullTryOnCode {
-	return WrapTryOnCode(e)
 }
 
 func (e TryOnCode) Name() string {
@@ -98,9 +83,19 @@ func (e *TryOnCode) Scan(src interface{}) error {
 	return err
 }
 
-type NullTryOnCode struct {
-	Enum  TryOnCode
-	Valid bool
+func (e TryOnCode) Wrap() NullTryOnCode {
+	return WrapTryOnCode(e)
+}
+
+func ParseTryOnCodeWithNull(s dot.NullString, d TryOnCode) NullTryOnCode {
+	if !s.Valid {
+		return NullTryOnCode{}
+	}
+	val, ok := enumTryOnCodeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return TryOnCode(val).Wrap()
 }
 
 func WrapTryOnCode(enum TryOnCode) NullTryOnCode {

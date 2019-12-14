@@ -53,23 +53,8 @@ func ParseShippingFeeTypeWithDefault(s string, d ShippingFeeType) ShippingFeeTyp
 	return ShippingFeeType(val)
 }
 
-func ParseShippingFeeTypeWithNull(s dot.NullString, d ShippingFeeType) NullShippingFeeType {
-	if !s.Valid {
-		return NullShippingFeeType{}
-	}
-	val, ok := enumShippingFeeTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return ShippingFeeType(val).Wrap()
-}
-
 func (e ShippingFeeType) Enum() int {
 	return int(e)
-}
-
-func (e ShippingFeeType) Wrap() NullShippingFeeType {
-	return WrapShippingFeeType(e)
 }
 
 func (e ShippingFeeType) Name() string {
@@ -110,9 +95,19 @@ func (e *ShippingFeeType) Scan(src interface{}) error {
 	return err
 }
 
-type NullShippingFeeType struct {
-	Enum  ShippingFeeType
-	Valid bool
+func (e ShippingFeeType) Wrap() NullShippingFeeType {
+	return WrapShippingFeeType(e)
+}
+
+func ParseShippingFeeTypeWithNull(s dot.NullString, d ShippingFeeType) NullShippingFeeType {
+	if !s.Valid {
+		return NullShippingFeeType{}
+	}
+	val, ok := enumShippingFeeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ShippingFeeType(val).Wrap()
 }
 
 func WrapShippingFeeType(enum ShippingFeeType) NullShippingFeeType {

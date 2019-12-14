@@ -55,23 +55,8 @@ func ParseStateWithDefault(s string, d State) State {
 	return State(val)
 }
 
-func ParseStateWithNull(s dot.NullString, d State) NullState {
-	if !s.Valid {
-		return NullState{}
-	}
-	val, ok := enumStateValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return State(val).Wrap()
-}
-
 func (e State) Enum() int {
 	return int(e)
-}
-
-func (e State) Wrap() NullState {
-	return WrapState(e)
 }
 
 func (e State) Name() string {
@@ -109,9 +94,19 @@ func (e *State) Scan(src interface{}) error {
 	return err
 }
 
-type NullState struct {
-	Enum  State
-	Valid bool
+func (e State) Wrap() NullState {
+	return WrapState(e)
+}
+
+func ParseStateWithNull(s dot.NullString, d State) NullState {
+	if !s.Valid {
+		return NullState{}
+	}
+	val, ok := enumStateValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return State(val).Wrap()
 }
 
 func WrapState(enum State) NullState {

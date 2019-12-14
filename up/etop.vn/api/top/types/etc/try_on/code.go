@@ -4,6 +4,11 @@ package try_on
 // +enum:zero=null
 type TryOnCode int
 
+type NullTryOnCode struct {
+	Enum  TryOnCode
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown TryOnCode = 0

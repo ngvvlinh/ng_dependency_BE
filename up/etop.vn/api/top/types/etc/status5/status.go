@@ -4,8 +4,12 @@ package status5
 // +enum:sql=int
 type Status int
 
-const (
+type NullStatus struct {
+	Enum  Status
+	Valid bool
+}
 
+const (
 	// +enum=Z
 	Z Status = 0
 

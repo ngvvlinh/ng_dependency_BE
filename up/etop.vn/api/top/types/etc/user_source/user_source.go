@@ -4,6 +4,11 @@ package user_source
 // +enum:zero=null
 type UserSource int
 
+type NullUserSource struct {
+	Enum  UserSource
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown UserSource = 0

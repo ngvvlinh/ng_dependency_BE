@@ -49,23 +49,8 @@ func ParseUserSourceWithDefault(s string, d UserSource) UserSource {
 	return UserSource(val)
 }
 
-func ParseUserSourceWithNull(s dot.NullString, d UserSource) NullUserSource {
-	if !s.Valid {
-		return NullUserSource{}
-	}
-	val, ok := enumUserSourceValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return UserSource(val).Wrap()
-}
-
 func (e UserSource) Enum() int {
 	return int(e)
-}
-
-func (e UserSource) Wrap() NullUserSource {
-	return WrapUserSource(e)
 }
 
 func (e UserSource) Name() string {
@@ -106,9 +91,19 @@ func (e *UserSource) Scan(src interface{}) error {
 	return err
 }
 
-type NullUserSource struct {
-	Enum  UserSource
-	Valid bool
+func (e UserSource) Wrap() NullUserSource {
+	return WrapUserSource(e)
+}
+
+func ParseUserSourceWithNull(s dot.NullString, d UserSource) NullUserSource {
+	if !s.Valid {
+		return NullUserSource{}
+	}
+	val, ok := enumUserSourceValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return UserSource(val).Wrap()
 }
 
 func WrapUserSource(enum UserSource) NullUserSource {

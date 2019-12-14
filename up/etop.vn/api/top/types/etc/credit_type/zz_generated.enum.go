@@ -35,23 +35,8 @@ func ParseCreditTypeWithDefault(s string, d CreditType) CreditType {
 	return CreditType(val)
 }
 
-func ParseCreditTypeWithNull(s dot.NullString, d CreditType) NullCreditType {
-	if !s.Valid {
-		return NullCreditType{}
-	}
-	val, ok := enumCreditTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return CreditType(val).Wrap()
-}
-
 func (e CreditType) Enum() int {
 	return int(e)
-}
-
-func (e CreditType) Wrap() NullCreditType {
-	return WrapCreditType(e)
 }
 
 func (e CreditType) Name() string {
@@ -92,9 +77,19 @@ func (e *CreditType) Scan(src interface{}) error {
 	return err
 }
 
-type NullCreditType struct {
-	Enum  CreditType
-	Valid bool
+func (e CreditType) Wrap() NullCreditType {
+	return WrapCreditType(e)
+}
+
+func ParseCreditTypeWithNull(s dot.NullString, d CreditType) NullCreditType {
+	if !s.Valid {
+		return NullCreditType{}
+	}
+	val, ok := enumCreditTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return CreditType(val).Wrap()
 }
 
 func WrapCreditType(enum CreditType) NullCreditType {

@@ -53,6 +53,11 @@ type Coordinates struct {
 // +enum
 type Fulfill int
 
+type NullFulfill struct {
+	Enum  Fulfill
+	Valid bool
+}
+
 const (
 	// +enum=none
 	FulfillNone Fulfill = 0

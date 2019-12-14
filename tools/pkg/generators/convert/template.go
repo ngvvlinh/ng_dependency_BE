@@ -7,10 +7,12 @@ import (
 	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api/parse"
 	"etop.vn/backend/tools/pkg/genutil"
 )
 
 var tplRegister, tplConvertType, tplUpdate, tplCreate *template.Template
+var currentInfo *parse.Info
 var currentPrinter generator.Printer
 var convPairs map[pair]*conversionFunc
 
@@ -221,6 +223,6 @@ func checkApplicable(named *types.Named) bool {
 			return true
 		}
 	}
-	cacheApplicable[named] = false
-	return false
+	cacheApplicable[named] = currentInfo.IsNullStruct(named, "")
+	return cacheApplicable[named]
 }

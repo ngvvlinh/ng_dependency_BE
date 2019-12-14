@@ -39,23 +39,8 @@ func ParseStatusWithDefault(s string, d Status) Status {
 	return Status(val)
 }
 
-func ParseStatusWithNull(s dot.NullString, d Status) NullStatus {
-	if !s.Valid {
-		return NullStatus{}
-	}
-	val, ok := enumStatusValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return Status(val).Wrap()
-}
-
 func (e Status) Enum() int {
 	return int(e)
-}
-
-func (e Status) Wrap() NullStatus {
-	return WrapStatus(e)
 }
 
 func (e Status) Name() string {
@@ -93,9 +78,19 @@ func (e *Status) Scan(src interface{}) error {
 	return err
 }
 
-type NullStatus struct {
-	Enum  Status
-	Valid bool
+func (e Status) Wrap() NullStatus {
+	return WrapStatus(e)
+}
+
+func ParseStatusWithNull(s dot.NullString, d Status) NullStatus {
+	if !s.Valid {
+		return NullStatus{}
+	}
+	val, ok := enumStatusValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Status(val).Wrap()
 }
 
 func WrapStatus(enum Status) NullStatus {

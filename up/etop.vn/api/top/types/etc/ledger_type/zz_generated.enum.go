@@ -39,23 +39,8 @@ func ParseLedgerTypeWithDefault(s string, d LedgerType) LedgerType {
 	return LedgerType(val)
 }
 
-func ParseLedgerTypeWithNull(s dot.NullString, d LedgerType) NullLedgerType {
-	if !s.Valid {
-		return NullLedgerType{}
-	}
-	val, ok := enumLedgerTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return LedgerType(val).Wrap()
-}
-
 func (e LedgerType) Enum() int {
 	return int(e)
-}
-
-func (e LedgerType) Wrap() NullLedgerType {
-	return WrapLedgerType(e)
 }
 
 func (e LedgerType) Name() string {
@@ -96,9 +81,19 @@ func (e *LedgerType) Scan(src interface{}) error {
 	return err
 }
 
-type NullLedgerType struct {
-	Enum  LedgerType
-	Valid bool
+func (e LedgerType) Wrap() NullLedgerType {
+	return WrapLedgerType(e)
+}
+
+func ParseLedgerTypeWithNull(s dot.NullString, d LedgerType) NullLedgerType {
+	if !s.Valid {
+		return NullLedgerType{}
+	}
+	val, ok := enumLedgerTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return LedgerType(val).Wrap()
 }
 
 func WrapLedgerType(enum LedgerType) NullLedgerType {

@@ -41,23 +41,8 @@ func ParseGHNNoteCodeWithDefault(s string, d GHNNoteCode) GHNNoteCode {
 	return GHNNoteCode(val)
 }
 
-func ParseGHNNoteCodeWithNull(s dot.NullString, d GHNNoteCode) NullGHNNoteCode {
-	if !s.Valid {
-		return NullGHNNoteCode{}
-	}
-	val, ok := enumGHNNoteCodeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return GHNNoteCode(val).Wrap()
-}
-
 func (e GHNNoteCode) Enum() int {
 	return int(e)
-}
-
-func (e GHNNoteCode) Wrap() NullGHNNoteCode {
-	return WrapGHNNoteCode(e)
 }
 
 func (e GHNNoteCode) Name() string {
@@ -98,9 +83,19 @@ func (e *GHNNoteCode) Scan(src interface{}) error {
 	return err
 }
 
-type NullGHNNoteCode struct {
-	Enum  GHNNoteCode
-	Valid bool
+func (e GHNNoteCode) Wrap() NullGHNNoteCode {
+	return WrapGHNNoteCode(e)
+}
+
+func ParseGHNNoteCodeWithNull(s dot.NullString, d GHNNoteCode) NullGHNNoteCode {
+	if !s.Valid {
+		return NullGHNNoteCode{}
+	}
+	val, ok := enumGHNNoteCodeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return GHNNoteCode(val).Wrap()
 }
 
 func WrapGHNNoteCode(enum GHNNoteCode) NullGHNNoteCode {

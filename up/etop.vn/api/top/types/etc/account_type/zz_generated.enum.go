@@ -43,23 +43,8 @@ func ParseAccountTypeWithDefault(s string, d AccountType) AccountType {
 	return AccountType(val)
 }
 
-func ParseAccountTypeWithNull(s dot.NullString, d AccountType) NullAccountType {
-	if !s.Valid {
-		return NullAccountType{}
-	}
-	val, ok := enumAccountTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return AccountType(val).Wrap()
-}
-
 func (e AccountType) Enum() int {
 	return int(e)
-}
-
-func (e AccountType) Wrap() NullAccountType {
-	return WrapAccountType(e)
 }
 
 func (e AccountType) Name() string {
@@ -100,9 +85,19 @@ func (e *AccountType) Scan(src interface{}) error {
 	return err
 }
 
-type NullAccountType struct {
-	Enum  AccountType
-	Valid bool
+func (e AccountType) Wrap() NullAccountType {
+	return WrapAccountType(e)
+}
+
+func ParseAccountTypeWithNull(s dot.NullString, d AccountType) NullAccountType {
+	if !s.Valid {
+		return NullAccountType{}
+	}
+	val, ok := enumAccountTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return AccountType(val).Wrap()
 }
 
 func WrapAccountType(enum AccountType) NullAccountType {

@@ -41,23 +41,8 @@ func ParseChangeTypeWithDefault(s string, d ChangeType) ChangeType {
 	return ChangeType(val)
 }
 
-func ParseChangeTypeWithNull(s dot.NullString, d ChangeType) NullChangeType {
-	if !s.Valid {
-		return NullChangeType{}
-	}
-	val, ok := enumChangeTypeValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return ChangeType(val).Wrap()
-}
-
 func (e ChangeType) Enum() int {
 	return int(e)
-}
-
-func (e ChangeType) Wrap() NullChangeType {
-	return WrapChangeType(e)
 }
 
 func (e ChangeType) Name() string {
@@ -98,9 +83,19 @@ func (e *ChangeType) Scan(src interface{}) error {
 	return err
 }
 
-type NullChangeType struct {
-	Enum  ChangeType
-	Valid bool
+func (e ChangeType) Wrap() NullChangeType {
+	return WrapChangeType(e)
+}
+
+func ParseChangeTypeWithNull(s dot.NullString, d ChangeType) NullChangeType {
+	if !s.Valid {
+		return NullChangeType{}
+	}
+	val, ok := enumChangeTypeValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ChangeType(val).Wrap()
 }
 
 func WrapChangeType(enum ChangeType) NullChangeType {

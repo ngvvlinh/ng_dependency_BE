@@ -39,23 +39,8 @@ func ParseNotifierEntityWithDefault(s string, d NotifierEntity) NotifierEntity {
 	return NotifierEntity(val)
 }
 
-func ParseNotifierEntityWithNull(s dot.NullString, d NotifierEntity) NullNotifierEntity {
-	if !s.Valid {
-		return NullNotifierEntity{}
-	}
-	val, ok := enumNotifierEntityValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return NotifierEntity(val).Wrap()
-}
-
 func (e NotifierEntity) Enum() int {
 	return int(e)
-}
-
-func (e NotifierEntity) Wrap() NullNotifierEntity {
-	return WrapNotifierEntity(e)
 }
 
 func (e NotifierEntity) Name() string {
@@ -96,9 +81,19 @@ func (e *NotifierEntity) Scan(src interface{}) error {
 	return err
 }
 
-type NullNotifierEntity struct {
-	Enum  NotifierEntity
-	Valid bool
+func (e NotifierEntity) Wrap() NullNotifierEntity {
+	return WrapNotifierEntity(e)
+}
+
+func ParseNotifierEntityWithNull(s dot.NullString, d NotifierEntity) NullNotifierEntity {
+	if !s.Valid {
+		return NullNotifierEntity{}
+	}
+	val, ok := enumNotifierEntityValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return NotifierEntity(val).Wrap()
 }
 
 func WrapNotifierEntity(enum NotifierEntity) NullNotifierEntity {

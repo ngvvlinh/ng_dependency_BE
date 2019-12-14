@@ -47,23 +47,8 @@ func ParsePaymentStateWithDefault(s string, d PaymentState) PaymentState {
 	return PaymentState(val)
 }
 
-func ParsePaymentStateWithNull(s dot.NullString, d PaymentState) NullPaymentState {
-	if !s.Valid {
-		return NullPaymentState{}
-	}
-	val, ok := enumPaymentStateValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return PaymentState(val).Wrap()
-}
-
 func (e PaymentState) Enum() int {
 	return int(e)
-}
-
-func (e PaymentState) Wrap() NullPaymentState {
-	return WrapPaymentState(e)
 }
 
 func (e PaymentState) Name() string {
@@ -104,9 +89,19 @@ func (e *PaymentState) Scan(src interface{}) error {
 	return err
 }
 
-type NullPaymentState struct {
-	Enum  PaymentState
-	Valid bool
+func (e PaymentState) Wrap() NullPaymentState {
+	return WrapPaymentState(e)
+}
+
+func ParsePaymentStateWithNull(s dot.NullString, d PaymentState) NullPaymentState {
+	if !s.Valid {
+		return NullPaymentState{}
+	}
+	val, ok := enumPaymentStateValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return PaymentState(val).Wrap()
 }
 
 func WrapPaymentState(enum PaymentState) NullPaymentState {

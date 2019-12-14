@@ -12,6 +12,7 @@ import (
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/api/parse"
 	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
@@ -52,6 +53,8 @@ func (p *plugin) Filter(ng generator.FilterEngine) error {
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
+	currentInfo = parse.NewInfo(ng)
+
 	// collect all converting packages
 	var generatingPackages []*generatingPackage
 	pkgs := ng.GeneratingPackages()

@@ -9,6 +9,11 @@ import (
 // +enum:zero=null
 type State int
 
+type NullState struct {
+	Enum  State
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown State = 0

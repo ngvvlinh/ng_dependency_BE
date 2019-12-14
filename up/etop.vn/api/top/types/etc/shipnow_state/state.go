@@ -5,6 +5,11 @@ import "etop.vn/api/top/types/etc/status5"
 // +enum
 type State int
 
+type NullState struct {
+	Enum  State
+	Valid bool
+}
+
 const (
 	// +enum=default
 	StateDefault State = 0

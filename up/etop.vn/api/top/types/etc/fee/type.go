@@ -4,6 +4,11 @@ package fee
 // +enum:zero=null
 type FeeType int
 
+type NullFeeType struct {
+	Enum  FeeType
+	Valid bool
+}
+
 const (
 	// +enum=other
 	Other FeeType = 0

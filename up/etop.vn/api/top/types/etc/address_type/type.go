@@ -4,6 +4,11 @@ package address_type
 // +enum:zero=null
 type AddressType int
 
+type NullAddressType struct {
+	Enum  AddressType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown AddressType = 0

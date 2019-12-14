@@ -41,23 +41,8 @@ func ParseFulfillWithDefault(s string, d Fulfill) Fulfill {
 	return Fulfill(val)
 }
 
-func ParseFulfillWithNull(s dot.NullString, d Fulfill) NullFulfill {
-	if !s.Valid {
-		return NullFulfill{}
-	}
-	val, ok := enumFulfillValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return Fulfill(val).Wrap()
-}
-
 func (e Fulfill) Enum() int {
 	return int(e)
-}
-
-func (e Fulfill) Wrap() NullFulfill {
-	return WrapFulfill(e)
 }
 
 func (e Fulfill) Name() string {
@@ -95,9 +80,19 @@ func (e *Fulfill) Scan(src interface{}) error {
 	return err
 }
 
-type NullFulfill struct {
-	Enum  Fulfill
-	Valid bool
+func (e Fulfill) Wrap() NullFulfill {
+	return WrapFulfill(e)
+}
+
+func ParseFulfillWithNull(s dot.NullString, d Fulfill) NullFulfill {
+	if !s.Valid {
+		return NullFulfill{}
+	}
+	val, ok := enumFulfillValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return Fulfill(val).Wrap()
 }
 
 func WrapFulfill(enum Fulfill) NullFulfill {

@@ -29,23 +29,8 @@ func Parse{{.Name}}WithDefault(s string, d {{.Name}}) {{.Name}} {
 	return {{.Name}}(val)
 }
 
-func Parse{{.Name}}WithNull(s dot.NullString, d {{.Name}}) Null{{.Name}} {
-	if !s.Valid {
-		return Null{{.Name}}{}
-	}
-	val, ok := enum{{.Name}}Value[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return {{.Name}}(val).Wrap()
-}
-
 func (e {{.Name}}) Enum() {{$enum|valueType}} {
 	return {{$enum|valueType}}(e)
-}
-
-func (e {{.Name}}) Wrap() Null{{.Name}} {
-	return Wrap{{.Name}}(e)
 }
 
 func (e {{.Name}}) Name() string {
@@ -92,9 +77,20 @@ func (e *{{.Name}}) Scan(src interface{}) error {
 	return err
 }
 
-type Null{{.Name}} struct {
-	Enum {{.Name}}
-	Valid bool
+{{if $enum|withNull}}
+func (e {{.Name}}) Wrap() Null{{.Name}} {
+	return Wrap{{.Name}}(e)
+}
+
+func Parse{{.Name}}WithNull(s dot.NullString, d {{.Name}}) Null{{.Name}} {
+	if !s.Valid {
+		return Null{{.Name}}{}
+	}
+	val, ok := enum{{.Name}}Value[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return {{.Name}}(val).Wrap()
 }
 
 func Wrap{{.Name}}(enum {{.Name}}) Null{{.Name}} {
@@ -139,5 +135,6 @@ func (n *Null{{.Name}}) UnmarshalJSON(data []byte) error {
 	n.Valid = true
 	return n.Enum.UnmarshalJSON(data)
 }
+{{end}}
 {{end}}
 `

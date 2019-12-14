@@ -47,23 +47,8 @@ func ParseShippingProviderWithDefault(s string, d ShippingProvider) ShippingProv
 	return ShippingProvider(val)
 }
 
-func ParseShippingProviderWithNull(s dot.NullString, d ShippingProvider) NullShippingProvider {
-	if !s.Valid {
-		return NullShippingProvider{}
-	}
-	val, ok := enumShippingProviderValue[s.String]
-	if !ok {
-		return d.Wrap()
-	}
-	return ShippingProvider(val).Wrap()
-}
-
 func (e ShippingProvider) Enum() int {
 	return int(e)
-}
-
-func (e ShippingProvider) Wrap() NullShippingProvider {
-	return WrapShippingProvider(e)
 }
 
 func (e ShippingProvider) Name() string {
@@ -104,9 +89,19 @@ func (e *ShippingProvider) Scan(src interface{}) error {
 	return err
 }
 
-type NullShippingProvider struct {
-	Enum  ShippingProvider
-	Valid bool
+func (e ShippingProvider) Wrap() NullShippingProvider {
+	return WrapShippingProvider(e)
+}
+
+func ParseShippingProviderWithNull(s dot.NullString, d ShippingProvider) NullShippingProvider {
+	if !s.Valid {
+		return NullShippingProvider{}
+	}
+	val, ok := enumShippingProviderValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return ShippingProvider(val).Wrap()
 }
 
 func WrapShippingProvider(enum ShippingProvider) NullShippingProvider {

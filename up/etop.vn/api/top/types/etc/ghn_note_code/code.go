@@ -4,6 +4,11 @@ package ghn_note_code
 // +enum:zero=null
 type GHNNoteCode int
 
+type NullGHNNoteCode struct {
+	Enum  GHNNoteCode
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown GHNNoteCode = 0

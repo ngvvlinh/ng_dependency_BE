@@ -4,6 +4,11 @@ package ledger_type
 // +enum:zero=null
 type LedgerType int
 
+type NullLedgerType struct {
+	Enum  LedgerType
+	Valid bool
+}
+
 const (
 	// +enum=unknown
 	Unknown LedgerType = 0
