@@ -18,11 +18,12 @@ var convPairs map[pair]*conversionFunc
 
 func init() {
 	funcMap := map[string]interface{}{
-		"fieldName":   renderFieldName,
-		"fieldValue":  renderFieldValue,
-		"fieldApply":  renderFieldApply,
-		"lastComment": renderLastComment,
-		"plural":      renderPlural,
+		"embeddedConvert": renderEmbeddedConvert,
+		"fieldName":       renderFieldName,
+		"fieldValue":      renderFieldValue,
+		"fieldApply":      renderFieldApply,
+		"lastComment":     renderLastComment,
+		"plural":          renderPlural,
 	}
 	parse := func(name, text string) *template.Template {
 		return template.Must(template.New(name).Funcs(funcMap).Parse(text))
@@ -225,4 +226,32 @@ func checkApplicable(named *types.Named) bool {
 	}
 	cacheApplicable[named] = currentInfo.IsNullStruct(named, "")
 	return cacheApplicable[named]
+}
+
+func renderEmbeddedConvert(vars map[string]interface{}) string {
+	arg, _ := vars["EmbeddedArg"].(*types.Var)
+	out, _ := vars["EmbeddedOut"].(*types.Var)
+	switch {
+	case arg == nil && out == nil:
+		return ""
+
+	case arg != nil && out == nil:
+		if _, ok := arg.Type().(*types.Pointer); ok {
+			return fmt.Sprintf("*out = *arg.%v // embedded struct", arg.Name())
+		}
+		return fmt.Sprintf("*out = arg.%v // embedded struct", arg.Name())
+
+	case arg == nil && out != nil:
+		if ptr, ok := out.Type().(*types.Pointer); ok {
+			return fmt.Sprintf(`
+	out.%v = new(%v) // embedded struct
+	*out.%v = *arg // embedded struct`,
+				out.Name(), currentPrinter.TypeString(ptr.Elem()), out.Name(),
+			)[1:]
+		}
+		return fmt.Sprintf("out.%v = *arg // embedded struct", out.Name())
+
+	default:
+		panic("unexpected")
+	}
 }

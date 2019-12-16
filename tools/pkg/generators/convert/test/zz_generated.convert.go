@@ -58,6 +58,42 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*C1) = out0
 		return nil
 	})
+	s.Register((*C2)(nil), (*C0)(nil), func(arg, out interface{}) error {
+		Convert_C2_C0(arg.(*C2), out.(*C0))
+		return nil
+	})
+	s.Register(([]*C2)(nil), (*[]*C0)(nil), func(arg, out interface{}) error {
+		out0 := Convert_C2s_C0s(arg.([]*C2))
+		*out.(*[]*C0) = out0
+		return nil
+	})
+	s.Register((*C0)(nil), (*C2)(nil), func(arg, out interface{}) error {
+		Convert_C0_C2(arg.(*C0), out.(*C2))
+		return nil
+	})
+	s.Register(([]*C0)(nil), (*[]*C2)(nil), func(arg, out interface{}) error {
+		out0 := Convert_C0s_C2s(arg.([]*C0))
+		*out.(*[]*C2) = out0
+		return nil
+	})
+	s.Register((*C3)(nil), (*C0)(nil), func(arg, out interface{}) error {
+		Convert_C3_C0(arg.(*C3), out.(*C0))
+		return nil
+	})
+	s.Register(([]*C3)(nil), (*[]*C0)(nil), func(arg, out interface{}) error {
+		out0 := Convert_C3s_C0s(arg.([]*C3))
+		*out.(*[]*C0) = out0
+		return nil
+	})
+	s.Register((*C0)(nil), (*C3)(nil), func(arg, out interface{}) error {
+		Convert_C0_C3(arg.(*C0), out.(*C3))
+		return nil
+	})
+	s.Register(([]*C0)(nil), (*[]*C3)(nil), func(arg, out interface{}) error {
+		out0 := Convert_C0s_C3s(arg.([]*C0))
+		*out.(*[]*C3) = out0
+		return nil
+	})
 	s.Register((*D1)(nil), (*D0)(nil), func(arg, out interface{}) error {
 		Convert_D1_D0(arg.(*D1), out.(*D0))
 		return nil
@@ -182,6 +218,109 @@ func Convert_C0s_C1s(args []*C0) (outs []*C1) {
 	outs = make([]*C1, len(args))
 	for i := range tmps {
 		outs[i] = Convert_C0_C1(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_C2_C0(arg *C2, out *C0) *C0 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &C0{}
+	}
+	convert_C2_C0(arg, out)
+	return out
+}
+
+func convert_C2_C0(arg *C2, out *C0) {
+	*out = arg.C0 // embedded struct
+}
+
+func Convert_C2s_C0s(args []*C2) (outs []*C0) {
+	tmps := make([]C0, len(args))
+	outs = make([]*C0, len(args))
+	for i := range tmps {
+		outs[i] = Convert_C2_C0(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_C0_C2(arg *C0, out *C2) *C2 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &C2{}
+	}
+	convert_C0_C2(arg, out)
+	return out
+}
+
+func convert_C0_C2(arg *C0, out *C2) {
+	out.C0 = *arg // embedded struct
+	out.X = 0     // zero value
+	out.Y = 0     // zero value
+	out.Z = 0     // zero value
+}
+
+func Convert_C0s_C2s(args []*C0) (outs []*C2) {
+	tmps := make([]C2, len(args))
+	outs = make([]*C2, len(args))
+	for i := range tmps {
+		outs[i] = Convert_C0_C2(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_C3_C0(arg *C3, out *C0) *C0 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &C0{}
+	}
+	convert_C3_C0(arg, out)
+	return out
+}
+
+func convert_C3_C0(arg *C3, out *C0) {
+	*out = *arg.C0 // embedded struct
+}
+
+func Convert_C3s_C0s(args []*C3) (outs []*C0) {
+	tmps := make([]C0, len(args))
+	outs = make([]*C0, len(args))
+	for i := range tmps {
+		outs[i] = Convert_C3_C0(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_C0_C3(arg *C0, out *C3) *C3 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &C3{}
+	}
+	convert_C0_C3(arg, out)
+	return out
+}
+
+func convert_C0_C3(arg *C0, out *C3) {
+	out.C0 = new(C0) // embedded struct
+	*out.C0 = *arg   // embedded struct
+	out.X = 0        // zero value
+	out.Y = 0        // zero value
+	out.Z = 0        // zero value
+}
+
+func Convert_C0s_C3s(args []*C0) (outs []*C3) {
+	tmps := make([]C3, len(args))
+	outs = make([]*C3, len(args))
+	for i := range tmps {
+		outs[i] = Convert_C0_C3(args[i], &tmps[i])
 	}
 	return outs
 }

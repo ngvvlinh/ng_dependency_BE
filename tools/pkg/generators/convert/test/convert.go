@@ -58,6 +58,18 @@ type C1 struct {
 	Value string
 }
 
+// +convert:type=C0
+type C2 struct {
+	C0
+	X, Y, Z int
+}
+
+// +convert:type=C0
+type C3 struct {
+	*C0
+	X, Y, Z int
+}
+
 type D0 struct {
 	Value string
 }

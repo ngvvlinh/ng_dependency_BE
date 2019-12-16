@@ -30,6 +30,7 @@ func New() generator.Plugin {
 func (p *plugin) Name() string { return "enum" }
 
 func (p *plugin) Filter(ng generator.FilterEngine) error {
+	currentInfo = parse.NewInfo(ng)
 	for _, pkg := range ng.ParsingPackages() {
 		ds := pkg.InlineDirectives
 		if _, ok := ds.Get("enum"); ok {
@@ -40,7 +41,7 @@ func (p *plugin) Filter(ng generator.FilterEngine) error {
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
-	currentInfo = parse.NewInfo(ng)
+	currentInfo.Init(ng)
 	return ng.GenerateEachPackage(p.generatePackage)
 }
 

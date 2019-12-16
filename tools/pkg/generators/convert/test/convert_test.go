@@ -53,4 +53,34 @@ func TestConvert(t *testing.T) {
 		require.Equal(t, bs[0].Value, "10")
 		require.Equal(t, bs[1].Value, "20")
 	})
+	t.Run("Embedded", func(t *testing.T) {
+		t.Run("C0 to C2", func(t *testing.T) {
+			from := &C0{100}
+			var to C2
+			err := scheme.Convert(from, &to)
+			require.NoError(t, err)
+			assert.Equal(t, 100, to.Value)
+		})
+		t.Run("C2 to C0", func(t *testing.T) {
+			from := &C2{C0: C0{100}}
+			var to C0
+			err := scheme.Convert(from, &to)
+			require.NoError(t, err)
+			assert.Equal(t, 100, to.Value)
+		})
+		t.Run("C0 to C3 (pointer)", func(t *testing.T) {
+			from := &C0{100}
+			var to C3
+			err := scheme.Convert(from, &to)
+			require.NoError(t, err)
+			assert.Equal(t, 100, to.Value)
+		})
+		t.Run("C3 to C0 (pointer)", func(t *testing.T) {
+			from := &C3{C0: &C0{100}}
+			var to C0
+			err := scheme.Convert(from, &to)
+			require.NoError(t, err)
+			assert.Equal(t, 100, to.Value)
+		})
+	})
 }

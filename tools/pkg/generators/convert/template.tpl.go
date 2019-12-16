@@ -52,9 +52,10 @@ func {{.Actions}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) 
 
 const tplConvertTypeText = tplConvertCustomText + `
 func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
+	{{- .|embeddedConvert -}}
 	{{- range .Fields}}
 		out.{{.|fieldName}} = {{.|fieldValue "arg"}} {{lastComment -}}
-  {{end}}
+	{{end}}
 }
 
 func {{.Actions}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(outs []*{{.OutType}}) {
@@ -69,7 +70,7 @@ func {{.Actions}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(ou
 
 const tplCreateText = tplConvertCustomText + `
 func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
-  {{- range .Fields}}
+	{{- range .Fields}}
 		out.{{.|fieldName}} = {{.|fieldValue "arg"}} {{lastComment -}}
 	{{end}}
 }

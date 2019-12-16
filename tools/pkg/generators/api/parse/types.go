@@ -50,15 +50,21 @@ type Info struct {
 	typeNullID  types.Type
 }
 
-func NewInfo(ng generator.Engine) *Info {
-	inf := &Info{Meta: make(Meta), ng: ng}
+func NewInfo(ng generator.FilterEngine) *Info {
+	ng.ParsePackage("time")
+	ng.ParsePackage(dotPkgPath)
+	return &Info{}
+}
+
+func (inf *Info) Init(ng generator.Engine) {
+	inf.Meta = make(Meta)
+	inf.ng = ng
 	populateType(ng, &inf.typeBool, "", "bool")
 	populateType(ng, &inf.typeError, "", "error")
 	populateType(ng, &inf.typeStdTime, "time", "Time")
 	populateType(ng, &inf.typeDotTime, dotPkgPath, "Time")
 	populateType(ng, &inf.typeID, dotPkgPath, "ID")
 	populateType(ng, &inf.typeNullID, dotPkgPath, "NullID")
-	return inf
 }
 
 func populateType(ng generator.Engine, typ *types.Type, pkgPath, name string) {

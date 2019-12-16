@@ -24,12 +24,11 @@ import (
 )
 
 var ll = l.New()
-var info *parse.Info
+var currentInfo *parse.Info
 
 var _ generator.Plugin = &plugin{}
 
 type plugin struct {
-	generator.Filterer
 }
 
 type Opts struct {
@@ -38,15 +37,18 @@ type Opts struct {
 }
 
 func New() generator.Plugin {
-	return &plugin{
-		Filterer: generator.FilterByCommand("gen:apix"),
-	}
+	return &plugin{}
 }
 
 func (p *plugin) Name() string { return "swagger" }
 
+func (p *plugin) Filter(ng generator.FilterEngine) error {
+	currentInfo = parse.NewInfo(ng)
+	return generator.FilterByCommand("gen:apix").Filter(ng)
+}
+
 func (p *plugin) Generate(ng generator.Engine) error {
-	info = parse.NewInfo(ng)
+	currentInfo.Init(ng)
 	return ng.GenerateEachPackage(p.generatePackage)
 }
 
@@ -264,16 +266,16 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 	ll.V(3).Debugf("parse schema for %v (type %v)", path, typ)
 	var inner types.Type
 	switch {
-	case info.IsTime(typ):
+	case currentInfo.IsTime(typ):
 		return simpleType("string", "date-time")
 
-	case info.IsSliceOfBytes(typ):
+	case currentInfo.IsSliceOfBytes(typ):
 		return simpleType("string", "byte")
 
-	case info.IsNullID(typ):
+	case currentInfo.IsNullID(typ):
 		return simpleType("string", "int64")
 
-	case info.IsBasic(typ, &inner) || info.IsNullBasic(typ, &inner):
+	case currentInfo.IsBasic(typ, &inner) || currentInfo.IsNullBasic(typ, &inner):
 		switch inner.(*types.Basic).Kind() {
 		case types.Bool:
 			return simpleType("boolean", "")
@@ -297,7 +299,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 			return simpleType("string", "")
 		}
 
-	case info.IsEnum(typ):
+	case currentInfo.IsEnum(typ):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -308,7 +310,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 			return refSchema
 		}
 
-		enum := info.GetEnum(typ)
+		enum := currentInfo.GetEnum(typ)
 		var enumNames []interface{}
 		for _, value := range enum.Values {
 			enumNames = append(enumNames, enum.MapName[value])
@@ -333,7 +335,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		definitions[id] = s
 		return refSchema
 
-	case info.IsNamedStruct(typ, &inner):
+	case currentInfo.IsNamedStruct(typ, &inner):
 		id := getDefinitionID(typ)
 		refSchema := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -374,7 +376,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		definitions[id] = s
 		return refSchema
 
-	case info.IsArray(typ, &inner):
+	case currentInfo.IsArray(typ, &inner):
 		refSchema := parseSchema(ng, path+"[]", definitions, inner)
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -386,7 +388,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		}
 		return s
 
-	case info.IsMap(typ):
+	case currentInfo.IsMap(typ):
 		m := typ.(*types.Map)
 		elemSchema := parseSchema(ng, path+"[]", definitions, m.Elem())
 		s := spec.Schema{
@@ -399,10 +401,10 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		}
 		return s
 
-	case info.IsID(typ):
+	case currentInfo.IsID(typ):
 		return simpleType("string", "int64")
 
-	case info.IsNamedInterface(typ, &inner):
+	case currentInfo.IsNamedInterface(typ, &inner):
 		panic(fmt.Sprintf("oneof is not supported"))
 	}
 

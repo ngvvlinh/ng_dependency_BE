@@ -37,6 +37,7 @@ type plugin struct {
 func (p *plugin) Name() string { return "convert" }
 
 func (p *plugin) Filter(ng generator.FilterEngine) error {
+	currentInfo = parse.NewInfo(ng)
 	for _, pkg := range ng.ParsingPackages() {
 		if !generator.FilterByCommand(Command).Include(pkg.Directives) {
 			continue
@@ -53,7 +54,7 @@ func (p *plugin) Filter(ng generator.FilterEngine) error {
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
-	currentInfo = parse.NewInfo(ng)
+	currentInfo.Init(ng)
 
 	// collect all converting packages
 	var generatingPackages []*generatingPackage
@@ -278,7 +279,7 @@ func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*ge
 		result.steps = append(result.steps, step)
 	}
 	if len(result.steps) == 0 {
-		return nil, generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+		return nil, generator.Errorf(nil, "convert package %v: invalid directive (must in format pkg1 -> pkg2)", gpkg.PkgPath)
 	}
 	return result, nil
 }
@@ -732,16 +733,24 @@ func generateConvertTypeImpl(p generator.Printer, in types.Object, out types.Obj
 	inSt := validateStruct(in)
 	outSt := validateStruct(out)
 	fields := make([]fieldConvert, 0, outSt.NumFields())
+	embeddedArg, embeddedOut := validateEmbedded(in, out)
 	for i, n := 0, outSt.NumFields(); i < n; i++ {
 		outField := outSt.Field(i)
 		inField := matchField(outField, inSt)
-		fields = append(fields, fieldConvert{
-			Arg: inField,
-			Out: outField,
-		})
+		if inField != nil || outField != embeddedOut {
+			fields = append(fields, fieldConvert{
+				Arg: inField,
+				Out: outField,
+			})
+		}
+	}
+	if embeddedArg != nil {
+		fields = nil
 	}
 	vars := map[string]interface{}{
-		"Fields": fields,
+		"Fields":      fields,
+		"EmbeddedArg": embeddedArg,
+		"EmbeddedOut": embeddedOut,
 	}
 	includeBaseConversion(p, vars, ModeType, in, out)
 	includeCustomConversion(p, vars, in, out)
@@ -829,6 +838,32 @@ func includeCustomConversion(p generator.Printer, vars map[string]interface{}, a
 		}
 		vars["CustomConversionFuncName"] = funcName
 	}
+}
+
+func validateEmbedded(in, out types.Object) (inField, outField *types.Var) {
+	inSt := validateStruct(in)
+	outSt := validateStruct(out)
+	for i, n := 0, inSt.NumFields(); i < n; i++ {
+		inField := inSt.Field(i)
+		if inField.Embedded() && skipPointer(inField.Type()) == out.Type() {
+			return inField, nil
+		}
+	}
+	for i, n := 0, outSt.NumFields(); i < n; i++ {
+		outField := outSt.Field(i)
+		if outField.Embedded() && skipPointer(outField.Type()) == in.Type() {
+			return nil, outField
+		}
+	}
+	return nil, nil
+}
+
+func skipPointer(typ types.Type) types.Type {
+	ptr, ok := typ.(*types.Pointer)
+	if ok {
+		return ptr.Elem()
+	}
+	return typ
 }
 
 func validateCompatible(arg, out types.Object) bool {
