@@ -77,7 +77,8 @@ type CustomersResponse struct {
 //-- commands --//
 
 type CreateCustomerGroupArgs struct {
-	Name string
+	Name   string
+	ShopID dot.ID
 }
 
 // +convert:create=ShopCustomer
@@ -114,11 +115,13 @@ type BatchSetCustomersStatusArgs struct {
 type AddCustomerToGroupArgs struct {
 	GroupID     dot.ID
 	CustomerIDs []dot.ID
+	ShopID      dot.ID
 }
 
 type RemoveCustomerOutOfGroupArgs struct {
 	GroupID     dot.ID
 	CustomerIDs []dot.ID
+	ShopID      dot.ID
 }
 
 type UpdateCustomerGroupArgs struct {

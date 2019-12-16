@@ -159,7 +159,8 @@ func (s *CustomerService) GetCustomerDetails(ctx context.Context, r *GetCustomer
 
 func (s *CustomerGroupService) CreateCustomerGroup(ctx context.Context, r *CreateCustomerGroupEndpoint) error {
 	cmd := &customering.CreateCustomerGroupCommand{
-		Name: r.Name,
+		ShopID: r.Context.Shop.ID,
+		Name:   r.Name,
 	}
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -209,6 +210,7 @@ func (s *CustomerGroupService) UpdateCustomerGroup(ctx context.Context, r *Updat
 
 func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustomersToGroupEndpoint) error {
 	cmd := &customering.AddCustomersToGroupCommand{
+		ShopID:      r.Context.Shop.ID,
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}
@@ -221,6 +223,7 @@ func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustome
 
 func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *RemoveCustomersFromGroupEndpoint) error {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
+		ShopID:      r.Context.Shop.ID,
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}

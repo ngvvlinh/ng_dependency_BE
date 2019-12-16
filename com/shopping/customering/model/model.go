@@ -85,8 +85,9 @@ var _ = sqlgenShopCustomerGroup(&ShopCustomerGroup{})
 
 // +convert:type=customering.ShopCustomerGroup
 type ShopCustomerGroup struct {
-	ID   dot.ID
-	Name string
+	ID     dot.ID
+	Name   string
+	ShopID dot.ID
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

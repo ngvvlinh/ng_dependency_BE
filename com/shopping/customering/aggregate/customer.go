@@ -230,8 +230,9 @@ func (a *CustomerAggregate) BatchSetCustomersStatus(
 
 func (a *CustomerAggregate) CreateCustomerGroup(ctx context.Context, args *customering.CreateCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {
 	customerGroup := &customering.ShopCustomerGroup{
-		ID:   cm.NewID(),
-		Name: args.Name,
+		ID:     cm.NewID(),
+		ShopID: args.ShopID,
+		Name:   args.Name,
 	}
 	if err := a.customerGroupStore(ctx).CreateShopCustomerGroup(customerGroup); err != nil {
 		return nil, err
@@ -271,7 +272,7 @@ func (a *CustomerAggregate) AddCustomersToGroup(ctx context.Context, args *custo
 			return 0, cm.Errorf(cm.InvalidArgument, err, "CustomerID không được để trống")
 		}
 	}
-	customers, err := a.store(ctx).IDs(args.CustomerIDs...).ListCustomers()
+	customers, err := a.store(ctx).IDs(args.CustomerIDs...).ShopID(args.ShopID).ListCustomers()
 	if err != nil {
 		return 0, err
 	}
@@ -292,7 +293,7 @@ func (a *CustomerAggregate) AddCustomersToGroup(ctx context.Context, args *custo
 		}
 		return nil
 	})
-	return created, err
+	return created, nil
 }
 
 func (a *CustomerAggregate) RemoveCustomersFromGroup(ctx context.Context, args *customering.RemoveCustomerOutOfGroupArgs) (deleted int, _ error) {
@@ -310,6 +311,13 @@ func (a *CustomerAggregate) RemoveCustomersFromGroup(ctx context.Context, args *
 			return 0, cm.Errorf(cm.InvalidArgument, err, "CustomerID không được để trống")
 		}
 	}
-	removedCustomerGroup, err = a.customerGroupCustomerStore(ctx).CustomerIDs(args.CustomerIDs...).RemoveCustomerFromGroup()
+	customers, err := a.store(ctx).IDs(args.CustomerIDs...).ShopID(args.ShopID).ListCustomers()
+	if err != nil {
+		return 0, err
+	}
+	if len(customers) != len(args.CustomerIDs) {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Thành viên không tồn tại")
+	}
+	removedCustomerGroup, err = a.customerGroupCustomerStore(ctx).CustomerIDs(args.CustomerIDs...).ID(args.GroupID).RemoveCustomerFromGroup()
 	return removedCustomerGroup, err
 }

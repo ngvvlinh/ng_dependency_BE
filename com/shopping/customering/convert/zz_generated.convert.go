@@ -429,8 +429,9 @@ func Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(ar
 }
 
 func convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg *customeringmodel.ShopCustomerGroup, out *customering.ShopCustomerGroup) {
-	out.ID = arg.ID     // simple assign
-	out.Name = arg.Name // simple assign
+	out.ID = arg.ID         // simple assign
+	out.ShopID = arg.ShopID // simple assign
+	out.Name = arg.Name     // simple assign
 }
 
 func Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
@@ -456,6 +457,7 @@ func Convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(ar
 func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(arg *customering.ShopCustomerGroup, out *customeringmodel.ShopCustomerGroup) {
 	out.ID = arg.ID             // simple assign
 	out.Name = arg.Name         // simple assign
+	out.ShopID = arg.ShopID     // simple assign
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
 }

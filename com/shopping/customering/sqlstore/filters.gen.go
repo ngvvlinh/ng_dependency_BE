@@ -880,6 +880,25 @@ func (ft *ShopCustomerGroupFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr 
 	}
 }
 
+func (ft *ShopCustomerGroupFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
 func (ft *ShopCustomerGroupFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

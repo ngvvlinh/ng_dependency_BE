@@ -1240,7 +1240,7 @@ func sqlgenShopCustomerGroup(_ *ShopCustomerGroup) bool { return true }
 type ShopCustomerGroups []*ShopCustomerGroup
 
 const __sqlShopCustomerGroup_Table = "shop_customer_group"
-const __sqlShopCustomerGroup_ListCols = "\"id\",\"name\",\"created_at\",\"updated_at\""
+const __sqlShopCustomerGroup_ListCols = "\"id\",\"name\",\"shop_id\",\"created_at\",\"updated_at\""
 const __sqlShopCustomerGroup_Insert = "INSERT INTO \"shop_customer_group\" (" + __sqlShopCustomerGroup_ListCols + ") VALUES"
 const __sqlShopCustomerGroup_Select = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM \"shop_customer_group\""
 const __sqlShopCustomerGroup_Select_history = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM history.\"shop_customer_group\""
@@ -1266,6 +1266,7 @@ func (m *ShopCustomerGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		m.ID,
 		core.String(m.Name),
+		m.ShopID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -1275,6 +1276,7 @@ func (m *ShopCustomerGroup) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
 		(*core.String)(&m.Name),
+		&m.ShopID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1314,7 +1316,7 @@ func (_ *ShopCustomerGroups) SQLSelect(w SQLWriter) error {
 func (m *ShopCustomerGroup) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomerGroup_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(4)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1324,7 +1326,7 @@ func (ms ShopCustomerGroups) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomerGroup_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(4)
+		w.WriteMarkers(5)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1355,6 +1357,14 @@ func (m *ShopCustomerGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Name)
 	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -1381,7 +1391,7 @@ func (m *ShopCustomerGroup) SQLUpdate(w SQLWriter) error {
 func (m *ShopCustomerGroup) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomerGroup_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(4)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1405,31 +1415,33 @@ func (m ShopCustomerGroupHistories) SQLSelect(w SQLWriter) error {
 
 func (m ShopCustomerGroupHistory) ID() core.Interface        { return core.Interface{m["id"]} }
 func (m ShopCustomerGroupHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m ShopCustomerGroupHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
 func (m ShopCustomerGroupHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShopCustomerGroupHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *ShopCustomerGroupHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 4)
-	args := make([]interface{}, 4)
-	for i := 0; i < 4; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCustomerGroupHistory, 4)
+	res := make(ShopCustomerGroupHistory, 5)
 	res["id"] = data[0]
 	res["name"] = data[1]
-	res["created_at"] = data[2]
-	res["updated_at"] = data[3]
+	res["shop_id"] = data[2]
+	res["created_at"] = data[3]
+	res["updated_at"] = data[4]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCustomerGroupHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 4)
-	args := make([]interface{}, 4)
-	for i := 0; i < 4; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCustomerGroupHistories, 0, 128)
@@ -1440,8 +1452,9 @@ func (ms *ShopCustomerGroupHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 		m := make(ShopCustomerGroupHistory)
 		m["id"] = data[0]
 		m["name"] = data[1]
-		m["created_at"] = data[2]
-		m["updated_at"] = data[3]
+		m["shop_id"] = data[2]
+		m["created_at"] = data[3]
+		m["updated_at"] = data[4]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

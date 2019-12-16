@@ -31,6 +31,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 type AddCustomersToGroupCommand struct {
 	GroupID     dot.ID
 	CustomerIDs []dot.ID
+	ShopID      dot.ID
 
 	Result int `json:"-"`
 }
@@ -72,7 +73,8 @@ func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, msg *CreateC
 }
 
 type CreateCustomerGroupCommand struct {
-	Name string
+	Name   string
+	ShopID dot.ID
 
 	Result *ShopCustomerGroup `json:"-"`
 }
@@ -97,6 +99,7 @@ func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteC
 type RemoveCustomersFromGroupCommand struct {
 	GroupID     dot.ID
 	CustomerIDs []dot.ID
+	ShopID      dot.ID
 
 	Result int `json:"-"`
 }
@@ -272,12 +275,14 @@ func (q *AddCustomersToGroupCommand) GetArgs(ctx context.Context) (_ context.Con
 		&AddCustomerToGroupArgs{
 			GroupID:     q.GroupID,
 			CustomerIDs: q.CustomerIDs,
+			ShopID:      q.ShopID,
 		}
 }
 
 func (q *AddCustomersToGroupCommand) SetAddCustomerToGroupArgs(args *AddCustomerToGroupArgs) {
 	q.GroupID = args.GroupID
 	q.CustomerIDs = args.CustomerIDs
+	q.ShopID = args.ShopID
 }
 
 func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID, status int) {
@@ -315,12 +320,14 @@ func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) 
 func (q *CreateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerGroupArgs) {
 	return ctx,
 		&CreateCustomerGroupArgs{
-			Name: q.Name,
+			Name:   q.Name,
+			ShopID: q.ShopID,
 		}
 }
 
 func (q *CreateCustomerGroupCommand) SetCreateCustomerGroupArgs(args *CreateCustomerGroupArgs) {
 	q.Name = args.Name
+	q.ShopID = args.ShopID
 }
 
 func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
@@ -334,12 +341,14 @@ func (q *RemoveCustomersFromGroupCommand) GetArgs(ctx context.Context) (_ contex
 		&RemoveCustomerOutOfGroupArgs{
 			GroupID:     q.GroupID,
 			CustomerIDs: q.CustomerIDs,
+			ShopID:      q.ShopID,
 		}
 }
 
 func (q *RemoveCustomersFromGroupCommand) SetRemoveCustomerOutOfGroupArgs(args *RemoveCustomerOutOfGroupArgs) {
 	q.GroupID = args.GroupID
 	q.CustomerIDs = args.CustomerIDs
+	q.ShopID = args.ShopID
 }
 
 func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerArgs) {

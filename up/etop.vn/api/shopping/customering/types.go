@@ -28,8 +28,9 @@ type ShopCustomer struct {
 }
 
 type ShopCustomerGroup struct {
-	ID   dot.ID
-	Name string
+	ID     dot.ID
+	ShopID dot.ID
+	Name   string
 }
 
 type ShopCustomerGroupCustomer struct {
