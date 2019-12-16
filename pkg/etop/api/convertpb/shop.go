@@ -169,7 +169,7 @@ func PbCustomer(m *customering.ShopCustomer) *apishop.Customer {
 		Phone:     m.Phone,
 		Email:     m.Email,
 		Gender:    m.Gender,
-		Type:      string(m.Type),
+		Type:      m.Type,
 		Birthday:  m.Birthday,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		UpdatedAt: cmapi.PbTime(m.UpdatedAt),

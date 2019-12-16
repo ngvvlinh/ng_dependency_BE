@@ -6467,7 +6467,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/spCustomerType"
         },
         "updated_at": {
           "type": "string",

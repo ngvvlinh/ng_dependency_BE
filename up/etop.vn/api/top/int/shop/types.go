@@ -1210,21 +1210,21 @@ func (m *CustomerLiability) Reset()         { *m = CustomerLiability{} }
 func (m *CustomerLiability) String() string { return jsonx.MustMarshalToString(m) }
 
 type Customer struct {
-	Id        dot.ID             `json:"id"`
-	ShopId    dot.ID             `json:"shop_id"`
-	FullName  string             `json:"full_name"`
-	Code      string             `json:"code"`
-	Note      string             `json:"note"`
-	Phone     string             `json:"phone"`
-	Email     string             `json:"email"`
-	Gender    gender.Gender      `json:"gender"`
-	Type      string             `json:"type"`
-	Birthday  string             `json:"birthday"`
-	CreatedAt dot.Time           `json:"created_at"`
-	UpdatedAt dot.Time           `json:"updated_at"`
-	Status    status3.Status     `json:"status"`
-	GroupIds  []dot.ID           `json:"group_ids"`
-	Liability *CustomerLiability `json:"liability"`
+	Id        dot.ID                     `json:"id"`
+	ShopId    dot.ID                     `json:"shop_id"`
+	FullName  string                     `json:"full_name"`
+	Code      string                     `json:"code"`
+	Note      string                     `json:"note"`
+	Phone     string                     `json:"phone"`
+	Email     string                     `json:"email"`
+	Gender    gender.Gender              `json:"gender"`
+	Type      customer_type.CustomerType `json:"type"`
+	Birthday  string                     `json:"birthday"`
+	CreatedAt dot.Time                   `json:"created_at"`
+	UpdatedAt dot.Time                   `json:"updated_at"`
+	Status    status3.Status             `json:"status"`
+	GroupIds  []dot.ID                   `json:"group_ids"`
+	Liability *CustomerLiability         `json:"liability"`
 }
 
 func (m *Customer) Reset()         { *m = Customer{} }
