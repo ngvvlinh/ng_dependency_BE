@@ -31,10 +31,12 @@ type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
 const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\""
+const __sqlShipnowFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"order_ids\" = EXCLUDED.\"order_ids\",\"pickup_address\" = EXCLUDED.\"pickup_address\",\"carrier\" = EXCLUDED.\"carrier\",\"shipping_service_code\" = EXCLUDED.\"shipping_service_code\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"shipping_service_description\" = EXCLUDED.\"shipping_service_description\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"cod_amount\" = EXCLUDED.\"cod_amount\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"request_pickup_at\" = EXCLUDED.\"request_pickup_at\",\"delivery_points\" = EXCLUDED.\"delivery_points\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"carrier_fee_lines\" = EXCLUDED.\"carrier_fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_shared_link\" = EXCLUDED.\"shipping_shared_link\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_UpdateAll = "UPDATE \"shipnow_fulfillment\" SET (" + __sqlShipnowFulfillment_ListCols + ")"
+const __sqlShipnowFulfillment_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shipnow_fulfillment_pkey DO UPDATE SET"
 
 func (m *ShipnowFulfillment) SQLTableName() string  { return "shipnow_fulfillment" }
 func (m *ShipnowFulfillments) SQLTableName() string { return "shipnow_fulfillment" }
@@ -191,6 +193,22 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShipnowFulfillment) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShipnowFulfillment_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShipnowFulfillment_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShipnowFulfillments) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShipnowFulfillment_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShipnowFulfillment_ListColsOnConflict)
 	return nil
 }
 

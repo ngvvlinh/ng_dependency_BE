@@ -32,10 +32,12 @@ type Users []*User
 
 const __sqlUser_Table = "user"
 const __sqlUser_ListCols = "\"id\",\"name\",\"created_at\",\"updated_at\",\"bool\",\"float64\",\"int\",\"int64\",\"string\",\"p_bool\",\"p_float64\",\"p_int\",\"p_int64\",\"p_string\""
+const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"bool\" = EXCLUDED.\"bool\",\"float64\" = EXCLUDED.\"float64\",\"int\" = EXCLUDED.\"int\",\"int64\" = EXCLUDED.\"int64\",\"string\" = EXCLUDED.\"string\",\"p_bool\" = EXCLUDED.\"p_bool\",\"p_float64\" = EXCLUDED.\"p_float64\",\"p_int\" = EXCLUDED.\"p_int\",\"p_int64\" = EXCLUDED.\"p_int64\",\"p_string\" = EXCLUDED.\"p_string\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
 const __sqlUser_UpdateAll = "UPDATE \"user\" SET (" + __sqlUser_ListCols + ")"
+const __sqlUser_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_pkey DO UPDATE SET"
 
 func (m *User) SQLTableName() string  { return "user" }
 func (m *Users) SQLTableName() string { return "user" }
@@ -139,6 +141,22 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *User) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUser_ListColsOnConflict)
+	return nil
+}
+
+func (ms Users) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUser_ListColsOnConflict)
 	return nil
 }
 
@@ -443,10 +461,12 @@ type UserSubsets []*UserSubset
 
 const __sqlUserSubset_Table = "user"
 const __sqlUserSubset_ListCols = "\"id\",\"bool\",\"float64\",\"int\",\"int64\",\"string\",\"p_bool\",\"p_float64\",\"p_int\",\"p_int64\",\"p_string\""
+const __sqlUserSubset_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"bool\" = EXCLUDED.\"bool\",\"float64\" = EXCLUDED.\"float64\",\"int\" = EXCLUDED.\"int\",\"int64\" = EXCLUDED.\"int64\",\"string\" = EXCLUDED.\"string\",\"p_bool\" = EXCLUDED.\"p_bool\",\"p_float64\" = EXCLUDED.\"p_float64\",\"p_int\" = EXCLUDED.\"p_int\",\"p_int64\" = EXCLUDED.\"p_int64\",\"p_string\" = EXCLUDED.\"p_string\""
 const __sqlUserSubset_Insert = "INSERT INTO \"user\" (" + __sqlUserSubset_ListCols + ") VALUES"
 const __sqlUserSubset_Select = "SELECT " + __sqlUserSubset_ListCols + " FROM \"user\""
 const __sqlUserSubset_Select_history = "SELECT " + __sqlUserSubset_ListCols + " FROM history.\"user\""
 const __sqlUserSubset_UpdateAll = "UPDATE \"user\" SET (" + __sqlUserSubset_ListCols + ")"
+const __sqlUserSubset_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_pkey DO UPDATE SET"
 
 func (m *UserSubset) SQLTableName() string  { return "user" }
 func (m *UserSubsets) SQLTableName() string { return "user" }
@@ -544,6 +564,22 @@ func (ms UserSubsets) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserSubset) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserSubset_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserSubset_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserSubsets) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserSubset_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserSubset_ListColsOnConflict)
 	return nil
 }
 
@@ -750,10 +786,12 @@ type UserInfoes []*UserInfo
 
 const __sqlUserInfo_Table = "user_info"
 const __sqlUserInfo_ListCols = "\"user_id\",\"metadata\",\"bool\",\"float64\",\"int\",\"int64\",\"string\",\"p_bool\",\"p_float64\",\"p_int\",\"p_int64\",\"p_string\""
+const __sqlUserInfo_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"metadata\" = EXCLUDED.\"metadata\",\"bool\" = EXCLUDED.\"bool\",\"float64\" = EXCLUDED.\"float64\",\"int\" = EXCLUDED.\"int\",\"int64\" = EXCLUDED.\"int64\",\"string\" = EXCLUDED.\"string\",\"p_bool\" = EXCLUDED.\"p_bool\",\"p_float64\" = EXCLUDED.\"p_float64\",\"p_int\" = EXCLUDED.\"p_int\",\"p_int64\" = EXCLUDED.\"p_int64\",\"p_string\" = EXCLUDED.\"p_string\""
 const __sqlUserInfo_Insert = "INSERT INTO \"user_info\" (" + __sqlUserInfo_ListCols + ") VALUES"
 const __sqlUserInfo_Select = "SELECT " + __sqlUserInfo_ListCols + " FROM \"user_info\""
 const __sqlUserInfo_Select_history = "SELECT " + __sqlUserInfo_ListCols + " FROM history.\"user_info\""
 const __sqlUserInfo_UpdateAll = "UPDATE \"user_info\" SET (" + __sqlUserInfo_ListCols + ")"
+const __sqlUserInfo_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_info_pkey DO UPDATE SET"
 
 func (m *UserInfo) SQLTableName() string   { return "user_info" }
 func (m *UserInfoes) SQLTableName() string { return "user_info" }
@@ -853,6 +891,22 @@ func (ms UserInfoes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserInfo) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInfo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInfo_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserInfoes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInfo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInfo_ListColsOnConflict)
 	return nil
 }
 
@@ -1278,10 +1332,12 @@ type ComplexInfoes []*ComplexInfo
 
 const __sqlComplexInfo_Table = "complex_info"
 const __sqlComplexInfo_ListCols = "\"id\",\"address\",\"p_address\",\"metadata\",\"ints\",\"int64s\",\"strings\",\"times\",\"times_p\",\"alias_string\",\"alias_int64\",\"alias_int\",\"alias_bool\",\"alias_float64\",\"alias_p_string\",\"alias_p_int64\",\"alias_p_int\",\"alias_p_bool\",\"alias_p_float64\""
+const __sqlComplexInfo_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"address\" = EXCLUDED.\"address\",\"p_address\" = EXCLUDED.\"p_address\",\"metadata\" = EXCLUDED.\"metadata\",\"ints\" = EXCLUDED.\"ints\",\"int64s\" = EXCLUDED.\"int64s\",\"strings\" = EXCLUDED.\"strings\",\"times\" = EXCLUDED.\"times\",\"times_p\" = EXCLUDED.\"times_p\",\"alias_string\" = EXCLUDED.\"alias_string\",\"alias_int64\" = EXCLUDED.\"alias_int64\",\"alias_int\" = EXCLUDED.\"alias_int\",\"alias_bool\" = EXCLUDED.\"alias_bool\",\"alias_float64\" = EXCLUDED.\"alias_float64\",\"alias_p_string\" = EXCLUDED.\"alias_p_string\",\"alias_p_int64\" = EXCLUDED.\"alias_p_int64\",\"alias_p_int\" = EXCLUDED.\"alias_p_int\",\"alias_p_bool\" = EXCLUDED.\"alias_p_bool\",\"alias_p_float64\" = EXCLUDED.\"alias_p_float64\""
 const __sqlComplexInfo_Insert = "INSERT INTO \"complex_info\" (" + __sqlComplexInfo_ListCols + ") VALUES"
 const __sqlComplexInfo_Select = "SELECT " + __sqlComplexInfo_ListCols + " FROM \"complex_info\""
 const __sqlComplexInfo_Select_history = "SELECT " + __sqlComplexInfo_ListCols + " FROM history.\"complex_info\""
 const __sqlComplexInfo_UpdateAll = "UPDATE \"complex_info\" SET (" + __sqlComplexInfo_ListCols + ")"
+const __sqlComplexInfo_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT complex_info_pkey DO UPDATE SET"
 
 func (m *ComplexInfo) SQLTableName() string   { return "complex_info" }
 func (m *ComplexInfoes) SQLTableName() string { return "complex_info" }
@@ -1395,6 +1451,22 @@ func (ms ComplexInfoes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ComplexInfo) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlComplexInfo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlComplexInfo_ListColsOnConflict)
+	return nil
+}
+
+func (ms ComplexInfoes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlComplexInfo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlComplexInfo_ListColsOnConflict)
 	return nil
 }
 
@@ -1691,10 +1763,12 @@ type UserTags []*UserTag
 
 const __sqlUserTag_Table = "user_tag"
 const __sqlUserTag_ListCols = "\"province\",\"new_name\""
+const __sqlUserTag_ListColsOnConflict = "\"province\" = EXCLUDED.\"province\",\"new_name\" = EXCLUDED.\"new_name\""
 const __sqlUserTag_Insert = "INSERT INTO \"user_tag\" (" + __sqlUserTag_ListCols + ") VALUES"
 const __sqlUserTag_Select = "SELECT " + __sqlUserTag_ListCols + " FROM \"user_tag\""
 const __sqlUserTag_Select_history = "SELECT " + __sqlUserTag_ListCols + " FROM history.\"user_tag\""
 const __sqlUserTag_UpdateAll = "UPDATE \"user_tag\" SET (" + __sqlUserTag_ListCols + ")"
+const __sqlUserTag_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_tag_pkey DO UPDATE SET"
 
 func (m *UserTag) SQLTableName() string  { return "user_tag" }
 func (m *UserTags) SQLTableName() string { return "user_tag" }
@@ -1774,6 +1848,22 @@ func (ms UserTags) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserTag) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserTag_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserTag_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserTags) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserTag_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserTag_ListColsOnConflict)
 	return nil
 }
 
@@ -1881,10 +1971,12 @@ type UserInlines []*UserInline
 
 const __sqlUserInline_Table = "user_inline"
 const __sqlUserInline_ListCols = "\"province\",\"district\""
+const __sqlUserInline_ListColsOnConflict = "\"province\" = EXCLUDED.\"province\",\"district\" = EXCLUDED.\"district\""
 const __sqlUserInline_Insert = "INSERT INTO \"user_inline\" (" + __sqlUserInline_ListCols + ") VALUES"
 const __sqlUserInline_Select = "SELECT " + __sqlUserInline_ListCols + " FROM \"user_inline\""
 const __sqlUserInline_Select_history = "SELECT " + __sqlUserInline_ListCols + " FROM history.\"user_inline\""
 const __sqlUserInline_UpdateAll = "UPDATE \"user_inline\" SET (" + __sqlUserInline_ListCols + ")"
+const __sqlUserInline_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_inline_pkey DO UPDATE SET"
 
 func (m *UserInline) SQLTableName() string  { return "user_inline" }
 func (m *UserInlines) SQLTableName() string { return "user_inline" }
@@ -1965,6 +2057,22 @@ func (ms UserInlines) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserInline) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInline_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInline_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserInlines) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInline_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInline_ListColsOnConflict)
 	return nil
 }
 
@@ -2072,10 +2180,12 @@ type Profiles []*Profile
 
 const __sqlProfile_Table = "profile"
 const __sqlProfile_ListCols = "\"id\",\"style\""
+const __sqlProfile_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"style\" = EXCLUDED.\"style\""
 const __sqlProfile_Insert = "INSERT INTO \"profile\" (" + __sqlProfile_ListCols + ") VALUES"
 const __sqlProfile_Select = "SELECT " + __sqlProfile_ListCols + " FROM \"profile\""
 const __sqlProfile_Select_history = "SELECT " + __sqlProfile_ListCols + " FROM history.\"profile\""
 const __sqlProfile_UpdateAll = "UPDATE \"profile\" SET (" + __sqlProfile_ListCols + ")"
+const __sqlProfile_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT profile_pkey DO UPDATE SET"
 
 func (m *Profile) SQLTableName() string  { return "profile" }
 func (m *Profiles) SQLTableName() string { return "profile" }
@@ -2155,6 +2265,22 @@ func (ms Profiles) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Profile) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlProfile_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProfile_ListColsOnConflict)
+	return nil
+}
+
+func (ms Profiles) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlProfile_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProfile_ListColsOnConflict)
 	return nil
 }
 

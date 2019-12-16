@@ -31,10 +31,12 @@ type ShopCarriers []*ShopCarrier
 
 const __sqlShopCarrier_Table = "shop_carrier"
 const __sqlShopCarrier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCarrier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopCarrier_Insert = "INSERT INTO \"shop_carrier\" (" + __sqlShopCarrier_ListCols + ") VALUES"
 const __sqlShopCarrier_Select = "SELECT " + __sqlShopCarrier_ListCols + " FROM \"shop_carrier\""
 const __sqlShopCarrier_Select_history = "SELECT " + __sqlShopCarrier_ListCols + " FROM history.\"shop_carrier\""
 const __sqlShopCarrier_UpdateAll = "UPDATE \"shop_carrier\" SET (" + __sqlShopCarrier_ListCols + ")"
+const __sqlShopCarrier_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_carrier_pkey DO UPDATE SET"
 
 func (m *ShopCarrier) SQLTableName() string  { return "shop_carrier" }
 func (m *ShopCarriers) SQLTableName() string { return "shop_carrier" }
@@ -127,6 +129,22 @@ func (ms ShopCarriers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCarrier) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCarrier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCarrier_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCarriers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCarrier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCarrier_ListColsOnConflict)
 	return nil
 }
 

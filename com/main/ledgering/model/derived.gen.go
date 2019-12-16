@@ -31,10 +31,12 @@ type ShopLedgers []*ShopLedger
 
 const __sqlShopLedger_Table = "shop_ledger"
 const __sqlShopLedger_ListCols = "\"id\",\"shop_id\",\"name\",\"bank_account\",\"note\",\"type\",\"status\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopLedger_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"name\" = EXCLUDED.\"name\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopLedger_Insert = "INSERT INTO \"shop_ledger\" (" + __sqlShopLedger_ListCols + ") VALUES"
 const __sqlShopLedger_Select = "SELECT " + __sqlShopLedger_ListCols + " FROM \"shop_ledger\""
 const __sqlShopLedger_Select_history = "SELECT " + __sqlShopLedger_ListCols + " FROM history.\"shop_ledger\""
 const __sqlShopLedger_UpdateAll = "UPDATE \"shop_ledger\" SET (" + __sqlShopLedger_ListCols + ")"
+const __sqlShopLedger_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_ledger_pkey DO UPDATE SET"
 
 func (m *ShopLedger) SQLTableName() string  { return "shop_ledger" }
 func (m *ShopLedgers) SQLTableName() string { return "shop_ledger" }
@@ -133,6 +135,22 @@ func (ms ShopLedgers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopLedger) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopLedger_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopLedger_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopLedgers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopLedger_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopLedger_ListColsOnConflict)
 	return nil
 }
 

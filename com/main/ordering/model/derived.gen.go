@@ -31,10 +31,12 @@ type Orders []*Order
 
 const __sqlOrder_Table = "order"
 const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\",\"customer_id\",\"created_by\""
+const __sqlOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"ed_code\" = EXCLUDED.\"ed_code\",\"product_ids\" = EXCLUDED.\"product_ids\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"partner_id\" = EXCLUDED.\"partner_id\",\"currency\" = EXCLUDED.\"currency\",\"payment_method\" = EXCLUDED.\"payment_method\",\"customer\" = EXCLUDED.\"customer\",\"customer_address\" = EXCLUDED.\"customer_address\",\"billing_address\" = EXCLUDED.\"billing_address\",\"shipping_address\" = EXCLUDED.\"shipping_address\",\"customer_name\" = EXCLUDED.\"customer_name\",\"customer_phone\" = EXCLUDED.\"customer_phone\",\"customer_email\" = EXCLUDED.\"customer_email\",\"created_at\" = EXCLUDED.\"created_at\",\"processed_at\" = EXCLUDED.\"processed_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"customer_confirm\" = EXCLUDED.\"customer_confirm\",\"shop_confirm\" = EXCLUDED.\"shop_confirm\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"fulfillment_shipping_status\" = EXCLUDED.\"fulfillment_shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"status\" = EXCLUDED.\"status\",\"fulfillment_shipping_states\" = EXCLUDED.\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\" = EXCLUDED.\"fulfillment_payment_statuses\",\"lines\" = EXCLUDED.\"lines\",\"discounts\" = EXCLUDED.\"discounts\",\"total_items\" = EXCLUDED.\"total_items\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_weight\" = EXCLUDED.\"total_weight\",\"total_tax\" = EXCLUDED.\"total_tax\",\"order_discount\" = EXCLUDED.\"order_discount\",\"total_discount\" = EXCLUDED.\"total_discount\",\"shop_shipping_fee\" = EXCLUDED.\"shop_shipping_fee\",\"total_fee\" = EXCLUDED.\"total_fee\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"shop_cod\" = EXCLUDED.\"shop_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"order_note\" = EXCLUDED.\"order_note\",\"shop_note\" = EXCLUDED.\"shop_note\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"order_source_type\" = EXCLUDED.\"order_source_type\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"external_order_id\" = EXCLUDED.\"external_order_id\",\"reference_url\" = EXCLUDED.\"reference_url\",\"external_url\" = EXCLUDED.\"external_url\",\"shop_shipping\" = EXCLUDED.\"shop_shipping\",\"is_outside_etop\" = EXCLUDED.\"is_outside_etop\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"customer_name_norm\" = EXCLUDED.\"customer_name_norm\",\"product_name_norm\" = EXCLUDED.\"product_name_norm\",\"fulfillment_type\" = EXCLUDED.\"fulfillment_type\",\"fulfillment_ids\" = EXCLUDED.\"fulfillment_ids\",\"external_meta\" = EXCLUDED.\"external_meta\",\"trading_shop_id\" = EXCLUDED.\"trading_shop_id\",\"payment_status\" = EXCLUDED.\"payment_status\",\"payment_id\" = EXCLUDED.\"payment_id\",\"referral_meta\" = EXCLUDED.\"referral_meta\",\"customer_id\" = EXCLUDED.\"customer_id\",\"created_by\" = EXCLUDED.\"created_by\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
 const __sqlOrder_UpdateAll = "UPDATE \"order\" SET (" + __sqlOrder_ListCols + ")"
+const __sqlOrder_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT order_pkey DO UPDATE SET"
 
 func (m *Order) SQLTableName() string  { return "order" }
 func (m *Orders) SQLTableName() string { return "order" }
@@ -245,6 +247,22 @@ func (ms Orders) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Order) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlOrder_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrder_ListColsOnConflict)
+	return nil
+}
+
+func (ms Orders) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlOrder_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrder_ListColsOnConflict)
 	return nil
 }
 
@@ -1077,10 +1095,12 @@ type OrderLines []*OrderLine
 
 const __sqlOrderLine_Table = "order_line"
 const __sqlOrderLine_ListCols = "\"order_id\",\"variant_id\",\"product_name\",\"product_id\",\"shop_id\",\"weight\",\"quantity\",\"list_price\",\"retail_price\",\"payment_price\",\"line_amount\",\"total_discount\",\"total_line_amount\",\"image_url\",\"is_outside_etop\",\"code\",\"meta_fields\""
+const __sqlOrderLine_ListColsOnConflict = "\"order_id\" = EXCLUDED.\"order_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"product_name\" = EXCLUDED.\"product_name\",\"product_id\" = EXCLUDED.\"product_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"weight\" = EXCLUDED.\"weight\",\"quantity\" = EXCLUDED.\"quantity\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"payment_price\" = EXCLUDED.\"payment_price\",\"line_amount\" = EXCLUDED.\"line_amount\",\"total_discount\" = EXCLUDED.\"total_discount\",\"total_line_amount\" = EXCLUDED.\"total_line_amount\",\"image_url\" = EXCLUDED.\"image_url\",\"is_outside_etop\" = EXCLUDED.\"is_outside_etop\",\"code\" = EXCLUDED.\"code\",\"meta_fields\" = EXCLUDED.\"meta_fields\""
 const __sqlOrderLine_Insert = "INSERT INTO \"order_line\" (" + __sqlOrderLine_ListCols + ") VALUES"
 const __sqlOrderLine_Select = "SELECT " + __sqlOrderLine_ListCols + " FROM \"order_line\""
 const __sqlOrderLine_Select_history = "SELECT " + __sqlOrderLine_ListCols + " FROM history.\"order_line\""
 const __sqlOrderLine_UpdateAll = "UPDATE \"order_line\" SET (" + __sqlOrderLine_ListCols + ")"
+const __sqlOrderLine_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT order_line_pkey DO UPDATE SET"
 
 func (m *OrderLine) SQLTableName() string  { return "order_line" }
 func (m *OrderLines) SQLTableName() string { return "order_line" }
@@ -1190,6 +1210,22 @@ func (ms OrderLines) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderLine) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderLine_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderLine_ListColsOnConflict)
+	return nil
+}
+
+func (ms OrderLines) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderLine_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderLine_ListColsOnConflict)
 	return nil
 }
 

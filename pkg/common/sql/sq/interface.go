@@ -58,6 +58,10 @@ func (db *Database) Insert(objs ...core.IInsert) (int, error) {
 	return db.NewQuery().Insert(objs...)
 }
 
+func (db *Database) Upsert(objs ...core.IUpsert) (int, error) {
+	return db.NewQuery().Upsert(objs...)
+}
+
 // UpdateInfo ...
 func (db *Database) Update(objs ...core.IUpdate) (int, error) {
 	return db.NewQuery().Update(objs...)
@@ -318,6 +322,11 @@ func (tx *tx) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.R
 // Insert ...
 func (tx *tx) Insert(objs ...core.IInsert) (int, error) {
 	return tx.NewQuery().Insert(objs...)
+}
+
+// Upsert
+func (tx *tx) Upsert(objs ...core.IUpsert) (int, error) {
+	return tx.NewQuery().Upsert(objs...)
 }
 
 // UpdateInfo ...

@@ -31,10 +31,12 @@ type VhtCallHistories []*VhtCallHistory
 
 const __sqlVhtCallHistory_Table = "vht_call_history"
 const __sqlVhtCallHistory_ListCols = "\"cdr_id\",\"call_id\",\"sip_call_id\",\"sdk_call_id\",\"cause\",\"q850_cause\",\"from_extension\",\"to_extension\",\"from_number\",\"to_number\",\"duration\",\"direction\",\"time_started\",\"time_connected\",\"time_ended\",\"created_at\",\"updated_at\",\"recording_path\",\"recording_url\",\"record_file_size\",\"etop_account_id\",\"vtiger_account_id\",\"sync_status\",\"o_data\",\"search_norm\""
+const __sqlVhtCallHistory_ListColsOnConflict = "\"cdr_id\" = EXCLUDED.\"cdr_id\",\"call_id\" = EXCLUDED.\"call_id\",\"sip_call_id\" = EXCLUDED.\"sip_call_id\",\"sdk_call_id\" = EXCLUDED.\"sdk_call_id\",\"cause\" = EXCLUDED.\"cause\",\"q850_cause\" = EXCLUDED.\"q850_cause\",\"from_extension\" = EXCLUDED.\"from_extension\",\"to_extension\" = EXCLUDED.\"to_extension\",\"from_number\" = EXCLUDED.\"from_number\",\"to_number\" = EXCLUDED.\"to_number\",\"duration\" = EXCLUDED.\"duration\",\"direction\" = EXCLUDED.\"direction\",\"time_started\" = EXCLUDED.\"time_started\",\"time_connected\" = EXCLUDED.\"time_connected\",\"time_ended\" = EXCLUDED.\"time_ended\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"recording_path\" = EXCLUDED.\"recording_path\",\"recording_url\" = EXCLUDED.\"recording_url\",\"record_file_size\" = EXCLUDED.\"record_file_size\",\"etop_account_id\" = EXCLUDED.\"etop_account_id\",\"vtiger_account_id\" = EXCLUDED.\"vtiger_account_id\",\"sync_status\" = EXCLUDED.\"sync_status\",\"o_data\" = EXCLUDED.\"o_data\",\"search_norm\" = EXCLUDED.\"search_norm\""
 const __sqlVhtCallHistory_Insert = "INSERT INTO \"vht_call_history\" (" + __sqlVhtCallHistory_ListCols + ") VALUES"
 const __sqlVhtCallHistory_Select = "SELECT " + __sqlVhtCallHistory_ListCols + " FROM \"vht_call_history\""
 const __sqlVhtCallHistory_Select_history = "SELECT " + __sqlVhtCallHistory_ListCols + " FROM history.\"vht_call_history\""
 const __sqlVhtCallHistory_UpdateAll = "UPDATE \"vht_call_history\" SET (" + __sqlVhtCallHistory_ListCols + ")"
+const __sqlVhtCallHistory_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT vht_call_history_pkey DO UPDATE SET"
 
 func (m *VhtCallHistory) SQLTableName() string   { return "vht_call_history" }
 func (m *VhtCallHistories) SQLTableName() string { return "vht_call_history" }
@@ -161,6 +163,22 @@ func (ms VhtCallHistories) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *VhtCallHistory) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlVhtCallHistory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVhtCallHistory_ListColsOnConflict)
+	return nil
+}
+
+func (ms VhtCallHistories) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlVhtCallHistory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVhtCallHistory_ListColsOnConflict)
 	return nil
 }
 

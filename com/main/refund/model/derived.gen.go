@@ -31,10 +31,12 @@ type Refunds []*Refund
 
 const __sqlRefund_Table = "refund"
 const __sqlRefund_ListCols = "\"id\",\"shop_id\",\"order_id\",\"code\",\"code_norm\",\"note\",\"lines\",\"discount\",\"created_at\",\"updated_at\",\"cancelled_at\",\"confirmed_at\",\"created_by\",\"updated_by\",\"cancel_reason\",\"status\",\"customer_id\",\"total_amount\",\"basket_value\""
+const __sqlRefund_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"order_id\" = EXCLUDED.\"order_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"lines\" = EXCLUDED.\"lines\",\"discount\" = EXCLUDED.\"discount\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"customer_id\" = EXCLUDED.\"customer_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"basket_value\" = EXCLUDED.\"basket_value\""
 const __sqlRefund_Insert = "INSERT INTO \"refund\" (" + __sqlRefund_ListCols + ") VALUES"
 const __sqlRefund_Select = "SELECT " + __sqlRefund_ListCols + " FROM \"refund\""
 const __sqlRefund_Select_history = "SELECT " + __sqlRefund_ListCols + " FROM history.\"refund\""
 const __sqlRefund_UpdateAll = "UPDATE \"refund\" SET (" + __sqlRefund_ListCols + ")"
+const __sqlRefund_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT refund_pkey DO UPDATE SET"
 
 func (m *Refund) SQLTableName() string  { return "refund" }
 func (m *Refunds) SQLTableName() string { return "refund" }
@@ -149,6 +151,22 @@ func (ms Refunds) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Refund) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlRefund_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlRefund_ListColsOnConflict)
+	return nil
+}
+
+func (ms Refunds) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlRefund_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlRefund_ListColsOnConflict)
 	return nil
 }
 

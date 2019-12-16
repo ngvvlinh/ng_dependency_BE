@@ -34,6 +34,7 @@ type CommonQuery interface {
 	Get(obj IGet, preds ...interface{}) (bool, error)
 	Find(objs IFind, preds ...interface{}) error
 	Insert(objs ...IInsert) (int, error)
+	Upsert(objs ...IUpsert) (int, error)
 	Update(objs ...IUpdate) (int, error)
 	UpdateMap(m map[string]interface{}) (int, error)
 	Delete(obj ITableName) (int, error)
@@ -80,6 +81,7 @@ type Query interface {
 	BuildGet(obj IGet, preds ...interface{}) (string, []interface{}, error)
 	BuildFind(objs IFind, preds ...interface{}) (string, []interface{}, error)
 	BuildInsert(obj IInsert) (string, []interface{}, error)
+	BuildUpsert(obj IUpsert) (string, []interface{}, error)
 	BuildUpdate(obj IUpdate) (string, []interface{}, error)
 	BuildDelete(obj ITableName) (string, []interface{}, error)
 	BuildCount(obj ITableName, preds ...interface{}) (string, []interface{}, error)
@@ -165,6 +167,12 @@ type IUpdate interface {
 	ITableName
 	SQLUpdate(SQLWriter) error
 	SQLUpdateAll(SQLWriter) error
+}
+
+// IUpsert
+type IUpsert interface {
+	ITableName
+	SQLUpsert(SQLWriter) error
 }
 
 // IGet ...

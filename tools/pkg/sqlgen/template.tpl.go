@@ -20,10 +20,12 @@ type {{.TypeNames}} []*{{.TypeName}}
 {{if .IsSimple}}
     const {{._Table}} = {{.TableName | go}}
     const {{._ListCols}} = {{.ColsList | go}}
+	const {{._ListColsOnConflict}} = {{.ColsListUpdateOnConflict | go}}
     const {{._Insert}} = "INSERT INTO {{.TableName | quote}} (" + {{._ListCols}} + ") VALUES"
     const {{._Select}} = "SELECT " + {{._ListCols}} + " FROM {{.TableName | quote}}"
     const {{._Select}}_history = "SELECT " + {{._ListCols}} + " FROM history.{{.TableName | quote}}"
     const {{._UpdateAll}} = "UPDATE {{.TableName | quote}} SET (" + {{._ListCols}} + ")"
+	const {{._UpdateOnConflict}} = " ON CONFLICT ON CONSTRAINT {{.TableName}}_pkey DO UPDATE SET"
 {{else}}
     var {{._JoinTypes}} []sq.JOIN_TYPE
     var {{._As}} sq.AS
@@ -128,6 +130,24 @@ func (ms {{.TypeNames}}) SQLInsert(w SQLWriter) error {
         w.WriteRawString("),(")
     }
     w.TrimLast(2)
+    return nil
+}
+{{end}}
+
+{{if or .IsAll .IsInsert}}
+func (m *{{.TypeName}}) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString({{._UpdateOnConflict}})
+	w.WriteQueryString(" ")
+	w.WriteQueryString({{._ListColsOnConflict}})
+    return nil
+}
+
+func (ms {{.TypeNames}}) SQLUpsert(w SQLWriter) error {
+    ms.SQLInsert(w)
+	w.WriteQueryString({{._UpdateOnConflict}})
+	w.WriteQueryString(" ")
+	w.WriteQueryString({{._ListColsOnConflict}})
     return nil
 }
 {{end}}

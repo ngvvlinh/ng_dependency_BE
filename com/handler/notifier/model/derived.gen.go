@@ -31,10 +31,12 @@ type Notifications []*Notification
 
 const __sqlNotification_Table = "notification"
 const __sqlNotification_ListCols = "\"id\",\"title\",\"message\",\"is_read\",\"entity_id\",\"entity\",\"account_id\",\"sync_status\",\"external_service_id\",\"external_noti_id\",\"send_notification\",\"synced_at\",\"seen_at\",\"created_at\",\"updated_at\",\"meta_data\""
+const __sqlNotification_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"title\" = EXCLUDED.\"title\",\"message\" = EXCLUDED.\"message\",\"is_read\" = EXCLUDED.\"is_read\",\"entity_id\" = EXCLUDED.\"entity_id\",\"entity\" = EXCLUDED.\"entity\",\"account_id\" = EXCLUDED.\"account_id\",\"sync_status\" = EXCLUDED.\"sync_status\",\"external_service_id\" = EXCLUDED.\"external_service_id\",\"external_noti_id\" = EXCLUDED.\"external_noti_id\",\"send_notification\" = EXCLUDED.\"send_notification\",\"synced_at\" = EXCLUDED.\"synced_at\",\"seen_at\" = EXCLUDED.\"seen_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"meta_data\" = EXCLUDED.\"meta_data\""
 const __sqlNotification_Insert = "INSERT INTO \"notification\" (" + __sqlNotification_ListCols + ") VALUES"
 const __sqlNotification_Select = "SELECT " + __sqlNotification_ListCols + " FROM \"notification\""
 const __sqlNotification_Select_history = "SELECT " + __sqlNotification_ListCols + " FROM history.\"notification\""
 const __sqlNotification_UpdateAll = "UPDATE \"notification\" SET (" + __sqlNotification_ListCols + ")"
+const __sqlNotification_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT notification_pkey DO UPDATE SET"
 
 func (m *Notification) SQLTableName() string  { return "notification" }
 func (m *Notifications) SQLTableName() string { return "notification" }
@@ -143,6 +145,22 @@ func (ms Notifications) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Notification) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlNotification_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlNotification_ListColsOnConflict)
+	return nil
+}
+
+func (ms Notifications) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlNotification_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlNotification_ListColsOnConflict)
 	return nil
 }
 
@@ -410,10 +428,12 @@ type Devices []*Device
 
 const __sqlDevice_Table = "device"
 const __sqlDevice_ListCols = "\"id\",\"device_id\",\"device_name\",\"external_device_id\",\"external_service_id\",\"account_id\",\"user_id\",\"created_at\",\"updated_at\",\"deactivated_at\",\"config\""
+const __sqlDevice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"device_id\" = EXCLUDED.\"device_id\",\"device_name\" = EXCLUDED.\"device_name\",\"external_device_id\" = EXCLUDED.\"external_device_id\",\"external_service_id\" = EXCLUDED.\"external_service_id\",\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deactivated_at\" = EXCLUDED.\"deactivated_at\",\"config\" = EXCLUDED.\"config\""
 const __sqlDevice_Insert = "INSERT INTO \"device\" (" + __sqlDevice_ListCols + ") VALUES"
 const __sqlDevice_Select = "SELECT " + __sqlDevice_ListCols + " FROM \"device\""
 const __sqlDevice_Select_history = "SELECT " + __sqlDevice_ListCols + " FROM history.\"device\""
 const __sqlDevice_UpdateAll = "UPDATE \"device\" SET (" + __sqlDevice_ListCols + ")"
+const __sqlDevice_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT device_pkey DO UPDATE SET"
 
 func (m *Device) SQLTableName() string  { return "device" }
 func (m *Devices) SQLTableName() string { return "device" }
@@ -512,6 +532,22 @@ func (ms Devices) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Device) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlDevice_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlDevice_ListColsOnConflict)
+	return nil
+}
+
+func (ms Devices) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlDevice_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlDevice_ListColsOnConflict)
 	return nil
 }
 

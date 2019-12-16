@@ -31,10 +31,12 @@ type PurchaseOrders []*PurchaseOrder
 
 const __sqlPurchaseOrder_Table = "purchase_order"
 const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"total_discount\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\""
+const __sqlPurchaseOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"supplier\" = EXCLUDED.\"supplier\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_discount\" = EXCLUDED.\"total_discount\",\"total_amount\" = EXCLUDED.\"total_amount\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"created_by\" = EXCLUDED.\"created_by\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"supplier_full_name_norm\" = EXCLUDED.\"supplier_full_name_norm\",\"supplier_phone_norm\" = EXCLUDED.\"supplier_phone_norm\""
 const __sqlPurchaseOrder_Insert = "INSERT INTO \"purchase_order\" (" + __sqlPurchaseOrder_ListCols + ") VALUES"
 const __sqlPurchaseOrder_Select = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM \"purchase_order\""
 const __sqlPurchaseOrder_Select_history = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM history.\"purchase_order\""
 const __sqlPurchaseOrder_UpdateAll = "UPDATE \"purchase_order\" SET (" + __sqlPurchaseOrder_ListCols + ")"
+const __sqlPurchaseOrder_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT purchase_order_pkey DO UPDATE SET"
 
 func (m *PurchaseOrder) SQLTableName() string  { return "purchase_order" }
 func (m *PurchaseOrders) SQLTableName() string { return "purchase_order" }
@@ -155,6 +157,22 @@ func (ms PurchaseOrders) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *PurchaseOrder) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlPurchaseOrder_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPurchaseOrder_ListColsOnConflict)
+	return nil
+}
+
+func (ms PurchaseOrders) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlPurchaseOrder_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPurchaseOrder_ListColsOnConflict)
 	return nil
 }
 

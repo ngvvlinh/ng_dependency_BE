@@ -31,10 +31,12 @@ type EtopAcounts []*EtopAcount
 
 const __sqlEtopAcount_Table = "etop_acount"
 const __sqlEtopAcount_ListCols = "\"id\",\"full_name\",\"phone\",\"email\",\"account_id\",\"acount_name\",\"account_type\",\"is_operator\",\"vtiger_account\""
+const __sqlEtopAcount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"account_id\" = EXCLUDED.\"account_id\",\"acount_name\" = EXCLUDED.\"acount_name\",\"account_type\" = EXCLUDED.\"account_type\",\"is_operator\" = EXCLUDED.\"is_operator\",\"vtiger_account\" = EXCLUDED.\"vtiger_account\""
 const __sqlEtopAcount_Insert = "INSERT INTO \"etop_acount\" (" + __sqlEtopAcount_ListCols + ") VALUES"
 const __sqlEtopAcount_Select = "SELECT " + __sqlEtopAcount_ListCols + " FROM \"etop_acount\""
 const __sqlEtopAcount_Select_history = "SELECT " + __sqlEtopAcount_ListCols + " FROM history.\"etop_acount\""
 const __sqlEtopAcount_UpdateAll = "UPDATE \"etop_acount\" SET (" + __sqlEtopAcount_ListCols + ")"
+const __sqlEtopAcount_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT etop_acount_pkey DO UPDATE SET"
 
 func (m *EtopAcount) SQLTableName() string  { return "etop_acount" }
 func (m *EtopAcounts) SQLTableName() string { return "etop_acount" }
@@ -128,6 +130,22 @@ func (ms EtopAcounts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *EtopAcount) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlEtopAcount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlEtopAcount_ListColsOnConflict)
+	return nil
+}
+
+func (ms EtopAcounts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlEtopAcount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlEtopAcount_ListColsOnConflict)
 	return nil
 }
 
@@ -312,10 +330,12 @@ type VtigerContacts []*VtigerContact
 
 const __sqlVtigerContact_Table = "vtiger_contact"
 const __sqlVtigerContact_ListCols = "\"id\",\"firstname\",\"contact_no\",\"phone\",\"lastname\",\"mobile\",\"email\",\"leadsource\",\"secondaryemail\",\"assigned_user_id\",\"created_at\",\"etop_user_id\",\"updated_at\",\"description\",\"source\",\"used_shipping_provider\",\"orders_per_day\",\"company\",\"city\",\"state\",\"website\",\"lane\",\"country\",\"search_norm\",\"vtiger_created_at\",\"vtiger_updated_at\""
+const __sqlVtigerContact_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"firstname\" = EXCLUDED.\"firstname\",\"contact_no\" = EXCLUDED.\"contact_no\",\"phone\" = EXCLUDED.\"phone\",\"lastname\" = EXCLUDED.\"lastname\",\"mobile\" = EXCLUDED.\"mobile\",\"email\" = EXCLUDED.\"email\",\"leadsource\" = EXCLUDED.\"leadsource\",\"secondaryemail\" = EXCLUDED.\"secondaryemail\",\"assigned_user_id\" = EXCLUDED.\"assigned_user_id\",\"created_at\" = EXCLUDED.\"created_at\",\"etop_user_id\" = EXCLUDED.\"etop_user_id\",\"updated_at\" = EXCLUDED.\"updated_at\",\"description\" = EXCLUDED.\"description\",\"source\" = EXCLUDED.\"source\",\"used_shipping_provider\" = EXCLUDED.\"used_shipping_provider\",\"orders_per_day\" = EXCLUDED.\"orders_per_day\",\"company\" = EXCLUDED.\"company\",\"city\" = EXCLUDED.\"city\",\"state\" = EXCLUDED.\"state\",\"website\" = EXCLUDED.\"website\",\"lane\" = EXCLUDED.\"lane\",\"country\" = EXCLUDED.\"country\",\"search_norm\" = EXCLUDED.\"search_norm\",\"vtiger_created_at\" = EXCLUDED.\"vtiger_created_at\",\"vtiger_updated_at\" = EXCLUDED.\"vtiger_updated_at\""
 const __sqlVtigerContact_Insert = "INSERT INTO \"vtiger_contact\" (" + __sqlVtigerContact_ListCols + ") VALUES"
 const __sqlVtigerContact_Select = "SELECT " + __sqlVtigerContact_ListCols + " FROM \"vtiger_contact\""
 const __sqlVtigerContact_Select_history = "SELECT " + __sqlVtigerContact_ListCols + " FROM history.\"vtiger_contact\""
 const __sqlVtigerContact_UpdateAll = "UPDATE \"vtiger_contact\" SET (" + __sqlVtigerContact_ListCols + ")"
+const __sqlVtigerContact_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT vtiger_contact_pkey DO UPDATE SET"
 
 func (m *VtigerContact) SQLTableName() string  { return "vtiger_contact" }
 func (m *VtigerContacts) SQLTableName() string { return "vtiger_contact" }
@@ -444,6 +464,22 @@ func (ms VtigerContacts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *VtigerContact) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlVtigerContact_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVtigerContact_ListColsOnConflict)
+	return nil
+}
+
+func (ms VtigerContacts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlVtigerContact_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVtigerContact_ListColsOnConflict)
 	return nil
 }
 
@@ -827,10 +863,12 @@ type VtigerAccounts []*VtigerAccount
 
 const __sqlVtigerAccount_Table = "vtiger_account"
 const __sqlVtigerAccount_ListCols = "\"id\",\"user_name\",\"first_name\",\"role_id\",\"email1\",\"secondaryemail\",\"status\""
+const __sqlVtigerAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_name\" = EXCLUDED.\"user_name\",\"first_name\" = EXCLUDED.\"first_name\",\"role_id\" = EXCLUDED.\"role_id\",\"email1\" = EXCLUDED.\"email1\",\"secondaryemail\" = EXCLUDED.\"secondaryemail\",\"status\" = EXCLUDED.\"status\""
 const __sqlVtigerAccount_Insert = "INSERT INTO \"vtiger_account\" (" + __sqlVtigerAccount_ListCols + ") VALUES"
 const __sqlVtigerAccount_Select = "SELECT " + __sqlVtigerAccount_ListCols + " FROM \"vtiger_account\""
 const __sqlVtigerAccount_Select_history = "SELECT " + __sqlVtigerAccount_ListCols + " FROM history.\"vtiger_account\""
 const __sqlVtigerAccount_UpdateAll = "UPDATE \"vtiger_account\" SET (" + __sqlVtigerAccount_ListCols + ")"
+const __sqlVtigerAccount_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT vtiger_account_pkey DO UPDATE SET"
 
 func (m *VtigerAccount) SQLTableName() string  { return "vtiger_account" }
 func (m *VtigerAccounts) SQLTableName() string { return "vtiger_account" }
@@ -920,6 +958,22 @@ func (ms VtigerAccounts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *VtigerAccount) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlVtigerAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVtigerAccount_ListColsOnConflict)
+	return nil
+}
+
+func (ms VtigerAccounts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlVtigerAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlVtigerAccount_ListColsOnConflict)
 	return nil
 }
 

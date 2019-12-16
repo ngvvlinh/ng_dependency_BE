@@ -32,10 +32,12 @@ type ImportAttempts []*ImportAttempt
 
 const __sqlImportAttempt_Table = "import_attempt"
 const __sqlImportAttempt_ListCols = "\"id\",\"user_id\",\"account_id\",\"original_file\",\"stored_file\",\"type\",\"n_created\",\"n_updated\",\"n_error\",\"status\",\"error_type\",\"errors\",\"duration_ms\",\"created_at\""
+const __sqlImportAttempt_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"original_file\" = EXCLUDED.\"original_file\",\"stored_file\" = EXCLUDED.\"stored_file\",\"type\" = EXCLUDED.\"type\",\"n_created\" = EXCLUDED.\"n_created\",\"n_updated\" = EXCLUDED.\"n_updated\",\"n_error\" = EXCLUDED.\"n_error\",\"status\" = EXCLUDED.\"status\",\"error_type\" = EXCLUDED.\"error_type\",\"errors\" = EXCLUDED.\"errors\",\"duration_ms\" = EXCLUDED.\"duration_ms\",\"created_at\" = EXCLUDED.\"created_at\""
 const __sqlImportAttempt_Insert = "INSERT INTO \"import_attempt\" (" + __sqlImportAttempt_ListCols + ") VALUES"
 const __sqlImportAttempt_Select = "SELECT " + __sqlImportAttempt_ListCols + " FROM \"import_attempt\""
 const __sqlImportAttempt_Select_history = "SELECT " + __sqlImportAttempt_ListCols + " FROM history.\"import_attempt\""
 const __sqlImportAttempt_UpdateAll = "UPDATE \"import_attempt\" SET (" + __sqlImportAttempt_ListCols + ")"
+const __sqlImportAttempt_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT import_attempt_pkey DO UPDATE SET"
 
 func (m *ImportAttempt) SQLTableName() string  { return "import_attempt" }
 func (m *ImportAttempts) SQLTableName() string { return "import_attempt" }
@@ -140,6 +142,22 @@ func (ms ImportAttempts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ImportAttempt) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlImportAttempt_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlImportAttempt_ListColsOnConflict)
+	return nil
+}
+
+func (ms ImportAttempts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlImportAttempt_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlImportAttempt_ListColsOnConflict)
 	return nil
 }
 
@@ -379,10 +397,12 @@ type ExportAttempts []*ExportAttempt
 
 const __sqlExportAttempt_Table = "export_attempt"
 const __sqlExportAttempt_ListCols = "\"id\",\"user_id\",\"account_id\",\"export_type\",\"filename\",\"stored_file\",\"download_url\",\"request_query\",\"mime_type\",\"status\",\"errors\",\"error\",\"n_total\",\"n_exported\",\"n_error\",\"created_at\",\"deleted_at\",\"started_at\",\"done_at\",\"expires_at\""
+const __sqlExportAttempt_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"export_type\" = EXCLUDED.\"export_type\",\"filename\" = EXCLUDED.\"filename\",\"stored_file\" = EXCLUDED.\"stored_file\",\"download_url\" = EXCLUDED.\"download_url\",\"request_query\" = EXCLUDED.\"request_query\",\"mime_type\" = EXCLUDED.\"mime_type\",\"status\" = EXCLUDED.\"status\",\"errors\" = EXCLUDED.\"errors\",\"error\" = EXCLUDED.\"error\",\"n_total\" = EXCLUDED.\"n_total\",\"n_exported\" = EXCLUDED.\"n_exported\",\"n_error\" = EXCLUDED.\"n_error\",\"created_at\" = EXCLUDED.\"created_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"started_at\" = EXCLUDED.\"started_at\",\"done_at\" = EXCLUDED.\"done_at\",\"expires_at\" = EXCLUDED.\"expires_at\""
 const __sqlExportAttempt_Insert = "INSERT INTO \"export_attempt\" (" + __sqlExportAttempt_ListCols + ") VALUES"
 const __sqlExportAttempt_Select = "SELECT " + __sqlExportAttempt_ListCols + " FROM \"export_attempt\""
 const __sqlExportAttempt_Select_history = "SELECT " + __sqlExportAttempt_ListCols + " FROM history.\"export_attempt\""
 const __sqlExportAttempt_UpdateAll = "UPDATE \"export_attempt\" SET (" + __sqlExportAttempt_ListCols + ")"
+const __sqlExportAttempt_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT export_attempt_pkey DO UPDATE SET"
 
 func (m *ExportAttempt) SQLTableName() string  { return "export_attempt" }
 func (m *ExportAttempts) SQLTableName() string { return "export_attempt" }
@@ -499,6 +519,22 @@ func (ms ExportAttempts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ExportAttempt) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlExportAttempt_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExportAttempt_ListColsOnConflict)
+	return nil
+}
+
+func (ms ExportAttempts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlExportAttempt_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExportAttempt_ListColsOnConflict)
 	return nil
 }
 
@@ -804,10 +840,12 @@ type Accounts []*Account
 
 const __sqlAccount_Table = "account"
 const __sqlAccount_ListCols = "\"id\",\"owner_id\",\"name\",\"type\",\"image_url\",\"url_slug\""
+const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"type\" = EXCLUDED.\"type\",\"image_url\" = EXCLUDED.\"image_url\",\"url_slug\" = EXCLUDED.\"url_slug\""
 const __sqlAccount_Insert = "INSERT INTO \"account\" (" + __sqlAccount_ListCols + ") VALUES"
 const __sqlAccount_Select = "SELECT " + __sqlAccount_ListCols + " FROM \"account\""
 const __sqlAccount_Select_history = "SELECT " + __sqlAccount_ListCols + " FROM history.\"account\""
 const __sqlAccount_UpdateAll = "UPDATE \"account\" SET (" + __sqlAccount_ListCols + ")"
+const __sqlAccount_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT account_pkey DO UPDATE SET"
 
 func (m *Account) SQLTableName() string  { return "account" }
 func (m *Accounts) SQLTableName() string { return "account" }
@@ -895,6 +933,22 @@ func (ms Accounts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Account) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccount_ListColsOnConflict)
+	return nil
+}
+
+func (ms Accounts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccount_ListColsOnConflict)
 	return nil
 }
 
@@ -1046,10 +1100,12 @@ type Shops []*Shop
 
 const __sqlShop_Table = "shop"
 const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\""
+const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
 const __sqlShop_UpdateAll = "UPDATE \"shop\" SET (" + __sqlShop_ListCols + ")"
+const __sqlShop_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_pkey DO UPDATE SET"
 
 func (m *Shop) SQLTableName() string  { return "shop" }
 func (m *Shops) SQLTableName() string { return "shop" }
@@ -1180,6 +1236,22 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Shop) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShop_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShop_ListColsOnConflict)
+	return nil
+}
+
+func (ms Shops) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShop_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShop_ListColsOnConflict)
 	return nil
 }
 
@@ -1725,10 +1797,12 @@ type ShopDeletes []*ShopDelete
 
 const __sqlShopDelete_Table = "shop"
 const __sqlShopDelete_ListCols = "\"deleted_at\""
+const __sqlShopDelete_ListColsOnConflict = "\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopDelete_Insert = "INSERT INTO \"shop\" (" + __sqlShopDelete_ListCols + ") VALUES"
 const __sqlShopDelete_Select = "SELECT " + __sqlShopDelete_ListCols + " FROM \"shop\""
 const __sqlShopDelete_Select_history = "SELECT " + __sqlShopDelete_ListCols + " FROM history.\"shop\""
 const __sqlShopDelete_UpdateAll = "UPDATE \"shop\" SET (" + __sqlShopDelete_ListCols + ")"
+const __sqlShopDelete_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_pkey DO UPDATE SET"
 
 func (m *ShopDelete) SQLTableName() string  { return "shop" }
 func (m *ShopDeletes) SQLTableName() string { return "shop" }
@@ -1806,6 +1880,22 @@ func (ms ShopDeletes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopDelete) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopDelete_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopDelete_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopDeletes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopDelete_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopDelete_ListColsOnConflict)
 	return nil
 }
 
@@ -1902,10 +1992,12 @@ type Partners []*Partner
 
 const __sqlPartner_Table = "partner"
 const __sqlPartner_ListCols = "\"id\",\"owner_id\",\"status\",\"is_test\",\"name\",\"public_name\",\"phone\",\"email\",\"image_url\",\"website_url\",\"contact_persons\",\"recognized_hosts\",\"redirect_urls\",\"available_from_etop\",\"available_from_etop_config\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlPartner_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"status\" = EXCLUDED.\"status\",\"is_test\" = EXCLUDED.\"is_test\",\"name\" = EXCLUDED.\"name\",\"public_name\" = EXCLUDED.\"public_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"image_url\" = EXCLUDED.\"image_url\",\"website_url\" = EXCLUDED.\"website_url\",\"contact_persons\" = EXCLUDED.\"contact_persons\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"redirect_urls\" = EXCLUDED.\"redirect_urls\",\"available_from_etop\" = EXCLUDED.\"available_from_etop\",\"available_from_etop_config\" = EXCLUDED.\"available_from_etop_config\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlPartner_Insert = "INSERT INTO \"partner\" (" + __sqlPartner_ListCols + ") VALUES"
 const __sqlPartner_Select = "SELECT " + __sqlPartner_ListCols + " FROM \"partner\""
 const __sqlPartner_Select_history = "SELECT " + __sqlPartner_ListCols + " FROM history.\"partner\""
 const __sqlPartner_UpdateAll = "UPDATE \"partner\" SET (" + __sqlPartner_ListCols + ")"
+const __sqlPartner_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT partner_pkey DO UPDATE SET"
 
 func (m *Partner) SQLTableName() string  { return "partner" }
 func (m *Partners) SQLTableName() string { return "partner" }
@@ -2018,6 +2110,22 @@ func (ms Partners) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Partner) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlPartner_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPartner_ListColsOnConflict)
+	return nil
+}
+
+func (ms Partners) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlPartner_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPartner_ListColsOnConflict)
 	return nil
 }
 
@@ -2305,10 +2413,12 @@ type AccountAuths []*AccountAuth
 
 const __sqlAccountAuth_Table = "account_auth"
 const __sqlAccountAuth_ListCols = "\"auth_key\",\"account_id\",\"status\",\"roles\",\"permissions\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlAccountAuth_ListColsOnConflict = "\"auth_key\" = EXCLUDED.\"auth_key\",\"account_id\" = EXCLUDED.\"account_id\",\"status\" = EXCLUDED.\"status\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlAccountAuth_Insert = "INSERT INTO \"account_auth\" (" + __sqlAccountAuth_ListCols + ") VALUES"
 const __sqlAccountAuth_Select = "SELECT " + __sqlAccountAuth_ListCols + " FROM \"account_auth\""
 const __sqlAccountAuth_Select_history = "SELECT " + __sqlAccountAuth_ListCols + " FROM history.\"account_auth\""
 const __sqlAccountAuth_UpdateAll = "UPDATE \"account_auth\" SET (" + __sqlAccountAuth_ListCols + ")"
+const __sqlAccountAuth_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT account_auth_pkey DO UPDATE SET"
 
 func (m *AccountAuth) SQLTableName() string  { return "account_auth" }
 func (m *AccountAuths) SQLTableName() string { return "account_auth" }
@@ -2401,6 +2511,22 @@ func (ms AccountAuths) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *AccountAuth) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountAuth_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountAuth_ListColsOnConflict)
+	return nil
+}
+
+func (ms AccountAuths) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountAuth_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountAuth_ListColsOnConflict)
 	return nil
 }
 
@@ -2770,10 +2896,12 @@ type PartnerRelations []*PartnerRelation
 
 const __sqlPartnerRelation_Table = "partner_relation"
 const __sqlPartnerRelation_ListCols = "\"auth_key\",\"partner_id\",\"subject_id\",\"subject_type\",\"external_subject_id\",\"nonce\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\""
+const __sqlPartnerRelation_ListColsOnConflict = "\"auth_key\" = EXCLUDED.\"auth_key\",\"partner_id\" = EXCLUDED.\"partner_id\",\"subject_id\" = EXCLUDED.\"subject_id\",\"subject_type\" = EXCLUDED.\"subject_type\",\"external_subject_id\" = EXCLUDED.\"external_subject_id\",\"nonce\" = EXCLUDED.\"nonce\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\""
 const __sqlPartnerRelation_Insert = "INSERT INTO \"partner_relation\" (" + __sqlPartnerRelation_ListCols + ") VALUES"
 const __sqlPartnerRelation_Select = "SELECT " + __sqlPartnerRelation_ListCols + " FROM \"partner_relation\""
 const __sqlPartnerRelation_Select_history = "SELECT " + __sqlPartnerRelation_ListCols + " FROM history.\"partner_relation\""
 const __sqlPartnerRelation_UpdateAll = "UPDATE \"partner_relation\" SET (" + __sqlPartnerRelation_ListCols + ")"
+const __sqlPartnerRelation_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT partner_relation_pkey DO UPDATE SET"
 
 func (m *PartnerRelation) SQLTableName() string  { return "partner_relation" }
 func (m *PartnerRelations) SQLTableName() string { return "partner_relation" }
@@ -2874,6 +3002,22 @@ func (ms PartnerRelations) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *PartnerRelation) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlPartnerRelation_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPartnerRelation_ListColsOnConflict)
+	return nil
+}
+
+func (ms PartnerRelations) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlPartnerRelation_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPartnerRelation_ListColsOnConflict)
 	return nil
 }
 
@@ -3203,10 +3347,12 @@ type Users []*User
 
 const __sqlUser_Table = "user"
 const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\""
+const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
 const __sqlUser_UpdateAll = "UPDATE \"user\" SET (" + __sqlUser_ListCols + ")"
+const __sqlUser_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_pkey DO UPDATE SET"
 
 func (m *User) SQLTableName() string  { return "user" }
 func (m *Users) SQLTableName() string { return "user" }
@@ -3319,6 +3465,22 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *User) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUser_ListColsOnConflict)
+	return nil
+}
+
+func (ms Users) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUser_ListColsOnConflict)
 	return nil
 }
 
@@ -3608,10 +3770,12 @@ type AccountUsers []*AccountUser
 
 const __sqlAccountUser_Table = "account_user"
 const __sqlAccountUser_ListCols = "\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\""
+const __sqlAccountUser_ListColsOnConflict = "\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\""
 const __sqlAccountUser_Insert = "INSERT INTO \"account_user\" (" + __sqlAccountUser_ListCols + ") VALUES"
 const __sqlAccountUser_Select = "SELECT " + __sqlAccountUser_ListCols + " FROM \"account_user\""
 const __sqlAccountUser_Select_history = "SELECT " + __sqlAccountUser_ListCols + " FROM history.\"account_user\""
 const __sqlAccountUser_UpdateAll = "UPDATE \"account_user\" SET (" + __sqlAccountUser_ListCols + ")"
+const __sqlAccountUser_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT account_user_pkey DO UPDATE SET"
 
 func (m *AccountUser) SQLTableName() string  { return "account_user" }
 func (m *AccountUsers) SQLTableName() string { return "account_user" }
@@ -3726,6 +3890,22 @@ func (ms AccountUsers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *AccountUser) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountUser_ListColsOnConflict)
+	return nil
+}
+
+func (ms AccountUsers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountUser_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountUser_ListColsOnConflict)
 	return nil
 }
 
@@ -4185,10 +4365,12 @@ type AccountUserDeletes []*AccountUserDelete
 
 const __sqlAccountUserDelete_Table = "account_user"
 const __sqlAccountUserDelete_ListCols = "\"deleted_at\""
+const __sqlAccountUserDelete_ListColsOnConflict = "\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlAccountUserDelete_Insert = "INSERT INTO \"account_user\" (" + __sqlAccountUserDelete_ListCols + ") VALUES"
 const __sqlAccountUserDelete_Select = "SELECT " + __sqlAccountUserDelete_ListCols + " FROM \"account_user\""
 const __sqlAccountUserDelete_Select_history = "SELECT " + __sqlAccountUserDelete_ListCols + " FROM history.\"account_user\""
 const __sqlAccountUserDelete_UpdateAll = "UPDATE \"account_user\" SET (" + __sqlAccountUserDelete_ListCols + ")"
+const __sqlAccountUserDelete_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT account_user_pkey DO UPDATE SET"
 
 func (m *AccountUserDelete) SQLTableName() string  { return "account_user" }
 func (m *AccountUserDeletes) SQLTableName() string { return "account_user" }
@@ -4266,6 +4448,22 @@ func (ms AccountUserDeletes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *AccountUserDelete) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountUserDelete_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountUserDelete_ListColsOnConflict)
+	return nil
+}
+
+func (ms AccountUserDeletes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAccountUserDelete_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccountUserDelete_ListColsOnConflict)
 	return nil
 }
 
@@ -4362,10 +4560,12 @@ type UserAuths []*UserAuth
 
 const __sqlUserAuth_Table = "user_auth"
 const __sqlUserAuth_ListCols = "\"user_id\",\"auth_type\",\"auth_key\",\"created_at\",\"updated_at\""
+const __sqlUserAuth_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"auth_type\" = EXCLUDED.\"auth_type\",\"auth_key\" = EXCLUDED.\"auth_key\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlUserAuth_Insert = "INSERT INTO \"user_auth\" (" + __sqlUserAuth_ListCols + ") VALUES"
 const __sqlUserAuth_Select = "SELECT " + __sqlUserAuth_ListCols + " FROM \"user_auth\""
 const __sqlUserAuth_Select_history = "SELECT " + __sqlUserAuth_ListCols + " FROM history.\"user_auth\""
 const __sqlUserAuth_UpdateAll = "UPDATE \"user_auth\" SET (" + __sqlUserAuth_ListCols + ")"
+const __sqlUserAuth_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_auth_pkey DO UPDATE SET"
 
 func (m *UserAuth) SQLTableName() string  { return "user_auth" }
 func (m *UserAuths) SQLTableName() string { return "user_auth" }
@@ -4452,6 +4652,22 @@ func (ms UserAuths) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserAuth) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserAuth_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserAuth_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserAuths) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserAuth_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserAuth_ListColsOnConflict)
 	return nil
 }
 
@@ -4592,10 +4808,12 @@ type UserInternals []*UserInternal
 
 const __sqlUserInternal_Table = "user_internal"
 const __sqlUserInternal_ListCols = "\"id\",\"hashpwd\",\"updated_at\""
+const __sqlUserInternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"hashpwd\" = EXCLUDED.\"hashpwd\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlUserInternal_Insert = "INSERT INTO \"user_internal\" (" + __sqlUserInternal_ListCols + ") VALUES"
 const __sqlUserInternal_Select = "SELECT " + __sqlUserInternal_ListCols + " FROM \"user_internal\""
 const __sqlUserInternal_Select_history = "SELECT " + __sqlUserInternal_ListCols + " FROM history.\"user_internal\""
 const __sqlUserInternal_UpdateAll = "UPDATE \"user_internal\" SET (" + __sqlUserInternal_ListCols + ")"
+const __sqlUserInternal_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_internal_pkey DO UPDATE SET"
 
 func (m *UserInternal) SQLTableName() string  { return "user_internal" }
 func (m *UserInternals) SQLTableName() string { return "user_internal" }
@@ -4678,6 +4896,22 @@ func (ms UserInternals) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserInternal) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInternal_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserInternals) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserInternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserInternal_ListColsOnConflict)
 	return nil
 }
 
@@ -4796,10 +5030,12 @@ type Addresses []*Address
 
 const __sqlAddress_Table = "address"
 const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\",\"coordinates\""
+const __sqlAddress_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\",\"phone\" = EXCLUDED.\"phone\",\"position\" = EXCLUDED.\"position\",\"email\" = EXCLUDED.\"email\",\"country\" = EXCLUDED.\"country\",\"city\" = EXCLUDED.\"city\",\"province\" = EXCLUDED.\"province\",\"district\" = EXCLUDED.\"district\",\"ward\" = EXCLUDED.\"ward\",\"zip\" = EXCLUDED.\"zip\",\"district_code\" = EXCLUDED.\"district_code\",\"province_code\" = EXCLUDED.\"province_code\",\"ward_code\" = EXCLUDED.\"ward_code\",\"company\" = EXCLUDED.\"company\",\"address1\" = EXCLUDED.\"address1\",\"address2\" = EXCLUDED.\"address2\",\"type\" = EXCLUDED.\"type\",\"account_id\" = EXCLUDED.\"account_id\",\"notes\" = EXCLUDED.\"notes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"coordinates\" = EXCLUDED.\"coordinates\""
 const __sqlAddress_Insert = "INSERT INTO \"address\" (" + __sqlAddress_ListCols + ") VALUES"
 const __sqlAddress_Select = "SELECT " + __sqlAddress_ListCols + " FROM \"address\""
 const __sqlAddress_Select_history = "SELECT " + __sqlAddress_ListCols + " FROM history.\"address\""
 const __sqlAddress_UpdateAll = "UPDATE \"address\" SET (" + __sqlAddress_ListCols + ")"
+const __sqlAddress_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT address_pkey DO UPDATE SET"
 
 func (m *Address) SQLTableName() string   { return "address" }
 func (m *Addresses) SQLTableName() string { return "address" }
@@ -4926,6 +5162,22 @@ func (ms Addresses) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Address) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAddress_ListColsOnConflict)
+	return nil
+}
+
+func (ms Addresses) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAddress_ListColsOnConflict)
 	return nil
 }
 
@@ -5286,10 +5538,12 @@ type Codes []*Code
 
 const __sqlCode_Table = "code"
 const __sqlCode_ListCols = "\"code\",\"type\",\"created_at\""
+const __sqlCode_ListColsOnConflict = "\"code\" = EXCLUDED.\"code\",\"type\" = EXCLUDED.\"type\",\"created_at\" = EXCLUDED.\"created_at\""
 const __sqlCode_Insert = "INSERT INTO \"code\" (" + __sqlCode_ListCols + ") VALUES"
 const __sqlCode_Select = "SELECT " + __sqlCode_ListCols + " FROM \"code\""
 const __sqlCode_Select_history = "SELECT " + __sqlCode_ListCols + " FROM history.\"code\""
 const __sqlCode_UpdateAll = "UPDATE \"code\" SET (" + __sqlCode_ListCols + ")"
+const __sqlCode_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT code_pkey DO UPDATE SET"
 
 func (m *Code) SQLTableName() string  { return "code" }
 func (m *Codes) SQLTableName() string { return "code" }
@@ -5372,6 +5626,22 @@ func (ms Codes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Code) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCode_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCode_ListColsOnConflict)
+	return nil
+}
+
+func (ms Codes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCode_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCode_ListColsOnConflict)
 	return nil
 }
 
@@ -5490,10 +5760,12 @@ type Credits []*Credit
 
 const __sqlCredit_Table = "credit"
 const __sqlCredit_ListCols = "\"id\",\"amount\",\"shop_id\",\"type\",\"status\",\"created_at\",\"updated_at\",\"paid_at\""
+const __sqlCredit_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"shop_id\" = EXCLUDED.\"shop_id\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"paid_at\" = EXCLUDED.\"paid_at\""
 const __sqlCredit_Insert = "INSERT INTO \"credit\" (" + __sqlCredit_ListCols + ") VALUES"
 const __sqlCredit_Select = "SELECT " + __sqlCredit_ListCols + " FROM \"credit\""
 const __sqlCredit_Select_history = "SELECT " + __sqlCredit_ListCols + " FROM history.\"credit\""
 const __sqlCredit_UpdateAll = "UPDATE \"credit\" SET (" + __sqlCredit_ListCols + ")"
+const __sqlCredit_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT credit_pkey DO UPDATE SET"
 
 func (m *Credit) SQLTableName() string  { return "credit" }
 func (m *Credits) SQLTableName() string { return "credit" }
@@ -5586,6 +5858,22 @@ func (ms Credits) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Credit) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCredit_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCredit_ListColsOnConflict)
+	return nil
+}
+
+func (ms Credits) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCredit_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCredit_ListColsOnConflict)
 	return nil
 }
 
@@ -5857,10 +6145,12 @@ type ShippingSources []*ShippingSource
 
 const __sqlShippingSource_Table = "shipping_source"
 const __sqlShippingSource_ListCols = "\"id\",\"name\",\"username\",\"type\",\"created_at\",\"updated_at\""
+const __sqlShippingSource_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"username\" = EXCLUDED.\"username\",\"type\" = EXCLUDED.\"type\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShippingSource_Insert = "INSERT INTO \"shipping_source\" (" + __sqlShippingSource_ListCols + ") VALUES"
 const __sqlShippingSource_Select = "SELECT " + __sqlShippingSource_ListCols + " FROM \"shipping_source\""
 const __sqlShippingSource_Select_history = "SELECT " + __sqlShippingSource_ListCols + " FROM history.\"shipping_source\""
 const __sqlShippingSource_UpdateAll = "UPDATE \"shipping_source\" SET (" + __sqlShippingSource_ListCols + ")"
+const __sqlShippingSource_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shipping_source_pkey DO UPDATE SET"
 
 func (m *ShippingSource) SQLTableName() string  { return "shipping_source" }
 func (m *ShippingSources) SQLTableName() string { return "shipping_source" }
@@ -5949,6 +6239,22 @@ func (ms ShippingSources) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShippingSource) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingSource_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingSource_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShippingSources) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingSource_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingSource_ListColsOnConflict)
 	return nil
 }
 
@@ -6100,10 +6406,12 @@ type ShippingSourceInternals []*ShippingSourceInternal
 
 const __sqlShippingSourceInternal_Table = "shipping_source_internal"
 const __sqlShippingSourceInternal_ListCols = "\"id\",\"created_at\",\"updated_at\",\"last_sync_at\",\"access_token\",\"expires_at\",\"secret\""
+const __sqlShippingSourceInternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"last_sync_at\" = EXCLUDED.\"last_sync_at\",\"access_token\" = EXCLUDED.\"access_token\",\"expires_at\" = EXCLUDED.\"expires_at\",\"secret\" = EXCLUDED.\"secret\""
 const __sqlShippingSourceInternal_Insert = "INSERT INTO \"shipping_source_internal\" (" + __sqlShippingSourceInternal_ListCols + ") VALUES"
 const __sqlShippingSourceInternal_Select = "SELECT " + __sqlShippingSourceInternal_ListCols + " FROM \"shipping_source_internal\""
 const __sqlShippingSourceInternal_Select_history = "SELECT " + __sqlShippingSourceInternal_ListCols + " FROM history.\"shipping_source_internal\""
 const __sqlShippingSourceInternal_UpdateAll = "UPDATE \"shipping_source_internal\" SET (" + __sqlShippingSourceInternal_ListCols + ")"
+const __sqlShippingSourceInternal_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shipping_source_internal_pkey DO UPDATE SET"
 
 func (m *ShippingSourceInternal) SQLTableName() string  { return "shipping_source_internal" }
 func (m *ShippingSourceInternals) SQLTableName() string { return "shipping_source_internal" }
@@ -6194,6 +6502,22 @@ func (ms ShippingSourceInternals) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShippingSourceInternal) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingSourceInternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingSourceInternal_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShippingSourceInternals) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingSourceInternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingSourceInternal_ListColsOnConflict)
 	return nil
 }
 
@@ -6370,10 +6694,12 @@ type Webhooks []*Webhook
 
 const __sqlWebhook_Table = "webhook"
 const __sqlWebhook_ListCols = "\"id\",\"account_id\",\"entities\",\"fields\",\"url\",\"metadata\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlWebhook_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"entities\" = EXCLUDED.\"entities\",\"fields\" = EXCLUDED.\"fields\",\"url\" = EXCLUDED.\"url\",\"metadata\" = EXCLUDED.\"metadata\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlWebhook_Insert = "INSERT INTO \"webhook\" (" + __sqlWebhook_ListCols + ") VALUES"
 const __sqlWebhook_Select = "SELECT " + __sqlWebhook_ListCols + " FROM \"webhook\""
 const __sqlWebhook_Select_history = "SELECT " + __sqlWebhook_ListCols + " FROM history.\"webhook\""
 const __sqlWebhook_UpdateAll = "UPDATE \"webhook\" SET (" + __sqlWebhook_ListCols + ")"
+const __sqlWebhook_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT webhook_pkey DO UPDATE SET"
 
 func (m *Webhook) SQLTableName() string  { return "webhook" }
 func (m *Webhooks) SQLTableName() string { return "webhook" }
@@ -6468,6 +6794,22 @@ func (ms Webhooks) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Webhook) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlWebhook_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlWebhook_ListColsOnConflict)
+	return nil
+}
+
+func (ms Webhooks) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlWebhook_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlWebhook_ListColsOnConflict)
 	return nil
 }
 
@@ -6652,10 +6994,12 @@ type Callbacks []*Callback
 
 const __sqlCallback_Table = "callback"
 const __sqlCallback_ListCols = "\"id\",\"webhook_id\",\"account_id\",\"created_at\",\"changes\",\"result\""
+const __sqlCallback_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"webhook_id\" = EXCLUDED.\"webhook_id\",\"account_id\" = EXCLUDED.\"account_id\",\"created_at\" = EXCLUDED.\"created_at\",\"changes\" = EXCLUDED.\"changes\",\"result\" = EXCLUDED.\"result\""
 const __sqlCallback_Insert = "INSERT INTO \"callback\" (" + __sqlCallback_ListCols + ") VALUES"
 const __sqlCallback_Select = "SELECT " + __sqlCallback_ListCols + " FROM \"callback\""
 const __sqlCallback_Select_history = "SELECT " + __sqlCallback_ListCols + " FROM history.\"callback\""
 const __sqlCallback_UpdateAll = "UPDATE \"callback\" SET (" + __sqlCallback_ListCols + ")"
+const __sqlCallback_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT callback_pkey DO UPDATE SET"
 
 func (m *Callback) SQLTableName() string  { return "callback" }
 func (m *Callbacks) SQLTableName() string { return "callback" }
@@ -6744,6 +7088,22 @@ func (ms Callbacks) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Callback) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCallback_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCallback_ListColsOnConflict)
+	return nil
+}
+
+func (ms Callbacks) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCallback_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCallback_ListColsOnConflict)
 	return nil
 }
 

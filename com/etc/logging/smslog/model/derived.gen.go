@@ -31,10 +31,12 @@ type SmsLogs []*SmsLog
 
 const __sqlSmsLog_Table = "sms_log"
 const __sqlSmsLog_ListCols = "\"id\",\"external_id\",\"phone\",\"provider\",\"content\",\"created_at\",\"status\",\"error\""
+const __sqlSmsLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"phone\" = EXCLUDED.\"phone\",\"provider\" = EXCLUDED.\"provider\",\"content\" = EXCLUDED.\"content\",\"created_at\" = EXCLUDED.\"created_at\",\"status\" = EXCLUDED.\"status\",\"error\" = EXCLUDED.\"error\""
 const __sqlSmsLog_Insert = "INSERT INTO \"sms_log\" (" + __sqlSmsLog_ListCols + ") VALUES"
 const __sqlSmsLog_Select = "SELECT " + __sqlSmsLog_ListCols + " FROM \"sms_log\""
 const __sqlSmsLog_Select_history = "SELECT " + __sqlSmsLog_ListCols + " FROM history.\"sms_log\""
 const __sqlSmsLog_UpdateAll = "UPDATE \"sms_log\" SET (" + __sqlSmsLog_ListCols + ")"
+const __sqlSmsLog_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT sms_log_pkey DO UPDATE SET"
 
 func (m *SmsLog) SQLTableName() string  { return "sms_log" }
 func (m *SmsLogs) SQLTableName() string { return "sms_log" }
@@ -127,6 +129,22 @@ func (ms SmsLogs) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *SmsLog) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlSmsLog_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSmsLog_ListColsOnConflict)
+	return nil
+}
+
+func (ms SmsLogs) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlSmsLog_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSmsLog_ListColsOnConflict)
 	return nil
 }
 

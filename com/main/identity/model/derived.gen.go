@@ -31,10 +31,12 @@ type ExternalAccountAhamoves []*ExternalAccountAhamove
 
 const __sqlExternalAccountAhamove_Table = "external_account_ahamove"
 const __sqlExternalAccountAhamove_ListCols = "\"id\",\"owner_id\",\"phone\",\"name\",\"external_id\",\"external_verified\",\"external_created_at\",\"external_token\",\"created_at\",\"updated_at\",\"last_send_verified_at\",\"external_ticket_id\",\"id_card_front_img\",\"id_card_back_img\",\"portrait_img\",\"website_url\",\"fanpage_url\",\"company_imgs\",\"business_license_imgs\",\"external_data_verified\",\"uploaded_at\""
+const __sqlExternalAccountAhamove_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"phone\" = EXCLUDED.\"phone\",\"name\" = EXCLUDED.\"name\",\"external_id\" = EXCLUDED.\"external_id\",\"external_verified\" = EXCLUDED.\"external_verified\",\"external_created_at\" = EXCLUDED.\"external_created_at\",\"external_token\" = EXCLUDED.\"external_token\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"last_send_verified_at\" = EXCLUDED.\"last_send_verified_at\",\"external_ticket_id\" = EXCLUDED.\"external_ticket_id\",\"id_card_front_img\" = EXCLUDED.\"id_card_front_img\",\"id_card_back_img\" = EXCLUDED.\"id_card_back_img\",\"portrait_img\" = EXCLUDED.\"portrait_img\",\"website_url\" = EXCLUDED.\"website_url\",\"fanpage_url\" = EXCLUDED.\"fanpage_url\",\"company_imgs\" = EXCLUDED.\"company_imgs\",\"business_license_imgs\" = EXCLUDED.\"business_license_imgs\",\"external_data_verified\" = EXCLUDED.\"external_data_verified\",\"uploaded_at\" = EXCLUDED.\"uploaded_at\""
 const __sqlExternalAccountAhamove_Insert = "INSERT INTO \"external_account_ahamove\" (" + __sqlExternalAccountAhamove_ListCols + ") VALUES"
 const __sqlExternalAccountAhamove_Select = "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM \"external_account_ahamove\""
 const __sqlExternalAccountAhamove_Select_history = "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM history.\"external_account_ahamove\""
 const __sqlExternalAccountAhamove_UpdateAll = "UPDATE \"external_account_ahamove\" SET (" + __sqlExternalAccountAhamove_ListCols + ")"
+const __sqlExternalAccountAhamove_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT external_account_ahamove_pkey DO UPDATE SET"
 
 func (m *ExternalAccountAhamove) SQLTableName() string  { return "external_account_ahamove" }
 func (m *ExternalAccountAhamoves) SQLTableName() string { return "external_account_ahamove" }
@@ -153,6 +155,22 @@ func (ms ExternalAccountAhamoves) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ExternalAccountAhamove) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlExternalAccountAhamove_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExternalAccountAhamove_ListColsOnConflict)
+	return nil
+}
+
+func (ms ExternalAccountAhamoves) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlExternalAccountAhamove_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExternalAccountAhamove_ListColsOnConflict)
 	return nil
 }
 
@@ -507,10 +525,12 @@ type Affiliates []*Affiliate
 
 const __sqlAffiliate_Table = "affiliate"
 const __sqlAffiliate_ListCols = "\"id\",\"owner_id\",\"name\",\"phone\",\"email\",\"is_test\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"bank_account\""
+const __sqlAffiliate_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"is_test\" = EXCLUDED.\"is_test\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"bank_account\" = EXCLUDED.\"bank_account\""
 const __sqlAffiliate_Insert = "INSERT INTO \"affiliate\" (" + __sqlAffiliate_ListCols + ") VALUES"
 const __sqlAffiliate_Select = "SELECT " + __sqlAffiliate_ListCols + " FROM \"affiliate\""
 const __sqlAffiliate_Select_history = "SELECT " + __sqlAffiliate_ListCols + " FROM history.\"affiliate\""
 const __sqlAffiliate_UpdateAll = "UPDATE \"affiliate\" SET (" + __sqlAffiliate_ListCols + ")"
+const __sqlAffiliate_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT affiliate_pkey DO UPDATE SET"
 
 func (m *Affiliate) SQLTableName() string  { return "affiliate" }
 func (m *Affiliates) SQLTableName() string { return "affiliate" }
@@ -609,6 +629,22 @@ func (ms Affiliates) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Affiliate) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAffiliate_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAffiliate_ListColsOnConflict)
+	return nil
+}
+
+func (ms Affiliates) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAffiliate_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAffiliate_ListColsOnConflict)
 	return nil
 }
 

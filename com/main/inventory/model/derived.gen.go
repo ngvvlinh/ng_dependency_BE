@@ -31,10 +31,12 @@ type InventoryVariants []*InventoryVariant
 
 const __sqlInventoryVariant_Table = "inventory_variant"
 const __sqlInventoryVariant_ListCols = "\"shop_id\",\"variant_id\",\"quantity_on_hand\",\"quantity_picked\",\"cost_price\",\"created_at\",\"updated_at\""
+const __sqlInventoryVariant_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"quantity_on_hand\" = EXCLUDED.\"quantity_on_hand\",\"quantity_picked\" = EXCLUDED.\"quantity_picked\",\"cost_price\" = EXCLUDED.\"cost_price\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlInventoryVariant_Insert = "INSERT INTO \"inventory_variant\" (" + __sqlInventoryVariant_ListCols + ") VALUES"
 const __sqlInventoryVariant_Select = "SELECT " + __sqlInventoryVariant_ListCols + " FROM \"inventory_variant\""
 const __sqlInventoryVariant_Select_history = "SELECT " + __sqlInventoryVariant_ListCols + " FROM history.\"inventory_variant\""
 const __sqlInventoryVariant_UpdateAll = "UPDATE \"inventory_variant\" SET (" + __sqlInventoryVariant_ListCols + ")"
+const __sqlInventoryVariant_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT inventory_variant_pkey DO UPDATE SET"
 
 func (m *InventoryVariant) SQLTableName() string  { return "inventory_variant" }
 func (m *InventoryVariants) SQLTableName() string { return "inventory_variant" }
@@ -125,6 +127,22 @@ func (ms InventoryVariants) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *InventoryVariant) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlInventoryVariant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInventoryVariant_ListColsOnConflict)
+	return nil
+}
+
+func (ms InventoryVariants) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlInventoryVariant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInventoryVariant_ListColsOnConflict)
 	return nil
 }
 
@@ -291,10 +309,12 @@ type InventoryVouchers []*InventoryVoucher
 
 const __sqlInventoryVoucher_Table = "inventory_voucher"
 const __sqlInventoryVoucher_ListCols = "\"shop_id\",\"id\",\"created_by\",\"updated_by\",\"code\",\"code_norm\",\"status\",\"note\",\"trader_id\",\"trader\",\"total_amount\",\"type\",\"lines\",\"variant_ids\",\"ref_id\",\"ref_code\",\"ref_type\",\"ref_name\",\"title\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"product_ids\""
+const __sqlInventoryVoucher_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"id\" = EXCLUDED.\"id\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"note\" = EXCLUDED.\"note\",\"trader_id\" = EXCLUDED.\"trader_id\",\"trader\" = EXCLUDED.\"trader\",\"total_amount\" = EXCLUDED.\"total_amount\",\"type\" = EXCLUDED.\"type\",\"lines\" = EXCLUDED.\"lines\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_code\" = EXCLUDED.\"ref_code\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_name\" = EXCLUDED.\"ref_name\",\"title\" = EXCLUDED.\"title\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"product_ids\" = EXCLUDED.\"product_ids\""
 const __sqlInventoryVoucher_Insert = "INSERT INTO \"inventory_voucher\" (" + __sqlInventoryVoucher_ListCols + ") VALUES"
 const __sqlInventoryVoucher_Select = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM \"inventory_voucher\""
 const __sqlInventoryVoucher_Select_history = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM history.\"inventory_voucher\""
 const __sqlInventoryVoucher_UpdateAll = "UPDATE \"inventory_voucher\" SET (" + __sqlInventoryVoucher_ListCols + ")"
+const __sqlInventoryVoucher_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT inventory_voucher_pkey DO UPDATE SET"
 
 func (m *InventoryVoucher) SQLTableName() string  { return "inventory_voucher" }
 func (m *InventoryVouchers) SQLTableName() string { return "inventory_voucher" }
@@ -421,6 +441,22 @@ func (ms InventoryVouchers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *InventoryVoucher) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlInventoryVoucher_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInventoryVoucher_ListColsOnConflict)
+	return nil
+}
+
+func (ms InventoryVouchers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlInventoryVoucher_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInventoryVoucher_ListColsOnConflict)
 	return nil
 }
 

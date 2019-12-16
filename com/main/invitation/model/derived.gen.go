@@ -31,10 +31,12 @@ type Invitations []*Invitation
 
 const __sqlInvitation_Table = "invitation"
 const __sqlInvitation_ListCols = "\"id\",\"account_id\",\"email\",\"full_name\",\"short_name\",\"roles\",\"token\",\"status\",\"invited_by\",\"accepted_at\",\"rejected_at\",\"expires_at\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlInvitation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"email\" = EXCLUDED.\"email\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"roles\" = EXCLUDED.\"roles\",\"token\" = EXCLUDED.\"token\",\"status\" = EXCLUDED.\"status\",\"invited_by\" = EXCLUDED.\"invited_by\",\"accepted_at\" = EXCLUDED.\"accepted_at\",\"rejected_at\" = EXCLUDED.\"rejected_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlInvitation_Insert = "INSERT INTO \"invitation\" (" + __sqlInvitation_ListCols + ") VALUES"
 const __sqlInvitation_Select = "SELECT " + __sqlInvitation_ListCols + " FROM \"invitation\""
 const __sqlInvitation_Select_history = "SELECT " + __sqlInvitation_ListCols + " FROM history.\"invitation\""
 const __sqlInvitation_UpdateAll = "UPDATE \"invitation\" SET (" + __sqlInvitation_ListCols + ")"
+const __sqlInvitation_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT invitation_pkey DO UPDATE SET"
 
 func (m *Invitation) SQLTableName() string  { return "invitation" }
 func (m *Invitations) SQLTableName() string { return "invitation" }
@@ -141,6 +143,22 @@ func (ms Invitations) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Invitation) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlInvitation_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInvitation_ListColsOnConflict)
+	return nil
+}
+
+func (ms Invitations) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlInvitation_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlInvitation_ListColsOnConflict)
 	return nil
 }
 

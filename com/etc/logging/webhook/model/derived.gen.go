@@ -31,10 +31,12 @@ type ShippingProviderWebhooks []*ShippingProviderWebhook
 
 const __sqlShippingProviderWebhook_Table = "shipping_provider_webhook"
 const __sqlShippingProviderWebhook_ListCols = "\"id\",\"shipping_provider\",\"data\",\"shipping_code\",\"shipping_state\",\"external_shipping_state\",\"external_shipping_sub_state\",\"created_at\",\"updated_at\",\"error\""
+const __sqlShippingProviderWebhook_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipping_provider\" = EXCLUDED.\"shipping_provider\",\"data\" = EXCLUDED.\"data\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"external_shipping_state\" = EXCLUDED.\"external_shipping_state\",\"external_shipping_sub_state\" = EXCLUDED.\"external_shipping_sub_state\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"error\" = EXCLUDED.\"error\""
 const __sqlShippingProviderWebhook_Insert = "INSERT INTO \"shipping_provider_webhook\" (" + __sqlShippingProviderWebhook_ListCols + ") VALUES"
 const __sqlShippingProviderWebhook_Select = "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM \"shipping_provider_webhook\""
 const __sqlShippingProviderWebhook_Select_history = "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM history.\"shipping_provider_webhook\""
 const __sqlShippingProviderWebhook_UpdateAll = "UPDATE \"shipping_provider_webhook\" SET (" + __sqlShippingProviderWebhook_ListCols + ")"
+const __sqlShippingProviderWebhook_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shipping_provider_webhook_pkey DO UPDATE SET"
 
 func (m *ShippingProviderWebhook) SQLTableName() string  { return "shipping_provider_webhook" }
 func (m *ShippingProviderWebhooks) SQLTableName() string { return "shipping_provider_webhook" }
@@ -131,6 +133,22 @@ func (ms ShippingProviderWebhooks) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShippingProviderWebhook) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingProviderWebhook_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingProviderWebhook_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShippingProviderWebhooks) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShippingProviderWebhook_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShippingProviderWebhook_ListColsOnConflict)
 	return nil
 }
 

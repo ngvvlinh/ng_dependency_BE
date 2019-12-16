@@ -31,10 +31,12 @@ type ShopStocktakes []*ShopStocktake
 
 const __sqlShopStocktake_Table = "shop_stocktake"
 const __sqlShopStocktake_ListCols = "\"id\",\"shop_id\",\"total_quantity\",\"created_by\",\"updated_by\",\"cancel_reason\",\"code\",\"code_norm\",\"status\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"lines\",\"note\",\"product_ids\""
+const __sqlShopStocktake_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"total_quantity\" = EXCLUDED.\"total_quantity\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"lines\" = EXCLUDED.\"lines\",\"note\" = EXCLUDED.\"note\",\"product_ids\" = EXCLUDED.\"product_ids\""
 const __sqlShopStocktake_Insert = "INSERT INTO \"shop_stocktake\" (" + __sqlShopStocktake_ListCols + ") VALUES"
 const __sqlShopStocktake_Select = "SELECT " + __sqlShopStocktake_ListCols + " FROM \"shop_stocktake\""
 const __sqlShopStocktake_Select_history = "SELECT " + __sqlShopStocktake_ListCols + " FROM history.\"shop_stocktake\""
 const __sqlShopStocktake_UpdateAll = "UPDATE \"shop_stocktake\" SET (" + __sqlShopStocktake_ListCols + ")"
+const __sqlShopStocktake_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_stocktake_pkey DO UPDATE SET"
 
 func (m *ShopStocktake) SQLTableName() string  { return "shop_stocktake" }
 func (m *ShopStocktakes) SQLTableName() string { return "shop_stocktake" }
@@ -143,6 +145,22 @@ func (ms ShopStocktakes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopStocktake) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopStocktake_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopStocktake_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopStocktakes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopStocktake_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopStocktake_ListColsOnConflict)
 	return nil
 }
 

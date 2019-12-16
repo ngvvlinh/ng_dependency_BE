@@ -130,10 +130,12 @@ type ShopVariants []*ShopVariant
 
 const __sqlShopVariant_Table = "shop_variant"
 const __sqlShopVariant_ListCols = "\"external_id\",\"external_code\",\"shop_id\",\"variant_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"attributes\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"attr_norm_kv\""
+const __sqlShopVariant_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"shop_id\" = EXCLUDED.\"shop_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"status\" = EXCLUDED.\"status\",\"attributes\" = EXCLUDED.\"attributes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"attr_norm_kv\" = EXCLUDED.\"attr_norm_kv\""
 const __sqlShopVariant_Insert = "INSERT INTO \"shop_variant\" (" + __sqlShopVariant_ListCols + ") VALUES"
 const __sqlShopVariant_Select = "SELECT " + __sqlShopVariant_ListCols + " FROM \"shop_variant\""
 const __sqlShopVariant_Select_history = "SELECT " + __sqlShopVariant_ListCols + " FROM history.\"shop_variant\""
 const __sqlShopVariant_UpdateAll = "UPDATE \"shop_variant\" SET (" + __sqlShopVariant_ListCols + ")"
+const __sqlShopVariant_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_variant_pkey DO UPDATE SET"
 
 func (m *ShopVariant) SQLTableName() string  { return "shop_variant" }
 func (m *ShopVariants) SQLTableName() string { return "shop_variant" }
@@ -256,6 +258,22 @@ func (ms ShopVariants) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopVariant) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopVariant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopVariant_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopVariants) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopVariant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopVariant_ListColsOnConflict)
 	return nil
 }
 
@@ -594,10 +612,12 @@ type ShopProducts []*ShopProduct
 
 const __sqlShopProduct_Table = "shop_product"
 const __sqlShopProduct_ListCols = "\"external_id\",\"external_code\",\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"cost_price\",\"list_price\",\"retail_price\",\"brand_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
+const __sqlShopProduct_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"shop_id\" = EXCLUDED.\"shop_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"unit\" = EXCLUDED.\"unit\",\"category_id\" = EXCLUDED.\"category_id\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"brand_id\" = EXCLUDED.\"brand_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"name_norm_ua\" = EXCLUDED.\"name_norm_ua\",\"product_type\" = EXCLUDED.\"product_type\",\"meta_fields\" = EXCLUDED.\"meta_fields\""
 const __sqlShopProduct_Insert = "INSERT INTO \"shop_product\" (" + __sqlShopProduct_ListCols + ") VALUES"
 const __sqlShopProduct_Select = "SELECT " + __sqlShopProduct_ListCols + " FROM \"shop_product\""
 const __sqlShopProduct_Select_history = "SELECT " + __sqlShopProduct_ListCols + " FROM history.\"shop_product\""
 const __sqlShopProduct_UpdateAll = "UPDATE \"shop_product\" SET (" + __sqlShopProduct_ListCols + ")"
+const __sqlShopProduct_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_product_pkey DO UPDATE SET"
 
 func (m *ShopProduct) SQLTableName() string  { return "shop_product" }
 func (m *ShopProducts) SQLTableName() string { return "shop_product" }
@@ -726,6 +746,22 @@ func (ms ShopProducts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopProduct) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopProduct_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopProduct_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopProducts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopProduct_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopProduct_ListColsOnConflict)
 	return nil
 }
 
@@ -1097,10 +1133,12 @@ type ProductShopCollections []*ProductShopCollection
 
 const __sqlProductShopCollection_Table = "product_shop_collection"
 const __sqlProductShopCollection_ListCols = "\"collection_id\",\"product_id\",\"shop_id\",\"status\",\"created_at\",\"updated_at\""
+const __sqlProductShopCollection_ListColsOnConflict = "\"collection_id\" = EXCLUDED.\"collection_id\",\"product_id\" = EXCLUDED.\"product_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlProductShopCollection_Insert = "INSERT INTO \"product_shop_collection\" (" + __sqlProductShopCollection_ListCols + ") VALUES"
 const __sqlProductShopCollection_Select = "SELECT " + __sqlProductShopCollection_ListCols + " FROM \"product_shop_collection\""
 const __sqlProductShopCollection_Select_history = "SELECT " + __sqlProductShopCollection_ListCols + " FROM history.\"product_shop_collection\""
 const __sqlProductShopCollection_UpdateAll = "UPDATE \"product_shop_collection\" SET (" + __sqlProductShopCollection_ListCols + ")"
+const __sqlProductShopCollection_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT product_shop_collection_pkey DO UPDATE SET"
 
 func (m *ProductShopCollection) SQLTableName() string  { return "product_shop_collection" }
 func (m *ProductShopCollections) SQLTableName() string { return "product_shop_collection" }
@@ -1189,6 +1227,22 @@ func (ms ProductShopCollections) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ProductShopCollection) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlProductShopCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProductShopCollection_ListColsOnConflict)
+	return nil
+}
+
+func (ms ProductShopCollections) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlProductShopCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProductShopCollection_ListColsOnConflict)
 	return nil
 }
 
@@ -1352,10 +1406,12 @@ type ShopCategories []*ShopCategory
 
 const __sqlShopCategory_Table = "shop_category"
 const __sqlShopCategory_ListCols = "\"id\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCategory_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"parent_id\" = EXCLUDED.\"parent_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopCategory_Insert = "INSERT INTO \"shop_category\" (" + __sqlShopCategory_ListCols + ") VALUES"
 const __sqlShopCategory_Select = "SELECT " + __sqlShopCategory_ListCols + " FROM \"shop_category\""
 const __sqlShopCategory_Select_history = "SELECT " + __sqlShopCategory_ListCols + " FROM history.\"shop_category\""
 const __sqlShopCategory_UpdateAll = "UPDATE \"shop_category\" SET (" + __sqlShopCategory_ListCols + ")"
+const __sqlShopCategory_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_category_pkey DO UPDATE SET"
 
 func (m *ShopCategory) SQLTableName() string   { return "shop_category" }
 func (m *ShopCategories) SQLTableName() string { return "shop_category" }
@@ -1448,6 +1504,22 @@ func (ms ShopCategories) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCategory) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCategory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCategory_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCategories) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCategory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCategory_ListColsOnConflict)
 	return nil
 }
 
@@ -1621,10 +1693,12 @@ type ShopCollections []*ShopCollection
 
 const __sqlShopCollection_Table = "shop_collection"
 const __sqlShopCollection_ListCols = "\"id\",\"shop_id\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"created_at\",\"updated_at\""
+const __sqlShopCollection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopCollection_Insert = "INSERT INTO \"shop_collection\" (" + __sqlShopCollection_ListCols + ") VALUES"
 const __sqlShopCollection_Select = "SELECT " + __sqlShopCollection_ListCols + " FROM \"shop_collection\""
 const __sqlShopCollection_Select_history = "SELECT " + __sqlShopCollection_ListCols + " FROM history.\"shop_collection\""
 const __sqlShopCollection_UpdateAll = "UPDATE \"shop_collection\" SET (" + __sqlShopCollection_ListCols + ")"
+const __sqlShopCollection_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_collection_pkey DO UPDATE SET"
 
 func (m *ShopCollection) SQLTableName() string  { return "shop_collection" }
 func (m *ShopCollections) SQLTableName() string { return "shop_collection" }
@@ -1717,6 +1791,22 @@ func (ms ShopCollections) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCollection) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCollection_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCollections) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCollection_ListColsOnConflict)
 	return nil
 }
 
@@ -1890,10 +1980,12 @@ type ShopProductCollections []*ShopProductCollection
 
 const __sqlShopProductCollection_Table = "shop_product_collection"
 const __sqlShopProductCollection_ListCols = "\"product_id\",\"collection_id\",\"shop_id\",\"created_at\",\"updated_at\""
+const __sqlShopProductCollection_ListColsOnConflict = "\"product_id\" = EXCLUDED.\"product_id\",\"collection_id\" = EXCLUDED.\"collection_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopProductCollection_Insert = "INSERT INTO \"shop_product_collection\" (" + __sqlShopProductCollection_ListCols + ") VALUES"
 const __sqlShopProductCollection_Select = "SELECT " + __sqlShopProductCollection_ListCols + " FROM \"shop_product_collection\""
 const __sqlShopProductCollection_Select_history = "SELECT " + __sqlShopProductCollection_ListCols + " FROM history.\"shop_product_collection\""
 const __sqlShopProductCollection_UpdateAll = "UPDATE \"shop_product_collection\" SET (" + __sqlShopProductCollection_ListCols + ")"
+const __sqlShopProductCollection_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_product_collection_pkey DO UPDATE SET"
 
 func (m *ShopProductCollection) SQLTableName() string  { return "shop_product_collection" }
 func (m *ShopProductCollections) SQLTableName() string { return "shop_product_collection" }
@@ -1980,6 +2072,22 @@ func (ms ShopProductCollections) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopProductCollection) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopProductCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopProductCollection_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopProductCollections) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopProductCollection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopProductCollection_ListColsOnConflict)
 	return nil
 }
 
@@ -2132,10 +2240,12 @@ type ShopBrands []*ShopBrand
 
 const __sqlShopBrand_Table = "shop_brand"
 const __sqlShopBrand_ListCols = "\"id\",\"shop_id\",\"brand_name\",\"description\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopBrand_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"brand_name\" = EXCLUDED.\"brand_name\",\"description\" = EXCLUDED.\"description\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopBrand_Insert = "INSERT INTO \"shop_brand\" (" + __sqlShopBrand_ListCols + ") VALUES"
 const __sqlShopBrand_Select = "SELECT " + __sqlShopBrand_ListCols + " FROM \"shop_brand\""
 const __sqlShopBrand_Select_history = "SELECT " + __sqlShopBrand_ListCols + " FROM history.\"shop_brand\""
 const __sqlShopBrand_UpdateAll = "UPDATE \"shop_brand\" SET (" + __sqlShopBrand_ListCols + ")"
+const __sqlShopBrand_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_brand_pkey DO UPDATE SET"
 
 func (m *ShopBrand) SQLTableName() string  { return "shop_brand" }
 func (m *ShopBrands) SQLTableName() string { return "shop_brand" }
@@ -2226,6 +2336,22 @@ func (ms ShopBrands) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopBrand) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopBrand_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopBrand_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopBrands) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopBrand_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopBrand_ListColsOnConflict)
 	return nil
 }
 
@@ -2388,10 +2514,12 @@ type ShopVariantSuppliers []*ShopVariantSupplier
 
 const __sqlShopVariantSupplier_Table = "shop_variant_supplier"
 const __sqlShopVariantSupplier_ListCols = "\"shop_id\",\"supplier_id\",\"variant_id\",\"created_at\",\"updated_at\""
+const __sqlShopVariantSupplier_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopVariantSupplier_Insert = "INSERT INTO \"shop_variant_supplier\" (" + __sqlShopVariantSupplier_ListCols + ") VALUES"
 const __sqlShopVariantSupplier_Select = "SELECT " + __sqlShopVariantSupplier_ListCols + " FROM \"shop_variant_supplier\""
 const __sqlShopVariantSupplier_Select_history = "SELECT " + __sqlShopVariantSupplier_ListCols + " FROM history.\"shop_variant_supplier\""
 const __sqlShopVariantSupplier_UpdateAll = "UPDATE \"shop_variant_supplier\" SET (" + __sqlShopVariantSupplier_ListCols + ")"
+const __sqlShopVariantSupplier_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_variant_supplier_pkey DO UPDATE SET"
 
 func (m *ShopVariantSupplier) SQLTableName() string  { return "shop_variant_supplier" }
 func (m *ShopVariantSuppliers) SQLTableName() string { return "shop_variant_supplier" }
@@ -2478,6 +2606,22 @@ func (ms ShopVariantSuppliers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopVariantSupplier) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopVariantSupplier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopVariantSupplier_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopVariantSuppliers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopVariantSupplier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopVariantSupplier_ListColsOnConflict)
 	return nil
 }
 

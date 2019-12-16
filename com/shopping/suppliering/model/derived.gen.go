@@ -31,10 +31,12 @@ type ShopSuppliers []*ShopSupplier
 
 const __sqlShopSupplier_Table = "shop_supplier"
 const __sqlShopSupplier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"email\",\"code\",\"code_norm\",\"company_name\",\"company_name_norm\",\"tax_number\",\"headquater_address\",\"note\",\"full_name_norm\",\"phone_norm\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopSupplier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"company_name\" = EXCLUDED.\"company_name\",\"company_name_norm\" = EXCLUDED.\"company_name_norm\",\"tax_number\" = EXCLUDED.\"tax_number\",\"headquater_address\" = EXCLUDED.\"headquater_address\",\"note\" = EXCLUDED.\"note\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopSupplier_Insert = "INSERT INTO \"shop_supplier\" (" + __sqlShopSupplier_ListCols + ") VALUES"
 const __sqlShopSupplier_Select = "SELECT " + __sqlShopSupplier_ListCols + " FROM \"shop_supplier\""
 const __sqlShopSupplier_Select_history = "SELECT " + __sqlShopSupplier_ListCols + " FROM history.\"shop_supplier\""
 const __sqlShopSupplier_UpdateAll = "UPDATE \"shop_supplier\" SET (" + __sqlShopSupplier_ListCols + ")"
+const __sqlShopSupplier_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_supplier_pkey DO UPDATE SET"
 
 func (m *ShopSupplier) SQLTableName() string  { return "shop_supplier" }
 func (m *ShopSuppliers) SQLTableName() string { return "shop_supplier" }
@@ -147,6 +149,22 @@ func (ms ShopSuppliers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopSupplier) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopSupplier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopSupplier_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopSuppliers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopSupplier_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopSupplier_ListColsOnConflict)
 	return nil
 }
 

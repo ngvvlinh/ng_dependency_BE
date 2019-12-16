@@ -279,6 +279,12 @@ func (q *queryImpl) BuildInsert(obj core.IInsert) (string, []interface{}, error)
 	return q.build("INSERT", nil, obj.SQLInsert)
 }
 
+// BuildInsert ...
+func (q *queryImpl) BuildUpsert(obj core.IUpsert) (string, []interface{}, error) {
+	q.assertTable(obj)
+	return q.build("INSERT", nil, obj.SQLUpsert)
+}
+
 // BuildUpdate ...
 func (q *queryImpl) BuildUpdate(obj core.IUpdate) (string, []interface{}, error) {
 	q.assertTable(obj)
@@ -437,6 +443,62 @@ func (q *queryImpl) Insert(objs ...core.IInsert) (int, error) {
 			}
 			defer func() { _ = tx.Rollback() }()
 			n, err := doInsert(tx)
+			if err != nil {
+				return 0, err
+			}
+			return n, tx.Commit()
+		default:
+			panic("Expect Database or Tx")
+		}
+	}
+}
+
+func (q *queryImpl) Upsert(objs ...core.IUpsert) (int, error) {
+	switch len(objs) {
+	case 0:
+		return 0, nil
+	case 1:
+		if err := execBeforeInsert(objs[0]); err != nil {
+			return 0, err
+		}
+		query, args, err := q.BuildUpsert(objs[0])
+		if err != nil {
+			return 0, err
+		}
+		res, err := q.db.ExecContext(q.ctx, query, args...)
+		if err != nil {
+			return 0, err
+		}
+		count, err := res.RowsAffected()
+		return int(count), err
+	default:
+		doUpsert := func(tx Tx) (int, error) {
+			for _, obj := range objs {
+				if err := execBeforeInsert(obj); err != nil {
+					return 0, err
+				}
+			}
+			var count int
+			for _, obj := range objs {
+				c, err := tx.Upsert(obj)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+			return count, nil
+		}
+
+		switch x := q.db.(type) {
+		case Tx:
+			return doUpsert(x)
+		case *Database:
+			tx, err := x.Begin()
+			if err != nil {
+				return 0, err
+			}
+			defer func() { _ = tx.Rollback() }()
+			n, err := doUpsert(tx)
 			if err != nil {
 				return 0, err
 			}

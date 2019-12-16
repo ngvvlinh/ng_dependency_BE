@@ -514,6 +514,27 @@ func listColumns(prefix string, cols []*colDef) string {
 	return string(b)
 }
 
+func listUpdateOnConflictColumns(prefix string, cols []*colDef) string {
+	b := make([]byte, 0, 1024)
+	for i, col := range cols {
+		if i > 0 {
+			b = append(b, `,`...)
+		}
+		if prefix != "" {
+			b = append(b, prefix...)
+			b = append(b, '.')
+		}
+		b = append(b, '"')
+		b = append(b, col.ColumnName...)
+		b = append(b, '"')
+		b = appends(b, " = EXCLUDED.")
+		b = append(b, '"')
+		b = append(b, col.ColumnName...)
+		b = append(b, '"')
+	}
+	return string(b)
+}
+
 func listInsertArgs(cols []*colDef) []string {
 	res := make([]string, len(cols))
 	for i, col := range cols {

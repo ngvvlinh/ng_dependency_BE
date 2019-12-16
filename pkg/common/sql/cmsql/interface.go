@@ -506,6 +506,10 @@ func (db Database) ShouldInsert(objs ...core.IInsert) error {
 	return Should(db.db.Insert(objs...))
 }
 
+func (db Database) ShouldUpsert(objs ...core.IUpsert) error {
+	return Should(db.db.Upsert(objs...))
+}
+
 // ShouldDelete ...
 func (db Database) ShouldDelete(obj core.ITableName) error {
 	return Should(db.db.Delete(obj))

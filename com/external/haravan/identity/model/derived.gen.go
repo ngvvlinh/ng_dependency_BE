@@ -31,10 +31,12 @@ type ExternalAccountHaravans []*ExternalAccountHaravan
 
 const __sqlExternalAccountHaravan_Table = "external_account_haravan"
 const __sqlExternalAccountHaravan_ListCols = "\"id\",\"shop_id\",\"subdomain\",\"access_token\",\"external_shop_id\",\"external_carrier_service_id\",\"external_connected_carrier_service_at\",\"expires_at\",\"created_at\",\"updated_at\""
+const __sqlExternalAccountHaravan_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"subdomain\" = EXCLUDED.\"subdomain\",\"access_token\" = EXCLUDED.\"access_token\",\"external_shop_id\" = EXCLUDED.\"external_shop_id\",\"external_carrier_service_id\" = EXCLUDED.\"external_carrier_service_id\",\"external_connected_carrier_service_at\" = EXCLUDED.\"external_connected_carrier_service_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlExternalAccountHaravan_Insert = "INSERT INTO \"external_account_haravan\" (" + __sqlExternalAccountHaravan_ListCols + ") VALUES"
 const __sqlExternalAccountHaravan_Select = "SELECT " + __sqlExternalAccountHaravan_ListCols + " FROM \"external_account_haravan\""
 const __sqlExternalAccountHaravan_Select_history = "SELECT " + __sqlExternalAccountHaravan_ListCols + " FROM history.\"external_account_haravan\""
 const __sqlExternalAccountHaravan_UpdateAll = "UPDATE \"external_account_haravan\" SET (" + __sqlExternalAccountHaravan_ListCols + ")"
+const __sqlExternalAccountHaravan_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT external_account_haravan_pkey DO UPDATE SET"
 
 func (m *ExternalAccountHaravan) SQLTableName() string  { return "external_account_haravan" }
 func (m *ExternalAccountHaravans) SQLTableName() string { return "external_account_haravan" }
@@ -131,6 +133,22 @@ func (ms ExternalAccountHaravans) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ExternalAccountHaravan) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlExternalAccountHaravan_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExternalAccountHaravan_ListColsOnConflict)
+	return nil
+}
+
+func (ms ExternalAccountHaravans) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlExternalAccountHaravan_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlExternalAccountHaravan_ListColsOnConflict)
 	return nil
 }
 

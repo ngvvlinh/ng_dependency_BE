@@ -31,10 +31,12 @@ type ShopTraders []*ShopTrader
 
 const __sqlShopTrader_Table = "shop_trader"
 const __sqlShopTrader_ListCols = "\"id\",\"shop_id\",\"type\""
+const __sqlShopTrader_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"type\" = EXCLUDED.\"type\""
 const __sqlShopTrader_Insert = "INSERT INTO \"shop_trader\" (" + __sqlShopTrader_ListCols + ") VALUES"
 const __sqlShopTrader_Select = "SELECT " + __sqlShopTrader_ListCols + " FROM \"shop_trader\""
 const __sqlShopTrader_Select_history = "SELECT " + __sqlShopTrader_ListCols + " FROM history.\"shop_trader\""
 const __sqlShopTrader_UpdateAll = "UPDATE \"shop_trader\" SET (" + __sqlShopTrader_ListCols + ")"
+const __sqlShopTrader_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_trader_pkey DO UPDATE SET"
 
 func (m *ShopTrader) SQLTableName() string  { return "shop_trader" }
 func (m *ShopTraders) SQLTableName() string { return "shop_trader" }
@@ -116,6 +118,22 @@ func (ms ShopTraders) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopTrader) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTrader_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTrader_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopTraders) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTrader_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTrader_ListColsOnConflict)
 	return nil
 }
 
@@ -234,10 +252,12 @@ type ShopCustomers []*ShopCustomer
 
 const __sqlShopCustomer_Table = "shop_customer"
 const __sqlShopCustomer_ListCols = "\"external_id\",\"external_code\",\"id\",\"shop_id\",\"code\",\"code_norm\",\"full_name\",\"gender\",\"type\",\"birthday\",\"note\",\"phone\",\"email\",\"status\",\"full_name_norm\",\"phone_norm\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCustomer_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"full_name\" = EXCLUDED.\"full_name\",\"gender\" = EXCLUDED.\"gender\",\"type\" = EXCLUDED.\"type\",\"birthday\" = EXCLUDED.\"birthday\",\"note\" = EXCLUDED.\"note\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"status\" = EXCLUDED.\"status\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopCustomer_Insert = "INSERT INTO \"shop_customer\" (" + __sqlShopCustomer_ListCols + ") VALUES"
 const __sqlShopCustomer_Select = "SELECT " + __sqlShopCustomer_ListCols + " FROM \"shop_customer\""
 const __sqlShopCustomer_Select_history = "SELECT " + __sqlShopCustomer_ListCols + " FROM history.\"shop_customer\""
 const __sqlShopCustomer_UpdateAll = "UPDATE \"shop_customer\" SET (" + __sqlShopCustomer_ListCols + ")"
+const __sqlShopCustomer_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_customer_pkey DO UPDATE SET"
 
 func (m *ShopCustomer) SQLTableName() string  { return "shop_customer" }
 func (m *ShopCustomers) SQLTableName() string { return "shop_customer" }
@@ -352,6 +372,22 @@ func (ms ShopCustomers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCustomer) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomer_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomer_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCustomers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomer_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomer_ListColsOnConflict)
 	return nil
 }
 
@@ -646,10 +682,12 @@ type ShopTraderAddresses []*ShopTraderAddress
 
 const __sqlShopTraderAddress_Table = "shop_trader_address"
 const __sqlShopTraderAddress_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"full_name\",\"phone\",\"email\",\"company\",\"address1\",\"address2\",\"district_code\",\"ward_code\",\"is_default\",\"coordinates\",\"created_at\",\"updated_at\",\"deleted_at\",\"status\""
+const __sqlShopTraderAddress_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"trader_id\" = EXCLUDED.\"trader_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"company\" = EXCLUDED.\"company\",\"address1\" = EXCLUDED.\"address1\",\"address2\" = EXCLUDED.\"address2\",\"district_code\" = EXCLUDED.\"district_code\",\"ward_code\" = EXCLUDED.\"ward_code\",\"is_default\" = EXCLUDED.\"is_default\",\"coordinates\" = EXCLUDED.\"coordinates\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"status\" = EXCLUDED.\"status\""
 const __sqlShopTraderAddress_Insert = "INSERT INTO \"shop_trader_address\" (" + __sqlShopTraderAddress_ListCols + ") VALUES"
 const __sqlShopTraderAddress_Select = "SELECT " + __sqlShopTraderAddress_ListCols + " FROM \"shop_trader_address\""
 const __sqlShopTraderAddress_Select_history = "SELECT " + __sqlShopTraderAddress_ListCols + " FROM history.\"shop_trader_address\""
 const __sqlShopTraderAddress_UpdateAll = "UPDATE \"shop_trader_address\" SET (" + __sqlShopTraderAddress_ListCols + ")"
+const __sqlShopTraderAddress_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_trader_address_pkey DO UPDATE SET"
 
 func (m *ShopTraderAddress) SQLTableName() string   { return "shop_trader_address" }
 func (m *ShopTraderAddresses) SQLTableName() string { return "shop_trader_address" }
@@ -760,6 +798,22 @@ func (ms ShopTraderAddresses) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopTraderAddress) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTraderAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTraderAddress_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopTraderAddresses) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTraderAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTraderAddress_ListColsOnConflict)
 	return nil
 }
 
@@ -1036,10 +1090,12 @@ type ShopCustomerGroupCustomers []*ShopCustomerGroupCustomer
 
 const __sqlShopCustomerGroupCustomer_Table = "shop_customer_group_customer"
 const __sqlShopCustomerGroupCustomer_ListCols = "\"group_id\",\"customer_id\",\"created_at\",\"updated_at\""
+const __sqlShopCustomerGroupCustomer_ListColsOnConflict = "\"group_id\" = EXCLUDED.\"group_id\",\"customer_id\" = EXCLUDED.\"customer_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopCustomerGroupCustomer_Insert = "INSERT INTO \"shop_customer_group_customer\" (" + __sqlShopCustomerGroupCustomer_ListCols + ") VALUES"
 const __sqlShopCustomerGroupCustomer_Select = "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM \"shop_customer_group_customer\""
 const __sqlShopCustomerGroupCustomer_Select_history = "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM history.\"shop_customer_group_customer\""
 const __sqlShopCustomerGroupCustomer_UpdateAll = "UPDATE \"shop_customer_group_customer\" SET (" + __sqlShopCustomerGroupCustomer_ListCols + ")"
+const __sqlShopCustomerGroupCustomer_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_customer_group_customer_pkey DO UPDATE SET"
 
 func (m *ShopCustomerGroupCustomer) SQLTableName() string  { return "shop_customer_group_customer" }
 func (m *ShopCustomerGroupCustomers) SQLTableName() string { return "shop_customer_group_customer" }
@@ -1126,6 +1182,22 @@ func (ms ShopCustomerGroupCustomers) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCustomerGroupCustomer) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCustomerGroupCustomers) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_ListColsOnConflict)
 	return nil
 }
 
@@ -1267,10 +1339,12 @@ type ShopCustomerGroups []*ShopCustomerGroup
 
 const __sqlShopCustomerGroup_Table = "shop_customer_group"
 const __sqlShopCustomerGroup_ListCols = "\"id\",\"name\",\"shop_id\",\"created_at\",\"updated_at\""
+const __sqlShopCustomerGroup_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopCustomerGroup_Insert = "INSERT INTO \"shop_customer_group\" (" + __sqlShopCustomerGroup_ListCols + ") VALUES"
 const __sqlShopCustomerGroup_Select = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM \"shop_customer_group\""
 const __sqlShopCustomerGroup_Select_history = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM history.\"shop_customer_group\""
 const __sqlShopCustomerGroup_UpdateAll = "UPDATE \"shop_customer_group\" SET (" + __sqlShopCustomerGroup_ListCols + ")"
+const __sqlShopCustomerGroup_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_customer_group_pkey DO UPDATE SET"
 
 func (m *ShopCustomerGroup) SQLTableName() string  { return "shop_customer_group" }
 func (m *ShopCustomerGroups) SQLTableName() string { return "shop_customer_group" }
@@ -1357,6 +1431,22 @@ func (ms ShopCustomerGroups) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCustomerGroup) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomerGroup_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomerGroup_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCustomerGroups) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCustomerGroup_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCustomerGroup_ListColsOnConflict)
 	return nil
 }
 

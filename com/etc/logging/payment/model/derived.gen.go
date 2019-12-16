@@ -31,10 +31,12 @@ type Payments []*Payment
 
 const __sqlPayment_Table = "payment"
 const __sqlPayment_ListCols = "\"id\",\"data\",\"order_id\",\"payment_provider\",\"action\",\"created_at\",\"updated_at\""
+const __sqlPayment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"data\" = EXCLUDED.\"data\",\"order_id\" = EXCLUDED.\"order_id\",\"payment_provider\" = EXCLUDED.\"payment_provider\",\"action\" = EXCLUDED.\"action\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlPayment_Insert = "INSERT INTO \"payment\" (" + __sqlPayment_ListCols + ") VALUES"
 const __sqlPayment_Select = "SELECT " + __sqlPayment_ListCols + " FROM \"payment\""
 const __sqlPayment_Select_history = "SELECT " + __sqlPayment_ListCols + " FROM history.\"payment\""
 const __sqlPayment_UpdateAll = "UPDATE \"payment\" SET (" + __sqlPayment_ListCols + ")"
+const __sqlPayment_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT payment_pkey DO UPDATE SET"
 
 func (m *Payment) SQLTableName() string  { return "payment" }
 func (m *Payments) SQLTableName() string { return "payment" }
@@ -125,6 +127,22 @@ func (ms Payments) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Payment) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlPayment_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPayment_ListColsOnConflict)
+	return nil
+}
+
+func (ms Payments) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlPayment_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlPayment_ListColsOnConflict)
 	return nil
 }
 

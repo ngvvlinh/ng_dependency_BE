@@ -31,10 +31,12 @@ type Transactions []*Transaction
 
 const __sqlTransaction_Table = "transaction"
 const __sqlTransaction_ListCols = "\"id\",\"amount\",\"account_id\",\"status\",\"type\",\"note\",\"metadata\",\"created_at\",\"updated_at\""
+const __sqlTransaction_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"account_id\" = EXCLUDED.\"account_id\",\"status\" = EXCLUDED.\"status\",\"type\" = EXCLUDED.\"type\",\"note\" = EXCLUDED.\"note\",\"metadata\" = EXCLUDED.\"metadata\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlTransaction_Insert = "INSERT INTO \"transaction\" (" + __sqlTransaction_ListCols + ") VALUES"
 const __sqlTransaction_Select = "SELECT " + __sqlTransaction_ListCols + " FROM \"transaction\""
 const __sqlTransaction_Select_history = "SELECT " + __sqlTransaction_ListCols + " FROM history.\"transaction\""
 const __sqlTransaction_UpdateAll = "UPDATE \"transaction\" SET (" + __sqlTransaction_ListCols + ")"
+const __sqlTransaction_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT transaction_pkey DO UPDATE SET"
 
 func (m *Transaction) SQLTableName() string  { return "transaction" }
 func (m *Transactions) SQLTableName() string { return "transaction" }
@@ -129,6 +131,22 @@ func (ms Transactions) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Transaction) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlTransaction_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlTransaction_ListColsOnConflict)
+	return nil
+}
+
+func (ms Transactions) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlTransaction_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlTransaction_ListColsOnConflict)
 	return nil
 }
 

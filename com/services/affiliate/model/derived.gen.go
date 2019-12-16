@@ -31,10 +31,12 @@ type CommissionSettings []*CommissionSetting
 
 const __sqlCommissionSetting_Table = "commission_setting"
 const __sqlCommissionSetting_ListCols = "\"product_id\",\"account_id\",\"amount\",\"unit\",\"type\",\"created_at\",\"updated_at\""
+const __sqlCommissionSetting_ListColsOnConflict = "\"product_id\" = EXCLUDED.\"product_id\",\"account_id\" = EXCLUDED.\"account_id\",\"amount\" = EXCLUDED.\"amount\",\"unit\" = EXCLUDED.\"unit\",\"type\" = EXCLUDED.\"type\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlCommissionSetting_Insert = "INSERT INTO \"commission_setting\" (" + __sqlCommissionSetting_ListCols + ") VALUES"
 const __sqlCommissionSetting_Select = "SELECT " + __sqlCommissionSetting_ListCols + " FROM \"commission_setting\""
 const __sqlCommissionSetting_Select_history = "SELECT " + __sqlCommissionSetting_ListCols + " FROM history.\"commission_setting\""
 const __sqlCommissionSetting_UpdateAll = "UPDATE \"commission_setting\" SET (" + __sqlCommissionSetting_ListCols + ")"
+const __sqlCommissionSetting_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT commission_setting_pkey DO UPDATE SET"
 
 func (m *CommissionSetting) SQLTableName() string  { return "commission_setting" }
 func (m *CommissionSettings) SQLTableName() string { return "commission_setting" }
@@ -125,6 +127,22 @@ func (ms CommissionSettings) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *CommissionSetting) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCommissionSetting_ListColsOnConflict)
+	return nil
+}
+
+func (ms CommissionSettings) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCommissionSetting_ListColsOnConflict)
 	return nil
 }
 
@@ -287,10 +305,12 @@ type ProductPromotions []*ProductPromotion
 
 const __sqlProductPromotion_Table = "product_promotion"
 const __sqlProductPromotion_ListCols = "\"id\",\"product_id\",\"shop_id\",\"amount\",\"unit\",\"code\",\"description\",\"note\",\"type\",\"status\",\"created_at\",\"updated_at\""
+const __sqlProductPromotion_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"product_id\" = EXCLUDED.\"product_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"amount\" = EXCLUDED.\"amount\",\"unit\" = EXCLUDED.\"unit\",\"code\" = EXCLUDED.\"code\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlProductPromotion_Insert = "INSERT INTO \"product_promotion\" (" + __sqlProductPromotion_ListCols + ") VALUES"
 const __sqlProductPromotion_Select = "SELECT " + __sqlProductPromotion_ListCols + " FROM \"product_promotion\""
 const __sqlProductPromotion_Select_history = "SELECT " + __sqlProductPromotion_ListCols + " FROM history.\"product_promotion\""
 const __sqlProductPromotion_UpdateAll = "UPDATE \"product_promotion\" SET (" + __sqlProductPromotion_ListCols + ")"
+const __sqlProductPromotion_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT product_promotion_pkey DO UPDATE SET"
 
 func (m *ProductPromotion) SQLTableName() string  { return "product_promotion" }
 func (m *ProductPromotions) SQLTableName() string { return "product_promotion" }
@@ -391,6 +411,22 @@ func (ms ProductPromotions) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ProductPromotion) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlProductPromotion_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProductPromotion_ListColsOnConflict)
+	return nil
+}
+
+func (ms ProductPromotions) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlProductPromotion_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlProductPromotion_ListColsOnConflict)
 	return nil
 }
 
@@ -608,10 +644,12 @@ type SellerCommissions []*SellerCommission
 
 const __sqlSellerCommission_Table = "seller_commission"
 const __sqlSellerCommission_ListCols = "\"id\",\"seller_id\",\"from_seller_id\",\"product_id\",\"shop_id\",\"supply_id\",\"order_id\",\"amount\",\"description\",\"note\",\"type\",\"status\",\"o_value\",\"o_base_value\",\"valid_at\",\"created_at\",\"updated_at\""
+const __sqlSellerCommission_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"seller_id\" = EXCLUDED.\"seller_id\",\"from_seller_id\" = EXCLUDED.\"from_seller_id\",\"product_id\" = EXCLUDED.\"product_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supply_id\" = EXCLUDED.\"supply_id\",\"order_id\" = EXCLUDED.\"order_id\",\"amount\" = EXCLUDED.\"amount\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"o_value\" = EXCLUDED.\"o_value\",\"o_base_value\" = EXCLUDED.\"o_base_value\",\"valid_at\" = EXCLUDED.\"valid_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlSellerCommission_Insert = "INSERT INTO \"seller_commission\" (" + __sqlSellerCommission_ListCols + ") VALUES"
 const __sqlSellerCommission_Select = "SELECT " + __sqlSellerCommission_ListCols + " FROM \"seller_commission\""
 const __sqlSellerCommission_Select_history = "SELECT " + __sqlSellerCommission_ListCols + " FROM history.\"seller_commission\""
 const __sqlSellerCommission_UpdateAll = "UPDATE \"seller_commission\" SET (" + __sqlSellerCommission_ListCols + ")"
+const __sqlSellerCommission_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT seller_commission_pkey DO UPDATE SET"
 
 func (m *SellerCommission) SQLTableName() string  { return "seller_commission" }
 func (m *SellerCommissions) SQLTableName() string { return "seller_commission" }
@@ -722,6 +760,22 @@ func (ms SellerCommissions) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *SellerCommission) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlSellerCommission_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSellerCommission_ListColsOnConflict)
+	return nil
+}
+
+func (ms SellerCommissions) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlSellerCommission_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSellerCommission_ListColsOnConflict)
 	return nil
 }
 
@@ -996,10 +1050,12 @@ type OrderCreatedNotifies []*OrderCreatedNotify
 
 const __sqlOrderCreatedNotify_Table = "order_created_notify"
 const __sqlOrderCreatedNotify_ListCols = "\"id\",\"order_id\",\"shop_user_id\",\"seller_id\",\"shop_id\",\"supply_id\",\"referral_code\",\"promotion_snapshot_status\",\"promotion_snapshot_err\",\"commission_snapshot_status\",\"commission_snapshot_err\",\"cashback_process_status\",\"cashback_process_err\",\"commission_process_status\",\"commission_process_err\",\"payment_status\",\"status\",\"completed_at\",\"created_at\",\"updated_at\""
+const __sqlOrderCreatedNotify_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"order_id\" = EXCLUDED.\"order_id\",\"shop_user_id\" = EXCLUDED.\"shop_user_id\",\"seller_id\" = EXCLUDED.\"seller_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supply_id\" = EXCLUDED.\"supply_id\",\"referral_code\" = EXCLUDED.\"referral_code\",\"promotion_snapshot_status\" = EXCLUDED.\"promotion_snapshot_status\",\"promotion_snapshot_err\" = EXCLUDED.\"promotion_snapshot_err\",\"commission_snapshot_status\" = EXCLUDED.\"commission_snapshot_status\",\"commission_snapshot_err\" = EXCLUDED.\"commission_snapshot_err\",\"cashback_process_status\" = EXCLUDED.\"cashback_process_status\",\"cashback_process_err\" = EXCLUDED.\"cashback_process_err\",\"commission_process_status\" = EXCLUDED.\"commission_process_status\",\"commission_process_err\" = EXCLUDED.\"commission_process_err\",\"payment_status\" = EXCLUDED.\"payment_status\",\"status\" = EXCLUDED.\"status\",\"completed_at\" = EXCLUDED.\"completed_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlOrderCreatedNotify_Insert = "INSERT INTO \"order_created_notify\" (" + __sqlOrderCreatedNotify_ListCols + ") VALUES"
 const __sqlOrderCreatedNotify_Select = "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM \"order_created_notify\""
 const __sqlOrderCreatedNotify_Select_history = "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM history.\"order_created_notify\""
 const __sqlOrderCreatedNotify_UpdateAll = "UPDATE \"order_created_notify\" SET (" + __sqlOrderCreatedNotify_ListCols + ")"
+const __sqlOrderCreatedNotify_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT order_created_notify_pkey DO UPDATE SET"
 
 func (m *OrderCreatedNotify) SQLTableName() string   { return "order_created_notify" }
 func (m *OrderCreatedNotifies) SQLTableName() string { return "order_created_notify" }
@@ -1116,6 +1172,22 @@ func (ms OrderCreatedNotifies) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderCreatedNotify) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderCreatedNotify_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderCreatedNotify_ListColsOnConflict)
+	return nil
+}
+
+func (ms OrderCreatedNotifies) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderCreatedNotify_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderCreatedNotify_ListColsOnConflict)
 	return nil
 }
 
@@ -1445,10 +1517,12 @@ type AffiliateReferralCodes []*AffiliateReferralCode
 
 const __sqlAffiliateReferralCode_Table = "affiliate_referral_code"
 const __sqlAffiliateReferralCode_ListCols = "\"id\",\"code\",\"affiliate_id\",\"user_id\",\"created_at\",\"updated_at\""
+const __sqlAffiliateReferralCode_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"affiliate_id\" = EXCLUDED.\"affiliate_id\",\"user_id\" = EXCLUDED.\"user_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlAffiliateReferralCode_Insert = "INSERT INTO \"affiliate_referral_code\" (" + __sqlAffiliateReferralCode_ListCols + ") VALUES"
 const __sqlAffiliateReferralCode_Select = "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM \"affiliate_referral_code\""
 const __sqlAffiliateReferralCode_Select_history = "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM history.\"affiliate_referral_code\""
 const __sqlAffiliateReferralCode_UpdateAll = "UPDATE \"affiliate_referral_code\" SET (" + __sqlAffiliateReferralCode_ListCols + ")"
+const __sqlAffiliateReferralCode_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT affiliate_referral_code_pkey DO UPDATE SET"
 
 func (m *AffiliateReferralCode) SQLTableName() string  { return "affiliate_referral_code" }
 func (m *AffiliateReferralCodes) SQLTableName() string { return "affiliate_referral_code" }
@@ -1537,6 +1611,22 @@ func (ms AffiliateReferralCodes) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *AffiliateReferralCode) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAffiliateReferralCode_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAffiliateReferralCode_ListColsOnConflict)
+	return nil
+}
+
+func (ms AffiliateReferralCodes) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAffiliateReferralCode_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAffiliateReferralCode_ListColsOnConflict)
 	return nil
 }
 
@@ -1698,10 +1788,12 @@ type UserReferrals []*UserReferral
 
 const __sqlUserReferral_Table = "user_referral"
 const __sqlUserReferral_ListCols = "\"user_id\",\"referral_id\",\"referral_code\",\"sale_referral_id\",\"sale_referral_code\",\"referral_at\",\"sale_referral_at\",\"created_at\",\"updated_at\""
+const __sqlUserReferral_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"referral_id\" = EXCLUDED.\"referral_id\",\"referral_code\" = EXCLUDED.\"referral_code\",\"sale_referral_id\" = EXCLUDED.\"sale_referral_id\",\"sale_referral_code\" = EXCLUDED.\"sale_referral_code\",\"referral_at\" = EXCLUDED.\"referral_at\",\"sale_referral_at\" = EXCLUDED.\"sale_referral_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlUserReferral_Insert = "INSERT INTO \"user_referral\" (" + __sqlUserReferral_ListCols + ") VALUES"
 const __sqlUserReferral_Select = "SELECT " + __sqlUserReferral_ListCols + " FROM \"user_referral\""
 const __sqlUserReferral_Select_history = "SELECT " + __sqlUserReferral_ListCols + " FROM history.\"user_referral\""
 const __sqlUserReferral_UpdateAll = "UPDATE \"user_referral\" SET (" + __sqlUserReferral_ListCols + ")"
+const __sqlUserReferral_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_referral_pkey DO UPDATE SET"
 
 func (m *UserReferral) SQLTableName() string  { return "user_referral" }
 func (m *UserReferrals) SQLTableName() string { return "user_referral" }
@@ -1796,6 +1888,22 @@ func (ms UserReferrals) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserReferral) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserReferral_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserReferral_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserReferrals) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserReferral_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserReferral_ListColsOnConflict)
 	return nil
 }
 
@@ -1986,10 +2094,12 @@ type SupplyCommissionSettings []*SupplyCommissionSetting
 
 const __sqlSupplyCommissionSetting_Table = "supply_commission_setting"
 const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"m_level1_limit_duration\",\"lifetime_duration\",\"m_lifetime_duration\",\"customer_policy_group_id\",\"group\",\"created_at\",\"updated_at\""
+const __sqlSupplyCommissionSetting_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"product_id\" = EXCLUDED.\"product_id\",\"level1_direct_commission\" = EXCLUDED.\"level1_direct_commission\",\"level1_indirect_commission\" = EXCLUDED.\"level1_indirect_commission\",\"level2_direct_commission\" = EXCLUDED.\"level2_direct_commission\",\"level2_indirect_commission\" = EXCLUDED.\"level2_indirect_commission\",\"depend_on\" = EXCLUDED.\"depend_on\",\"level1_limit_count\" = EXCLUDED.\"level1_limit_count\",\"level1_limit_duration\" = EXCLUDED.\"level1_limit_duration\",\"m_level1_limit_duration\" = EXCLUDED.\"m_level1_limit_duration\",\"lifetime_duration\" = EXCLUDED.\"lifetime_duration\",\"m_lifetime_duration\" = EXCLUDED.\"m_lifetime_duration\",\"customer_policy_group_id\" = EXCLUDED.\"customer_policy_group_id\",\"group\" = EXCLUDED.\"group\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlSupplyCommissionSetting_Insert = "INSERT INTO \"supply_commission_setting\" (" + __sqlSupplyCommissionSetting_ListCols + ") VALUES"
 const __sqlSupplyCommissionSetting_Select = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM \"supply_commission_setting\""
 const __sqlSupplyCommissionSetting_Select_history = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM history.\"supply_commission_setting\""
 const __sqlSupplyCommissionSetting_UpdateAll = "UPDATE \"supply_commission_setting\" SET (" + __sqlSupplyCommissionSetting_ListCols + ")"
+const __sqlSupplyCommissionSetting_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT supply_commission_setting_pkey DO UPDATE SET"
 
 func (m *SupplyCommissionSetting) SQLTableName() string  { return "supply_commission_setting" }
 func (m *SupplyCommissionSettings) SQLTableName() string { return "supply_commission_setting" }
@@ -2098,6 +2208,22 @@ func (ms SupplyCommissionSettings) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *SupplyCommissionSetting) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlSupplyCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSupplyCommissionSetting_ListColsOnConflict)
+	return nil
+}
+
+func (ms SupplyCommissionSettings) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlSupplyCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlSupplyCommissionSetting_ListColsOnConflict)
 	return nil
 }
 
@@ -2391,10 +2517,12 @@ type OrderPromotions []*OrderPromotion
 
 const __sqlOrderPromotion_Table = "order_promotion"
 const __sqlOrderPromotion_ListCols = "\"id\",\"product_id\",\"order_id\",\"product_quantity\",\"base_value\",\"amount\",\"unit\",\"type\",\"order_created_notify_id\",\"description\",\"src\",\"created_at\",\"updated_at\""
+const __sqlOrderPromotion_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"product_id\" = EXCLUDED.\"product_id\",\"order_id\" = EXCLUDED.\"order_id\",\"product_quantity\" = EXCLUDED.\"product_quantity\",\"base_value\" = EXCLUDED.\"base_value\",\"amount\" = EXCLUDED.\"amount\",\"unit\" = EXCLUDED.\"unit\",\"type\" = EXCLUDED.\"type\",\"order_created_notify_id\" = EXCLUDED.\"order_created_notify_id\",\"description\" = EXCLUDED.\"description\",\"src\" = EXCLUDED.\"src\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlOrderPromotion_Insert = "INSERT INTO \"order_promotion\" (" + __sqlOrderPromotion_ListCols + ") VALUES"
 const __sqlOrderPromotion_Select = "SELECT " + __sqlOrderPromotion_ListCols + " FROM \"order_promotion\""
 const __sqlOrderPromotion_Select_history = "SELECT " + __sqlOrderPromotion_ListCols + " FROM history.\"order_promotion\""
 const __sqlOrderPromotion_UpdateAll = "UPDATE \"order_promotion\" SET (" + __sqlOrderPromotion_ListCols + ")"
+const __sqlOrderPromotion_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT order_promotion_pkey DO UPDATE SET"
 
 func (m *OrderPromotion) SQLTableName() string  { return "order_promotion" }
 func (m *OrderPromotions) SQLTableName() string { return "order_promotion" }
@@ -2497,6 +2625,22 @@ func (ms OrderPromotions) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderPromotion) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderPromotion_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderPromotion_ListColsOnConflict)
+	return nil
+}
+
+func (ms OrderPromotions) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderPromotion_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderPromotion_ListColsOnConflict)
 	return nil
 }
 
@@ -2729,10 +2873,12 @@ type OrderCommissionSettings []*OrderCommissionSetting
 
 const __sqlOrderCommissionSetting_Table = "order_commission_setting"
 const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"group\",\"customer_policy_group_id\",\"created_at\",\"updated_at\""
+const __sqlOrderCommissionSetting_ListColsOnConflict = "\"order_id\" = EXCLUDED.\"order_id\",\"supply_id\" = EXCLUDED.\"supply_id\",\"product_id\" = EXCLUDED.\"product_id\",\"product_quantity\" = EXCLUDED.\"product_quantity\",\"level1_direct_commission\" = EXCLUDED.\"level1_direct_commission\",\"level1_indirect_commission\" = EXCLUDED.\"level1_indirect_commission\",\"level2_direct_commission\" = EXCLUDED.\"level2_direct_commission\",\"level2_indirect_commission\" = EXCLUDED.\"level2_indirect_commission\",\"depend_on\" = EXCLUDED.\"depend_on\",\"level1_limit_count\" = EXCLUDED.\"level1_limit_count\",\"level1_limit_duration\" = EXCLUDED.\"level1_limit_duration\",\"lifetime_duration\" = EXCLUDED.\"lifetime_duration\",\"group\" = EXCLUDED.\"group\",\"customer_policy_group_id\" = EXCLUDED.\"customer_policy_group_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlOrderCommissionSetting_Insert = "INSERT INTO \"order_commission_setting\" (" + __sqlOrderCommissionSetting_ListCols + ") VALUES"
 const __sqlOrderCommissionSetting_Select = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM \"order_commission_setting\""
 const __sqlOrderCommissionSetting_Select_history = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM history.\"order_commission_setting\""
 const __sqlOrderCommissionSetting_UpdateAll = "UPDATE \"order_commission_setting\" SET (" + __sqlOrderCommissionSetting_ListCols + ")"
+const __sqlOrderCommissionSetting_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT order_commission_setting_pkey DO UPDATE SET"
 
 func (m *OrderCommissionSetting) SQLTableName() string  { return "order_commission_setting" }
 func (m *OrderCommissionSettings) SQLTableName() string { return "order_commission_setting" }
@@ -2841,6 +2987,22 @@ func (ms OrderCommissionSettings) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderCommissionSetting) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderCommissionSetting_ListColsOnConflict)
+	return nil
+}
+
+func (ms OrderCommissionSettings) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlOrderCommissionSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlOrderCommissionSetting_ListColsOnConflict)
 	return nil
 }
 
@@ -3134,10 +3296,12 @@ type ShopCashbacks []*ShopCashback
 
 const __sqlShopCashback_Table = "shop_cashback"
 const __sqlShopCashback_ListCols = "\"id\",\"shop_id\",\"order_id\",\"amount\",\"order_created_notify_id\",\"description\",\"status\",\"valid_at\",\"created_at\",\"updated_at\""
+const __sqlShopCashback_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"order_id\" = EXCLUDED.\"order_id\",\"amount\" = EXCLUDED.\"amount\",\"order_created_notify_id\" = EXCLUDED.\"order_created_notify_id\",\"description\" = EXCLUDED.\"description\",\"status\" = EXCLUDED.\"status\",\"valid_at\" = EXCLUDED.\"valid_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopCashback_Insert = "INSERT INTO \"shop_cashback\" (" + __sqlShopCashback_ListCols + ") VALUES"
 const __sqlShopCashback_Select = "SELECT " + __sqlShopCashback_ListCols + " FROM \"shop_cashback\""
 const __sqlShopCashback_Select_history = "SELECT " + __sqlShopCashback_ListCols + " FROM history.\"shop_cashback\""
 const __sqlShopCashback_UpdateAll = "UPDATE \"shop_cashback\" SET (" + __sqlShopCashback_ListCols + ")"
+const __sqlShopCashback_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_cashback_pkey DO UPDATE SET"
 
 func (m *ShopCashback) SQLTableName() string  { return "shop_cashback" }
 func (m *ShopCashbacks) SQLTableName() string { return "shop_cashback" }
@@ -3234,6 +3398,22 @@ func (ms ShopCashbacks) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCashback) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCashback_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCashback_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopCashbacks) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopCashback_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopCashback_ListColsOnConflict)
 	return nil
 }
 
@@ -3431,10 +3611,12 @@ type ShopOrderProductHistories []*ShopOrderProductHistory
 
 const __sqlShopOrderProductHistory_Table = "shop_order_product_history"
 const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"customer_policy_group_id\",\"product_quantity\",\"created_at\",\"updated_at\""
+const __sqlShopOrderProductHistory_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"order_id\" = EXCLUDED.\"order_id\",\"supply_id\" = EXCLUDED.\"supply_id\",\"product_id\" = EXCLUDED.\"product_id\",\"customer_policy_group_id\" = EXCLUDED.\"customer_policy_group_id\",\"product_quantity\" = EXCLUDED.\"product_quantity\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopOrderProductHistory_Insert = "INSERT INTO \"shop_order_product_history\" (" + __sqlShopOrderProductHistory_ListCols + ") VALUES"
 const __sqlShopOrderProductHistory_Select = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM \"shop_order_product_history\""
 const __sqlShopOrderProductHistory_Select_history = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM history.\"shop_order_product_history\""
 const __sqlShopOrderProductHistory_UpdateAll = "UPDATE \"shop_order_product_history\" SET (" + __sqlShopOrderProductHistory_ListCols + ")"
+const __sqlShopOrderProductHistory_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_order_product_history_pkey DO UPDATE SET"
 
 func (m *ShopOrderProductHistory) SQLTableName() string   { return "shop_order_product_history" }
 func (m *ShopOrderProductHistories) SQLTableName() string { return "shop_order_product_history" }
@@ -3529,6 +3711,22 @@ func (ms ShopOrderProductHistories) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopOrderProductHistory) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopOrderProductHistory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopOrderProductHistory_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopOrderProductHistories) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopOrderProductHistory_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopOrderProductHistory_ListColsOnConflict)
 	return nil
 }
 
@@ -3729,10 +3927,12 @@ type CustomerPolicyGroups []*CustomerPolicyGroup
 
 const __sqlCustomerPolicyGroup_Table = "customer_policy_group"
 const __sqlCustomerPolicyGroup_ListCols = "\"id\",\"supply_id\",\"name\",\"created_at\",\"updated_at\""
+const __sqlCustomerPolicyGroup_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"supply_id\" = EXCLUDED.\"supply_id\",\"name\" = EXCLUDED.\"name\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlCustomerPolicyGroup_Insert = "INSERT INTO \"customer_policy_group\" (" + __sqlCustomerPolicyGroup_ListCols + ") VALUES"
 const __sqlCustomerPolicyGroup_Select = "SELECT " + __sqlCustomerPolicyGroup_ListCols + " FROM \"customer_policy_group\""
 const __sqlCustomerPolicyGroup_Select_history = "SELECT " + __sqlCustomerPolicyGroup_ListCols + " FROM history.\"customer_policy_group\""
 const __sqlCustomerPolicyGroup_UpdateAll = "UPDATE \"customer_policy_group\" SET (" + __sqlCustomerPolicyGroup_ListCols + ")"
+const __sqlCustomerPolicyGroup_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT customer_policy_group_pkey DO UPDATE SET"
 
 func (m *CustomerPolicyGroup) SQLTableName() string  { return "customer_policy_group" }
 func (m *CustomerPolicyGroups) SQLTableName() string { return "customer_policy_group" }
@@ -3819,6 +4019,22 @@ func (ms CustomerPolicyGroups) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *CustomerPolicyGroup) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCustomerPolicyGroup_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCustomerPolicyGroup_ListColsOnConflict)
+	return nil
+}
+
+func (ms CustomerPolicyGroups) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCustomerPolicyGroup_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCustomerPolicyGroup_ListColsOnConflict)
 	return nil
 }
 

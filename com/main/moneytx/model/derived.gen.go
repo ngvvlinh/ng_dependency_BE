@@ -35,10 +35,12 @@ type MoneyTransactionShippingExternals []*MoneyTransactionShippingExternal
 
 const __sqlMoneyTransactionShippingExternal_Table = "money_transaction_shipping_external"
 const __sqlMoneyTransactionShippingExternal_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"created_at\",\"updated_at\",\"status\",\"external_paid_at\",\"provider\",\"bank_account\",\"note\",\"invoice_number\""
+const __sqlMoneyTransactionShippingExternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"status\" = EXCLUDED.\"status\",\"external_paid_at\" = EXCLUDED.\"external_paid_at\",\"provider\" = EXCLUDED.\"provider\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\""
 const __sqlMoneyTransactionShippingExternal_Insert = "INSERT INTO \"money_transaction_shipping_external\" (" + __sqlMoneyTransactionShippingExternal_ListCols + ") VALUES"
 const __sqlMoneyTransactionShippingExternal_Select = "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM \"money_transaction_shipping_external\""
 const __sqlMoneyTransactionShippingExternal_Select_history = "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM history.\"money_transaction_shipping_external\""
 const __sqlMoneyTransactionShippingExternal_UpdateAll = "UPDATE \"money_transaction_shipping_external\" SET (" + __sqlMoneyTransactionShippingExternal_ListCols + ")"
+const __sqlMoneyTransactionShippingExternal_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT money_transaction_shipping_external_pkey DO UPDATE SET"
 
 func (m *MoneyTransactionShippingExternal) SQLTableName() string {
 	return "money_transaction_shipping_external"
@@ -145,6 +147,22 @@ func (ms MoneyTransactionShippingExternals) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *MoneyTransactionShippingExternal) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_ListColsOnConflict)
+	return nil
+}
+
+func (ms MoneyTransactionShippingExternals) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_ListColsOnConflict)
 	return nil
 }
 
@@ -390,10 +408,12 @@ type MoneyTransactionShippingExternalLines []*MoneyTransactionShippingExternalLi
 
 const __sqlMoneyTransactionShippingExternalLine_Table = "money_transaction_shipping_external_line"
 const __sqlMoneyTransactionShippingExternalLine_ListCols = "\"id\",\"external_code\",\"external_customer\",\"external_address\",\"external_total_cod\",\"external_created_at\",\"external_closed_at\",\"etop_fulfillment_id_raw\",\"etop_fulfillment_id\",\"note\",\"money_transaction_shipping_external_id\",\"created_at\",\"updated_at\",\"import_error\",\"external_total_shipping_fee\""
+const __sqlMoneyTransactionShippingExternalLine_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_code\" = EXCLUDED.\"external_code\",\"external_customer\" = EXCLUDED.\"external_customer\",\"external_address\" = EXCLUDED.\"external_address\",\"external_total_cod\" = EXCLUDED.\"external_total_cod\",\"external_created_at\" = EXCLUDED.\"external_created_at\",\"external_closed_at\" = EXCLUDED.\"external_closed_at\",\"etop_fulfillment_id_raw\" = EXCLUDED.\"etop_fulfillment_id_raw\",\"etop_fulfillment_id\" = EXCLUDED.\"etop_fulfillment_id\",\"note\" = EXCLUDED.\"note\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"import_error\" = EXCLUDED.\"import_error\",\"external_total_shipping_fee\" = EXCLUDED.\"external_total_shipping_fee\""
 const __sqlMoneyTransactionShippingExternalLine_Insert = "INSERT INTO \"money_transaction_shipping_external_line\" (" + __sqlMoneyTransactionShippingExternalLine_ListCols + ") VALUES"
 const __sqlMoneyTransactionShippingExternalLine_Select = "SELECT " + __sqlMoneyTransactionShippingExternalLine_ListCols + " FROM \"money_transaction_shipping_external_line\""
 const __sqlMoneyTransactionShippingExternalLine_Select_history = "SELECT " + __sqlMoneyTransactionShippingExternalLine_ListCols + " FROM history.\"money_transaction_shipping_external_line\""
 const __sqlMoneyTransactionShippingExternalLine_UpdateAll = "UPDATE \"money_transaction_shipping_external_line\" SET (" + __sqlMoneyTransactionShippingExternalLine_ListCols + ")"
+const __sqlMoneyTransactionShippingExternalLine_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT money_transaction_shipping_external_line_pkey DO UPDATE SET"
 
 func (m *MoneyTransactionShippingExternalLine) SQLTableName() string {
 	return "money_transaction_shipping_external_line"
@@ -506,6 +526,22 @@ func (ms MoneyTransactionShippingExternalLines) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *MoneyTransactionShippingExternalLine) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternalLine_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternalLine_ListColsOnConflict)
+	return nil
+}
+
+func (ms MoneyTransactionShippingExternalLines) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternalLine_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingExternalLine_ListColsOnConflict)
 	return nil
 }
 
@@ -916,10 +952,12 @@ type MoneyTransactionShippings []*MoneyTransactionShipping
 
 const __sqlMoneyTransactionShipping_Table = "money_transaction_shipping"
 const __sqlMoneyTransactionShipping_ListCols = "\"id\",\"shop_id\",\"created_at\",\"updated_at\",\"closed_at\",\"status\",\"total_cod\",\"total_amount\",\"total_orders\",\"code\",\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\",\"provider\",\"confirmed_at\",\"etop_transfered_at\",\"bank_account\",\"note\",\"invoice_number\",\"type\""
+const __sqlMoneyTransactionShipping_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"status\" = EXCLUDED.\"status\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_orders\" = EXCLUDED.\"total_orders\",\"code\" = EXCLUDED.\"code\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\" = EXCLUDED.\"money_transaction_shipping_etop_id\",\"provider\" = EXCLUDED.\"provider\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"etop_transfered_at\" = EXCLUDED.\"etop_transfered_at\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"type\" = EXCLUDED.\"type\""
 const __sqlMoneyTransactionShipping_Insert = "INSERT INTO \"money_transaction_shipping\" (" + __sqlMoneyTransactionShipping_ListCols + ") VALUES"
 const __sqlMoneyTransactionShipping_Select = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM \"money_transaction_shipping\""
 const __sqlMoneyTransactionShipping_Select_history = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM history.\"money_transaction_shipping\""
 const __sqlMoneyTransactionShipping_UpdateAll = "UPDATE \"money_transaction_shipping\" SET (" + __sqlMoneyTransactionShipping_ListCols + ")"
+const __sqlMoneyTransactionShipping_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT money_transaction_shipping_pkey DO UPDATE SET"
 
 func (m *MoneyTransactionShipping) SQLTableName() string  { return "money_transaction_shipping" }
 func (m *MoneyTransactionShippings) SQLTableName() string { return "money_transaction_shipping" }
@@ -1034,6 +1072,22 @@ func (ms MoneyTransactionShippings) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *MoneyTransactionShipping) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShipping_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShipping_ListColsOnConflict)
+	return nil
+}
+
+func (ms MoneyTransactionShippings) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShipping_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShipping_ListColsOnConflict)
 	return nil
 }
 
@@ -1456,10 +1510,12 @@ type MoneyTransactionShippingEtops []*MoneyTransactionShippingEtop
 
 const __sqlMoneyTransactionShippingEtop_Table = "money_transaction_shipping_etop"
 const __sqlMoneyTransactionShippingEtop_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"total_amount\",\"total_fee\",\"total_money_transaction\",\"created_at\",\"updated_at\",\"confirmed_at\",\"status\",\"bank_account\",\"note\",\"invoice_number\""
+const __sqlMoneyTransactionShippingEtop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_money_transaction\" = EXCLUDED.\"total_money_transaction\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"status\" = EXCLUDED.\"status\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\""
 const __sqlMoneyTransactionShippingEtop_Insert = "INSERT INTO \"money_transaction_shipping_etop\" (" + __sqlMoneyTransactionShippingEtop_ListCols + ") VALUES"
 const __sqlMoneyTransactionShippingEtop_Select = "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM \"money_transaction_shipping_etop\""
 const __sqlMoneyTransactionShippingEtop_Select_history = "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM history.\"money_transaction_shipping_etop\""
 const __sqlMoneyTransactionShippingEtop_UpdateAll = "UPDATE \"money_transaction_shipping_etop\" SET (" + __sqlMoneyTransactionShippingEtop_ListCols + ")"
+const __sqlMoneyTransactionShippingEtop_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT money_transaction_shipping_etop_pkey DO UPDATE SET"
 
 func (m *MoneyTransactionShippingEtop) SQLTableName() string { return "money_transaction_shipping_etop" }
 func (m *MoneyTransactionShippingEtops) SQLTableName() string {
@@ -1568,6 +1624,22 @@ func (ms MoneyTransactionShippingEtops) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *MoneyTransactionShippingEtop) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_ListColsOnConflict)
+	return nil
+}
+
+func (ms MoneyTransactionShippingEtops) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_ListColsOnConflict)
 	return nil
 }
 

@@ -32,10 +32,12 @@ type Foos []*Foo
 
 const __sqlFoo_Table = "foo"
 const __sqlFoo_ListCols = "\"id\",\"account_id\",\"abc_2\",\"def2\",\"created_at\",\"updated_at\""
+const __sqlFoo_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"abc_2\" = EXCLUDED.\"abc_2\",\"def2\" = EXCLUDED.\"def2\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFoo_Insert = "INSERT INTO \"foo\" (" + __sqlFoo_ListCols + ") VALUES"
 const __sqlFoo_Select = "SELECT " + __sqlFoo_ListCols + " FROM \"foo\""
 const __sqlFoo_Select_history = "SELECT " + __sqlFoo_ListCols + " FROM history.\"foo\""
 const __sqlFoo_UpdateAll = "UPDATE \"foo\" SET (" + __sqlFoo_ListCols + ")"
+const __sqlFoo_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT foo_pkey DO UPDATE SET"
 
 func (m *Foo) SQLTableName() string  { return "foo" }
 func (m *Foos) SQLTableName() string { return "foo" }
@@ -124,6 +126,22 @@ func (ms Foos) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Foo) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlFoo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFoo_ListColsOnConflict)
+	return nil
+}
+
+func (ms Foos) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlFoo_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFoo_ListColsOnConflict)
 	return nil
 }
 
@@ -275,10 +293,12 @@ type Accounts []*Account
 
 const __sqlAccount_Table = "account"
 const __sqlAccount_ListCols = "\"id\",\"name\""
+const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\""
 const __sqlAccount_Insert = "INSERT INTO \"account\" (" + __sqlAccount_ListCols + ") VALUES"
 const __sqlAccount_Select = "SELECT " + __sqlAccount_ListCols + " FROM \"account\""
 const __sqlAccount_Select_history = "SELECT " + __sqlAccount_ListCols + " FROM history.\"account\""
 const __sqlAccount_UpdateAll = "UPDATE \"account\" SET (" + __sqlAccount_ListCols + ")"
+const __sqlAccount_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT account_pkey DO UPDATE SET"
 
 func (m *Account) SQLTableName() string  { return "account" }
 func (m *Accounts) SQLTableName() string { return "account" }
@@ -358,6 +378,22 @@ func (ms Accounts) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Account) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccount_ListColsOnConflict)
+	return nil
+}
+
+func (ms Accounts) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAccount_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAccount_ListColsOnConflict)
 	return nil
 }
 
