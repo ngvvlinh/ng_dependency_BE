@@ -3443,16 +3443,13 @@
           "format": "int64"
         },
         "total_amount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "total_cod": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "total_orders": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         }
       }
     },
@@ -3464,16 +3461,13 @@
           "format": "int64"
         },
         "total_amount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "total_cod": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "total_orders": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         }
       }
     },
@@ -3481,8 +3475,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "paid_at": {
           "type": "string",
@@ -3761,8 +3754,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer"
         },
         "id": {
           "type": "string",

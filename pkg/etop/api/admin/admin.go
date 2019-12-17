@@ -179,9 +179,9 @@ func (s *MoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context, q
 	cmd := &modelx.ConfirmMoneyTransaction{
 		MoneyTransactionID: q.MoneyTransactionId,
 		ShopID:             q.ShopId,
-		TotalCOD:           int(q.TotalCod),
-		TotalAmount:        int(q.TotalAmount),
-		TotalOrders:        int(q.TotalOrders),
+		TotalCOD:           q.TotalCod,
+		TotalAmount:        q.TotalAmount,
+		TotalOrders:        q.TotalOrders,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -315,7 +315,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoint) error {
 	cmd := &model.CreateCreditCommand{
-		Amount: int(q.Amount),
+		Amount: q.Amount,
 		ShopID: q.ShopId,
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
 		Type:   q.Type,
@@ -360,7 +360,7 @@ func (s *CreditService) UpdateCredit(ctx context.Context, q *UpdateCreditEndpoin
 	cmd := &model.UpdateCreditCommand{
 		ID:     q.Id,
 		ShopID: q.ShopId,
-		Amount: int(q.Amount),
+		Amount: q.Amount,
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -523,9 +523,9 @@ func (s *MoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx context
 func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx context.Context, q *ConfirmMoneyTransactionShippingEtopEndpoint) error {
 	cmd := &modelx.ConfirmMoneyTransactionShippingEtop{
 		ID:          q.Id,
-		TotalCOD:    int(q.TotalCod),
-		TotalAmount: int(q.TotalAmount),
-		TotalOrders: int(q.TotalOrders),
+		TotalCOD:    q.TotalCod,
+		TotalAmount: q.TotalAmount,
+		TotalOrders: q.TotalOrders,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

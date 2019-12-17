@@ -88,9 +88,9 @@ func (m *RemoveMoneyTransactionShippingExternalLinesRequest) String() string {
 type ConfirmMoneyTransactionRequest struct {
 	MoneyTransactionId dot.ID `json:"money_transaction_id"`
 	ShopId             dot.ID `json:"shop_id"`
-	TotalCod           dot.ID `json:"total_cod"`
-	TotalAmount        dot.ID `json:"total_amount"`
-	TotalOrders        dot.ID `json:"total_orders"`
+	TotalCod           int    `json:"total_cod"`
+	TotalAmount        int    `json:"total_amount"`
+	TotalOrders        int    `json:"total_orders"`
 }
 
 func (m *ConfirmMoneyTransactionRequest) Reset()         { *m = ConfirmMoneyTransactionRequest{} }
@@ -136,7 +136,7 @@ func (m *GetCreditsRequest) Reset()         { *m = GetCreditsRequest{} }
 func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCreditRequest struct {
-	Amount dot.ID                 `json:"amount"`
+	Amount int                    `json:"amount"`
 	ShopId dot.ID                 `json:"shop_id"`
 	Type   credit_type.CreditType `json:"type"`
 	PaidAt dot.Time               `json:"paid_at"`
@@ -147,7 +147,7 @@ func (m *CreateCreditRequest) String() string { return jsonx.MustMarshalToString
 
 type UpdateCreditRequest struct {
 	Id     dot.ID                  `json:"id"`
-	Amount dot.ID                  `json:"amount"`
+	Amount int                     `json:"amount"`
 	ShopId dot.ID                  `json:"shop_id"`
 	Type   *credit_type.CreditType `json:"type"`
 	PaidAt dot.Time                `json:"paid_at"`
@@ -231,9 +231,9 @@ func (m *GetMoneyTransactionShippingEtopsRequest) String() string { return jsonx
 
 type ConfirmMoneyTransactionShippingEtopRequest struct {
 	Id          dot.ID `json:"id"`
-	TotalCod    dot.ID `json:"total_cod"`
-	TotalAmount dot.ID `json:"total_amount"`
-	TotalOrders dot.ID `json:"total_orders"`
+	TotalCod    int    `json:"total_cod"`
+	TotalAmount int    `json:"total_amount"`
+	TotalOrders int    `json:"total_orders"`
 }
 
 func (m *ConfirmMoneyTransactionShippingEtopRequest) Reset() {
