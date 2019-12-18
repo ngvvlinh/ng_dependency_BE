@@ -41,7 +41,7 @@ func (p *ProcessManager) ReceiptCreating(
 	receipt := event.Receipt
 	mapRefIDAmount := event.MapRefIDAmount
 
-	if receipt.RefType != receipt_ref.ReceiptRefTypePurchaseOrder {
+	if receipt.RefType != receipt_ref.PurchaseOrder {
 		return nil
 	}
 
@@ -77,7 +77,7 @@ func (p *ProcessManager) ReceiptCreating(
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
-		RefType: receipt_ref.ReceiptRefTypePurchaseOrder,
+		RefType: receipt_ref.PurchaseOrder,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {

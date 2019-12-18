@@ -14,14 +14,14 @@ const (
 	Unknown ReceiptRef = 0
 
 	// +enum=order
-	ReceiptRefTypeOrder ReceiptRef = 1
+	Order ReceiptRef = 1
 
 	// +enum=fulfillment
-	ReceiptRefTypeFulfillment ReceiptRef = 2
+	Fulfillment ReceiptRef = 2
 
 	// +enum=purchase_order
-	ReceiptRefTypePurchaseOrder ReceiptRef = 3
+	PurchaseOrder ReceiptRef = 3
 
 	// +enum=refund
-	ReceiptRefTypeRefund ReceiptRef = 4
+	Refund ReceiptRef = 4
 )

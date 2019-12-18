@@ -220,7 +220,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  purchaseOrderIDs,
-		RefType: receipt_ref.ReceiptRefTypePurchaseOrder,
+		RefType: receipt_ref.PurchaseOrder,
 		Status:  int(status3.P),
 	}
 	if err := q.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {

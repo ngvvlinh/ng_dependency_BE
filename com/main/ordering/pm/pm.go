@@ -111,7 +111,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 	if len(getReceiptByIDQuery.Result.RefIDs) == 0 {
 		return nil
 	}
-	if getReceiptByIDQuery.Result.RefType != receipt_ref.ReceiptRefTypeOrder {
+	if getReceiptByIDQuery.Result.RefType != receipt_ref.Order {
 		return nil
 	}
 	for _, orderID := range getReceiptByIDQuery.Result.RefIDs {
@@ -121,7 +121,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
-		RefType: receipt_ref.ReceiptRefTypeOrder,
+		RefType: receipt_ref.Order,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
@@ -218,7 +218,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	receipt := event.Receipt
 	refIDs := event.RefIDs
 	mapRefIDAmount := event.MapRefIDAmount
-	if receipt.RefType != receipt_ref.ReceiptRefTypeOrder {
+	if receipt.RefType != receipt_ref.Order {
 		return nil
 	}
 
@@ -270,7 +270,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
-		RefType: receipt_ref.ReceiptRefTypeOrder,
+		RefType: receipt_ref.Order,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {

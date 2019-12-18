@@ -98,14 +98,14 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  event.ShopID,
 		RefIDs:  orderIDs,
-		RefType: receipt_ref.ReceiptRefTypeOrder,
+		RefType: receipt_ref.Order,
 		Status:  int(status3.P),
 	}
 	if err := m.receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
 		return err
 	}
 	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
-		if receipt.RefType != receipt_ref.ReceiptRefTypeOrder {
+		if receipt.RefType != receipt_ref.Order {
 			continue
 		}
 		for _, receiptLine := range receipt.Lines {
@@ -164,7 +164,7 @@ func (m *ProcessManager) createPayment(
 			Status:      int(status3.P),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
-			RefType:     receipt_ref.ReceiptRefTypeFulfillment,
+			RefType:     receipt_ref.Fulfillment,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
 			Mode:        receipt_mode.Auto,
@@ -207,7 +207,7 @@ func createReceipts(
 			Amount:      value - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
 			RefIDs:      []dot.ID{key},
-			RefType:     receipt_ref.ReceiptRefTypeOrder,
+			RefType:     receipt_ref.Order,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
 			Mode:        receipt_mode.Auto,

@@ -290,7 +290,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
-		RefType: receipt_ref.ReceiptRefTypeOrder,
+		RefType: receipt_ref.Order,
 		Status:  int(status3.P),
 	}
 	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {

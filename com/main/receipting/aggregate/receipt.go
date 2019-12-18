@@ -218,7 +218,7 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 	}
 
 	// Validate type and refID
-	if err := a.validateTypeAndRefType(receipt.Type, receipt.RefType); err != nil {
+	if err := validateTypeAndRefType(receipt.Type, receipt.RefType); err != nil {
 		return err
 	}
 
@@ -246,17 +246,20 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 	return nil
 }
 
-func (a *ReceiptAggregate) validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType receipt_ref.ReceiptRef) error {
-	if receiptRefType == receipt_ref.ReceiptRefTypePurchaseOrder && receiptType == receipt_type.Receipt {
+func validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType receipt_ref.ReceiptRef) error {
+	type tuple struct {
+		receiptType    receipt_type.ReceiptType
+		receiptRefType receipt_ref.ReceiptRef
+	}
+	t := tuple{receiptType, receiptRefType}
+	switch t {
+	case tuple{receipt_type.Receipt, receipt_ref.PurchaseOrder},
+		tuple{receipt_type.Receipt, receipt_ref.Refund},
+		tuple{receipt_type.Payment, receipt_ref.Refund}:
+		return nil
+	default:
 		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
 	}
-	if receiptType == receipt_type.Payment && receiptRefType == receipt_ref.ReceiptRefTypeOrder {
-		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
-	}
-	if receiptRefType == receipt_ref.ReceiptRefTypeRefund && receiptType == receipt_type.Receipt {
-		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
-	}
-	return nil
 }
 
 func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID dot.ID) error {
@@ -290,15 +293,15 @@ func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID dot
 	}
 	traderType := query.Result.Type
 	switch receipt.RefType {
-	case receipt_ref.ReceiptRefTypeOrder:
+	case receipt_ref.Order:
 		if traderType != tradering.CustomerType {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
 		}
-	case receipt_ref.ReceiptRefTypeFulfillment:
+	case receipt_ref.Fulfillment:
 		if traderType != tradering.CarrierType {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
 		}
-	case receipt_ref.ReceiptRefTypePurchaseOrder:
+	case receipt_ref.PurchaseOrder:
 		if traderType != tradering.SupplierType {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
 		}
