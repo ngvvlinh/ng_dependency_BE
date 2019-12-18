@@ -129,28 +129,6 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể chỉnh sửa đơn nhập hàng, kiểm tra trạng thái đơn.")
 	}
 
-	if args.SupplierID.Valid && args.SupplierID.ID != purchaseOrder.SupplierID {
-		// check supplier_id
-		getSupplier := &suppliering.GetSupplierByIDQuery{
-			ID:     args.SupplierID.ID,
-			ShopID: args.ShopID,
-		}
-		if err := a.supplierQuery.Dispatch(ctx, getSupplier); err != nil {
-			return nil, cm.MapError(err).
-				Wrap(cm.NotFound, "Không tìm thấy nhà phân phối").
-				Throw()
-		}
-
-		purchaseOrder.Supplier = &purchaseorder.PurchaseOrderSupplier{
-			FullName:           getSupplier.Result.FullName,
-			Phone:              getSupplier.Result.Phone,
-			Email:              getSupplier.Result.Email,
-			CompanyName:        getSupplier.Result.CompanyName,
-			TaxNumber:          getSupplier.Result.TaxNumber,
-			HeadquarterAddress: getSupplier.Result.HeadquaterAddress,
-		}
-	}
-
 	if err := scheme.Convert(args, purchaseOrder); err != nil {
 		return nil, err
 	}

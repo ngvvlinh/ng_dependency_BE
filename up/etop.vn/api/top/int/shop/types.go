@@ -91,7 +91,6 @@ func (m *CreatePurchaseOrderRequest) String() string { return jsonx.MustMarshalT
 
 type UpdatePurchaseOrderRequest struct {
 	Id            dot.ID               `json:"id"`
-	SupplierId    dot.NullID           `json:"supplier_id"`
 	BasketValue   dot.NullInt          `json:"basket_value"`
 	TotalDiscount dot.NullInt          `json:"total_discount"`
 	TotalAmount   dot.NullInt          `json:"total_amount"`

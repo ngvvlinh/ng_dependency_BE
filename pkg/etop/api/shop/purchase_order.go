@@ -109,7 +109,6 @@ func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *Updat
 	cmd := &purchaseorder.UpdatePurchaseOrderCommand{
 		ID:            r.Id,
 		ShopID:        r.Context.Shop.ID,
-		SupplierID:    r.SupplierId,
 		BasketValue:   r.BasketValue,
 		TotalDiscount: r.TotalDiscount,
 		TotalAmount:   r.TotalAmount,

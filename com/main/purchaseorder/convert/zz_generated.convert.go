@@ -233,7 +233,7 @@ func Apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 func apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg *purchaseorder.UpdatePurchaseOrderArgs, out *purchaseorder.PurchaseOrder) {
 	out.ID = out.ID                                                // identifier
 	out.ShopID = out.ShopID                                        // identifier
-	out.SupplierID = arg.SupplierID.Apply(out.SupplierID)          // apply change
+	out.SupplierID = out.SupplierID                                // no change
 	out.Supplier = out.Supplier                                    // no change
 	out.InventoryVoucher = out.InventoryVoucher                    // no change
 	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)       // apply change

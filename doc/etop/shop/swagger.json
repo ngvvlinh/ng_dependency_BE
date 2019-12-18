@@ -9759,10 +9759,6 @@
         "note": {
           "type": "string"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "total_amount": {
           "type": "integer"
         },

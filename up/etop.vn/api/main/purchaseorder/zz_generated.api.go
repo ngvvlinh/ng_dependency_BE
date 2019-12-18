@@ -87,7 +87,6 @@ func (h AggregateHandler) HandleDeletePurchaseOrder(ctx context.Context, msg *De
 type UpdatePurchaseOrderCommand struct {
 	ID            dot.ID
 	ShopID        dot.ID
-	SupplierID    dot.NullID
 	BasketValue   dot.NullInt
 	TotalDiscount dot.NullInt
 	TotalAmount   dot.NullInt
@@ -246,7 +245,6 @@ func (q *UpdatePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 		&UpdatePurchaseOrderArgs{
 			ID:            q.ID,
 			ShopID:        q.ShopID,
-			SupplierID:    q.SupplierID,
 			BasketValue:   q.BasketValue,
 			TotalDiscount: q.TotalDiscount,
 			TotalAmount:   q.TotalAmount,
@@ -258,7 +256,6 @@ func (q *UpdatePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 func (q *UpdatePurchaseOrderCommand) SetUpdatePurchaseOrderArgs(args *UpdatePurchaseOrderArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
-	q.SupplierID = args.SupplierID
 	q.BasketValue = args.BasketValue
 	q.TotalDiscount = args.TotalDiscount
 	q.TotalAmount = args.TotalAmount

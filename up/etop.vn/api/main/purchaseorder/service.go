@@ -55,7 +55,6 @@ type CreatePurchaseOrderArgs struct {
 type UpdatePurchaseOrderArgs struct {
 	ID            dot.ID
 	ShopID        dot.ID
-	SupplierID    NullID
 	BasketValue   NullInt
 	TotalDiscount NullInt
 	TotalAmount   NullInt
