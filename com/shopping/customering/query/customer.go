@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
@@ -87,9 +88,22 @@ func (q *CustomerQuery) ListCustomers(
 }
 
 func (q *CustomerQuery) ListCustomersByIDs(
-	ctx context.Context, args *shopping.IDsQueryShopArgs,
+	ctx context.Context, args *customering.ListCustomerByIDsArgs,
 ) (*customering.CustomersResponse, error) {
-	customers, err := q.store(ctx).ShopID(args.ShopID).IDs(args.IDs...).ListCustomers()
+	var shopIDs []dot.ID
+	count := 0
+	if args.ShopID != 0 {
+		shopIDs = append(shopIDs, args.ShopID)
+		count++
+	}
+	if args.ShopIDs != nil {
+		shopIDs = append(shopIDs, args.ShopIDs...)
+		count++
+	}
+	if count != 1 {
+		return nil, cm.Error(cm.InvalidArgument, "Yêu cầu không hợp lệ", nil)
+	}
+	customers, err := q.store(ctx).ShopIDs(shopIDs...).IDs(args.IDs...).ListCustomers()
 	if err != nil {
 		return nil, err
 	}

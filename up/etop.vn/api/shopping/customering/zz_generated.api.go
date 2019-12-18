@@ -236,8 +236,9 @@ func (h QueryServiceHandler) HandleListCustomers(ctx context.Context, msg *ListC
 }
 
 type ListCustomersByIDsQuery struct {
-	IDs    []dot.ID
-	ShopID dot.ID
+	IDs     []dot.ID
+	ShopIDs []dot.ID
+	ShopID  dot.ID
 
 	Result *CustomersResponse `json:"-"`
 }
@@ -472,16 +473,18 @@ func (q *ListCustomersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopAr
 	q.Filters = args.Filters
 }
 
-func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerByIDsArgs) {
 	return ctx,
-		&shopping.IDsQueryShopArgs{
-			IDs:    q.IDs,
-			ShopID: q.ShopID,
+		&ListCustomerByIDsArgs{
+			IDs:     q.IDs,
+			ShopIDs: q.ShopIDs,
+			ShopID:  q.ShopID,
 		}
 }
 
-func (q *ListCustomersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+func (q *ListCustomersByIDsQuery) SetListCustomerByIDsArgs(args *ListCustomerByIDsArgs) {
 	q.IDs = args.IDs
+	q.ShopIDs = args.ShopIDs
 	q.ShopID = args.ShopID
 }
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/shopping/customering"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/receipt_ref"
@@ -88,11 +89,46 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		Paging: cmapi.PbPageInfo(paging),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
-
+	if err := checkValidateCustomer(ctx, q.Result.Orders); err != nil {
+		return err
+	}
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
+	if orders == nil {
+		return nil
+	}
+	customerIDs := make([]dot.ID, 0, len(orders))
+	shopIDs := make([]dot.ID, 0, len(orders))
+	for _, order := range orders {
+		customerIDs = append(customerIDs, order.CustomerId)
+		shopIDs = append(shopIDs, order.ShopId)
+	}
+	queryCustomers := &customering.ListCustomersByIDsQuery{
+		IDs:     customerIDs,
+		ShopIDs: shopIDs,
+	}
+	if err := customerQuery.Dispatch(ctx, queryCustomers); err != nil {
+		return err
+	}
+	customers := queryCustomers.Result.Customers
+	var mapCustomerValidate = make(map[dot.ID]bool)
+	for _, customer := range customers {
+		mapCustomerValidate[customer.ID] = true
+	}
+	for _, order := range orders {
+		if order.CustomerId == 0 {
+			break
+		}
+		if !mapCustomerValidate[order.CustomerId] {
+			order.Customer.Deleted = true
+		}
+	}
 	return nil
 }
 

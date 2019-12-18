@@ -72,6 +72,11 @@ func (s *CustomerStore) ShopID(id dot.ID) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) ShopIDs(ids ...dot.ID) *CustomerStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "shop_id", ids))
+	return s
+}
+
 func (s *CustomerStore) Type(typ customer_type.CustomerType) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByType(typ))
 	return s

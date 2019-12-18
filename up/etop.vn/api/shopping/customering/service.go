@@ -45,7 +45,7 @@ type QueryService interface {
 
 	ListCustomers(context.Context, *shopping.ListQueryShopArgs) (*CustomersResponse, error)
 
-	ListCustomersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*CustomersResponse, error)
+	ListCustomersByIDs(context.Context, *ListCustomerByIDsArgs) (*CustomersResponse, error)
 
 	GetCustomerGroup(ctx context.Context, _ *GetCustomerGroupArgs) (*ShopCustomerGroup, error)
 
@@ -55,6 +55,12 @@ type QueryService interface {
 //-- queries --//
 type GetCustomerGroupArgs struct {
 	ID dot.ID
+}
+
+type ListCustomerByIDsArgs struct {
+	IDs     []dot.ID
+	ShopIDs []dot.ID
+	ShopID  dot.ID
 }
 
 type ListCustomerGroupArgs struct {
