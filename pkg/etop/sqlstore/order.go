@@ -427,10 +427,10 @@ func SimpleGetOrdersByIDs(ctx context.Context, query *ordermodelx.SimpleGetOrder
 }
 
 func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatusCommand) error {
-	if cmd.ShopConfirm.Apply(0) != status3.N && cmd.CancelReason != "" {
+	if cmd.ShopConfirm.Apply(0) == status3.N && cmd.CancelReason != "" {
 		return cm.Error(cm.InvalidArgument, "Cancel reason provided but confirm status is not cancel", nil)
 	}
-	if cmd.ShopConfirm.Apply(0) != status3.N && cmd.CancelReason == "" {
+	if cmd.ShopConfirm.Apply(0) == status3.N && cmd.CancelReason == "" {
 		return cm.Error(cm.InvalidArgument, "Cancel orders must provide cancel reason", nil)
 	}
 
