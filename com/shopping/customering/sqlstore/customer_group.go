@@ -29,18 +29,14 @@ type CustomerGroupStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *CustomerGroupStore) Paging(paging meta.Paging) *CustomerGroupStore {
-	s.paging = paging
+func (s *CustomerGroupStore) WithPaging(paging meta.Paging) *CustomerGroupStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *CustomerGroupStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *CustomerGroupStore) Filters(filters meta.Filters) *CustomerGroupStore {
@@ -100,10 +96,10 @@ func (s *CustomerGroupStore) GetShopCustomerGroup() (*customering.ShopCustomerGr
 func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGroup, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopCustomerGroup, s.ft.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroup, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

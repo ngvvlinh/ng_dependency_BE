@@ -27,7 +27,7 @@ type CustomerPolicyGroupStore struct {
 
 	ft CustomerPolicyGroupFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -41,12 +41,8 @@ func (s *CustomerPolicyGroupStore) Count() (int, error) {
 	return query.Count((*model.CustomerPolicyGroup)(nil))
 }
 
-func (s *CustomerPolicyGroupStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *CustomerPolicyGroupStore) Paging(paging meta.Paging) *CustomerPolicyGroupStore {
-	s.paging = paging
+func (s *CustomerPolicyGroupStore) WithPaging(paging meta.Paging) *CustomerPolicyGroupStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

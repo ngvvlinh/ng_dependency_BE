@@ -27,7 +27,7 @@ type OrderCommissionSettingStore struct {
 
 	ft OrderCommissionSettingFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -41,12 +41,8 @@ func (s *OrderCommissionSettingStore) Count() (int, error) {
 	return query.Count((*model.OrderCommissionSetting)(nil))
 }
 
-func (s *OrderCommissionSettingStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *OrderCommissionSettingStore) Paging(paging meta.Paging) *OrderCommissionSettingStore {
-	s.paging = paging
+func (s *OrderCommissionSettingStore) WithPaging(paging meta.Paging) *OrderCommissionSettingStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

@@ -34,18 +34,14 @@ type SupplierStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *SupplierStore) Paging(paging meta.Paging) *SupplierStore {
-	s.paging = paging
+func (s *SupplierStore) WithPaging(paging meta.Paging) *SupplierStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *SupplierStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *SupplierStore) Filters(filters meta.Filters) *SupplierStore {
@@ -176,10 +172,10 @@ func (s *SupplierStore) GetSupplier() (supplierResult *suppliering.ShopSupplier,
 func (s *SupplierStore) ListSuppliersDB() ([]*model.ShopSupplier, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortSupplier, s.ft.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortSupplier, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

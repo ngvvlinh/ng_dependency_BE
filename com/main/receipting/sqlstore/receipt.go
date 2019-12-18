@@ -36,14 +36,14 @@ type ReceiptStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *ReceiptStore) Paging(paging meta.Paging) *ReceiptStore {
+func (s *ReceiptStore) WithPaging(paging meta.Paging) *ReceiptStore {
 	ss := *s
-	ss.paging = paging
+	ss.Paging.WithPaging(paging)
 	return &ss
 }
 
@@ -236,10 +236,10 @@ func (s *ReceiptStore) ListReceiptsDB() ([]*model.Receipt, error) {
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	// default sort by created_at
-	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
-		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortReceipt)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortReceipt)
 	if err != nil {
 		return nil, err
 	}

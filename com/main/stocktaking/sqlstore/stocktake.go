@@ -34,15 +34,15 @@ func NewStocktakeStore(db *cmsql.Database) ShopStocktakeFactory {
 }
 
 type ShopStocktakeStore struct {
-	query   cmsql.QueryFactory
-	ft      ShopStocktakeFilters
-	paging  *cm.Paging
+	query cmsql.QueryFactory
+	ft    ShopStocktakeFilters
+	*sqlstore.Paging
 	filters meta.Filters
 	preds   []interface{}
 }
 
-func (s *ShopStocktakeStore) Paging(page *cm.Paging) *ShopStocktakeStore {
-	s.paging = page
+func (s *ShopStocktakeStore) WithPaging(paging *cm.Paging) *ShopStocktakeStore {
+	s.Paging.WithPaging(*paging)
 	return s
 }
 func (s *ShopStocktakeStore) Filters(filters meta.Filters) *ShopStocktakeStore {
@@ -148,10 +148,10 @@ func (s *ShopStocktakeStore) ListShopStocktake() ([]*st.ShopStocktake, error) {
 
 func (s *ShopStocktakeStore) ListShopStocktakeDB() ([]*model.ShopStocktake, error) {
 	query := s.query().Where(s.preds)
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, s.paging, SortShopStocktake, s.ft.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, s.Paging, SortShopStocktake, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

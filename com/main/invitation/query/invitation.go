@@ -64,7 +64,7 @@ func (q *InvitationQuery) ListInvitationsByEmail(
 	ctx context.Context, args *invitation.ListInvitationsByEmailArgs,
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).Email(args.Email).Filters(args.Filters)
-	invitations, err := query.Paging(args.Paging).ListInvitations()
+	invitations, err := query.WithPaging(args.Paging).ListInvitations()
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (q *InvitationQuery) ListInvitations(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).AccountID(args.ShopID).Filters(args.Filters)
-	invitations, err := query.Paging(args.Paging).ListInvitations()
+	invitations, err := query.WithPaging(args.Paging).ListInvitations()
 	if err != nil {
 		return nil, err
 	}

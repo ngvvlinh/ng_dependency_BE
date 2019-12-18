@@ -26,9 +26,9 @@ var SortShopCustomerGroup = map[string]string{
 var FilterCustomerGroup = sqlstore.FilterWhitelist{}
 
 var SortCustomer = map[string]string{
-	"id":         "",
+	"id":         "id",
 	"created_at": "",
-	"updated_at": "",
+	"updated_at": "updated_at",
 	"name":       "",
 	"code":       "",
 }

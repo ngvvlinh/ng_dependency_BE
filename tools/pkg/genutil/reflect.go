@@ -25,6 +25,23 @@ func (tags StructTags) String() string {
 	return "`" + strings.Join(s, " ") + "`"
 }
 
+func (tags StructTags) Get(name string) string {
+	for _, tag := range tags {
+		if tag.Name == name {
+			return tag.Value
+		}
+	}
+	return ""
+}
+
+func MustParseStructTags(tag string) StructTags {
+	tags, err := ParseStructTags(tag)
+	if err != nil {
+		panic(err)
+	}
+	return tags
+}
+
 // ParseStructTags returns the full set of fields in a struct tag in the order they appear in
 // the struct tag.
 func ParseStructTags(tag string) (StructTags, error) {

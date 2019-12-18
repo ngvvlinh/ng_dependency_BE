@@ -29,7 +29,7 @@ type UserReferralStore struct {
 
 	ft UserReferralFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -48,12 +48,8 @@ func (s *UserReferralStore) Count() (int, error) {
 	return query.Count((*model.ProductPromotion)(nil))
 }
 
-func (s *UserReferralStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *UserReferralStore) Paging(paging meta.Paging) *UserReferralStore {
-	s.paging = paging
+func (s *UserReferralStore) WithPaging(paging meta.Paging) *UserReferralStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

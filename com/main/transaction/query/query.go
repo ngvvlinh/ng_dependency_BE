@@ -34,7 +34,7 @@ func (q QueryService) GetTransactionByID(ctx context.Context, tranID dot.ID, use
 
 func (q QueryService) ListTransactions(ctx context.Context, args *transaction.GetTransactionsArgs) (*transaction.TransactionResponse, error) {
 	query := q.store(ctx).AccountID(args.AccountID)
-	transactions, err := query.Paging(args.Paging).ListTransactions()
+	transactions, err := query.WithPaging(args.Paging).ListTransactions()
 	if err != nil {
 		return nil, err
 	}

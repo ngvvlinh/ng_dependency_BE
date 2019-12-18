@@ -34,8 +34,8 @@ func (q *RefundQueryService) GetRefunds(ctx context.Context, args *refund.GetRef
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	query := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(args.Paging)
-	result, err := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(args.Paging).ListRefunds()
+	query := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).WithPaging(args.Paging)
+	result, err := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).WithPaging(args.Paging).ListRefunds()
 	if err != nil {
 		return nil, err
 	}

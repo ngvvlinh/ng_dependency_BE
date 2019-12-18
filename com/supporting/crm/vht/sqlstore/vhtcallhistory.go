@@ -13,10 +13,10 @@ import (
 type VhtCallHistoriesFactory func(context.Context) *VhtCallHistoryStore
 
 type VhtCallHistoryStore struct {
-	query   cmsql.QueryFactory
-	preds   []interface{}
-	ft      VhtCallHistoryFilters
-	paging  meta.Paging
+	query cmsql.QueryFactory
+	preds []interface{}
+	ft    VhtCallHistoryFilters
+	sqlstore.Paging
 	OrderBy string
 }
 
@@ -32,13 +32,9 @@ var SortVhtCallHistories = map[string]string{
 	"time_started": "-time_started",
 }
 
-func (s *VhtCallHistoryStore) Paging(paging meta.Paging) *VhtCallHistoryStore {
-	s.paging = paging
+func (s *VhtCallHistoryStore) WithPaging(paging meta.Paging) *VhtCallHistoryStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *VhtCallHistoryStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *VhtCallHistoryStore) ByStatus(value string) *VhtCallHistoryStore {
@@ -76,7 +72,7 @@ func (s *VhtCallHistoryStore) GetCallHistories() ([]*model.VhtCallHistory, error
 	if s.OrderBy != "" {
 		query.OrderBy(s.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortVhtCallHistories)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortVhtCallHistories)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +86,7 @@ func (s *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model.Vht
 	if s.OrderBy != "" {
 		query.OrderBy(s.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortVhtCallHistories)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortVhtCallHistories)
 	if err != nil {
 		return nil, err
 	}

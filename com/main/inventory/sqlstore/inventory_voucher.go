@@ -26,15 +26,15 @@ func NewInventoryVoucherStore(db *cmsql.Database) InventoryVoucherFactory {
 }
 
 type InventoryVoucherStore struct {
-	query   cmsql.QueryFactory
-	ft      InventoryVoucherFilters
-	preds   []interface{}
-	paging  meta.Paging
+	query cmsql.QueryFactory
+	ft    InventoryVoucherFilters
+	preds []interface{}
+	sqlstore.Paging
 	filters meta.Filters
 }
 
-func (s *InventoryVoucherStore) Paging(page meta.Paging) *InventoryVoucherStore {
-	s.paging = page
+func (s *InventoryVoucherStore) WithPaging(paging meta.Paging) *InventoryVoucherStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 
@@ -161,10 +161,10 @@ func (s *InventoryVoucherStore) Get() (*inventory.InventoryVoucher, error) {
 func (s *InventoryVoucherStore) ListInventoryVoucherDB() ([]*model.InventoryVoucher, error) {
 	query := s.query().Where(s.preds)
 	// default sort by created_at
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortInventoryVoucher)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortInventoryVoucher)
 	if err != nil {
 		return nil, err
 	}

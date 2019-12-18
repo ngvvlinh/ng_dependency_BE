@@ -15,10 +15,10 @@ import (
 type VtigerContactStoreFactory func(context.Context) *VtigerContactStore
 
 type VtigerContactStore struct {
-	query   cmsql.QueryFactory
-	preds   []interface{}
-	ft      VtigerContactFilters
-	paging  meta.Paging
+	query cmsql.QueryFactory
+	preds []interface{}
+	ft    VtigerContactFilters
+	sqlstore.Paging
 	OrderBy string
 }
 
@@ -35,13 +35,9 @@ func (v *VtigerContactStore) SortBy(order string) *VtigerContactStore {
 	return v
 }
 
-func (v *VtigerContactStore) Paging(paging meta.Paging) *VtigerContactStore {
-	v.paging = paging
+func (v *VtigerContactStore) WithPaging(paging meta.Paging) *VtigerContactStore {
+	v.WithPaging(paging)
 	return v
-}
-
-func (v *VtigerContactStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(v.paging)
 }
 
 func (v *VtigerContactStore) ByEmail(email string) *VtigerContactStore {
@@ -90,7 +86,7 @@ func (v *VtigerContactStore) SearchContact(value string) ([]*model.VtigerContact
 	if v.OrderBy != "" {
 		query = query.OrderBy(v.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &v.paging, SortVtigerContact)
+	query, err := sqlstore.LimitSort(query, &v.Paging, SortVtigerContact)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +107,7 @@ func (v *VtigerContactStore) GetContacts() ([]*model.VtigerContact, error) {
 	if v.OrderBy != "" {
 		query = query.OrderBy(v.OrderBy)
 	}
-	query, err := sqlstore.LimitSort(query, &v.paging, nil)
+	query, err := sqlstore.LimitSort(query, &v.Paging, nil)
 	if err != nil {
 		return nil, err
 	}

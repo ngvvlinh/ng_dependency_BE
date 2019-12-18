@@ -20,6 +20,7 @@ import (
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -282,7 +283,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 		if query.IDs != nil {
 			s2 = s2.In("m.id", query.IDs)
 		} else {
-			s2, err = LimitSort(s2, query.Paging, Ms{"m.created_at": ""})
+			s2, err = LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"m.created_at": ""})
 			if err != nil {
 				return err
 			}
@@ -1125,7 +1126,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "", "created_at": ""})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": ""})
 		if err != nil {
 			return err
 		}
@@ -1239,7 +1240,7 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "c.updated_at", "created_at": "c.created_at"})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "c.updated_at", "created_at": "c.created_at"})
 		if err != nil {
 			return err
 		}
@@ -1477,7 +1478,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "", "creted_at": ""})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "creted_at": ""})
 		if err != nil {
 			return err
 		}

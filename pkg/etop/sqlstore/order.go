@@ -25,6 +25,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/code/gencode"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/capi/util"
@@ -216,7 +217,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	{
 
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"id": "", "created_at": "", "updated_at": ""})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "", "created_at": "", "updated_at": ""})
 		if err != nil {
 			return err
 		}
@@ -356,7 +357,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": `"order".updated_at`, "created_at": `"order".created_at`, "id": `"order".id`})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": `"order".updated_at`, "created_at": `"order".created_at`, "id": `"order".id`})
 		if err != nil {
 			return err
 		}
@@ -788,7 +789,7 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 	{
 		s2 := s.Clone()
 		if isLimitSort {
-			s2, err = LimitSort(s2, query.Paging, Ms{"updated_at": "", "created_at": "", "id": ""})
+			s2, err = LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
 			if err != nil {
 				return err
 			}
@@ -828,7 +829,7 @@ func GetFulfillmentsCallbackLogs(ctx context.Context, query *shipmodelx.GetFulfi
 	if len(query.ExcludeShippingStates) > 0 {
 		s = s.NotIn("shipping_state", query.ExcludeShippingStates)
 	}
-	s, err := LimitSort(s, query.Paging, Ms{"updated_at": "", "created_at": "", "id": ""})
+	s, err := LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
 	if err != nil {
 		return err
 	}
@@ -899,7 +900,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
 		if err != nil {
 			return err
 		}

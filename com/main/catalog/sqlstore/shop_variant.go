@@ -37,7 +37,7 @@ type ShopVariantStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -48,13 +48,9 @@ func (s *ShopVariantStore) extend() *ShopVariantStore {
 	return s
 }
 
-func (s *ShopVariantStore) Paging(paging meta.Paging) *ShopVariantStore {
-	s.paging = paging
+func (s *ShopVariantStore) WithPaging(paging meta.Paging) *ShopVariantStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *ShopVariantStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *ShopVariantStore) IncludeDeleted() *ShopVariantStore {
@@ -154,10 +150,10 @@ func (s *ShopVariantStore) GetShopVariantWithProduct() (*catalog.ShopVariantWith
 func (s *ShopVariantStore) ListShopVariantsDB() ([]*model.ShopVariant, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopVariant, s.FtShopVariant.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -179,10 +175,10 @@ func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*model.ShopVariant
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 	query = s.includeDeleted.Check(query, s.ftShopProduct.NotDeleted())
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopVariant, s.FtShopVariant.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}

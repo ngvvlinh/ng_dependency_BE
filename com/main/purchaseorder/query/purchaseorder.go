@@ -92,7 +92,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
-	purchaseOrders, err := query.Paging(args.Paging).ListPurchaseOrders()
+	purchaseOrders, err := query.WithPaging(args.Paging).ListPurchaseOrders()
 	if err != nil {
 		return nil, err
 	}

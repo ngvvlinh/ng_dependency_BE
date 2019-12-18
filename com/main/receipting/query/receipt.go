@@ -47,7 +47,7 @@ func (q *ReceiptQuery) ListReceipts(
 	ctx context.Context, args *receipting.ListReceiptsArgs,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
-	receipts, err := query.Paging(args.Paging).ListReceipts()
+	receipts, err := query.WithPaging(args.Paging).ListReceipts()
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 	ctx context.Context, args *receipting.ListReceiptsByLedgerIDsArgs,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).LedgerIDs(args.LedgerIDs...).Filters(args.Filters)
-	receipts, err := query.Paging(args.Paging).ListReceipts()
+	receipts, err := query.WithPaging(args.Paging).ListReceipts()
 	if err != nil {
 		return nil, err
 	}

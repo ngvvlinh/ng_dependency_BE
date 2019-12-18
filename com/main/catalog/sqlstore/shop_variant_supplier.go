@@ -33,18 +33,14 @@ type VariantSupplierStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *VariantSupplierStore) Paging(paging meta.Paging) *VariantSupplierStore {
-	s.paging = paging
+func (s *VariantSupplierStore) WithPaging(paging meta.Paging) *VariantSupplierStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *VariantSupplierStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *VariantSupplierStore) Filters(filters meta.Filters) *VariantSupplierStore {
@@ -100,7 +96,7 @@ func (s *VariantSupplierStore) DeleteVariantSupplier() error {
 
 func (s *VariantSupplierStore) ListVariantSupplier() ([]*model.ShopVariantSupplier, error) {
 	query := s.query().Where(s.preds)
-	s.paging.Sort = []string{"-created_at"}
+	s.Paging.Sort = []string{"-created_at"}
 
 	var variantSuppliers model.ShopVariantSuppliers
 	err := query.Find(&variantSuppliers)

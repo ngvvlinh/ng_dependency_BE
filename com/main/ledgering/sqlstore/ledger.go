@@ -38,18 +38,14 @@ type LedgerStore struct {
 	query   func() cmsql.QueryInterface
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *LedgerStore) Paging(paging meta.Paging) *LedgerStore {
-	s.paging = paging
+func (s *LedgerStore) WithPaging(paging meta.Paging) *LedgerStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *LedgerStore) GetPaing() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *LedgerStore) Filters(filters meta.Filters) *LedgerStore {
@@ -154,7 +150,7 @@ func (s *LedgerStore) UpdateLedgerDB(ledger *model.ShopLedger) error {
 func (s *LedgerStore) ListLedgersDB() ([]*model.ShopLedger, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortLedger)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortLedger)
 	if err != nil {
 		return nil, err
 	}

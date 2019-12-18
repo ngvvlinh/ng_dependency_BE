@@ -30,7 +30,7 @@ type ProductPromotionStore struct {
 
 	ft ProductPromotionFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -59,12 +59,8 @@ func (s *ProductPromotionStore) Count() (int, error) {
 	return query.Count((*model.ProductPromotion)(nil))
 }
 
-func (s *ProductPromotionStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *ProductPromotionStore) Paging(paging meta.Paging) *ProductPromotionStore {
-	s.paging = paging
+func (s *ProductPromotionStore) WithPaging(paging meta.Paging) *ProductPromotionStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

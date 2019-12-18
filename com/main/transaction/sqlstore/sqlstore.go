@@ -27,10 +27,10 @@ func NewTransactionStore(db *cmsql.Database) TransactionStoreFactory {
 }
 
 type TransactionStore struct {
-	query  cmsql.QueryFactory
-	preds  []interface{}
-	ft     TransactionFilters
-	paging meta.Paging
+	query cmsql.QueryFactory
+	preds []interface{}
+	ft    TransactionFilters
+	sqlstore.Paging
 }
 
 var SortTransaction = map[string]string{
@@ -58,13 +58,9 @@ func (s *TransactionStore) OptionalTransactionType(transactionType transaction.T
 	return s
 }
 
-func (s *TransactionStore) Paging(paging meta.Paging) *TransactionStore {
-	s.paging = paging
+func (s *TransactionStore) WithPaging(paging meta.Paging) *TransactionStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *TransactionStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *TransactionStore) GetTransactionDB() (*transactionmodel.Transaction, error) {
@@ -83,7 +79,7 @@ func (s *TransactionStore) GetTransaction() (*transaction.Transaction, error) {
 
 func (s *TransactionStore) ListTransactionsDB() ([]*transactionmodel.Transaction, error) {
 	query := s.query().Where(s.preds)
-	query, err := sqlstore.LimitSort(query, &s.paging, SortTransaction)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortTransaction)
 	if err != nil {
 		return nil, err
 	}

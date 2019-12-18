@@ -75,7 +75,7 @@ func TestTransactionQueryService(t *testing.T) {
 			So(tran.ID, ShouldEqual, tranID)
 		})
 
-		Convey("List Succress", func() {
+		Convey("List Success", func() {
 			query := &transaction.ListTransactionsQuery{
 				AccountID: accountID,
 				Paging: meta.Paging{

@@ -96,7 +96,7 @@ func inTransaction(callback func(cmsql.QueryInterface) error) (err error) {
 	return x.InTransaction(bus.Ctx(), callback)
 }
 
-func LimitSort(s Query, p *cm.Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
+func LimitSort(s Query, p *sqlstore.Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
 	query, err := sqlstore.LimitSort(s, p, sortWhitelist)
 	if err != nil {
 		return cmsql.Query{}, err

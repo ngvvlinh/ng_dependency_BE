@@ -61,7 +61,7 @@ func (q *CustomerQuery) GetCustomerByCode(
 func (q *CustomerQuery) ListCustomers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*customering.CustomersResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
+	query := q.store(ctx).ShopID(args.ShopID).WithPaging(args.Paging).Filters(args.Filters)
 	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
@@ -130,7 +130,7 @@ func (q *CustomerQuery) GetCustomerIndependentByShop(
 func (q *CustomerQuery) ListCustomerGroups(
 	ctx context.Context, args *customering.ListCustomerGroupArgs,
 ) (*customering.CustomerGroupsResponse, error) {
-	query := q.customerGroupStore(ctx).Paging(args.Paging).Filters(args.Filters)
+	query := q.customerGroupStore(ctx).WithPaging(args.Paging).Filters(args.Filters)
 	customerGroup, err := query.ListShopCustomerGroups()
 	if err != nil {
 		return nil, err

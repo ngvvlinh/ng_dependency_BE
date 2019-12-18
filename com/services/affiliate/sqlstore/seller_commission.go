@@ -29,7 +29,7 @@ type SellerCommissionStore struct {
 
 	ft SellerCommissionFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -38,12 +38,8 @@ func (s *SellerCommissionStore) Count() (int, error) {
 	return query.Count((*model.SellerCommission)(nil))
 }
 
-func (s *SellerCommissionStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *SellerCommissionStore) Paging(paging meta.Paging) *SellerCommissionStore {
-	s.paging = paging
+func (s *SellerCommissionStore) WithPaging(paging meta.Paging) *SellerCommissionStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 
@@ -93,10 +89,10 @@ func (s *SellerCommissionStore) GetAffiliateCommission() (*affiliate.SellerCommi
 
 func (s *SellerCommissionStore) GetAffiliateCommissions() ([]*affiliate.SellerCommission, error) {
 	query := s.query().Where(s.preds)
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortSellerCommission)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortSellerCommission)
 	if err != nil {
 		return nil, err
 	}

@@ -28,20 +28,16 @@ func NewTraderStore(db *cmsql.Database) TraderStoreFactory {
 type TraderStore struct {
 	ft ShopTraderFilters
 
-	query          cmsql.QueryFactory
-	preds          []interface{}
-	filters        meta.Filters
-	paging         meta.Paging
+	query   cmsql.QueryFactory
+	preds   []interface{}
+	filters meta.Filters
+	sqlstore.Paging
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *TraderStore) Paging(paging meta.Paging) *TraderStore {
-	s.paging = paging
+func (s *TraderStore) WithPaging(paging meta.Paging) *TraderStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *TraderStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *TraderStore) Filters(filters meta.Filters) *TraderStore {
@@ -97,7 +93,7 @@ func (s *TraderStore) GetTrader() (traderResult *tradering.ShopTrader, _ error) 
 func (s *TraderStore) ListTradersDB() ([]*model.ShopTrader, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortTrader)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortTrader)
 	if err != nil {
 		return nil, err
 	}

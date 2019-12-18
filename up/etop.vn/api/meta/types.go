@@ -35,17 +35,24 @@ type PageInfo struct {
 	Limit  int
 	Sort   []string
 
-	// TODO: next, prev
-}
+	First  int
+	Last   int
+	Before string
+	After  string
 
-func FromPaging(paging Paging) PageInfo {
-	return PageInfo(paging)
+	Next string
+	Prev string
 }
 
 type Paging struct {
 	Offset int
 	Limit  int
 	Sort   []string
+
+	First  int
+	Last   int
+	Before string
+	After  string
 }
 
 type Filter struct {

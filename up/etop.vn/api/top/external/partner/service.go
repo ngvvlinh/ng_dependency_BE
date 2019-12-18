@@ -45,3 +45,8 @@ type ShippingService interface {
 	GetOrder(context.Context, *types.OrderIDRequest) (*types.OrderAndFulfillments, error)
 	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)
 }
+
+// +apix:path=/partner.Customer
+type CustomerService interface {
+	GetCustomers(context.Context, *types.GetCustomersRequest) (*types.CustomersResponse, error)
+}

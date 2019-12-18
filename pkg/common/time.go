@@ -52,6 +52,7 @@ func (t *TimeAsMillis) IsZero() bool {
 type Timestamp int64
 
 const e6 = 1e6
+const e3 = 1e3
 
 // ToTimestamp converts from Go time to timestamp (in nanosecond).
 func ToTimestamp(t time.Time) Timestamp {
@@ -61,12 +62,12 @@ func ToTimestamp(t time.Time) Timestamp {
 	return Timestamp(t.UnixNano() / e6)
 }
 
-// Nanos converts from Go time to timestamp (in nanosecond).
-func Nanos(t time.Time) int64 {
+// Micros converts from Go time to timestamp (in nanosecond).
+func Micros(t time.Time) int64 {
 	if IsZeroTime(t) {
 		return 0
 	}
-	return t.UnixNano() / e6
+	return t.UnixNano() / e3
 }
 
 // Millis converts from Go time to timestamp (in millisecond).
@@ -77,12 +78,12 @@ func Millis(t time.Time) int64 {
 	return t.UnixNano() / e6
 }
 
-// NanosP converts from Go time (with pointer) to timestamp (in nanosecond).
-func NanosP(t *time.Time) int64 {
+// MicrosP converts from Go time (with pointer) to timestamp (in nanosecond).
+func MicrosP(t *time.Time) int64 {
 	if t == nil || IsZeroTime(*t) {
 		return 0
 	}
-	return t.UnixNano() / e6
+	return t.UnixNano() / e3
 }
 
 // MillisP converts from Go time (with pointer) to timestamp (in millisecond).
@@ -93,17 +94,17 @@ func MillisP(t *time.Time) int64 {
 	return t.UnixNano() / e6
 }
 
-// FromNanos converts nanosecond to Go time
-func FromNanos(t int64) time.Time {
-	return Timestamp(t / 1e3).ToTime()
+// FromMicros converts nanosecond to Go time
+func FromMicros(t int64) time.Time {
+	return Timestamp(t / e3).ToTime()
 }
 
-// FromNanosP converts nanosecond to Go time with pointer
-func FromNanosP(t int64) *time.Time {
+// FromMicrosP converts nanosecond to Go time with pointer
+func FromMicrosP(t int64) *time.Time {
 	if t == 0 {
 		return nil
 	}
-	tt := Timestamp(t / 1e3).ToTime()
+	tt := Timestamp(t / e3).ToTime()
 	return &tt
 }
 

@@ -91,7 +91,7 @@ func (s *ShipnowStore) GetShipnow() (*shipnow.ShipnowFulfillment, error) {
 	return convert.Shipnow(shipnowFfm), nil
 }
 
-func (s *ShipnowStore) ListShipnowsDB(paging *meta.Paging) ([]*model.ShipnowFulfillment, error) {
+func (s *ShipnowStore) ListShipnowsDB(paging *sqlstore.Paging) ([]*model.ShipnowFulfillment, error) {
 	query := s.query().Where(s.preds)
 	query, err := sqlstore.LimitSort(query, paging, SortShipnow)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *ShipnowStore) ListShipnowsDB(paging *meta.Paging) ([]*model.ShipnowFulf
 }
 
 func (s *ShipnowStore) ListShipnows(paging *meta.Paging) ([]*shipnow.ShipnowFulfillment, error) {
-	ffms, err := s.ListShipnowsDB(paging)
+	ffms, err := s.ListShipnowsDB(sqlstore.ConvertPaging(paging))
 	return convert.Shipnows(ffms), err
 }
 

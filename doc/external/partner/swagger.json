@@ -15,6 +15,32 @@
     "version": "v1"
   },
   "paths": {
+    "/v1/partner.Customer/GetCustomers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "operationId": "GetCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetCustomersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomersResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/partner.History/GetChanges": {
       "post": {
         "tags": [
@@ -518,6 +544,58 @@
         "etop"
       ]
     },
+    "ktCursorPageInfo": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "first": {
+          "type": "integer"
+        },
+        "last": {
+          "type": "integer"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "next": {
+          "type": "string"
+        },
+        "prev": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktCursorPaging": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "first": {
+          "type": "integer"
+        },
+        "last": {
+          "type": "integer"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
     "ktEmpty": {
       "type": "object"
     },
@@ -715,6 +793,81 @@
         }
       }
     },
+    "mrCustomer": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "group_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrCustomersResponse": {
+      "type": "object",
+      "properties": {
+        "customers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomer"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "mrDeleteWebhookRequest": {
       "type": "object",
       "properties": {
@@ -874,6 +1027,21 @@
         },
         "paging": {
           "$ref": "#/definitions/ktForwardPaging"
+        }
+      }
+    },
+    "mrGetCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -1451,6 +1619,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Customer"
+    },
     {
       "name": "History"
     },

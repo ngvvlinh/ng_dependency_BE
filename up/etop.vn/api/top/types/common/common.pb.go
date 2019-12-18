@@ -186,3 +186,32 @@ type MetaField struct {
 
 func (m *MetaField) Reset()         { *m = MetaField{} }
 func (m *MetaField) String() string { return jsonx.MustMarshalToString(m) }
+
+type CursorPaging struct {
+	First  int    `json:"first"`
+	Last   int    `json:"last"`
+	Before string `json:"before"`
+	After  string `json:"after"`
+
+	Limit int    `json:"limit"`
+	Sort  string `json:"sort"`
+}
+
+func (m *CursorPaging) Reset()         { *m = CursorPaging{} }
+func (m *CursorPaging) String() string { return jsonx.MustMarshalToString(m) }
+
+type CursorPageInfo struct {
+	First  int    `json:"first"`
+	Last   int    `json:"last"`
+	Before string `json:"before"`
+	After  string `json:"after"`
+
+	Limit int    `json:"limit"`
+	Sort  string `json:"sort"`
+
+	Prev string `json:"prev"`
+	Next string `json:"next"`
+}
+
+func (m *CursorPageInfo) Reset()         { *m = CursorPageInfo{} }
+func (m *CursorPageInfo) String() string { return jsonx.MustMarshalToString(m) }

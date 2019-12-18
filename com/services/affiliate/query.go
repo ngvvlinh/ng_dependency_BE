@@ -46,7 +46,7 @@ func (a *QueryService) GetCommissionByProductID(ctx context.Context, args *affil
 
 func (a *QueryService) ListShopProductPromotions(ctx context.Context, args *affiliate.ListShopProductPromotionsArgs) (*affiliate.ListShopProductPromotionsResponse, error) {
 	query := a.productPromotion(ctx).ShopID(args.ShopID).Filters(args.Filters)
-	promotions, err := query.Paging(args.Paging).GetProductPromotions()
+	promotions, err := query.WithPaging(args.Paging).GetProductPromotions()
 	if err != nil {
 		return nil, err
 	}
@@ -81,5 +81,5 @@ func (a *QueryService) GetSupplyCommissionSettingsByProductIDs(ctx context.Conte
 }
 
 func (a *QueryService) GetSellerCommissions(ctx context.Context, args *affiliate.GetSellerCommissionsArgs) ([]*affiliate.SellerCommission, error) {
-	return a.sellerCommission(ctx).SellerID(args.SellerID).Paging(args.Paging).Filters(args.Filters).GetAffiliateCommissions()
+	return a.sellerCommission(ctx).SellerID(args.SellerID).WithPaging(args.Paging).Filters(args.Filters).GetAffiliateCommissions()
 }

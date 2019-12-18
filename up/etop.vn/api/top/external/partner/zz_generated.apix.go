@@ -20,6 +20,51 @@ type Server interface {
 	PathPrefix() string
 }
 
+type CustomerServiceServer struct {
+	inner CustomerService
+}
+
+func NewCustomerServiceServer(svc CustomerService) Server {
+	return &CustomerServiceServer{
+		inner: svc,
+	}
+}
+
+const CustomerServicePathPrefix = "/partner.Customer/"
+
+func (s *CustomerServiceServer) PathPrefix() string {
+	return CustomerServicePathPrefix
+}
+
+func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.Customer/GetCustomers":
+		msg := &externaltypes.GetCustomersRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetCustomers(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type HistoryServiceServer struct {
 	inner HistoryService
 }

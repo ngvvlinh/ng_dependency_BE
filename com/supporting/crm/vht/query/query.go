@@ -37,9 +37,9 @@ func (q QueryService) GetCallHistories(ctx context.Context, req *crmvht.GetCallH
 	var dbResult []*model.VhtCallHistory
 	var err error
 	if textSearch != "" {
-		dbResult, err = q.VhtStore(ctx).Paging(paging).SearchVhtCallHistories(textSearch)
+		dbResult, err = q.VhtStore(ctx).WithPaging(paging).SearchVhtCallHistories(textSearch)
 	} else {
-		dbResult, err = q.VhtStore(ctx).Paging(paging).GetCallHistories()
+		dbResult, err = q.VhtStore(ctx).WithPaging(paging).GetCallHistories()
 	}
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (q QueryService) GetCallHistories(ctx context.Context, req *crmvht.GetCallH
 }
 
 func (q *QueryService) GetLastCallHistory(ctx context.Context, paging meta.Paging) (*crmvht.VhtCallLog, error) {
-	result, err := q.VhtStore(ctx).Paging(paging).ByStatus("Done").SortBy("time_started desc").GetCallHistories()
+	result, err := q.VhtStore(ctx).WithPaging(paging).ByStatus("Done").SortBy("time_started desc").GetCallHistories()
 	if err != nil {
 		return nil, err
 	}

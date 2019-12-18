@@ -32,16 +32,12 @@ type ShopProductCollectionStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 }
 
-func (s *ShopProductCollectionStore) Paging(paging meta.Paging) *ShopProductCollectionStore {
-	s.paging = paging
+func (s *ShopProductCollectionStore) WithPaging(paging meta.Paging) *ShopProductCollectionStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *ShopProductCollectionStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *ShopProductCollectionStore) Filters(filters meta.Filters) *ShopProductCollectionStore {
@@ -102,10 +98,10 @@ func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *c
 
 func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -129,10 +125,10 @@ func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductID() ([]
 
 func (s *ShopProductCollectionStore) ListShopProductCollectionsDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}

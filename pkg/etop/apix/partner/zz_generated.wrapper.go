@@ -19,6 +19,59 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
+func WrapCustomerService(s *CustomerService) api.CustomerService {
+	return wrapCustomerService{s: s}
+}
+
+type wrapCustomerService struct {
+	s *CustomerService
+}
+
+type GetCustomersEndpoint struct {
+	*externaltypes.GetCustomersRequest
+	Result  *externaltypes.CustomersResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerService) GetCustomers(ctx context.Context, req *externaltypes.GetCustomersRequest) (resp *externaltypes.CustomersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Customer/GetCustomers"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCustomersEndpoint{GetCustomersRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetCustomers(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapHistoryService(s *HistoryService) api.HistoryService {
 	return wrapHistoryService{s: s}
 }

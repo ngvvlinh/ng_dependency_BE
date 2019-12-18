@@ -446,7 +446,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []
 		s.Where(s.FtShopProduct.ByCode("").Nullable())
 		s.ByNameNormUas(keys...)
 	}
-	products, err := s.Paging(maxPaging).ListShopProductsDB()
+	products, err := s.WithPaging(maxPaging).ListShopProductsDB()
 	if err != nil {
 		return nil, err
 	}
@@ -487,7 +487,7 @@ func loadVariants(
 	if useCode {
 		args.Codes = codes
 	}
-	variants, err := s.Paging(maxPaging).ListShopVariantsDB()
+	variants, err := s.WithPaging(maxPaging).ListShopVariantsDB()
 	if err != nil {
 		return nil, nil, err
 	}

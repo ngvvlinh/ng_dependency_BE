@@ -170,9 +170,9 @@ func (q *QueryService) GetContacts(ctx context.Context, req *vtiger.GetContactsA
 	var dbResult []*model.VtigerContact
 	var err error
 	if textSearch != "" {
-		dbResult, err = q.vcsf(ctx).Paging(*req.Paging).SearchContact(textSearch)
+		dbResult, err = q.vcsf(ctx).WithPaging(*req.Paging).SearchContact(textSearch)
 	} else {
-		dbResult, err = q.vcsf(ctx).Paging(*req.Paging).GetContacts()
+		dbResult, err = q.vcsf(ctx).WithPaging(*req.Paging).GetContacts()
 	}
 	if err != nil {
 		return nil, err
@@ -256,7 +256,7 @@ func buildVtigerQuery(fieldMap mapping.ConfigGroup, module string, condition map
 }
 
 func (q *QueryService) GetRecordLastTimeModify(ctx context.Context, paging meta.Paging) (*vtiger.Contact, error) {
-	result, err := q.vcsf(ctx).Paging(paging).SortBy("vtiger_updated_at desc").GetContacts()
+	result, err := q.vcsf(ctx).WithPaging(paging).SortBy("vtiger_updated_at desc").GetContacts()
 	if err != nil {
 		return nil, err
 	}

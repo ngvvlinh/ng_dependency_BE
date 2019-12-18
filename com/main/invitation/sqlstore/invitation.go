@@ -35,18 +35,14 @@ type InvitationStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *InvitationStore) Paging(paging meta.Paging) *InvitationStore {
-	s.paging = paging
+func (s *InvitationStore) WithPaging(paging meta.Paging) *InvitationStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *InvitationStore) GetPaing() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *InvitationStore) Filters(filters meta.Filters) *InvitationStore {
@@ -193,7 +189,7 @@ func (s *InvitationStore) CreateInvitation(invitation *invitation.Invitation) er
 func (s *InvitationStore) ListInvitationsDB() ([]*model.Invitation, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortInvitation)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortInvitation)
 	if err != nil {
 		return nil, err
 	}

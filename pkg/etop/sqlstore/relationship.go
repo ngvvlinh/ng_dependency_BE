@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -168,7 +169,7 @@ func GetAccountUserExtendeds(ctx context.Context, query *model.GetAccountUserExt
 
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"id": "u.id", "updated_at": "au.updated_at"})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "u.id", "updated_at": "au.updated_at"})
 		if err != nil {
 			return err
 		}

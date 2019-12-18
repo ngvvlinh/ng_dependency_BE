@@ -561,7 +561,10 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 		return err
 	}
 	q.Result = &shop.ShopProductsResponse{
-		Paging:   cmapi.PbPaging(cm.Paging(query.Result.Paging)),
+		Paging: cmapi.PbPaging(cm.Paging{
+			Limit: query.Result.Paging.Limit,
+			Sort:  query.Result.Paging.Sort,
+		}),
 		Products: products,
 	}
 	return nil

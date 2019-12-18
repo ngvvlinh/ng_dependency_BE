@@ -53,7 +53,7 @@ func (q *StocktakeQuery) ListStocktake(ctx context.Context, args *st.ListStockta
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	query := q.StocktakeStore(ctx).ShopID(args.ShopID).Paging(&args.Page).Filters(args.Filter)
+	query := q.StocktakeStore(ctx).ShopID(args.ShopID).WithPaging(&args.Page).Filters(args.Filter)
 	result, err := query.ListShopStocktake()
 	if err != nil {
 		return nil, err

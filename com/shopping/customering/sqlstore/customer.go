@@ -34,18 +34,14 @@ type CustomerStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *CustomerStore) Paging(paging meta.Paging) *CustomerStore {
-	s.paging = paging
+func (s *CustomerStore) WithPaging(paging meta.Paging) *CustomerStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *CustomerStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *CustomerStore) Filters(filters meta.Filters) *CustomerStore {
@@ -184,10 +180,10 @@ func (s *CustomerStore) GetCustomerByMaximumCodeNorm() (*model.ShopCustomer, err
 func (s *CustomerStore) ListCustomersDB() ([]*model.ShopCustomer, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	if len(s.paging.Sort) == 0 {
-		s.paging.Sort = []string{"-created_at"}
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortCustomer, s.ft.prefix)
+	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortCustomer, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +194,11 @@ func (s *CustomerStore) ListCustomersDB() ([]*model.ShopCustomer, error) {
 
 	var customers model.ShopCustomers
 	err = query.Find(&customers)
-	return customers, err
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(customers)
+	return customers, nil
 }
 
 func (s *CustomerStore) ListCustomers() (result []*customering.ShopCustomer, err error) {

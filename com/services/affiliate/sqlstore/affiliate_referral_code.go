@@ -29,7 +29,7 @@ type AffiliateReferralCodeStore struct {
 
 	ft AffiliateReferralCodeFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -38,12 +38,8 @@ func (s *AffiliateReferralCodeStore) Count() (int, error) {
 	return query.Count((*model.SellerCommission)(nil))
 }
 
-func (s *AffiliateReferralCodeStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *AffiliateReferralCodeStore) Paging(paging meta.Paging) *AffiliateReferralCodeStore {
-	s.paging = paging
+func (s *AffiliateReferralCodeStore) WithPaging(paging meta.Paging) *AffiliateReferralCodeStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

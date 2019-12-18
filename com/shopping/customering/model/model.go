@@ -25,7 +25,7 @@ var _ = sqlgenShopCustomer(&ShopCustomer{})
 
 // +convert:type=customering.ShopCustomer
 type ShopCustomer struct {
-	ID           dot.ID
+	ID           dot.ID `paging:"id"`
 	ShopID       dot.ID
 	Code         string
 	CodeNorm     int
@@ -41,7 +41,7 @@ type ShopCustomer struct {
 	PhoneNorm    string
 	GroupIDs     []dot.ID  `sq:"-"`
 	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
+	UpdatedAt    time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt    time.Time
 }
 

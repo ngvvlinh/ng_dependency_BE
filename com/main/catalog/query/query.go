@@ -87,7 +87,7 @@ func (s *QueryService) ListShopCategories(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopCategoriesResponse, error) {
 	q := s.shopCategory(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
-	categories, err := q.Paging(args.Paging).ListShopCategories()
+	categories, err := q.WithPaging(args.Paging).ListShopCategories()
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func (s *QueryService) ListShopProducts(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
-	products, err := q.Paging(args.Paging).ListShopProducts()
+	products, err := q.WithPaging(args.Paging).ListShopProducts()
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func (s *QueryService) ListShopProductsWithVariants(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
-	products, err := q.Paging(args.Paging).ListShopProductsWithVariants()
+	products, err := q.WithPaging(args.Paging).ListShopProductsWithVariants()
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +238,7 @@ func (s *QueryService) ListShopCollections(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopCollectionsResponse, error) {
 	q := s.shopCollection(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
-	collections, err := q.Paging(args.Paging).ListShopCollections()
+	collections, err := q.WithPaging(args.Paging).ListShopCollections()
 	if err != nil {
 		return nil, err
 	}
@@ -296,7 +296,7 @@ func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopI
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	query := s.shopBrand(ctx).ShopID(shopID).Paging(paging)
+	query := s.shopBrand(ctx).ShopID(shopID).WithPaging(paging)
 	result, err := query.ListShopBrands()
 	if err != nil {
 		return nil, err

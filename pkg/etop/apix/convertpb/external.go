@@ -1,8 +1,13 @@
 package convertpb
 
 import (
+	"strings"
+
+	"etop.vn/api/meta"
+	"etop.vn/api/shopping/customering"
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	"etop.vn/backend/com/main/catalog/convert"
@@ -472,5 +477,53 @@ func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.F
 	return &exttypes.OrderAndFulfillments{
 		Order:        PbOrder(order),
 		Fulfillments: PbFulfillments(fulfillments),
+	}
+}
+
+func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
+	if customer == nil {
+		return nil
+	}
+	return &exttypes.Customer{
+		Id:        customer.ID,
+		ShopId:    customer.ShopID,
+		FullName:  customer.FullName,
+		Code:      customer.Code,
+		Note:      customer.Note,
+		Phone:     customer.Phone,
+		Email:     customer.Email,
+		Gender:    customer.Gender.String(),
+		Type:      customer.Type.String(),
+		Birthday:  customer.Birthday,
+		CreatedAt: dot.Time(customer.CreatedAt),
+		UpdatedAt: dot.Time(customer.UpdatedAt),
+		Status:    customer.Status,
+		GroupIds:  customer.GroupIDs,
+	}
+}
+
+func PbShopCustomers(customers []*customering.ShopCustomer) []*exttypes.Customer {
+	out := make([]*exttypes.Customer, len(customers))
+	for i, customer := range customers {
+		out[i] = PbShopCustomer(customer)
+	}
+	return out
+}
+
+func PbPageInfo(arg *meta.PageInfo) *common.CursorPageInfo {
+	if arg == nil {
+		return nil
+	}
+	return &common.CursorPageInfo{
+		First:  arg.First,
+		Last:   arg.Last,
+		Before: arg.Before,
+		After:  arg.After,
+
+		Limit: arg.Limit,
+		Sort:  strings.Join(arg.Sort, ","),
+
+		Prev: arg.Prev,
+		Next: arg.Next,
 	}
 }

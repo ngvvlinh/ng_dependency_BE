@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -37,7 +38,7 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtend
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"created_at": "s.created_at", "updated_at": "s.updated_at"})
+		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"created_at": "s.created_at", "updated_at": "s.updated_at"})
 		if err != nil {
 			return err
 		}

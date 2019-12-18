@@ -36,7 +36,7 @@ func (q *SupplierQuery) GetSupplierByID(
 func (q *SupplierQuery) ListSuppliers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*suppliering.SuppliersResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
+	query := q.store(ctx).ShopID(args.ShopID).WithPaging(args.Paging).Filters(args.Filters)
 	suppliers, err := query.ListSuppliers()
 	if err != nil {
 		return nil, err

@@ -36,7 +36,7 @@ func (q *CarrierQuery) GetCarrierByID(
 func (q *CarrierQuery) ListCarriers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*carrying.CarriersResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
+	query := q.store(ctx).ShopID(args.ShopID).WithPaging(args.Paging).Filters(args.Filters)
 	carriers, err := query.ListCarriers()
 	if err != nil {
 		return nil, err

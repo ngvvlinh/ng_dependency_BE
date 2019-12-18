@@ -33,18 +33,14 @@ type CarrierStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *CarrierStore) Paging(paging meta.Paging) *CarrierStore {
-	s.paging = paging
+func (s *CarrierStore) WithPaging(paging meta.Paging) *CarrierStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *CarrierStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *CarrierStore) Filters(filters meta.Filters) *CarrierStore {
@@ -147,7 +143,7 @@ func (s *CarrierStore) GetCarrier() (carrierResult *carrying.ShopCarrier, _ erro
 func (s *CarrierStore) ListCarriersDB() ([]*model.ShopCarrier, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortCarrier)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortCarrier)
 	if err != nil {
 		return nil, err
 	}

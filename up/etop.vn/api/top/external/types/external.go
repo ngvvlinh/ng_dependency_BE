@@ -443,3 +443,41 @@ func (m *Fulfillment) HasChanged() bool {
 		m.ShippingNote.Valid ||
 		m.ChargeableWeight.Valid
 }
+
+type Customer struct {
+	Id           dot.ID         `json:"id"`
+	ShopId       dot.ID         `json:"shop_id"`
+	ExternalId   string         `json:"external_id"`
+	ExternalCode string         `json:"external_code"`
+	FullName     string         `json:"full_name"`
+	Code         string         `json:"code"`
+	Note         string         `json:"note"`
+	Phone        string         `json:"phone"`
+	Email        string         `json:"email"`
+	Gender       string         `json:"gender"`
+	Type         string         `json:"type"`
+	Birthday     string         `json:"birthday"`
+	CreatedAt    dot.Time       `json:"created_at"`
+	UpdatedAt    dot.Time       `json:"updated_at"`
+	Status       status3.Status `json:"status"`
+	GroupIds     []dot.ID       `json:"group_ids"`
+}
+
+func (m *Customer) Reset()         { *m = Customer{} }
+func (m *Customer) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomersResponse struct {
+	Customers []*Customer            `json:"customers"`
+	Paging    *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *CustomersResponse) Reset()         { *m = CustomersResponse{} }
+func (m *CustomersResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetCustomersRequest struct {
+	Ids    []dot.ID             `json:"ids"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *GetCustomersRequest) Reset()         { *m = GetCustomersRequest{} }
+func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }

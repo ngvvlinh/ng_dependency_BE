@@ -7,6 +7,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/µjson"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/jsonx"
@@ -43,7 +44,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 	s := x.
 		Select(`row_to_json("` + query.Table + `")`).
 		From(`history."` + query.Table + `"`)
-	s, err := LimitSort(s, query.Paging, Ms{"rid": ""})
+	s, err := LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"rid": ""})
 	if err != nil {
 		return err
 	}

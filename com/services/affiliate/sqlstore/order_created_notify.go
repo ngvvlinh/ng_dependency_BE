@@ -27,7 +27,7 @@ type OrderCreatedNotifyStore struct {
 
 	ft OrderCreatedNotifyFilters
 
-	paging  meta.Paging
+	sqlstore.Paging
 	filters meta.Filters
 }
 
@@ -41,12 +41,8 @@ func (s *OrderCreatedNotifyStore) Count() (int, error) {
 	return query.Count((*model.ProductPromotion)(nil))
 }
 
-func (s *OrderCreatedNotifyStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
-}
-
-func (s *OrderCreatedNotifyStore) Paging(paging meta.Paging) *OrderCreatedNotifyStore {
-	s.paging = paging
+func (s *OrderCreatedNotifyStore) WithPaging(paging meta.Paging) *OrderCreatedNotifyStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

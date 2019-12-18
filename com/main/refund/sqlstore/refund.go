@@ -30,12 +30,12 @@ type RefundStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 }
 
-func (s *RefundStore) Paging(paging meta.Paging) *RefundStore {
+func (s *RefundStore) WithPaging(paging meta.Paging) *RefundStore {
 	ss := *s
-	ss.paging = paging
+	ss.Paging.WithPaging(paging)
 	return &ss
 }
 
@@ -92,10 +92,10 @@ func (s *RefundStore) GetRefund() (refundResult *refund.Refund, err error) {
 func (s *RefundStore) ListRefundsDB() ([]*model.Refund, error) {
 	query := s.query().Where(s.preds)
 	// default sort by created_at
-	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
-		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortRefund)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortRefund)
 	if err != nil {
 		return nil, err
 	}
@@ -154,8 +154,4 @@ func (s *RefundStore) GetRefundByMaximumCodeNorm() (*model.Refund, error) {
 		return nil, err
 	}
 	return &inventoryVoucher, nil
-}
-
-func (s *RefundStore) GetPaging() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }

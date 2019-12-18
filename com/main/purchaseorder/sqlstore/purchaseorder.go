@@ -36,18 +36,14 @@ type PurchaseOrderStore struct {
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
-	paging  meta.Paging
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *PurchaseOrderStore) Paging(paging meta.Paging) *PurchaseOrderStore {
-	s.paging = paging
+func (s *PurchaseOrderStore) WithPaging(paging meta.Paging) *PurchaseOrderStore {
+	s.Paging.WithPaging(paging)
 	return s
-}
-
-func (s *PurchaseOrderStore) GetPaing() meta.PageInfo {
-	return meta.FromPaging(s.paging)
 }
 
 func (s *PurchaseOrderStore) Filters(filters meta.Filters) *PurchaseOrderStore {
@@ -187,10 +183,10 @@ func (s *PurchaseOrderStore) ListPurchaseOrderDB() ([]*model.PurchaseOrder, erro
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	// default sort by created_at
-	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
-		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
-	query, err := sqlstore.LimitSort(query, &s.paging, SortPurchaseOrder)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortPurchaseOrder)
 	if err != nil {
 		return nil, err
 	}

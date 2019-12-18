@@ -44,7 +44,7 @@ func (q *LedgerQuery) GetLedgerByID(ctx context.Context, args *shopping.IDQueryS
 func (q *LedgerQuery) ListLedgers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (_ *ledgering.ShopLedgersResponse, err error) {
-	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
+	query := q.store(ctx).ShopID(args.ShopID).WithPaging(args.Paging).Filters(args.Filters)
 	ledgers, err := query.ListLedgers()
 	if err != nil {
 		return nil, err
