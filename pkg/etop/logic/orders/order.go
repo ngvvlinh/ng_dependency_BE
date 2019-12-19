@@ -211,16 +211,14 @@ func CreateOrder(
 		r.Customer = getCustomerByID(ctx, claim.Shop.ID, r.CustomerId)
 	}
 	if r.CustomerId == 0 && r.ShippingAddress == nil {
-		q := &customering.GetCustomerIndependentByShopQuery{
-			ShopID: claim.Shop.ID,
+		cmd := &customering.GetCustomerIndependentQuery{}
+		if err := customerQuery.Dispatch(ctx, cmd); err != nil {
+			return nil, err
 		}
-		err := customerQuery.Dispatch(ctx, q)
-		if err == nil {
-			r.CustomerId = q.Result.ID
-			r.Customer = &types.OrderCustomer{
-				FullName: q.Result.FullName,
-				Type:     customer_type.Independent,
-			}
+		r.CustomerId = cmd.Result.ID
+		r.Customer = &types.OrderCustomer{
+			FullName: cmd.Result.FullName,
+			Type:     cmd.Result.Type,
 		}
 	}
 	shop := claim.Shop

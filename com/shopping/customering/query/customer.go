@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
@@ -165,16 +166,6 @@ func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.
 	return customerGroup, err
 }
 
-func (q *CustomerQuery) GetCustomerIndependentByShop(
-	ctx context.Context, args *customering.GetCustomerIndependentByShop,
-) (*customering.ShopCustomer, error) {
-	customer, err := q.store(ctx).ShopID(args.ShopID).Type(customer_type.Independent).GetCustomer()
-	if err != nil {
-		return nil, err
-	}
-	return customer, err
-}
-
 func (q *CustomerQuery) ListCustomerGroups(
 	ctx context.Context, args *customering.ListCustomerGroupArgs,
 ) (*customering.CustomerGroupsResponse, error) {
@@ -207,6 +198,13 @@ func (q *CustomerQuery) GetCustomerByEmail(
 		return nil, err
 	}
 	return customer, nil
+}
+func (q *CustomerQuery) GetCustomerIndependent(context.Context, *meta.Empty) (*customering.ShopCustomer, error) {
+	return &customering.ShopCustomer{
+		ID:       customering.CustomerAnonymous,
+		FullName: "Khách lẻ",
+		Type:     customer_type.Independent,
+	}, nil
 }
 
 func (q *CustomerQuery) ListCustomerGroupsCustomers(ctx context.Context, args *customering.ListCustomerGroupsCustomersArgs) (*customering.CustomerGroupsCustomersResponse, error) {

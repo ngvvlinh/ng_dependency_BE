@@ -61,26 +61,7 @@ func (a *CustomerAggregate) CreateCustomer(
 	}
 
 	if args.Type == customer_type.Independent {
-		cust, err := a.store(ctx).ShopID(args.ShopID).Type(args.Type).GetCustomer()
-		// khách lẻ là duy nhất, nếu có lỗi khác lỗi "NotFound" thì trả về lỗi
-		if err == nil {
-			return cust, nil
-		}
-		if cm.ErrorCode(err) != cm.NotFound {
-			return nil, err
-		}
-		ct := &model.ShopCustomer{
-			ID:       cm.NewID(),
-			FullName: "Khách Lẻ",
-			ShopID:   args.ShopID,
-			Type:     customer_type.Independent,
-		}
-		err = a.store(ctx).CreateCustomer(ct)
-		customerResult, err := a.store(ctx).ShopID(ct.ShopID).ID(ct.ID).GetCustomer()
-		if err != nil {
-			return nil, err
-		}
-		return customerResult, err
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "loại khách hàng không hợp lệ")
 	}
 	if args.FullName == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
@@ -141,7 +122,6 @@ func (a *CustomerAggregate) UpdateCustomer(
 	if err != nil {
 		return nil, err
 	}
-
 	if customer.Type == customer_type.Independent {
 		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi khách lẻ", nil)
 	}

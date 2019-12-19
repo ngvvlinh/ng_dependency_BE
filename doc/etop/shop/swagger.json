@@ -8303,6 +8303,9 @@
             "$ref": "#/definitions/ktFilter"
           }
         },
+        "get_all": {
+          "type": "boolean"
+        },
         "paging": {
           "$ref": "#/definitions/ktPaging"
         }
@@ -13728,12 +13731,13 @@
       ]
     },
     "spCustomerType": {
+      "description": "Deprecated values: \"independent\"",
       "type": "string",
       "enum": [
         "unknown",
         "individual",
         "organization",
-        "independent"
+        "anonymous"
       ]
     },
     "ujLedgerType": {

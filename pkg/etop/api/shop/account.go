@@ -3,7 +3,6 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
 	apietop "etop.vn/api/top/int/etop"
 	apishop "etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
@@ -50,13 +49,6 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 		ShippingServicePickStrategy: convertpb.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	event := &identity.AccountCreatedEvent{
-		ShopID: cmd.Result.ID,
-		UserID: q.Context.UserID,
-	}
-	if err := eventBus.Publish(ctx, event); err != nil {
 		return err
 	}
 

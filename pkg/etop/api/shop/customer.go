@@ -118,22 +118,69 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 
 func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpoint) error {
 	paging := cmapi.CMPaging(r.Paging)
+	switch r.GetAll {
+	case true:
+		if err := getAllCustomers(ctx, paging, r); err != nil {
+			return err
+		}
+	case false:
+		customers, err := getCustomers(ctx, paging, r)
+		if err != nil {
+			return err
+		}
+		r.Result.Customers = customers
+	}
+	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) error {
+	queryCustomerIndenpendent := &customering.GetCustomerIndependentQuery{}
+	if err := customerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
+		return err
+	}
+	var customers []*shop.Customer
+	customers = append(customers, convertpb.PbCustomer(queryCustomerIndenpendent.Result))
+
+	if paging.Limit == 1 && paging.Offset == 0 {
+		r.Result.Customers = customers
+		return nil
+	}
+	if paging.Offset == 0 {
+		paging.Limit--
+		cts, err := getCustomers(ctx, paging, r)
+		if err != nil {
+			return err
+		}
+		customers = append(customers, cts...)
+		r.Result.Customers = customers
+		r.Result.Paging.Limit++
+	} else {
+		paging.Offset--
+		_, err := getCustomers(ctx, paging, r)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func getCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) ([]*shop.Customer, error) {
 	query := &customering.ListCustomersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	r.Result = &shop.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
 		Paging:    cmapi.PbPageInfo(paging),
 	}
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
-		return err
-	}
-	return nil
+	return convertpb.PbCustomers(query.Result.Customers), nil
 }
 
 func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *GetCustomersByIDsEndpoint) error {

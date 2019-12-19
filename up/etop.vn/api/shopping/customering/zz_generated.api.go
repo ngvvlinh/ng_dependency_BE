@@ -230,14 +230,12 @@ func (h QueryServiceHandler) HandleGetCustomerGroup(ctx context.Context, msg *Ge
 	return err
 }
 
-type GetCustomerIndependentByShopQuery struct {
-	ShopID dot.ID
-
+type GetCustomerIndependentQuery struct {
 	Result *ShopCustomer `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetCustomerIndependentByShop(ctx context.Context, msg *GetCustomerIndependentByShopQuery) (err error) {
-	msg.Result, err = h.inner.GetCustomerIndependentByShop(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetCustomerIndependent(ctx context.Context, msg *GetCustomerIndependentQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerIndependent(msg.GetArgs(ctx))
 	return err
 }
 
@@ -305,17 +303,17 @@ func (q *RemoveCustomersFromGroupCommand) command() {}
 func (q *UpdateCustomerCommand) command()           {}
 func (q *UpdateCustomerGroupCommand) command()      {}
 
-func (q *GetCustomerQuery) query()                  {}
-func (q *GetCustomerByCodeQuery) query()            {}
-func (q *GetCustomerByEmailQuery) query()           {}
-func (q *GetCustomerByIDQuery) query()              {}
-func (q *GetCustomerByPhoneQuery) query()           {}
-func (q *GetCustomerGroupQuery) query()             {}
-func (q *GetCustomerIndependentByShopQuery) query() {}
-func (q *ListCustomerGroupsQuery) query()           {}
-func (q *ListCustomerGroupsCustomersQuery) query()  {}
-func (q *ListCustomersQuery) query()                {}
-func (q *ListCustomersByIDsQuery) query()           {}
+func (q *GetCustomerQuery) query()                 {}
+func (q *GetCustomerByCodeQuery) query()           {}
+func (q *GetCustomerByEmailQuery) query()          {}
+func (q *GetCustomerByIDQuery) query()             {}
+func (q *GetCustomerByPhoneQuery) query()          {}
+func (q *GetCustomerGroupQuery) query()            {}
+func (q *GetCustomerIndependentQuery) query()      {}
+func (q *ListCustomerGroupsQuery) query()          {}
+func (q *ListCustomerGroupsCustomersQuery) query() {}
+func (q *ListCustomersQuery) query()               {}
+func (q *ListCustomersByIDsQuery) query()          {}
 
 // implement conversion
 
@@ -529,15 +527,12 @@ func (q *GetCustomerGroupQuery) SetGetCustomerGroupArgs(args *GetCustomerGroupAr
 	q.ID = args.ID
 }
 
-func (q *GetCustomerIndependentByShopQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerIndependentByShop) {
+func (q *GetCustomerIndependentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
-		&GetCustomerIndependentByShop{
-			ShopID: q.ShopID,
-		}
+		&meta.Empty{}
 }
 
-func (q *GetCustomerIndependentByShopQuery) SetGetCustomerIndependentByShop(args *GetCustomerIndependentByShop) {
-	q.ShopID = args.ShopID
+func (q *GetCustomerIndependentQuery) SetEmpty(args *meta.Empty) {
 }
 
 func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupArgs) {
@@ -642,7 +637,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetCustomerByID)
 	b.AddHandler(h.HandleGetCustomerByPhone)
 	b.AddHandler(h.HandleGetCustomerGroup)
-	b.AddHandler(h.HandleGetCustomerIndependentByShop)
+	b.AddHandler(h.HandleGetCustomerIndependent)
 	b.AddHandler(h.HandleListCustomerGroups)
 	b.AddHandler(h.HandleListCustomerGroupsCustomers)
 	b.AddHandler(h.HandleListCustomers)

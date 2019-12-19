@@ -45,8 +45,6 @@ type QueryService interface {
 
 	GetCustomerByEmail(ctx context.Context, email string, shopID dot.ID) (*ShopCustomer, error)
 
-	GetCustomerIndependentByShop(ctx context.Context, _ *GetCustomerIndependentByShop) (*ShopCustomer, error)
-
 	ListCustomers(context.Context, *shopping.ListQueryShopArgs) (*CustomersResponse, error)
 
 	ListCustomersByIDs(context.Context, *ListCustomerByIDsArgs) (*CustomersResponse, error)
@@ -56,6 +54,8 @@ type QueryService interface {
 	ListCustomerGroups(ctx context.Context, _ *ListCustomerGroupArgs) (*CustomerGroupsResponse, error)
 
 	ListCustomerGroupsCustomers(ctx context.Context, _ *ListCustomerGroupsCustomersArgs) (*CustomerGroupsCustomersResponse, error)
+
+	GetCustomerIndependent(context.Context, *meta.Empty) (*ShopCustomer, error)
 }
 
 //-- queries --//
