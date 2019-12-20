@@ -97,7 +97,7 @@ func New(env string, cfg ConfigAccount) *ClientImpl {
 		Username: cfg.Username,
 		Password: cfg.Password,
 	}
-	c.baseUrl = "https://partner.viettelpost.vn/v2/"
+	c.baseUrl = "https://partner.viettelpost.vn/v2"
 	return c
 }
 

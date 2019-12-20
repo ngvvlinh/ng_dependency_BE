@@ -57,10 +57,10 @@ func New(cfg Config) *Client {
 	}
 	switch cfg.Env {
 	case cm.PartnerEnvTest:
-		c.baseUrl = "http://apistg.ahamove.com/v1/"
+		c.baseUrl = "http://apistg.ahamove.com/v1"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket_stg"
 	case cm.PartnerEnvProd:
-		c.baseUrl = "https://api.ahamove.com/v1/"
+		c.baseUrl = "https://api.ahamove.com/v1"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket"
 	default:
 		ll.Fatal("ahamove: Invalid ENV")

@@ -52,9 +52,9 @@ func New(env string, cfg GhtkAccount) *Client {
 	}
 	switch env {
 	case cm.PartnerEnvTest:
-		c.baseUrl = "https://dev.ghtk.vn/"
+		c.baseUrl = "https://dev.ghtk.vn"
 	case cm.PartnerEnvProd:
-		c.baseUrl = "https://services.giaohangtietkiem.vn/"
+		c.baseUrl = "https://services.giaohangtietkiem.vn"
 	default:
 		ll.Fatal("ghtk: Invalid ENV")
 	}
