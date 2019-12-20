@@ -139,6 +139,7 @@ type OrderLine struct {
 	ProductId      dot.ID                `json:"product_id"`
 	TotalDiscount  int                   `json:"total_discount"`
 	MetaFields     []*OrderLineMetaField `json:"meta_fields"`
+	Code           string                `json:"code"`
 }
 
 func (m *OrderLine) Reset()         { *m = OrderLine{} }

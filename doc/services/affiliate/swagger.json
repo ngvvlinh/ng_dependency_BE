@@ -2607,6 +2607,9 @@
             "$ref": "#/definitions/qdAttribute"
           }
         },
+        "code": {
+          "type": "string"
+        },
         "exported_fields": {
           "type": "array",
           "items": {

@@ -602,20 +602,20 @@ func PbOrderLine(m *ordermodel.OrderLine) *types.OrderLine {
 	}
 	return &types.OrderLine{
 		ExportedFields: exportedOrderLine,
-
-		OrderId:       m.OrderID,
-		VariantId:     m.VariantID,
-		ProductName:   m.ProductName,
-		IsOutsideEtop: m.IsOutsideEtop,
-		Quantity:      m.Quantity,
-		ListPrice:     m.ListPrice,
-		RetailPrice:   m.RetailPrice,
-		PaymentPrice:  m.PaymentPrice,
-		ImageUrl:      m.ImageURL,
-		Attributes:    PbAttributesFromModel(m.Attributes),
-		ProductId:     m.ProductID,
-		TotalDiscount: m.TotalDiscount,
-		MetaFields:    metaFields,
+		Code:           m.Code,
+		OrderId:        m.OrderID,
+		VariantId:      m.VariantID,
+		ProductName:    m.ProductName,
+		IsOutsideEtop:  m.IsOutsideEtop,
+		Quantity:       m.Quantity,
+		ListPrice:      m.ListPrice,
+		RetailPrice:    m.RetailPrice,
+		PaymentPrice:   m.PaymentPrice,
+		ImageUrl:       m.ImageURL,
+		Attributes:     PbAttributesFromModel(m.Attributes),
+		ProductId:      m.ProductID,
+		TotalDiscount:  m.TotalDiscount,
+		MetaFields:     metaFields,
 	}
 }
 
