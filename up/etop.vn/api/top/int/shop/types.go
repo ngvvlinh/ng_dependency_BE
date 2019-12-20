@@ -20,6 +20,7 @@ import (
 	shipping "etop.vn/api/top/types/etc/shipping"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
@@ -2072,7 +2073,8 @@ type CreateStocktakeRequest struct {
 	TotalQuantity int    `json:"total_quantity"`
 	Note          string `json:"note"`
 	//  length more than one
-	Lines []*StocktakeLine `json:"lines"`
+	Lines []*StocktakeLine             `json:"lines"`
+	Type  stocktake_type.StocktakeType `json:"type"`
 }
 
 func (m *CreateStocktakeRequest) Reset()         { *m = CreateStocktakeRequest{} }
@@ -2104,6 +2106,7 @@ type Stocktake struct {
 	CancelledAt   dot.Time         `json:"cancelled_at"`
 	Status        status3.Status   `json:"status"`
 	Lines         []*StocktakeLine `json:"lines"`
+	Type          string           `json:"type"`
 }
 
 func (m *Stocktake) Reset()         { *m = Stocktake{} }
@@ -2250,6 +2253,7 @@ type Refund struct {
 	Status       status3.Status       `json:"status"`
 	TotalAmount  int                  `json:"total_amount"`
 	BasketValue  int                  `json:"basket_value"`
+	PaidAmount   int                  `json:"paid_amount"`
 }
 
 func (m *Refund) Reset()         { *m = Refund{} }

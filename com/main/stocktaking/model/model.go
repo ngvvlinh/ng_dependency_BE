@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/capi/dot"
 )
@@ -19,6 +20,7 @@ type ShopStocktake struct {
 	CreatedBy     dot.ID
 	UpdatedBy     dot.ID
 	CancelReason  string
+	Type          stocktake_type.StocktakeType
 	Code          string
 	CodeNorm      int
 	Status        status3.Status

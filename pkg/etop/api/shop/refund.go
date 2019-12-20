@@ -4,9 +4,12 @@ import (
 	"context"
 
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/top/int/shop"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
@@ -42,6 +45,10 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 	if err != nil {
 		return err
 	}
+	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -72,6 +79,10 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 	if err != nil {
 		return err
 	}
+	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -93,6 +104,10 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 	if err != nil {
 		return err
 	}
+	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -111,6 +126,10 @@ func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoin
 	}
 	result := PbRefund(cmd.Result)
 	result, err := populateRefundWithCustomer(ctx, result)
+	if err != nil {
+		return err
+	}
+	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -139,6 +158,10 @@ func (s *RefundService) GetRefund(ctx context.Context, q *GetRefundEndpoint) err
 	if err != nil {
 		return err
 	}
+	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	if err != nil {
+		return err
+	}
 	result.Customer = convertpb.PbOrderCustomer(queryOrder.Result.Order.Customer)
 	q.Result = result
 	return nil
@@ -157,6 +180,10 @@ func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *GetRefundsByIDsE
 	var err error
 	if len(result) > 0 {
 		result, err = populateRefundsWithCustomer(ctx, result)
+		if err != nil {
+			return err
+		}
+		result, err = populateRefundsWithReceiptPaidAmount(ctx, result)
 		if err != nil {
 			return err
 		}
@@ -185,12 +212,69 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 		if err != nil {
 			return err
 		}
+		result, err = populateRefundsWithReceiptPaidAmount(ctx, result)
+		if err != nil {
+			return err
+		}
 	}
 	q.Result = &shop.GetRefundsResponse{
 		Refunds: result,
 		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return nil
+}
+
+// Get total paid amount of refund from receipt which have status = P
+func populateRefundWithReceiptPaidAmount(ctx context.Context, arg *shop.Refund) (*shop.Refund, error) {
+	query := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:  arg.ShopID,
+		RefIDs:  []dot.ID{arg.ID},
+		RefType: receipt_ref.Refund,
+		Status:  int(status3.P),
+	}
+	err := receiptQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for _, value := range query.Result.Receipts {
+		for _, _value := range value.Lines {
+			if _value.RefID == arg.ID {
+				arg.PaidAmount += _value.Amount
+			}
+		}
+	}
+	return arg, nil
+}
+
+// Get total paid amount of each refunds  from receipt which have status = P
+func populateRefundsWithReceiptPaidAmount(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {
+	if len(refunds) == 0 {
+		return refunds, nil
+	}
+	var refundIDs []dot.ID
+	for _, value := range refunds {
+		refundIDs = append(refundIDs, value.ID)
+	}
+	query := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:  refunds[0].ShopID,
+		RefIDs:  refundIDs,
+		RefType: receipt_ref.Refund,
+		Status:  int(status3.P),
+	}
+	err := receiptQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	var mapPaidAmount = make(map[dot.ID]int)
+	for _, value := range query.Result.Receipts {
+		for _, _value := range value.Lines {
+			mapPaidAmount[_value.RefID] = _value.Amount + mapPaidAmount[_value.RefID]
+		}
+	}
+	for key, value := range refunds {
+		refunds[key].PaidAmount = mapPaidAmount[value.ID]
+	}
+	return refunds, nil
 }
 
 func populateRefundsWithCustomer(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {

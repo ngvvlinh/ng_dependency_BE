@@ -30,8 +30,8 @@ func sqlgenStocktake(_ *ShopStocktake) bool { return true }
 type ShopStocktakes []*ShopStocktake
 
 const __sqlShopStocktake_Table = "shop_stocktake"
-const __sqlShopStocktake_ListCols = "\"id\",\"shop_id\",\"total_quantity\",\"created_by\",\"updated_by\",\"cancel_reason\",\"code\",\"code_norm\",\"status\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"lines\",\"note\",\"product_ids\""
-const __sqlShopStocktake_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"total_quantity\" = EXCLUDED.\"total_quantity\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"lines\" = EXCLUDED.\"lines\",\"note\" = EXCLUDED.\"note\",\"product_ids\" = EXCLUDED.\"product_ids\""
+const __sqlShopStocktake_ListCols = "\"id\",\"shop_id\",\"total_quantity\",\"created_by\",\"updated_by\",\"cancel_reason\",\"type\",\"code\",\"code_norm\",\"status\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"lines\",\"note\",\"product_ids\""
+const __sqlShopStocktake_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"total_quantity\" = EXCLUDED.\"total_quantity\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"type\" = EXCLUDED.\"type\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"lines\" = EXCLUDED.\"lines\",\"note\" = EXCLUDED.\"note\",\"product_ids\" = EXCLUDED.\"product_ids\""
 const __sqlShopStocktake_Insert = "INSERT INTO \"shop_stocktake\" (" + __sqlShopStocktake_ListCols + ") VALUES"
 const __sqlShopStocktake_Select = "SELECT " + __sqlShopStocktake_ListCols + " FROM \"shop_stocktake\""
 const __sqlShopStocktake_Select_history = "SELECT " + __sqlShopStocktake_ListCols + " FROM history.\"shop_stocktake\""
@@ -62,6 +62,7 @@ func (m *ShopStocktake) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.CreatedBy,
 		m.UpdatedBy,
 		core.String(m.CancelReason),
+		m.Type,
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
 		m.Status,
@@ -83,6 +84,7 @@ func (m *ShopStocktake) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.CreatedBy,
 		&m.UpdatedBy,
 		(*core.String)(&m.CancelReason),
+		&m.Type,
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
 		&m.Status,
@@ -130,7 +132,7 @@ func (_ *ShopStocktakes) SQLSelect(w SQLWriter) error {
 func (m *ShopStocktake) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopStocktake_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -140,7 +142,7 @@ func (ms ShopStocktakes) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopStocktake_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -218,6 +220,14 @@ func (m *ShopStocktake) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.CancelReason)
+	}
+	if m.Type != 0 {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
 	}
 	if m.Code != "" {
 		flag = true
@@ -309,7 +319,7 @@ func (m *ShopStocktake) SQLUpdate(w SQLWriter) error {
 func (m *ShopStocktake) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopStocktake_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -339,6 +349,7 @@ func (m ShopStocktakeHistory) TotalQuantity() core.Interface {
 func (m ShopStocktakeHistory) CreatedBy() core.Interface    { return core.Interface{m["created_by"]} }
 func (m ShopStocktakeHistory) UpdatedBy() core.Interface    { return core.Interface{m["updated_by"]} }
 func (m ShopStocktakeHistory) CancelReason() core.Interface { return core.Interface{m["cancel_reason"]} }
+func (m ShopStocktakeHistory) Type() core.Interface         { return core.Interface{m["type"]} }
 func (m ShopStocktakeHistory) Code() core.Interface         { return core.Interface{m["code"]} }
 func (m ShopStocktakeHistory) CodeNorm() core.Interface     { return core.Interface{m["code_norm"]} }
 func (m ShopStocktakeHistory) Status() core.Interface       { return core.Interface{m["status"]} }
@@ -351,39 +362,40 @@ func (m ShopStocktakeHistory) Note() core.Interface         { return core.Interf
 func (m ShopStocktakeHistory) ProductIDs() core.Interface   { return core.Interface{m["product_ids"]} }
 
 func (m *ShopStocktakeHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopStocktakeHistory, 16)
+	res := make(ShopStocktakeHistory, 17)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["total_quantity"] = data[2]
 	res["created_by"] = data[3]
 	res["updated_by"] = data[4]
 	res["cancel_reason"] = data[5]
-	res["code"] = data[6]
-	res["code_norm"] = data[7]
-	res["status"] = data[8]
-	res["created_at"] = data[9]
-	res["updated_at"] = data[10]
-	res["confirmed_at"] = data[11]
-	res["cancelled_at"] = data[12]
-	res["lines"] = data[13]
-	res["note"] = data[14]
-	res["product_ids"] = data[15]
+	res["type"] = data[6]
+	res["code"] = data[7]
+	res["code_norm"] = data[8]
+	res["status"] = data[9]
+	res["created_at"] = data[10]
+	res["updated_at"] = data[11]
+	res["confirmed_at"] = data[12]
+	res["cancelled_at"] = data[13]
+	res["lines"] = data[14]
+	res["note"] = data[15]
+	res["product_ids"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *ShopStocktakeHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopStocktakeHistories, 0, 128)
@@ -398,16 +410,17 @@ func (ms *ShopStocktakeHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["created_by"] = data[3]
 		m["updated_by"] = data[4]
 		m["cancel_reason"] = data[5]
-		m["code"] = data[6]
-		m["code_norm"] = data[7]
-		m["status"] = data[8]
-		m["created_at"] = data[9]
-		m["updated_at"] = data[10]
-		m["confirmed_at"] = data[11]
-		m["cancelled_at"] = data[12]
-		m["lines"] = data[13]
-		m["note"] = data[14]
-		m["product_ids"] = data[15]
+		m["type"] = data[6]
+		m["code"] = data[7]
+		m["code_norm"] = data[8]
+		m["status"] = data[9]
+		m["created_at"] = data[10]
+		m["updated_at"] = data[11]
+		m["confirmed_at"] = data[12]
+		m["cancelled_at"] = data[13]
+		m["lines"] = data[14]
+		m["note"] = data[15]
+		m["product_ids"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

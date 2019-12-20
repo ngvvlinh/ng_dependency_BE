@@ -7160,6 +7160,9 @@
         },
         "total_quantity": {
           "type": "integer"
+        },
+        "type": {
+          "$ref": "#/definitions/qeStocktakeType"
         }
       }
     },
@@ -9051,6 +9054,9 @@
           "type": "string",
           "format": "int64"
         },
+        "paid_amount": {
+          "type": "integer"
+        },
         "shop_id": {
           "type": "string",
           "format": "int64"
@@ -9718,6 +9724,9 @@
         },
         "total_quantity": {
           "type": "integer"
+        },
+        "type": {
+          "type": "string"
         },
         "updated_at": {
           "type": "string",
@@ -13044,6 +13053,13 @@
           "$ref": "#/definitions/bmStatus"
         }
       }
+    },
+    "qeStocktakeType": {
+      "type": "string",
+      "enum": [
+        "balance",
+        "discard"
+      ]
     },
     "sdShippingFeeType": {
       "type": "string",

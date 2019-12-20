@@ -9,6 +9,7 @@ import (
 
 	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
+	stocktake_type "etop.vn/api/top/types/etc/stocktake_type"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -60,6 +61,7 @@ type CreateStocktakeCommand struct {
 	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
+	Type          stocktake_type.StocktakeType
 
 	Result *ShopStocktake `json:"-"`
 }
@@ -177,6 +179,7 @@ func (q *CreateStocktakeCommand) GetArgs(ctx context.Context) (_ context.Context
 			CreatedBy:     q.CreatedBy,
 			Lines:         q.Lines,
 			Note:          q.Note,
+			Type:          q.Type,
 		}
 }
 
@@ -186,6 +189,7 @@ func (q *CreateStocktakeCommand) SetCreateStocktakeRequest(args *CreateStocktake
 	q.CreatedBy = args.CreatedBy
 	q.Lines = args.Lines
 	q.Note = args.Note
+	q.Type = args.Type
 }
 
 func (q *UpdateStocktakeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStocktakeRequest) {

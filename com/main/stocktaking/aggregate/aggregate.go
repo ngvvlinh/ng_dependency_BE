@@ -6,6 +6,7 @@ import (
 
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/backend/com/main/stocktaking/convert"
 	"etop.vn/backend/com/main/stocktaking/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -41,10 +42,20 @@ func (q *StocktakeAggregate) CreateStocktake(ctx context.Context, args *stocktak
 	if args.ShopID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id in request", nil)
 	}
+	if args.Type != stocktake_type.Balance && args.Type != stocktake_type.Discard {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Loại quản lí tồn kho không đúng")
+	}
 	var stockTake = &stocktake.ShopStocktake{}
 	err := scheme.Convert(args, stockTake)
 	if err != nil {
 		return nil, err
+	}
+	if args.Type == stocktake_type.Discard {
+		for _, v := range args.Lines {
+			if v.NewQuantity > v.OldQuantity || v.NewQuantity < 0 {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng xuất hủy không đúng")
+			}
+		}
 	}
 	InventoryMaxCode, err := q.StocktakeStore(ctx).ShopID(args.ShopID).GetStocktakeMaximumCodeNorm()
 	var maxCodeNorm int

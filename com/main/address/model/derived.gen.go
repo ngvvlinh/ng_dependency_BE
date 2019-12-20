@@ -31,10 +31,12 @@ type Addresses []*Address
 
 const __sqlAddress_Table = "address"
 const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\",\"coordinates\""
+const __sqlAddress_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\",\"phone\" = EXCLUDED.\"phone\",\"position\" = EXCLUDED.\"position\",\"email\" = EXCLUDED.\"email\",\"country\" = EXCLUDED.\"country\",\"city\" = EXCLUDED.\"city\",\"province\" = EXCLUDED.\"province\",\"district\" = EXCLUDED.\"district\",\"ward\" = EXCLUDED.\"ward\",\"zip\" = EXCLUDED.\"zip\",\"district_code\" = EXCLUDED.\"district_code\",\"province_code\" = EXCLUDED.\"province_code\",\"ward_code\" = EXCLUDED.\"ward_code\",\"company\" = EXCLUDED.\"company\",\"address1\" = EXCLUDED.\"address1\",\"address2\" = EXCLUDED.\"address2\",\"type\" = EXCLUDED.\"type\",\"account_id\" = EXCLUDED.\"account_id\",\"notes\" = EXCLUDED.\"notes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"coordinates\" = EXCLUDED.\"coordinates\""
 const __sqlAddress_Insert = "INSERT INTO \"address\" (" + __sqlAddress_ListCols + ") VALUES"
 const __sqlAddress_Select = "SELECT " + __sqlAddress_ListCols + " FROM \"address\""
 const __sqlAddress_Select_history = "SELECT " + __sqlAddress_ListCols + " FROM history.\"address\""
 const __sqlAddress_UpdateAll = "UPDATE \"address\" SET (" + __sqlAddress_ListCols + ")"
+const __sqlAddress_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT address_pkey DO UPDATE SET"
 
 func (m *Address) SQLTableName() string   { return "address" }
 func (m *Addresses) SQLTableName() string { return "address" }
@@ -161,6 +163,22 @@ func (ms Addresses) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Address) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAddress_ListColsOnConflict)
+	return nil
+}
+
+func (ms Addresses) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlAddress_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlAddress_ListColsOnConflict)
 	return nil
 }
 

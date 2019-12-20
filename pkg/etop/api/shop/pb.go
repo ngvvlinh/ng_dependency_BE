@@ -122,6 +122,7 @@ func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
 		ConfirmedAt:   cmapi.PbTime(args.ConfirmedAt),
 		CancelledAt:   cmapi.PbTime(args.CancelledAt),
 		Status:        args.Status,
+		Type:          args.Type.String(),
 		Code:          args.Code,
 		Lines:         PbstocktakeLines(args.Lines),
 	}

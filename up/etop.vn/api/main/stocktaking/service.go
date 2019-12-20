@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/capi/dot"
 )
 
@@ -35,6 +36,7 @@ type CreateStocktakeRequest struct {
 	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
+	Type          stocktake_type.StocktakeType
 }
 
 // +convert:update=ShopStocktake

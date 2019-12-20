@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
@@ -135,6 +136,25 @@ func (ft *ShopStocktakeFilters) ByCancelReasonPtr(CancelReason *string) *sq.Colu
 		Value:  CancelReason,
 		IsNil:  CancelReason == nil,
 		IsZero: CancelReason != nil && (*CancelReason) == "",
+	}
+}
+
+func (ft *ShopStocktakeFilters) ByType(Type stocktake_type.StocktakeType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == 0,
+	}
+}
+
+func (ft *ShopStocktakeFilters) ByTypePtr(Type *stocktake_type.StocktakeType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 

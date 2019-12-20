@@ -102,6 +102,7 @@ func convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg *stock
 	out.CancelledAt = arg.CancelledAt     // simple assign
 	out.Lines = Convert_stocktakingmodel_StocktakeLines_stocktaking_StocktakeLines(arg.Lines)
 	out.Status = arg.Status // simple assign
+	out.Type = arg.Type     // simple assign
 }
 
 func Convert_stocktakingmodel_ShopStocktakes_stocktaking_ShopStocktakes(args []*stocktakingmodel.ShopStocktake) (outs []*stocktaking.ShopStocktake) {
@@ -131,6 +132,7 @@ func convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stock
 	out.CreatedBy = arg.CreatedBy         // simple assign
 	out.UpdatedBy = arg.UpdatedBy         // simple assign
 	out.CancelReason = arg.CancelReason   // simple assign
+	out.Type = arg.Type                   // simple assign
 	out.Code = arg.Code                   // simple assign
 	out.CodeNorm = arg.CodeNorm           // simple assign
 	out.Status = arg.Status               // simple assign
@@ -172,6 +174,7 @@ func apply_stocktaking_CreateStocktakeRequest_stocktaking_ShopStocktake(arg *sto
 	out.CancelledAt = time.Time{}         // zero value
 	out.Lines = arg.Lines                 // simple assign
 	out.Status = 0                        // zero value
+	out.Type = arg.Type                   // simple assign
 }
 
 func Apply_stocktaking_UpdateStocktakeRequest_stocktaking_ShopStocktake(arg *stocktaking.UpdateStocktakeRequest, out *stocktaking.ShopStocktake) *stocktaking.ShopStocktake {
@@ -194,6 +197,7 @@ func apply_stocktaking_UpdateStocktakeRequest_stocktaking_ShopStocktake(arg *sto
 	out.CancelledAt = out.CancelledAt     // no change
 	out.Lines = arg.Lines                 // simple assign
 	out.Status = out.Status               // no change
+	out.Type = out.Type                   // no change
 }
 
 //-- convert etop.vn/api/main/stocktaking.StocktakeLine --//

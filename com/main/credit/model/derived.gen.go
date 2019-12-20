@@ -33,10 +33,12 @@ type Credits []*Credit
 
 const __sqlCredit_Table = "credit"
 const __sqlCredit_ListCols = "\"id\",\"amount\",\"shop_id\",\"type\",\"status\",\"created_at\",\"updated_at\",\"paid_at\""
+const __sqlCredit_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"shop_id\" = EXCLUDED.\"shop_id\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"paid_at\" = EXCLUDED.\"paid_at\""
 const __sqlCredit_Insert = "INSERT INTO \"credit\" (" + __sqlCredit_ListCols + ") VALUES"
 const __sqlCredit_Select = "SELECT " + __sqlCredit_ListCols + " FROM \"credit\""
 const __sqlCredit_Select_history = "SELECT " + __sqlCredit_ListCols + " FROM history.\"credit\""
 const __sqlCredit_UpdateAll = "UPDATE \"credit\" SET (" + __sqlCredit_ListCols + ")"
+const __sqlCredit_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT credit_pkey DO UPDATE SET"
 
 func (m *Credit) SQLTableName() string  { return "credit" }
 func (m *Credits) SQLTableName() string { return "credit" }
@@ -129,6 +131,22 @@ func (ms Credits) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Credit) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCredit_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCredit_ListColsOnConflict)
+	return nil
+}
+
+func (ms Credits) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCredit_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCredit_ListColsOnConflict)
 	return nil
 }
 

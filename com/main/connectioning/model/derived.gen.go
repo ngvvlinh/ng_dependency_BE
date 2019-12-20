@@ -31,10 +31,12 @@ type Connections []*Connection
 
 const __sqlConnection_Table = "connection"
 const __sqlConnection_ListCols = "\"id\",\"name\",\"status\",\"partner_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"driver_config\",\"driver\",\"connection_type\",\"connection_subtype\",\"connection_method\",\"connection_provider\",\"etop_affiliate_account\",\"code\",\"image_url\""
+const __sqlConnection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"partner_id\" = EXCLUDED.\"partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"driver_config\" = EXCLUDED.\"driver_config\",\"driver\" = EXCLUDED.\"driver\",\"connection_type\" = EXCLUDED.\"connection_type\",\"connection_subtype\" = EXCLUDED.\"connection_subtype\",\"connection_method\" = EXCLUDED.\"connection_method\",\"connection_provider\" = EXCLUDED.\"connection_provider\",\"etop_affiliate_account\" = EXCLUDED.\"etop_affiliate_account\",\"code\" = EXCLUDED.\"code\",\"image_url\" = EXCLUDED.\"image_url\""
 const __sqlConnection_Insert = "INSERT INTO \"connection\" (" + __sqlConnection_ListCols + ") VALUES"
 const __sqlConnection_Select = "SELECT " + __sqlConnection_ListCols + " FROM \"connection\""
 const __sqlConnection_Select_history = "SELECT " + __sqlConnection_ListCols + " FROM history.\"connection\""
 const __sqlConnection_UpdateAll = "UPDATE \"connection\" SET (" + __sqlConnection_ListCols + ")"
+const __sqlConnection_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT connection_pkey DO UPDATE SET"
 
 func (m *Connection) SQLTableName() string  { return "connection" }
 func (m *Connections) SQLTableName() string { return "connection" }
@@ -143,6 +145,22 @@ func (ms Connections) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *Connection) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlConnection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlConnection_ListColsOnConflict)
+	return nil
+}
+
+func (ms Connections) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlConnection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlConnection_ListColsOnConflict)
 	return nil
 }
 
@@ -414,10 +432,12 @@ type ShopConnections []*ShopConnection
 
 const __sqlShopConnection_Table = "shop_connection"
 const __sqlShopConnection_ListCols = "\"shop_id\",\"connection_id\",\"token\",\"token_expires_at\",\"status\",\"connection_states\",\"created_at\",\"updated_at\",\"deleted_at\",\"is_global\",\"external_data\""
+const __sqlShopConnection_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"token\" = EXCLUDED.\"token\",\"token_expires_at\" = EXCLUDED.\"token_expires_at\",\"status\" = EXCLUDED.\"status\",\"connection_states\" = EXCLUDED.\"connection_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"is_global\" = EXCLUDED.\"is_global\",\"external_data\" = EXCLUDED.\"external_data\""
 const __sqlShopConnection_Insert = "INSERT INTO \"shop_connection\" (" + __sqlShopConnection_ListCols + ") VALUES"
 const __sqlShopConnection_Select = "SELECT " + __sqlShopConnection_ListCols + " FROM \"shop_connection\""
 const __sqlShopConnection_Select_history = "SELECT " + __sqlShopConnection_ListCols + " FROM history.\"shop_connection\""
 const __sqlShopConnection_UpdateAll = "UPDATE \"shop_connection\" SET (" + __sqlShopConnection_ListCols + ")"
+const __sqlShopConnection_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_connection_pkey DO UPDATE SET"
 
 func (m *ShopConnection) SQLTableName() string  { return "shop_connection" }
 func (m *ShopConnections) SQLTableName() string { return "shop_connection" }
@@ -516,6 +536,22 @@ func (ms ShopConnections) SQLInsert(w SQLWriter) error {
 		w.WriteRawString("),(")
 	}
 	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopConnection) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopConnection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopConnection_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopConnections) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopConnection_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopConnection_ListColsOnConflict)
 	return nil
 }
 
