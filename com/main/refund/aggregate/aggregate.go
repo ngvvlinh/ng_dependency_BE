@@ -123,7 +123,7 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 	}
 	refundByOrder, err := a.store(ctx).ShopID(shopID).OrderID(orderID).ListRefunds()
 	for _, value := range refundByOrder {
-		if value.ID == refundID {
+		if value.ID == refundID || value.Status == status3.N {
 			continue
 		}
 		for _, _value := range value.Lines {
@@ -162,6 +162,7 @@ func (a *RefundAggregate) CancelRefund(ctx context.Context, args *refund.CancelR
 	}
 	refundDB.CancelledAt = time.Now()
 	refundDB.Status = status3.N
+	refundDB.CancelReason = args.CancelReason
 	err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdateRefundAll(refundDB)
 	return refundDB, err
 }
