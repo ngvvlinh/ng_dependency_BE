@@ -85,6 +85,9 @@ func (a *RefundAggregate) UpdateRefund(ctx context.Context, args *refund.UpdateR
 	if err != nil {
 		return nil, err
 	}
+	if refundDB.Status != status3.Z {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu trả hàng %v đã hủy hoặc đã xác nhận không thể cập nhập", refundDB.Code)
+	}
 	err = scheme.Convert(args, refundDB)
 	if err != nil {
 		return nil, err
@@ -131,6 +134,9 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 		}
 	}
 	for key, value := range lines {
+		if linesVariant[value.VariantID] == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sản phẩm không tồn tại trong đơn hàng %v", queryOrder.Result.Order.Code)
+		}
 		if linesVariant[value.VariantID].Quantity < value.Quantity {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lơn hơn đơn hàng")
 		}
