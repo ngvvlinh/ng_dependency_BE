@@ -66,18 +66,31 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		ExcelMode: r.ExcelCompatibleMode,
 	}
 
-	from, to, err := cm.ParseDateFromTo(r.DateFrom, r.DateTo)
-	if err != nil {
-		return nil, err
+	var from, to time.Time
+	count := 0
+	if r.Ids != nil {
+		count++
+	}
+	if r.DateFrom != "" && r.DateTo != "" {
+		var err error
+		from, to, err = cm.ParseDateFromTo(r.DateFrom, r.DateTo)
+		if err != nil {
+			return nil, err
+		}
+		count++
+	}
+	if count != 1 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide ids or date_from/date_to")
 	}
 
-	tableNameExport := ""
-
+	var tableNameExport string
 	switch r.ExportType {
 	case PathShopOrders:
 		tableNameExport = "orders"
 	case PathShopFulfillments:
 		tableNameExport = "fulfillments"
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing export_type")
 	}
 
 	exportID := cm.NewBase54ID()

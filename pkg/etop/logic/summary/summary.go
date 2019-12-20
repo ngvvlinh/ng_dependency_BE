@@ -53,7 +53,6 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 	if query.ShopID == 0 {
 		return query, cm.Error(cm.InvalidArgument, "missing shop_id", nil)
 	}
-
 	from, to, err := cm.ParseDateFromTo(query.DateFrom, query.DateTo)
 	if err != nil {
 		return nil, err
