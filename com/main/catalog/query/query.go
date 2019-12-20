@@ -102,17 +102,21 @@ func (s *QueryService) ListShopCategories(
 	}, nil
 }
 
-func (s *QueryService) GetShopVariantByID(
-	ctx context.Context, args *catalog.GetShopVariantByIDQueryArgs,
+func (s *QueryService) GetShopVariant(
+	ctx context.Context, args *catalog.GetShopVariantQueryArgs,
 ) (*catalog.ShopVariant, error) {
-	q := s.shopVariant(ctx).ID(args.VariantID).OptionalShopID(args.ShopID)
+	q := s.shopVariant(ctx).OptionalShopID(args.ShopID)
+	if args.VariantID.Valid {
+		q = q.ID(args.VariantID.ID)
+	} else {
+		q = q.Code(args.Code.String)
+	}
 	variant, err := q.GetShopVariant()
 	if err != nil {
 		return nil, err
 	}
 	return variant, nil
 }
-
 func (s *QueryService) GetShopVariantWithProductByID(
 	ctx context.Context, args *catalog.GetShopVariantByIDQueryArgs,
 ) (*catalog.ShopVariantWithProduct, error) {

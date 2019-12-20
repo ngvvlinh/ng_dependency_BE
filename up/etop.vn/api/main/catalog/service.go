@@ -92,7 +92,7 @@ type QueryService interface {
 	ListShopProductsWithVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 	ListShopProductsWithVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 
-	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariant, error)
+	GetShopVariant(context.Context, *GetShopVariantQueryArgs) (*ShopVariant, error)
 	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
 	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
@@ -144,6 +144,17 @@ type CreateVariantsSupplier struct {
 type GetShopVariantByIDQueryArgs struct {
 	VariantID dot.ID
 	ShopID    dot.ID
+}
+
+type GetShopVariantQueryArgs struct {
+	VariantID NullID
+	ShopID    dot.ID
+	Code      NullString
+}
+
+type GetShopVariantByCodeArgs struct {
+	ShopID dot.ID
+	Code   string
 }
 
 type ShopProductsResponse struct {

@@ -6300,13 +6300,13 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 }
 
 type GetVariantEndpoint struct {
-	*cm.IDRequest
+	*api.GetVariantRequest
 	Result     *api.ShopVariant
 	Context    claims.ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp *api.ShopVariant, err error) {
+func (s wrapProductService) GetVariant(ctx context.Context, req *api.GetVariantRequest) (resp *api.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -6327,7 +6327,7 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetVariantEndpoint{IDRequest: req}
+	query := &GetVariantEndpoint{GetVariantRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner

@@ -61,6 +61,10 @@ func (s *ShopVariantStore) ID(id dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByVariantID(id))
 	return s
 }
+func (s *ShopVariantStore) Code(code string) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtShopVariant.ByCode(code))
+	return s
+}
 
 func (s *ShopVariantStore) ProductIDs(productIds ...dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "product_id", productIds))

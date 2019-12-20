@@ -2347,3 +2347,11 @@ func (m *ImportProductsResponse) HasErrors() []*common.Error {
 	}
 	return m.ImportErrors
 }
+
+type GetVariantRequest struct {
+	Code dot.NullString `json:"code"`
+	ID   dot.NullID     `json:"id"`
+}
+
+func (m *GetVariantRequest) Reset()         { *m = GetVariantRequest{} }
+func (m *GetVariantRequest) String() string { return jsonx.MustMarshalToString(m) }

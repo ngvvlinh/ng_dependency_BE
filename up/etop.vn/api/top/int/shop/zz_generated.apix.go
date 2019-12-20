@@ -1480,7 +1480,7 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		}
 		return msg, fn, nil
 	case "/shop.Product/GetVariant":
-		msg := &common.IDRequest{}
+		msg := &GetVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetVariant(ctx, msg)
 		}

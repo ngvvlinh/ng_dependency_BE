@@ -130,7 +130,7 @@ type ProductService interface {
 	RemoveProducts(context.Context, *RemoveVariantsRequest) (*cm.RemovedResponse, error)
 	//-- variant --//
 
-	GetVariant(context.Context, *cm.IDRequest) (*ShopVariant, error)
+	GetVariant(context.Context, *GetVariantRequest) (*ShopVariant, error)
 	GetVariantsByIDs(context.Context, *cm.IDsRequest) (*ShopVariantsResponse, error)
 
 	CreateVariant(context.Context, *CreateVariantRequest) (*ShopVariant, error)

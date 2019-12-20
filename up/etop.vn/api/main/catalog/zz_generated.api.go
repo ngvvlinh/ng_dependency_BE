@@ -490,15 +490,16 @@ func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Co
 	return err
 }
 
-type GetShopVariantByIDQuery struct {
-	VariantID dot.ID
+type GetShopVariantQuery struct {
+	VariantID dot.NullID
 	ShopID    dot.ID
+	Code      dot.NullString
 
 	Result *ShopVariant `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetShopVariantByID(ctx context.Context, msg *GetShopVariantByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetShopVariantByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetShopVariant(ctx context.Context, msg *GetShopVariantQuery) (err error) {
+	msg.Result, err = h.inner.GetShopVariant(msg.GetArgs(ctx))
 	return err
 }
 
@@ -723,7 +724,7 @@ func (q *GetShopCategoryQuery) query()                   {}
 func (q *GetShopCollectionQuery) query()                 {}
 func (q *GetShopProductByIDQuery) query()                {}
 func (q *GetShopProductWithVariantsByIDQuery) query()    {}
-func (q *GetShopVariantByIDQuery) query()                {}
+func (q *GetShopVariantQuery) query()                    {}
 func (q *GetShopVariantWithProductByIDQuery) query()     {}
 func (q *GetSupplierIDsByVariantIDQuery) query()         {}
 func (q *GetVariantsBySupplierIDQuery) query()           {}
@@ -1274,17 +1275,19 @@ func (q *GetShopProductWithVariantsByIDQuery) SetGetShopProductByIDQueryArgs(arg
 	q.ShopID = args.ShopID
 }
 
-func (q *GetShopVariantByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
+func (q *GetShopVariantQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantQueryArgs) {
 	return ctx,
-		&GetShopVariantByIDQueryArgs{
+		&GetShopVariantQueryArgs{
 			VariantID: q.VariantID,
 			ShopID:    q.ShopID,
+			Code:      q.Code,
 		}
 }
 
-func (q *GetShopVariantByIDQuery) SetGetShopVariantByIDQueryArgs(args *GetShopVariantByIDQueryArgs) {
+func (q *GetShopVariantQuery) SetGetShopVariantQueryArgs(args *GetShopVariantQueryArgs) {
 	q.VariantID = args.VariantID
 	q.ShopID = args.ShopID
+	q.Code = args.Code
 }
 
 func (q *GetShopVariantWithProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
@@ -1524,7 +1527,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetShopCollection)
 	b.AddHandler(h.HandleGetShopProductByID)
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
-	b.AddHandler(h.HandleGetShopVariantByID)
+	b.AddHandler(h.HandleGetShopVariant)
 	b.AddHandler(h.HandleGetShopVariantWithProductByID)
 	b.AddHandler(h.HandleGetSupplierIDsByVariantID)
 	b.AddHandler(h.HandleGetVariantsBySupplierID)

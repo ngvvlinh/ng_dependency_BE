@@ -2991,7 +2991,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktIDRequest"
+              "$ref": "#/definitions/paGetVariantRequest"
             }
           }
         ],
@@ -7710,6 +7710,18 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetVariantRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
