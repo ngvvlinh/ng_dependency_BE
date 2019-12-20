@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
@@ -18,14 +20,14 @@ type Receipt struct {
 	Code               string
 	CodeNorm           int
 	Title              string
-	Type               string
+	Type               receipt_type.ReceiptType
 	Description        string
 	TraderFullNameNorm string
 
 	Amount          int
 	Status          status3.Status
 	RefIDs          []dot.ID
-	RefType         string
+	RefType         receipt_ref.ReceiptRef
 	Lines           []*ReceiptLine
 	LedgerID        dot.ID
 	Trader          *Trader

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
@@ -36,7 +37,7 @@ type InventoryVoucher struct {
 	TraderID     dot.ID
 	Trader       *Trader
 	TotalAmount  int
-	Type         string
+	Type         inventory.InventoryVoucherType
 	Lines        []*InventoryVoucherItem
 	VariantIDs   []dot.ID
 	RefID        dot.ID

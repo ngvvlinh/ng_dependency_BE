@@ -107,28 +107,28 @@ func Convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 }
 
 func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Receipt, out *receipting.Receipt) {
-	out.ID = arg.ID                                      // simple assign
-	out.ShopID = arg.ShopID                              // simple assign
-	out.TraderID = arg.TraderID                          // simple assign
-	out.Code = arg.Code                                  // simple assign
-	out.CodeNorm = arg.CodeNorm                          // simple assign
-	out.Title = arg.Title                                // simple assign
-	out.Type = receipting.ReceiptType(arg.Type)          // simple conversion
-	out.Description = arg.Description                    // simple assign
-	out.Amount = arg.Amount                              // simple assign
-	out.Status = arg.Status                              // simple assign
-	out.LedgerID = arg.LedgerID                          // simple assign
-	out.RefIDs = arg.RefIDs                              // simple assign
-	out.RefType = receipting.ReceiptRefType(arg.RefType) // simple conversion
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.TraderID = arg.TraderID       // simple assign
+	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
+	out.Title = arg.Title             // simple assign
+	out.Type = arg.Type               // simple assign
+	out.Description = arg.Description // simple assign
+	out.Amount = arg.Amount           // simple assign
+	out.Status = arg.Status           // simple assign
+	out.LedgerID = arg.LedgerID       // simple assign
+	out.RefIDs = arg.RefIDs           // simple assign
+	out.RefType = arg.RefType         // simple assign
 	out.Lines = Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(arg.Lines)
 	out.Trader = Convert_receiptingmodel_Trader_receipting_Trader(arg.Trader, nil)
-	out.PaidAt = arg.PaidAt                                          // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt                                // simple assign
-	out.CancelledAt = arg.CancelledAt                                // simple assign
-	out.CreatedBy = arg.CreatedBy                                    // simple assign
-	out.CreatedType = receipting.ReceiptCreatedType(arg.CreatedType) // simple conversion
-	out.CreatedAt = arg.CreatedAt                                    // simple assign
-	out.UpdatedAt = arg.UpdatedAt                                    // simple assign
+	out.PaidAt = arg.PaidAt           // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.Mode = 0                      // zero value
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
 }
 
 func Convert_receiptingmodel_Receipts_receipting_Receipts(args []*receiptingmodel.Receipt) (outs []*receipting.Receipt) {
@@ -158,25 +158,25 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.Code = arg.Code               // simple assign
 	out.CodeNorm = arg.CodeNorm       // simple assign
 	out.Title = arg.Title             // simple assign
-	out.Type = string(arg.Type)       // simple conversion
+	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.TraderFullNameNorm = ""       // zero value
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
 	out.RefIDs = arg.RefIDs           // simple assign
-	out.RefType = string(arg.RefType) // simple conversion
+	out.RefType = arg.RefType         // simple assign
 	out.Lines = Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(arg.Lines)
 	out.LedgerID = arg.LedgerID // simple assign
 	out.Trader = Convert_receipting_Trader_receiptingmodel_Trader(arg.Trader, nil)
-	out.CancelledReason = ""                  // zero value
-	out.CreatedType = string(arg.CreatedType) // simple conversion
-	out.CreatedBy = arg.CreatedBy             // simple assign
-	out.PaidAt = arg.PaidAt                   // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
-	out.CancelledAt = arg.CancelledAt         // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.DeletedAt = time.Time{}               // zero value
+	out.CancelledReason = ""          // zero value
+	out.CreatedType = ""              // zero value
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.PaidAt = arg.PaidAt           // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = time.Time{}       // zero value
 }
 
 func Convert_receipting_Receipts_receiptingmodel_Receipts(args []*receipting.Receipt) (outs []*receiptingmodel.Receipt) {
@@ -219,7 +219,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.ConfirmedAt = arg.ConfirmedAt       // simple assign
 	out.CancelledAt = time.Time{}           // zero value
 	out.CreatedBy = arg.CreatedBy           // simple assign
-	out.CreatedType = arg.CreatedType       // simple assign
+	out.Mode = arg.Mode                     // simple assign
 	out.CreatedAt = time.Time{}             // zero value
 	out.UpdatedAt = time.Time{}             // zero value
 }
@@ -248,14 +248,14 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.Status = out.Status                                  // no change
 	out.LedgerID = arg.LedgerID.Apply(out.LedgerID)          // apply change
 	out.RefIDs = arg.RefIDs                                  // simple assign
-	out.RefType = arg.RefType                                // simple assign
+	out.RefType = arg.RefType.Apply(out.RefType)             // apply change
 	out.Lines = arg.Lines                                    // simple assign
 	out.Trader = arg.Trader                                  // simple assign
 	out.PaidAt = arg.PaidAt                                  // simple assign
 	out.ConfirmedAt = out.ConfirmedAt                        // no change
 	out.CancelledAt = out.CancelledAt                        // no change
 	out.CreatedBy = out.CreatedBy                            // no change
-	out.CreatedType = out.CreatedType                        // no change
+	out.Mode = out.Mode                                      // no change
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 }

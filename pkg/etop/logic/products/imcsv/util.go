@@ -41,7 +41,7 @@ func Init(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsq
 
 	if ul != nil {
 		uploader = ul
-		ul.ExpectDir(string(model.ImportTypeShopProduct))
+		ul.ExpectDir(model.ImportTypeShopProduct.String())
 	}
 }
 
@@ -114,7 +114,7 @@ func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetDa
 func uploadFile(id dot.ID, data []byte) (*upload.StoreFileCommand, error) {
 	fileName := fmt.Sprintf("%v.xlsx", id)
 	uploadCmd := &upload.StoreFileCommand{
-		UploadType: string(model.ImportTypeShopProduct),
+		UploadType: model.ImportTypeShopProduct.String(),
 		FileName:   fileName,
 		Data:       data,
 	}

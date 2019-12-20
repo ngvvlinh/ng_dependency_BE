@@ -82,7 +82,7 @@ func (s *InventoryVoucherStore) RefType(refType string) *InventoryVoucherStore {
 	return s
 }
 
-func (s *InventoryVoucherStore) Type(inventoryVoucherType string) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) Type(inventoryVoucherType inventory.InventoryVoucherType) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByType(inventoryVoucherType))
 	return s
 }

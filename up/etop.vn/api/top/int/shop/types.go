@@ -11,6 +11,9 @@ import (
 	"etop.vn/api/top/types/etc/ledger_type"
 	payment_provider "etop.vn/api/top/types/etc/payment_provider"
 	product_type "etop.vn/api/top/types/etc/product_type"
+	"etop.vn/api/top/types/etc/receipt_mode"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	shipping "etop.vn/api/top/types/etc/shipping"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
@@ -1630,62 +1633,62 @@ func (m *Trader) Reset()         { *m = Trader{} }
 func (m *Trader) String() string { return jsonx.MustMarshalToString(m) }
 
 type Receipt struct {
-	Id          dot.ID         `json:"id"`
-	ShopId      dot.ID         `json:"shop_id"`
-	TraderId    dot.ID         `json:"trader_id"`
-	CreatedBy   dot.ID         `json:"created_by"`
-	CreatedType string         `json:"created_type"`
-	Code        string         `json:"code"`
-	Title       string         `json:"title"`
-	Type        string         `json:"type"`
-	Description string         `json:"description"`
-	Amount      int            `json:"amount"`
-	LedgerId    dot.ID         `json:"ledger_id"`
-	RefType     string         `json:"ref_type"`
-	Lines       []*ReceiptLine `json:"lines"`
-	Status      status3.Status `json:"status"`
-	Reason      string         `json:"reason"`
-	PaidAt      dot.Time       `json:"paid_at"`
-	CreatedAt   dot.Time       `json:"created_at"`
-	UpdatedAt   dot.Time       `json:"updated_at"`
-	ConfirmedAt dot.Time       `json:"confirmed_at"`
-	CancelledAt dot.Time       `json:"cancelled_at"`
-	User        *etop.User     `json:"user"`
-	Trader      *Trader        `json:"trader"`
-	Ledger      *Ledger        `json:"ledger"`
+	Id          dot.ID                   `json:"id"`
+	ShopId      dot.ID                   `json:"shop_id"`
+	TraderId    dot.ID                   `json:"trader_id"`
+	CreatedBy   dot.ID                   `json:"created_by"`
+	Mode        receipt_mode.ReceiptMode `json:"mode"`
+	Code        string                   `json:"code"`
+	Title       string                   `json:"title"`
+	Type        receipt_type.ReceiptType `json:"type"`
+	Description string                   `json:"description"`
+	Amount      int                      `json:"amount"`
+	LedgerId    dot.ID                   `json:"ledger_id"`
+	RefType     receipt_ref.ReceiptRef   `json:"ref_type"`
+	Lines       []*ReceiptLine           `json:"lines"`
+	Status      status3.Status           `json:"status"`
+	Reason      string                   `json:"reason"`
+	PaidAt      dot.Time                 `json:"paid_at"`
+	CreatedAt   dot.Time                 `json:"created_at"`
+	UpdatedAt   dot.Time                 `json:"updated_at"`
+	ConfirmedAt dot.Time                 `json:"confirmed_at"`
+	CancelledAt dot.Time                 `json:"cancelled_at"`
+	User        *etop.User               `json:"user"`
+	Trader      *Trader                  `json:"trader"`
+	Ledger      *Ledger                  `json:"ledger"`
+
+	// deprecated: use mode
+	CreatedType receipt_mode.ReceiptMode `json:"created_type"`
 }
 
 func (m *Receipt) Reset()         { *m = Receipt{} }
 func (m *Receipt) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateReceiptRequest struct {
-	TraderId dot.ID `json:"trader_id"`
-	Title    string `json:"title"`
-	// enum('receipt', 'payment')
-	Type        string `json:"type"`
-	Description string `json:"description"`
-	Amount      int    `json:"amount"`
-	LedgerId    dot.ID `json:"ledger_id"`
-	// enum ('order', 'fulfillment', 'inventory voucher'
-	RefType string         `json:"ref_type"`
-	PaidAt  dot.Time       `json:"paid_at"`
-	Lines   []*ReceiptLine `json:"lines"`
+	TraderId    dot.ID                   `json:"trader_id"`
+	Title       string                   `json:"title"`
+	Type        receipt_type.ReceiptType `json:"type"`
+	Description string                   `json:"description"`
+	Amount      int                      `json:"amount"`
+	LedgerId    dot.ID                   `json:"ledger_id"`
+	RefType     receipt_ref.ReceiptRef   `json:"ref_type"`
+	PaidAt      dot.Time                 `json:"paid_at"`
+	Lines       []*ReceiptLine           `json:"lines"`
 }
 
 func (m *CreateReceiptRequest) Reset()         { *m = CreateReceiptRequest{} }
 func (m *CreateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateReceiptRequest struct {
-	Id          dot.ID         `json:"id"`
-	TraderId    dot.NullID     `json:"trader_id"`
-	Title       dot.NullString `json:"title"`
-	Description dot.NullString `json:"description"`
-	Amount      dot.NullInt    `json:"amount"`
-	LedgerId    dot.NullID     `json:"ledger_id"`
-	// enum ('order', 'fulfillment', 'inventory voucher'
-	RefType dot.NullString `json:"ref_type"`
-	PaidAt  dot.Time       `json:"paid_at"`
-	Lines   []*ReceiptLine `json:"lines"`
+	Id          dot.ID                     `json:"id"`
+	TraderId    dot.NullID                 `json:"trader_id"`
+	Title       dot.NullString             `json:"title"`
+	Description dot.NullString             `json:"description"`
+	Amount      dot.NullInt                `json:"amount"`
+	LedgerId    dot.NullID                 `json:"ledger_id"`
+	RefType     receipt_ref.NullReceiptRef `json:"ref_type"`
+	PaidAt      dot.Time                   `json:"paid_at"`
+	Lines       []*ReceiptLine             `json:"lines"`
 }
 
 func (m *UpdateReceiptRequest) Reset()         { *m = UpdateReceiptRequest{} }

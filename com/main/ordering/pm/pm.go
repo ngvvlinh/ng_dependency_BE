@@ -10,6 +10,8 @@ import (
 	"etop.vn/api/services/affiliate"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/com/main/ordering/modelx"
@@ -109,7 +111,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 	if len(getReceiptByIDQuery.Result.RefIDs) == 0 {
 		return nil
 	}
-	if getReceiptByIDQuery.Result.RefType != receipting.ReceiptRefTypeOrder {
+	if getReceiptByIDQuery.Result.RefType != receipt_ref.ReceiptRefTypeOrder {
 		return nil
 	}
 	for _, orderID := range getReceiptByIDQuery.Result.RefIDs {
@@ -119,7 +121,7 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
-		RefType: receipting.ReceiptRefTypeOrder,
+		RefType: receipt_ref.ReceiptRefTypeOrder,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
@@ -173,9 +175,9 @@ func (p *ProcessManager) validateTotalAmountAndReceivedAmount(
 			}
 			if _, ok := mapOrderIDAndReceivedAmount[receiptLine.RefID]; ok {
 				switch receipt.Type {
-				case receipting.ReceiptTypeReceipt:
+				case receipt_type.Receipt:
 					mapOrderIDAndReceivedAmount[receiptLine.RefID] += receiptLine.Amount
-				case receipting.ReceiptTypePayment:
+				case receipt_type.Payment:
 					mapOrderIDAndReceivedAmount[receiptLine.RefID] -= receiptLine.Amount
 				}
 			}
@@ -216,7 +218,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	receipt := event.Receipt
 	refIDs := event.RefIDs
 	mapRefIDAmount := event.MapRefIDAmount
-	if receipt.RefType != receipting.ReceiptRefTypeOrder {
+	if receipt.RefType != receipt_ref.ReceiptRefTypeOrder {
 		return nil
 	}
 
@@ -260,7 +262,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	}
 
 	// IGNORE: check received_amount of receipt type payment
-	if receipt.Type == receipting.ReceiptTypePayment {
+	if receipt.Type == receipt_type.Payment {
 		return nil
 	}
 
@@ -268,7 +270,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
-		RefType: receipting.ReceiptRefTypeOrder,
+		RefType: receipt_ref.ReceiptRefTypeOrder,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
@@ -290,9 +292,9 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 			}
 			if _, has := mapRefIDAmount[receiptLine.RefID]; has {
 				switch receipt.Type {
-				case receipting.ReceiptTypeReceipt:
+				case receipt_type.Receipt:
 					mapRefIDAmountOld[receiptLine.RefID] += receiptLine.Amount
-				case receipting.ReceiptTypePayment:
+				case receipt_type.Payment:
 					mapRefIDAmountOld[receiptLine.RefID] -= receiptLine.Amount
 				}
 			}

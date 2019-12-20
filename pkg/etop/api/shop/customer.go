@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -262,9 +263,9 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 	}
 	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {
 		switch receipt.Type {
-		case receipting.ReceiptTypeReceipt:
+		case receipt_type.Receipt:
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += receipt.Amount
-		case receipting.ReceiptTypePayment:
+		case receipt_type.Payment:
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= receipt.Amount
 		}
 	}

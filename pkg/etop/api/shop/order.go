@@ -9,6 +9,8 @@ import (
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
@@ -288,7 +290,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  orderIDs,
-		RefType: receipting.ReceiptRefTypeOrder,
+		RefType: receipt_ref.ReceiptRefTypeOrder,
 		Status:  int(status3.P),
 	}
 	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
@@ -302,9 +304,9 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 			}
 			if _, ok := mOrderIDsAndReceivedAmounts[receiptLine.RefID]; ok {
 				switch receipt.Type {
-				case receipting.ReceiptTypeReceipt:
+				case receipt_type.Receipt:
 					mOrderIDsAndReceivedAmounts[receiptLine.RefID] += receiptLine.Amount
-				case receipting.ReceiptTypePayment:
+				case receipt_type.Payment:
 					mOrderIDsAndReceivedAmounts[receiptLine.RefID] -= receiptLine.Amount
 				}
 			}

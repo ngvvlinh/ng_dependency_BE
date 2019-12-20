@@ -904,7 +904,7 @@ func PbShippingFeeLines(items []*model.ShippingFeeLine) []*types.ShippingFeeLine
 
 func PbShippingFeeLine(line *model.ShippingFeeLine) *types.ShippingFeeLine {
 	return &types.ShippingFeeLine{
-		ShippingFeeType:          PbShippingFeeType(line.ShippingFeeType),
+		ShippingFeeType:          line.ShippingFeeType,
 		Cost:                     line.Cost,
 		ExternalServiceId:        line.ExternalServiceID,
 		ExternalServiceName:      line.ExternalServiceName,

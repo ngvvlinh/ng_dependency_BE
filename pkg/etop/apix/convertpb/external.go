@@ -70,7 +70,7 @@ func PbWebhook(m *model.Webhook, s sender.WebhookStates) *exttypes.Webhook {
 		Metadata:  m.Metadata,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		States: &exttypes.WebhookStates{
-			State:      string(s.State),
+			State:      s.State.String(),
 			LastSentAt: cmapi.PbTime(s.LastSentAt),
 			LastError:  PbWebhookError(s.LastError),
 		},

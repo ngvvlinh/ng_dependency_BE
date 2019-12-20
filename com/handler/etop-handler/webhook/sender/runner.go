@@ -45,6 +45,8 @@ var retryIntervals = []time.Duration{
 
 type State string
 
+func (s State) String() string { return string(s) }
+
 const (
 	StateOK    State = "ok"
 	StateRetry State = "retry"

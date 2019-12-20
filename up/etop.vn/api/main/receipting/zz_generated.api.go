@@ -9,6 +9,9 @@ import (
 	time "time"
 
 	meta "etop.vn/api/meta"
+	receipt_mode "etop.vn/api/top/types/etc/receipt_mode"
+	receipt_ref "etop.vn/api/top/types/etc/receipt_ref"
+	receipt_type "etop.vn/api/top/types/etc/receipt_type"
 	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -56,18 +59,18 @@ type CreateReceiptCommand struct {
 	ShopID      dot.ID
 	TraderID    dot.ID
 	Title       string
-	Type        ReceiptType
+	Type        receipt_type.ReceiptType
 	Status      int
 	Description string
 	Amount      int
 	LedgerID    dot.ID
 	RefIDs      []dot.ID
-	RefType     ReceiptRefType
+	RefType     receipt_ref.ReceiptRef
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
 	CreatedBy   dot.ID
-	CreatedType ReceiptCreatedType
+	Mode        receipt_mode.ReceiptMode
 	ConfirmedAt time.Time
 
 	Result *Receipt `json:"-"`
@@ -99,7 +102,7 @@ type UpdateReceiptCommand struct {
 	Amount      dot.NullInt
 	LedgerID    dot.NullID
 	RefIDs      []dot.ID
-	RefType     ReceiptRefType
+	RefType     receipt_ref.NullReceiptRef
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
@@ -178,7 +181,7 @@ func (h QueryServiceHandler) HandleListReceiptsByLedgerIDs(ctx context.Context, 
 type ListReceiptsByRefsAndStatusQuery struct {
 	ShopID  dot.ID
 	RefIDs  []dot.ID
-	RefType ReceiptRefType
+	RefType receipt_ref.ReceiptRef
 	Status  int
 
 	Result *ReceiptsResponse `json:"-"`
@@ -265,7 +268,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Trader:      q.Trader,
 			PaidAt:      q.PaidAt,
 			CreatedBy:   q.CreatedBy,
-			CreatedType: q.CreatedType,
+			Mode:        q.Mode,
 			ConfirmedAt: q.ConfirmedAt,
 		}
 }
@@ -285,7 +288,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.Trader = args.Trader
 	q.PaidAt = args.PaidAt
 	q.CreatedBy = args.CreatedBy
-	q.CreatedType = args.CreatedType
+	q.Mode = args.Mode
 	q.ConfirmedAt = args.ConfirmedAt
 }
 

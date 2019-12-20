@@ -258,10 +258,10 @@ func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 	out.RefCode = arg.RefCode                                    // simple assign
 	out.TraderID = arg.TraderID                                  // simple assign
 	out.Trader = Convert_inventorymodel_Trader_inventory_Trader(arg.Trader, nil)
-	out.TotalAmount = arg.TotalAmount                   // simple assign
-	out.Type = inventory.InventoryVoucherType(arg.Type) // simple conversion
-	out.CancelReason = arg.CancelReason                 // simple assign
-	out.Note = arg.Note                                 // simple assign
+	out.TotalAmount = arg.TotalAmount   // simple assign
+	out.Type = arg.Type                 // simple assign
+	out.CancelReason = arg.CancelReason // simple assign
+	out.Note = arg.Note                 // simple assign
 	out.Lines = Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(arg.Lines)
 	out.Status = arg.Status // simple assign
 }
@@ -291,7 +291,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.TraderID = arg.TraderID   // simple assign
 	out.Trader = Convert_inventory_Trader_inventorymodel_Trader(arg.Trader, nil)
 	out.TotalAmount = arg.TotalAmount // simple assign
-	out.Type = string(arg.Type)       // simple conversion
+	out.Type = arg.Type               // simple assign
 	out.Lines = Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(arg.Lines)
 	out.VariantIDs = nil                // zero value
 	out.RefID = arg.RefID               // simple assign

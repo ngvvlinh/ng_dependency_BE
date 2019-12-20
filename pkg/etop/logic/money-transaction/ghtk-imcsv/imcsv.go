@@ -309,7 +309,7 @@ func checkHeaderIndex(headerIndexMap map[string]int) error {
 
 func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider shipping_provider.ShippingProvider) ([]*shipmodel.Fulfillment, error) {
 	if shippingProvider != shipping_provider.GHTK {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển phải là GHTK.").WithMeta("shipping_provider", string(shippingProvider))
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển phải là GHTK.").WithMeta("shipping_provider", shippingProvider.String())
 	}
 	ffmShippingCodes := make([]string, len(lines))
 	for i, line := range lines {

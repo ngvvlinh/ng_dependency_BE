@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/receipt_mode"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	. "etop.vn/capi/dot"
 	dot "etop.vn/capi/dot"
@@ -62,18 +65,18 @@ type CreateReceiptArgs struct {
 	ShopID      dot.ID
 	TraderID    dot.ID
 	Title       string
-	Type        ReceiptType
+	Type        receipt_type.ReceiptType
 	Status      int
 	Description string
 	Amount      int
 	LedgerID    dot.ID
 	RefIDs      []dot.ID
-	RefType     ReceiptRefType
+	RefType     receipt_ref.ReceiptRef
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
 	CreatedBy   dot.ID
-	CreatedType ReceiptCreatedType
+	Mode        receipt_mode.ReceiptMode
 	ConfirmedAt time.Time
 }
 
@@ -87,7 +90,7 @@ type UpdateReceiptArgs struct {
 	Amount      NullInt
 	LedgerID    NullID
 	RefIDs      []dot.ID
-	RefType     ReceiptRefType
+	RefType     receipt_ref.NullReceiptRef
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
@@ -114,6 +117,6 @@ type ListReceiptsByLedgerIDsArgs struct {
 type ListReceiptsByRefsAndStatusArgs struct {
 	ShopID  dot.ID
 	RefIDs  []dot.ID
-	RefType ReceiptRefType
+	RefType receipt_ref.ReceiptRef
 	Status  int
 }

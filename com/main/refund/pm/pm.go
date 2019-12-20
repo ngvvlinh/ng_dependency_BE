@@ -5,6 +5,8 @@ import (
 
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/refund"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -38,7 +40,7 @@ func (p *ProcessManager) ReceiptCreating(
 	receipt := event.Receipt
 	mapRefIDAmount := event.MapRefIDAmount
 
-	if receipt.RefType != receipting.ReceiptRefTypeRefund {
+	if receipt.RefType != receipt_ref.ReceiptRefTypeRefund {
 		return nil
 	}
 
@@ -74,7 +76,7 @@ func (p *ProcessManager) ReceiptCreating(
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  receipt.ShopID,
 		RefIDs:  refIDs,
-		RefType: receipting.ReceiptRefTypeRefund,
+		RefType: receipt_ref.ReceiptRefTypeRefund,
 		Status:  int(status3.P),
 	}
 	if err := p.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
@@ -96,7 +98,7 @@ func (p *ProcessManager) ReceiptCreating(
 			}
 			if _, has := mapRefIDAmount[receiptLine.RefID]; has {
 				switch receipt.Type {
-				case receipting.ReceiptTypePayment:
+				case receipt_type.Payment:
 					mapRefIDAmountOld[receiptLine.RefID] += receiptLine.Amount
 				}
 			}

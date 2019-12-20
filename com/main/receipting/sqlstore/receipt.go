@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/receipting/convert"
 	"etop.vn/backend/com/main/receipting/model"
@@ -109,8 +110,8 @@ func (s *ReceiptStore) RefIDs(ids ...dot.ID) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) RefType(refType receipting.ReceiptRefType) *ReceiptStore {
-	s.preds = append(s.preds, s.ft.ByRefType(refType.String()))
+func (s *ReceiptStore) RefType(refType receipt_ref.ReceiptRef) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByRefType(refType))
 	return s
 }
 

@@ -5,6 +5,8 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
@@ -138,22 +140,22 @@ func (ft *ReceiptFilters) ByTitlePtr(Title *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByType(Type string) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByType(Type receipt_type.ReceiptType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *ReceiptFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByTypePtr(Type *receipt_type.ReceiptType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 
@@ -233,22 +235,22 @@ func (ft *ReceiptFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *ReceiptFilters) ByRefType(RefType string) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByRefType(RefType receipt_ref.ReceiptRef) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ref_type",
 		Value:  RefType,
-		IsNil:  RefType == "",
+		IsNil:  RefType == 0,
 	}
 }
 
-func (ft *ReceiptFilters) ByRefTypePtr(RefType *string) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByRefTypePtr(RefType *receipt_ref.ReceiptRef) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ref_type",
 		Value:  RefType,
 		IsNil:  RefType == nil,
-		IsZero: RefType != nil && (*RefType) == "",
+		IsZero: RefType != nil && (*RefType) == 0,
 	}
 }
 

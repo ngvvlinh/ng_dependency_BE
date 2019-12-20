@@ -8,6 +8,9 @@ import (
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/top/types/etc/ledger_type"
+	"etop.vn/api/top/types/etc/receipt_mode"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/moneytx/modelx"
@@ -95,14 +98,14 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  event.ShopID,
 		RefIDs:  orderIDs,
-		RefType: receipting.ReceiptRefTypeOrder,
+		RefType: receipt_ref.ReceiptRefTypeOrder,
 		Status:  int(status3.P),
 	}
 	if err := m.receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
 		return err
 	}
 	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
-		if receipt.RefType != receipting.ReceiptRefTypeOrder {
+		if receipt.RefType != receipt_ref.ReceiptRefTypeOrder {
 			continue
 		}
 		for _, receiptLine := range receipt.Lines {
@@ -111,9 +114,9 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 			}
 			if _, ok := mapOrderAndReceivedAmount[receiptLine.RefID]; ok {
 				switch receipt.Type {
-				case receipting.ReceiptTypeReceipt:
+				case receipt_type.Receipt:
 					mapOrderAndReceivedAmount[receiptLine.RefID] += receiptLine.Amount
-				case receipting.ReceiptTypePayment:
+				case receipt_type.Payment:
 					mapOrderAndReceivedAmount[receiptLine.RefID] -= receiptLine.Amount
 				}
 			}
@@ -157,14 +160,14 @@ func (m *ProcessManager) createPayment(
 			TraderID:    model.TopShipID,
 			Title:       "Thanh toán phí vận chuyển Topship",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
-			Type:        receipting.ReceiptTypePayment,
+			Type:        receipt_type.Payment,
 			Status:      int(status3.P),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
-			RefType:     receipting.ReceiptRefTypeFulfillment,
+			RefType:     receipt_ref.ReceiptRefTypeFulfillment,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
-			CreatedType: receipting.ReceiptCreatedTypeAuto,
+			Mode:        receipt_mode.Auto,
 			ConfirmedAt: time.Now(),
 		}
 		if err := m.receiptAggr.Dispatch(ctx, cmd); err != nil {
@@ -199,15 +202,15 @@ func createReceipts(
 			TraderID:    traderID,
 			Title:       "Thanh toán đơn hàng",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
-			Type:        receipting.ReceiptTypeReceipt,
+			Type:        receipt_type.Receipt,
 			Status:      int(status3.P),
 			Amount:      value - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
 			RefIDs:      []dot.ID{key},
-			RefType:     receipting.ReceiptRefTypeOrder,
+			RefType:     receipt_ref.ReceiptRefTypeOrder,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
-			CreatedType: receipting.ReceiptCreatedTypeAuto,
+			Mode:        receipt_mode.Auto,
 			ConfirmedAt: time.Now(),
 		}
 		if err := m.receiptAggr.Dispatch(ctx, cmd); err != nil {

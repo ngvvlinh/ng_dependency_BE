@@ -63,7 +63,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	if inventoryVoucher.RefID != 0 {
-		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).Type(inventoryVoucher.Type.String()).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
+		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).Type(inventoryVoucher.Type).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
 		if err != nil {
 			return nil, err
 		}
@@ -398,9 +398,9 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 		if err != nil {
 			return nil, err
 		}
-		if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut.String() {
+		if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
-		} else if inventoryVoucher.Type == inventory.InventoryVoucherTypeIn.String() {
+		} else if inventoryVoucher.Type == inventory.InventoryVoucherTypeIn {
 			if inventoryVoucher.TraderID != 0 {
 				if data.QuantityOnHand < 0 {
 					data.CostPrice = value.Price
@@ -443,7 +443,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
-	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut.String() {
+	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
 		for _, value := range inventoryVoucher.Lines {
 			var data *inventory.InventoryVariant
 			data, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()

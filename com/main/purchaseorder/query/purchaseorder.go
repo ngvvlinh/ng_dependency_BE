@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/suppliering"
+	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/purchaseorder/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -219,7 +220,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, p
 	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  shopID,
 		RefIDs:  purchaseOrderIDs,
-		RefType: receipting.ReceiptRefTypePurchaseOrder,
+		RefType: receipt_ref.ReceiptRefTypePurchaseOrder,
 		Status:  int(status3.P),
 	}
 	if err := q.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {

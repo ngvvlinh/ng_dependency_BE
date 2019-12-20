@@ -301,7 +301,7 @@ func FillInfoEtopServices(providerServices []*model.AvailableShippingService, et
 
 	serviceTypeIndex := make(map[string]*model.AvailableShippingService)
 	for _, service := range providerServices {
-		key := fmt.Sprintf("%v_%v", string(service.Provider), service.Name)
+		key := fmt.Sprintf("%v_%v", service.Provider.String(), service.Name)
 		if serviceTypeIndex[key] == nil {
 			serviceTypeIndex[key] = service
 		}
@@ -311,7 +311,7 @@ func FillInfoEtopServices(providerServices []*model.AvailableShippingService, et
 		if service.Source != model.TypeShippingSourceEtop {
 			continue
 		}
-		key := fmt.Sprintf("%v_%v", string(service.Provider), service.Name)
+		key := fmt.Sprintf("%v_%v", service.Provider.String(), service.Name)
 		if serviceTypeIndex[key] != nil {
 			s := serviceTypeIndex[key]
 			service.ExpectedPickAt = s.ExpectedPickAt

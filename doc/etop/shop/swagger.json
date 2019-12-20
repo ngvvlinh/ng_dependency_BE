@@ -5045,6 +5045,24 @@
         "shipfrom"
       ]
     },
+    "ajReceiptType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "receipt",
+        "payment"
+      ]
+    },
+    "akReceiptRef": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "order",
+        "fulfillment",
+        "purchase_order",
+        "refund"
+      ]
+    },
     "baAddress": {
       "type": "object",
       "properties": {
@@ -6515,7 +6533,7 @@
           "format": "date-time"
         },
         "ref_type": {
-          "type": "string"
+          "$ref": "#/definitions/akReceiptRef"
         },
         "title": {
           "type": "string"
@@ -6525,7 +6543,7 @@
           "format": "int64"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/ajReceiptType"
         }
       }
     },
@@ -8231,7 +8249,7 @@
           "format": "int64"
         },
         "created_type": {
-          "type": "string"
+          "$ref": "#/definitions/rdReceiptMode"
         },
         "description": {
           "type": "string"
@@ -8253,6 +8271,9 @@
             "$ref": "#/definitions/paReceiptLine"
           }
         },
+        "mode": {
+          "$ref": "#/definitions/rdReceiptMode"
+        },
         "paid_at": {
           "type": "string",
           "format": "date-time"
@@ -8261,7 +8282,7 @@
           "type": "string"
         },
         "ref_type": {
-          "type": "string"
+          "$ref": "#/definitions/akReceiptRef"
         },
         "shop_id": {
           "type": "string",
@@ -8281,7 +8302,7 @@
           "format": "int64"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/ajReceiptType"
         },
         "updated_at": {
           "type": "string",
@@ -9778,7 +9799,7 @@
           "format": "date-time"
         },
         "ref_type": {
-          "type": "string"
+          "$ref": "#/definitions/akReceiptRef"
         },
         "title": {
           "type": "string"
@@ -12080,6 +12101,14 @@
           "$ref": "#/definitions/bmStatus"
         }
       }
+    },
+    "rdReceiptMode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "manual",
+        "auto"
+      ]
     },
     "sdShippingFeeType": {
       "type": "string",

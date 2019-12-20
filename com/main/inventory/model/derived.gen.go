@@ -523,7 +523,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Type)
+		w.WriteArg(string(m.Type))
 	}
 	if m.Lines != nil {
 		flag = true

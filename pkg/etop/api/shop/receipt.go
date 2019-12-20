@@ -13,6 +13,7 @@ import (
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -56,9 +57,9 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		Description: q.Description,
 		Amount:      q.Amount,
 		LedgerID:    q.LedgerId,
-		RefType:     receipting.ReceiptRefType(q.RefType),
-		Type:        receipting.ReceiptType(q.Type),
-		CreatedType: receipting.ReceiptCreatedTypeManual,
+		RefType:     q.RefType,
+		Type:        q.Type,
+		Mode:        receipt_mode.Manual,
 		Status:      int(status3.Z),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
@@ -73,16 +74,16 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 	cmd := &receipting.UpdateReceiptCommand{
 		ID:          q.Id,
 		ShopID:      q.Context.Shop.ID,
+		TraderID:    q.TraderId,
 		Title:       q.Title,
 		Description: q.Description,
-		LedgerID:    q.LedgerId,
-		TraderID:    q.TraderId,
 		Amount:      q.Amount,
+		LedgerID:    q.LedgerId,
+		RefIDs:      nil,
+		RefType:     q.RefType,
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
+		Trader:      nil,
 		PaidAt:      q.PaidAt.ToTime(),
-	}
-	if q.RefType.Valid {
-		cmd.RefType = receipting.ReceiptRefType(q.RefType.String)
 	}
 	err = receiptAggr.Dispatch(ctx, cmd)
 	if err != nil {

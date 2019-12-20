@@ -4,33 +4,14 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/receipt_mode"
+	"etop.vn/api/top/types/etc/receipt_ref"
+	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/receipting
-
-type ReceiptType string
-type ReceiptCreatedType string
-type ReceiptRefType string
-
-func (t ReceiptType) String() string        { return string(t) }
-func (t ReceiptCreatedType) String() string { return string(t) }
-func (t ReceiptRefType) String() string     { return string(t) }
-
-const (
-	ReceiptTypeReceipt ReceiptType = "receipt"
-	ReceiptTypePayment ReceiptType = "payment"
-
-	// Created type
-	ReceiptCreatedTypeManual ReceiptCreatedType = "manual"
-	ReceiptCreatedTypeAuto   ReceiptCreatedType = "auto"
-
-	ReceiptRefTypeOrder         ReceiptRefType = "order"
-	ReceiptRefTypeFulfillment   ReceiptRefType = "fulfillment"
-	ReceiptRefTypePurchaseOrder ReceiptRefType = "purchase_order"
-	ReceiptRefTypeRefund        ReceiptRefType = "refund"
-)
 
 type Receipt struct {
 	ID          dot.ID
@@ -39,20 +20,20 @@ type Receipt struct {
 	Code        string
 	CodeNorm    int
 	Title       string
-	Type        ReceiptType
+	Type        receipt_type.ReceiptType
 	Description string
 	Amount      int
 	Status      status3.Status
 	LedgerID    dot.ID
 	RefIDs      []dot.ID
-	RefType     ReceiptRefType
+	RefType     receipt_ref.ReceiptRef
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 	CreatedBy   dot.ID
-	CreatedType ReceiptCreatedType
+	Mode        receipt_mode.ReceiptMode
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

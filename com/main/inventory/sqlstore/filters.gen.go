@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/capi/dot"
@@ -361,7 +362,7 @@ func (ft *InventoryVoucherFilters) ByTotalAmountPtr(TotalAmount *int) *sq.Column
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByType(Type string) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByType(Type inventory.InventoryVoucherType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -370,7 +371,7 @@ func (ft *InventoryVoucherFilters) ByType(Type string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByTypePtr(Type *inventory.InventoryVoucherType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",

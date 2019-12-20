@@ -55,7 +55,7 @@ func TestTransactionQueryService(t *testing.T) {
 			Status:    status3.P,
 			Type:      transaction.TransactionTypeAffiliate,
 			Metadata: &transactionmodel.TransactionMetadata{
-				ReferralType: string(transaction.ReferralTypeOrder),
+				ReferralType: transaction.ReferralTypeOrder.String(),
 				ReferralIDs:  []dot.ID{555555},
 			},
 		}

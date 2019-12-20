@@ -60,13 +60,13 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
 		core.String(m.Title),
-		core.String(m.Type),
+		m.Type,
 		core.String(m.Description),
 		core.String(m.TraderFullNameNorm),
 		core.Int(m.Amount),
 		m.Status,
 		core.Array{m.RefIDs, opts},
-		core.String(m.RefType),
+		m.RefType,
 		core.JSON{m.Lines},
 		m.LedgerID,
 		core.JSON{m.Trader},
@@ -90,13 +90,13 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Title),
-		(*core.String)(&m.Type),
+		&m.Type,
 		(*core.String)(&m.Description),
 		(*core.String)(&m.TraderFullNameNorm),
 		(*core.Int)(&m.Amount),
 		&m.Status,
 		core.Array{&m.RefIDs, opts},
-		(*core.String)(&m.RefType),
+		&m.RefType,
 		core.JSON{&m.Lines},
 		&m.LedgerID,
 		core.JSON{&m.Trader},
@@ -219,7 +219,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Title)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')
@@ -267,7 +267,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.RefIDs, opts})
 	}
-	if m.RefType != "" {
+	if m.RefType != 0 {
 		flag = true
 		w.WriteName("ref_type")
 		w.WriteByte('=')
