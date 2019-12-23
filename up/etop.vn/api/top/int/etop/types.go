@@ -60,7 +60,7 @@ type Invitation struct {
 	InvitedBy     dot.ID         `json:"invited_by"`
 	AcceptedAt    dot.Time       `json:"accepted_at"`
 	DeclinedAt    dot.Time       `json:"declined_at"`
-	ExpiredAt     dot.Time       `json:"expired_at"`
+	ExpiresAt     dot.Time       `json:"expires_at"`
 	CreatedAt     dot.Time       `json:"created_at"`
 	UpdatedAt     dot.Time       `json:"updated_at"`
 }

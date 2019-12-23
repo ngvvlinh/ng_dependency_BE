@@ -1924,7 +1924,7 @@
         "email": {
           "type": "string"
         },
-        "expired_at": {
+        "expires_at": {
           "type": "string",
           "format": "date-time"
         },

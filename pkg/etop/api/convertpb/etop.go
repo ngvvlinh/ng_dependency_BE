@@ -781,7 +781,7 @@ func PbInvitation(m *invitation.Invitation) *etop.Invitation {
 		InvitedBy:  m.InvitedBy,
 		AcceptedAt: cmapi.PbTime(m.AcceptedAt),
 		DeclinedAt: cmapi.PbTime(m.RejectedAt),
-		ExpiredAt:  cmapi.PbTime(m.ExpiresAt),
+		ExpiresAt:  cmapi.PbTime(m.ExpiresAt),
 		CreatedAt:  cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:  cmapi.PbTime(m.UpdatedAt),
 	}
