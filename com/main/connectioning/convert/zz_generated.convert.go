@@ -137,6 +137,8 @@ func convert_connectioningmodel_Connection_connectioning_Connection(arg *connect
 	out.ConnectionMethod = arg.ConnectionMethod     // simple assign
 	out.ConnectionProvider = arg.ConnectionProvider // simple assign
 	out.EtopAffiliateAccount = Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg.EtopAffiliateAccount, nil)
+	out.Code = arg.Code         // simple assign
+	out.ImageURL = arg.ImageURL // simple assign
 }
 
 func Convert_connectioningmodel_Connections_connectioning_Connections(args []*connectioningmodel.Connection) (outs []*connectioning.Connection) {
@@ -174,6 +176,8 @@ func convert_connectioning_Connection_connectioningmodel_Connection(arg *connect
 	out.ConnectionMethod = arg.ConnectionMethod     // simple assign
 	out.ConnectionProvider = arg.ConnectionProvider // simple assign
 	out.EtopAffiliateAccount = Convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliateAccount(arg.EtopAffiliateAccount, nil)
+	out.Code = arg.Code         // simple assign
+	out.ImageURL = arg.ImageURL // simple assign
 }
 
 func Convert_connectioning_Connections_connectioningmodel_Connections(args []*connectioning.Connection) (outs []*connectioningmodel.Connection) {
@@ -211,6 +215,8 @@ func apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg *conn
 	out.ConnectionMethod = arg.ConnectionMethod     // simple assign
 	out.ConnectionProvider = arg.ConnectionProvider // simple assign
 	out.EtopAffiliateAccount = nil                  // zero value
+	out.Code = ""                                   // zero value
+	out.ImageURL = ""                               // zero value
 }
 
 //-- convert etop.vn/api/main/connectioning.EtopAffiliateAccount --//

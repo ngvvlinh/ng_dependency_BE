@@ -26,7 +26,7 @@ func GenerateCodeWithoutTransaction(ctx context.Context, typeCode model.CodeType
 func GenerateCode(ctx context.Context, x Qx, typeCode model.CodeType, subCode string) (string, error) {
 	var fn func() string
 	switch typeCode {
-	case model.CodeTypeShop:
+	case model.CodeTypeShop, model.CodeTypeConnection:
 		fn = gencode.GenerateShopCode
 	case model.CodeTypeOrder:
 		fn = func() string {

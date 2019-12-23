@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"strings"
 
+	ordertypes "etop.vn/api/main/ordering/types"
+	shippingcore "etop.vn/api/main/shipping"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	exttypes "etop.vn/api/top/external/types"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
-	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/connection_type"
 	pbsource "etop.vn/api/top/types/etc/order_source"
-	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -40,9 +42,6 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	if !shipping.CodAmount.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.cod_amount")
 	}
-	if shipping.Carrier == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.carrier")
-	}
 	if !shipping.IncludeInsurance.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.include_insurance")
 	}
@@ -64,6 +63,11 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	externalCode := validate.NormalizeExternalCode(r.ExternalCode)
 	if r.ExternalCode != "" && externalCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã đơn hàng external_code không hợp lệ")
+	}
+
+	conn, serviceCode, err := parseServiceCode(ctx, shipping.ShippingServiceCode.Apply(""))
+	if err != nil {
+		return nil, err
 	}
 
 	req := &types.CreateOrderRequest{
@@ -103,7 +107,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 			PickupAddress:       convertpb.OrderAddressToPbOrder(shipping.PickupAddress),
 			ReturnAddress:       convertpb.OrderAddressToPbOrder(shipping.ReturnAddress),
 			ShippingServiceName: "", // TODO: be filled when confirm
-			ShippingServiceCode: shipping.ShippingServiceCode.Apply(""),
+			ShippingServiceCode: serviceCode,
 			ShippingServiceFee:  shipping.ShippingServiceFee.Apply(0),
 			ShippingProvider:    0,
 			Carrier:             shipping.Carrier,
@@ -119,16 +123,16 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		},
 		GhnNoteCode: 0, // will be over-written by try_on
 	}
-	if err := validateAddress(req.CustomerAddress, shipping.Carrier); err != nil {
+
+	if err := validateAddress(req.CustomerAddress, conn.ConnectionProvider); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.ShippingAddress, shipping.Carrier); err != nil {
+	if err := validateAddress(req.ShippingAddress, conn.ConnectionProvider); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ người nhận không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.Shipping.PickupAddress, shipping.Carrier); err != nil {
+	if err := validateAddress(req.Shipping.PickupAddress, conn.ConnectionProvider); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
-
 	resp, err := logicorder.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
@@ -145,23 +149,40 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		}
 	}()
 
-	cfmResp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, shopClaim.Shop, shopClaim.AuthPartnerID,
-		&apishop.OrderIDRequest{
-			OrderId: orderID,
-		})
+	_, err = logicorder.ConfirmOrder(ctx, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+		OrderId: orderID,
+	})
 	if err != nil {
 		return nil, err
 	}
-	if len(cfmResp.FulfillmentErrors) > 0 {
-		// TODO: refactor
-		var anErr *pbcm.Error
-		for _, err := range cfmResp.FulfillmentErrors {
-			if err.Code != "ok" {
-				anErr = err
-				break
-			}
-		}
-		return nil, anErr
+	createFfmArgs := &shippingcore.CreateFulfillmentsCommand{
+		ShopID:              accountID,
+		OrderID:             orderID,
+		PickupAddress:       convertpbint.Convert_api_OrderAddress_To_core_OrderAddress(req.Shipping.PickupAddress),
+		ShippingAddress:     convertpbint.Convert_api_OrderAddress_To_core_OrderAddress(req.ShippingAddress),
+		ReturnAddress:       convertpbint.Convert_api_OrderAddress_To_core_OrderAddress(req.Shipping.ReturnAddress),
+		ShippingType:        ordertypes.ShippingTypeShipment,
+		ShippingServiceCode: serviceCode,
+		ShippingServiceFee:  shipping.ShippingServiceFee.Apply(0),
+		ShippingServiceName: shipping.ShippingServiceName.Apply(""),
+		WeightInfo: shippingtypes.WeightInfo{
+			GrossWeight:      shipping.GrossWeight.Apply(0),
+			ChargeableWeight: shipping.ChargeableWeight.Apply(0),
+			Length:           shipping.Length.Apply(0),
+			Width:            shipping.Width.Apply(0),
+			Height:           shipping.Height.Apply(0),
+		},
+		ValueInfo: shippingtypes.ValueInfo{
+			BasketValue:      r.BasketValue,
+			CODAmount:        shipping.CodAmount.Apply(0),
+			IncludeInsurance: shipping.IncludeInsurance.Apply(false),
+		},
+		TryOn:        shipping.TryOn,
+		ShippingNote: shipping.ShippingNote.Apply(""),
+		ConnectionID: conn.ID,
+	}
+	if err := shippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
+		return nil, err
 	}
 
 	orderQuery := &modelx.GetOrderQuery{
@@ -248,7 +269,7 @@ func GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentI
 	return convertpb.PbFulfillment(ffm), nil
 }
 
-func validateAddress(address *types.OrderAddress, shippingProvider shipping_provider.ShippingProvider) error {
+func validateAddress(address *types.OrderAddress, shippingProvider connection_type.ConnectionProvider) error {
 	if address == nil {
 		return errors.New("Thiếu thông tin địa chỉ")
 	}
@@ -275,7 +296,7 @@ func validateAddress(address *types.OrderAddress, shippingProvider shipping_prov
 		address.FullName = s
 	}
 
-	if shippingProvider == shipping_provider.VTPost {
+	if shippingProvider == connection_type.ConnectionProviderVTP {
 		// required Ward
 		_address, err := convertpbint.OrderAddressToModel(address)
 		if err != nil {

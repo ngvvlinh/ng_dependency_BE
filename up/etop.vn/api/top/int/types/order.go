@@ -512,18 +512,28 @@ type ExternalShippingService struct {
 	// @deprecated use estimated_pickup_at
 	ExpectedPickAt dot.Time `json:"expected_pick_at"`
 	// @deprecated use estimated_delivery_at
-	ExpectedDeliveryAt  dot.Time                           `json:"expected_delivery_at"`
-	Name                string                             `json:"name"`
-	Code                string                             `json:"code"`
-	Fee                 int                                `json:"fee"`
+	ExpectedDeliveryAt dot.Time `json:"expected_delivery_at"`
+	Name               string   `json:"name"`
+	Code               string   `json:"code"`
+	Fee                int      `json:"fee"`
+	// @deprecated use connection instead
 	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
 	EstimatedPickupAt   dot.Time                           `json:"estimated_pickup_at"`
 	EstimatedDeliveryAt dot.Time                           `json:"estimated_delivery_at"`
-	ConnectionID        dot.ID                             `json:"connection_id"`
+	ConnectionInfo      *ConnectionInfo                    `json:"connection_info"`
 }
 
 func (m *ExternalShippingService) Reset()         { *m = ExternalShippingService{} }
 func (m *ExternalShippingService) String() string { return jsonx.MustMarshalToString(m) }
+
+type ConnectionInfo struct {
+	ID       dot.ID `json:"id"`
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
+}
+
+func (m *ConnectionInfo) Reset()         { *m = ConnectionInfo{} }
+func (m *ConnectionInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type FulfillmentSyncStates struct {
 	SyncAt            dot.Time       `json:"sync_at"`
@@ -946,6 +956,7 @@ func (m *TradingCreateOrderRequest) Reset()         { *m = TradingCreateOrderReq
 func (m *TradingCreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShippingServicesRequest struct {
+	ConnectionIDs    []dot.ID     `json:"connection_ids"`
 	FromDistrictCode string       `json:"from_district_code"`
 	FromProvinceCode string       `json:"from_province_code"`
 	ToDistrictCode   string       `json:"to_district_code"`

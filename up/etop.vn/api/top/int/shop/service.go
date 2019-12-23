@@ -349,8 +349,10 @@ type StocktakeService interface {
 
 // +apix:path=/shop.Connection
 type ConnectionService interface {
+	GetConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
+	GetAvailableConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
+	GetShopConnections(context.Context, *cm.Empty) (*GetShopConnectionsResponse, error)
 	RegisterShopConnection(context.Context, *RegisterShopConnectionRequest) (*ShopConnection, error)
-
 	LoginShopConnection(context.Context, *LoginShopConnectionRequest) (*ShopConnection, error)
 }
 

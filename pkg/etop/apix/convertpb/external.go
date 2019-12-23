@@ -441,6 +441,17 @@ func PbShippingService(m *model.AvailableShippingService) *exttypes.ShippingServ
 		Carrier:             m.Provider,
 		EstimatedPickupAt:   cmapi.PbTime(m.ExpectedPickAt),
 		EstimatedDeliveryAt: cmapi.PbTime(m.ExpectedDeliveryAt),
+		CarrierInfo:         PbCarrierInfo(m.ConnectionInfo),
+	}
+}
+
+func PbCarrierInfo(m *model.ConnectionInfo) *exttypes.CarrierInfo {
+	if m == nil {
+		return nil
+	}
+	return &exttypes.CarrierInfo{
+		Name:     m.Name,
+		ImageURL: m.ImageURL,
 	}
 }
 

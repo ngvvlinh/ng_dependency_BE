@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/com/main/connectioning/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
@@ -34,6 +35,14 @@ func NewShopConnectionStore(db *cmsql.Database) ShopConnectionStoreFactory {
 	}
 }
 
+func (s *ShopConnectionStore) Clone() *ShopConnectionStore {
+	return &ShopConnectionStore{
+		query:          s.query,
+		preds:          s.preds,
+		includeDeleted: s.includeDeleted,
+	}
+}
+
 func (s *ShopConnectionStore) ShopID(shopID dot.ID) *ShopConnectionStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID))
 	return s
@@ -46,6 +55,11 @@ func (s *ShopConnectionStore) OptionalShopID(shopID dot.ID) *ShopConnectionStore
 
 func (s *ShopConnectionStore) ConnectionID(connectionID dot.ID) *ShopConnectionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionID(connectionID))
+	return s
+}
+
+func (s *ShopConnectionStore) ConnectionIDs(connectionIDs ...dot.ID) *ShopConnectionStore {
+	s.preds = append(s.preds, sq.In("connection_id", connectionIDs))
 	return s
 }
 
@@ -85,7 +99,7 @@ func (s *ShopConnectionStore) GetShopConnection() (*connectioning.ShopConnection
 }
 
 func (s *ShopConnectionStore) ListShopConnectionsDB() (res []*model.ShopConnection, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).Where(s.ft.ByStatus(status3.P))
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	err = query.Find((*model.ShopConnections)(&res))

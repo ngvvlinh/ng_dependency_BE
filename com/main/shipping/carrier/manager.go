@@ -11,7 +11,7 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/shipping"
+	shippingstate "etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	carriertypes "etop.vn/backend/com/main/shipping/carrier/types"
@@ -101,7 +101,7 @@ func (m *ShipmentManager) GetWebhookEndpoint(connectionProvider connection_type.
 }
 
 func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID dot.ID, shopID dot.ID) (carriertypes.ShipmentCarrier, error) {
-	connection, err := m.getConnection(ctx, connectionID)
+	connection, err := m.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *ordering.Order, ffms []*shipmodel.Fulfillment) error {
 	// check balance of shop
 	// if balance < MinShopBalance => can not create order
-	// TODO: raise event FulfillmentCreatingEvent
+	// TODO: raise event FulfillmentCreatingEvent after merge wallet (amount-available serivice)
 	{
 		query := &model.GetBalanceShopCommand{
 			ShopID: order.ShopID,
@@ -215,7 +215,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),
 
-				NextShippingState: shipping.Created,
+				NextShippingState: shippingstate.Created,
 			},
 		}
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm2}
@@ -287,6 +287,8 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	if err != nil {
 		return err
 	}
+	// update shipping service name
+	ffmToUpdate.ShippingServiceName = providerService.Name
 
 	if etopService != nil {
 		err := ffmToUpdate.ApplyEtopPrice(etopService.ShippingFeeMain)
@@ -332,8 +334,8 @@ func (m *ShipmentManager) CancelFulfillment(ctx context.Context, ffm *shipmodel.
 	return driver.CancelFulfillment(ctx, ffm)
 }
 
-func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot.ID, args *carriertypes.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
-	shopConnections, err := m.GetAllShopConnections(ctx, accountID)
+func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot.ID, args *GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+	shopConnections, err := m.GetAllShopConnections(ctx, accountID, args.ConnectionIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -349,28 +351,37 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 			if shopConn.Status != status3.P || shopConn.Token == "" {
 				return cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid (check status or token)")
 			}
+			conn, err := m.GetConnectionByID(ctx, connID)
+			if err != nil {
+				return err
+			}
 
 			var services []*model.AvailableShippingService
-			var err error
 			driver, err := m.getShipmentDriver(ctx, connID, accountID)
 			if err != nil {
 				ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
 				return err
 			}
 
-			_args := *args // clone the request to prevent race condition
+			_args := args.ToShipmentServiceArgs() // clone the request to prevent race condition
 			_args.ArbitraryID = connID
-			if shopConn.IsGlobal {
+			_args.AccountID = accountID
+			if conn.ConnectionMethod == connection_type.ConnectionMethodTopship {
 				_args.IncludeTopshipServices = true
 			}
-			services, err = driver.GetShippingServices(ctx, &_args)
+			services, err = driver.GetShippingServices(ctx, _args)
 			if err != nil {
 				ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
 				return err
 			}
+
+			// assign connection info to services
 			for _, s := range services {
-				// assign connection_id to shipping service
-				s.ConnectionID = connID
+				s.ConnectionInfo = &model.ConnectionInfo{
+					ID:       connID,
+					Name:     conn.Name,
+					ImageURL: conn.ImageURL,
+				}
 			}
 			mutex.Lock()
 			res = append(res, services...)
@@ -387,22 +398,17 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 	return res, nil
 }
 
-func (m *ShipmentManager) GetAllShopConnections(ctx context.Context, shopID dot.ID) ([]*connectioning.ShopConnection, error) {
+func (m *ShipmentManager) GetAllShopConnections(ctx context.Context, shopID dot.ID, connectionIDs []dot.ID) ([]*connectioning.ShopConnection, error) {
 	// Get all shop_connection & global shop_connection
-	query1 := &connectioning.ListGlobalShopConnectionsQuery{}
-	if err := m.ConnectionQS.Dispatch(ctx, query1); err != nil {
+	query := &connectioning.ListShopConnectionsQuery{
+		ShopID:        shopID,
+		IncludeGlobal: true,
+		ConnectionIDs: connectionIDs,
+	}
+	if err := m.ConnectionQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	query2 := &connectioning.ListShopConnectionsByShopIDQuery{
-		ShopID: shopID,
-	}
-	if err := m.ConnectionQS.Dispatch(ctx, query2); err != nil {
-		return nil, err
-	}
-	var res []*connectioning.ShopConnection
-	res = append(res, query1.Result...)
-	res = append(res, query2.Result...)
-	return res, nil
+	return query.Result, nil
 }
 
 func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs) (account *carriertypes.AccountResponse, _ error) {
@@ -439,9 +445,13 @@ func (m *ShipmentManager) SignUp(ctx context.Context, args *ConnectionSignUpArgs
 }
 
 func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, connectionID dot.ID) (carriertypes.ShipmentCarrier, error) {
-	conn, err := m.getConnection(ctx, connectionID)
+	conn, err := m.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
+	}
+
+	if conn.ConnectionMethod != connection_type.ConnectionMethodDirect {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Do not support this feature for this connection")
 	}
 
 	if conn.EtopAffiliateAccount == nil {
@@ -505,8 +515,8 @@ func (m *ShipmentManager) UpdateFulfillment(ctx context.Context, ffm *shipmodel.
 	return
 }
 
-func (m *ShipmentManager) getConnection(ctx context.Context, connID dot.ID) (*connectioning.Connection, error) {
-	connKey := getRedisConnectionKey(connID)
+func (m *ShipmentManager) GetConnectionByID(ctx context.Context, connID dot.ID) (*connectioning.Connection, error) {
+	connKey := getRedisConnectionKeyByID(connID)
 	var connection connectioning.Connection
 	err := m.loadRedis(connKey, &connection)
 	if err != nil {
@@ -517,7 +527,28 @@ func (m *ShipmentManager) getConnection(ctx context.Context, connID dot.ID) (*co
 			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
 		}
 		connection = *query.Result
+		connKeyCode := getRedisConnectionKeyByCode(connection.Code)
 		m.setRedis(connKey, connection)
+		m.setRedis(connKeyCode, connection)
+	}
+	return &connection, nil
+}
+
+func (m *ShipmentManager) GetConnectionByCode(ctx context.Context, connCode string) (*connectioning.Connection, error) {
+	connKey := getRedisConnectionKeyByCode(connCode)
+	var connection connectioning.Connection
+	err := m.loadRedis(connKey, &connection)
+	if err != nil {
+		query := &connectioning.GetConnectionByCodeQuery{
+			Code: connCode,
+		}
+		if err := m.ConnectionQS.Dispatch(ctx, query); err != nil {
+			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
+		}
+		connection = *query.Result
+		connKeyID := getRedisConnectionKeyByID(connection.ID)
+		m.setRedis(connKey, connection)
+		m.setRedis(connKeyID, connection)
 	}
 	return &connection, nil
 }
@@ -545,8 +576,12 @@ func getRedisShopConnectionKey(connID dot.ID, shopID dot.ID) string {
 	return "shopConn:" + shopID.String() + connID.String()
 }
 
-func getRedisConnectionKey(connID dot.ID) string {
-	return "conn:" + connID.String()
+func getRedisConnectionKeyByID(connID dot.ID) string {
+	return "conn:id:" + connID.String()
+}
+
+func getRedisConnectionKeyByCode(code string) string {
+	return "conn:code:" + code
 }
 
 func (m *ShipmentManager) loadRedis(key string, v interface{}) error {

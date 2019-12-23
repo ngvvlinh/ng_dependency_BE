@@ -148,6 +148,17 @@ func (h AggregateHandler) HandleUpdateShopConnectionToken(ctx context.Context, m
 	return err
 }
 
+type GetConnectionByCodeQuery struct {
+	Code string
+
+	Result *Connection `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetConnectionByCode(ctx context.Context, msg *GetConnectionByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetConnectionByCode(msg.GetArgs(ctx))
+	return err
+}
+
 type GetConnectionByIDQuery struct {
 	ID dot.ID
 
@@ -194,6 +205,10 @@ func (h QueryServiceHandler) HandleListGlobalShopConnections(ctx context.Context
 }
 
 type ListShopConnectionsQuery struct {
+	ShopID        dot.ID
+	IncludeGlobal bool
+	ConnectionIDs []dot.ID
+
 	Result []*ShopConnection `json:"-"`
 }
 
@@ -236,6 +251,7 @@ func (q *DeleteShopConnectionCommand) command()         {}
 func (q *UpdateConnectionDriverConfigCommand) command() {}
 func (q *UpdateShopConnectionTokenCommand) command()    {}
 
+func (q *GetConnectionByCodeQuery) query()               {}
 func (q *GetConnectionByIDQuery) query()                 {}
 func (q *GetShopConnectionByIDQuery) query()             {}
 func (q *ListConnectionsQuery) query()                   {}
@@ -363,6 +379,11 @@ func (q *UpdateShopConnectionTokenCommand) SetUpdateShopConnectionExternalDataAr
 	q.ExternalData = args.ExternalData
 }
 
+func (q *GetConnectionByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string) {
+	return ctx,
+		q.Code
+}
+
 func (q *GetConnectionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
@@ -397,12 +418,19 @@ func (q *ListGlobalShopConnectionsQuery) GetArgs(ctx context.Context) (_ context
 func (q *ListGlobalShopConnectionsQuery) SetEmpty(args *meta.Empty) {
 }
 
-func (q *ListShopConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
+func (q *ListShopConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopConnectionsArgs) {
 	return ctx,
-		&meta.Empty{}
+		&ListShopConnectionsArgs{
+			ShopID:        q.ShopID,
+			IncludeGlobal: q.IncludeGlobal,
+			ConnectionIDs: q.ConnectionIDs,
+		}
 }
 
-func (q *ListShopConnectionsQuery) SetEmpty(args *meta.Empty) {
+func (q *ListShopConnectionsQuery) SetListShopConnectionsArgs(args *ListShopConnectionsArgs) {
+	q.ShopID = args.ShopID
+	q.IncludeGlobal = args.IncludeGlobal
+	q.ConnectionIDs = args.ConnectionIDs
 }
 
 func (q *ListShopConnectionsByConnectionIDQuery) GetArgs(ctx context.Context) (_ context.Context, ConnectionID dot.ID) {
@@ -451,6 +479,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetConnectionByCode)
 	b.AddHandler(h.HandleGetConnectionByID)
 	b.AddHandler(h.HandleGetShopConnectionByID)
 	b.AddHandler(h.HandleListConnections)

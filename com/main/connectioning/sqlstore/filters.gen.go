@@ -253,6 +253,44 @@ func (ft *ConnectionFilters) ByConnectionProviderPtr(ConnectionProvider *connect
 	}
 }
 
+func (ft *ConnectionFilters) ByCode(Code string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == "",
+	}
+}
+
+func (ft *ConnectionFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
+	}
+}
+
+func (ft *ConnectionFilters) ByImageURL(ImageURL string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "image_url",
+		Value:  ImageURL,
+		IsNil:  ImageURL == "",
+	}
+}
+
+func (ft *ConnectionFilters) ByImageURLPtr(ImageURL *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "image_url",
+		Value:  ImageURL,
+		IsNil:  ImageURL == nil,
+		IsZero: ImageURL != nil && (*ImageURL) == "",
+	}
+}
+
 type ShopConnectionFilters struct{ prefix string }
 
 func NewShopConnectionFilters(prefix string) ShopConnectionFilters {

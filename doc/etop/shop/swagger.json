@@ -962,6 +962,87 @@
         }
       }
     },
+    "/api/shop.Connection/GetAvailableConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetAvailableConnections",
+        "operationId": "ebGetAvailableConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/GetConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetConnections",
+        "operationId": "ebGetConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/GetShopConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetShopConnections",
+        "operationId": "ebGetShopConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetShopConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Connection/LoginShopConnection": {
       "post": {
         "tags": [
@@ -5989,6 +6070,39 @@
         "etop"
       ]
     },
+    "cdConnectionMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "topship",
+        "direct"
+      ]
+    },
+    "cdConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner"
+      ]
+    },
+    "cdConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual"
+      ]
+    },
+    "cdConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping"
+      ]
+    },
     "csTryOnCode": {
       "type": "string",
       "enum": [
@@ -6577,6 +6691,41 @@
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "paConnection": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "connection_provider": {
+          "$ref": "#/definitions/cdConnectionProvider"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        },
+        "connection_type": {
+          "$ref": "#/definitions/cdConnectionType"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -7732,6 +7881,17 @@
         }
       }
     },
+    "paGetConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paConnection"
+          }
+        }
+      }
+    },
     "paGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
@@ -8096,6 +8256,17 @@
         "product_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "paGetShopConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "shop_connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopConnection"
+          }
         }
       }
     },
@@ -10720,6 +10891,21 @@
         }
       }
     },
+    "qdConnectionInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "qdCreateOrderLine": {
       "type": "object",
       "properties": {
@@ -10973,14 +11159,14 @@
       "type": "object",
       "properties": {
         "carrier": {
+          "description": "**Deprecated:** use connection instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "code": {
           "type": "string"
         },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
+        "connection_info": {
+          "$ref": "#/definitions/qdConnectionInfo"
         },
         "estimated_delivery_at": {
           "type": "string",
@@ -11454,6 +11640,13 @@
         },
         "chargeable_weight": {
           "type": "integer"
+        },
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         },
         "from_district": {
           "type": "string"

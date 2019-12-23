@@ -221,21 +221,23 @@ func (m *Order) Reset()         { *m = Order{} }
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderShipping struct {
-	PickupAddress       *OrderAddress                      `json:"pickup_address"`
-	ReturnAddress       *OrderAddress                      `json:"return_address"`
-	ShippingServiceName dot.NullString                     `json:"shipping_service_name"`
-	ShippingServiceCode dot.NullString                     `json:"shipping_service_code"`
-	ShippingServiceFee  dot.NullInt                        `json:"shipping_service_fee"`
-	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
-	IncludeInsurance    dot.NullBool                       `json:"include_insurance"`
-	TryOn               try_on.TryOnCode                   `json:"try_on"`
-	ShippingNote        dot.NullString                     `json:"shipping_note"`
-	CodAmount           dot.NullInt                        `json:"cod_amount"`
-	GrossWeight         dot.NullInt                        `json:"gross_weight"`
-	Length              dot.NullInt                        `json:"length"`
-	Width               dot.NullInt                        `json:"width"`
-	Height              dot.NullInt                        `json:"height"`
-	ChargeableWeight    dot.NullInt                        `json:"chargeable_weight"`
+	PickupAddress       *OrderAddress  `json:"pickup_address"`
+	ReturnAddress       *OrderAddress  `json:"return_address"`
+	ShippingServiceName dot.NullString `json:"shipping_service_name"`
+	ShippingServiceCode dot.NullString `json:"shipping_service_code"`
+	ShippingServiceFee  dot.NullInt    `json:"shipping_service_fee"`
+	// @Deprecated use connection_id instead
+	Carrier          shipping_provider.ShippingProvider `json:"carrier"`
+	IncludeInsurance dot.NullBool                       `json:"include_insurance"`
+	TryOn            try_on.TryOnCode                   `json:"try_on"`
+	ShippingNote     dot.NullString                     `json:"shipping_note"`
+	CodAmount        dot.NullInt                        `json:"cod_amount"`
+	GrossWeight      dot.NullInt                        `json:"gross_weight"`
+	Length           dot.NullInt                        `json:"length"`
+	Width            dot.NullInt                        `json:"width"`
+	Height           dot.NullInt                        `json:"height"`
+	ChargeableWeight dot.NullInt                        `json:"chargeable_weight"`
+	ConnectionID     dot.ID                             `json:"connection_id"`
 }
 
 func (m *OrderShipping) Reset()         { *m = OrderShipping{} }
@@ -350,6 +352,7 @@ func (m *LocationResponse) Reset()         { *m = LocationResponse{} }
 func (m *LocationResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShippingServicesRequest struct {
+	ConnectionIDs   []dot.ID         `json:"connection_ids"`
 	PickupAddress   *LocationAddress `json:"pickup_address"`
 	ShippingAddress *LocationAddress `json:"shipping_address"`
 	// in gram (g)
@@ -386,16 +389,27 @@ func (m *GetShippingServicesResponse) Reset()         { *m = GetShippingServices
 func (m *GetShippingServicesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShippingService struct {
-	Code                string                             `json:"code"`
-	Name                string                             `json:"name"`
-	Fee                 int                                `json:"fee"`
+	Code string `json:"code"`
+	// @deprecated use carrier info instead
+	Name string `json:"name"`
+	Fee  int    `json:"fee"`
+	// @deprecated
 	Carrier             shipping_provider.ShippingProvider `json:"carrier"`
 	EstimatedPickupAt   dot.Time                           `json:"estimated_pickup_at"`
 	EstimatedDeliveryAt dot.Time                           `json:"estimated_delivery_at"`
+	CarrierInfo         *CarrierInfo                       `json:"carrier_info"`
 }
 
 func (m *ShippingService) Reset()         { *m = ShippingService{} }
 func (m *ShippingService) String() string { return jsonx.MustMarshalToString(m) }
+
+type CarrierInfo struct {
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
+}
+
+func (m *CarrierInfo) Reset()         { *m = CarrierInfo{} }
+func (m *CarrierInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderCustomer struct {
 	FullName string        `json:"full_name"`

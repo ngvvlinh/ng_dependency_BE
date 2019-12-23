@@ -106,7 +106,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	// set default driver when ffm.ConnectionID = 0
 	if ffm.ConnectionID == 0 {
 		queryShopConn := &connectioning.GetShopConnectionByIDQuery{
-			ConnectionID: connectioning.DefaultGHTKConnectionID,
+			ConnectionID: connectioning.DefaultTopshipGHTKConnectionID,
 		}
 		if err := wh.shipmentManager.ConnectionQS.Dispatch(ctx, queryShopConn); err != nil {
 			return cm.Errorf(cm.InvalidArgument, err, "Không thể lấy default driver cho ghtk, err = %v", err)

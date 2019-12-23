@@ -11,6 +11,7 @@ import (
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ledgering"
@@ -218,6 +219,7 @@ var (
 	shippingAggregate    shipping.CommandBus
 	RefundAggr           refund.CommandBus
 	RefundQuery          refund.QueryBus
+	connectionQuery      connectioning.QueryBus
 )
 
 func Init(
@@ -262,6 +264,7 @@ func Init(
 	shippingA shipping.CommandBus,
 	refundA refund.CommandBus,
 	refundQ refund.QueryBus,
+	connectionQ connectioning.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -304,6 +307,7 @@ func Init(
 	shippingAggregate = shippingA
 	RefundAggr = refundA
 	RefundQuery = refundQ
+	connectionQuery = connectionQ
 }
 
 type MiscService struct{}

@@ -9,7 +9,9 @@ import (
 )
 
 var (
-	DefaultGHTKConnectionID = dot.ID(1000804010396750738)
+	DefaultTopshipGHTKConnectionID   = dot.ID(1000804010396750738)
+	DefaultTopshipGHNConnectionID    = dot.ID(1000803215822389663)
+	DefaultTopshipVTPostConnectionID = dot.ID(1000804104889339180)
 )
 
 type Connection struct {
@@ -27,6 +29,8 @@ type Connection struct {
 	ConnectionMethod     connection_type.ConnectionMethod
 	ConnectionProvider   connection_type.ConnectionProvider
 	EtopAffiliateAccount *EtopAffiliateAccount
+	Code                 string
+	ImageURL             string
 }
 
 type ConnectionDriverConfig struct {

@@ -29,6 +29,8 @@ type Connection struct {
 	ConnectionMethod     connection_type.ConnectionMethod
 	ConnectionProvider   connection_type.ConnectionProvider
 	EtopAffiliateAccount *EtopAffiliateAccount
+	Code                 string
+	ImageURL             string
 }
 
 var _ = sqlgenShopConnection(&ShopConnection{})

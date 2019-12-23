@@ -1,6 +1,7 @@
 package partner_proto
 
 import (
+	"etop.vn/api/top/types/etc/authorize_shop_config"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
@@ -12,6 +13,8 @@ type AuthorizeShopRequest struct {
 	Phone          string `json:"phone"`
 	Email          string `json:"email"`
 	RedirectUrl    string `json:"redirect_url"`
+
+	Config []authorize_shop_config.AuthorizeShopConfig `json:"config"`
 }
 
 func (m *AuthorizeShopRequest) Reset()         { *m = AuthorizeShopRequest{} }

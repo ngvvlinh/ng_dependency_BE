@@ -55,18 +55,30 @@ ALTER TABLE history.fulfillment
     , ADD COLUMN width INT
     , ADD COLUMN height INT;
 
-INSERT INTO "connection" ("id", "name", "status", "created_at", "updated_at", "driver", "connection_type", "connection_subtype", "connection_method", "connection_provider") VALUES ('1000803215822389663', 'TopShip - GHN', '1', NOW(), NOW(), 'shipping/shipment/topship/ghn', 'shipping', 'shipment', 'topship', 'ghn');
+ALTER TABLE connection
+    ADD COLUMN code text
+    , ADD COLUMN image_url text;
 
-INSERT INTO "connection" ("id", "name", "status", "created_at", "updated_at", "driver", "connection_type", "connection_subtype", "connection_method", "connection_provider") VALUES ('1000804010396750738', 'TopShip - GHTK', '1', NOW(), NOW(), 'shipping/shipment/topship/ghtk', 'shipping', 'shipment', 'topship', 'ghtk');
+select init_history('connection', '{id}');
+select init_history('shop_connection', '{shop_id,connection_id}');
 
-INSERT INTO "connection" ("id", "name", "status", "created_at", "updated_at", "driver", "connection_type", "connection_subtype", "connection_method", "connection_provider") VALUES ('1000804104889339180', 'TopShip - VTP', '1', NOW(), NOW(), 'shipping/shipment/topship/vtpost', 'shipping', 'shipment', 'topship', 'vtpost');
+ALTER TYPE code_type ADD VALUE 'connection';
+CREATE UNIQUE INDEX ON connection(code);
 
-INSERT INTO "shop_connection" ("connection_id", "status", "created_at", "updated_at", "is_global") VALUES ('1000803215822389663','1', NOW(), NOW(), 't');
+INSERT INTO code ("code", "type", "created_at") VALUES
+    ('50BS', 'connection', NOW()),
+    ('448C', 'connection', NOW()),
+    ('E7QC', 'connection', NOW());
 
-INSERT INTO "shop_connection" ("connection_id", "status", "created_at", "updated_at", "is_global") VALUES ('1000804010396750738','1', NOW(), NOW(), 't');
+INSERT INTO "connection" ("id", "name", "status", "created_at", "updated_at", "driver", "connection_type", "connection_subtype", "connection_method", "connection_provider", "code") VALUES
+('1000803215822389663', 'TopShip - GHN', '1', NOW(), NOW(), 'shipping/shipment/topship/ghn', 'shipping', 'shipment', 'topship', 'ghn', '50BS'),
+('1000804010396750738', 'TopShip - GHTK', '1', NOW(), NOW(), 'shipping/shipment/topship/ghtk', 'shipping', 'shipment', 'topship', 'ghtk', '448C'),
+('1000804104889339180', 'TopShip - VTP', '1', NOW(), NOW(), 'shipping/shipment/topship/vtpost', 'shipping', 'shipment', 'topship', 'vtpost', 'E7QC');
 
-INSERT INTO "shop_connection" ("connection_id", "status", "created_at", "updated_at", "is_global") VALUES ('1000804104889339180','1', NOW(), NOW(), 't');
-
+INSERT INTO "shop_connection" ("connection_id", "status", "created_at", "updated_at", "is_global") VALUES
+('1000803215822389663','1', NOW(), NOW(), 't'),
+('1000804010396750738','1', NOW(), NOW(), 't'),
+('1000804104889339180','1', NOW(), NOW(), 't');
 
 -- Fulfillment trigger --
 CREATE OR REPLACE FUNCTION coalesce_fulfillment_status(

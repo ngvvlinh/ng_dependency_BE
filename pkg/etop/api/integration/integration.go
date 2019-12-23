@@ -148,7 +148,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 			shop.Status == status3.P && shop.DeletedAt.IsZero() &&
 			user.Status == status3.P {
 			// everything looks good
-			resp, err := s.generateNewSession(ctx, nil, partner, shop)
+			resp, err := s.generateNewSession(ctx, nil, partner, shop, requestInfo)
 			q.Result = resp
 			return err
 		}
@@ -230,26 +230,29 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	return resp, nil
 }
 
-func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*integration.LoginResponse, error) {
+func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
 			AccountID:     shop.ID,
 			AuthPartnerID: partner.ID,
+			Extra: map[string]string{
+				"request_login": jsonx.MustMarshalToString(info),
+			},
 		},
 	}
 	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "")
 	}
-
-	actions := []*integration.Action{
-		{
+	actions := getActionsFromConfig(info.Config)
+	if len(actions) == 0 {
+		actions = append(actions, &integration.Action{
 			Name: "create_order",
-		},
+		})
 	}
 	resp := generateShopLoginResponse(
 		tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn,
-		user, partner, shop, actions,
+		user, partner, shop, actions, info.RedirectURL,
 	)
 	return resp, nil
 }
@@ -670,9 +673,23 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		Shop:              nil,
 		AvailableAccounts: availableAccounts,
 		AuthPartner:       convertpb.PbPublicAccountInfo(partner),
-		Actions:           nil,
+		Actions:           getActionsFromConfig(requestInfo.Config),
+		RedirectUrl:       requestInfo.RedirectURL,
 	}
 	return nil
+}
+
+func getActionsFromConfig(config string) (actions []*integration.Action) {
+	if config == "" {
+		return
+	}
+	_actions := strings.Split(config, ",")
+	for _, a := range _actions {
+		actions = append(actions, &integration.Action{
+			Name: a,
+		})
+	}
+	return
 }
 
 func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) error {
@@ -905,14 +922,24 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 		}
 		shop = query.Result
 	}
+	claim := q.Context.Claim
+	var actions []*integration.Action
+	redirectURL := ""
+	if claim.Extra != nil && claim.Extra["request_login"] != "" {
+		var requestInfo apipartner.PartnerShopToken
+		jsonx.Unmarshal([]byte(claim.Extra["request_login"]), &requestInfo)
+		actions = getActionsFromConfig(requestInfo.Config)
+		redirectURL = requestInfo.RedirectURL
+	}
+
 	q.Result = generateShopLoginResponse(
 		q.Context.Token, tokens.DefaultAccessTokenTTL,
-		nil, q.CtxPartner, shop, nil,
+		nil, q.CtxPartner, shop, actions, redirectURL,
 	)
 	return nil
 }
 
-func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*integration.Action) *integration.LoginResponse {
+func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*integration.Action, redirectURL string) *integration.LoginResponse {
 	resp := &integration.LoginResponse{
 		AccessToken:       accessToken,
 		ExpiresIn:         expiresIn,
@@ -922,6 +949,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 		Shop:              nil,
 		AuthPartner:       convertpb.PbPublicAccountInfo(partner),
 		Actions:           actions,
+		RedirectUrl:       redirectURL,
 	}
 
 	if shop != nil {

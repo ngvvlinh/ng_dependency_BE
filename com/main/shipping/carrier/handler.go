@@ -6,10 +6,8 @@ import (
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/int/types"
-	carriertypes "etop.vn/backend/com/main/shipping/carrier/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
 )
 
 /*
@@ -89,7 +87,7 @@ func (m *ShipmentManager) ShopConnectionSignUp(ctx context.Context, args *ShopCo
 	return cmd2.Result, nil
 }
 
-func (m *ShipmentManager) PrepareDataGetShippingService(ctx context.Context, accountID dot.ID, q *types.GetShippingServicesRequest) (*carriertypes.GetShippingServicesArgs, error) {
+func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q *types.GetShippingServicesRequest) (*GetShippingServicesArgs, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
 		Province:     q.FromProvince,
 		District:     q.FromDistrict,
@@ -134,8 +132,8 @@ func (m *ShipmentManager) PrepareDataGetShippingService(ctx context.Context, acc
 			WithMetap("expected chargeable_weight (= MAX(gross_weight, volumetric_weight))", calculatedChargeableWeight)
 	}
 
-	return &carriertypes.GetShippingServicesArgs{
-		AccountID:        accountID,
+	return &GetShippingServicesArgs{
+		ConnectionIDs:    q.ConnectionIDs,
 		FromDistrictCode: fromDistrict.Code,
 		ToDistrictCode:   topDistrict.Code,
 		ChargeableWeight: chargeableWeight,

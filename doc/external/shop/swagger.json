@@ -510,6 +510,17 @@
         }
       }
     },
+    "mrCarrierInfo": {
+      "type": "object",
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "mrChange": {
       "type": "object",
       "properties": {
@@ -803,6 +814,13 @@
         "cod_amount": {
           "type": "integer"
         },
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
         "gross_weight": {
           "description": "in gram (g)\n",
           "type": "integer"
@@ -1092,6 +1110,7 @@
       "type": "object",
       "properties": {
         "carrier": {
+          "description": "**Deprecated:** use connection_id instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
@@ -1099,6 +1118,10 @@
         },
         "cod_amount": {
           "type": "integer"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         },
         "gross_weight": {
           "type": "integer"
@@ -1156,7 +1179,11 @@
       "type": "object",
       "properties": {
         "carrier": {
+          "description": "**Deprecated:**\n",
           "$ref": "#/definitions/bwShippingProvider"
+        },
+        "carrier_info": {
+          "$ref": "#/definitions/mrCarrierInfo"
         },
         "code": {
           "type": "string"
@@ -1173,6 +1200,7 @@
           "type": "integer"
         },
         "name": {
+          "description": "**Deprecated:** use carrier info instead\n",
           "type": "string"
         }
       }

@@ -1932,6 +1932,138 @@ type wrapConnectionService struct {
 	s *ConnectionService
 }
 
+type GetAvailableConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *api.GetConnectionsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req *cm.Empty) (resp *api.GetConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/GetAvailableConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetAvailableConnectionsEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetAvailableConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *api.GetConnectionsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *api.GetConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/GetConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetConnectionsEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShopConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *api.GetShopConnectionsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.Empty) (resp *api.GetShopConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/GetShopConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShopConnectionsEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetShopConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type LoginShopConnectionEndpoint struct {
 	*api.LoginShopConnectionRequest
 	Result  *api.ShopConnection

@@ -27,4 +27,6 @@ type PartnerShopToken struct {
 	// if this is set, client must send the same email/phone to request_login
 	RetainCurrentInfo bool   `json:"retain,omitempty"`
 	RedirectURL       string `json:"redirect_url"`
+	// Config: "shipment,..."
+	Config string `json:"config"`
 }

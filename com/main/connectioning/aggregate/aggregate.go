@@ -11,6 +11,8 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	etopmodel "etop.vn/backend/pkg/etop/model"
+	etopsqlstore "etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -43,6 +45,11 @@ func (a *ConnectionAggregate) CreateConnection(ctx context.Context, args *connec
 		return nil, err
 	}
 	conn.ID = cm.NewID()
+	code, err := etopsqlstore.GenerateCodeWithoutTransaction(ctx, etopmodel.CodeTypeConnection, "")
+	if err != nil {
+		return nil, err
+	}
+	conn.Code = code
 	return a.connectionStore(ctx).CreateConnection(&conn)
 }
 
@@ -79,6 +86,8 @@ func (a *ConnectionAggregate) CreateShopConnection(ctx context.Context, args *co
 	if err := schemas.Convert(args, &shopConn); err != nil {
 		return nil, err
 	}
+	// always set status = 1
+	shopConn.Status = 1
 	return a.shopConnectionStore(ctx).CreateShopConnection(&shopConn)
 }
 

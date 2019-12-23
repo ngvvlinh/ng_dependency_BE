@@ -465,3 +465,36 @@ func PbShopConnection(c *connectioning.ShopConnection) *shop.ShopConnection {
 	}
 	return res
 }
+
+func PbShopConnections(items []*connectioning.ShopConnection) []*shop.ShopConnection {
+	result := make([]*shop.ShopConnection, len(items))
+	for i, item := range items {
+		result[i] = PbShopConnection(item)
+	}
+	return result
+}
+
+func PbConnection(c *connectioning.Connection) *shop.Connection {
+	if c == nil {
+		return nil
+	}
+	return &shop.Connection{
+		ID:                 c.ID,
+		Name:               c.Name,
+		Status:             c.Status,
+		CreatedAt:          cmapi.PbTime(c.CreatedAt),
+		UpdatedAt:          cmapi.PbTime(c.UpdatedAt),
+		ConnectionType:     c.ConnectionType,
+		ConnectionSubtype:  c.ConnectionSubtype,
+		ConnectionMethod:   c.ConnectionMethod,
+		ConnectionProvider: c.ConnectionProvider,
+	}
+}
+
+func PbConnections(items []*connectioning.Connection) []*shop.Connection {
+	result := make([]*shop.Connection, len(items))
+	for i, item := range items {
+		result[i] = PbConnection(item)
+	}
+	return result
+}

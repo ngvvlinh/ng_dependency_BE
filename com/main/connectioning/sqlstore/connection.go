@@ -42,6 +42,11 @@ func (s *ConnectionStore) ID(id dot.ID) *ConnectionStore {
 	return s
 }
 
+func (s *ConnectionStore) Code(code string) *ConnectionStore {
+	s.preds = append(s.preds, s.ft.ByCode(code))
+	return s
+}
+
 func (s *ConnectionStore) PartnerID(partnerID dot.ID) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(partnerID))
 	return s
@@ -92,7 +97,7 @@ func (s *ConnectionStore) GetConnection() (*connectioning.Connection, error) {
 }
 
 func (s *ConnectionStore) ListConnectionsDB() (res []*model.Connection, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).Where(s.ft.ByStatus(status3.P))
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	err = query.Find((*model.Connections)(&res))

@@ -4,11 +4,13 @@ import (
 	"context"
 	"net/url"
 	"regexp"
+	"strings"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/shopping/customering"
 	extpartner "etop.vn/api/top/external/partner"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/authorize_shop_config"
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
@@ -20,6 +22,7 @@ import (
 	apiconvertpb "etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -110,9 +113,16 @@ func (s *ShopService) CurrentShop(ctx context.Context, q *CurrentShopEndpoint) e
 	return nil
 }
 
+func getAuthorizeShopConfig(configs []authorize_shop_config.AuthorizeShopConfig) string {
+	var res []string
+	for _, c := range configs {
+		res = append(res, c.String())
+	}
+	return strings.Join(res, ",")
+}
+
 func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoint) error {
 	partner := q.Context.Partner
-
 	if q.RedirectUrl != "" {
 		if err := validateRedirectURL(partner.RedirectURLs, q.RedirectUrl, true); err != nil {
 			return err
@@ -163,6 +173,9 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
 				shop.Status == status3.P && shop.DeletedAt.IsZero() &&
 				user.Status == status3.P {
+				if q.Config != nil && len(q.Config) > 0 {
+					return generateAuthTokenWithRequestLogin(ctx, q, q.ShopId)
+				}
 				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopKey,
@@ -189,6 +202,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 					// client must keep the current email/phone when calling
 					// request_login
 					RetainCurrentInfo: true,
+					Config:            getAuthorizeShopConfig(q.Config),
 				}
 				token, err := generateAuthToken(info)
 				if err != nil {
@@ -212,7 +226,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				return cm.Errorf(cm.PermissionDenied, nil, "").
 					WithMeta("reason", "Chỉ có thể sử dụng shop_id nếu shop đã từng đăng nhập qua hệ thống của đối tác")
 			}
-			return generateAuthTokenWithRequestLogin(ctx, q)
+			return generateAuthTokenWithRequestLogin(ctx, q, 0)
 
 		default:
 			return cm.Errorf(cm.Internal, err, "")
@@ -224,10 +238,10 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 	}
 
 	// case 2: if the shop has not linked to the partner
-	return generateAuthTokenWithRequestLogin(ctx, q)
+	return generateAuthTokenWithRequestLogin(ctx, q, 0)
 }
 
-func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndpoint) error {
+func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndpoint, shopID dot.ID) error {
 	info := PartnerShopToken{
 		PartnerID: q.Context.Partner.ID,
 
@@ -241,6 +255,11 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 
 		RetainCurrentInfo: false,
 		RedirectURL:       q.RedirectUrl,
+		Config:            getAuthorizeShopConfig(q.Config),
+	}
+	if shopID != 0 {
+		info.ShopID = shopID
+		info.RetainCurrentInfo = true
 	}
 	token, err := generateAuthToken(info)
 	if err != nil {

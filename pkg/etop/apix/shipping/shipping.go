@@ -3,30 +3,42 @@ package shipping
 import (
 	"context"
 
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/shipping"
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/types"
 	servicelocation "etop.vn/backend/com/main/location"
 	locationlist "etop.vn/backend/com/main/location/list"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
+	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
+	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
-var shippingCtrl *shipping_provider.ProviderManager
-var locationBus = servicelocation.New().MessageBus()
-var locationList = buildLocationList()
-var orderStore ordersqlstore.OrderStoreFactory
-var fulfillmentStore shipsqlstore.FulfillmentStoreFactory
+var (
+	shippingCtrl     *shipping_provider.ProviderManager
+	locationBus      = servicelocation.New().MessageBus()
+	locationList     = buildLocationList()
+	orderStore       ordersqlstore.OrderStoreFactory
+	fulfillmentStore shipsqlstore.FulfillmentStoreFactory
+	shipmentManager  *shippingcarrier.ShipmentManager
+	shippingAggr     shipping.CommandBus
+	connectionQS     connectioning.QueryBus
+)
 
-func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory) {
+func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory, shipmentM *shippingcarrier.ShipmentManager, shippingA shipping.CommandBus, connectionQueryService connectioning.QueryBus) {
 	shippingCtrl = _shippingCtrl
 	orderStore = _orderStore
 	fulfillmentStore = ffmStore
+	shipmentManager = shipmentM
+	shippingAggr = shippingA
+	connectionQS = connectionQueryService
 }
 
 // TODO: should not import location/list
@@ -77,10 +89,8 @@ func GetShippingServices(ctx context.Context, accountID dot.ID, r *exttypes.GetS
 	if r.ShippingAddress == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ giao hàng")
 	}
-
-	req := &types.GetExternalShippingServicesRequest{
-		Provider:         0,
-		Carrier:          0,
+	req := &types.GetShippingServicesRequest{
+		ConnectionIDs:    r.ConnectionIDs,
 		FromDistrictCode: "",
 		FromProvinceCode: "",
 		ToDistrictCode:   "",
@@ -89,23 +99,55 @@ func GetShippingServices(ctx context.Context, accountID dot.ID, r *exttypes.GetS
 		FromDistrict:     r.PickupAddress.District,
 		ToProvince:       r.ShippingAddress.Province,
 		ToDistrict:       r.ShippingAddress.District,
-		Weight:           0,
 		GrossWeight:      r.GrossWeight,
 		ChargeableWeight: r.ChargeableWeight,
 		Length:           r.Length,
 		Width:            r.Width,
 		Height:           r.Height,
-		Value:            r.BasketValue,
 		TotalCodAmount:   r.CodAmount,
-		CodAmount:        r.CodAmount,
 		BasketValue:      r.BasketValue,
 		IncludeInsurance: r.IncludeInsurance,
 	}
-	services, err := shippingCtrl.GetExternalShippingServices(ctx, accountID, req)
+	args, err := shipmentManager.PrepareDataGetShippingServices(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+	resp, err := shipmentManager.GetShippingServices(ctx, accountID, args)
+	if err != nil {
+		return nil, err
+	}
+	if err := buildCodeForShippingServices(ctx, resp); err != nil {
+		return nil, err
+	}
 	return &exttypes.GetShippingServicesResponse{
-		Services: convertpb.PbShippingServices(services),
+		Services: convertpb.PbShippingServices(resp),
 	}, nil
+}
+
+func buildCodeForShippingServices(ctx context.Context, services []*model.AvailableShippingService) error {
+	// add connection code to service code to identify which connects
+	// code format: XXXXYYYYYYYY (12 characters)
+	for _, s := range services {
+		if s.ConnectionInfo == nil {
+			continue
+		}
+		connection, err := shipmentManager.GetConnectionByID(ctx, s.ConnectionInfo.ID)
+		if err != nil {
+			return err
+		}
+		s.ProviderServiceID = connection.Code + s.ProviderServiceID
+	}
+	return nil
+}
+
+func parseServiceCode(ctx context.Context, serviceCode string) (conn *connectioning.Connection, code string, _ error) {
+	if len(serviceCode) <= 8 {
+		return nil, "", cm.Errorf(cm.InvalidArgument, nil, "Shipping service code is invalid")
+	}
+	connCode, code := serviceCode[:4], serviceCode[4:]
+	conn, err := shipmentManager.GetConnectionByCode(ctx, connCode)
+	if err != nil {
+		return nil, "", err
+	}
+	return conn, code, nil
 }

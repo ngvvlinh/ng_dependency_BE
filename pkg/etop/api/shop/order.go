@@ -498,7 +498,7 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 
 func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippingServicesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	args, err := shipmentManager.PrepareDataGetShippingService(ctx, shopID, q.GetShippingServicesRequest)
+	args, err := shipmentManager.PrepareDataGetShippingServices(ctx, q.GetShippingServicesRequest)
 	if err != nil {
 		return err
 	}

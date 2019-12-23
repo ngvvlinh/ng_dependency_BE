@@ -88,6 +88,7 @@ const (
 	CodeTypeMoneyTransaction         = "money_transaction_shipping"
 	CodeTypeMoneyTransactionEtop     = "money_transaction_shipping_etop"
 	CodeTypeMoneyTransactionExternal = "money_transaction_external"
+	CodeTypeConnection               = "connection"
 
 	// For import
 
@@ -193,7 +194,8 @@ func (t CodeType) Validate() error {
 		CodeTypeOrder,
 		CodeTypeMoneyTransaction,
 		CodeTypeMoneyTransactionExternal,
-		CodeTypeMoneyTransactionEtop:
+		CodeTypeMoneyTransactionEtop,
+		CodeTypeConnection:
 		// no-op
 	default:
 		return cm.Error(cm.InvalidArgument, "Type is not valid", nil)
@@ -219,6 +221,9 @@ func VerifyOrderSource(s order_source.Source) bool {
 }
 
 func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
+	if s == 0 {
+		return true
+	}
 	switch s {
 	case shipping_provider.GHN, shipping_provider.GHTK, shipping_provider.VTPost, shipping_provider.Manual:
 		return true
@@ -1091,7 +1096,13 @@ type AvailableShippingService struct {
 	ExpectedPickAt     time.Time
 	ExpectedDeliveryAt time.Time
 	Source             ShippingPriceSource
-	ConnectionID       dot.ID
+	ConnectionInfo     *ConnectionInfo
+}
+
+type ConnectionInfo struct {
+	ID       dot.ID
+	Name     string
+	ImageURL string
 }
 
 func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {

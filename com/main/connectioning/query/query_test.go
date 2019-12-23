@@ -39,6 +39,8 @@ func init() {
 			, updated_at TIMESTAMP WITH TIME ZONE
 			, deleted_at TIMESTAMP WITH TIME ZONE
 			, etop_affiliate_account JSONB
+			, code TEXT
+			, image_url TEXT
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8
@@ -59,7 +61,7 @@ func init() {
 func TestConnectionQueryService(t *testing.T) {
 	Convey("Connection QueryService", t, func() {
 		Reset(func() {
-			db.MustExec("truncate connection, shop_connection")
+			db.MustExec("truncate connection, shop_connection CASCADE")
 		})
 		_conn := &model.Connection{
 			ID:     connID,
@@ -109,7 +111,9 @@ func TestConnectionQueryService(t *testing.T) {
 		})
 
 		Convey("List ShopConnections Success", func() {
-			query := &connectioning.ListShopConnectionsQuery{}
+			query := &connectioning.ListShopConnectionsQuery{
+				ShopID: shopID,
+			}
 			err := QS.Dispatch(ctx, query)
 			So(err, ShouldBeNil)
 			shopConns := query.Result

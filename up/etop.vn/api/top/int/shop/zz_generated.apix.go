@@ -498,6 +498,24 @@ func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 
 func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Connection/GetAvailableConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetAvailableConnections(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Connection/GetConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetConnections(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Connection/GetShopConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShopConnections(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Connection/LoginShopConnection":
 		msg := &LoginShopConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

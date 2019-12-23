@@ -238,9 +238,6 @@ type OrderShipping struct {
 
 	GrossWeight      int `json:"gross_weight"`
 	ChargeableWeight int `json:"chargeable_weight"`
-
-	ConnectionID  dot.ID
-	ShopCarrierID dot.ID
 }
 
 func (s *OrderShipping) Validate() error {

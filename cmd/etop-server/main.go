@@ -505,12 +505,13 @@ func main() {
 		shippingAggr,
 		refundAggr,
 		refundQuery,
+		connectionQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth, &customerQuery, &catalogQuery)
 	xshop.Init(shutdowner, redisStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
-	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
+	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, connectionQuery)
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)

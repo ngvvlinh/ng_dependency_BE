@@ -167,7 +167,11 @@ func CompactServices(services []*model.AvailableShippingService) []*model.Availa
 	var res []*model.AvailableShippingService
 	carrierServicesIndex := make(map[string][]*model.AvailableShippingService)
 	for _, s := range services {
-		key := fmt.Sprintf("%v_%v", s.Provider.String(), s.Name)
+		connectionID := dot.ID(0)
+		if s.ConnectionInfo != nil {
+			connectionID = s.ConnectionInfo.ID
+		}
+		key := fmt.Sprintf("%v_%v_%v", s.Provider.String(), s.Name, connectionID)
 		carrierServicesIndex[key] = append(carrierServicesIndex[key], s)
 	}
 	for _, carrierServices := range carrierServicesIndex {

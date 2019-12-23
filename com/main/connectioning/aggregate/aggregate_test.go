@@ -10,9 +10,11 @@ import (
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/com/main/connectioning/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	. "etop.vn/backend/pkg/common/testing"
+	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -27,6 +29,7 @@ var (
 func init() {
 	postgres := cc.DefaultPostgres()
 	db = cmsql.MustConnect(postgres)
+	sqlstore.Init(db)
 	db.MustExec(`
 		DROP TABLE IF EXISTS shop_connection, connection CASCADE;
 		CREATE TABLE connection (
@@ -44,6 +47,8 @@ func init() {
 			, updated_at TIMESTAMP WITH TIME ZONE
 			, deleted_at TIMESTAMP WITH TIME ZONE
 			, etop_affiliate_account JSONB
+			, code TEXT
+			, image_url TEXT
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8
@@ -69,13 +74,13 @@ func TestConnectionAggregate(t *testing.T) {
 			Status: 0,
 		}
 
-		ctx := context.Background()
+		ctx := bus.Ctx()
 		Aggr := NewConnectionAggregate(db).MessageBus()
 		_, err := db.Insert(_conn)
 		So(err, ShouldBeNil)
 
 		Reset(func() {
-			db.MustExec("truncate connection")
+			db.MustExec("truncate connection CASCADE")
 		})
 
 		Convey("Create Connection Success", func() {
@@ -159,7 +164,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Reset(func() {
-			db.MustExec("truncate shop_connection")
+			db.MustExec("truncate connection, shop_connection CASCADE")
 		})
 
 		Convey("Create Success", func() {

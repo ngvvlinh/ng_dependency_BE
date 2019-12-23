@@ -560,8 +560,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Brand/GetBrandsByIDs":  {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Brand/ListBrands":      {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 
-	"shop.Connection/LoginShopConnection":    {Type: Shop},
-	"shop.Connection/RegisterShopConnection": {Type: Shop},
+	"shop.Connection/GetConnections":          {Type: Shop},
+	"shop.Connection/GetAvailableConnections": {Type: Shop},
+	"shop.Connection/GetShopConnections":      {Type: Shop},
+	"shop.Connection/LoginShopConnection":     {Type: Shop},
+	"shop.Connection/RegisterShopConnection":  {Type: Shop},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

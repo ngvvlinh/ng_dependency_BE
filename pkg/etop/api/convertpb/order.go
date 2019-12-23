@@ -488,8 +488,6 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 		Height:              m.Height.Apply(0),
 		GrossWeight:         grossWeight,
 		ChargeableWeight:    chargeableWeight,
-		ConnectionID:        m.ConnectionID,
-		ShopCarrierID:       m.ShopCarrierID,
 	}
 
 	// when adding new fields here, remember to also change UpdateOrderCommand
@@ -860,7 +858,18 @@ func PbAvailableShippingService(s *model.AvailableShippingService) *types.Extern
 		Carrier:             PbShippingProviderType(s.Provider),
 		EstimatedPickupAt:   cmapi.PbTime(s.ExpectedPickAt),
 		EstimatedDeliveryAt: cmapi.PbTime(s.ExpectedDeliveryAt),
-		ConnectionID:        s.ConnectionID,
+		ConnectionInfo:      PbConnectionInfo(s.ConnectionInfo),
+	}
+}
+
+func PbConnectionInfo(item *model.ConnectionInfo) *types.ConnectionInfo {
+	if item == nil {
+		return nil
+	}
+	return &types.ConnectionInfo{
+		ID:       item.ID,
+		Name:     item.Name,
+		ImageURL: item.ImageURL,
 	}
 }
 

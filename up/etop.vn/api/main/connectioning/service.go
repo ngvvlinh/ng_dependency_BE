@@ -37,12 +37,14 @@ type QueryService interface {
 	// -- Connection -- //
 	GetConnectionByID(ctx context.Context, ID dot.ID) (*Connection, error)
 
+	GetConnectionByCode(ctx context.Context, code string) (*Connection, error)
+
 	ListConnections(context.Context, *ListConnectionsArgs) ([]*Connection, error)
 
 	// -- Shop Connection -- //
 	GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*ShopConnection, error)
 
-	ListShopConnections(context.Context, *meta.Empty) ([]*ShopConnection, error)
+	ListShopConnections(context.Context, *ListShopConnectionsArgs) ([]*ShopConnection, error)
 
 	ListGlobalShopConnections(context.Context, *meta.Empty) ([]*ShopConnection, error)
 
@@ -90,4 +92,10 @@ type ListConnectionsArgs struct {
 	ConnectionType     connection_type.ConnectionType
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
+}
+
+type ListShopConnectionsArgs struct {
+	ShopID        dot.ID
+	IncludeGlobal bool
+	ConnectionIDs []dot.ID
 }
