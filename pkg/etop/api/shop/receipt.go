@@ -160,7 +160,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
-			Paging:                      cmapi.PbPageInfo(paging, query.Result.Count),
+			Paging:                      cmapi.PbPageInfo(paging),
 		}
 	}
 
@@ -198,7 +198,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
-			Paging:                      cmapi.PbPageInfo(paging, query.Result.Count),
+			Paging:                      cmapi.PbPageInfo(paging),
 		}
 	}
 	return nil

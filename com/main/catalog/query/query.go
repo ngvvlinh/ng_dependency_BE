@@ -91,13 +91,8 @@ func (s *QueryService) ListShopCategories(
 	if err != nil {
 		return nil, err
 	}
-	count, err := q.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &catalog.ShopCategoriesResponse{
 		Categories: categories,
-		Count:      count,
 		Paging:     q.GetPaging(),
 	}, nil
 }
@@ -136,13 +131,8 @@ func (s *QueryService) ListShopProducts(
 	if err != nil {
 		return nil, err
 	}
-	count, err := q.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &catalog.ShopProductsResponse{
 		Products: products,
-		Count:    count,
 		Paging:   q.GetPaging(),
 	}, nil
 }
@@ -170,13 +160,8 @@ func (s *QueryService) ListShopProductsWithVariants(
 	for _, product := range products {
 		product.CollectionIDs = mapProductCollection[product.ProductID]
 	}
-	count, err := q.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &catalog.ShopProductsWithVariantsResponse{
 		Products: products,
-		Count:    count,
 		Paging:   q.GetPaging(),
 	}, nil
 }
@@ -197,7 +182,6 @@ func (s *QueryService) ListShopProductsByIDs(
 	}
 	return &catalog.ShopProductsResponse{
 		Products: products,
-		Count:    len(products),
 	}, nil
 }
 
@@ -211,7 +195,6 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 	}
 	return &catalog.ShopProductsWithVariantsResponse{
 		Products: products,
-		Count:    len(products),
 	}, nil
 }
 
@@ -225,7 +208,6 @@ func (s *QueryService) ListShopVariantsByIDs(
 	}
 	return &catalog.ShopVariantsResponse{
 		Variants: variants,
-		Count:    len(variants),
 	}, nil
 }
 
@@ -239,7 +221,6 @@ func (s *QueryService) ListShopVariantsWithProductByIDs(
 	}
 	return &catalog.ShopVariantsWithProductResponse{
 		Variants: variants,
-		Count:    len(variants),
 	}, nil
 }
 func (s *QueryService) GetShopCollection(
@@ -261,13 +242,8 @@ func (s *QueryService) ListShopCollections(
 	if err != nil {
 		return nil, err
 	}
-	count, err := q.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &catalog.ShopCollectionsResponse{
 		Collections: collections,
-		Count:       count,
 		Paging:      q.GetPaging(),
 	}, nil
 }
@@ -325,14 +301,9 @@ func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopI
 	if err != nil {
 		return nil, err
 	}
-	total, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	listBrandResult := &catalog.ListBrandsResult{
 		ShopBrands: result,
 		PageInfo:   query.GetPaging(),
-		Total:      total,
 	}
 	return listBrandResult, err
 }

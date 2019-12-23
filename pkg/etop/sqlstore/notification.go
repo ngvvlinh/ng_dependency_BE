@@ -19,8 +19,8 @@ func GetNotification(ctx context.Context, args *notimodel.GetNotificationArgs) (
 	return notificationStore.GetNotification(args)
 }
 
-func GetNotifications(ctx context.Context, args *notimodel.GetNotificationsArgs) (notis []*notimodel.Notification, total int, err error) {
-	notis, total, err = notificationStore.GetNotifications(args)
+func GetNotifications(ctx context.Context, args *notimodel.GetNotificationsArgs) (notis []*notimodel.Notification, err error) {
+	notis, err = notificationStore.GetNotifications(args)
 	return
 }
 

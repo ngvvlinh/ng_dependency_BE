@@ -78,7 +78,6 @@ type GetOrdersQuery struct {
 	Result struct {
 		Orders []OrderWithFulfillments
 		Shops  []*model.Shop
-		Total  int
 	}
 }
 

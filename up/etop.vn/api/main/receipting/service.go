@@ -52,7 +52,6 @@ type ListReceiptsArgs struct {
 
 type ReceiptsResponse struct {
 	Receipts                    []*Receipt
-	Count                       int
 	TotalAmountConfirmedReceipt int
 	TotalAmountConfirmedPayment int
 	Paging                      meta.PageInfo

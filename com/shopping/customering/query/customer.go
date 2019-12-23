@@ -80,13 +80,8 @@ func (q *CustomerQuery) ListCustomers(
 	for _, customer := range customers {
 		customer.GroupIDs = mapCustomerGroup[customer.ID]
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &customering.CustomersResponse{
 		Customers: customers,
-		Count:     count,
 		Paging:    query.GetPaging(),
 	}, nil
 }
@@ -126,13 +121,8 @@ func (q *CustomerQuery) ListCustomerGroups(
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &customering.CustomerGroupsResponse{
 		CustomerGroups: customerGroup,
-		Count:          count,
 		Paging:         query.GetPaging(),
 	}, nil
 }

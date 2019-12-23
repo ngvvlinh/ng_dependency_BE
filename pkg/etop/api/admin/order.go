@@ -48,7 +48,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		return err
 	}
 	q.Result = &types.OrdersResponse{
-		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging: cmapi.PbPageInfo(paging),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
@@ -94,7 +94,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	}
 	q.Result = &types.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
-		Paging:       cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:       cmapi.PbPageInfo(paging),
 	}
 	return nil
 }

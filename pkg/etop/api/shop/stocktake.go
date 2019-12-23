@@ -246,7 +246,7 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 	}
 	q.Result = &shop.GetStocktakesResponse{
 		Stocktakes: PbStocktakes(query.Result.Stocktakes),
-		Paging:     cmapi.PbPaging(query.Page, query.Result.Total),
+		Paging:     cmapi.PbPaging(query.Page),
 	}
 	return nil
 }

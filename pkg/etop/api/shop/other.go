@@ -55,7 +55,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 	}
 
 	r.Result = &etop.HistoryResponse{
-		Paging: cmapi.PbPageInfo(paging, 0),
+		Paging: cmapi.PbPageInfo(paging),
 		Data:   cmapi.RawJSONObjectMsg(query.Result.Data),
 	}
 	return nil

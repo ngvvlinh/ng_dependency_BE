@@ -188,7 +188,7 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 	}
 	q.Result = &shop.GetRefundsResponse{
 		Refunds: result,
-		Paging:  cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return nil
 }

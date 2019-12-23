@@ -130,18 +130,6 @@ func (s *ReceiptStore) LedgerIDs(LedgerIDs ...dot.ID) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) Count() (_ int, err error) {
-	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-
-	query, _, err = sqlstore.Filters(query, s.filters, FilterReceipt)
-	if err != nil {
-		return 0, err
-	}
-
-	return query.Count((*model.Receipt)(nil))
-}
-
 func (s *ReceiptStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

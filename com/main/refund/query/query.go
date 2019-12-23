@@ -35,10 +35,6 @@ func (q *RefundQueryService) GetRefunds(ctx context.Context, args *refund.GetRef
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	query := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(args.Paging)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	result, err := q.RefundStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(args.Paging).ListRefunds()
 	if err != nil {
 		return nil, err
@@ -46,7 +42,6 @@ func (q *RefundQueryService) GetRefunds(ctx context.Context, args *refund.GetRef
 	return &refund.GetRefundsResponse{
 		PageInfor: query.GetPaging(),
 		Refunds:   result,
-		Count:     count,
 	}, nil
 }
 

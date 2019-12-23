@@ -137,7 +137,7 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 	}
 
 	q.Result = &apiaffiliate.SupplyGetProductsResponse{
-		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
 	}
 	return nil
@@ -159,7 +159,7 @@ func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *Get
 	}
 
 	q.Result = &apiaffiliate.GetProductPromotionsResponse{
-		Paging:     cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:     cmapi.PbPageInfo(paging),
 		Promotions: convertpb.PbProductPromotions(query.Result.Promotions),
 	}
 	return nil
@@ -316,7 +316,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 	}
 
 	q.Result = &apiaffiliate.ShopGetProductsResponse{
-		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
 	}
 	return nil
@@ -483,7 +483,7 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 	}
 
 	q.Result = &apiaffiliate.AffiliateGetProductsResponse{
-		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
 	}
 

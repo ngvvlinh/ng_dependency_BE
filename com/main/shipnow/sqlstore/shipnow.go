@@ -47,11 +47,6 @@ func (s *ShipnowStore) Filters(filters []*meta.Filter) *ShipnowStore {
 	return s
 }
 
-func (s *ShipnowStore) Count() (int, error) {
-	query := s.query().Where(s.preds)
-	return query.Count((*model.ShipnowFulfillment)(nil))
-}
-
 func (s *ShipnowStore) ID(id dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s

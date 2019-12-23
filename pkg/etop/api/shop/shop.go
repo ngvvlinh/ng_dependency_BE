@@ -408,7 +408,7 @@ func (s *BrandService) GetBrands(ctx context.Context, q *GetBrandsEndpoint) erro
 	}
 	q.Result = &shop.GetBrandsResponse{
 		Brands: PbBrands(query.Result.ShopBrands),
-		Paging: cmapi.PbPaging(query.Paging, query.Result.Total),
+		Paging: cmapi.PbPaging(query.Paging),
 	}
 	return nil
 }
@@ -561,7 +561,7 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 		return err
 	}
 	q.Result = &shop.ShopProductsResponse{
-		Paging:   cmapi.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
+		Paging:   cmapi.PbPaging(cm.Paging(query.Result.Paging)),
 		Products: products,
 	}
 	return nil
@@ -987,7 +987,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	}
 	q.Result = &apitypes.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:            cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -1111,13 +1111,13 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *GetNotifi
 		Paging:    paging,
 		AccountID: q.Context.Shop.ID,
 	}
-	notis, total, err := sqlstore.GetNotifications(ctx, query)
+	notis, err := sqlstore.GetNotifications(ctx, query)
 	if err != nil {
 		return err
 	}
 	q.Result = &etop.NotificationsResponse{
 		Notifications: convertpb.PbNotifications(notis),
-		Paging:        cmapi.PbPageInfo(paging, total),
+		Paging:        cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -1167,7 +1167,7 @@ func (s *ShipnowService) GetShipnowFulfillments(ctx context.Context, q *GetShipn
 	}
 	q.Result = &apitypes.ShipnowFulfillments{
 		ShipnowFulfillments: convertpb.Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(query.Result.ShipnowFulfillments),
-		Paging:              cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:              cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -1592,7 +1592,7 @@ func (s *CategoryService) GetCategories(ctx context.Context, q *GetCategoriesEnd
 	}
 
 	q.Result = &shop.ShopCategoriesResponse{
-		Paging:     cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:     cmapi.PbPageInfo(paging),
 		Categories: PbShopCategories(query.Result.Categories),
 	}
 	return nil
@@ -1662,7 +1662,7 @@ func (s *CollectionService) GetCollections(ctx context.Context, q *GetCollection
 		return err
 	}
 	q.Result = &shop.ShopCollectionsResponse{
-		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:      cmapi.PbPageInfo(paging),
 		Collections: PbShopCollections(query.Result.Collections),
 	}
 	return nil

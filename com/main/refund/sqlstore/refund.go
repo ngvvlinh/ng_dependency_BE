@@ -156,11 +156,6 @@ func (s *RefundStore) GetRefundByMaximumCodeNorm() (*model.Refund, error) {
 	return &inventoryVoucher, nil
 }
 
-func (s *RefundStore) Count() (int, error) {
-	query := s.query().Where(s.preds)
-	return query.Count((*model.Refund)(nil))
-}
-
 func (s *RefundStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }

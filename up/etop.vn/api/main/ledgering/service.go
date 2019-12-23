@@ -32,7 +32,6 @@ type QueryService interface {
 
 type ShopLedgersResponse struct {
 	Ledgers []*ShopLedger
-	Count   int
 	Paging  meta.PageInfo
 }
 

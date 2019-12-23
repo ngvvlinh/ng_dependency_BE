@@ -58,10 +58,6 @@ func (q *StocktakeQuery) ListStocktake(ctx context.Context, args *st.ListStockta
 	if err != nil {
 		return nil, err
 	}
-	total, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &st.ListStocktakeResponse{
 		Stocktakes: result,
 		PageInfo: meta.PageInfo{
@@ -69,6 +65,5 @@ func (q *StocktakeQuery) ListStocktake(ctx context.Context, args *st.ListStockta
 			Limit:  args.Page.Limit,
 			Sort:   args.Page.Sort,
 		},
-		Total: total,
 	}, err
 }

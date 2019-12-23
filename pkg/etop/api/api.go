@@ -331,7 +331,7 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 	}
 	q.Result = &apietop.InvitationsResponse{
 		Invitations: convertpb.PbInvitations(query.Result.Invitations),
-		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:      cmapi.PbPageInfo(paging),
 	}
 
 	var accountIDs []dot.ID
@@ -418,7 +418,7 @@ func (s *AccountRelationshipService) GetInvitations(ctx context.Context, q *Acco
 	}
 	q.Result = &apietop.InvitationsResponse{
 		Invitations: convertpb.PbInvitations(query.Result.Invitations),
-		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:      cmapi.PbPageInfo(paging),
 	}
 	return nil
 }

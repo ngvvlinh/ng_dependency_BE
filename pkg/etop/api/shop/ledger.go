@@ -47,7 +47,7 @@ func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) er
 
 	r.Result = &shop.LedgersResponse{
 		Ledgers: convertpb.PbLedgers(query.Result.Ledgers),
-		Paging:  cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return nil
 }

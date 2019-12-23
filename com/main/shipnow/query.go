@@ -45,19 +45,12 @@ func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipno
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-created_at"}
 	}
-
 	ffms, err := s.ListShipnows(query.Paging)
 	if err != nil {
 		return nil, err
 	}
-	count, err := s.Count()
-	if err != nil {
-		return nil, err
-	}
-
 	return &shipnow.GetShipnowFulfillmentsQueryResult{
 		ShipnowFulfillments: ffms,
-		Count:               count,
 	}, nil
 }
 

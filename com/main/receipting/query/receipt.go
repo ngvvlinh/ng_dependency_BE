@@ -51,11 +51,6 @@ func (q *ReceiptQuery) ListReceipts(
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
-
 	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(status3.P).SumAmountReceiptAndPayment()
 	if err != nil {
 		return nil, err
@@ -63,7 +58,6 @@ func (q *ReceiptQuery) ListReceipts(
 
 	return &receipting.ReceiptsResponse{
 		Receipts:                    receipts,
-		Count:                       count,
 		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
 		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
 	}, nil
@@ -109,12 +103,6 @@ func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 	if err != nil {
 		return nil, err
 	}
-
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
-
 	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(status3.P).SumAmountReceiptAndPayment()
 	if err != nil {
 		return nil, err
@@ -122,7 +110,6 @@ func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 
 	return &receipting.ReceiptsResponse{
 		Receipts:                    receipts,
-		Count:                       count,
 		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
 		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
 	}, nil

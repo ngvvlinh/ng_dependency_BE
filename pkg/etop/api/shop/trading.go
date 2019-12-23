@@ -58,7 +58,7 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 	}
 
 	q.Result = &shop.ShopProductsResponse{
-		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging),
 		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil
@@ -176,7 +176,7 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrde
 		return err
 	}
 	q.Result = &types.OrdersResponse{
-		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging: cmapi.PbPageInfo(paging),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil

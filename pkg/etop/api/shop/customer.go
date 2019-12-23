@@ -128,7 +128,7 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 	}
 	r.Result = &shop.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
-		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:    cmapi.PbPageInfo(paging),
 	}
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
 		return err
@@ -190,7 +190,7 @@ func (s *CustomerGroupService) GetCustomerGroups(ctx context.Context, q *GetCust
 		return err
 	}
 	q.Result = &shop.CustomerGroupsResponse{
-		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:         cmapi.PbPageInfo(paging),
 		CustomerGroups: convertpb.PbCustomerGroups(query.Result.CustomerGroups),
 	}
 	return nil

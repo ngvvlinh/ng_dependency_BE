@@ -47,13 +47,6 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtend
 		}
 		query.Result.Shops = shops
 	}
-	{
-		total, err := s.Count(&model.ShopExtended{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
-	}
 	return nil
 }
 

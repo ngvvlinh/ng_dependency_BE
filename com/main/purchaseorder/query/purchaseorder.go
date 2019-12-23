@@ -92,11 +92,6 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
-
 	purchaseOrders, err := query.Paging(args.Paging).ListPurchaseOrders()
 	if err != nil {
 		return nil, err
@@ -162,7 +157,6 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          count,
 	}, nil
 }
 
@@ -190,11 +184,6 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 	ctx context.Context, IDs []dot.ID, ShopID dot.ID,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(ShopID).IDs(IDs...)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
-
 	purchaseOrders, err := query.ListPurchaseOrders()
 	if err != nil {
 		return nil, err
@@ -206,7 +195,6 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          count,
 	}, nil
 }
 
@@ -251,13 +239,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
 	if err != nil {
 		return nil, err
 	}
-
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Count:          count,
 	}, nil
 }

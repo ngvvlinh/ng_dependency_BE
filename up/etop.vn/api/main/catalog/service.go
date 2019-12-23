@@ -160,31 +160,26 @@ type GetShopVariantByCodeArgs struct {
 
 type ShopProductsResponse struct {
 	Products []*ShopProduct
-	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopCategoriesResponse struct {
 	Categories []*ShopCategory
-	Count      int
 	Paging     meta.PageInfo
 }
 
 type ShopProductsWithVariantsResponse struct {
 	Products []*ShopProductWithVariants
-	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopVariantsResponse struct {
 	Variants []*ShopVariant
-	Count    int
 	Paging   meta.PageInfo
 }
 
 type ShopVariantsWithProductResponse struct {
 	Variants []*ShopVariantWithProduct
-	Count    int
 	Paging   meta.PageInfo
 }
 
@@ -200,7 +195,6 @@ type GetShopCollectionArgs struct {
 
 type ShopCollectionsResponse struct {
 	Collections []*ShopCollection
-	Count       int
 	Paging      meta.PageInfo
 }
 
@@ -390,7 +384,6 @@ type ShopBrand struct {
 type ListBrandsResult struct {
 	ShopBrands []*ShopBrand
 	PageInfo   meta.PageInfo
-	Total      int
 }
 
 type GetVariantsBySupplierIDResponse struct {

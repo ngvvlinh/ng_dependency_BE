@@ -201,7 +201,6 @@ func (s *InvitationStore) ListInvitationsDB() ([]*model.Invitation, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	var invitations model.Invitations
 	err = query.Find(&invitations)
 	return invitations, err

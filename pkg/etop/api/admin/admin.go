@@ -156,7 +156,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 	}
 	q.Result = &types.MoneyTransactionsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:            cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -215,7 +215,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx conte
 	}
 	q.Result = &types.MoneyTransactionShippingExternalsResponse{
 		MoneyTransactions: convertpb.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
-		Paging:            cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:            cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -307,7 +307,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 		return err
 	}
 	q.Result = &admin.GetShopsResponse{
-		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging: cmapi.PbPageInfo(paging),
 		Shops:  convertpb.PbShopExtendeds(query.Result.Shops),
 	}
 	return nil
@@ -351,7 +351,7 @@ func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) e
 	}
 	q.Result = &etop.CreditsResponse{
 		Credits: convertpb.PbCreditExtendeds(query.Result.Credits),
-		Paging:  cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
@@ -473,7 +473,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.C
 		return err
 	}
 	q.Result = &types.MoneyTransactionShippingEtopsResponse{
-		Paging:                        cmapi.PbPageInfo(paging, query.Result.Total),
+		Paging:                        cmapi.PbPageInfo(paging),
 		MoneyTransactionShippingEtops: convertpb.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
 	}
 	return nil

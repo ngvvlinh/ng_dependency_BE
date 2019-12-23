@@ -50,13 +50,8 @@ func (a *QueryService) ListShopProductPromotions(ctx context.Context, args *affi
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &affiliate.ListShopProductPromotionsResponse{
 		Promotions: promotions,
-		Count:      count,
 		Paging:     query.GetPaging(),
 	}, nil
 }

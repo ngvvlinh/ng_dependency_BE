@@ -319,13 +319,6 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 		}
 		query.Result.MoneyTransactions = result
 	}
-	{
-		total, err := s.Count(&txmodel.MoneyTransactionShippingFtShop{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
-	}
 	return nil
 }
 
@@ -1169,13 +1162,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 		}
 		query.Result.MoneyTransactionShippingExternals = result
 	}
-	{
-		total, err := s.Count(&txmodel.MoneyTransactionShippingExternal{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
-	}
+
 	return nil
 }
 
@@ -1261,13 +1248,6 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 			return err
 		}
 		query.Result.Credits = credits
-	}
-	{
-		total, err := s.Count(&model.Credit{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
 	}
 	return nil
 }
@@ -1536,13 +1516,6 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 			}
 		}
 		query.Result.MoneyTransactionShippingEtops = result
-	}
-	{
-		total, err := s.Count(&txmodel.MoneyTransactionShippingEtop{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
 	}
 	return nil
 }

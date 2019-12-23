@@ -176,13 +176,6 @@ func GetAccountUserExtendeds(ctx context.Context, query *model.GetAccountUserExt
 			return err
 		}
 	}
-	{
-		total, err := s.Count(&model.AccountUserExtendeds{})
-		if err != nil {
-			return nil
-		}
-		query.Result.Total = total
-	}
 	return nil
 }
 

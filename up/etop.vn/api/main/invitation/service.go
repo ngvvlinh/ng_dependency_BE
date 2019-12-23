@@ -33,7 +33,6 @@ type QueryService interface {
 
 type InvitationsResponse struct {
 	Invitations []*Invitation
-	Count       int
 	Paging      meta.PageInfo
 }
 

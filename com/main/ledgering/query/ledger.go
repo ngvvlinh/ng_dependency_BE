@@ -49,13 +49,8 @@ func (q *LedgerQuery) ListLedgers(
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   count,
 	}, nil
 }
 
@@ -67,13 +62,8 @@ func (q *LedgerQuery) ListLedgersByIDs(
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   count,
 	}, nil
 }
 
@@ -85,13 +75,8 @@ func (q *LedgerQuery) ListLedgersByType(
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &ledgering.ShopLedgersResponse{
 		Ledgers: ledgers,
-		Count:   count,
 	}, nil
 }
 

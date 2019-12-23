@@ -231,13 +231,6 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 			query.Result.Orders[i] = ordermodelx.OrderWithFulfillments{Order: order}
 		}
 	}
-	if len(query.Filters) == 0 {
-		total, err := s.Count(&ordermodel.Order{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
-	}
 
 	orderIds := make([]dot.ID, len(query.Result.Orders))
 	shopIdsMap := make(map[dot.ID]dot.ID)
@@ -885,14 +878,6 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	// for exporting data
 	if query.ResultAsRows {
 		{
-			s2 := s.Clone()
-			total, err := s2.Count((*shipmodely.FulfillmentExtendeds)(nil))
-			if err != nil {
-				return err
-			}
-			query.Result.Total = total
-		}
-		{
 			if query.Paging != nil && len(query.Paging.Sort) != 0 {
 				s = s.OrderBy(query.Paging.Sort...)
 			} else {
@@ -921,13 +906,6 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 		if err := s2.Find((*shipmodely.FulfillmentExtendeds)(&query.Result.Fulfillments)); err != nil {
 			return err
 		}
-	}
-	if len(query.Filters) == 0 {
-		total, err := s.Count(&shipmodely.FulfillmentExtended{})
-		if err != nil {
-			return err
-		}
-		query.Result.Total = total
 	}
 	return nil
 }

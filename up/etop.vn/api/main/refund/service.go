@@ -26,7 +26,6 @@ type QueryService interface {
 type GetRefundsResponse struct {
 	PageInfor meta.PageInfo
 	Refunds   []*Refund
-	Count     int
 }
 
 // +convert:create=Refund

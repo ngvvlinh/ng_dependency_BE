@@ -64,17 +64,12 @@ func (q *InvitationQuery) ListInvitationsByEmail(
 	ctx context.Context, args *invitation.ListInvitationsByEmailArgs,
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).Email(args.Email).Filters(args.Filters)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	invitations, err := query.Paging(args.Paging).ListInvitations()
 	if err != nil {
 		return nil, err
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       count,
 	}, nil
 }
 
@@ -82,17 +77,12 @@ func (q *InvitationQuery) ListInvitations(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).AccountID(args.ShopID).Filters(args.Filters)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	invitations, err := query.Paging(args.Paging).ListInvitations()
 	if err != nil {
 		return nil, err
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       count,
 	}, nil
 }
 
@@ -104,16 +94,11 @@ func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
 	}
 	query := q.store(ctx).Email(emailNorm.String()).Accepted()
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	invitations, err := query.ListInvitations()
 	if err != nil {
 		return nil, err
 	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
-		Count:       count,
 	}, nil
 }

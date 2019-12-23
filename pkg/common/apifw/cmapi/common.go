@@ -71,17 +71,15 @@ func CMPaging(p *common.Paging, sorts ...string) *cm.Paging {
 	return res
 }
 
-func PbPageInfo(p *cm.Paging, total int) *common.PageInfo {
+func PbPageInfo(p *cm.Paging) *common.PageInfo {
 	return &common.PageInfo{
-		Total: total,
 		Limit: p.Limit,
 		Sort:  p.Sort,
 	}
 }
 
-func PbPaging(p cm.Paging, total int) *common.PageInfo {
+func PbPaging(p cm.Paging) *common.PageInfo {
 	return &common.PageInfo{
-		Total: total,
 		Limit: p.Limit,
 		Sort:  p.Sort,
 	}

@@ -49,7 +49,6 @@ type GetMoneyTransactions struct {
 
 	Result struct {
 		MoneyTransactions []*modely.MoneyTransactionExtended
-		Total             int
 	}
 }
 
@@ -178,7 +177,6 @@ type GetMoneyTransactionShippingExternals struct {
 
 	Result struct {
 		MoneyTransactionShippingExternals []*txmodel.MoneyTransactionShippingExternalExtended
-		Total                             int
 	}
 }
 
@@ -204,7 +202,6 @@ type GetMoneyTransactionShippingEtops struct {
 	Filters []cm.Filter
 
 	Result struct {
-		Total                         int
 		MoneyTransactionShippingEtops []*modely.MoneyTransactionShippingEtopExtended
 	}
 }

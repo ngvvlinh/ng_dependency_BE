@@ -160,9 +160,9 @@ func (s *NotificationStore) UpdateNotifications(args *model.UpdateNotificationsA
 	return err
 }
 
-func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (notis []*model.Notification, total int, err error) {
+func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (notis []*model.Notification, err error) {
 	if args.AccountID == 0 {
-		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
 	}
 	x := s.db.Table("notification").Where("account_id = ?", args.AccountID)
 	if args.Paging != nil && len(args.Paging.Sort) == 0 {
@@ -172,13 +172,11 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 		x1 := x.Clone()
 		x1, err = LimitSort(x1, args.Paging, Ms{"created_at": "", "updated_at": ""})
 		if err != nil {
-			return nil, 0, err
+			return nil, err
 		}
 		if err = x1.Find((*model.Notifications)(&notis)); err != nil {
-			return nil, 0, err
+			return nil, err
 		}
 	}
-	_total, err := x.Count(&model.Notification{})
-	total = _total
 	return
 }

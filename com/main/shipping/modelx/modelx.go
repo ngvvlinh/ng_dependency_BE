@@ -34,7 +34,6 @@ type GetFulfillmentExtendedsQuery struct {
 	Result struct {
 		Fulfillments []*modely.FulfillmentExtended
 		Total        int
-
 		// only for ResultAsRows
 		Rows *sql.Rows
 		Opts core.Opts

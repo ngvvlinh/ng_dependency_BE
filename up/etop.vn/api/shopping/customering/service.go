@@ -64,13 +64,11 @@ type ListCustomerGroupArgs struct {
 
 type CustomerGroupsResponse struct {
 	CustomerGroups []*ShopCustomerGroup
-	Count          int
 	Paging         meta.PageInfo
 }
 
 type CustomersResponse struct {
 	Customers []*ShopCustomer
-	Count     int
 	Paging    meta.PageInfo
 }
 

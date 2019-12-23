@@ -54,7 +54,7 @@ func (s *SupplierService) GetSuppliers(ctx context.Context, r *GetSuppliersEndpo
 	}
 	r.Result = &shop.SuppliersResponse{
 		Suppliers: convertpb.PbSuppliers(query.Result.Suppliers),
-		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:    cmapi.PbPageInfo(paging),
 	}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {

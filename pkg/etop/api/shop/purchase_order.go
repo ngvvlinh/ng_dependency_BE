@@ -58,7 +58,7 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 
 	r.Result = &shop.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:         cmapi.PbPageInfo(paging),
 	}
 	return nil
 }

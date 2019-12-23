@@ -30,7 +30,6 @@ type GetCreditsQuery struct {
 
 	Result struct {
 		Credits []*CreditExtended
-		Total   int
 	}
 }
 

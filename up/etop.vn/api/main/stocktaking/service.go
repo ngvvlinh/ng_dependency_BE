@@ -70,5 +70,4 @@ type ListStocktakeRequest struct {
 type ListStocktakeResponse struct {
 	Stocktakes []*ShopStocktake
 	PageInfo   meta.PageInfo
-	Total      int
 }

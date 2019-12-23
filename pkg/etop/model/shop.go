@@ -74,7 +74,6 @@ type GetAllShopExtendedsQuery struct {
 
 	Result struct {
 		Shops []*ShopExtended
-		Total int
 	}
 }
 

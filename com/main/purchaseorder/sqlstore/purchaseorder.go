@@ -89,18 +89,6 @@ func (s *PurchaseOrderStore) SupplierIDs(supplierIDs ...dot.ID) *PurchaseOrderSt
 	return s
 }
 
-func (s *PurchaseOrderStore) Count() (int, error) {
-	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-
-	query, _, err := sqlstore.Filters(query, s.filters, FilterPurchaseOrder)
-	if err != nil {
-		return 0, err
-	}
-
-	return query.Count((*model.PurchaseOrder)(nil))
-}
-
 func (s *PurchaseOrderStore) GetReceiptByMaximumCodeNorm() (*model.PurchaseOrder, error) {
 	query := s.query().Where(s.preds).Where("code_norm != 0")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

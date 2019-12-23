@@ -121,7 +121,6 @@ type ListShopProductPromotionsArgs struct {
 
 type ListShopProductPromotionsResponse struct {
 	Promotions []*ProductPromotion
-	Count      int
 	Paging     meta.PageInfo
 }
 

@@ -45,7 +45,7 @@ func (s *CarrierService) GetCarriers(ctx context.Context, r *GetCarriersEndpoint
 	}
 	r.Result = &shop.CarriersResponse{
 		Carriers: convertpb.PbCarriers(query.Result.Carriers),
-		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging),
 	}
 	return nil
 }
