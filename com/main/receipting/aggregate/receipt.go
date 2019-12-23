@@ -253,9 +253,9 @@ func validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType
 	}
 	t := tuple{receiptType, receiptRefType}
 	switch t {
-	case tuple{receipt_type.Receipt, receipt_ref.PurchaseOrder},
-		tuple{receipt_type.Receipt, receipt_ref.Refund},
-		tuple{receipt_type.Payment, receipt_ref.Refund}:
+	case tuple{receipt_type.Payment, receipt_ref.PurchaseOrder},
+		tuple{receipt_type.Payment, receipt_ref.Refund},
+		tuple{receipt_type.Receipt, receipt_ref.Order}:
 		return nil
 	default:
 		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
