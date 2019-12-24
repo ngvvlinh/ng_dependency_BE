@@ -10,11 +10,6 @@ scripts/install-tools.sh
 scripts/generate-all.sh
 scripts/clean-imports.sh
 
-# Generate go-bindata
-cd "${ETOPDIR}/backend/doc"
-go-bindata -pkg doc -o bindata.gen.go -ignore '\.(md|go|xlsx)$' ./...
-cd $wd
-
 go mod tidy
 tidy $wd/up/etop.vn/api
 tidy $wd/up/etop.vn/capi
