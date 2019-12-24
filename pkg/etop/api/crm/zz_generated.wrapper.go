@@ -12,7 +12,6 @@ import (
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
-	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
@@ -40,7 +39,6 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &RefreshFulfillmentFromCarrierEndpoint{RefreshFulfillmentFromCarrierRequest: req}
@@ -75,7 +73,6 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &SendNotificationEndpoint{SendNotificationRequest: req}
@@ -119,7 +116,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
@@ -163,7 +159,6 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -208,7 +203,6 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -253,7 +247,6 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -306,7 +299,6 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.C
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -351,7 +343,6 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.Lead
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -396,7 +387,6 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUp
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -441,7 +431,6 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -486,7 +475,6 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContacts
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -531,7 +519,6 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -576,7 +563,6 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRe
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -621,7 +607,6 @@ func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUp
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

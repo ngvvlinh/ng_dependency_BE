@@ -14,7 +14,6 @@ import (
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
-	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
@@ -42,7 +41,6 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.G
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -96,7 +94,6 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -142,7 +139,6 @@ func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -188,7 +184,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -242,7 +237,6 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -288,7 +282,6 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -334,7 +327,6 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externalty
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -380,7 +372,6 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.Or
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -426,7 +417,6 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -480,7 +470,6 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltype
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -526,7 +515,6 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltype
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -572,7 +560,6 @@ func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (res
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

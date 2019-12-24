@@ -13,7 +13,6 @@ import (
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
-	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
@@ -41,7 +40,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -91,7 +89,6 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUs
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -133,7 +130,6 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAcc
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -175,7 +171,6 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.SAdminReset
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

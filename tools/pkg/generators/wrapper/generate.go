@@ -214,7 +214,6 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 {{- if requireAuth $m}}

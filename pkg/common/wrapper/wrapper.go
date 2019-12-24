@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/metrics"
+
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
@@ -205,6 +207,8 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 	}
 	t1 := time.Now()
 	d := t1.Sub(t0)
+	twError = xerrors.TwirpError(err)
+	metrics.APIRequest(rpcName, d, twError)
 
 	if err == nil {
 		if errs != nil {
@@ -221,7 +225,6 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 		return nil
 	}
 
-	twError = xerrors.TwirpError(err)
 	lvl := xerrors.GetTraceLevel(err)
 	if lvl <= xerrors.LevelTrival {
 		if cm.IsDev() {

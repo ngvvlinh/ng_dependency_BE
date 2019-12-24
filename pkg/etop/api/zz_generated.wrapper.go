@@ -13,7 +13,6 @@ import (
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
-	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/auth"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -43,7 +42,6 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -83,7 +81,6 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -123,7 +120,6 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -178,7 +174,6 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -233,7 +228,6 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -288,7 +282,6 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -343,7 +336,6 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -398,7 +390,6 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -453,7 +444,6 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -508,7 +498,6 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -571,7 +560,6 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -619,7 +607,6 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -664,7 +651,6 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -711,7 +697,6 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -766,7 +751,6 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -813,7 +797,6 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -860,7 +843,6 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -914,7 +896,6 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &GetDistrictsEndpoint{Empty: req}
@@ -944,7 +925,6 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &GetDistrictsByProvinceEndpoint{GetDistrictsByProvinceRequest: req}
@@ -974,7 +954,6 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &GetProvincesEndpoint{Empty: req}
@@ -1004,7 +983,6 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &GetWardsEndpoint{Empty: req}
@@ -1034,7 +1012,6 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &GetWardsByDistrictEndpoint{GetWardsByDistrictRequest: req}
@@ -1065,7 +1042,6 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1112,7 +1088,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
@@ -1151,7 +1126,6 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1197,7 +1171,6 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &ChangePasswordUsingTokenEndpoint{ChangePasswordUsingTokenRequest: req}
@@ -1227,7 +1200,6 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &CheckUserRegistrationEndpoint{GetUserByPhoneRequest: req}
@@ -1261,7 +1233,6 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &InitSessionEndpoint{Empty: req}
@@ -1291,7 +1262,6 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &LoginEndpoint{LoginRequest: req}
@@ -1321,7 +1291,6 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &RegisterEndpoint{CreateUserRequest: req}
@@ -1352,7 +1321,6 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1391,7 +1359,6 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &ResetPasswordEndpoint{ResetPasswordRequest: req}
@@ -1422,7 +1389,6 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1469,7 +1435,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1509,7 +1474,6 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1556,7 +1520,6 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1603,7 +1566,6 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1650,7 +1612,6 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1697,7 +1658,6 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1744,7 +1704,6 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1791,7 +1750,6 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1838,7 +1796,6 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1885,7 +1842,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1933,7 +1889,6 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1979,7 +1934,6 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	query := &UserRelationshipGetInvitationByTokenEndpoint{GetInvitationByTokenRequest: req}
@@ -2010,7 +1964,6 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2057,7 +2010,6 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2104,7 +2056,6 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

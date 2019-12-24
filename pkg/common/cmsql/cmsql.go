@@ -380,6 +380,7 @@ func DefaultLogger(entry *sq.LogEntry) {
 	if ctx, ok := entry.Ctx.(*bus.NodeContext); ok {
 		ctx.WithMessage(entry)
 	}
+	monitorQuery(entry)
 	if entry.IsTx() {
 		if entry.Type() == sq.TypeCommit || entry.Type() == sq.TypeRollback {
 			for _, item := range entry.TxQueries {
