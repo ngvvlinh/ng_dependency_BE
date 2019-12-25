@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
@@ -39,7 +40,7 @@ func (wh *Webhook) Register(rt *httpx.Router) {
 	rt.POST("/webhook/ghtk/callback/:id", wh.Callback)
 }
 
-func (wh *Webhook) Callback(c *httpx.Context) error {
+func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	t0 := time.Now()
 	var msg ghtkclient.CallbackOrder
 	if err := c.DecodeJson(&msg); err != nil {
@@ -47,8 +48,9 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 	statusID := int(msg.StatusID)
 	stateID := ghtkclient.StateID(statusID)
-	shippingState := string(stateID.ToModel())
-	{
+	shippingState := stateID.ToModel().String()
+
+	defer func() {
 		// save to database etop_log
 		buf := new(bytes.Buffer)
 		enc := json.NewEncoder(buf)
@@ -60,6 +62,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 			ExternalShippingState:    ghtkclient.StateMapping[stateID],
 			ExternalShippingSubState: ghtkclient.SubStateMapping[stateID],
 			ShippingState:            shippingState,
+			Error:                    model.ToError(_err),
 		}
 		if err := enc.Encode(msg); err == nil {
 			webhookData.Data = buf.Bytes()
@@ -67,7 +70,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
 			ll.Error("Insert db etop_log error", l.Error(err))
 		}
-	}
+	}()
 
 	if msg.PartnerID == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is empty").WithMeta("result", "ignore")

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/backend/pkg/etop/model"
+
 	"etop.vn/api/top/types/etc/shipping_provider"
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
@@ -39,14 +41,14 @@ func (wh *Webhook) Register(rt *httpx.Router) {
 	rt.POST("/webhook/ghn/callback/:id", wh.Callback)
 }
 
-func (wh *Webhook) Callback(c *httpx.Context) error {
+func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	t0 := time.Now()
 	var msg ghnclient.CallbackOrder
 	if err := c.DecodeJson(&msg); err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "...")
 	}
 
-	{
+	defer func() {
 		// save to database etop_log
 		buf := new(bytes.Buffer)
 		enc := json.NewEncoder(buf)
@@ -56,6 +58,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 			ShippingProvider:      shipping_provider.GHN.String(),
 			ShippingCode:          msg.OrderCode.String(),
 			ExternalShippingState: msg.CurrentStatus.String(),
+			Error:                 model.ToError(_err),
 		}
 		if err := enc.Encode(msg); err == nil {
 			webhookData.Data = buf.Bytes()
@@ -63,7 +66,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
 			ll.Error("Insert db etop_log error", l.Error(err))
 		}
-	}
+	}()
 
 	if msg.ExternalCode == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is empty")

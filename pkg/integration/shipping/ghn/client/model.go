@@ -89,15 +89,11 @@ func (s State) ToModel(old typesshipping.State, callbackOrder *CallbackOrder) ty
 			return typesshipping.Returned
 		case typesshipping.Cancelled, typesshipping.Delivered, typesshipping.Undeliverable:
 			return old
-		case typesshipping.Delivering:
-			if callbackOrder.ReturnInfo != "" {
-				return typesshipping.Returned
-			} else {
-				return typesshipping.Delivered
-			}
-		default:
-			return typesshipping.Unknown
 		}
+		if callbackOrder.ReturnInfo != "" {
+			return typesshipping.Returned
+		}
+		return typesshipping.Delivered
 	default:
 		return typesshipping.Unknown
 	}

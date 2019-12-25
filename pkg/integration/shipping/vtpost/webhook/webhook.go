@@ -5,12 +5,14 @@ import (
 
 	"etop.vn/api/top/types/etc/shipping_provider"
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
@@ -44,7 +46,7 @@ func (wh *Webhook) Register(rt *httpx.Router) {
 	rt.POST("/webhook/vtpost/callback/:id", wh.Callback)
 }
 
-func (wh *Webhook) Callback(c *httpx.Context) error {
+func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	t0 := time.Now()
 	var msg vtpostclient.CallbackOrder
 	if err := c.DecodeJson(&msg); err != nil {
@@ -55,47 +57,46 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	orderData := msg.Data
 	statusCode := orderData.OrderStatus
 	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
-	logID := cm.NewID()
-	{
+	var ffm *shipmodel.Fulfillment
+
+	defer func() {
 		// save to database etop_log
 		data, _ := jsonx.Marshal(orderData)
 		webhookData := &logmodel.ShippingProviderWebhook{
-			ID:                       logID,
+			ID:                       cm.NewID(),
 			ShippingProvider:         shipping_provider.VTPost.String(),
 			Data:                     data,
 			ShippingCode:             orderData.OrderNumber,
 			ExternalShippingState:    orderData.StatusName,
 			ExternalShippingSubState: vtpostclient.SubStateMap[statusCode],
+			Error:                    model.ToError(_err),
+		}
+		if ffm != nil {
+			webhookData.ShippingState = vtpostStatus.ToModel(ffm.ShippingState).String()
 		}
 		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
 			ll.Error("Insert db etop_log error", l.Error(err))
 		}
-	}
+	}()
 
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider:     shipping_provider.VTPost,
 		ExternalShippingCode: orderData.OrderNumber,
 	}
+
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return cm.MapError(err).
 			Wrapf(cm.NotFound, "VTPost: Fulfillment not found: %v", orderData.OrderNumber).
 			DefaultInternal().WithMeta("result", "ignore")
 	}
-	ffm := query.Result
+
+	ffm = query.Result
 	// gặp các hành trình này 501 giao thành công. 503, tiêu hủy.
 	// 504 hoàn thành công. 201 hủy phiếu gửi(Viettelpost thực hiện).
 	// 107, hủy đơn(Khách hang thực hiện)
 	// => Không update trạng thái đơn nữa.
 	if cm.StringsContain(EndStatesCode, ffm.ExternalShippingStateCode) {
 		return cm.Errorf(cm.FailedPrecondition, nil, "This ffm was done. Cannot update it.").WithMeta("result", "ignore")
-	}
-	{
-		// update database etop_log
-		webhookData := &logmodel.ShippingProviderWebhook{
-			ID:            logID,
-			ShippingState: vtpostStatus.ToModel(ffm.ShippingState).String(),
-		}
-		_, _ = wh.dbLogs.Where("id = ?", logID).Update(webhookData)
 	}
 
 	providerServiceID := ffm.ProviderServiceID
