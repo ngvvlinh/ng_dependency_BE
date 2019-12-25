@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"net/http"
 	"os"
 	"os/signal"
@@ -48,7 +47,7 @@ var (
 
 func main() {
 	cc.InitFlags()
-	flag.Parse()
+	cc.ParseFlags()
 
 	var err error
 	cfg, err = config.Load()

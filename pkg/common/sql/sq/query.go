@@ -132,6 +132,7 @@ func (q *queryImpl) build(typ string, def interface{}, fn builderFunc) (_ string
 		if err != nil {
 			entry := &LogEntry{
 				Ctx:   q.ctx,
+				DBID:  q.db.DBID(),
 				Query: w.String(),
 				Args:  w.args,
 				Error: err,

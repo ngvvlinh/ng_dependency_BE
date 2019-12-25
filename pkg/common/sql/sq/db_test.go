@@ -19,7 +19,7 @@ var (
 
 func init() {
 	connStr := "host=postgres port=5432 user=postgres password=postgres dbname=test sslmode=disable connect_timeout=10"
-	db = MustConnect("postgres", connStr, SetErrorMapper(merr.Mock))
+	db = MustConnect("postgres", "1", connStr, SetErrorMapper(merr.Mock))
 	db.MustExec("SELECT 1")
 }
 

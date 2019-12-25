@@ -57,21 +57,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  mongo:
-    container_name: etop_mongo
-    image: mongo
-    ports:
-    - "27017:27017"
-    volumes:
-    - etop_mongo_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-
 volumes:
   etop_redis_data:
     external: true
   etop_postgres_data:
-    external: true
-  etop_mongo_data:
     external: true

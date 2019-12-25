@@ -35,7 +35,7 @@ var (
 
 func main() {
 	cc.InitFlags()
-	flag.Parse()
+	cc.ParseFlags()
 
 	if *flPrintTopics {
 		printAllTopics()

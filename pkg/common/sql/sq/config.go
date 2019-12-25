@@ -169,12 +169,13 @@ func (args LogArgs) MarshalJSON() ([]byte, error) {
 // LogEntry ...
 type LogEntry struct {
 	Ctx       context.Context `json:"-"`
-	Query     string          `json:"query"`
-	Args      LogArgs         `json:"args"`
-	Error     error           `json:"error"`
-	OrigError error           `json:"orig_error"`
-	Time      time.Time       `json:"time"`
-	Duration  time.Duration   `json:"duration"`
+	DBID      string
+	Query     string        `json:"query"`
+	Args      LogArgs       `json:"args"`
+	Error     error         `json:"error"`
+	OrigError error         `json:"orig_error"`
+	Time      time.Time     `json:"time"`
+	Duration  time.Duration `json:"duration"`
 
 	Flags `json:"flags"`
 

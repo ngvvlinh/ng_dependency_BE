@@ -9,5 +9,5 @@ wd=$(pwd)
 
 # generate go-bindata
 cd "${ETOPDIR}/backend/doc"
-go-bindata -pkg doc -o zz_release.bindata.go -ignore '\.(md|go|xlsx)$' ./...
+go-bindata -pkg doc -o zz_release.bindata.go -tags release -ignore '\.(md|go|xlsx)$' ./...
 cd $wd

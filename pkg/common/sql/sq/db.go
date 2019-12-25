@@ -10,7 +10,8 @@ import (
 
 // Database ...
 type Database struct {
-	db *sql.DB
+	db   *sql.DB
+	dbid string
 
 	opts   core.Opts
 	quote  byte
@@ -20,12 +21,16 @@ type Database struct {
 }
 
 // Connect ...
-func Connect(driver, connStr string, opts ...Option) (*Database, error) {
+func Connect(driver, dbid string, connStr string, opts ...Option) (*Database, error) {
 	_db, err := sql.Open(driver, connStr)
 	if err != nil {
 		return nil, err
 	}
-	db := &Database{db: _db, logger: func(_ *LogEntry) {}}
+	db := &Database{
+		db:     _db,
+		dbid:   dbid,
+		logger: func(_ *LogEntry) {},
+	}
 
 	switch driver {
 	case "postgres", "cloudsqlpostgres":
@@ -43,8 +48,8 @@ func Connect(driver, connStr string, opts ...Option) (*Database, error) {
 }
 
 // MustConnect ...
-func MustConnect(driver, connStr string, opts ...Option) *Database {
-	db, err := Connect(driver, connStr, opts...)
+func MustConnect(driver, dbid string, connStr string, opts ...Option) *Database {
+	db, err := Connect(driver, dbid, connStr, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -59,10 +64,15 @@ func (db *Database) Opts() core.Opts {
 	return db.opts
 }
 
+func (db *Database) DBID() string {
+	return db.dbid
+}
+
 // ExecContext ...
 func (db *Database) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),
@@ -93,6 +103,7 @@ func (db *Database) MustExec(query string, args ...interface{}) sql.Result {
 func (db *Database) QueryContext(ctx context.Context, query string, args ...interface{}) (_ *sql.Rows, err error) {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),
@@ -114,6 +125,7 @@ func (db *Database) Query(query string, args ...interface{}) (_ *sql.Rows, err e
 func (db *Database) QueryRowContext(ctx context.Context, query string, args ...interface{}) Row {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),

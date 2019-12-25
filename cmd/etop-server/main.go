@@ -84,6 +84,7 @@ import (
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sqltrace"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/admin"
 	"etop.vn/backend/pkg/etop/api/affiliate"
@@ -158,7 +159,7 @@ var (
 
 func main() {
 	cc.InitFlags()
-	flag.Parse()
+	cc.ParseFlags()
 
 	var err error
 	cfg, err = config.Load(*flTest)
@@ -168,6 +169,7 @@ func main() {
 
 	cm.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
+	sqltrace.Init()
 
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {

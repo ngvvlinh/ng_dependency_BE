@@ -10,6 +10,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/common/l"
@@ -21,12 +22,22 @@ var (
 	flConfigFile = ""
 	flExample    = false
 	flNoEnv      = false
+	flCommitMsgs = false
 )
 
 func InitFlags() {
 	flag.StringVar(&flConfigFile, "config-file", "", "Path to config file")
 	flag.BoolVar(&flNoEnv, "no-env", false, "Don't read config from environment")
 	flag.BoolVar(&flExample, "example", false, "Print example config then exit")
+	flag.BoolVar(&flCommitMsgs, "commit-messages", false, "Print commit messages then exit")
+}
+
+func ParseFlags() {
+	flag.Parse()
+	if flCommitMsgs {
+		fmt.Println(cm.CommitMessage())
+		os.Exit(2)
+	}
 }
 
 func FlagConfigFile() string {
@@ -48,7 +59,7 @@ func LoadWithDefault(v, def interface{}) (err error) {
 				ll.Fatal("Error while loading config", l.Error(err))
 			}
 			PrintExample(v)
-			os.Exit(0)
+			os.Exit(2)
 		}
 	}()
 

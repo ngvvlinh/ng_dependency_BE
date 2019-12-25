@@ -12,38 +12,27 @@ import (
 var databaseQuery = registerHistogramVec(prometheus.HistogramOpts{
 	Namespace: "",
 	Subsystem: "",
-	Name:      "main_database_query_histogram",
+	Name:      "AA_main_database_query_histogram",
 }, "tx", "query")
 
-func DatabaseQuery(entry *sq.LogEntry) {
+func DatabaseQuery(fingerprint string, entry *sq.LogEntry) {
 	databaseQuery.WithLabelValues(
 		strconv.FormatBool(entry.IsTx()),
-		entry.Query,
+		fingerprint,
 	).Observe(entry.Duration.Seconds())
 }
 
 var databaseTransaction = registerHistogramVec(prometheus.HistogramOpts{
 	Namespace: "",
 	Subsystem: "",
-	Name:      "main_database_transaction_histogram",
+	Name:      "AA_main_database_transaction_histogram",
 }, "n", "type", "query")
 
-func DatabaseTransaction(entry *sq.LogEntry) {
-	var n int
-	for _, query := range entry.TxQueries {
-		n += len(query.Query) + 1
-	}
-	var b strings.Builder
-	b.Grow(n)
-	for _, query := range entry.TxQueries {
-		b.WriteString(query.Query)
-		b.WriteByte(';')
-	}
-
+func DatabaseTransaction(fingerprints []string, entry *sq.LogEntry) {
 	flag, _ := entry.Flags.MarshalJSON()
 	databaseTransaction.WithLabelValues(
 		strconv.Itoa(len(entry.TxQueries)),
 		string(flag),
-		b.String(),
+		strings.Join(fingerprints, ","),
 	).Observe(entry.Duration.Seconds())
 }

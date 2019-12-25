@@ -63,6 +63,7 @@ type CommonQuery interface {
 
 // DBInterface ...
 type DBInterface interface {
+	DBID() string
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 	Query(query string, args ...interface{}) (*sql.Rows, error)

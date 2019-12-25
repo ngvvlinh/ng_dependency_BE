@@ -30,7 +30,7 @@ type (
 
 func init() {
 	connStr := "host=postgres port=5432 user=postgres password=postgres dbname=test sslmode=disable connect_timeout=10"
-	db = sq.MustConnect("postgres", connStr, sq.SetErrorMapper(merr.Mock))
+	db = sq.MustConnect("postgres", "1", connStr, sq.SetErrorMapper(merr.Mock))
 	db.MustExec("SELECT 1")
 
 	InitSchema()

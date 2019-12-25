@@ -1,6 +1,11 @@
 package cmsql
 
-import "context"
+import (
+	"context"
+
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqltrace"
+)
 
 type QueryFactory func() QueryInterface
 
@@ -16,4 +21,8 @@ func GetTxOrNewQuery(ctx context.Context, db *Database) QueryInterface {
 		return db.WithContext(ctx)
 	}
 	return tx.(Tx)
+}
+
+func monitorQuery(entry *sq.LogEntry) {
+	sqltrace.Trace(entry)
 }

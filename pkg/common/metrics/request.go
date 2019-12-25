@@ -12,7 +12,7 @@ import (
 var countRequests = registerCounterVec(prometheus.CounterOpts{
 	Namespace:   "",
 	Subsystem:   "",
-	Name:        "main_api_requests_total",
+	Name:        "AA_main_api_requests_total",
 	Help:        "",
 	ConstLabels: nil,
 }, "name", "code")
@@ -20,7 +20,7 @@ var countRequests = registerCounterVec(prometheus.CounterOpts{
 var apiRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{
 	Namespace:   "",
 	Subsystem:   "",
-	Name:        "main_api_requests_histogram",
+	Name:        "AA_main_api_requests_histogram",
 	Help:        "",
 	ConstLabels: nil,
 	Buckets:     nil,

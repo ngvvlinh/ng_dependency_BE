@@ -197,9 +197,12 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	}
 	mu.RUnlock()
 
+	id := int64(cm.NewID())
+	idx := c.Database
+
 	dlog := sq.NewDynamicLogger(DefaultLogger)
 	driver, conn := c.ConnectionString()
-	db, err := sq.Connect(driver, conn, dlog,
+	db, err := sq.Connect(driver, idx, conn, dlog,
 		sq.SetErrorMapper(DefaultErrorMapper))
 	if err != nil {
 		return &Database{}, err
@@ -217,7 +220,7 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
 
 	mu.Lock()
-	database := &Database{id: int64(cm.NewID()), db: *db, dlog: *dlog}
+	database := &Database{id: id, db: *db, dlog: *dlog}
 	dbPool[identifier] = database
 	defer mu.Unlock()
 	return database, nil
@@ -225,6 +228,10 @@ func Connect(c ConfigPostgres) (*Database, error) {
 
 func (db Database) TxKey() TxKey {
 	return TxKey{db.id}
+}
+
+func (db Database) DBID() string {
+	return db.db.DBID()
 }
 
 // DB ...
@@ -341,6 +348,10 @@ func (q Query) ScanRow(dest ...interface{}) (bool, error) {
 type tx struct {
 	tx sq.Tx
 	db Database
+}
+
+func (tx tx) DBID() string {
+	return tx.db.DBID()
 }
 
 func (tx tx) Exec(query string, args ...interface{}) (sql.Result, error) {

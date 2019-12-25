@@ -21,6 +21,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	"etop.vn/backend/pkg/common/metrics"
+	"etop.vn/backend/pkg/common/sql/sqltrace"
 	api "etop.vn/backend/pkg/etop/api"
 	admin "etop.vn/backend/pkg/etop/api/admin"
 	affiliate "etop.vn/backend/pkg/etop/api/affiliate"
@@ -63,6 +64,7 @@ func startEtopServer() *http.Server {
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 	jsonx.RegisterHTTPHandler(mux)
+	sqltrace.RegisterHTTPHandler(mux)
 
 	if *flDocOnly {
 		ll.Warn("API IS DISABLED (-doc-only)")

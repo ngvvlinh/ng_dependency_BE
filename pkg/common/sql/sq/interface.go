@@ -189,6 +189,10 @@ func (tx *tx) log(e *LogEntry) error {
 	return tx.db.log(e)
 }
 
+func (tx *tx) DBID() string {
+	return tx.db.dbid
+}
+
 // Commit ...
 func (tx *tx) Commit() (err error) {
 	defer func() {
@@ -198,6 +202,7 @@ func (tx *tx) Commit() (err error) {
 		}
 		entry := &LogEntry{
 			Ctx:       tx.ctx,
+			DBID:      tx.db.dbid,
 			Error:     err,
 			Time:      tx.t0,
 			Flags:     Flags(TypeCommit) | FlagTx,
@@ -217,6 +222,7 @@ func (tx *tx) Rollback() (err error) {
 		}
 		entry := &LogEntry{
 			Ctx:       tx.ctx,
+			DBID:      tx.db.dbid,
 			Error:     err,
 			Time:      tx.t0,
 			Flags:     Flags(TypeRollback) | FlagTx,
@@ -231,6 +237,7 @@ func (tx *tx) Rollback() (err error) {
 func (tx *tx) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  tx.db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),
@@ -252,6 +259,7 @@ func (tx *tx) Exec(query string, args ...interface{}) (_ sql.Result, err error) 
 func (tx *tx) QueryContext(ctx context.Context, query string, args ...interface{}) (_ *sql.Rows, err error) {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  tx.db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),
@@ -272,6 +280,7 @@ func (tx *tx) Query(query string, args ...interface{}) (_ *sql.Rows, err error) 
 func (tx *tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) Row {
 	entry := &LogEntry{
 		Ctx:   ctx,
+		DBID:  tx.db.dbid,
 		Query: query,
 		Args:  args,
 		Time:  time.Now(),
