@@ -5,6 +5,7 @@ import (
 	"etop.vn/api/top/types/etc/ghn_note_code"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/imcsv"
+	"etop.vn/backend/pkg/common/validate"
 )
 
 var schema = imcsv.Schema{
@@ -261,6 +262,11 @@ func (m *RowOrder) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {
 	col = idxCustomerPhone
 	if m.CustomerPhone == "" {
 		errs = append(errs, imcsv.CellError(idx, r, col, "%v không được để trống.", schema[col].Display))
+	} else {
+		_, ok := validate.NormalizePhone(m.CustomerPhone)
+		if !ok {
+			errs = append(errs, imcsv.CellError(idx, r, col, "%v không hợp lệ.", schema[col].Display))
+		}
 	}
 
 	col = idxTotalWeight

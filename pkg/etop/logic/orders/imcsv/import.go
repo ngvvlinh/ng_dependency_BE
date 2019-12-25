@@ -172,7 +172,6 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 	if err != nil {
 		return nil, err
 	}
-
 	rows := excelFile.GetRows(sheetName)
 	if len(rows) <= 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
@@ -186,7 +185,6 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 	if len(_errs) > 0 {
 		return imp.generateErrorResponse(idx, _errs)
 	}
-
 	imp.LastRow, _errs, err = validateRows(idx, rows, idxOrderEdCode, idxLines)
 	if err != nil {
 		return nil, err
@@ -202,7 +200,6 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 	if len(_errs) > 0 {
 		return imp.generateErrorResponse(idx, _errs)
 	}
-
 	now := time.Now()
 	orders := make([]*ordermodel.Order, len(rowOrders))
 	for i, rowOrder := range rowOrders {
