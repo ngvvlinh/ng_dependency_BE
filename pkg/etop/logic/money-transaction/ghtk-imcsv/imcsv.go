@@ -368,9 +368,13 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 			})
 		}
 		if line.Discount != 0 {
+			cost := line.Discount
+			if cost > 0 {
+				cost = -cost
+			}
 			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
+				Cost:                 cost,
 				ShippingFeeType:      shipping_fee_type.Discount,
-				Cost:                 -line.Discount,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
