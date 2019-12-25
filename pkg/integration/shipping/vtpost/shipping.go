@@ -6,7 +6,7 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/shipping"
-	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+	typeshippingprovider "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -66,7 +66,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 
 	cmd := &model.CreateShippingSource{
 		Name:     clientName,
-		Type:     shipping_provider2.VTPost,
+		Type:     typeshippingprovider.VTPost,
 		Username: client.GetUserName(),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {

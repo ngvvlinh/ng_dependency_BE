@@ -330,7 +330,7 @@ func generate(printer generator.Printer, pkg *packages.Package, services []*Serv
 	printer.Import("bus", "etop.vn/backend/pkg/common/bus")
 	printer.Import("claims", "etop.vn/backend/pkg/etop/authorize/claims")
 	printer.Import("cm", "etop.vn/api/top/types/common")
-	printer.Import("cmwrapper", "etop.vn/backend/pkg/common/wrapper")
+	printer.Import("cmwrapper", "etop.vn/backend/pkg/common/apifw/wrapper")
 	printer.Import("common", "etop.vn/backend/pkg/common")
 	printer.Import("metrics", "etop.vn/backend/pkg/common/metrics")
 	printer.Import("middleware", "etop.vn/backend/pkg/etop/authorize/middleware")

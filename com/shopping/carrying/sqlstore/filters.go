@@ -1,7 +1,7 @@
 package sqlstore
 
 import (
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/etop/sqlstore"
 )
 

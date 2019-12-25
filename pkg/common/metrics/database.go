@@ -6,7 +6,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 )
 
 var databaseQuery = registerHistogramVec(prometheus.HistogramOpts{

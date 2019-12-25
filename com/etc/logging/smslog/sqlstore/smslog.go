@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"etop.vn/backend/com/etc/logging/smslog/model"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 type SmsLogStoreFactory func(context.Context) *SmsLogStore

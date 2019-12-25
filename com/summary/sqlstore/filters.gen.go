@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

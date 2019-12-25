@@ -9,7 +9,7 @@ import (
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

@@ -6,8 +6,8 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/supporting/crm/vtiger/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )

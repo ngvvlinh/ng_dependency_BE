@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )

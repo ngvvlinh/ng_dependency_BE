@@ -12,7 +12,7 @@ import (
 	"etop.vn/backend/com/main/ordering/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

@@ -11,8 +11,8 @@ import (
 	"etop.vn/api/top/int/shop"
 	orderingmodely "etop.vn/backend/com/main/ordering/modely"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 )
 

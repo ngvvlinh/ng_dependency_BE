@@ -11,15 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/common/metrics"
-
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
 	cmP "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/telebot"
+	"etop.vn/backend/pkg/common/extservice/telebot"
+	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/capi"
 	"etop.vn/common/jsonx"

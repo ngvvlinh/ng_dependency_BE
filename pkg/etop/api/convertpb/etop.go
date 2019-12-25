@@ -13,7 +13,7 @@ import (
 	addresstype "etop.vn/api/top/types/etc/address_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	"etop.vn/capi/dot"

@@ -5,7 +5,7 @@ import (
 
 	"etop.vn/api/top/types/etc/notifier_entity"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/onesignal"
+	"etop.vn/backend/pkg/common/extservice/onesignal"
 	"etop.vn/capi/dot"
 )
 

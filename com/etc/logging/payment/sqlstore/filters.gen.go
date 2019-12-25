@@ -7,7 +7,7 @@ import (
 
 	"etop.vn/api/top/types/etc/payment_provider"
 	m "etop.vn/backend/com/etc/logging/payment/model"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

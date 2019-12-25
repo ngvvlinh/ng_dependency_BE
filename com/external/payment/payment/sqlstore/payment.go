@@ -11,7 +11,7 @@ import (
 	"etop.vn/backend/com/external/payment/payment/convert"
 	"etop.vn/backend/com/external/payment/payment/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 )
 

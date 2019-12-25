@@ -7,7 +7,7 @@ import (
 	"etop.vn/api/main/receipting"
 	etop "etop.vn/api/top/int/etop"
 	shop "etop.vn/api/top/int/shop"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 )
 
 func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove, hideInfo bool) *shop.ExternalAccountAhamove {

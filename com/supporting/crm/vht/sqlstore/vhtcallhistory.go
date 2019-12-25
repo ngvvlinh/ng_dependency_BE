@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/supporting/crm/vht/model"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
 )
 

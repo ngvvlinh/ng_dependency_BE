@@ -10,8 +10,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/telebot"
+	"etop.vn/backend/pkg/common/extservice/telebot"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/common/l"
 )
 

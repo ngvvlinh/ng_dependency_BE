@@ -18,7 +18,7 @@ import (
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpx"
+	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/metrics"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"

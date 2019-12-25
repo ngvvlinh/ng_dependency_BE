@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/mock"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sq/mock"
 	. "etop.vn/backend/pkg/common/testing"
 	"etop.vn/common/l"
 )

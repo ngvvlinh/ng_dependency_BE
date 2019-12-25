@@ -13,7 +13,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )

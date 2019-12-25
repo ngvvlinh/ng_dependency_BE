@@ -10,10 +10,10 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/purchaseorder/convert"
 	"etop.vn/backend/com/main/purchaseorder/model"
-	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

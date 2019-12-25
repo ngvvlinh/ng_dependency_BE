@@ -33,10 +33,10 @@
 
 - baseImportPath: "./pkg/common"
   ignoredSubTrees:
-  - "./pkg/common/httpx"
-  - "./pkg/common/service"
-  - "./pkg/common/wrapper"
-  - "./pkg/common/cmapi"
+  - "./pkg/common/apifw/httpx"
+  - "./pkg/common/apifw/service"
+  - "./pkg/common/apifw/wrapper"
+  - "./pkg/common/apifw/cmapi"
   allowedImports:
   - etop.vn/backend/pkg/common
 

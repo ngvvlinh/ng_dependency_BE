@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 )
 

@@ -7,9 +7,9 @@ import (
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/notifier/sqlstore"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/common/telebot"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/common/l"
 )

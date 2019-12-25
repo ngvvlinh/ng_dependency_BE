@@ -12,7 +12,7 @@ import (
 	"github.com/awalterschulze/goderive/derive"
 	"github.com/dustin/go-humanize/english"
 
-	gen2 "etop.vn/backend/tools/pkg/gen"
+	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/goderive/substruct"
 	"etop.vn/backend/tools/pkg/sqlgen/filtergen"
 	"etop.vn/common/strs"
@@ -31,10 +31,10 @@ var gt derive.TypesMap
 func New(typesMap derive.TypesMap, p derive.Printer, deps map[string]derive.Dependency) derive.Generator {
 	gt = typesMap
 
-	p.NewImport("sq", "etop.vn/backend/pkg/common/sq")()
-	p.NewImport("core", "etop.vn/backend/pkg/common/sq/core")()
+	p.NewImport("sq", "etop.vn/backend/pkg/common/sql/sq")()
+	p.NewImport("core", "etop.vn/backend/pkg/common/sql/sq/core")()
 	p.NewImport("", "database/sql")()
-	return &gen{
+	return &genImpl{
 		TypesMap: typesMap,
 		printer:  p,
 		mapBase:  make(map[string]bool),
@@ -44,7 +44,7 @@ func New(typesMap derive.TypesMap, p derive.Printer, deps map[string]derive.Depe
 
 const sqlTag = "sq"
 
-type gen struct {
+type genImpl struct {
 	derive.TypesMap
 	printer derive.Printer
 
@@ -194,7 +194,7 @@ type preloadDef struct {
 	Fkey          string
 }
 
-func (g *gen) Add(name string, typs []types.Type) (string, error) {
+func (g *genImpl) Add(name string, typs []types.Type) (string, error) {
 	if len(typs) == 0 {
 		return "", fmt.Errorf("%s must have at least one argument", name)
 	}
@@ -303,7 +303,7 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 					if err != nil {
 						panic(err)
 					}
-					pkgPath, err = filepath.Rel(gen2.ProjectPath(), pkgPath)
+					pkgPath, err = filepath.Rel(gen.ProjectPath(), pkgPath)
 					if err != nil {
 						panic(err)
 					}
@@ -340,7 +340,7 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 	return g.SetFuncName(name, typs[0])
 }
 
-func (g *gen) validateTypes() error {
+func (g *genImpl) validateTypes() error {
 	// for _, def := range g.mapType {
 	// 	if def.base != nil {
 	// 		if !g.mapBase[def.base.String()] {
@@ -530,7 +530,7 @@ func listScanArgs(cols []*colDef) []string {
 	return res
 }
 
-func (g *gen) genConvertMethodsFor(typ, base types.Type) error {
+func (g *genImpl) genConvertMethodsFor(typ, base types.Type) error {
 	sgen := substruct.New(g.TypesMap, g.printer, nil)
 	if _, err := sgen.Add(g.GetFuncName(typ), []types.Type{typ, base}); err != nil {
 		return err
@@ -559,7 +559,7 @@ const helpJoin = `
 
 `
 
-func (g *gen) parseJoin(typs []types.Type) (joins []*joinDef, err error) {
+func (g *genImpl) parseJoin(typs []types.Type) (joins []*joinDef, err error) {
 	if len(typs)%4 != 0 {
 		return nil, fmt.Errorf("Invalid join definition")
 	}
@@ -573,7 +573,7 @@ func (g *gen) parseJoin(typs []types.Type) (joins []*joinDef, err error) {
 	return joins, nil
 }
 
-func (g *gen) parseJoinLine(typs []types.Type) (*joinDef, error) {
+func (g *genImpl) parseJoinLine(typs []types.Type) (*joinDef, error) {
 	if gt.TypeString(typs[0]) != "core.JoinType" {
 		return nil, fmt.Errorf("Invalid JoinType: must be one of predefined constants (got %v)", gt.TypeString(typs[0]))
 	}

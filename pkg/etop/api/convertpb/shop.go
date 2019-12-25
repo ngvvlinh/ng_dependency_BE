@@ -14,7 +14,7 @@ import (
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/summary"
 	apishop "etop.vn/api/top/int/shop"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 )
 

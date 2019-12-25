@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 )
 
 type HistoryStoreFactory func(context.Context) *HistoryStore

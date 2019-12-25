@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	shipping2 "etop.vn/api/top/types/etc/shipping"
+	typesshipping "etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/common/strs"
@@ -63,47 +63,47 @@ const (
 	ServiceFeeTypeMain ServiceFeeType = "1"
 )
 
-func (s State) ToModel(old shipping2.State, callbackOrder *CallbackOrder) shipping2.State {
+func (s State) ToModel(old typesshipping.State, callbackOrder *CallbackOrder) typesshipping.State {
 	switch s {
 	case StateReadyToPick:
-		return shipping2.Created
+		return typesshipping.Created
 	case StatePicking:
-		return shipping2.Picking
+		return typesshipping.Picking
 	case StateStoring:
-		return shipping2.Holding
+		return typesshipping.Holding
 	case StateDelivering:
-		return shipping2.Delivering
+		return typesshipping.Delivering
 	case StateDelivered:
-		return shipping2.Delivered
+		return typesshipping.Delivered
 	case StateReturn:
-		return shipping2.Returning
+		return typesshipping.Returning
 	case StateReturned:
-		return shipping2.Returned
+		return typesshipping.Returned
 	case StateCancel:
-		return shipping2.Cancelled
+		return typesshipping.Cancelled
 	case StateLostOrder:
-		return shipping2.Undeliverable
+		return typesshipping.Undeliverable
 	case StateWaitingToFinish, StateFinish:
 		switch old {
-		case shipping2.Returning, shipping2.Returned:
-			return shipping2.Returned
-		case shipping2.Cancelled, shipping2.Delivered, shipping2.Undeliverable:
+		case typesshipping.Returning, typesshipping.Returned:
+			return typesshipping.Returned
+		case typesshipping.Cancelled, typesshipping.Delivered, typesshipping.Undeliverable:
 			return old
-		case shipping2.Delivering:
+		case typesshipping.Delivering:
 			if callbackOrder.ReturnInfo != "" {
-				return shipping2.Returned
+				return typesshipping.Returned
 			} else {
-				return shipping2.Delivered
+				return typesshipping.Delivered
 			}
 		default:
-			return shipping2.Unknown
+			return typesshipping.Unknown
 		}
 	default:
-		return shipping2.Unknown
+		return typesshipping.Unknown
 	}
 }
 
-func (s State) ToStatus5(old shipping2.State) status5.Status {
+func (s State) ToStatus5(old typesshipping.State) status5.Status {
 	switch s {
 	case StateCancel:
 		return status5.N
@@ -113,9 +113,9 @@ func (s State) ToStatus5(old shipping2.State) status5.Status {
 
 	case StateFinish:
 		switch old {
-		case shipping2.Cancelled:
+		case typesshipping.Cancelled:
 			return status5.N
-		case shipping2.Returned, shipping2.Returning:
+		case typesshipping.Returned, typesshipping.Returning:
 			return status5.NS
 		default:
 			return status5.P
@@ -125,7 +125,7 @@ func (s State) ToStatus5(old shipping2.State) status5.Status {
 	return status5.S
 }
 
-func (s State) ToShippingStatus5(old shipping2.State) status5.Status {
+func (s State) ToShippingStatus5(old typesshipping.State) status5.Status {
 	switch s {
 	case StateCancel:
 		return status5.N
@@ -135,9 +135,9 @@ func (s State) ToShippingStatus5(old shipping2.State) status5.Status {
 
 	case StateWaitingToFinish, StateFinish:
 		switch old {
-		case shipping2.Cancelled:
+		case typesshipping.Cancelled:
 			return status5.N
-		case shipping2.Returned, shipping2.Returning:
+		case typesshipping.Returned, typesshipping.Returning:
 			return status5.NS
 		default:
 			return status5.P

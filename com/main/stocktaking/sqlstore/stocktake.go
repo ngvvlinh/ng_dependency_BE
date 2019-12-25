@@ -7,10 +7,10 @@ import (
 	"etop.vn/backend/com/main/stocktaking/convert"
 	"etop.vn/backend/com/main/stocktaking/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

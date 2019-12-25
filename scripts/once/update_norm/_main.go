@@ -6,8 +6,8 @@ import (
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

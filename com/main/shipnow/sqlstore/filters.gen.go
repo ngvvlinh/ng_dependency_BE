@@ -10,7 +10,7 @@ import (
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	m "etop.vn/backend/com/main/shipnow/model"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

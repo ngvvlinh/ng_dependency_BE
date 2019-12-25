@@ -9,7 +9,7 @@ import (
 	"etop.vn/backend/com/supporting/crm/vht/model"
 	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 type QueryService struct {

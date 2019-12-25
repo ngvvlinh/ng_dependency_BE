@@ -5,9 +5,9 @@ import (
 
 	"etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/onesignal"
+	"etop.vn/backend/pkg/common/extservice/onesignal"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 func init() {

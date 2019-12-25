@@ -5,8 +5,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	. "etop.vn/backend/pkg/common/testing"
 	"etop.vn/backend/zexp/sample/model"
 )

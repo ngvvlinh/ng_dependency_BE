@@ -10,7 +10,7 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"

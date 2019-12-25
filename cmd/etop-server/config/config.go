@@ -9,7 +9,7 @@ import (
 	crmsyncconfig "etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/captcha"
+	"etop.vn/backend/pkg/common/apifw/captcha"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/email"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"

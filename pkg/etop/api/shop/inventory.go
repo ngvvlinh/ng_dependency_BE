@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/top/int/shop"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/capi/dot"
 )
 

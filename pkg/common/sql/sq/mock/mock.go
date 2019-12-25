@@ -1,7 +1,7 @@
 package mock
 
 import (
-	sq "etop.vn/backend/pkg/common/sq"
+	sq "etop.vn/backend/pkg/common/sql/sq"
 )
 
 // ErrorMock ...

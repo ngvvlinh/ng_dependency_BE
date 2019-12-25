@@ -8,7 +8,7 @@ import (
 	"etop.vn/backend/com/external/haravan/identity/convert"
 	identitymodel "etop.vn/backend/com/external/haravan/identity/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 )
 

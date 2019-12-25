@@ -9,9 +9,9 @@ import (
 	"github.com/lib/pq"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/httpreq"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 )
 

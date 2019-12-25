@@ -19,7 +19,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

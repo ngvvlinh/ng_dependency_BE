@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	"etop.vn/capi/dot"
 )
 

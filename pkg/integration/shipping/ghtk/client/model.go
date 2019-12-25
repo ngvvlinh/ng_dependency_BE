@@ -7,7 +7,7 @@ import (
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/etop/model"
 )
 

@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/common/l"
 )
 

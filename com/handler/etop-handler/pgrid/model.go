@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/com/handler/pgevent"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh

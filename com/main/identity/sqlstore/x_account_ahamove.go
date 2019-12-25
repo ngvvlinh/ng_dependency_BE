@@ -9,7 +9,7 @@ import (
 	"etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 )
 

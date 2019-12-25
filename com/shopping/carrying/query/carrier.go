@@ -7,7 +7,7 @@ import (
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/backend/com/shopping/carrying/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 var _ carrying.QueryService = &CarrierQuery{}

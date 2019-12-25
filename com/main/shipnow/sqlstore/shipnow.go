@@ -16,9 +16,9 @@ import (
 	"etop.vn/backend/com/main/shipnow/convert"
 	"etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

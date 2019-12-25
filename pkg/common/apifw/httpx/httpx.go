@@ -16,9 +16,9 @@ import (
 	"github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pkg/common"
+	cmWrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/telebot"
-	cmWrapper "etop.vn/backend/pkg/common/wrapper"
+	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"

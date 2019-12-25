@@ -7,10 +7,10 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/inventory/model"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sq/core"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

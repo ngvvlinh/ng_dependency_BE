@@ -1,18 +1,12 @@
-package redis_test
+package redis
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	. "etop.vn/backend/pkg/common/redis"
-	"etop.vn/common/l"
 )
 
-var (
-	store Store
-	ll    = l.New()
-)
+var store Store
 
 func init() {
 	redisAddress := "redis://redis:6379"

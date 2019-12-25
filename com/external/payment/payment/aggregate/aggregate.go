@@ -7,7 +7,7 @@ import (
 	"etop.vn/backend/com/external/payment/payment/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 var _ payment.Aggregate = &Aggregate{}

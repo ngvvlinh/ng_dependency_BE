@@ -9,10 +9,10 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/invitation/convert"
 	"etop.vn/backend/com/main/invitation/model"
-	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	. "etop.vn/backend/pkg/etop/logic/summary"
 	"etop.vn/capi/dot"
 )

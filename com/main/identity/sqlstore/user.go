@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"

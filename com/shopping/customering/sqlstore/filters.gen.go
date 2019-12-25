@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"etop.vn/api/main/shipnow"
-	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 func TestQueryService(t *testing.T) {

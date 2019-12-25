@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 )
 

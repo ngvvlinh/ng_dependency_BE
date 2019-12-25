@@ -24,7 +24,7 @@ import (
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/capi/util"

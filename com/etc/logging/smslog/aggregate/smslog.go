@@ -8,8 +8,8 @@ import (
 	"etop.vn/backend/com/etc/logging/smslog/model"
 	"etop.vn/backend/com/etc/logging/smslog/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi"
 )
 

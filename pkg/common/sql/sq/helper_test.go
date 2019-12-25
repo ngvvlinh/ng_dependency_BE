@@ -1,12 +1,11 @@
-package sq_test
+package sq
 
 import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
+	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
 type A = []interface{}

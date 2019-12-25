@@ -11,7 +11,7 @@ import (
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/api/top/types/etc/user_source"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	m "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

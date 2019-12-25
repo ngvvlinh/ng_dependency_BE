@@ -10,7 +10,7 @@ import (
 
 	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/common/l"
 )

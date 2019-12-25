@@ -4,7 +4,7 @@ import (
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/etop/model"
 )
 

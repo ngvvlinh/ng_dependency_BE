@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/schema"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"

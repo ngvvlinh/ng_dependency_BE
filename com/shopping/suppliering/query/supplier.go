@@ -7,7 +7,7 @@ import (
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/backend/com/shopping/suppliering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 var _ suppliering.QueryService = &SupplierQuery{}

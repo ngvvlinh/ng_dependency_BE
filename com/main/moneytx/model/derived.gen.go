@@ -9,9 +9,9 @@ import (
 
 	etop_vn_backend_com_main_ordering_model "etop.vn/backend/com/main/ordering/model"
 	etop_vn_backend_com_main_shipping_model "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/common/cmsql"
-	sq "etop.vn/backend/pkg/common/sq"
-	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	sq "etop.vn/backend/pkg/common/sql/sq"
+	core "etop.vn/backend/pkg/common/sql/sq/core"
 	model "etop.vn/backend/pkg/etop/model"
 )
 

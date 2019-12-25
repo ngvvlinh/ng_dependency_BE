@@ -5,7 +5,7 @@ import (
 	"etop.vn/api/services/affiliate"
 	etop "etop.vn/api/top/int/etop"
 	affiliate3 "etop.vn/api/top/services/affiliate"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 )
 
 func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate3.CommissionSetting {

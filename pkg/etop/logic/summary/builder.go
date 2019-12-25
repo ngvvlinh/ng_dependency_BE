@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 )
 
 type SummaryQueryBuilder struct {

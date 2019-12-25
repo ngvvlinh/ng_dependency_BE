@@ -2,7 +2,7 @@ package cmsql
 
 import (
 	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 )
 
 // TODO: explain analyze

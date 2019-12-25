@@ -11,8 +11,8 @@ import (
 	"etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

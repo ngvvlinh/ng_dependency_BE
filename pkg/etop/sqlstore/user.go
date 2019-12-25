@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/model"

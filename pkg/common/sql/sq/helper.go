@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"etop.vn/backend/pkg/common/sq/core"
+	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
 type (

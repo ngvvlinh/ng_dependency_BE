@@ -20,8 +20,8 @@ import (
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/api/top/types/etc/user_source"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/code/gencode"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )

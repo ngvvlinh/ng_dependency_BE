@@ -6,9 +6,9 @@ import (
 	"etop.vn/api/services/affiliate"
 	"etop.vn/backend/com/services/affiliate/convert"
 	"etop.vn/backend/com/services/affiliate/model"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
 )
 

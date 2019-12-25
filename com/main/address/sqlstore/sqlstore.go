@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/main/address"
 	"etop.vn/backend/com/main/address/convert"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

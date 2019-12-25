@@ -12,7 +12,7 @@ import (
 	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
 	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
 	cm "etop.vn/backend/pkg/common"
-	sqlbuilder "etop.vn/backend/pkg/common/simple-sql-builder"
+	sqlbuilder "etop.vn/backend/pkg/common/sql/simple-sql-builder"
 )
 
 type SyncVtiger struct {

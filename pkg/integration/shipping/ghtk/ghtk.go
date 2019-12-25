@@ -16,7 +16,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"

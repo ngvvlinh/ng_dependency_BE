@@ -1,7 +1,7 @@
 package sqlstore
 
 import (
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 )
 
 var (

@@ -3,7 +3,7 @@ package modely
 import (
 	"etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh

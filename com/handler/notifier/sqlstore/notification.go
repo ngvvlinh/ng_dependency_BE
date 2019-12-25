@@ -8,7 +8,7 @@ import (
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

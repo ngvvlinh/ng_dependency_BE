@@ -9,8 +9,8 @@ import (
 
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/common/xerrors"
 )
 

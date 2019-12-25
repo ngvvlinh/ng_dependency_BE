@@ -6,9 +6,9 @@ import (
 
 	"etop.vn/api/summary"
 	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	smry "etop.vn/backend/pkg/etop/logic/summary"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"

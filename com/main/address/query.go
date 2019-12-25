@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/main/address"
 	"etop.vn/backend/com/main/address/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 var _ address.QueryService = &QueryService{}

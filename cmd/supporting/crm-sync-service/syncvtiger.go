@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/pkg/common/scheduler"
+	"etop.vn/backend/pkg/common/apifw/scheduler"
 )
 
 var (

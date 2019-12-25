@@ -7,8 +7,8 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpx"
-	cmService "etop.vn/backend/pkg/common/service"
+	"etop.vn/backend/pkg/common/apifw/httpx"
+	cmService "etop.vn/backend/pkg/common/apifw/service"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"

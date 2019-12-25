@@ -8,7 +8,7 @@ import (
 	"etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/ordering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
 )
 

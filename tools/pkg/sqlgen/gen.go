@@ -85,7 +85,7 @@ func fnToTitle(s string) string {
 	return s
 }
 
-func (g *gen) Generate(typs []types.Type) error {
+func (g *genImpl) Generate(typs []types.Type) error {
 	if err := g.validateTypes(); err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (g *gen) Generate(typs []types.Type) error {
 	return g.genQueryFor(typs[0])
 }
 
-func (g *gen) generateCommon() {
+func (g *genImpl) generateCommon() {
 	if g.init {
 		return
 	}
@@ -118,7 +118,7 @@ type SQLWriter = core.SQLWriter
 	p.P(str)
 }
 
-func (g *gen) genQueryFor(typ types.Type) error {
+func (g *genImpl) genQueryFor(typ types.Type) error {
 	defer func() {
 		g.nGen++
 		if g.nGen == g.nAdd {

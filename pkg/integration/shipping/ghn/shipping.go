@@ -7,8 +7,8 @@ import (
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/ghn_note_code"
-	shipping2 "etop.vn/api/top/types/etc/shipping"
-	shipping_provider2 "etop.vn/api/top/types/etc/shipping_provider"
+	typesshipping "etop.vn/api/top/types/etc/shipping"
+	typeshippingprovider "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -50,7 +50,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 		}
 		cmd := &model.CreateShippingSource{
 			Name: GetShippingSourceName(cName, c.ClientID()),
-			Type: shipping_provider2.GHN,
+			Type: typeshippingprovider.GHN,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
@@ -128,7 +128,7 @@ func (c *Carrier) CreateFulfillment(
 	r := ghnCmd.Result
 
 	now := time.Now()
-	expectedDeliveryAt := shipping.CalcDeliveryTime(shipping_provider2.GHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
+	expectedDeliveryAt := shipping.CalcDeliveryTime(typeshippingprovider.GHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
 	updateFfm := &shipmodel.Fulfillment{
 		ID:                ffm.ID,
 		ProviderServiceID: service.ProviderServiceID,
@@ -145,7 +145,7 @@ func (c *Carrier) CreateFulfillment(
 		ExternalShippingUpdatedAt: now,
 		ShippingCreatedAt:         now,
 		ExternalShippingFee:       int(r.TotalServiceFee),
-		ShippingState:             shipping2.Created,
+		ShippingState:             typesshipping.Created,
 		SyncStatus:                status4.P,
 		SyncStates: &model.FulfillmentSyncStates{
 			SyncAt:    now,
@@ -267,7 +267,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	// get Etop services
 	etopServiceArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
 		ArbitraryID:  args.AccountID,
-		Carrier:      shipping_provider2.GHN,
+		Carrier:      typeshippingprovider.GHN,
 		FromProvince: fromProvince,
 		ToProvince:   toProvince,
 		ToDistrict:   toDistrict,

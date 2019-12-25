@@ -7,7 +7,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 )
 

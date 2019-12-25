@@ -11,7 +11,7 @@ import (
 	paymentutil "etop.vn/backend/com/external/payment"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"

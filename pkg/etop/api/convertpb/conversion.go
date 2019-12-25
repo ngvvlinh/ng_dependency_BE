@@ -7,7 +7,7 @@ import (
 	shippingtypes "etop.vn/api/main/shipping/types"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
-	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 )
 
 func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *types.ShipnowFulfillment {

@@ -11,13 +11,13 @@ import (
 
 	"etop.vn/backend/cmd/etop-uploader/config"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/auth"
+	"etop.vn/backend/pkg/common/apifw/health"
+	"etop.vn/backend/pkg/common/apifw/httpx"
+	"etop.vn/backend/pkg/common/authorization/auth"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/health"
-	"etop.vn/backend/pkg/common/httpx"
+	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/common/l"
 )

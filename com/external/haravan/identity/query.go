@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/external/haravan/identity"
 	"etop.vn/backend/com/external/haravan/identity/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 var _ identity.QueryService = &QueryService{}

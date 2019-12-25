@@ -9,7 +9,7 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )

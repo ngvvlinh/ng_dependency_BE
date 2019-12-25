@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/captcha"
+	"etop.vn/backend/pkg/common/apifw/captcha"
 )
 
 type authKey struct{}

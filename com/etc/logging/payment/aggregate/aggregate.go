@@ -5,7 +5,7 @@ import (
 
 	"etop.vn/backend/com/etc/logging/payment/model"
 	"etop.vn/backend/com/etc/logging/payment/sqlstore"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
 type Aggregate struct {

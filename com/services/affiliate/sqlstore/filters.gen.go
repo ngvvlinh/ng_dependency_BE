@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 

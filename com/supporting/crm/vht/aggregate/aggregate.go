@@ -10,7 +10,7 @@ import (
 	syncvht "etop.vn/backend/com/supporting/crm/vht/sync"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
 )
 

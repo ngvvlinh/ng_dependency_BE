@@ -11,7 +11,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sql/sq/core"
 	"etop.vn/capi/dot"
 )
 

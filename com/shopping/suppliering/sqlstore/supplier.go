@@ -10,9 +10,9 @@ import (
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/suppliering/convert"
 	"etop.vn/backend/com/shopping/suppliering/model"
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )

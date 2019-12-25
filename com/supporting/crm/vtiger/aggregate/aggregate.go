@@ -14,7 +14,7 @@ import (
 	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 )
 
