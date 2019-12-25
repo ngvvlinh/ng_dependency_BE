@@ -316,7 +316,7 @@ func TestWalk(t *testing.T) {
 		t.Run("Walk/"+tt.inp, func(t *testing.T) {
 			var b strings.Builder
 			err := Walk([]byte(tt.inp), 0,
-				func(st int, key, value string) bool {
+				func(_, st int, key, value string) bool {
 					fmt.Fprintf(&b, "\n%v %v %v", st, key, value)
 					return true
 				})

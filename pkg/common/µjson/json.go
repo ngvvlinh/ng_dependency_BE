@@ -19,128 +19,6 @@ import (
 
 var ll = l.New()
 
-func Walk(s []byte, i int, fn func(st int, key, value string) bool) error {
-	var si, ei, st int
-	var key string
-
-	// fn returns false to skip a whole array or object
-	sst := 1024
-
-	// Trim the last newline
-	if len(s) > 0 && s[len(s)-1] == '\n' {
-		s = s[:len(s)-1]
-	}
-
-value:
-	si = i
-	switch s[i] {
-	case 'n', 't': // null, true
-		i += 4
-		ei = i
-		if st <= sst {
-			fn(st, key, string(s[si:i]))
-		}
-		key = ""
-		goto closing
-	case 'f': // false
-		i += 5
-		ei = i
-		if st <= sst {
-			fn(st, key, string(s[si:i]))
-		}
-		key = ""
-		goto closing
-	case '{', '[':
-		if st <= sst && !fn(st, key, string(s[i])) {
-			sst = st
-		}
-		key = ""
-		st++
-		i++
-		if s[i] == '}' || s[i] == ']' {
-			goto closing
-		}
-		goto value
-	case '"': // scan string
-		for {
-			i++
-			switch s[i] {
-			case '\\': // \. - skip 2
-				i++
-			case '"': // end of string
-				i++
-				ei = i // space, ignore
-				for s[i] == ' ' ||
-					s[i] == '\t' ||
-					s[i] == '\n' ||
-					s[i] == '\r' {
-					i++
-				}
-				if s[i] != ':' {
-					if st <= sst {
-						fn(st, key, string(s[si:ei]))
-					}
-					key = ""
-				}
-				goto closing
-			}
-		}
-	case ' ', '\t', '\n', '\r': // space, ignore
-		i++
-		goto value
-	default: // scan number
-		for i < len(s) {
-			switch s[i] {
-			case ',', '}', ']', ' ', '\t', '\n', '\r':
-				ei = i
-				for s[i] == ' ' ||
-					s[i] == '\t' ||
-					s[i] == '\n' ||
-					s[i] == '\r' {
-					i++
-				}
-				if st <= sst {
-					fn(st, key, string(s[si:ei]))
-				}
-				key = ""
-				goto closing
-			}
-			i++
-		}
-	}
-
-closing:
-	if i >= len(s) {
-		return nil
-	}
-	switch s[i] {
-	case ':':
-		key = string(s[si:ei])
-		i++
-		goto value
-	case ',':
-		i++
-		goto value
-	case ']', '}':
-		st--
-		if st == sst {
-			sst = 1024
-		} else {
-			fn(st, "", string(s[i]))
-		}
-		if st <= 0 {
-			return nil
-		}
-		i++
-		goto closing
-	case ' ', '\t', '\n', '\r':
-		i++ // space, ignore
-		goto closing
-	default:
-		return parseError(i, s[i], `expect ']', '}' or ','`)
-	}
-}
-
 func parseError(i int, c byte, msg string) error {
 	return fmt.Errorf("json error at %v '%c' 0x%2x: %v", i, c, c, msg)
 }
@@ -152,7 +30,7 @@ func ShouldAddComma(value string, lastChar byte) bool {
 
 func Reconstruct(s []byte) ([]byte, error) {
 	b := make([]byte, 0, 1024)
-	err := Walk(s, 0, func(st int, key, value string) bool {
+	err := Walk(s, 0, func(_, st int, key, value string) bool {
 		if len(b) != 0 && ShouldAddComma(value, b[len(b)-1]) {
 			b = append(b, ',')
 		}
@@ -186,7 +64,7 @@ func FilterAndRename(b []byte, input []byte) (output []byte, _ error) {
 		}()
 	}
 
-	err := Walk(input, 0, func(st int, key, value string) bool {
+	err := Walk(input, 0, func(pos, st int, key, value string) bool {
 
 		// Ignore fields with null value
 		if value == "null" {
