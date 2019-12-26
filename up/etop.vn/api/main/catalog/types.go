@@ -27,9 +27,17 @@ type ShopProduct struct {
 
 	Note string
 
-	DescriptionInfo
+	ShortDesc string
 
-	PriceInfo
+	Description string
+
+	DescHTML string
+
+	CostPrice int
+
+	ListPrice int
+
+	RetailPrice int
 
 	CategoryID dot.ID
 
@@ -64,7 +72,11 @@ type ShopVariant struct {
 
 	Name string
 
-	DescriptionInfo
+	ShortDesc string
+
+	Description string
+
+	DescHTML string
 
 	ImageURLs []string
 
@@ -72,7 +84,11 @@ type ShopVariant struct {
 
 	Attributes types.Attributes
 
-	PriceInfo
+	CostPrice int
+
+	ListPrice int
+
+	RetailPrice int
 
 	Note string // only in ShopProduct and ShopVariant
 
@@ -124,14 +140,6 @@ type DescriptionInfo struct {
 	Description string
 
 	DescHTML string
-}
-
-type PriceDeclareInfo struct {
-	ListPrice int
-
-	CostPrice int
-
-	RetailPrice int
 }
 
 type PriceInfo struct {

@@ -93,7 +93,9 @@ func (s *ShopProductCollectionStore) RemoveProductFromCollection() (int, error) 
 func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *catalog.ShopProductCollection) (int, error) {
 	sqlstore.MustNoPreds(s.preds)
 	var out model.ShopProductCollection
-	convert.ShopProductCollectionDB(productCollection, &out)
+	if err := scheme.Convert(productCollection, &out); err != nil {
+		return 0, err
+	}
 	created, err := s.query().Suffix("ON CONFLICT ON CONSTRAINT shop_product_collection_constraint DO NOTHING").Insert(&out)
 	return created, err
 }

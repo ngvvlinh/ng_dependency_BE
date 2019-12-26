@@ -123,7 +123,10 @@ func (s *ShopProductStore) Count() (int, error) {
 
 func (s *ShopProductStore) CreateShopProduct(product *catalog.ShopProduct) error {
 	sqlstore.MustNoPreds(s.preds)
-	productDB := convert.ShopProductDB(product)
+	productDB := &model.ShopProduct{}
+	if err := scheme.Convert(product, productDB); err != nil {
+		return err
+	}
 	_, err := s.query().Insert(productDB)
 	return checkProductOrVariantError(err, productDB.Code)
 }
@@ -137,12 +140,13 @@ func (s *ShopProductStore) GetShopProductDB() (*model.ShopProduct, error) {
 	return &product, err
 }
 
-func (s *ShopProductStore) GetShopProduct() (*catalog.ShopProduct, error) {
-	product, err := s.GetShopProductDB()
+func (s *ShopProductStore) GetShopProduct() (out *catalog.ShopProduct, err error) {
+	productDB, err := s.GetShopProductDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopProduct(product), nil
+
+	return convert.Convert_catalogmodel_ShopProduct_catalog_ShopProduct(productDB, nil), nil
 }
 
 func (s *ShopProductStore) GetShopProductWithVariantsDB() (*model.ShopProductWithVariants, error) {
@@ -197,7 +201,7 @@ func (s *ShopProductStore) ListShopProducts() ([]*catalog.ShopProduct, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopProducts(products), nil
+	return convert.Convert_catalogmodel_ShopProducts_catalog_ShopProducts(products), nil
 }
 
 func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*model.ShopProductWithVariants, error) {
@@ -268,14 +272,20 @@ func (s *ShopProductStore) UpdateStatusShopProducts(status int16) (int, error) {
 
 func (s *ShopProductStore) UpdateImageShopProduct(product *catalog.ShopProduct) error {
 	query := s.query().Where(s.preds)
-	producttDB := convert.ShopProductDB(product)
-	err := query.ShouldUpdate(producttDB)
+	productDB := &model.ShopProduct{}
+	if err := scheme.Convert(product, productDB); err != nil {
+		return err
+	}
+	err := query.ShouldUpdate(productDB)
 	return err
 }
 
 func (s *ShopProductStore) UpdateMetaFieldsShopProduct(product *catalog.ShopProduct) error {
 	query := s.query().Where(s.preds)
-	productDB := convert.ShopProductDB(product)
+	productDB := &model.ShopProduct{}
+	if err := scheme.Convert(product, productDB); err != nil {
+		return err
+	}
 	err := query.ShouldUpdate(productDB)
 	return err
 }

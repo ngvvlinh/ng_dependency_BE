@@ -33,12 +33,12 @@ func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuer
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
-	var variant catalogmodel.ShopVariant
+	var variantDB catalogmodel.ShopVariant
 	if err := x.Where("shop_id = ? AND variant_id = ?", query.ShopID, query.VariantID).
-		ShouldGet(&variant); err != nil {
+		ShouldGet(&variantDB); err != nil {
 		return err
 	}
-	query.Result = convert.ShopVariant(&variant)
+	query.Result = convert.Convert_catalogmodel_ShopVariant_catalog_ShopVariant(&variantDB, nil)
 	return nil
 }
 

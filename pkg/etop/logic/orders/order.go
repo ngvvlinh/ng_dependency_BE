@@ -774,7 +774,7 @@ func prepareOrderLine(
 			line.RetailPrice = v.GetRetailPrice()
 			originalPrice = v.GetRetailPrice()
 		}
-		line.Attributes = convert.AttributesDB(v.ShopVariant.Attributes)
+		line.Attributes = convert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(v.ShopVariant.Attributes)
 	}
 	if line.RetailPrice <= 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,

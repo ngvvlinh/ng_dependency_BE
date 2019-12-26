@@ -102,7 +102,10 @@ func (s *ShopVariantStore) FilterForImport(args ListVariantsForImportArgs) *Shop
 
 func (s *ShopVariantStore) CreateShopVariant(variant *catalog.ShopVariant) error {
 	sqlstore.MustNoPreds(s.preds)
-	variantDB := convert.ShopVariantDB(variant)
+	variantDB := &model.ShopVariant{}
+	if err := scheme.Convert(variant, variantDB); err != nil {
+		return err
+	}
 	_, err := s.query().Insert(variantDB)
 	return checkProductOrVariantError(err, variantDB.Code)
 }
@@ -117,11 +120,13 @@ func (s *ShopVariantStore) GetShopVariantDB() (*model.ShopVariant, error) {
 }
 
 func (s *ShopVariantStore) GetShopVariant() (*catalog.ShopVariant, error) {
-	variant, err := s.GetShopVariantDB()
+	variantDB, err := s.GetShopVariantDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopVariant(variant), nil
+	variant := &catalog.ShopVariant{}
+	err = scheme.Convert(variantDB, variant)
+	return variant, err
 }
 
 func (s *ShopVariantStore) GetShopVariantWithProductDB() (*model.ShopVariantWithProduct, error) {
@@ -158,12 +163,11 @@ func (s *ShopVariantStore) ListShopVariantsDB() ([]*model.ShopVariant, error) {
 }
 
 func (s *ShopVariantStore) ListShopVariants() ([]*catalog.ShopVariant, error) {
-	variants, err := s.ListShopVariantsDB()
+	variantsModel, err := s.ListShopVariantsDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopVariants(variants), nil
-
+	return convert.Convert_catalogmodel_ShopVariants_catalog_ShopVariants(variantsModel), nil
 }
 
 func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*model.ShopVariantWithProduct, error) {
@@ -218,7 +222,10 @@ func (s *ShopVariantStore) UpdateStatusShopVariant(status int16) (int, error) {
 func (s *ShopVariantStore) UpdateImageShopVariant(variant *catalog.ShopVariant) error {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
-	variantDB := convert.ShopVariantDB(variant)
+	variantDB := &model.ShopVariant{}
+	if err := scheme.Convert(variant, variantDB); err != nil {
+		return err
+	}
 	err := query.ShouldUpdate(variantDB)
 	return err
 }

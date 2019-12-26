@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/com/main/catalog/convert"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
@@ -98,13 +99,13 @@ func (s *ShopCategoryStore) GetShopCategoryDB() (*model.ShopCategory, error) {
 }
 
 func (s *ShopCategoryStore) GetShopCategory() (*catalog.ShopCategory, error) {
-	category, err := s.GetShopCategoryDB()
+	categoryModel, err := s.GetShopCategoryDB()
 	if err != nil {
 		return nil, err
 	}
-	var out catalog.ShopCategory
-	convert.ShopCategory(category, &out)
-	return &out, err
+	var category catalog.ShopCategory
+	err = scheme.Convert(categoryModel, &category)
+	return &category, err
 }
 
 func (s *ShopCategoryStore) ListShopCategoriesDB() ([]*model.ShopCategory, error) {
@@ -128,17 +129,19 @@ func (s *ShopCategoryStore) ListShopCategoriesDB() ([]*model.ShopCategory, error
 }
 
 func (s *ShopCategoryStore) ListShopCategories() ([]*catalog.ShopCategory, error) {
-	categories, err := s.ListShopCategoriesDB()
+	categoriesModel, err := s.ListShopCategoriesDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopCategories(categories), nil
+	return convert.Convert_catalogmodel_ShopCategories_catalog_ShopCategories(categoriesModel), nil
 }
 
 func (s *ShopCategoryStore) CreateShopCategory(category *catalog.ShopCategory) error {
 	sqlstore.MustNoPreds(s.preds)
 	var categoryDB model.ShopCategory
-	convert.ShopCategoryDB(category, &categoryDB)
+	if err := scheme.Convert(category, &categoryDB); err != nil {
+		return err
+	}
 	_, err := s.query().Insert(&categoryDB)
 	return err
 }

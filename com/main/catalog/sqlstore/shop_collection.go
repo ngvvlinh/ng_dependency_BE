@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/com/main/catalog/convert"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
@@ -104,12 +105,12 @@ func (s *ShopCollectionStore) GetShopCollectionDB() (*model.ShopCollection, erro
 }
 
 func (s *ShopCollectionStore) GetShopCollection() (*catalog.ShopCollection, error) {
-	Collection, err := s.GetShopCollectionDB()
+	collection, err := s.GetShopCollectionDB()
 	if err != nil {
 		return nil, err
 	}
 	var out catalog.ShopCollection
-	convert.ShopCollection(Collection, &out)
+	err = scheme.Convert(collection, &out)
 	return &out, err
 }
 
@@ -134,17 +135,19 @@ func (s *ShopCollectionStore) ListShopCollectionsDB() ([]*model.ShopCollection, 
 }
 
 func (s *ShopCollectionStore) ListShopCollections() ([]*catalog.ShopCollection, error) {
-	Collections, err := s.ListShopCollectionsDB()
+	collectionsModel, err := s.ListShopCollectionsDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopCollections(Collections), nil
+	return convert.Convert_catalogmodel_ShopCollections_catalog_ShopCollections(collectionsModel), nil
 }
 
 func (s *ShopCollectionStore) CreateShopCollection(Collection *catalog.ShopCollection) error {
 	sqlstore.MustNoPreds(s.preds)
 	var collectionDB model.ShopCollection
-	convert.ShopCollectionDB(Collection, &collectionDB)
+	if err := scheme.Convert(Collection, &collectionDB); err != nil {
+		return err
+	}
 	_, err := s.query().Insert(&collectionDB)
 	return err
 }

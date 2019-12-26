@@ -215,6 +215,7 @@ type CreateShopProductArgs struct {
 	BrandID     dot.ID
 }
 
+// +convert:create=ShopCategory
 type CreateShopCategoryArgs struct {
 	ID       dot.ID
 	ShopID   dot.ID
@@ -223,6 +224,7 @@ type CreateShopCategoryArgs struct {
 	Status   int
 }
 
+// +convert:update=ShopProduct
 type UpdateShopProductInfoArgs struct {
 	ShopID    dot.ID
 	ProductID dot.ID
@@ -242,12 +244,14 @@ type UpdateShopProductInfoArgs struct {
 	CategoryID  dot.ID
 }
 
+// +convert:update=ShopProduct
 type UpdateShopProductCategoryArgs struct {
 	CategoryID dot.ID
 	ShopID     dot.ID
 	ProductID  dot.ID
 }
 
+// +convert:update=ShopCategory
 type UpdateShopCategoryArgs struct {
 	ID       dot.ID
 	Name     NullString
@@ -255,6 +259,7 @@ type UpdateShopCategoryArgs struct {
 	ParentID dot.ID
 }
 
+// +convert:update=ShopCollection
 type UpdateShopCollectionArgs struct {
 	ID     dot.ID
 	ShopID dot.ID
@@ -265,6 +270,7 @@ type UpdateShopCollectionArgs struct {
 	ShortDesc   NullString
 }
 
+// +convert:create=ShopCollection
 type CreateShopCollectionArgs struct {
 	ID     dot.ID
 	ShopID dot.ID
@@ -293,6 +299,7 @@ type CreateShopVariantArgs struct {
 	PriceInfo
 }
 
+// +convert:update=ShopVariant
 type UpdateShopVariantInfoArgs struct {
 	ShopID    dot.ID
 	VariantID dot.ID

@@ -453,7 +453,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []
 
 	mapProducts := make(map[string]*catalog.ShopProduct)
 	for _, p := range products {
-		product := convert.ShopProduct(p)
+		product := convert.Convert_catalogmodel_ShopProduct_catalog_ShopProduct(p, nil)
 		if useCode {
 			mapProducts[p.Code] = product
 		} else {

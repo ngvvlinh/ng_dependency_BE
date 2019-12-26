@@ -15,38 +15,21 @@ import (
 
 /*
 Custom conversions:
-    Attribute                  // in use
-    AttributeDB                // in use
-    ShopCategory               // in use
-    ShopCategoryDB             // in use
-    ShopCollection             // in use
-    ShopCollectionDB           // in use
-    ShopProducCollection       // in use
-    ShopProduct                // in use
-    ShopProductCollectionDB    // in use
-    ShopProductDB              // in use
-    ShopProductUpdate          // not use, no conversions between params
-    ShopProductWithVariants    // not use, no conversions between params
-    ShopVariant                // in use
-    ShopVariantDB              // in use
-    ShopVariantWithProduct     // not use, no conversions between params
-    createShopBrand            // in use
+    ShopProductWithVariants      // not use, no conversions between params
+    ShopVariantWithProduct       // not use, no conversions between params
+    createShopBrand              // in use
+    shopProduct                  // in use
+    shopProductDB                // in use
+    shopVariantDB                // in use
+    updateShopCategory           // in use
+    updateShopCollection         // in use
+    updateShopProduct            // in use
+    updateShopProductCategory    // in use
+    updateShopVariant            // in use
 
 Ignored functions:
-    Attributes                   // params are not pointer to named types
-    AttributesDB                 // params are not pointer to named types
-    ShopCategories               // params are not pointer to named types
-    ShopCollections              // params are not pointer to named types
-    ShopProductCollections       // params are not pointer to named types
-    ShopProducts                 // params are not pointer to named types
-    ShopProductsWithVariants     // params are not pointer to named types
-    ShopVariants                 // params are not pointer to named types
-    ShopVariantsWithProduct      // params are not pointer to named types
-    UpdateShopCategory           // not recognized
-    UpdateShopCollection         // not recognized
-    UpdateShopProduct            // not recognized
-    UpdateShopProductCategory    // not recognized
-    UpdateShopVariant            // not recognized
+    ShopProductsWithVariants    // params are not pointer to named types
+    ShopVariantsWithProduct     // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -98,6 +81,14 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*catalogmodel.ShopCategory) = out0
 		return nil
 	})
+	s.Register((*catalog.CreateShopCategoryArgs)(nil), (*catalog.ShopCategory)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg.(*catalog.CreateShopCategoryArgs), out.(*catalog.ShopCategory))
+		return nil
+	})
+	s.Register((*catalog.UpdateShopCategoryArgs)(nil), (*catalog.ShopCategory)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg.(*catalog.UpdateShopCategoryArgs), out.(*catalog.ShopCategory))
+		return nil
+	})
 	s.Register((*catalogmodel.ShopCollection)(nil), (*catalog.ShopCollection)(nil), func(arg, out interface{}) error {
 		Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg.(*catalogmodel.ShopCollection), out.(*catalog.ShopCollection))
 		return nil
@@ -116,6 +107,14 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*catalogmodel.ShopCollection) = out0
 		return nil
 	})
+	s.Register((*catalog.CreateShopCollectionArgs)(nil), (*catalog.ShopCollection)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg.(*catalog.CreateShopCollectionArgs), out.(*catalog.ShopCollection))
+		return nil
+	})
+	s.Register((*catalog.UpdateShopCollectionArgs)(nil), (*catalog.ShopCollection)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg.(*catalog.UpdateShopCollectionArgs), out.(*catalog.ShopCollection))
+		return nil
+	})
 	s.Register((*catalogmodel.ShopProduct)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
 		Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg.(*catalogmodel.ShopProduct), out.(*catalog.ShopProduct))
 		return nil
@@ -132,6 +131,14 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*catalog.ShopProduct)(nil), (*[]*catalogmodel.ShopProduct)(nil), func(arg, out interface{}) error {
 		out0 := Convert_catalog_ShopProducts_catalogmodel_ShopProducts(arg.([]*catalog.ShopProduct))
 		*out.(*[]*catalogmodel.ShopProduct) = out0
+		return nil
+	})
+	s.Register((*catalog.UpdateShopProductCategoryArgs)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg.(*catalog.UpdateShopProductCategoryArgs), out.(*catalog.ShopProduct))
+		return nil
+	})
+	s.Register((*catalog.UpdateShopProductInfoArgs)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg.(*catalog.UpdateShopProductInfoArgs), out.(*catalog.ShopProduct))
 		return nil
 	})
 	s.Register((*catalogmodel.ShopProductCollection)(nil), (*catalog.ShopProductCollection)(nil), func(arg, out interface{}) error {
@@ -168,6 +175,10 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*catalog.ShopVariant)(nil), (*[]*catalogmodel.ShopVariant)(nil), func(arg, out interface{}) error {
 		out0 := Convert_catalog_ShopVariants_catalogmodel_ShopVariants(arg.([]*catalog.ShopVariant))
 		*out.(*[]*catalogmodel.ShopVariant) = out0
+		return nil
+	})
+	s.Register((*catalog.UpdateShopVariantInfoArgs)(nil), (*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg.(*catalog.UpdateShopVariantInfoArgs), out.(*catalog.ShopVariant))
 		return nil
 	})
 	s.Register((*catalogmodel.ShopVariantSupplier)(nil), (*catalog.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
@@ -325,7 +336,7 @@ func Convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.Sh
 	if out == nil {
 		out = &catalog.ShopCategory{}
 	}
-	ShopCategory(arg, out)
+	convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg, out)
 	return out
 }
 
@@ -356,7 +367,7 @@ func Convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCat
 	if out == nil {
 		out = &catalogmodel.ShopCategory{}
 	}
-	ShopCategoryDB(arg, out)
+	convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg, out)
 	return out
 }
 
@@ -380,6 +391,43 @@ func Convert_catalog_ShopCategories_catalogmodel_ShopCategories(args []*catalog.
 	return outs
 }
 
+func Apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg *catalog.CreateShopCategoryArgs, out *catalog.ShopCategory) *catalog.ShopCategory {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopCategory{}
+	}
+	apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg, out)
+	return out
+}
+
+func apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg *catalog.CreateShopCategoryArgs, out *catalog.ShopCategory) {
+	out.ID = arg.ID             // simple assign
+	out.ParentID = arg.ParentID // simple assign
+	out.ShopID = arg.ShopID     // simple assign
+	out.Name = arg.Name         // simple assign
+	out.Status = arg.Status     // simple assign
+	out.CreatedAt = time.Time{} // zero value
+	out.UpdatedAt = time.Time{} // zero value
+	out.DeletedAt = time.Time{} // zero value
+}
+
+func Apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg *catalog.UpdateShopCategoryArgs, out *catalog.ShopCategory) *catalog.ShopCategory {
+	return updateShopCategory(arg, out)
+}
+
+func apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg *catalog.UpdateShopCategoryArgs, out *catalog.ShopCategory) {
+	out.ID = arg.ID                     // simple assign
+	out.ParentID = arg.ParentID         // simple assign
+	out.ShopID = arg.ShopID             // simple assign
+	out.Name = arg.Name.Apply(out.Name) // apply change
+	out.Status = out.Status             // no change
+	out.CreatedAt = out.CreatedAt       // no change
+	out.UpdatedAt = out.UpdatedAt       // no change
+	out.DeletedAt = out.DeletedAt       // no change
+}
+
 //-- convert etop.vn/api/main/catalog.ShopCollection --//
 
 func Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmodel.ShopCollection, out *catalog.ShopCollection) *catalog.ShopCollection {
@@ -389,7 +437,7 @@ func Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmode
 	if out == nil {
 		out = &catalog.ShopCollection{}
 	}
-	ShopCollection(arg, out)
+	convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg, out)
 	return out
 }
 
@@ -420,7 +468,7 @@ func Convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.Sho
 	if out == nil {
 		out = &catalogmodel.ShopCollection{}
 	}
-	ShopCollectionDB(arg, out)
+	convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg, out)
 	return out
 }
 
@@ -444,32 +492,80 @@ func Convert_catalog_ShopCollections_catalogmodel_ShopCollections(args []*catalo
 	return outs
 }
 
+func Apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.CreateShopCollectionArgs, out *catalog.ShopCollection) *catalog.ShopCollection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopCollection{}
+	}
+	apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg, out)
+	return out
+}
+
+func apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.CreateShopCollectionArgs, out *catalog.ShopCollection) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Description = arg.Description // simple assign
+	out.DescHTML = arg.DescHTML       // simple assign
+	out.ShortDesc = arg.ShortDesc     // simple assign
+	out.CreatedAt = time.Time{}       // zero value
+	out.UpdatedAt = time.Time{}       // zero value
+}
+
+func Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.UpdateShopCollectionArgs, out *catalog.ShopCollection) *catalog.ShopCollection {
+	return updateShopCollection(arg, out)
+}
+
+func apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.UpdateShopCollectionArgs, out *catalog.ShopCollection) {
+	out.ID = arg.ID                                          // simple assign
+	out.ShopID = arg.ShopID                                  // simple assign
+	out.Name = arg.Name.Apply(out.Name)                      // apply change
+	out.Description = arg.Description.Apply(out.Description) // apply change
+	out.DescHTML = arg.DescHTML.Apply(out.DescHTML)          // apply change
+	out.ShortDesc = arg.ShortDesc.Apply(out.ShortDesc)       // apply change
+	out.CreatedAt = out.CreatedAt                            // no change
+	out.UpdatedAt = out.UpdatedAt                            // no change
+}
+
 //-- convert etop.vn/api/main/catalog.ShopProduct --//
 
 func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) *catalog.ShopProduct {
-	return ShopProduct(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopProduct{}
+	}
+	shopProduct(arg, out)
+	return out
 }
 
 func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
-	out.ShopID = arg.ShopID                         // simple assign
-	out.ProductID = arg.ProductID                   // simple assign
-	out.Code = arg.Code                             // simple assign
-	out.Name = arg.Name                             // simple assign
-	out.Unit = arg.Unit                             // simple assign
-	out.ImageURLs = arg.ImageURLs                   // simple assign
-	out.Note = arg.Note                             // simple assign
-	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
-	out.PriceInfo = catalog.PriceInfo{}             // zero value
-	out.CategoryID = arg.CategoryID                 // simple assign
-	out.CollectionIDs = arg.CollectionIDs           // simple assign
-	out.Tags = arg.Tags                             // simple assign
-	out.Status = arg.Status                         // simple assign
-	out.CreatedAt = arg.CreatedAt                   // simple assign
-	out.UpdatedAt = arg.UpdatedAt                   // simple assign
-	out.DeletedAt = arg.DeletedAt                   // simple assign
-	out.ProductType = arg.ProductType               // simple assign
-	out.MetaFields = nil                            // types do not match
-	out.BrandID = arg.BrandID                       // simple assign
+	out.ShopID = arg.ShopID               // simple assign
+	out.ProductID = arg.ProductID         // simple assign
+	out.Code = arg.Code                   // simple assign
+	out.Name = arg.Name                   // simple assign
+	out.Unit = arg.Unit                   // simple assign
+	out.ImageURLs = arg.ImageURLs         // simple assign
+	out.Note = arg.Note                   // simple assign
+	out.ShortDesc = arg.ShortDesc         // simple assign
+	out.Description = arg.Description     // simple assign
+	out.DescHTML = arg.DescHTML           // simple assign
+	out.CostPrice = arg.CostPrice         // simple assign
+	out.ListPrice = arg.ListPrice         // simple assign
+	out.RetailPrice = arg.RetailPrice     // simple assign
+	out.CategoryID = arg.CategoryID       // simple assign
+	out.CollectionIDs = arg.CollectionIDs // simple assign
+	out.Tags = arg.Tags                   // simple assign
+	out.Status = arg.Status               // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.DeletedAt = arg.DeletedAt         // simple assign
+	out.ProductType = arg.ProductType     // simple assign
+	out.MetaFields = nil                  // types do not match
+	out.BrandID = arg.BrandID             // simple assign
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -482,7 +578,14 @@ func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel
 }
 
 func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) *catalogmodel.ShopProduct {
-	return ShopProductDB(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopProduct{}
+	}
+	shopProductDB(arg, out)
+	return out
 }
 
 func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
@@ -491,17 +594,17 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.CollectionIDs = arg.CollectionIDs // simple assign
 	out.Code = arg.Code                   // simple assign
 	out.Name = arg.Name                   // simple assign
-	out.Description = ""                  // zero value
-	out.DescHTML = ""                     // zero value
-	out.ShortDesc = ""                    // zero value
+	out.Description = arg.Description     // simple assign
+	out.DescHTML = arg.DescHTML           // simple assign
+	out.ShortDesc = arg.ShortDesc         // simple assign
 	out.ImageURLs = arg.ImageURLs         // simple assign
 	out.Note = arg.Note                   // simple assign
 	out.Tags = arg.Tags                   // simple assign
 	out.Unit = arg.Unit                   // simple assign
 	out.CategoryID = arg.CategoryID       // simple assign
-	out.CostPrice = 0                     // zero value
-	out.ListPrice = 0                     // zero value
-	out.RetailPrice = 0                   // zero value
+	out.CostPrice = arg.CostPrice         // simple assign
+	out.ListPrice = arg.ListPrice         // simple assign
+	out.RetailPrice = arg.RetailPrice     // simple assign
 	out.BrandID = arg.BrandID             // simple assign
 	out.Status = arg.Status               // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
@@ -522,6 +625,66 @@ func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.Shop
 	return outs
 }
 
+func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
+	return updateShopProductCategory(arg, out)
+}
+
+func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) {
+	out.ShopID = arg.ShopID               // simple assign
+	out.ProductID = arg.ProductID         // simple assign
+	out.Code = out.Code                   // no change
+	out.Name = out.Name                   // no change
+	out.Unit = out.Unit                   // no change
+	out.ImageURLs = out.ImageURLs         // no change
+	out.Note = out.Note                   // no change
+	out.ShortDesc = out.ShortDesc         // no change
+	out.Description = out.Description     // no change
+	out.DescHTML = out.DescHTML           // no change
+	out.CostPrice = out.CostPrice         // no change
+	out.ListPrice = out.ListPrice         // no change
+	out.RetailPrice = out.RetailPrice     // no change
+	out.CategoryID = arg.CategoryID       // simple assign
+	out.CollectionIDs = out.CollectionIDs // no change
+	out.Tags = out.Tags                   // no change
+	out.Status = out.Status               // no change
+	out.CreatedAt = out.CreatedAt         // no change
+	out.UpdatedAt = out.UpdatedAt         // no change
+	out.DeletedAt = out.DeletedAt         // no change
+	out.ProductType = out.ProductType     // no change
+	out.MetaFields = out.MetaFields       // no change
+	out.BrandID = out.BrandID             // no change
+}
+
+func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
+	return updateShopProduct(arg, out)
+}
+
+func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) {
+	out.ShopID = arg.ShopID                                  // simple assign
+	out.ProductID = arg.ProductID                            // simple assign
+	out.Code = arg.Code.Apply(out.Code)                      // apply change
+	out.Name = arg.Name.Apply(out.Name)                      // apply change
+	out.Unit = arg.Unit.Apply(out.Unit)                      // apply change
+	out.ImageURLs = out.ImageURLs                            // no change
+	out.Note = arg.Note.Apply(out.Note)                      // apply change
+	out.ShortDesc = arg.ShortDesc.Apply(out.ShortDesc)       // apply change
+	out.Description = arg.Description.Apply(out.Description) // apply change
+	out.DescHTML = arg.DescHTML.Apply(out.DescHTML)          // apply change
+	out.CostPrice = arg.CostPrice.Apply(out.CostPrice)       // apply change
+	out.ListPrice = arg.ListPrice.Apply(out.ListPrice)       // apply change
+	out.RetailPrice = arg.RetailPrice.Apply(out.RetailPrice) // apply change
+	out.CategoryID = arg.CategoryID                          // simple assign
+	out.CollectionIDs = out.CollectionIDs                    // no change
+	out.Tags = out.Tags                                      // no change
+	out.Status = out.Status                                  // no change
+	out.CreatedAt = out.CreatedAt                            // no change
+	out.UpdatedAt = out.UpdatedAt                            // no change
+	out.DeletedAt = out.DeletedAt                            // no change
+	out.ProductType = arg.ProductType                        // simple assign
+	out.MetaFields = out.MetaFields                          // no change
+	out.BrandID = arg.BrandID.Apply(out.BrandID)             // apply change
+}
+
 //-- convert etop.vn/api/main/catalog.ShopProductCollection --//
 
 func Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) *catalog.ShopProductCollection {
@@ -531,7 +694,7 @@ func Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(ar
 	if out == nil {
 		out = &catalog.ShopProductCollection{}
 	}
-	ShopProducCollection(arg, out)
+	convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg, out)
 	return out
 }
 
@@ -559,7 +722,7 @@ func Convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(ar
 	if out == nil {
 		out = &catalogmodel.ShopProductCollection{}
 	}
-	ShopProductCollectionDB(arg, out)
+	convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(arg, out)
 	return out
 }
 
@@ -583,24 +746,35 @@ func Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(
 //-- convert etop.vn/api/main/catalog.ShopVariant --//
 
 func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) *catalog.ShopVariant {
-	return ShopVariant(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopVariant{}
+	}
+	convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg, out)
+	return out
 }
 
 func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
-	out.ShopID = arg.ShopID                         // simple assign
-	out.ProductID = arg.ProductID                   // simple assign
-	out.VariantID = arg.VariantID                   // simple assign
-	out.Code = arg.Code                             // simple assign
-	out.Name = arg.Name                             // simple assign
-	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
-	out.ImageURLs = arg.ImageURLs                   // simple assign
-	out.Status = arg.Status                         // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.Code = arg.Code               // simple assign
+	out.Name = arg.Name               // simple assign
+	out.ShortDesc = arg.ShortDesc     // simple assign
+	out.Description = arg.Description // simple assign
+	out.DescHTML = arg.DescHTML       // simple assign
+	out.ImageURLs = arg.ImageURLs     // simple assign
+	out.Status = arg.Status           // simple assign
 	out.Attributes = Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
-	out.PriceInfo = catalog.PriceInfo{} // zero value
-	out.Note = arg.Note                 // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
-	out.DeletedAt = arg.DeletedAt       // simple assign
+	out.CostPrice = arg.CostPrice     // simple assign
+	out.ListPrice = arg.ListPrice     // simple assign
+	out.RetailPrice = arg.RetailPrice // simple assign
+	out.Note = arg.Note               // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = arg.DeletedAt     // simple assign
 }
 
 func Convert_catalogmodel_ShopVariants_catalog_ShopVariants(args []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
@@ -613,25 +787,32 @@ func Convert_catalogmodel_ShopVariants_catalog_ShopVariants(args []*catalogmodel
 }
 
 func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) *catalogmodel.ShopVariant {
-	return ShopVariantDB(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopVariant{}
+	}
+	shopVariantDB(arg, out)
+	return out
 }
 
 func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
-	out.ShopID = arg.ShopID       // simple assign
-	out.VariantID = arg.VariantID // simple assign
-	out.ProductID = arg.ProductID // simple assign
-	out.Code = arg.Code           // simple assign
-	out.Name = arg.Name           // simple assign
-	out.Description = ""          // zero value
-	out.DescHTML = ""             // zero value
-	out.ShortDesc = ""            // zero value
-	out.ImageURLs = arg.ImageURLs // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Tags = nil                // zero value
-	out.CostPrice = 0             // zero value
-	out.ListPrice = 0             // zero value
-	out.RetailPrice = 0           // zero value
-	out.Status = arg.Status       // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.Code = arg.Code               // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Description = arg.Description // simple assign
+	out.DescHTML = arg.DescHTML       // simple assign
+	out.ShortDesc = arg.ShortDesc     // simple assign
+	out.ImageURLs = arg.ImageURLs     // simple assign
+	out.Note = arg.Note               // simple assign
+	out.Tags = nil                    // zero value
+	out.CostPrice = arg.CostPrice     // simple assign
+	out.ListPrice = arg.ListPrice     // simple assign
+	out.RetailPrice = arg.RetailPrice // simple assign
+	out.Status = arg.Status           // simple assign
 	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
@@ -647,6 +828,31 @@ func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(args []*catalog.Shop
 		outs[i] = Convert_catalog_ShopVariant_catalogmodel_ShopVariant(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) *catalog.ShopVariant {
+	return updateShopVariant(arg, out)
+}
+
+func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) {
+	out.ShopID = arg.ShopID                                  // simple assign
+	out.ProductID = out.ProductID                            // no change
+	out.VariantID = arg.VariantID                            // simple assign
+	out.Code = arg.Code.Apply(out.Code)                      // apply change
+	out.Name = arg.Name.Apply(out.Name)                      // apply change
+	out.ShortDesc = arg.ShortDesc.Apply(out.ShortDesc)       // apply change
+	out.Description = out.Description                        // no change
+	out.DescHTML = arg.DescHTML.Apply(out.DescHTML)          // apply change
+	out.ImageURLs = out.ImageURLs                            // no change
+	out.Status = out.Status                                  // no change
+	out.Attributes = out.Attributes                          // no change
+	out.CostPrice = arg.CostPrice.Apply(out.CostPrice)       // apply change
+	out.ListPrice = arg.ListPrice.Apply(out.ListPrice)       // apply change
+	out.RetailPrice = arg.RetailPrice.Apply(out.RetailPrice) // apply change
+	out.Note = arg.Note.Apply(out.Note)                      // apply change
+	out.CreatedAt = out.CreatedAt                            // no change
+	out.UpdatedAt = out.UpdatedAt                            // no change
+	out.DeletedAt = out.DeletedAt                            // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopVariantSupplier --//
@@ -729,7 +935,14 @@ func apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg *catalo
 //-- convert etop.vn/api/main/catalog/types.Attribute --//
 
 func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
-	return Attribute(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogtypes.Attribute{}
+	}
+	convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg, out)
+	return out
 }
 
 func convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) {
@@ -753,7 +966,7 @@ func Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogty
 	if out == nil {
 		out = &catalogmodel.ProductAttribute{}
 	}
-	AttributeDB(arg, out)
+	convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg, out)
 	return out
 }
 

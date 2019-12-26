@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/pkg/common/conversion"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -18,6 +20,7 @@ import (
 )
 
 var _ catalog.Aggregate = &Aggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type Aggregate struct {
 	db                    *cmsql.Database
@@ -60,23 +63,19 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		}
 	}
 	product := &catalog.ShopProduct{
-		ProductID: cm.NewID(),
-		ShopID:    args.ShopID,
-		Code:      args.Code,
-		Name:      args.Name,
-		Unit:      args.Unit,
-		ImageURLs: args.ImageURLs,
-		Note:      args.Note,
-		DescriptionInfo: catalog.DescriptionInfo{
-			ShortDesc:   args.ShortDesc,
-			Description: args.Description,
-			DescHTML:    args.DescHTML,
-		},
-		PriceInfo: catalog.PriceInfo{
-			CostPrice:   args.CostPrice,
-			ListPrice:   args.ListPrice,
-			RetailPrice: args.RetailPrice,
-		},
+		ProductID:   cm.NewID(),
+		ShopID:      args.ShopID,
+		Code:        args.Code,
+		Name:        args.Name,
+		Unit:        args.Unit,
+		ImageURLs:   args.ImageURLs,
+		Note:        args.Note,
+		ShortDesc:   args.ShortDesc,
+		Description: args.Description,
+		DescHTML:    args.DescHTML,
+		CostPrice:   args.CostPrice,
+		ListPrice:   args.ListPrice,
+		RetailPrice: args.RetailPrice,
 		ProductType: args.ProductType,
 		MetaFields:  args.MetaFields,
 		BrandID:     args.BrandID,
@@ -97,12 +96,16 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 				Throw()
 		}
 	}
-	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductDB()
+	product, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()
 	if err != nil {
 		return nil, err
 	}
-	updated := convert.UpdateShopProduct(productDB, args)
-	if err = a.shopProduct(ctx).UpdateShopProduct(updated); err != nil {
+	product = convert.Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(args, product)
+	productModel := &model.ShopProduct{}
+	if err := scheme.Convert(product, productModel); err != nil {
+		return nil, err
+	}
+	if err = a.shopProduct(ctx).UpdateShopProduct(productModel); err != nil {
 		return nil, err
 	}
 	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductWithVariants()
@@ -155,25 +158,21 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	}
 
 	variant := &catalog.ShopVariant{
-		ShopID:    args.ShopID,
-		ProductID: args.ProductID,
-		VariantID: cm.NewID(),
-		Code:      args.Code,
-		Name:      args.Name,
-		DescriptionInfo: catalog.DescriptionInfo{
-			ShortDesc:   args.ShortDesc,
-			Description: args.Description,
-			DescHTML:    args.DescHTML,
-		},
-		ImageURLs:  args.ImageURLs,
-		Status:     0,
-		Attributes: args.Attributes,
-		PriceInfo: catalog.PriceInfo{
-			CostPrice:   args.CostPrice,
-			ListPrice:   args.ListPrice,
-			RetailPrice: args.RetailPrice,
-		},
-		Note: args.Note,
+		ShopID:      args.ShopID,
+		ProductID:   args.ProductID,
+		VariantID:   cm.NewID(),
+		Code:        args.Code,
+		Name:        args.Name,
+		ShortDesc:   args.ShortDesc,
+		Description: args.Description,
+		DescHTML:    args.DescHTML,
+		ImageURLs:   args.ImageURLs,
+		Status:      0,
+		Attributes:  args.Attributes,
+		CostPrice:   args.CostPrice,
+		ListPrice:   args.ListPrice,
+		RetailPrice: args.RetailPrice,
+		Note:        args.Note,
 	}
 	if err = a.shopVariant(ctx).CreateShopVariant(variant); err != nil {
 		return nil, err
@@ -182,16 +181,20 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 }
 
 func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.UpdateShopVariantInfoArgs) (*catalog.ShopVariant, error) {
-	variantDB, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariantDB()
+	variant, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
 	if err != nil {
 		return nil, err
 	}
-	updated := convert.UpdateShopVariant(variantDB, args)
-	if err = a.shopVariant(ctx).UpdateShopVariant(updated); err != nil {
+	variant = convert.Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, variant)
+	variantModel := &model.ShopVariant{}
+	if err := scheme.Convert(variant, variantModel); err != nil {
 		return nil, err
 	}
-	variant, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
-	return variant, err
+	if err = a.shopVariant(ctx).UpdateShopVariant(variantModel); err != nil {
+		return nil, err
+	}
+	result, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
+	return result, err
 }
 
 func (a *Aggregate) DeleteShopVariants(ctx context.Context, args *shopping.IDsQueryShopArgs) (int, error) {
@@ -301,7 +304,7 @@ func OptionValue(update []*meta.UpdateSet, op meta.UpdateOp) *meta.UpdateSet {
 }
 
 func (a *Aggregate) UpdateShopProductCategory(ctx context.Context, args *catalog.UpdateShopProductCategoryArgs) (*catalog.ShopProductWithVariants, error) {
-	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductDB()
+	product, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()
 	if err != nil {
 		return nil, err
 	}
@@ -309,8 +312,12 @@ func (a *Aggregate) UpdateShopProductCategory(ctx context.Context, args *catalog
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã danh mục không không tồn tại")
 	}
-	updated := convert.UpdateShopProductCategory(productDB, args)
-	if err = a.shopProduct(ctx).UpdateShopProductCategory(updated); err != nil {
+	product = convert.Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(args, product)
+	productModel := &model.ShopProduct{}
+	if err := scheme.Convert(product, productModel); err != nil {
+		return nil, err
+	}
+	if err = a.shopProduct(ctx).UpdateShopProductCategory(productModel); err != nil {
 		return nil, err
 	}
 	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductWithVariants()
@@ -337,7 +344,7 @@ func (a *Aggregate) CreateShopCategory(ctx context.Context, args *catalog.Create
 }
 
 func (a *Aggregate) UpdateShopCategory(ctx context.Context, args *catalog.UpdateShopCategoryArgs) (*catalog.ShopCategory, error) {
-	categoryDB, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategoryDB()
+	category, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategory()
 	if err != nil {
 		return nil, err
 	}
@@ -346,8 +353,12 @@ func (a *Aggregate) UpdateShopCategory(ctx context.Context, args *catalog.Update
 			return nil, err
 		}
 	}
-	updated := convert.UpdateShopCategory(categoryDB, args)
-	if err = a.shopCategory(ctx).UpdateShopCategory(updated); err != nil {
+	category = convert.Apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(args, category)
+	categoryModel := &model.ShopCategory{}
+	if err := scheme.Convert(category, categoryModel); err != nil {
+		return nil, err
+	}
+	if err = a.shopCategory(ctx).UpdateShopCategory(categoryModel); err != nil {
 		return nil, err
 	}
 	result, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategory()
@@ -396,12 +407,17 @@ func (a *Aggregate) CreateShopCollection(ctx context.Context, args *catalog.Crea
 }
 
 func (a *Aggregate) UpdateShopCollection(ctx context.Context, args *catalog.UpdateShopCollectionArgs) (*catalog.ShopCollection, error) {
-	collectionDB, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollectionDB()
+	collection, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollection()
 	if err != nil {
 		return nil, err
 	}
-	updated := convert.UpdateShopCollection(collectionDB, args)
-	if err = a.shopCollection(ctx).UpdateShopCollection(updated); err != nil {
+	collection = convert.Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(args, collection)
+	collectionModel := &model.ShopCollection{}
+	if err := scheme.Convert(collection, collectionModel); err != nil {
+		return nil, err
+	}
+
+	if err = a.shopCollection(ctx).UpdateShopCollection(collectionModel); err != nil {
 		return nil, err
 	}
 	result, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollection()
