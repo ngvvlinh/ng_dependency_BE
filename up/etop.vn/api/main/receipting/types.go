@@ -14,28 +14,29 @@ import (
 // +gen:event:topic=event/receipting
 
 type Receipt struct {
-	ID          dot.ID
-	ShopID      dot.ID
-	TraderID    dot.ID
-	Code        string
-	CodeNorm    int
-	Title       string
-	Type        receipt_type.ReceiptType
-	Description string
-	Amount      int
-	Status      status3.Status
-	LedgerID    dot.ID
-	RefIDs      []dot.ID
-	RefType     receipt_ref.ReceiptRef
-	Lines       []*ReceiptLine
-	Trader      *Trader
-	PaidAt      time.Time
-	ConfirmedAt time.Time
-	CancelledAt time.Time
-	CreatedBy   dot.ID
-	Mode        receipt_mode.ReceiptMode
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID           dot.ID
+	ShopID       dot.ID
+	TraderID     dot.ID
+	Code         string
+	CodeNorm     int
+	Title        string
+	CancelReason string
+	Type         receipt_type.ReceiptType
+	Description  string
+	Amount       int
+	Status       status3.Status
+	LedgerID     dot.ID
+	RefIDs       []dot.ID
+	RefType      receipt_ref.ReceiptRef
+	Lines        []*ReceiptLine
+	Trader       *Trader
+	PaidAt       time.Time
+	ConfirmedAt  time.Time
+	CancelledAt  time.Time
+	CreatedBy    dot.ID
+	Mode         receipt_mode.ReceiptMode
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type ReceiptLine struct {

@@ -31,9 +31,9 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CancelReceiptCommand struct {
-	ID     dot.ID
-	ShopID dot.ID
-	Reason string
+	ID           dot.ID
+	ShopID       dot.ID
+	CancelReason string
 
 	Result int `json:"-"`
 }
@@ -226,16 +226,16 @@ func (q *ListReceiptsByTraderIDsAndStatusesQuery) query() {}
 func (q *CancelReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelReceiptArgs) {
 	return ctx,
 		&CancelReceiptArgs{
-			ID:     q.ID,
-			ShopID: q.ShopID,
-			Reason: q.Reason,
+			ID:           q.ID,
+			ShopID:       q.ShopID,
+			CancelReason: q.CancelReason,
 		}
 }
 
 func (q *CancelReceiptCommand) SetCancelReceiptArgs(args *CancelReceiptArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
-	q.Reason = args.Reason
+	q.CancelReason = args.CancelReason
 }
 
 func (q *ConfirmReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmReceiptArgs) {

@@ -62,3 +62,8 @@ func receiptDB(args *receipting.Receipt, out *model.Receipt) {
 	out.RefIDs = args.GetRefIDs()
 	out.CreatedType = args.Mode.String()
 }
+
+func receipt(args *model.Receipt, out *receipting.Receipt) {
+	convert_receiptingmodel_Receipt_receipting_Receipt(args, out)
+	out.CancelReason = args.CancelledReason
+}

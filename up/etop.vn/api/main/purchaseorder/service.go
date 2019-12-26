@@ -64,7 +64,7 @@ type UpdatePurchaseOrderArgs struct {
 type CancelPurchaseOrderArgs struct {
 	ID                   dot.ID
 	ShopID               dot.ID
-	Reason               string
+	CancelReason         string
 	UpdatedBy            dot.ID
 	InventoryOverStock   bool
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher

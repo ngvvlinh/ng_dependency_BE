@@ -30,7 +30,7 @@ type PurchaseOrder struct {
 	Lines            []*PurchaseOrderLine
 	PaidAmount       int
 	CreatedBy        dot.ID
-	CancelledReason  string
+	CancelReason     string
 	ConfirmedAt      time.Time
 	CancelledAt      time.Time
 	CreatedAt        time.Time `sq:"create"`

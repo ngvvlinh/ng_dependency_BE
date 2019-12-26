@@ -16,6 +16,7 @@ import (
 /*
 Custom conversions:
     createPurchaseOrder    // in use
+    purchaseOrder          // in use
     purchaseOrderDB        // in use
     updatePurchaseOrder    // in use
 
@@ -102,7 +103,7 @@ func Convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg *p
 	if out == nil {
 		out = &purchaseorder.PurchaseOrder{}
 	}
-	convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg, out)
+	purchaseOrder(arg, out)
 	return out
 }
 
@@ -121,13 +122,13 @@ func convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg *p
 	out.Status = arg.Status               // simple assign
 	out.VariantIDs = arg.VariantIDs       // simple assign
 	out.Lines = Convert_purchaseordermodel_PurchaseOrderLines_purchaseorder_PurchaseOrderLines(arg.Lines)
-	out.PaidAmount = 0                        // zero value
-	out.CreatedBy = arg.CreatedBy             // simple assign
-	out.CancelledReason = arg.CancelledReason // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
-	out.CancelledAt = arg.CancelledAt         // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.PaidAmount = 0                // zero value
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.CancelReason = ""             // zero value
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
 }
 
 func Convert_purchaseordermodel_PurchaseOrders_purchaseorder_PurchaseOrders(args []*purchaseordermodel.PurchaseOrder) (outs []*purchaseorder.PurchaseOrder) {
@@ -164,15 +165,15 @@ func convert_purchaseorder_PurchaseOrder_purchaseordermodel_PurchaseOrder(arg *p
 	out.Status = arg.Status               // simple assign
 	out.VariantIDs = arg.VariantIDs       // simple assign
 	out.Lines = Convert_purchaseorder_PurchaseOrderLines_purchaseordermodel_PurchaseOrderLines(arg.Lines)
-	out.CreatedBy = arg.CreatedBy             // simple assign
-	out.CancelledReason = arg.CancelledReason // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
-	out.CancelledAt = arg.CancelledAt         // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.DeletedAt = time.Time{}               // zero value
-	out.SupplierFullNameNorm = ""             // zero value
-	out.SupplierPhoneNorm = ""                // zero value
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.CancelledReason = ""          // zero value
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = time.Time{}       // zero value
+	out.SupplierFullNameNorm = ""     // zero value
+	out.SupplierPhoneNorm = ""        // zero value
 }
 
 func Convert_purchaseorder_PurchaseOrders_purchaseordermodel_PurchaseOrders(args []*purchaseorder.PurchaseOrder) (outs []*purchaseordermodel.PurchaseOrder) {
@@ -212,7 +213,7 @@ func apply_purchaseorder_CreatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.Lines = arg.Lines                 // simple assign
 	out.PaidAmount = 0                    // zero value
 	out.CreatedBy = arg.CreatedBy         // simple assign
-	out.CancelledReason = ""              // zero value
+	out.CancelReason = ""                 // zero value
 	out.ConfirmedAt = time.Time{}         // zero value
 	out.CancelledAt = time.Time{}         // zero value
 	out.CreatedAt = time.Time{}           // zero value
@@ -247,7 +248,7 @@ func apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.Lines = arg.Lines                                          // simple assign
 	out.PaidAmount = out.PaidAmount                                // no change
 	out.CreatedBy = out.CreatedBy                                  // no change
-	out.CancelledReason = out.CancelledReason                      // no change
+	out.CancelReason = out.CancelReason                            // no change
 	out.ConfirmedAt = out.ConfirmedAt                              // no change
 	out.CancelledAt = out.CancelledAt                              // no change
 	out.CreatedAt = out.CreatedAt                                  // no change

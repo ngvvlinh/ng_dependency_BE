@@ -96,9 +96,9 @@ type UpdateReceiptArgs struct {
 }
 
 type CancelReceiptArgs struct {
-	ID     dot.ID
-	ShopID dot.ID
-	Reason string
+	ID           dot.ID
+	ShopID       dot.ID
+	CancelReason string
 }
 
 type ConfirmReceiptArgs struct {

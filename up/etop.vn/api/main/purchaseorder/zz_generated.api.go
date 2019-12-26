@@ -31,7 +31,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 type CancelPurchaseOrderCommand struct {
 	ID                   dot.ID
 	ShopID               dot.ID
-	Reason               string
+	CancelReason         string
 	UpdatedBy            dot.ID
 	InventoryOverStock   bool
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
@@ -187,7 +187,7 @@ func (q *CancelPurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 		&CancelPurchaseOrderArgs{
 			ID:                   q.ID,
 			ShopID:               q.ShopID,
-			Reason:               q.Reason,
+			CancelReason:         q.CancelReason,
 			UpdatedBy:            q.UpdatedBy,
 			InventoryOverStock:   q.InventoryOverStock,
 			AutoInventoryVoucher: q.AutoInventoryVoucher,
@@ -197,7 +197,7 @@ func (q *CancelPurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 func (q *CancelPurchaseOrderCommand) SetCancelPurchaseOrderArgs(args *CancelPurchaseOrderArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
-	q.Reason = args.Reason
+	q.CancelReason = args.CancelReason
 	q.UpdatedBy = args.UpdatedBy
 	q.InventoryOverStock = args.InventoryOverStock
 	q.AutoInventoryVoucher = args.AutoInventoryVoucher

@@ -23,6 +23,7 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 )
 
 func init() {
@@ -111,9 +112,9 @@ func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEn
 
 func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndpoint) error {
 	cmd := &receipting.CancelReceiptCommand{
-		ID:     q.Id,
-		ShopID: q.Context.Shop.ID,
-		Reason: q.Reason,
+		ID:           q.Id,
+		ShopID:       q.Context.Shop.ID,
+		CancelReason: util.CoalesceString(q.CancelReason, q.Reason),
 	}
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err

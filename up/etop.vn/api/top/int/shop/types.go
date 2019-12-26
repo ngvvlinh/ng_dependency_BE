@@ -43,7 +43,7 @@ type PurchaseOrder struct {
 	Status           status3.Status         `json:"status"`
 	Lines            []*PurchaseOrderLine   `json:"lines"`
 	CreatedBy        dot.ID                 `json:"created_by"`
-	CancelledReason  string                 `json:"cancelled_reason"`
+	CancelReason     string                 `json:"cancel_reason"`
 	ConfirmedAt      dot.Time               `json:"confirmed_at"`
 	CancelledAt      dot.Time               `json:"cancelled_at"`
 	CreatedAt        dot.Time               `json:"created_at"`
@@ -118,6 +118,7 @@ func (m *PurchaseOrderLine) String() string { return jsonx.MustMarshalToString(m
 
 type CancelPurchaseOrderRequest struct {
 	Id                   dot.ID                              `json:"id"`
+	CancelReason         string                              `json:"cancel_reason"`
 	Reason               string                              `json:"reason"`
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
@@ -1492,29 +1493,29 @@ type Trader struct {
 func (m *Trader) String() string { return jsonx.MustMarshalToString(m) }
 
 type Receipt struct {
-	Id          dot.ID                   `json:"id"`
-	ShopId      dot.ID                   `json:"shop_id"`
-	TraderId    dot.ID                   `json:"trader_id"`
-	CreatedBy   dot.ID                   `json:"created_by"`
-	Mode        receipt_mode.ReceiptMode `json:"mode"`
-	Code        string                   `json:"code"`
-	Title       string                   `json:"title"`
-	Type        receipt_type.ReceiptType `json:"type"`
-	Description string                   `json:"description"`
-	Amount      int                      `json:"amount"`
-	LedgerId    dot.ID                   `json:"ledger_id"`
-	RefType     receipt_ref.ReceiptRef   `json:"ref_type"`
-	Lines       []*ReceiptLine           `json:"lines"`
-	Status      status3.Status           `json:"status"`
-	Reason      string                   `json:"reason"`
-	PaidAt      dot.Time                 `json:"paid_at"`
-	CreatedAt   dot.Time                 `json:"created_at"`
-	UpdatedAt   dot.Time                 `json:"updated_at"`
-	ConfirmedAt dot.Time                 `json:"confirmed_at"`
-	CancelledAt dot.Time                 `json:"cancelled_at"`
-	User        *etop.User               `json:"user"`
-	Trader      *Trader                  `json:"trader"`
-	Ledger      *Ledger                  `json:"ledger"`
+	Id           dot.ID                   `json:"id"`
+	ShopId       dot.ID                   `json:"shop_id"`
+	TraderId     dot.ID                   `json:"trader_id"`
+	CreatedBy    dot.ID                   `json:"created_by"`
+	Mode         receipt_mode.ReceiptMode `json:"mode"`
+	Code         string                   `json:"code"`
+	Title        string                   `json:"title"`
+	Type         receipt_type.ReceiptType `json:"type"`
+	Description  string                   `json:"description"`
+	Amount       int                      `json:"amount"`
+	LedgerId     dot.ID                   `json:"ledger_id"`
+	RefType      receipt_ref.ReceiptRef   `json:"ref_type"`
+	Lines        []*ReceiptLine           `json:"lines"`
+	Status       status3.Status           `json:"status"`
+	CancelReason string                   `json:"cancel_reason"`
+	PaidAt       dot.Time                 `json:"paid_at"`
+	CreatedAt    dot.Time                 `json:"created_at"`
+	UpdatedAt    dot.Time                 `json:"updated_at"`
+	ConfirmedAt  dot.Time                 `json:"confirmed_at"`
+	CancelledAt  dot.Time                 `json:"cancelled_at"`
+	User         *etop.User               `json:"user"`
+	Trader       *Trader                  `json:"trader"`
+	Ledger       *Ledger                  `json:"ledger"`
 
 	// deprecated: use mode
 	CreatedType receipt_mode.ReceiptMode `json:"created_type"`
@@ -1551,8 +1552,9 @@ type UpdateReceiptRequest struct {
 func (m *UpdateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelReceiptRequest struct {
-	Id     dot.ID `json:"id"`
-	Reason string `json:"reason"`
+	Id           dot.ID `json:"id"`
+	CancelReason string `json:"cancel_reason"`
+	Reason       string `json:"reson"`
 }
 
 func (m *CancelReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }

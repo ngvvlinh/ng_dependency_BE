@@ -16,6 +16,7 @@ import (
 /*
 Custom conversions:
     createReceipt    // in use
+    receipt          // in use
     receiptDB        // in use
     updateReceipt    // in use
 
@@ -102,7 +103,7 @@ func Convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	if out == nil {
 		out = &receipting.Receipt{}
 	}
-	convert_receiptingmodel_Receipt_receipting_Receipt(arg, out)
+	receipt(arg, out)
 	return out
 }
 
@@ -113,6 +114,7 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.Code = arg.Code               // simple assign
 	out.CodeNorm = arg.CodeNorm       // simple assign
 	out.Title = arg.Title             // simple assign
+	out.CancelReason = ""             // zero value
 	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
@@ -208,6 +210,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.Code = ""                           // zero value
 	out.CodeNorm = 0                        // zero value
 	out.Title = arg.Title                   // simple assign
+	out.CancelReason = ""                   // zero value
 	out.Type = arg.Type                     // simple assign
 	out.Description = arg.Description       // simple assign
 	out.Amount = arg.Amount                 // simple assign
@@ -244,6 +247,7 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.Code = out.Code                                      // no change
 	out.CodeNorm = out.CodeNorm                              // no change
 	out.Title = arg.Title.Apply(out.Title)                   // apply change
+	out.CancelReason = out.CancelReason                      // no change
 	out.Type = out.Type                                      // no change
 	out.Description = arg.Description.Apply(out.Description) // apply change
 	out.Amount = arg.Amount.Apply(out.Amount)                // apply change

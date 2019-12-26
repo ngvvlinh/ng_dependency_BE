@@ -6805,6 +6805,9 @@
         "auto_inventory_voucher": {
           "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
+        "cancel_reason": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -6832,11 +6835,14 @@
     "paCancelReceiptRequest": {
       "type": "object",
       "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
         },
-        "reason": {
+        "reson": {
           "type": "string"
         }
       }
@@ -9149,12 +9155,12 @@
         "basket_value": {
           "type": "integer"
         },
+        "cancel_reason": {
+          "type": "string"
+        },
         "cancelled_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "cancelled_reason": {
-          "type": "string"
         },
         "code": {
           "type": "string"
@@ -9409,6 +9415,9 @@
         "amount": {
           "type": "integer"
         },
+        "cancel_reason": {
+          "type": "string"
+        },
         "cancelled_at": {
           "type": "string",
           "format": "date-time"
@@ -9458,9 +9467,6 @@
         "paid_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "reason": {
-          "type": "string"
         },
         "ref_type": {
           "$ref": "#/definitions/akReceiptRef"

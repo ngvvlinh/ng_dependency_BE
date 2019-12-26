@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/auth"
+	"etop.vn/capi/util"
 )
 
 func init() {
@@ -152,7 +153,7 @@ func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *Cance
 	cmd := &purchaseorder.CancelPurchaseOrderCommand{
 		ID:                   r.Id,
 		ShopID:               r.Context.Shop.ID,
-		Reason:               r.Reason,
+		CancelReason:         util.CoalesceString(r.CancelReason, r.Reason),
 		UpdatedBy:            r.Context.UserID,
 		InventoryOverStock:   r.Context.Shop.InventoryOverstock.Apply(true),
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),

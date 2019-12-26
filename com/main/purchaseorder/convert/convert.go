@@ -63,3 +63,8 @@ func purchaseOrderDB(args *purchaseorder.PurchaseOrder, out *model.PurchaseOrder
 	}
 	out.VariantIDs = args.GetVariantIDs()
 }
+
+func purchaseOrder(args *model.PurchaseOrder, out *purchaseorder.PurchaseOrder) {
+	convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(args, out)
+	out.CancelReason = args.CancelledReason
+}

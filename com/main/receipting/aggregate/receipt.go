@@ -385,8 +385,7 @@ func (a *ReceiptAggregate) CancelReceipt(
 	if receipt.Status == status3.N {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
 	}
-
-	updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelReceipt(args.Reason)
+	updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelReceipt(args.CancelReason)
 	if err != nil {
 		return 0, err
 	}

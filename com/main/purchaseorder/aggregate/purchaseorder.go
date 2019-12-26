@@ -241,11 +241,9 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 	if totalPrice != args.BasketValue {
 		return cm.Errorf(cm.NotFound, nil, "Tiền hàng không hợp lệ")
 	}
-
 	query := &catalog.ListShopVariantsByIDsQuery{
 		IDs:    variantIDs,
 		ShopID: args.ShopID,
-		Result: nil,
 	}
 	if err := a.catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -274,7 +272,7 @@ func (a *PurchaseOrderAggregate) CancelPurchaseOrder(
 			Throw()
 	}
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelPurchaseOrder(args.Reason)
+		updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelPurchaseOrder(args.CancelReason)
 		event := &purchaseorder.PurchaseOrderCancelledEvent{
 			PurchaseOrderID:      args.ID,
 			ShopID:               args.ShopID,
