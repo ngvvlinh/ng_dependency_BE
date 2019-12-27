@@ -3217,7 +3217,8 @@
         "etop_pos",
         "etop_pxs",
         "etop_cmx",
-        "ts_app"
+        "ts_app",
+        "etop_app"
       ]
     },
     "yiPaymentMethod": {

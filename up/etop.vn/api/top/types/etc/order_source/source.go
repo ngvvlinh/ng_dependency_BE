@@ -33,4 +33,7 @@ const (
 
 	// +enum=ts_app
 	TSApp Source = 8
+
+	// +enum=etop_app
+	EtopApp Source = 9
 )
