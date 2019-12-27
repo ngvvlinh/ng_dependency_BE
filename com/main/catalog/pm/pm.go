@@ -6,7 +6,8 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
-	"etop.vn/api/shopping/suppliering"
+	"etop.vn/api/shopping/tradering"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
@@ -61,13 +62,26 @@ func (m *ProcessManager) VerifyVariantIDs(ctx context.Context, ShopID dot.ID, va
 	return m.catalogQ.Dispatch(ctx, &query)
 }
 
-func (m *ProcessManager) DeleteVariantSupplier(ctx context.Context, event *suppliering.VariantSupplierDeletedEvent) error {
-	cmd := catalog.DeleteVariantSupplierCommand{
-		VariantID:  0,
-		SupplierID: event.SupplierID,
+func (m *ProcessManager) DeleteVariantSupplier(ctx context.Context, event *tradering.TraderDeletedEvent) error {
+	query := &catalog.GetVariantsBySupplierIDQuery{
+		SupplierID: event.TraderID,
 		ShopID:     event.ShopID,
 	}
-	return m.catalogA.Dispatch(ctx, &cmd)
+	if err := m.catalogQ.Dispatch(ctx, query); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return nil
+		}
+		return err
+	}
+	if len(query.Result.Variants) == 0 {
+		return nil
+	}
+	cmd := &catalog.DeleteVariantSupplierCommand{
+		VariantID:  0,
+		SupplierID: event.TraderID,
+		ShopID:     event.ShopID,
+	}
+	return m.catalogA.Dispatch(ctx, cmd)
 }
 
 func (m *ProcessManager) CreateVariantSupplier(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {

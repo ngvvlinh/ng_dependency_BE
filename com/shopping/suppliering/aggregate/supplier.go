@@ -3,7 +3,6 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/meta"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/suppliering/convert"
@@ -23,12 +22,14 @@ var scheme = conversion.Build(convert.RegisterConversions)
 
 type SupplierAggregate struct {
 	store    sqlstore.SupplierStoreFactory
+	db       *cmsql.Database
 	eventBus capi.EventBus
 }
 
 func NewSupplierAggregate(eventBus capi.EventBus, db *cmsql.Database) *SupplierAggregate {
 	return &SupplierAggregate{
 		store:    sqlstore.NewSupplierStore(db),
+		db:       db,
 		eventBus: eventBus,
 	}
 }
@@ -141,21 +142,20 @@ func (a *SupplierAggregate) UpdateSupplier(
 func (a *SupplierAggregate) DeleteSupplier(
 	ctx context.Context, ID dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
-	deleted, err := a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()
-	event := &tradering.TraderDeletedEvent{
-		EventMeta: meta.NewEvent(),
-		ShopID:    shopID,
-		TraderID:  ID,
-	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
-		return 0, err
-	}
-	eventDeleVariantSupplier := &suppliering.VariantSupplierDeletedEvent{
-		ShopID:     shopID,
-		SupplierID: ID,
-	}
-	if err := a.eventBus.Publish(ctx, eventDeleVariantSupplier); err != nil {
-		return 0, err
-	}
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		deletedTrader, err := a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()
+		if err != nil {
+			return err
+		}
+		event := &tradering.TraderDeletedEvent{
+			ShopID:   shopID,
+			TraderID: ID,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		deleted = deletedTrader
+		return nil
+	})
 	return deleted, err
 }

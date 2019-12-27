@@ -3,7 +3,6 @@ package suppliering
 import (
 	"time"
 
-	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
 )
@@ -25,11 +24,4 @@ type ShopSupplier struct {
 	Status            status3.Status
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-}
-
-type VariantSupplierDeletedEvent struct {
-	meta.EventMeta
-
-	SupplierID dot.ID
-	ShopID     dot.ID
 }

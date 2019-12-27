@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
-
 	"etop.vn/api/top/types/etc/shipping_provider"
 	logmodel "etop.vn/backend/com/etc/logging/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
@@ -14,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
