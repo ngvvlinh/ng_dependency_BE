@@ -23,21 +23,21 @@ func main() {
 		os.Exit(2)
 	}
 
-	for _, arg := range flag.Args() {
-		absPath, err := filepath.Abs(arg)
-		if err != nil {
-			must(err, "invalid path")
-		}
+	args := flag.Args()
+	for i, arg := range args {
+		path, err := filepath.EvalSymlinks(arg)
+		must(err, "invalid path")
+		absPath, err := filepath.Abs(path)
+		must(err, "invalid path")
 		f, err := os.Stat(absPath)
-		if err != nil {
-			must(err, "can not read directory")
-		}
+		must(err, "can not read directory")
 		if !f.IsDir() {
 			panicf("%v must be directory", absPath)
 		}
+		args[i] = absPath
 	}
 	var files []string
-	for _, arg := range flag.Args() {
+	for _, arg := range args {
 		files = append(files, walk(arg)...)
 	}
 	if len(files) == 0 {
@@ -71,6 +71,7 @@ func panicf(msg string, args ...interface{}) {
 }
 
 func walk(dir string) (files []string) {
+	fmt.Println("Clean imports:", dir)
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("process %v: %v", path, err)
