@@ -16,6 +16,27 @@ var enum{{.Name}}Value = map[string]int {
 {{end -}}
 }
 
+{{if $enum.Labels -}}
+	var enum{{.Name}}MapLabel = map[string]map[string]string{
+	{{range $name := .Names -}}
+			{{$name|quote}}: {
+			{{ $mapLable := index $enum.MapLabel $name -}}
+						{{range $lable := $enum.Labels -}}
+							{{$lable|quote}}: {{index $mapLable $lable |quote}},
+						{{end -}}
+			},
+	{{end -}}
+	}
+	{{$name := .Name}}
+
+	{{range $label := .Labels -}}
+		func (e {{$name}}) GetLabel{{$label}}() string {
+		val :=  enum{{$name}}Name[int(e)]
+		nameVal := enum{{$name}}MapLabel[val]
+			return nameVal[{{$label|quote}}]
+		}
+	{{end -}}
+{{end -}}
 func Parse{{.Name}}(s string) ({{.Name}}, bool) {
 	val, ok := enum{{.Name}}Value[s]
 	return {{.Name}}(val), ok

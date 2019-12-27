@@ -48,10 +48,13 @@ type Enum struct {
 	Name string
 
 	// sorted values as appear in code
-	Values   []interface{}
-	Names    []string
+	Values []interface{}
+	Names  []string
+	Labels []string
+
 	MapValue map[string]interface{} // int or uint64
 	MapName  map[interface{}]string
+	MapLabel map[string]map[string]string
 
 	Type     *types.Named
 	Basic    *types.Basic

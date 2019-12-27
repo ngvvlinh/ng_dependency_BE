@@ -249,6 +249,7 @@ func ParseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 			Basic:    basic.(*types.Basic),
 			MapValue: map[string]interface{}{},
 			MapName:  map[interface{}]string{},
+			MapLabel: map[string]map[string]string{},
 			MapConst: map[string]*types.Const{},
 		}
 	}
@@ -259,6 +260,7 @@ func ParseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 		if !ok {
 			continue
 		}
+		ds := ng.GetDirectives(cnst)
 		directive, ok := ng.GetDirectives(cnst).Get("enum")
 		enum := validateEnumConstType(pkg.Types, mapEnum, cnst.Type())
 		if ok != (enum != nil) {
@@ -296,8 +298,14 @@ func ParseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 				panic(fmt.Sprintf("unexpected kind %v", enum.Basic))
 			}
 
+			lable, err := getLabels(ds, name)
+			if err != nil {
+				return nil, err
+			}
 			enum.MapConst[name] = cnst
 			enum.MapValue[name] = enumValue
+			enum.MapLabel[name] = lable
+			enum.Labels = addLableToList(enum.Labels, enum.MapLabel[name])
 			enum.Names = append(enum.Names, name)
 
 			// multiple name can exist for a value, only map value to the first name
@@ -308,6 +316,49 @@ func ParseEnumInPackage(ng generator.Engine, pkg *packages.Package) (map[string]
 		}
 	}
 	return mapEnum, nil
+}
+
+func addLableToList(labels []string, mapLable map[string]string) []string {
+	for key, _ := range mapLable {
+		isExisted := false
+		for _, value := range labels {
+			if value == key && key != "" {
+				isExisted = true
+				break
+			}
+		}
+		if !isExisted {
+			labels = append(labels, key)
+		}
+	}
+	return labels
+}
+
+func getLabels(ds generator.Directives, name string) (map[string]string, error) {
+	var mapLabel = make(map[string]string)
+	for i := 0; i < len(ds); i++ {
+		rootPoint := ds[i]
+		if rootPoint.Arg == name {
+			for {
+				if i+1 == len(ds) {
+					break
+				}
+				strs := strings.Split(ds[i+1].Raw, `:`)
+				if strs[0] != "+enum" || len(strs) != 3 {
+					break
+				}
+				firstNameCharacter := strs[1][:1]
+				if "A" > firstNameCharacter || firstNameCharacter > "Z" {
+					i++
+					continue
+				}
+				mapLabel[strs[1]] = strs[2]
+				i++
+			}
+			break
+		}
+	}
+	return mapLabel, nil
 }
 
 func validateEnumConstType(pkg *types.Package, mapEnum map[string]*defs.Enum, typ types.Type) *defs.Enum {
