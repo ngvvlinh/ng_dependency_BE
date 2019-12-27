@@ -16,11 +16,15 @@ get_change_id() {
   git log -1 | grep "Change-Id" | tail -1 | grep -o "[A-z0-9]\+$"
 }
 
-export change_id="$(get_change_id)"
+export branch="$CI_COMMIT_REF_NAME"
+
+change_id="$(get_change_id)"
+export change_id
 : ${change_id?Can not parse change_id}
 
 export revision="$CI_COMMIT_SHA"
-export basic_auth="$(echo "$CI_GERRIT_BASIC_AUTH" | base64 -d)"
+basic_auth="$(echo "$CI_GERRIT_BASIC_AUTH" | base64 -d)"
+export basic_auth
 
 pipelines_url="${CI_PROJECT_URL}/commit/${revision}/pipelines (#${CI_PIPELINE_ID})"
 
@@ -37,7 +41,8 @@ else
   export message="Build successfully on ${CI_COMMIT_REF_NAME}. See ${pipelines_url}"
   if [[ -f "artifacts/COVERAGE" ]] ; then
     coverage_url="$(cat artifacts/ARTIFACTS_URL)/browse/artifacts/coverage/"
-    export message="Build successfully on ${CI_COMMIT_REF_NAME} with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
+    message="Build successfully on ${CI_COMMIT_REF_NAME} with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
+    export message
   fi
 fi
 
