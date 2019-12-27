@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -27,7 +26,7 @@ var apiRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{
 }, "name", "code")
 
 func APIRequest(name string, d time.Duration, err error) {
-	code := strconv.Itoa(int(cm.ErrorCode(err)))
+	code := cm.ErrorCode(err).String()
 	countRequests.WithLabelValues(name, code).Inc()
 	apiRequestHistogram.WithLabelValues(name, code).Observe(d.Seconds())
 }
