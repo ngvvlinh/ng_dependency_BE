@@ -8,6 +8,9 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
+	inventory_auto "etop.vn/api/top/types/etc/inventory_auto"
+	inventory_type "etop.vn/api/top/types/etc/inventory_type"
+	inventory_voucher_ref "etop.vn/api/top/types/etc/inventory_voucher_ref"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -41,6 +44,22 @@ func (h AggregateHandler) HandleAdjustInventoryQuantity(ctx context.Context, msg
 	return err
 }
 
+type CancelInventoryByRefIDCommand struct {
+	RefID                dot.ID
+	ShopID               dot.ID
+	RefType              inventory_voucher_ref.InventoryVoucherRef
+	InventoryOverStock   bool
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
+	UpdateBy             dot.ID
+
+	Result *CancelInventoryByRefIDResponse `json:"-"`
+}
+
+func (h AggregateHandler) HandleCancelInventoryByRefID(ctx context.Context, msg *CancelInventoryByRefIDCommand) (err error) {
+	msg.Result, err = h.inner.CancelInventoryByRefID(msg.GetArgs(ctx))
+	return err
+}
+
 type CancelInventoryVoucherCommand struct {
 	ShopID    dot.ID
 	ID        dot.ID
@@ -59,7 +78,7 @@ type CheckInventoryVariantsQuantityCommand struct {
 	Lines              []*InventoryVoucherItem
 	InventoryOverStock bool
 	ShopID             dot.ID
-	Type               InventoryVoucherType
+	Type               inventory_type.InventoryVoucherType
 
 	Result struct {
 	} `json:"-"`
@@ -99,13 +118,14 @@ type CreateInventoryVoucherCommand struct {
 	ShopID      dot.ID
 	CreatedBy   dot.ID
 	Title       string
+	Rollback    bool
 	RefID       dot.ID
-	RefType     InventoryRefType
-	RefName     InventoryVoucherRefName
+	RefType     inventory_voucher_ref.InventoryVoucherRef
+	RefName     string
 	RefCode     string
 	TraderID    dot.ID
 	TotalAmount int
-	Type        InventoryVoucherType
+	Type        inventory_type.InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
 
@@ -120,8 +140,8 @@ func (h AggregateHandler) HandleCreateInventoryVoucher(ctx context.Context, msg 
 type CreateInventoryVoucherByQuantityChangeCommand struct {
 	ShopID    dot.ID
 	RefID     dot.ID
-	RefType   InventoryRefType
-	RefName   InventoryVoucherRefName
+	RefType   inventory_voucher_ref.InventoryVoucherRef
+	RefName   string
 	RefCode   string
 	NoteIn    string
 	NoteOut   string
@@ -139,9 +159,9 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByQuantityChange(ctx conte
 }
 
 type CreateInventoryVoucherByReferenceCommand struct {
-	RefType   InventoryRefType
+	RefType   inventory_voucher_ref.InventoryVoucherRef
 	RefID     dot.ID
-	Type      InventoryVoucherType
+	Type      inventory_type.InventoryVoucherType
 	ShopID    dot.ID
 	UserID    dot.ID
 	OverStock bool
@@ -237,7 +257,7 @@ func (h QueryServiceHandler) HandleGetInventoryVoucher(ctx context.Context, msg 
 type GetInventoryVoucherByReferenceQuery struct {
 	ShopID  dot.ID
 	RefID   dot.ID
-	RefType InventoryRefType
+	RefType inventory_voucher_ref.InventoryVoucherRef
 
 	Result *GetInventoryVoucherByReferenceResponse `json:"-"`
 }
@@ -300,6 +320,7 @@ func (h QueryServiceHandler) HandleListInventoryVariantsByVariantIDs(ctx context
 // implement interfaces
 
 func (q *AdjustInventoryQuantityCommand) command()                {}
+func (q *CancelInventoryByRefIDCommand) command()                 {}
 func (q *CancelInventoryVoucherCommand) command()                 {}
 func (q *CheckInventoryVariantsQuantityCommand) command()         {}
 func (q *ConfirmInventoryVoucherCommand) command()                {}
@@ -340,6 +361,27 @@ func (q *AdjustInventoryQuantityCommand) SetAdjustInventoryQuantityArgs(args *Ad
 	q.Title = args.Title
 	q.UserID = args.UserID
 	q.Note = args.Note
+}
+
+func (q *CancelInventoryByRefIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelInventoryByRefIDRequest) {
+	return ctx,
+		&CancelInventoryByRefIDRequest{
+			RefID:                q.RefID,
+			ShopID:               q.ShopID,
+			RefType:              q.RefType,
+			InventoryOverStock:   q.InventoryOverStock,
+			AutoInventoryVoucher: q.AutoInventoryVoucher,
+			UpdateBy:             q.UpdateBy,
+		}
+}
+
+func (q *CancelInventoryByRefIDCommand) SetCancelInventoryByRefIDRequest(args *CancelInventoryByRefIDRequest) {
+	q.RefID = args.RefID
+	q.ShopID = args.ShopID
+	q.RefType = args.RefType
+	q.InventoryOverStock = args.InventoryOverStock
+	q.AutoInventoryVoucher = args.AutoInventoryVoucher
+	q.UpdateBy = args.UpdateBy
 }
 
 func (q *CancelInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelInventoryVoucherArgs) {
@@ -411,6 +453,7 @@ func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 			ShopID:      q.ShopID,
 			CreatedBy:   q.CreatedBy,
 			Title:       q.Title,
+			Rollback:    q.Rollback,
 			RefID:       q.RefID,
 			RefType:     q.RefType,
 			RefName:     q.RefName,
@@ -427,6 +470,7 @@ func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *Crea
 	q.ShopID = args.ShopID
 	q.CreatedBy = args.CreatedBy
 	q.Title = args.Title
+	q.Rollback = args.Rollback
 	q.RefID = args.RefID
 	q.RefType = args.RefType
 	q.RefName = args.RefName
@@ -570,7 +614,7 @@ func (q *GetInventoryVoucherQuery) GetArgs(ctx context.Context) (_ context.Conte
 		q.ID
 }
 
-func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, refID dot.ID, refType InventoryRefType) {
+func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, refID dot.ID, refType inventory_voucher_ref.InventoryVoucherRef) {
 	return ctx,
 		q.ShopID,
 		q.RefID,
@@ -639,6 +683,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleAdjustInventoryQuantity)
+	b.AddHandler(h.HandleCancelInventoryByRefID)
 	b.AddHandler(h.HandleCancelInventoryVoucher)
 	b.AddHandler(h.HandleCheckInventoryVariantsQuantity)
 	b.AddHandler(h.HandleConfirmInventoryVoucher)

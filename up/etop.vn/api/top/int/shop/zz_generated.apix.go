@@ -1842,6 +1842,87 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg capi.Messag
 	}
 }
 
+type PurchaseRefundServiceServer struct {
+	inner PurchaseRefundService
+}
+
+func NewPurchaseRefundServiceServer(svc PurchaseRefundService) Server {
+	return &PurchaseRefundServiceServer{
+		inner: svc,
+	}
+}
+
+const PurchaseRefundServicePathPrefix = "/shop.PurchaseRefund/"
+
+func (s *PurchaseRefundServiceServer) PathPrefix() string {
+	return PurchaseRefundServicePathPrefix
+}
+
+func (s *PurchaseRefundServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *PurchaseRefundServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.PurchaseRefund/CancelPurchaseRefund":
+		msg := &CancelPurchaseRefundRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CancelPurchaseRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/ConfirmPurchaseRefund":
+		msg := &ConfirmPurchaseRefundRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ConfirmPurchaseRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/CreatePurchaseRefund":
+		msg := &CreatePurchaseRefundRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreatePurchaseRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/GetPurchaseRefund":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetPurchaseRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/GetPurchaseRefunds":
+		msg := &GetPurchaseRefundsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetPurchaseRefunds(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/GetPurchaseRefundsByIDs":
+		msg := &common.IDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetPurchaseRefundsByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseRefund/UpdatePurchaseRefund":
+		msg := &UpdatePurchaseRefundRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdatePurchaseRefund(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type ReceiptServiceServer struct {
 	inner ReceiptService
 }

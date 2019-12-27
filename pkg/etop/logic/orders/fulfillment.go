@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -14,6 +13,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/shipping"
 	typeshippingprovider "etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
@@ -83,10 +83,6 @@ var blockCarrierByProvinces = map[typeshippingprovider.ShippingProvider][]string
 }
 
 func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
-	autoInventoryVoucher := inventory.AutoInventoryVoucher(r.AutoInventoryVoucher.Apply(""))
-	if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
-	}
 	autoCreateFfm := r.AutoCreateFulfillment
 
 	query := &ordermodelx.GetOrderQuery{
@@ -110,7 +106,7 @@ func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.Conf
 		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
 	}
 
-	if err := RaiseOrderConfirmingEvent(ctx, shop, autoInventoryVoucher, order); err != nil {
+	if err := RaiseOrderConfirmingEvent(ctx, shop, r.AutoInventoryVoucher, order); err != nil {
 		return nil, err
 	}
 
@@ -131,7 +127,7 @@ func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.Conf
 
 		event := &ordering.OrderConfirmedEvent{
 			OrderID:              order.ID,
-			AutoInventoryVoucher: autoInventoryVoucher,
+			AutoInventoryVoucher: r.AutoInventoryVoucher,
 			ShopID:               shop.ID,
 			InventoryOverStock:   shop.InventoryOverstock.Apply(true),
 		}
@@ -237,7 +233,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.
 			order.ShopShipping.ShippingProvider != typeshippingprovider.GHTK {
 			go func() {
 				time.Sleep(5 * time.Minute)
-				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", "")
+				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", inventory_auto.Unknown)
 				if err != nil {
 					ll.Error("Can not cancel order on sandbox", l.Error(err))
 				}
@@ -286,7 +282,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.
 	return resp, nil
 }
 
-func RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
+func RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, autoInventoryVoucher inventory_auto.AutoInventoryVoucher, order *ordermodel.Order) error {
 	orderLines := []*ordertypes.ItemLine{}
 	for _, line := range order.Lines {
 		if line.VariantID != 0 {

@@ -7,18 +7,20 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/top/int/shop"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/capi/dot"
 )
 
 func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEndpoint) error {
 	cmd := &inventory.CreateInventoryVoucherByReferenceCommand{
-		RefType:   inventory.InventoryRefType(q.RefType),
+		RefType:   q.RefType,
 		RefID:     q.RefId,
 		ShopID:    q.Context.Shop.ID,
 		UserID:    q.Context.UserID,
-		Type:      inventory.InventoryVoucherType(q.Type),
+		Type:      q.Type,
 		OverStock: q.Context.Shop.InventoryOverstock.Apply(true),
 	}
 	err := inventoryAggregate.Dispatch(ctx, cmd)
@@ -152,7 +154,7 @@ func (s *InventoryService) GetInventoryVouchersByReference(ctx context.Context, 
 	query := &inventory.GetInventoryVoucherByReferenceQuery{
 		ShopID:  shopID,
 		RefID:   q.RefId,
-		RefType: inventory.InventoryRefType(q.RefType),
+		RefType: q.RefType,
 	}
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -301,4 +303,18 @@ func (s *InventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, 
 		InventoryVariant: PbInventory(cmd.Result),
 	}
 	return nil
+}
+
+func checkRoleAutoInventoryVoucher(roles auth.Roles, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) inventory_auto.AutoInventoryVoucher {
+	roleLevel := inventory_auto.Unknown
+	if roles.Check("shop/inventory:create") == true {
+		roleLevel = inventory_auto.Create
+	}
+	if roles.Check("shop/inventory:confirm") == true {
+		roleLevel = inventory_auto.Confirm
+	}
+	if roleLevel < autoInventoryVoucher {
+		return roleLevel
+	}
+	return autoInventoryVoucher
 }

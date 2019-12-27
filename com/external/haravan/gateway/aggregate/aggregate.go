@@ -13,6 +13,7 @@ import (
 	"etop.vn/api/main/location"
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	pbsp "etop.vn/api/top/types/etc/shipping_provider"
 	pbtryon "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/com/external/haravan/gateway/convert"
@@ -268,7 +269,7 @@ func (a *Aggregate) CancelOrder(ctx context.Context, args *gateway.CancelOrderRe
 	ffm := ffmQuery.Result
 	orderID := ffm.OrderID
 
-	_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng", "")
+	_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng", inventory_auto.Unknown)
 	if err != nil {
 		return nil, err
 	}

@@ -24,4 +24,7 @@ const (
 
 	// +enum=refund
 	Refund ReceiptRef = 4
+
+	// +enum=purchase_refund
+	PurchaseRefund ReceiptRef = 5
 )

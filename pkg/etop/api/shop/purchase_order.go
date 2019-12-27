@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 )
 
 func init() {
@@ -134,9 +134,10 @@ func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *Delet
 }
 
 func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *ConfirmPurchaseOrderEndpoint) error {
+	roles := auth.Roles(r.Context.Roles)
 	cmd := &purchaseorder.ConfirmPurchaseOrderCommand{
 		ID:                   r.Id,
-		AutoInventoryVoucher: inventory.AutoInventoryVoucher(r.AutoInventoryVoucher),
+		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
 		ShopID:               r.Context.Shop.ID,
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
@@ -147,10 +148,14 @@ func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *Conf
 }
 
 func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *CancelPurchaseOrderEndpoint) error {
+	roles := auth.Roles(r.Context.Roles)
 	cmd := &purchaseorder.CancelPurchaseOrderCommand{
-		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
-		Reason: r.Reason,
+		ID:                   r.Id,
+		ShopID:               r.Context.Shop.ID,
+		Reason:               r.Reason,
+		UpdatedBy:            r.Context.UserID,
+		InventoryOverStock:   r.Context.Shop.InventoryOverstock.Apply(true),
+		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err

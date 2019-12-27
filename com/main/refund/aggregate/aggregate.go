@@ -31,7 +31,7 @@ type RefundAggregate struct {
 	bus      bus.Bus
 }
 
-func NewReceiptAggregate(
+func NewRefundAggregate(
 	database *cmsql.Database, eventBus capi.EventBus,
 ) *RefundAggregate {
 	return &RefundAggregate{
@@ -138,7 +138,7 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sản phẩm không tồn tại trong đơn hàng %v", queryOrder.Result.Order.Code)
 		}
 		if linesVariant[value.VariantID].Quantity < value.Quantity {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lơn hơn đơn hàng")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lớn hơn đơn hàng")
 		}
 		lines[key].Code = linesVariant[value.VariantID].Code
 		lines[key].ImageURL = linesVariant[value.VariantID].ImageURL

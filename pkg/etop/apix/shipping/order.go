@@ -13,6 +13,7 @@ import (
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/connection_type"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	pbsource "etop.vn/api/top/types/etc/order_source"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
@@ -156,7 +157,7 @@ func ConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *claims.ShopC
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), "")
+			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
@@ -329,7 +330,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), "")
+			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
@@ -412,7 +413,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, r *exttypes.CancelOrderRequ
 		orderID = order.ID
 	}
 
-	resp, err := logicorder.CancelOrder(ctx, shopID, 0, orderID, r.CancelReason, "")
+	resp, err := logicorder.CancelOrder(ctx, shopID, 0, orderID, r.CancelReason, inventory_auto.Unknown)
 	if err != nil {
 		return nil, err
 	}

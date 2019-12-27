@@ -5,7 +5,8 @@ package sqlstore
 import (
 	"time"
 
-	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
@@ -362,22 +363,22 @@ func (ft *InventoryVoucherFilters) ByTotalAmountPtr(TotalAmount *int) *sq.Column
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByType(Type inventory.InventoryVoucherType) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByType(Type inventory_type.InventoryVoucherType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTypePtr(Type *inventory.InventoryVoucherType) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByTypePtr(Type *inventory_type.InventoryVoucherType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 
@@ -419,22 +420,22 @@ func (ft *InventoryVoucherFilters) ByRefCodePtr(RefCode *string) *sq.ColumnFilte
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByRefType(RefType string) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByRefType(RefType inventory_voucher_ref.InventoryVoucherRef) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ref_type",
 		Value:  RefType,
-		IsNil:  RefType == "",
+		IsNil:  RefType == 0,
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByRefTypePtr(RefType *string) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByRefTypePtr(RefType *inventory_voucher_ref.InventoryVoucherRef) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ref_type",
 		Value:  RefType,
 		IsNil:  RefType == nil,
-		IsZero: RefType != nil && (*RefType) == "",
+		IsZero: RefType != nil && (*RefType) == 0,
 	}
 }
 
@@ -568,5 +569,24 @@ func (ft *InventoryVoucherFilters) ByCancelReasonPtr(CancelReason *string) *sq.C
 		Value:  CancelReason,
 		IsNil:  CancelReason == nil,
 		IsZero: CancelReason != nil && (*CancelReason) == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRollback(Rollback bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rollback",
+		Value:  Rollback,
+		IsNil:  bool(!Rollback),
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRollbackPtr(Rollback *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rollback",
+		Value:  Rollback,
+		IsNil:  Rollback == nil,
+		IsZero: Rollback != nil && bool(!(*Rollback)),
 	}
 }

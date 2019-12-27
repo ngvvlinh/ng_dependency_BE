@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
 )
@@ -75,7 +76,15 @@ type PurchaseOrderConfirmedEvent struct {
 	PurchaseOrderID      dot.ID
 	TraderID             dot.ID
 	TotalAmount          int
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 
 	Lines []*inventory.InventoryVoucherItem
+}
+
+type PurchaseOrderCancelledEvent struct {
+	PurchaseOrderID      dot.ID
+	ShopID               dot.ID
+	UpdatedBy            dot.ID
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
+	InventoryOverStock   bool
 }

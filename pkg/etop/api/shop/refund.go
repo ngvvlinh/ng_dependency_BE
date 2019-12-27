@@ -3,7 +3,6 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/shopping/customering"
@@ -94,7 +93,7 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
-		AutoInventoryVoucher: inventory.AutoInventoryVoucher(q.AutoInventoryVoucher),
+		AutoInventoryVoucher: q.AutoInventoryVoucher,
 	}
 	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err

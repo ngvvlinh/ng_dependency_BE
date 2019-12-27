@@ -5,6 +5,8 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -77,12 +79,12 @@ func (s *InventoryVoucherStore) RefID(id dot.ID) *InventoryVoucherStore {
 	return s
 }
 
-func (s *InventoryVoucherStore) RefType(refType string) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) RefType(refType inventory_voucher_ref.InventoryVoucherRef) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByRefType(refType))
 	return s
 }
 
-func (s *InventoryVoucherStore) Type(inventoryVoucherType inventory.InventoryVoucherType) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) Type(inventoryVoucherType inventory_type.InventoryVoucherType) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByType(inventoryVoucherType))
 	return s
 }

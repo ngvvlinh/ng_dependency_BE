@@ -11,6 +11,9 @@ import (
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/gender"
 	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/ledger_type"
 	payment_provider "etop.vn/api/top/types/etc/payment_provider"
 	product_type "etop.vn/api/top/types/etc/product_type"
@@ -113,8 +116,9 @@ type PurchaseOrderLine struct {
 func (m *PurchaseOrderLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelPurchaseOrderRequest struct {
-	Id     dot.ID `json:"id"`
-	Reason string `json:"reason"`
+	Id                   dot.ID                              `json:"id"`
+	Reason               string                              `json:"reason"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *CancelPurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -122,7 +126,7 @@ func (m *CancelPurchaseOrderRequest) String() string { return jsonx.MustMarshalT
 type ConfirmPurchaseOrderRequest struct {
 	Id dot.ID `json:"id"`
 	// enum create, confirm
-	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *ConfirmPurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -573,8 +577,8 @@ func (m *UpdateOrdersStatusRequest) String() string { return jsonx.MustMarshalTo
 type ConfirmOrderRequest struct {
 	OrderId dot.ID `json:"order_id"`
 	// enum ('create', 'create')
-	AutoInventoryVoucher  dot.NullString `json:"auto_inventory_voucher"`
-	AutoCreateFulfillment bool           `json:"auto_create_fulfillment"`
+	AutoInventoryVoucher  inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
+	AutoCreateFulfillment bool                                `json:"auto_create_fulfillment"`
 }
 
 func (m *ConfirmOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -599,9 +603,9 @@ type CreateFulfillmentsForOrderRequest struct {
 func (m *CreateFulfillmentsForOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelOrderRequest struct {
-	OrderId              dot.ID `json:"order_id"`
-	CancelReason         string `json:"cancel_reason"`
-	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
+	OrderId              dot.ID                              `json:"order_id"`
+	CancelReason         string                              `json:"cancel_reason"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *CancelOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -1581,10 +1585,10 @@ type GetShopCollectionsByProductIDRequest struct {
 func (m *GetShopCollectionsByProductIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateInventoryVoucherRequest struct {
-	RefId   dot.ID `json:"ref_id"`
-	RefType string `json:"ref_type"`
+	RefId   dot.ID                                    `json:"ref_id"`
+	RefType inventory_voucher_ref.InventoryVoucherRef `json:"ref_type"`
 	//enum "in" or "out" only for ref_type = "order"
-	Type string `json:"type"`
+	Type inventory_type.InventoryVoucherType `json:"type"`
 }
 
 func (m *CreateInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -1731,6 +1735,7 @@ type InventoryVoucher struct {
 	CancelReason string                  `json:"cancel_reason"`
 	Trader       *Trader                 `json:"trader"`
 	Status       status3.Status          `json:"status"`
+	Rollback     bool                    `json:"rollback"`
 }
 
 func (m *InventoryVoucher) String() string { return jsonx.MustMarshalToString(m) }
@@ -1854,7 +1859,7 @@ func (m *GetBrandsResponse) String() string { return jsonx.MustMarshalToString(m
 type GetInventoryVouchersByReferenceRequest struct {
 	RefId dot.ID `json:"ref_id"`
 	// enum ('order', 'purchase_order', 'return', 'purchase_order')
-	RefType string `json:"ref_type"`
+	RefType inventory_voucher_ref.InventoryVoucherRef `json:"ref_type"`
 }
 
 func (m *GetInventoryVouchersByReferenceRequest) Reset() {
@@ -1955,8 +1960,8 @@ type StocktakeLine struct {
 func (m *StocktakeLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmStocktakeRequest struct {
-	Id                   dot.ID `json:"id"`
-	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
+	Id                   dot.ID                              `json:"id"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *ConfirmStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -2008,8 +2013,8 @@ type CancelRefundRequest struct {
 func (m *CancelRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmRefundRequest struct {
-	ID                   dot.ID `json:"id"`
-	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
+	ID                   dot.ID                              `json:"id"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *ConfirmRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -2069,6 +2074,105 @@ type RefundLine struct {
 }
 
 func (m *RefundLine) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetPurchaseRefundsByIDsResponse struct {
+	PurchaseRefund []*PurchaseRefund `json:"purchase_refunds"`
+}
+
+func (m *GetPurchaseRefundsByIDsResponse) Reset()         { *m = GetPurchaseRefundsByIDsResponse{} }
+func (m *GetPurchaseRefundsByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetPurchaseRefundsResponse struct {
+	PurchaseRefunds []*PurchaseRefund `json:"purchase_refunds"`
+	Paging          *common.PageInfo  `json:"paging"`
+}
+
+func (m *GetPurchaseRefundsResponse) Reset()         { *m = GetPurchaseRefundsResponse{} }
+func (m *GetPurchaseRefundsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetPurchaseRefundsRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetPurchaseRefundsRequest) Reset()         { *m = GetPurchaseRefundsRequest{} }
+func (m *GetPurchaseRefundsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CancelPurchaseRefundRequest struct {
+	ID                   dot.ID                              `json:"id"`
+	CancelReason         string                              `json:"cancel_reason"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
+}
+
+func (m *CancelPurchaseRefundRequest) Reset()         { *m = CancelPurchaseRefundRequest{} }
+func (m *CancelPurchaseRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ConfirmPurchaseRefundRequest struct {
+	ID                   dot.ID                              `json:"id"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
+}
+
+func (m *ConfirmPurchaseRefundRequest) Reset()         { *m = ConfirmPurchaseRefundRequest{} }
+func (m *ConfirmPurchaseRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdatePurchaseRefundRequest struct {
+	Lines    []*PurchaseRefundLine `json:"lines"`
+	Note     dot.NullString        `json:"note"`
+	ID       dot.ID                `json:"id"`
+	DisCount dot.NullInt           `json:"discount"`
+}
+
+func (m *UpdatePurchaseRefundRequest) Reset()         { *m = UpdatePurchaseRefundRequest{} }
+func (m *UpdatePurchaseRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreatePurchaseRefundRequest struct {
+	Lines           []*PurchaseRefundLine `json:"lines"`
+	PurchaseOrderID dot.ID                `json:"purchase_order_id"`
+	Note            string                `json:"note"`
+	Discount        int                   `json:"discount"`
+}
+
+func (m *CreatePurchaseRefundRequest) Reset()         { *m = CreatePurchaseRefundRequest{} }
+func (m *CreatePurchaseRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type PurchaseRefund struct {
+	ID              dot.ID                 `json:"id"`
+	ShopID          dot.ID                 `json:"shop_id"`
+	PurchaseOrderID dot.ID                 `json:"purchase_order_id"`
+	Note            string                 `json:"note"`
+	Code            string                 `json:"code"`
+	Discount        int                    `json:"discount"`
+	Lines           []*PurchaseRefundLine  `json:"lines"`
+	CreatedAt       dot.Time               `json:"created_at"`
+	UpdatedAt       dot.Time               `json:"updated_at"`
+	CancelledAt     dot.Time               `json:"cancelled_at"`
+	ConfirmedAt     dot.Time               `json:"confirmed_at"`
+	CreatedBy       dot.ID                 `json:"created_by"`
+	UpdatedBy       dot.ID                 `json:"updated_by"`
+	CancelReason    string                 `json:"cancel_reason"`
+	Supplier        *PurchaseOrderSupplier `json:"supplier"`
+	SupplierID      dot.ID                 `json:"supplier_id"`
+	Status          status3.Status         `json:"status"`
+	TotalAmount     int                    `json:"total_amount"`
+	BasketValue     int                    `json:"basket_value"`
+}
+
+func (m *PurchaseRefund) Reset()         { *m = PurchaseRefund{} }
+func (m *PurchaseRefund) String() string { return jsonx.MustMarshalToString(m) }
+
+type PurchaseRefundLine struct {
+	VariantID    dot.ID                    `json:"variant_id"`
+	ProductID    dot.ID                    `json:"product_id"`
+	Quantity     int                       `json:"quantity"`
+	Code         string                    `json:"code"`
+	ImageURL     string                    `json:"image_url"`
+	Name         string                    `json:"name"`
+	PaymentPrice int                       `json:"payment_price"`
+	Attributes   []*catalogtypes.Attribute `json:"attributes"`
+}
+
+func (m *PurchaseRefundLine) Reset()         { *m = PurchaseRefundLine{} }
+func (m *PurchaseRefundLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateInventoryVariantCostPriceResponse struct {
 	InventoryVariant *InventoryVariant `json:"inventory_variant"`

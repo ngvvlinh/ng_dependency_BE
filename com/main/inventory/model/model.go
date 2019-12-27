@@ -3,7 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/catalog/model"
 	"etop.vn/capi/dot"
@@ -38,12 +39,12 @@ type InventoryVoucher struct {
 	TraderID     dot.ID
 	Trader       *Trader
 	TotalAmount  int
-	Type         inventory.InventoryVoucherType
+	Type         inventory_type.InventoryVoucherType
 	Lines        []*InventoryVoucherItem
 	VariantIDs   []dot.ID
 	RefID        dot.ID
 	RefCode      string
-	RefType      string
+	RefType      inventory_voucher_ref.InventoryVoucherRef
 	RefName      string
 	Title        string
 	CreatedAt    time.Time `sq:"create"`
@@ -52,6 +53,7 @@ type InventoryVoucher struct {
 	CancelledAt  time.Time
 	CancelReason string
 	ProductIDs   []dot.ID
+	Rollback     bool
 }
 
 type InventoryVoucherItem struct {

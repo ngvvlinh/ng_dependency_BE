@@ -51,6 +51,9 @@ import (
 	purchaseorderaggregate "etop.vn/backend/com/main/purchaseorder/aggregate"
 	purchaseorderpm "etop.vn/backend/com/main/purchaseorder/pm"
 	purchaseorderquery "etop.vn/backend/com/main/purchaseorder/query"
+	purchaserefundaggregate "etop.vn/backend/com/main/purchaserefund/aggregate"
+	purchaserefundpm "etop.vn/backend/com/main/purchaserefund/pm"
+	purchaserefundquery "etop.vn/backend/com/main/purchaserefund/query"
 	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
 	receiptpm "etop.vn/backend/com/main/receipting/pm"
 	receiptquery "etop.vn/backend/com/main/receipting/query"
@@ -413,11 +416,16 @@ func main() {
 	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
 	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
 	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
+
 	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
 	purchaseOrderPM.RegisterEventHandlers(eventBus)
-	refundAggr := refundaggregate.NewReceiptAggregate(db, eventBus).MessageBus()
+	refundAggr := refundaggregate.NewRefundAggregate(db, eventBus).MessageBus()
 	refundQuery := refundquery.NewQueryRefund(eventBus, db).MessageBus()
-	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery, refundQuery).MessageBus()
+
+	purchaseRefundAggr := purchaserefundaggregate.NewPurchaseRefundAggregate(db, eventBus, purchaseOrderQuery).MessageBus()
+	purchaseRefundQuery := purchaserefundquery.NewQueryPurchasePurchaseRefund(eventBus, db).MessageBus()
+
+	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery, refundQuery, purchaseRefundQuery).MessageBus()
 	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
 	inventoryPm.RegisterEventHandlers(eventBus)
 
@@ -441,7 +449,9 @@ func main() {
 	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
 	invitationPM.RegisterEventHandlers(eventBus)
-
+	purchaseRefundPM := purchaserefundpm.New(&purchaseRefundAggr, &purchaseRefundQuery, &receiptQuery)
+	purchaseRefundPM.RegisterEventHandlers(eventBus)
+	identityPM.RegisterEventHandlers(eventBus)
 	authorizationQuery := authorizationquery.NewAuthorizationQuery().MessageBus()
 	authorizationAggregate := authorizationaggregate.NewAuthorizationAggregate().MessageBus()
 
@@ -522,6 +532,8 @@ func main() {
 		shippingAggr,
 		refundAggr,
 		refundQuery,
+		purchaseRefundAggr,
+		purchaseRefundQuery,
 		connectionQuery,
 	)
 	partner.Init(

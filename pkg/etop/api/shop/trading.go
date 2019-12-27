@@ -11,6 +11,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/top/int/shop"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	pbsource "etop.vn/api/top/types/etc/order_source"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
@@ -76,7 +77,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 		}
 		if _orderID != 0 {
 			// cancel Order an inform error message
-			if _, err := logicorder.CancelOrder(ctx, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), ""); err != nil {
+			if _, err := logicorder.CancelOrder(ctx, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), inventory_auto.Unknown); err != nil {
 				return
 			}
 		}

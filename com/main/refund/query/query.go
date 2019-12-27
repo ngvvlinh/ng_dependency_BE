@@ -40,8 +40,8 @@ func (q *RefundQueryService) GetRefunds(ctx context.Context, args *refund.GetRef
 		return nil, err
 	}
 	return &refund.GetRefundsResponse{
-		PageInfor: query.GetPaging(),
-		Refunds:   result,
+		PageInfo: query.GetPaging(),
+		Refunds:  result,
 	}, nil
 }
 

@@ -4,4 +4,5 @@
 
 package purchaseorder
 
+func (e *PurchaseOrderCancelledEvent) GetTopic() string { return "event/purchaseorder" }
 func (e *PurchaseOrderConfirmedEvent) GetTopic() string { return "event/purchaseorder" }

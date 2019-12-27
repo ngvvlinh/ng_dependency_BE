@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/order_source"
 	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status3"
@@ -228,20 +228,20 @@ type OrderConfirmingEvent struct {
 	InventoryOverStock   bool
 	Lines                []*types.ItemLine
 	CustomerID           dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type OrderConfirmedEvent struct {
 	OrderID              dot.ID
 	ShopID               dot.ID
 	InventoryOverStock   bool
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	UpdatedBy            dot.ID
 }
 
 type OrderCancelledEvent struct {
 	OrderID              dot.ID
 	ShopID               dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	UpdatedBy            dot.ID
 }

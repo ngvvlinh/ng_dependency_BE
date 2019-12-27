@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/int/types"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
@@ -1001,7 +1001,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher string) (*types.OrderWithErrorsResponse, error) {
+func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (*types.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1041,7 +1041,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 	event := &ordering.OrderCancelledEvent{
 		OrderID:              order.ID,
 		ShopID:               shopID,
-		AutoInventoryVoucher: inventory.AutoInventoryVoucher(autoInventoryVoucher),
+		AutoInventoryVoucher: autoInventoryVoucher,
 	}
 	if err := eventBus.Publish(ctx, event); err != nil {
 		ll.Error("RaiseOrderCancelledEvent", l.Error(err))

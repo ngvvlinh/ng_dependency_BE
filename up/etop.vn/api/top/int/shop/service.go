@@ -371,3 +371,15 @@ type RefundService interface {
 	GetRefundsByIDs(context.Context, *cm.IDsRequest) (*GetRefundsByIDsResponse, error)
 	GetRefunds(context.Context, *GetRefundsRequest) (*GetRefundsResponse, error)
 }
+
+// +apix:path=/shop.PurchaseRefund
+type PurchaseRefundService interface {
+	CreatePurchaseRefund(context.Context, *CreatePurchaseRefundRequest) (*PurchaseRefund, error)
+	UpdatePurchaseRefund(context.Context, *UpdatePurchaseRefundRequest) (*PurchaseRefund, error)
+	ConfirmPurchaseRefund(context.Context, *ConfirmPurchaseRefundRequest) (*PurchaseRefund, error)
+	CancelPurchaseRefund(context.Context, *CancelPurchaseRefundRequest) (*PurchaseRefund, error)
+
+	GetPurchaseRefund(context.Context, *cm.IDRequest) (*PurchaseRefund, error)
+	GetPurchaseRefundsByIDs(context.Context, *cm.IDsRequest) (*GetPurchaseRefundsByIDsResponse, error)
+	GetPurchaseRefunds(context.Context, *GetPurchaseRefundsRequest) (*GetPurchaseRefundsResponse, error)
+}

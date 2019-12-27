@@ -156,6 +156,12 @@ const (
 	ShopRefundCancel  permission.ActionType = "shop/refund:cancel"
 	ShopRefundView    permission.ActionType = "shop/refund:view"
 
+	ShopPurchaseRefundCreate  permission.ActionType = "shop/purchaserefund:create"
+	ShopPurchaseRefundUpdate  permission.ActionType = "shop/purchaserefund:update"
+	ShopPurchaseRefundConfirm permission.ActionType = "shop/purchaserefund:confirm"
+	ShopPurchaseRefundCancel  permission.ActionType = "shop/purchaserefund:cancel"
+	ShopPurchaseRefundView    permission.ActionType = "shop/purchaserefund:view"
+
 	ShopSupplierCreate permission.ActionType = "shop/supplier:create"
 	ShopSupplierUpdate permission.ActionType = "shop/supplier:update"
 	ShopSupplierDelete permission.ActionType = "shop/supplier:delete"
@@ -750,14 +756,21 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.AccountRelationship/GetRelationships":   {Type: Shop, Actions: actions(RelationshipRelationshipView)},
 	"etop.AccountRelationship/RemoveUser":         {Type: Shop, Actions: actions(RelationshipUserRemove)},
 
-	"shop.Refund/CreateRefund":  {Type: Shop, Actions: actions(ShopRefundCreate)},
-	"shop.Refund/UpdateRefund":  {Type: Shop, Actions: actions(ShopRefundUpdate)},
-	"shop.Refund/CancelRefund":  {Type: Shop, Actions: actions(ShopRefundCancel)},
-	"shop.Refund/ConfirmRefund": {Type: Shop, Actions: actions(ShopRefundConfirm)},
-
+	"shop.Refund/CreateRefund":    {Type: Shop, Actions: actions(ShopRefundCreate)},
+	"shop.Refund/UpdateRefund":    {Type: Shop, Actions: actions(ShopRefundUpdate)},
+	"shop.Refund/CancelRefund":    {Type: Shop, Actions: actions(ShopRefundCancel)},
+	"shop.Refund/ConfirmRefund":   {Type: Shop, Actions: actions(ShopRefundConfirm)},
 	"shop.Refund/GetRefund":       {Type: Shop, Actions: actions(ShopRefundView)},
 	"shop.Refund/GetRefundsByIDs": {Type: Shop, Actions: actions(ShopRefundView)},
 	"shop.Refund/GetRefunds":      {Type: Shop, Actions: actions(ShopRefundView)},
+
+	"shop.PurchaseRefund/CreatePurchaseRefund":    {Type: Shop, Actions: actions(ShopPurchaseRefundCreate)},
+	"shop.PurchaseRefund/UpdatePurchaseRefund":    {Type: Shop, Actions: actions(ShopPurchaseRefundUpdate)},
+	"shop.PurchaseRefund/CancelPurchaseRefund":    {Type: Shop, Actions: actions(ShopPurchaseRefundCancel)},
+	"shop.PurchaseRefund/ConfirmPurchaseRefund":   {Type: Shop, Actions: actions(ShopPurchaseRefundConfirm)},
+	"shop.PurchaseRefund/GetPurchaseRefund":       {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
+	"shop.PurchaseRefund/GetPurchaseRefundsByIDs": {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
+	"shop.PurchaseRefund/GetPurchaseRefunds":      {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

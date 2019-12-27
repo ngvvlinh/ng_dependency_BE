@@ -7,8 +7,8 @@ package refund
 import (
 	context "context"
 
-	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
+	inventory_auto "etop.vn/api/top/types/etc/inventory_auto"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -44,7 +44,7 @@ type ConfirmRefundCommand struct {
 	ShopID               dot.ID
 	ID                   dot.ID
 	UpdatedBy            dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 
 	Result *Refund `json:"-"`
 }

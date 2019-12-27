@@ -20,14 +20,16 @@ var enumReceiptRefName = map[int]string{
 	2: "fulfillment",
 	3: "purchase_order",
 	4: "refund",
+	5: "purchase_refund",
 }
 
 var enumReceiptRefValue = map[string]int{
-	"none":           0,
-	"order":          1,
-	"fulfillment":    2,
-	"purchase_order": 3,
-	"refund":         4,
+	"none":            0,
+	"order":           1,
+	"fulfillment":     2,
+	"purchase_order":  3,
+	"refund":          4,
+	"purchase_refund": 5,
 }
 
 func ParseReceiptRef(s string) (ReceiptRef, bool) {

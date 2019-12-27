@@ -308,8 +308,8 @@ func sqlgenInventoryVoucher(_ *InventoryVoucher) bool { return true }
 type InventoryVouchers []*InventoryVoucher
 
 const __sqlInventoryVoucher_Table = "inventory_voucher"
-const __sqlInventoryVoucher_ListCols = "\"shop_id\",\"id\",\"created_by\",\"updated_by\",\"code\",\"code_norm\",\"status\",\"note\",\"trader_id\",\"trader\",\"total_amount\",\"type\",\"lines\",\"variant_ids\",\"ref_id\",\"ref_code\",\"ref_type\",\"ref_name\",\"title\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"product_ids\""
-const __sqlInventoryVoucher_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"id\" = EXCLUDED.\"id\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"note\" = EXCLUDED.\"note\",\"trader_id\" = EXCLUDED.\"trader_id\",\"trader\" = EXCLUDED.\"trader\",\"total_amount\" = EXCLUDED.\"total_amount\",\"type\" = EXCLUDED.\"type\",\"lines\" = EXCLUDED.\"lines\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_code\" = EXCLUDED.\"ref_code\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_name\" = EXCLUDED.\"ref_name\",\"title\" = EXCLUDED.\"title\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"product_ids\" = EXCLUDED.\"product_ids\""
+const __sqlInventoryVoucher_ListCols = "\"shop_id\",\"id\",\"created_by\",\"updated_by\",\"code\",\"code_norm\",\"status\",\"note\",\"trader_id\",\"trader\",\"total_amount\",\"type\",\"lines\",\"variant_ids\",\"ref_id\",\"ref_code\",\"ref_type\",\"ref_name\",\"title\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"product_ids\",\"rollback\""
+const __sqlInventoryVoucher_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"id\" = EXCLUDED.\"id\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"status\" = EXCLUDED.\"status\",\"note\" = EXCLUDED.\"note\",\"trader_id\" = EXCLUDED.\"trader_id\",\"trader\" = EXCLUDED.\"trader\",\"total_amount\" = EXCLUDED.\"total_amount\",\"type\" = EXCLUDED.\"type\",\"lines\" = EXCLUDED.\"lines\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_code\" = EXCLUDED.\"ref_code\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_name\" = EXCLUDED.\"ref_name\",\"title\" = EXCLUDED.\"title\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"product_ids\" = EXCLUDED.\"product_ids\",\"rollback\" = EXCLUDED.\"rollback\""
 const __sqlInventoryVoucher_Insert = "INSERT INTO \"inventory_voucher\" (" + __sqlInventoryVoucher_ListCols + ") VALUES"
 const __sqlInventoryVoucher_Select = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM \"inventory_voucher\""
 const __sqlInventoryVoucher_Select_history = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM history.\"inventory_voucher\""
@@ -345,12 +345,12 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.TraderID,
 		core.JSON{m.Trader},
 		core.Int(m.TotalAmount),
-		core.String(m.Type),
+		m.Type,
 		core.JSON{m.Lines},
 		core.Array{m.VariantIDs, opts},
 		m.RefID,
 		core.String(m.RefCode),
-		core.String(m.RefType),
+		m.RefType,
 		core.String(m.RefName),
 		core.String(m.Title),
 		core.Now(m.CreatedAt, now, create),
@@ -359,6 +359,7 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.CancelledAt),
 		core.String(m.CancelReason),
 		core.Array{m.ProductIDs, opts},
+		core.Bool(m.Rollback),
 	}
 }
 
@@ -375,12 +376,12 @@ func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.TraderID,
 		core.JSON{&m.Trader},
 		(*core.Int)(&m.TotalAmount),
-		(*core.String)(&m.Type),
+		&m.Type,
 		core.JSON{&m.Lines},
 		core.Array{&m.VariantIDs, opts},
 		&m.RefID,
 		(*core.String)(&m.RefCode),
-		(*core.String)(&m.RefType),
+		&m.RefType,
 		(*core.String)(&m.RefName),
 		(*core.String)(&m.Title),
 		(*core.Time)(&m.CreatedAt),
@@ -389,6 +390,7 @@ func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CancelledAt),
 		(*core.String)(&m.CancelReason),
 		core.Array{&m.ProductIDs, opts},
+		(*core.Bool)(&m.Rollback),
 	}
 }
 
@@ -426,7 +428,7 @@ func (_ *InventoryVouchers) SQLSelect(w SQLWriter) error {
 func (m *InventoryVoucher) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -436,7 +438,7 @@ func (ms InventoryVouchers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -555,13 +557,13 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.TotalAmount)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Type))
+		w.WriteArg(m.Type)
 	}
 	if m.Lines != nil {
 		flag = true
@@ -595,7 +597,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.RefCode)
 	}
-	if m.RefType != "" {
+	if m.RefType != 0 {
 		flag = true
 		w.WriteName("ref_type")
 		w.WriteByte('=')
@@ -667,6 +669,14 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.ProductIDs, opts})
 	}
+	if m.Rollback {
+		flag = true
+		w.WriteName("rollback")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rollback)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -677,7 +687,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 func (m *InventoryVoucher) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -732,17 +742,18 @@ func (m InventoryVoucherHistory) CancelReason() core.Interface {
 	return core.Interface{m["cancel_reason"]}
 }
 func (m InventoryVoucherHistory) ProductIDs() core.Interface { return core.Interface{m["product_ids"]} }
+func (m InventoryVoucherHistory) Rollback() core.Interface   { return core.Interface{m["rollback"]} }
 
 func (m *InventoryVoucherHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(InventoryVoucherHistory, 25)
+	res := make(InventoryVoucherHistory, 26)
 	res["shop_id"] = data[0]
 	res["id"] = data[1]
 	res["created_by"] = data[2]
@@ -768,14 +779,15 @@ func (m *InventoryVoucherHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["cancelled_at"] = data[22]
 	res["cancel_reason"] = data[23]
 	res["product_ids"] = data[24]
+	res["rollback"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *InventoryVoucherHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(InventoryVoucherHistories, 0, 128)
@@ -809,6 +821,7 @@ func (ms *InventoryVoucherHistories) SQLScan(opts core.Opts, rows *sql.Rows) err
 		m["cancelled_at"] = data[22]
 		m["cancel_reason"] = data[23]
 		m["product_ids"] = data[24]
+		m["rollback"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

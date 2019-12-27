@@ -4,7 +4,7 @@ import (
 	"time"
 
 	catalogtype "etop.vn/api/main/catalog/types"
-	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/capi/dot"
@@ -17,7 +17,7 @@ type StocktakeConfirmedEvent struct {
 	ShopID               dot.ID
 	Overstock            bool
 	ConfirmedBy          dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type ShopStocktake struct {

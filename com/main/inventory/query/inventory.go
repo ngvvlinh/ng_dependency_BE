@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/backend/com/main/inventory/convert"
@@ -117,8 +118,8 @@ func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVouchers}, nil
 }
 
-func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType inventory.InventoryRefType) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
-	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(refType.String()).ListInventoryVoucher()
+func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType inventory_voucher_ref.InventoryVoucherRef) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
+	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(refType).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}

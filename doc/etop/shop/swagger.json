@@ -4182,6 +4182,195 @@
         }
       }
     },
+    "/api/shop.PurchaseRefund/CancelPurchaseRefund": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "CancelPurchaseRefund",
+        "operationId": "shop.PurchaseRefund-CancelPurchaseRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCancelPurchaseRefundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paPurchaseRefund"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/ConfirmPurchaseRefund": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "ConfirmPurchaseRefund",
+        "operationId": "shop.PurchaseRefund-ConfirmPurchaseRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paConfirmPurchaseRefundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paPurchaseRefund"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/CreatePurchaseRefund": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "CreatePurchaseRefund",
+        "operationId": "shop.PurchaseRefund-CreatePurchaseRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreatePurchaseRefundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paPurchaseRefund"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/GetPurchaseRefund": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "GetPurchaseRefund",
+        "operationId": "shop.PurchaseRefund-GetPurchaseRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paPurchaseRefund"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/GetPurchaseRefunds": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "GetPurchaseRefunds",
+        "operationId": "shop.PurchaseRefund-GetPurchaseRefunds",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetPurchaseRefundsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetPurchaseRefundsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/GetPurchaseRefundsByIDs": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "GetPurchaseRefundsByIDs",
+        "operationId": "shop.PurchaseRefund-GetPurchaseRefundsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetPurchaseRefundsByIDsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.PurchaseRefund/UpdatePurchaseRefund": {
+      "post": {
+        "tags": [
+          "PurchaseRefund"
+        ],
+        "summary": "UpdatePurchaseRefund",
+        "operationId": "shop.PurchaseRefund-UpdatePurchaseRefund",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdatePurchaseRefundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paPurchaseRefund"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Receipt/CancelReceipt": {
       "post": {
         "tags": [
@@ -5479,7 +5668,8 @@
         "order",
         "fulfillment",
         "purchase_order",
-        "refund"
+        "refund",
+        "purchase_refund"
       ]
     },
     "baAddress": {
@@ -6503,7 +6693,7 @@
       "type": "object",
       "properties": {
         "auto_inventory_voucher": {
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "cancel_reason": {
           "type": "string"
@@ -6517,12 +6707,30 @@
     "paCancelPurchaseOrderRequest": {
       "type": "object",
       "properties": {
+        "auto_inventory_voucher": {
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
         "id": {
           "type": "string",
           "format": "int64"
         },
         "reason": {
           "type": "string"
+        }
+      }
+    },
+    "paCancelPurchaseRefundRequest": {
+      "type": "object",
+      "properties": {
+        "auto_inventory_voucher": {
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -6677,7 +6885,7 @@
         },
         "auto_inventory_voucher": {
           "description": "enum ('create', 'create')\n",
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "order_id": {
           "type": "string",
@@ -6690,7 +6898,19 @@
       "properties": {
         "auto_inventory_voucher": {
           "description": "enum create, confirm\n",
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paConfirmPurchaseRefundRequest": {
+      "type": "object",
+      "properties": {
+        "auto_inventory_voucher": {
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "id": {
           "type": "string",
@@ -6702,7 +6922,7 @@
       "type": "object",
       "properties": {
         "auto_inventory_voucher": {
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "id": {
           "type": "string",
@@ -6714,7 +6934,7 @@
       "type": "object",
       "properties": {
         "auto_inventory_voucher": {
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "id": {
           "type": "string",
@@ -6985,11 +7205,11 @@
           "format": "int64"
         },
         "ref_type": {
-          "type": "string"
+          "$ref": "#/definitions/rkInventoryVoucherRef"
         },
         "type": {
           "description": "enum \"in\" or \"out\" only for ref_type = \"order\"\n",
-          "type": "string"
+          "$ref": "#/definitions/rjInventoryVoucherType"
         }
       }
     },
@@ -7111,6 +7331,27 @@
         },
         "total_discount": {
           "type": "integer"
+        }
+      }
+    },
+    "paCreatePurchaseRefundRequest": {
+      "type": "object",
+      "properties": {
+        "discount": {
+          "type": "integer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paPurchaseRefundLine"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "purchase_order_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -8078,7 +8319,7 @@
         },
         "ref_type": {
           "description": "enum ('order', 'purchase_order', 'return', 'purchase_order')\n",
-          "type": "string"
+          "$ref": "#/definitions/rkInventoryVoucherRef"
         }
       }
     },
@@ -8208,6 +8449,45 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetPurchaseRefundsByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "purchase_refunds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paPurchaseRefund"
+          }
+        }
+      }
+    },
+    "paGetPurchaseRefundsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetPurchaseRefundsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "purchase_refunds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paPurchaseRefund"
+          }
         }
       }
     },
@@ -8518,6 +8798,9 @@
         },
         "ref_type": {
           "type": "string"
+        },
+        "rollback": {
+          "type": "boolean"
         },
         "shop_id": {
           "type": "string",
@@ -8898,6 +9181,115 @@
           "items": {
             "$ref": "#/definitions/paPurchaseOrder"
           }
+        }
+      }
+    },
+    "paPurchaseRefund": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "discount": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paPurchaseRefundLine"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "purchase_order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "supplier": {
+          "$ref": "#/definitions/paPurchaseOrderSupplier"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paPurchaseRefundLine": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "payment_price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -10564,6 +10956,27 @@
         },
         "total_discount": {
           "type": "integer"
+        }
+      }
+    },
+    "paUpdatePurchaseRefundRequest": {
+      "type": "object",
+      "properties": {
+        "discount": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paPurchaseRefundLine"
+          }
+        },
+        "note": {
+          "type": "string"
         }
       }
     },
@@ -13139,6 +13552,34 @@
         "auto"
       ]
     },
+    "rjInventoryVoucherType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "in",
+        "out"
+      ]
+    },
+    "rkInventoryVoucherRef": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "refund",
+        "purchase_refund",
+        "stocktake",
+        "purchase_order",
+        "order",
+        "cancel_order"
+      ]
+    },
+    "rtAutoInventoryVoucher": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "create",
+        "confirm"
+      ]
+    },
     "sdShippingFeeType": {
       "type": "string",
       "enum": [
@@ -13305,6 +13746,9 @@
     },
     {
       "name": "PurchaseOrder"
+    },
+    {
+      "name": "PurchaseRefund"
     },
     {
       "name": "Receipt"

@@ -6,6 +6,9 @@ import (
 
 	catalogtype "etop.vn/api/main/catalog/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/capi/dot"
@@ -33,6 +36,8 @@ type Aggregate interface {
 	CreateInventoryVoucherByReference(context.Context, *CreateInventoryVoucherByReferenceArgs) ([]*InventoryVoucher, error)
 
 	UpdateInventoryVariantCostPrice(context.Context, *UpdateInventoryVariantCostPriceRequest) (*InventoryVariant, error)
+
+	CancelInventoryByRefID(context.Context, *CancelInventoryByRefIDRequest) (*CancelInventoryByRefIDResponse, error)
 }
 
 type QueryService interface {
@@ -50,7 +55,7 @@ type QueryService interface {
 
 	GetInventoryVouchersByRefIDs(_ context.Context, RefIDs []dot.ID, ShopID dot.ID) (*GetInventoryVouchersResponse, error)
 
-	GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType InventoryRefType) (*GetInventoryVoucherByReferenceResponse, error)
+	GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType inventory_voucher_ref.InventoryVoucherRef) (*GetInventoryVoucherByReferenceResponse, error)
 
 	ListInventoryVariantsByVariantIDs(context.Context, *ListInventoryVariantsByVariantIDsArgs) (*GetInventoryVariantsResponse, error)
 }
@@ -138,15 +143,16 @@ type CreateInventoryVoucherArgs struct {
 	ShopID    dot.ID
 	CreatedBy dot.ID
 	Title     string
+	Rollback  bool
 
 	RefID   dot.ID
-	RefType InventoryRefType
-	RefName InventoryVoucherRefName
+	RefType inventory_voucher_ref.InventoryVoucherRef
+	RefName string
 	RefCode string
 
 	TraderID    dot.ID
 	TotalAmount int
-	Type        InventoryVoucherType
+	Type        inventory_type.InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
 }
@@ -155,8 +161,8 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 	ShopID dot.ID
 
 	RefID   dot.ID
-	RefType InventoryRefType
-	RefName InventoryVoucherRefName
+	RefType inventory_voucher_ref.InventoryVoucherRef
+	RefName string
 	RefCode string
 
 	NoteIn  string
@@ -178,7 +184,7 @@ type CheckInventoryVariantQuantityRequest struct {
 	Lines              []*InventoryVoucherItem
 	InventoryOverStock bool
 	ShopID             dot.ID
-	Type               InventoryVoucherType
+	Type               inventory_type.InventoryVoucherType
 }
 
 type InventoryVoucher struct {
@@ -196,8 +202,8 @@ type InventoryVoucher struct {
 	CancelledAt time.Time
 
 	RefID   dot.ID
-	RefType InventoryRefType
-	RefName InventoryVoucherRefName
+	RefType inventory_voucher_ref.InventoryVoucherRef
+	RefName string
 	RefCode string
 
 	TraderID    dot.ID
@@ -205,12 +211,13 @@ type InventoryVoucher struct {
 	TotalAmount int
 
 	// enum "in" or "out"
-	Type InventoryVoucherType
+	Type inventory_type.InventoryVoucherType
 
 	CancelReason string
 	Note         string
 	Lines        []*InventoryVoucherItem
 	Status       status3.Status
+	Rollback     bool
 }
 
 type Trader struct {
@@ -265,9 +272,9 @@ type CreateInventoryVoucherByQuantityChangeResponse struct {
 }
 
 type CreateInventoryVoucherByReferenceArgs struct {
-	RefType   InventoryRefType
+	RefType   inventory_voucher_ref.InventoryVoucherRef
 	RefID     dot.ID
-	Type      InventoryVoucherType
+	Type      inventory_type.InventoryVoucherType
 	ShopID    dot.ID
 	UserID    dot.ID
 	OverStock bool
@@ -277,6 +284,19 @@ type UpdateInventoryVariantCostPriceRequest struct {
 	ShopID    dot.ID
 	VariantID dot.ID
 	CostPrice int
+}
+
+type CancelInventoryByRefIDResponse struct {
+	InventoryVouchers []*InventoryVoucher
+}
+
+type CancelInventoryByRefIDRequest struct {
+	RefID                dot.ID
+	ShopID               dot.ID
+	RefType              inventory_voucher_ref.InventoryVoucherRef
+	InventoryOverStock   bool
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
+	UpdateBy             dot.ID
 }
 
 type ListInventoryVariantsByVariantIDsArgs struct {

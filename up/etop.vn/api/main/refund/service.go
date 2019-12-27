@@ -3,8 +3,8 @@ package refund
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/capi/dot"
 )
 
@@ -24,8 +24,8 @@ type QueryService interface {
 }
 
 type GetRefundsResponse struct {
-	PageInfor meta.PageInfo
-	Refunds   []*Refund
+	PageInfo meta.PageInfo
+	Refunds  []*Refund
 }
 
 // +convert:create=Refund
@@ -59,7 +59,7 @@ type ConfirmRefundArgs struct {
 	ShopID               dot.ID
 	ID                   dot.ID
 	UpdatedBy            dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type GetRefundByIDArgs struct {

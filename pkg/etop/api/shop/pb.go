@@ -4,6 +4,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/purchaserefund"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/top/int/shop"
@@ -12,6 +13,54 @@ import (
 	"etop.vn/capi/dot"
 )
 
+func PbPurchaseRefunds(args []*purchaserefund.PurchaseRefund) []*shop.PurchaseRefund {
+	var result []*shop.PurchaseRefund
+	for _, value := range args {
+		result = append(result, PbPurchaseRefund(value))
+	}
+	return result
+}
+
+func PbPurchaseRefund(args *purchaserefund.PurchaseRefund) *shop.PurchaseRefund {
+	var result = &shop.PurchaseRefund{
+		ID:              args.ID,
+		ShopID:          args.ShopID,
+		PurchaseOrderID: args.PurchaseOrderID,
+		Note:            args.Note,
+		Code:            args.Code,
+		Discount:        args.Discount,
+		Lines:           PbPurchaseRefundLine(args.Lines),
+		CreatedAt:       cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:       cmapi.PbTime(args.UpdatedAt),
+		CancelledAt:     cmapi.PbTime(args.CancelledAt),
+		ConfirmedAt:     cmapi.PbTime(args.ConfirmedAt),
+		CreatedBy:       args.CreatedBy,
+		UpdatedBy:       args.UpdatedBy,
+		CancelReason:    args.CancelReason,
+		Status:          args.Status,
+		TotalAmount:     args.TotalAmount,
+		BasketValue:     args.BasketValue,
+	}
+	return result
+}
+
+func PbPurchaseRefundLine(args []*purchaserefund.PurchaseRefundLine) []*shop.PurchaseRefundLine {
+	var result []*shop.PurchaseRefundLine
+	for _, v := range args {
+		result = append(result, &shop.PurchaseRefundLine{
+			VariantID:    v.VariantID,
+			ProductID:    v.ProductID,
+			Quantity:     v.Quantity,
+			Code:         v.Code,
+			ImageURL:     v.ImageURL,
+			Name:         v.ProductName,
+			PaymentPrice: v.PaymentPrice,
+			Attributes:   v.Attributes,
+		})
+	}
+	return result
+}
+
 func PbRefunds(args []*refund.Refund) []*shop.Refund {
 	var result []*shop.Refund
 	for _, value := range args {
@@ -19,6 +68,7 @@ func PbRefunds(args []*refund.Refund) []*shop.Refund {
 	}
 	return result
 }
+
 func PbRefund(args *refund.Refund) *shop.Refund {
 	var result = &shop.Refund{
 		ID:           args.ID,
@@ -216,7 +266,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 		Code:         args.Code,
 		RefCode:      args.RefCode,
 		RefType:      args.RefType.String(),
-		RefName:      args.RefName.String(),
+		RefName:      args.RefName,
 		TraderId:     args.TraderID,
 		Trader:       PbShopTrader(args.Trader),
 		Status:       args.Status,
@@ -229,6 +279,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 		CancelledAt:  cmapi.PbTime(args.CancelledAt),
 		ConfirmedAt:  cmapi.PbTime(args.ConfirmedAt),
 		CancelReason: args.CancelReason,
+		Rollback:     args.Rollback,
 	}
 }
 

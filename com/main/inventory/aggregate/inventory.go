@@ -8,9 +8,13 @@ import (
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
+	"etop.vn/api/main/purchaserefund"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/shopping/tradering"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_type"
+	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/inventory/convert"
@@ -36,13 +40,17 @@ type InventoryAggregate struct {
 	PurchaseOrderQuery    purchaseorder.QueryBus
 	StocktakeQuery        stocktaking.QueryBus
 	RefundQuery           refund.QueryBus
+	PurchaseRefundQuery   purchaserefund.QueryBus
 }
 
 func NewAggregateInventory(eventBus bus.Bus,
 	db *cmsql.Database,
 	traderQuery tradering.QueryBus,
 	purchaseOrderQuery purchaseorder.QueryBus,
-	StocktakeQuery stocktaking.QueryBus, refundQuery refund.QueryBus) *InventoryAggregate {
+	StocktakeQuery stocktaking.QueryBus,
+	refundQuery refund.QueryBus,
+	purchaserRefundQuery purchaserefund.QueryBus,
+) *InventoryAggregate {
 	return &InventoryAggregate{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
@@ -52,6 +60,7 @@ func NewAggregateInventory(eventBus bus.Bus,
 		PurchaseOrderQuery:    purchaseOrderQuery,
 		StocktakeQuery:        StocktakeQuery,
 		RefundQuery:           refundQuery,
+		PurchaseRefundQuery:   purchaserRefundQuery,
 	}
 }
 
@@ -61,7 +70,7 @@ func (q *InventoryAggregate) MessageBus() inventory.CommandBus {
 }
 
 func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Overstock bool, inventoryVoucher *inventory.CreateInventoryVoucherArgs) (*inventory.InventoryVoucher, error) {
-	if inventoryVoucher.ShopID == 0 || inventoryVoucher.Type == "" {
+	if inventoryVoucher.ShopID == 0 || inventoryVoucher.Type == inventory_type.Unknown {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	if inventoryVoucher.RefID != 0 {
@@ -70,8 +79,8 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 			return nil, err
 		}
 		for _, value := range inventoryVoucherRefIDs {
-			if value.Status == status3.P || value.Status == status3.Z {
-				return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu xuất nhập kho cho ref_id đã tồn tại, Vui lòng kiểm tra lại ", value.ID)
+			if (value.Status == status3.P || value.Status == status3.Z) && value.Rollback == inventoryVoucher.Rollback {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu xuất nhập kho cho đơn %v đã tồn tại, Vui lòng kiểm tra lại.", value.Code)
 			}
 		}
 	}
@@ -183,13 +192,13 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 			return 0, nil, err
 		}
 
-		if args.RefType == inventory.RefTypeOrder || args.RefType == inventory.RefTypeStockTake || args.RefType == inventory.RefTypeRefund {
+		if args.RefType == inventory_voucher_ref.Order || args.RefType == inventory_voucher_ref.StockTake || args.RefType == inventory_voucher_ref.Refund || args.RefType == inventory_voucher_ref.PurchaseRefund {
 			args.Lines[key].Price = inventoryvariant.CostPrice
 		}
 		totalAmount = totalAmount + args.Lines[key].Price*value.Quantity
 
 		// if InventoryVoucher is type 'out' move InventoryVariant quantity from onhand -> picked
-		if args.Type == inventory.InventoryVoucherTypeOut {
+		if args.Type == inventory_type.Out {
 			if !overStock && inventoryvariant.QuantityOnHand < value.Quantity {
 				return 0, nil, cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
 			}
@@ -216,7 +225,7 @@ func (q *InventoryAggregate) CheckInventoryVariantsQuantity(ctx context.Context,
 		if err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return err
 		}
-		if args.Type == inventory.InventoryVoucherTypeOut {
+		if args.Type == inventory_type.Out {
 			if !args.InventoryOverStock && inventoryCore.QuantityOnHand < value.Quantity {
 				return cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
 			}
@@ -236,7 +245,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "This inventory is already confirmed or cancelled")
 	}
-	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
+	if inventoryVoucher.Type == inventory_type.Out {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Can not update inventory delivery voucher")
 	}
 	event := &inventory.InventoryVoucherUpdatingEvent{
@@ -292,14 +301,14 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 	}
 	var inventoryVoucherInID dot.ID
 	if len(linesCheckin) > 0 {
-		inventoryVoucherInID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckin, inventory.InventoryVoucherTypeIn)
+		inventoryVoucherInID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckin, inventory_type.In)
 		if err != nil {
 			return nil, err
 		}
 	}
 	var inventoryVoucherOutID dot.ID
 	if len(linesCheckout) > 0 {
-		inventoryVoucherOutID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckout, inventory.InventoryVoucherTypeOut)
+		inventoryVoucherOutID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckout, inventory_type.Out)
 		if err != nil {
 			return nil, err
 		}
@@ -363,7 +372,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 
 func (q *InventoryAggregate) CreateVoucherForAdjustInventoryQuantity(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
 	lines []*inventory.InventoryVoucherItem,
-	typeVoucher inventory.InventoryVoucherType) (dot.ID, error) {
+	typeVoucher inventory_type.InventoryVoucherType) (dot.ID, error) {
 	var totalValue = 0
 	for _, value := range lines {
 		totalValue = totalValue + value.Price*value.Quantity
@@ -400,13 +409,22 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 		if err != nil {
 			return nil, err
 		}
-		if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
+		if inventoryVoucher.Type == inventory_type.Out {
+			// if purchase refund -> change cost_price
+			if inventory_voucher_ref.PurchaseRefund == inventoryVoucher.RefType {
+				currentQuantity := data.QuantityPicked + data.QuantityOnHand
+				currentValue := currentQuantity * data.CostPrice
+				outValue := value.Quantity * value.Price
+				data.CostPrice = (currentValue - outValue) / (currentQuantity - value.Quantity)
+			}
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
-		} else if inventoryVoucher.Type == inventory.InventoryVoucherTypeIn {
+		} else if inventoryVoucher.Type == inventory_type.In {
+			// if TraderID = 0 -> stocktake, TraderID != 0 -> purchase order
 			if inventoryVoucher.TraderID != 0 {
 				if data.QuantityOnHand < 0 {
 					data.CostPrice = value.Price
 				} else {
+					// Update costPirce from Purchase Order
 					data.CostPrice = AvgValue(data.CostPrice, value.Price, data.QuantityOnHand, value.Quantity)
 				}
 			}
@@ -445,7 +463,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	if inventoryVoucher.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
-	if inventoryVoucher.Type == inventory.InventoryVoucherTypeOut {
+	if inventoryVoucher.Type == inventory_type.Out {
 		for _, value := range inventoryVoucher.Lines {
 			var data *inventory.InventoryVariant
 			data, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
@@ -509,23 +527,33 @@ func validateInventoryVoucherItem(args *inventory.InventoryVoucherItem) error {
 
 func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) error {
 	switch inventoryVoucher.RefType {
-	case inventory.RefTypeOrder:
-		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn && inventoryVoucher.Type != inventory.InventoryVoucherTypeOut {
+	case inventory_voucher_ref.Order:
+		if inventoryVoucher.Type != inventory_type.In && inventoryVoucher.Type != inventory_type.Out {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng. Bán hàng chỉ có thể là 'in' hoặc 'out'", nil)
 		}
-	case inventory.RefTypeStockTake:
-		if inventoryVoucher.Type != inventory.InventoryVoucherTypeOut && inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+	case inventory_voucher_ref.StockTake:
+		if inventoryVoucher.Type != inventory_type.Out && inventoryVoucher.Type != inventory_type.In {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Kiểm kho chỉ có thể là 'in' hoặc 'out'", nil)
 		}
-	case inventory.RefTypePurchaseOrder:
-		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+	case inventory_voucher_ref.PurchaseOrder:
+		if inventoryVoucher.Type == inventory_type.Out && !inventoryVoucher.Rollback {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Nhập hàng chỉ có thể là 'in'", nil)
 		}
-	case inventory.RefTypeRefund:
-		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+		if inventoryVoucher.Type == inventory_type.In && inventoryVoucher.Rollback {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Hủy nhập hàng chỉ có thể là type 'out'", nil)
+		}
+	case inventory_voucher_ref.Refund:
+		if inventoryVoucher.Type != inventory_type.In {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Trả hàng chỉ có thể là 'in'", nil)
 		}
-	case "":
+	case inventory_voucher_ref.PurchaseRefund:
+		if inventoryVoucher.Type != inventory_type.In && inventoryVoucher.Rollback {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Trả hàng nhập chỉ có thể là 'out'", nil)
+		}
+		if inventoryVoucher.Type != inventory_type.Out && !inventoryVoucher.Rollback {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Hủy trả hàng nhập chỉ có thể là 'in'", nil)
+		}
+	case inventory_voucher_ref.Unknown:
 		if inventoryVoucher.RefName != "" || inventoryVoucher.RefID != 0 {
 			return cm.Error(cm.InvalidArgument, "'ref_type','ref_id' hoặc 'ref_name' không đúng. Vui lòng kiểm tra lại", nil)
 		}
@@ -590,7 +618,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 			RefName:   args.RefName,
 			RefCode:   args.RefCode,
 			TraderID:  0,
-			Type:      "in",
+			Type:      inventory_type.In,
 			Note:      args.NoteIn,
 			Lines:     inventoryVoucherIn,
 		})
@@ -609,7 +637,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 			RefName:   args.RefName,
 			RefCode:   args.RefCode,
 			TraderID:  0,
-			Type:      "out",
+			Type:      inventory_type.Out,
 			Note:      args.NoteOut,
 			Lines:     inventoryVoucherOut,
 		})
@@ -628,7 +656,7 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 	if args.ShopID == 0 || args.VariantID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id")
 	}
-	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(inventory.RefTypePurchaseOrder.String()).VariantID(args.VariantID).ListInventoryVoucher()
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(inventory_voucher_ref.PurchaseOrder).VariantID(args.VariantID).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}
@@ -667,17 +695,66 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 
 func (q *InventoryAggregate) CreateInventoryVoucherByReference(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
 	switch args.RefType {
-	case inventory.RefTypePurchaseOrder:
+	case inventory_voucher_ref.PurchaseOrder:
 		return q.CreateInventoryVoucherByPurchaseOrder(ctx, args)
-	case inventory.RefTypeStockTake:
+	case inventory_voucher_ref.StockTake:
 		return q.CreateInventoryVoucherByStockTake(ctx, args)
-	case inventory.RefTypeOrder:
+	case inventory_voucher_ref.Order:
 		return q.CreateInventoryVoucherByOrder(ctx, args)
-	case inventory.RefTypeRefund:
+	case inventory_voucher_ref.Refund:
 		return q.CreateInventoryVoucherByRefund(ctx, args)
+	case inventory_voucher_ref.PurchaseRefund:
+		return q.CreateInventoryVoucherByPurchaseRefund(ctx, args)
 	default:
 		return nil, cm.Error(cm.InvalidArgument, "wrong ref_type", nil)
 	}
+}
+
+func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseRefund(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
+	var items []*inventory.InventoryVoucherItem
+	queryPurchaseRefund := &purchaserefund.GetPurchaseRefundByIDQuery{
+		ID:     args.RefID,
+		ShopID: args.ShopID,
+	}
+	if err := q.PurchaseRefundQuery.Dispatch(ctx, queryPurchaseRefund); err != nil {
+		return nil, err
+	}
+	if queryPurchaseRefund.Result.Status != status3.P {
+		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho Refund chưa được xác nhận.", nil)
+	}
+	for _, value := range queryPurchaseRefund.Result.Lines {
+		items = append(items, &inventory.InventoryVoucherItem{
+			Price:       value.PaymentPrice,
+			ProductID:   value.ProductID,
+			ProductName: value.ProductName,
+			VariantID:   value.VariantID,
+			VariantName: value.ProductName,
+			Quantity:    value.Quantity,
+			Code:        value.Code,
+			ImageURL:    value.ImageURL,
+			Attributes:  value.Attributes,
+		})
+	}
+	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
+		ShopID:    args.ShopID,
+		CreatedBy: args.UserID,
+		Title:     "Xuất kho khi trả hàng nhập",
+		RefID:     args.RefID,
+		RefType:   args.RefType,
+		RefName:   args.RefType.GetLabelRefName(),
+		RefCode:   queryPurchaseRefund.Result.Code,
+		TraderID:  queryPurchaseRefund.Result.SupplierID,
+		Type:      inventory_type.Out,
+		Note:      fmt.Sprintf("Tạo phiếu xuất kho theo phiếu trả hàng nhập %v", queryPurchaseRefund.Result.Code),
+		Lines:     items,
+	}
+	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
+	if err != nil {
+		return nil, err
+	}
+	var listInventoryVoucher []*inventory.InventoryVoucher
+	listInventoryVoucher = append(listInventoryVoucher, createResult)
+	return listInventoryVoucher, nil
 }
 
 func (q *InventoryAggregate) CreateInventoryVoucherByRefund(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
@@ -710,10 +787,10 @@ func (q *InventoryAggregate) CreateInventoryVoucherByRefund(ctx context.Context,
 		Title:     "Nhập kho khi nhập hàng",
 		RefID:     args.RefID,
 		RefType:   args.RefType,
-		RefName:   inventory.RefNameReturns,
+		RefName:   args.RefType.GetLabelRefName(),
 		RefCode:   queryRefund.Result.Code,
 		TraderID:  queryRefund.Result.CustomerID,
-		Type:      inventory.InventoryVoucherTypeIn,
+		Type:      inventory_type.In,
 		Note:      fmt.Sprintf("Tạo phiếu nhập kho theo đơn trả hàng %v", queryRefund.Result.Code),
 		Lines:     items,
 	}
@@ -758,10 +835,10 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 		Title:     "Nhập kho khi nhập hàng",
 		RefID:     args.RefID,
 		RefType:   args.RefType,
-		RefName:   inventory.RefNamePurchaseOrder,
+		RefName:   args.RefType.GetLabelRefName(),
 		RefCode:   queryPurchaseOrder.Result.Code,
 		TraderID:  queryPurchaseOrder.Result.SupplierID,
-		Type:      inventory.InventoryVoucherTypeIn,
+		Type:      inventory_type.In,
 		Note:      fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập hàng %v", queryPurchaseOrder.Result.Code),
 		Lines:     items,
 	}
@@ -817,13 +894,13 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 		Lines:     items,
 	}
 	switch inventoryVoucherCreateRequest.Type {
-	case inventory.InventoryVoucherTypeOut:
-		inventoryVoucherCreateRequest.RefName = inventory.RefNameOrder
+	case inventory_type.Out:
+		inventoryVoucherCreateRequest.RefName = inventory_voucher_ref.Order.GetLabelRefName()
 		inventoryVoucherCreateRequest.Title = "Xuất kho khi bán hàng"
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu xuất kho theo đơn hàng %v", queryOrder.Result.Order.Code)
-	case inventory.InventoryVoucherTypeIn:
+	case inventory_type.In:
 		inventoryVoucherCreateRequest.Title = "Nhập kho khi Hủy bán hàng"
-		inventoryVoucherCreateRequest.RefName = inventory.RefNameCancelOrder
+		inventoryVoucherCreateRequest.RefName = inventory_voucher_ref.CancelOrder.GetLabelRefName()
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	}
 	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
@@ -867,8 +944,8 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherByQuantityChangeRequest{
 		ShopID:    args.ShopID,
 		RefID:     args.RefID,
-		RefType:   inventory.RefTypeStockTake,
-		RefName:   inventory.RefNameStockTake,
+		RefType:   inventory_voucher_ref.StockTake,
+		RefName:   inventory_voucher_ref.StockTake.GetLabelRefName(),
 		Title:     "Phiếu kiểm kho",
 		RefCode:   queryStocktake.Result.Code,
 		Overstock: args.OverStock,
@@ -889,4 +966,115 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 		listInventoryVoucher = append(listInventoryVoucher, createResult.TypeOut)
 	}
 	return listInventoryVoucher, err
+}
+
+func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *inventory.CancelInventoryByRefIDRequest) (*inventory.CancelInventoryByRefIDResponse, error) {
+	if args.AutoInventoryVoucher == inventory_auto.Unknown {
+		return nil, nil
+	}
+	isConfirm := false
+	if args.AutoInventoryVoucher == inventory_auto.Confirm {
+		isConfirm = true
+	}
+
+	var inventoryVouchers []*inventory.InventoryVoucher
+	inventoryVouchersData, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefID(args.RefID).ListInventoryVoucher()
+	if err != nil {
+		return nil, err
+	}
+	for _, value := range inventoryVouchersData {
+		switch value.Status {
+		case status3.P:
+			var typeInventoryVoucher inventory_type.InventoryVoucherType
+			if value.Type == inventory_type.Out {
+				typeInventoryVoucher = inventory_type.In
+			} else {
+				typeInventoryVoucher = inventory_type.Out
+			}
+			newVoucher := &inventory.CreateInventoryVoucherArgs{
+				ShopID:      value.ShopID,
+				CreatedBy:   value.CreatedBy,
+				Title:       "Phiếu xuất nhập kho",
+				RefID:       value.RefID,
+				RefType:     value.RefType,
+				RefName:     value.RefName,
+				RefCode:     value.RefCode,
+				TraderID:    value.TraderID,
+				TotalAmount: value.TotalAmount,
+				Type:        typeInventoryVoucher,
+				Lines:       value.Lines,
+				Rollback:    true,
+				Note:        getNoteCancelInventoryVoucher(value.RefType, value.RefCode),
+			}
+			result, err := q.CreateInventoryVoucher(ctx, args.InventoryOverStock, newVoucher)
+			if err != nil {
+				return nil, err
+			}
+			inventoryVouchers = append(inventoryVouchers, result)
+		case status3.Z:
+			cancelResult, err := q.CancelInventoryVoucher(ctx, &inventory.CancelInventoryVoucherArgs{
+				ShopID:    value.ShopID,
+				ID:        value.ID,
+				UpdatedBy: args.UpdateBy,
+				Reason:    getCancelReason(value.RefType, value.RefCode),
+			})
+			if err != nil {
+				return nil, err
+			}
+			inventoryVouchers = append(inventoryVouchers, cancelResult)
+		case status3.N:
+			continue
+		}
+	}
+	if isConfirm {
+		for _, value := range inventoryVouchers {
+			if value.Status == status3.Z {
+				_, err = q.ConfirmInventoryVoucher(ctx, &inventory.ConfirmInventoryVoucherArgs{
+					ShopID:    args.ShopID,
+					ID:        value.ID,
+					UpdatedBy: args.UpdateBy,
+				})
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+	return &inventory.CancelInventoryByRefIDResponse{
+		InventoryVouchers: inventoryVouchers,
+	}, nil
+}
+
+func getNoteCancelInventoryVoucher(ref inventory_voucher_ref.InventoryVoucherRef, refCode string) string {
+	switch ref {
+	case inventory_voucher_ref.Order:
+		return fmt.Sprintf("Tạo phiếu nhập kho theo đơn hàng %v", refCode)
+	case inventory_voucher_ref.Refund:
+		return fmt.Sprintf("Tạo phiếu xuất kho theo đơn trả hàng %v", refCode)
+	case inventory_voucher_ref.PurchaseOrder:
+		return fmt.Sprintf("Tạo phiếu xuất kho theo đơn nhập hàng %v", refCode)
+	case inventory_voucher_ref.PurchaseRefund:
+		return fmt.Sprintf("Tạo phiếu nhập kho theo đơn trả hàng nhập %v", refCode)
+	case inventory_voucher_ref.StockTake:
+		return fmt.Sprintf("Tạo phiếu xuất/nhập kho theo phiếu kiểm kho %v", refCode)
+	default:
+		return ""
+	}
+}
+
+func getCancelReason(ref inventory_voucher_ref.InventoryVoucherRef, refCode string) string {
+	switch ref {
+	case inventory_voucher_ref.Order:
+		return fmt.Sprintf("Hủy đơn hàng %v", refCode)
+	case inventory_voucher_ref.Refund:
+		return fmt.Sprintf("Hủy đơn trả hàng %v", refCode)
+	case inventory_voucher_ref.PurchaseOrder:
+		return fmt.Sprintf("Hủy đơn nhập hàng %v", refCode)
+	case inventory_voucher_ref.PurchaseRefund:
+		return fmt.Sprintf("Hủy đơn trả hàng nhập %v", refCode)
+	case inventory_voucher_ref.StockTake:
+		return fmt.Sprintf("Hủy phiếu kiểm kho %v", refCode)
+	default:
+		return ""
+	}
 }

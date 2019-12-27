@@ -7,9 +7,9 @@ package purchaseorder
 import (
 	context "context"
 
-	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	inventory_auto "etop.vn/api/top/types/etc/inventory_auto"
 	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -29,9 +29,12 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CancelPurchaseOrderCommand struct {
-	ID     dot.ID
-	ShopID dot.ID
-	Reason string
+	ID                   dot.ID
+	ShopID               dot.ID
+	Reason               string
+	UpdatedBy            dot.ID
+	InventoryOverStock   bool
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 
 	Result int `json:"-"`
 }
@@ -43,7 +46,7 @@ func (h AggregateHandler) HandleCancelPurchaseOrder(ctx context.Context, msg *Ca
 
 type ConfirmPurchaseOrderCommand struct {
 	ID                   dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	ShopID               dot.ID
 
 	Result int `json:"-"`
@@ -182,9 +185,12 @@ func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) query() {}
 func (q *CancelPurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelPurchaseOrderArgs) {
 	return ctx,
 		&CancelPurchaseOrderArgs{
-			ID:     q.ID,
-			ShopID: q.ShopID,
-			Reason: q.Reason,
+			ID:                   q.ID,
+			ShopID:               q.ShopID,
+			Reason:               q.Reason,
+			UpdatedBy:            q.UpdatedBy,
+			InventoryOverStock:   q.InventoryOverStock,
+			AutoInventoryVoucher: q.AutoInventoryVoucher,
 		}
 }
 
@@ -192,6 +198,9 @@ func (q *CancelPurchaseOrderCommand) SetCancelPurchaseOrderArgs(args *CancelPurc
 	q.ID = args.ID
 	q.ShopID = args.ShopID
 	q.Reason = args.Reason
+	q.UpdatedBy = args.UpdatedBy
+	q.InventoryOverStock = args.InventoryOverStock
+	q.AutoInventoryVoucher = args.AutoInventoryVoucher
 }
 
 func (q *ConfirmPurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmPurchaseOrderArgs) {

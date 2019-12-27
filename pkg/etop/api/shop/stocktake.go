@@ -168,7 +168,7 @@ func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStock
 		ShopID:               shopID,
 		ConfirmedBy:          userID,
 		OverStock:            overStock.Apply(true),
-		AutoInventoryVoucher: inventory.AutoInventoryVoucher(q.AutoInventoryVoucher),
+		AutoInventoryVoucher: q.AutoInventoryVoucher,
 		Result:               nil,
 	}
 	err := StocktakeAggregate.Dispatch(ctx, cmd)

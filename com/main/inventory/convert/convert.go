@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_type"
 	"etop.vn/backend/com/main/inventory/model"
 	cm "etop.vn/backend/pkg/common"
 )
@@ -26,9 +27,9 @@ func createInventoryVoucher(args *inventory.CreateInventoryVoucherArgs, out *inv
 	out.ID = cm.NewID()
 	out.UpdatedBy = out.CreatedBy
 	if out.Title == "" {
-		if args.Type == "in" {
+		if args.Type == inventory_type.In {
 			out.Title = "Phiếu nhập kho"
-		} else if args.Type == "out" {
+		} else if args.Type == inventory_type.Out {
 			out.Title = "Phiếu xuất kho"
 		}
 	}

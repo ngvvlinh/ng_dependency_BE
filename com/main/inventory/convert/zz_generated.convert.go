@@ -169,29 +169,30 @@ func Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 }
 
 func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inventorymodel.InventoryVoucher, out *inventory.InventoryVoucher) {
-	out.ID = arg.ID                                              // simple assign
-	out.ShopID = arg.ShopID                                      // simple assign
-	out.Title = arg.Title                                        // simple assign
-	out.Code = arg.Code                                          // simple assign
-	out.CodeNorm = arg.CodeNorm                                  // simple assign
-	out.CreatedBy = arg.CreatedBy                                // simple assign
-	out.UpdatedBy = arg.UpdatedBy                                // simple assign
-	out.CreatedAt = arg.CreatedAt                                // simple assign
-	out.UpdatedAt = arg.UpdatedAt                                // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt                            // simple assign
-	out.CancelledAt = arg.CancelledAt                            // simple assign
-	out.RefID = arg.RefID                                        // simple assign
-	out.RefType = inventory.InventoryRefType(arg.RefType)        // simple conversion
-	out.RefName = inventory.InventoryVoucherRefName(arg.RefName) // simple conversion
-	out.RefCode = arg.RefCode                                    // simple assign
-	out.TraderID = arg.TraderID                                  // simple assign
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.Title = arg.Title             // simple assign
+	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.UpdatedBy = arg.UpdatedBy     // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.RefID = arg.RefID             // simple assign
+	out.RefType = arg.RefType         // simple assign
+	out.RefName = arg.RefName         // simple assign
+	out.RefCode = arg.RefCode         // simple assign
+	out.TraderID = arg.TraderID       // simple assign
 	out.Trader = Convert_inventorymodel_Trader_inventory_Trader(arg.Trader, nil)
 	out.TotalAmount = arg.TotalAmount   // simple assign
 	out.Type = arg.Type                 // simple assign
 	out.CancelReason = arg.CancelReason // simple assign
 	out.Note = arg.Note                 // simple assign
 	out.Lines = Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(arg.Lines)
-	out.Status = arg.Status // simple assign
+	out.Status = arg.Status     // simple assign
+	out.Rollback = arg.Rollback // simple assign
 }
 
 func Convert_inventorymodel_InventoryVouchers_inventory_InventoryVouchers(args []*inventorymodel.InventoryVoucher) (outs []*inventory.InventoryVoucher) {
@@ -224,8 +225,8 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.VariantIDs = nil                // zero value
 	out.RefID = arg.RefID               // simple assign
 	out.RefCode = arg.RefCode           // simple assign
-	out.RefType = string(arg.RefType)   // simple conversion
-	out.RefName = string(arg.RefName)   // simple conversion
+	out.RefType = arg.RefType           // simple assign
+	out.RefName = arg.RefName           // simple assign
 	out.Title = arg.Title               // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
@@ -233,6 +234,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.CancelledAt = arg.CancelledAt   // simple assign
 	out.CancelReason = arg.CancelReason // simple assign
 	out.ProductIDs = nil                // zero value
+	out.Rollback = arg.Rollback         // simple assign
 }
 
 func Convert_inventory_InventoryVouchers_inventorymodel_InventoryVouchers(args []*inventory.InventoryVoucher) (outs []*inventorymodel.InventoryVoucher) {
@@ -279,6 +281,7 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.Note = arg.Note               // simple assign
 	out.Lines = arg.Lines             // simple assign
 	out.Status = 0                    // zero value
+	out.Rollback = arg.Rollback       // simple assign
 }
 
 func Apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs, out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
@@ -309,6 +312,7 @@ func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.Note = arg.Note.Apply(out.Note)             // apply change
 	out.Lines = arg.Lines                           // simple assign
 	out.Status = out.Status                         // no change
+	out.Rollback = out.Rollback                     // no change
 }
 
 //-- convert etop.vn/api/main/inventory.InventoryVoucherItem --//

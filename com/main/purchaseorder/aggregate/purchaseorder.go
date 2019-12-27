@@ -267,17 +267,24 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 func (a *PurchaseOrderAggregate) CancelPurchaseOrder(
 	ctx context.Context, args *purchaseorder.CancelPurchaseOrderArgs,
 ) (updated int, err error) {
-	purchaseOrder, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetPurchaseOrder()
+	_, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetPurchaseOrder()
 	if err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").
 			Throw()
 	}
-	if purchaseOrder.Status != status3.Z {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể huỷ đơn nhập hàng.")
-	}
-
-	updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelPurchaseOrder(args.Reason)
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelPurchaseOrder(args.Reason)
+		event := &purchaseorder.PurchaseOrderCancelledEvent{
+			PurchaseOrderID:      args.ID,
+			ShopID:               args.ShopID,
+			UpdatedBy:            args.UpdatedBy,
+			AutoInventoryVoucher: args.AutoInventoryVoucher,
+			InventoryOverStock:   args.InventoryOverStock,
+		}
+		err = a.eventBus.Publish(ctx, event)
+		return err
+	})
 	return updated, err
 }
 

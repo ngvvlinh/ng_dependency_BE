@@ -3,8 +3,8 @@ package stocktaking
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/capi/dot"
 )
@@ -60,7 +60,7 @@ type ConfirmStocktakeRequest struct {
 	ShopID               dot.ID
 	ConfirmedBy          dot.ID
 	OverStock            bool
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type ListStocktakeRequest struct {

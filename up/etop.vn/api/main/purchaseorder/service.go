@@ -3,12 +3,12 @@ package purchaseorder
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
-	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -62,13 +62,16 @@ type UpdatePurchaseOrderArgs struct {
 }
 
 type CancelPurchaseOrderArgs struct {
-	ID     dot.ID
-	ShopID dot.ID
-	Reason string
+	ID                   dot.ID
+	ShopID               dot.ID
+	Reason               string
+	UpdatedBy            dot.ID
+	InventoryOverStock   bool
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type ConfirmPurchaseOrderArgs struct {
 	ID                   dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	ShopID               dot.ID
 }

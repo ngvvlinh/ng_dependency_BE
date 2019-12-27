@@ -4,7 +4,7 @@ import (
 	"time"
 
 	catalog "etop.vn/api/main/catalog/types"
-	"etop.vn/api/main/inventory"
+	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
@@ -51,7 +51,7 @@ type ConfirmedRefundEvent struct {
 	ShopID               dot.ID
 	RefundID             dot.ID
 	UpdatedBy            dot.ID
-	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type CheckReceiptLinesResponse struct {
