@@ -285,9 +285,12 @@ func validateRegister(r *etop.CreateUserRequest) error {
 		return cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
 	if r.Email != "" {
-		_, ok := validate.NormalizeEmail(r.Email)
+		emailNorm, ok := validate.NormalizeEmail(r.Email)
 		if !ok {
 			return cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+		}
+		if err := validate.PopularEmailAddressMistake(emailNorm.String()); err != nil {
+			return err
 		}
 	}
 	return nil

@@ -53,7 +53,7 @@ var (
 
 	spaceWhiteList = regexp.MustCompile(`\s\s+`)
 
-	emailLocalRegexp = regexp.MustCompile(`[0-9a-z._-]{1,128}`)
+	emailLocalRegexp = regexp.MustCompile(`^[0-9a-z._-]{1,128}$`)
 	subdomainRegexp  = regexp.MustCompile(`[0-9A-z]{1,200}`)
 	slugRegexp       = regexp.MustCompile(`^[0-9a-z]([0-9a-z-]{0,62}[0-9a-z])?$`)
 
@@ -341,13 +341,86 @@ func NormalizeEmail(s string) (res NormalizedEmail, ok bool) {
 	if len(ss) != 2 {
 		return "", false
 	}
-	if !emailLocalRegexp.MatchString(ss[0]) {
+	localPart := ss[0]
+	domain := ss[1]
+
+	if !emailLocalRegexp.MatchString(localPart) {
 		return "", false
 	}
-	if ss[1] == "gmail.com" {
-		ss[0] = strings.Replace(ss[0], ".", "", -1)
+	if strings.Contains(localPart, "--") || strings.Contains(localPart, "..") ||
+		strings.Contains(localPart, "-.") || strings.Contains(localPart, ".-") {
+		return "", false
 	}
-	return NormalizedEmail(ss[0] + "@" + ss[1]), govalidator.IsEmail(s)
+	if !validateDomain(domain) {
+		return "", false
+	}
+	if domain == "gmail.com" {
+		localPart = strings.Replace(localPart, ".", "", -1)
+	}
+	return NormalizedEmail(localPart + "@" + domain), govalidator.IsEmail(s)
+}
+
+func popularEmailAddressMistake(popularDomain string, s string) error {
+	ss := strings.Split(s, "@")
+	if len(ss) != 2 {
+		return cm.Errorf(cm.InvalidArgument, nil, "not an email address")
+	}
+	domain := ss[1]
+
+	switch {
+	case domain == popularDomain:
+		// it's ok
+
+	case len(domain) == len(popularDomain): // swap two consecutive characters
+		for i := 0; i < len(domain)-1; i++ {
+			// two consecutive characters are swapped
+			if domain[i] != popularDomain[i] && domain[i] == popularDomain[i+1] && popularDomain[i] == domain[i+1] {
+				// and the remaining is the same
+				if domain[i+2:] == popularDomain[i+2:] {
+					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+				}
+				return nil // check for swap only once
+			}
+		}
+
+	case len(domain) == len(popularDomain)-1: // miss one character
+		// miss the last character
+		if domain == popularDomain[:len(popularDomain)-1] {
+			return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+		}
+		for i := 0; i < len(domain)-1; i++ {
+			// one character is missed
+			if domain[i] != popularDomain[i] && domain[i] == popularDomain[i+1] {
+				// and the remaining is the same
+				if domain[i+1:] == popularDomain[i+2:] {
+					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+				}
+				return nil // check for mistake only once
+			}
+		}
+	}
+	return nil
+}
+
+func PopularEmailAddressMistake(s string) error {
+	s = strings.ToLower(s)
+	s, _, _ = TrimTest(s)
+	return popularEmailAddressMistake("gmail.com", s)
+}
+
+func validateDomain(s string) bool {
+	if !govalidator.IsDNSName(s) {
+		return false
+	}
+	if strings.Contains(s, "_") || // disallow underscore in domain
+		strings.Contains(s, "--") || strings.Contains(s, "..") ||
+		strings.Contains(s, "-.") || strings.Contains(s, ".-") {
+		return false
+	}
+	if strings.HasSuffix(s, ".") { // disallow ending dot
+		return false
+	}
+	return true
 }
 
 func NormalizeEmailOrPhone(s string) (email string, phone string, ok bool) {

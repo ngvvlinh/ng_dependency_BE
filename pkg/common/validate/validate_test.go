@@ -51,15 +51,138 @@ func TestNormalize(t *testing.T) {
 				"Test email",
 				"test@example.com-test", "test@example.com-test", true,
 			},
+			{
+				"test rule email 1",
+				".Mothaibabon1234@gmail.com", "", false,
+			},
+			{
+				"test rule email 2",
+				"Mothaibabon1234.@gmail.com", "", false,
+			},
+			{
+				"test rule email 3",
+				"Mothaibabon..1234@gmail.com", "", false,
+			},
+			{
+				"test rule email 4",
+				"Mothaibabon12!34@gmail.com", "", false,
+			},
+			{
+				"test rule email 5",
+				"Mothaibabon1234@gmail.com", "mothaibabon1234@gmail.com", true,
+			},
+			{
+				"test rule email 6",
+				"Mothaibabon12!34@gmail.com", "", false,
+			},
+			{
+				"test rule email 7",
+				"Mothaibabon12.34@gmail.com", "mothaibabon1234@gmail.com", true,
+			},
+			{
+				"test rule email 8",
+				"Mothaibabon12^.34@gmail.com", "", false,
+			},
+			{
+				"test rule email 9",
+				"Mothaibabon12!34@example.com", "mothaibabon12!34@example.com", false,
+			},
+			{
+				"test rule email 10",
+				"Mothaibabon1234@example-extratest.com", "mothaibabon1234@example-extratest.com", true,
+			},
+			{
+				"test rule email 11",
+				"Mothaibabon12!34@example--extratest.com", "", false,
+			},
+			{
+				"test rule email 12",
+				"MothaibaBônTest@gmail.com", "", false,
+			},
+			{
+				"test rule email 13",
+				"Mothaibabon1234@example-extratest.com.", "", false,
+			},
+			{
+				"test rule email 14",
+				"Mothaibabon1234@example-extratest.com-", "", false,
+			},
+			{
+				"test rule email 15",
+				"Mothaibabon1234@example-extratest.plaza.com", "mothaibabon1234@example-extratest.plaza.com", true,
+			},
+			{
+				"test rule email 16",
+				"Mothaibabon1234@exam!ple-extratest.com", "", false,
+			},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				actual, ok := NormalizeEmail(tt.email)
-
 				require.Equal(t, tt.ok, ok)
 				if ok {
 					require.Equal(t, tt.want, string(actual))
+				}
+			})
+		}
+	})
+
+	t.Run("popular email address mistake", func(t *testing.T) {
+		tests := []struct {
+			name  string
+			email string
+			ok    bool
+		}{
+			{
+				"valid email address",
+				"mothaibabon1234@gmail.com", true,
+			},
+			{
+				"not the first character",
+				"mothaibabon1234@ymail.com", true,
+			},
+			{
+				"mail.com",
+				"mothaibabon1234@mail.com", false,
+			},
+			{
+				"swap 2 characters (invalid)",
+				"mothaibabon1234@gamil.com", false,
+			},
+			{
+				"swap more than 2 characters (valid)",
+				"mothaibabon1234@gamil.cmo", true,
+			},
+			{
+				"miss one character (invalid)",
+				"mothaibabon1234@gmal.com", false,
+			},
+			{
+				"miss more than 2 characters (valid)",
+				"mothaibabon1234@gmal.co", true,
+			},
+			{
+				"miss the last character (invalid)",
+				"mothaibabon1234@gmail.co", false,
+			},
+			{
+				"miss dot (invalid)",
+				"mothaibabon1234@gmailcom", false,
+			},
+			{
+				"different domain (valid)",
+				"mothaibabon1234@yahoo.com", true,
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				err := PopularEmailAddressMistake(tt.email)
+				if err != nil {
+					require.Equal(t, tt.ok, false)
+				} else {
+					require.Equal(t, tt.ok, true)
 				}
 			})
 		}
@@ -436,13 +559,13 @@ func TestNormalizeSearch(t *testing.T) {
 		},
 		{
 			"Remove vnese chars",
-			"ÁO CHỮ T - KIỂU 2 - đen #6824-XL-100",
-			"ao chu t - kieu 2 - den # 6824 - xl - 100",
-			"ao_chu_t_kieu_2_den_6824_xl_100",
-			"ao chu t '-' kieu 2 '-' den '#' 6824 '-' xl '-' 100",
-			"ao & chu & t & '-' & kieu & 2 & '-' & den & '#' & 6824 & '-' & xl & '-' & 100",
-			"ao | chu | t | '-' | kieu | 2 | '-' | den | '#' | 6824 | '-' | xl | '-' | 100",
-			"'#' '-' '100' '2' '6824' 'ao' 'chu' 'den' 'kieu' 't' 'xl'",
+			"ÁO CHỮ T - KIỂU 2 - đen #6812-XL-100",
+			"ao chu t - kieu 2 - den # 6812 - xl - 100",
+			"ao_chu_t_kieu_2_den_6812_xl_100",
+			"ao chu t '-' kieu 2 '-' den '#' 6812 '-' xl '-' 100",
+			"ao & chu & t & '-' & kieu & 2 & '-' & den & '#' & 6812 & '-' & xl & '-' & 100",
+			"ao | chu | t | '-' | kieu | 2 | '-' | den | '#' | 6812 | '-' | xl | '-' | 100",
+			"'#' '-' '100' '2' '6812' 'ao' 'chu' 'den' 'kieu' 't' 'xl'",
 		},
 		{
 			"Spaces, special chars",
@@ -456,13 +579,13 @@ func TestNormalizeSearch(t *testing.T) {
 		},
 		{
 			"Spaces, special and CAP chars",
-			"  Akkj   tay phong@NANDA #6824  ",
-			"akkj tay phong @ nanda # 6824",
-			"akkj_tay_phong_nanda_6824",
-			"akkj tay phong '@' nanda '#' 6824",
-			"akkj & tay & phong & '@' & nanda & '#' & 6824",
-			"akkj | tay | phong | '@' | nanda | '#' | 6824",
-			"'#' '6824' '@' 'akkj' 'nanda' 'phong' 'tay'",
+			"  Akkj   tay phong@NANDA #6812  ",
+			"akkj tay phong @ nanda # 6812",
+			"akkj_tay_phong_nanda_6812",
+			"akkj tay phong '@' nanda '#' 6812",
+			"akkj & tay & phong & '@' & nanda & '#' & 6812",
+			"akkj | tay | phong | '@' | nanda | '#' | 6812",
+			"'#' '6812' '@' 'akkj' 'nanda' 'phong' 'tay'",
 		},
 		{
 			"Single and double quote",
