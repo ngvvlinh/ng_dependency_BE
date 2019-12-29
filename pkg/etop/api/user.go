@@ -317,8 +317,8 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserReg
 		return nil
 	}
 
-	userByPhoneQuery := &model.GetUserByLoginQuery{
-		PhoneOrEmail: q.Phone,
+	userByPhoneQuery := &model.GetUserByEmailOrPhoneQuery{
+		Phone: q.Phone,
 	}
 	err := bus.Dispatch(ctx, userByPhoneQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {

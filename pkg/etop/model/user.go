@@ -26,8 +26,9 @@ type GetUserByIDQuery struct {
 	Result *User
 }
 
-type GetUserByEmailQuery struct {
+type GetUserByEmailOrPhoneQuery struct {
 	Email string
+	Phone string
 
 	Result *User
 }

@@ -295,7 +295,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 		ImageUrl: getAccountQuery.Result.ImageURL,
 	}
 
-	getUserQuery := &model.GetUserByEmailQuery{
+	getUserQuery := &model.GetUserByEmailOrPhoneQuery{
 		Email: query.Result.Email,
 	}
 	err := bus.Dispatch(ctx, getUserQuery)

@@ -82,13 +82,22 @@ func GetUserByID(ctx context.Context, query *model.GetUserByIDQuery) error {
 		ShouldGet(query.Result)
 }
 
-func GetUserByEmail(ctx context.Context, query *model.GetUserByEmailQuery) error {
-	if query.Email == "" {
+func GetUserByEmail(ctx context.Context, query *model.GetUserByEmailOrPhoneQuery) error {
+	count := 0
+	q := x.Table("user")
+	if query.Email != "" {
+		q = q.Where("email = ?", query.Email)
+		count++
+	}
+	if query.Phone != "" {
+		q = q.Where("phone = ?", query.Phone)
+		count++
+	}
+	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 	query.Result = new(model.User)
-	return x.Where("email = ?", query.Email).
-		ShouldGet(query.Result)
+	return q.ShouldGet(query.Result)
 }
 
 func GetUserByLogin(ctx context.Context, query *model.GetUserByLoginQuery) error {
