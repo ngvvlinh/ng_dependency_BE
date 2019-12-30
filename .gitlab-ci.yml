@@ -4,7 +4,7 @@ stages:
 
 variables:
   ETOPDIR: /etop.vn
-  ETOP_LOG: "*:1"
+  ETOP_LOG: "*:0"
   POSTGRES_USER: postgres
   POSTGRES_DB: test
   POSTGRES_PASSWORD: postgres
