@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -62,7 +63,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ g
 	if docPath == "" {
 		return generator.Errorf(nil, "no doc-path for pkg %v", pkg.Name)
 	}
-	description, err := parseDescription(pkg, pkgDirectives)
+	description, err := parsePackageDescription(pkg, pkgDirectives)
 	if err != nil {
 		return err
 	}
@@ -104,23 +105,26 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 	pathItems := map[string]spec.PathItem{}
 	for _, service := range services {
 		for _, method := range service.Methods {
+			desc, err := parseItemDescription(ng, method.Method)
+			if err != nil {
+				return nil, err
+			}
 			sign := method.Method.Type().(*types.Signature)
 			requestRef := getReference(ng, definitions, sign.Params().At(1).Type())
 			responseRef := getReference(ng, definitions, sign.Results().At(0).Type())
 
 			apiPath := opts.BasePath + service.APIPath + "/" + method.Name
 			pathItem := spec.PathItem{
-				Refable:          spec.Refable{},
-				VendorExtensible: spec.VendorExtensible{},
 				PathItemProps: spec.PathItemProps{
 					Post: &spec.Operation{
-						VendorExtensible: spec.VendorExtensible{},
 						OperationProps: spec.OperationProps{
-							Tags: []string{service.Name},
-							ID:   method.Name,
+							Description: desc.FormattedDescription,
+							Deprecated:  desc.Deprecated,
+							Summary:     desc.Summary,
+							Tags:        []string{service.Name},
+							ID:          method.Name,
 							Parameters: []spec.Parameter{
 								{
-									Refable: spec.Refable{},
 									ParamProps: spec.ParamProps{
 										Name:     "body",
 										In:       "body",
@@ -352,6 +356,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		st := inner.(*types.Struct)
 
 		// TODO: use message.Walk
+		var requiredFields []string
 		for i, n := 0, st.NumFields(); i < n; i++ {
 			field := st.Field(i)
 			if !field.Exported() {
@@ -365,12 +370,21 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 				continue
 			}
 			fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
+			desc, err := parseItemDescription(ng, field)
+			if err != nil {
+				panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err))
+			}
+			fieldSchema.Description = desc.FormattedDescription
+			if desc.Required {
+				requiredFields = append(requiredFields, jsonTag)
+			}
 			props[jsonTag] = fieldSchema
 		}
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
 				Type:       spec.StringOrArray{"object"},
 				Properties: props,
+				Required:   requiredFields,
 			},
 		}
 		definitions[id] = s
@@ -434,7 +448,7 @@ func parseJsonTag(tag string) string {
 	return ""
 }
 
-func parseDescription(pkg *packages.Package, ds generator.Directives) (string, error) {
+func parsePackageDescription(pkg *packages.Package, ds generator.Directives) (string, error) {
 	filePath := ds.GetArg("gen:swagger:description")
 	if filePath == "" {
 		return "", nil
@@ -445,4 +459,67 @@ func parseDescription(pkg *packages.Package, ds generator.Directives) (string, e
 		return "", generator.Errorf(err, "%v", err)
 	}
 	return strings.TrimSpace(string(data)), nil
+}
+
+type ItemDescription struct {
+	Summary              string
+	Description          string
+	FormattedDescription string
+	Deprecated           bool
+	DeprecatedText       string
+	Required             bool
+	Default              string
+}
+
+var reDeprecated = regexp.MustCompile(`(?i)((?:^|\n)@?(deprecated|required|default|todo):?)(?:([^\n]+))?\n`)
+
+func parseItemDescription(ng generator.Engine, pos generator.Positioner) (ItemDescription, error) {
+	cmt := ng.GetComment(pos)
+	doc := cmt.Doc.Text()
+	desc, err := parseItemDescriptionText(doc)
+	if err != nil {
+		return desc, generator.Errorf(err, "%v: %v", pos, err)
+	}
+	return desc, nil
+}
+
+func parseItemDescriptionText(doc string) (res ItemDescription, _ error) {
+	res.Description = doc
+	match := reDeprecated.FindAllStringSubmatch(doc, -1)
+	if len(match) == 0 {
+		res.FormattedDescription = res.Description
+		return
+	}
+	formattedDescription := doc
+	for _, parts := range match {
+		if strings.Contains(parts[0], " ") && !strings.ContainsAny(parts[1], "@:") {
+			return res, generator.Errorf(nil, "invalid keyword, must contain @ or : (%v)", strings.TrimSpace(parts[0]))
+		}
+		keyword := strings.ToLower(parts[2])
+		switch keyword {
+		case "deprecated":
+			res.Deprecated = true
+			res.DeprecatedText = strings.TrimSpace(parts[3])
+			formattedDescription = strings.Replace(formattedDescription, parts[1], "\n**Deprecated:**", 1)
+
+		case "required":
+			res.Required = true
+			formattedDescription = strings.Replace(formattedDescription, parts[1], "", 1)
+
+		case "default":
+			res.Default = strings.TrimSpace(parts[3])
+			formattedDescription = strings.Replace(formattedDescription, parts[1], "\n**Default:**", 1)
+
+		case "todo":
+			formattedDescription = strings.Replace(formattedDescription, parts[1], "\n**TODO:**", 1)
+
+		default:
+			panic(fmt.Sprintf("unexpected (%v)", keyword))
+		}
+	}
+	if res.Required && res.Default != "" {
+		return res, generator.Errorf(nil, "required and default can not be used together")
+	}
+	res.FormattedDescription = strings.TrimLeft(formattedDescription, "\n")
+	return
 }

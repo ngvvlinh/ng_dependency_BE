@@ -162,6 +162,7 @@
           }
         },
         "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "full_name": {
@@ -172,6 +173,7 @@
           "format": "int64"
         },
         "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "notes": {
@@ -319,6 +321,13 @@
     },
     "baCreateUserRequest": {
       "type": "object",
+      "required": [
+        "full_name",
+        "phone",
+        "password",
+        "agree_tos",
+        "agree_email_info"
+      ],
       "properties": {
         "agree_email_info": {
           "type": "boolean"
@@ -330,6 +339,7 @@
           "type": "boolean"
         },
         "email": {
+          "description": "It's not required if the user provides register_token\n",
           "type": "string"
         },
         "full_name": {
@@ -342,9 +352,11 @@
           "type": "string"
         },
         "register_token": {
+          "description": "This field must be set if the user uses generated password to register.\nAutomatically set phone_verified if it's sent within a specific time.\n",
           "type": "string"
         },
         "short_name": {
+          "description": "Can be automatically deduce from full_name.\n",
           "type": "string"
         },
         "source": {
@@ -354,11 +366,18 @@
     },
     "baLoginAccount": {
       "type": "object",
+      "required": [
+        "id",
+        "name",
+        "type"
+      ],
       "properties": {
         "access_token": {
+          "description": "Associated token for the account. It's returned when calling Login or\nSwitchAccount with regenerate_tokens set to true.\n",
           "type": "string"
         },
         "expires_in": {
+          "description": "The same as access_token.\n",
           "type": "integer"
         },
         "exported_fields": {
@@ -390,6 +409,12 @@
     },
     "baLoginResponse": {
       "type": "object",
+      "required": [
+        "access_token",
+        "expires_in",
+        "user",
+        "available_accounts"
+      ],
       "properties": {
         "access_token": {
           "type": "string"
@@ -449,6 +474,9 @@
     },
     "baRegisterResponse": {
       "type": "object",
+      "required": [
+        "user"
+      ],
       "properties": {
         "user": {
           "$ref": "#/definitions/baUser"
@@ -494,6 +522,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -510,6 +539,7 @@
           "type": "boolean"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -576,6 +606,15 @@
     },
     "baUser": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
       "properties": {
         "created_at": {
           "type": "string",
@@ -624,6 +663,15 @@
     },
     "baUserAccountInfo": {
       "type": "object",
+      "required": [
+        "user_id",
+        "user_full_name",
+        "user_short_name",
+        "account_id",
+        "account_name",
+        "account_type",
+        "permission"
+      ],
       "properties": {
         "account_id": {
           "type": "string",

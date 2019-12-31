@@ -225,10 +225,12 @@
     },
     "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages": {
       "post": {
+        "description": "**Deprecated:** backward-compatible, will be removed later\n",
         "tags": [
           "Account"
         ],
         "operationId": "UpdateExternalAccountAhamoveVerificationImages",
+        "deprecated": true,
         "parameters": [
           {
             "name": "body",
@@ -927,6 +929,7 @@
     },
     "/api/shop.Customer/AddCustomersToGroup": {
       "post": {
+        "description": "-- group --//\n",
         "tags": [
           "Customer"
         ],
@@ -2747,10 +2750,12 @@
     },
     "/api/shop.Order/UpdateOrdersStatus": {
       "post": {
+        "description": "**Deprecated:**\n",
         "tags": [
           "Order"
         ],
         "operationId": "UpdateOrdersStatus",
+        "deprecated": true,
         "parameters": [
           {
             "name": "body",
@@ -2825,6 +2830,7 @@
     },
     "/api/shop.Product/AddProductCollection": {
       "post": {
+        "description": "-- collection --//\n",
         "tags": [
           "Product"
         ],
@@ -3189,6 +3195,7 @@
     },
     "/api/shop.Product/UpdateProductCategory": {
       "post": {
+        "description": "-- category --//\n",
         "tags": [
           "Product"
         ],
@@ -3475,10 +3482,12 @@
     },
     "/api/shop.ProductSource/CreateVariant": {
       "post": {
+        "description": "**Deprecated:** use shop.Product/CreateVariant instead\n",
         "tags": [
           "ProductSource"
         ],
         "operationId": "CreateVariant",
+        "deprecated": true,
         "parameters": [
           {
             "name": "body",
@@ -5094,6 +5103,7 @@
           }
         },
         "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "full_name": {
@@ -5104,6 +5114,7 @@
           "format": "int64"
         },
         "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "notes": {
@@ -5301,6 +5312,9 @@
     },
     "baIDsRequest": {
       "type": "object",
+      "required": [
+        "ids"
+      ],
       "properties": {
         "ids": {
           "type": "array",
@@ -5465,6 +5479,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -5481,6 +5496,7 @@
           "type": "boolean"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -5562,6 +5578,15 @@
     },
     "baUser": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
       "properties": {
         "created_at": {
           "type": "string",
@@ -5752,18 +5777,24 @@
       "type": "object",
       "properties": {
         "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
           "type": "string"
         },
         "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
           "type": "string"
         },
         "value": {
+          "description": "Must always be string\n",
           "type": "string"
         }
       }
     },
     "ktIDRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -5773,6 +5804,9 @@
     },
     "ktIDsRequest": {
       "type": "object",
+      "required": [
+        "ids"
+      ],
       "properties": {
         "ids": {
           "type": "array",
@@ -6199,6 +6233,7 @@
           "type": "boolean"
         },
         "auto_inventory_voucher": {
+          "description": "enum ('create', 'create')\n",
           "type": "string"
         },
         "order_id": {
@@ -6211,6 +6246,7 @@
       "type": "object",
       "properties": {
         "auto_inventory_voucher": {
+          "description": "enum create, confirm\n",
           "type": "string"
         },
         "id": {
@@ -6279,6 +6315,9 @@
     },
     "paCreateCollectionRequest": {
       "type": "object",
+      "required": [
+        "name"
+      ],
       "properties": {
         "desc_html": {
           "type": "string"
@@ -6349,6 +6388,10 @@
     },
     "paCreateCustomerRequest": {
       "type": "object",
+      "required": [
+        "full_name",
+        "phone"
+      ],
       "properties": {
         "birthday": {
           "type": "string"
@@ -6369,6 +6412,7 @@
           "type": "string"
         },
         "type": {
+          "description": "enum ('individual', 'organization')\n",
           "$ref": "#/definitions/spCustomerType"
         }
       }
@@ -6384,6 +6428,7 @@
           "type": "string"
         },
         "type": {
+          "description": "enum \"in\" or \"out\" only for ref_type = \"order\"\n",
           "type": "string"
         }
       }
@@ -6572,6 +6617,7 @@
       "type": "object",
       "properties": {
         "lines": {
+          "description": " length more than one\n",
           "type": "array",
           "items": {
             "$ref": "#/definitions/paStocktakeLine"
@@ -6863,6 +6909,9 @@
     },
     "paDeprecatedCreateVariantRequest": {
       "type": "object",
+      "required": [
+        "product_source_id"
+      ],
       "properties": {
         "attributes": {
           "type": "array",
@@ -6892,6 +6941,7 @@
           "type": "integer"
         },
         "name": {
+          "description": "In `Dép Adidas Adilette Slides - Full Đỏ`, name is \"Full Đỏ\"\n",
           "type": "string"
         },
         "product_id": {
@@ -6899,6 +6949,7 @@
           "format": "int64"
         },
         "product_name": {
+          "description": "In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is \"Dép Adidas Adilette Slides\"\n",
           "type": "string"
         },
         "product_source_id": {
@@ -6921,6 +6972,7 @@
           "type": "string"
         },
         "sku": {
+          "description": "**Deprecated:** use code instead\n",
           "type": "string"
         },
         "status": {
@@ -6973,6 +7025,7 @@
           "type": "string"
         },
         "product_source_category_id": {
+          "description": "**Deprecated:**\n",
           "type": "string",
           "format": "int64"
         },
@@ -7054,6 +7107,7 @@
           }
         },
         "export_type": {
+          "description": "example: shop/fulfillments, admin/orders\n",
           "type": "string"
         },
         "filename": {
@@ -7097,6 +7151,7 @@
           "format": "date-time"
         },
         "external_created_at": {
+          "description": "   optional string external_token = 5 [(gogoproto.nullable) = false];\n",
           "type": "string",
           "format": "date-time"
         },
@@ -7182,8 +7237,14 @@
     },
     "paExternalAccountHaravanRequest": {
       "type": "object",
+      "required": [
+        "subdomain",
+        "code",
+        "redirect_uri"
+      ],
       "properties": {
         "code": {
+          "description": " OAuth code\n",
           "type": "string"
         },
         "redirect_uri": {
@@ -7442,6 +7503,7 @@
           "format": "int64"
         },
         "ref_type": {
+          "description": "enum ('order', 'purchase_order', 'return', 'purchase_order')\n",
           "type": "string"
         }
       }
@@ -7552,6 +7614,9 @@
     },
     "paGetPublicFulfillmentRequest": {
       "type": "object",
+      "required": [
+        "code"
+      ],
       "properties": {
         "code": {
           "type": "string"
@@ -7964,6 +8029,7 @@
           "type": "string"
         },
         "type": {
+          "description": "enum: cash, bank\n",
           "$ref": "#/definitions/ujLedgerType"
         },
         "updated_at": {
@@ -8261,6 +8327,7 @@
           "format": "int64"
         },
         "created_type": {
+          "description": "**Deprecated:** use mode\n",
           "$ref": "#/definitions/rdReceiptMode"
         },
         "description": {
@@ -8471,6 +8538,9 @@
     },
     "paRegisterShopRequest": {
       "type": "object",
+      "required": [
+        "name"
+      ],
       "properties": {
         "address": {
           "$ref": "#/definitions/baAddress"
@@ -8488,6 +8558,7 @@
           "type": "string"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -8518,6 +8589,9 @@
     },
     "paRegisterShopResponse": {
       "type": "object",
+      "required": [
+        "shop"
+      ],
       "properties": {
         "shop": {
           "$ref": "#/definitions/baShop"
@@ -8578,9 +8652,11 @@
           "type": "string"
         },
         "delimiter": {
+          "description": "Accept '\\t', ',' or ';'. Default to ','.\n",
           "type": "string"
         },
         "excel_compatible_mode": {
+          "description": "For exporting csv compatible with Excel\n",
           "type": "boolean"
         },
         "export_type": {
@@ -8593,6 +8669,7 @@
           }
         },
         "ids": {
+          "description": "Export specific ids\n",
           "type": "array",
           "items": {
             "type": "string",
@@ -8712,6 +8789,9 @@
     },
     "paShopProduct": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "brand_id": {
           "type": "string",
@@ -8742,6 +8822,7 @@
           "type": "string"
         },
         "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
           "type": "string"
         },
         "id": {
@@ -8798,6 +8879,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "tags": {
+          "description": "**Deprecated:** use stags instead\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -8843,6 +8925,9 @@
     },
     "paShopVariant": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "attributes": {
           "type": "array",
@@ -8863,6 +8948,7 @@
           "type": "string"
         },
         "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
           "type": "string"
         },
         "id": {
@@ -8879,6 +8965,7 @@
           "$ref": "#/definitions/paEtopVariant"
         },
         "inventory_variant": {
+          "description": "**Deprecated:**\n",
           "$ref": "#/definitions/paInventoryVariantShopVariant"
         },
         "is_available": {
@@ -8921,6 +9008,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "tags": {
+          "description": "**Deprecated:** use stags instead\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -9341,6 +9429,10 @@
     },
     "paUpdateCollectionRequest": {
       "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
       "properties": {
         "desc_html": {
           "type": "string"
@@ -9443,14 +9535,19 @@
           "type": "string"
         },
         "type": {
+          "description": "enum ('individual', 'organization','independent')\n",
           "$ref": "#/definitions/spCustomerType"
         }
       }
     },
     "paUpdateFulfillmentsShippingStateRequest": {
       "type": "object",
+      "required": [
+        "shipping_state"
+      ],
       "properties": {
         "ids": {
+          "description": "Only support for manual order\n",
           "type": "array",
           "items": {
             "type": "string",
@@ -9568,6 +9665,10 @@
     },
     "paUpdateOrdersStatusRequest": {
       "type": "object",
+      "required": [
+        "ids",
+        "confirm"
+      ],
       "properties": {
         "cancel_reason": {
           "type": "string"
@@ -9602,6 +9703,9 @@
     },
     "paUpdateProductMetaFieldsRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -9617,6 +9721,9 @@
     },
     "paUpdateProductRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "brand_id": {
           "type": "string",
@@ -9721,6 +9828,9 @@
     },
     "paUpdateProductsTagsRequest": {
       "type": "object",
+      "required": [
+        "ids"
+      ],
       "properties": {
         "adds": {
           "type": "array",
@@ -9858,6 +9968,7 @@
           "type": "string"
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "image_url": {
@@ -9867,6 +9978,7 @@
           "type": "boolean"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -9911,6 +10023,7 @@
           "format": "int64"
         },
         "lines": {
+          "description": " length more than one\n",
           "type": "array",
           "items": {
             "$ref": "#/definitions/paStocktakeLine"
@@ -9956,6 +10069,9 @@
     },
     "paUpdateVariantAttributesRequest": {
       "type": "object",
+      "required": [
+        "variant_id"
+      ],
       "properties": {
         "attributes": {
           "type": "array",
@@ -9971,6 +10087,9 @@
     },
     "paUpdateVariantImagesRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "adds": {
           "type": "array",
@@ -10001,6 +10120,9 @@
     },
     "paUpdateVariantRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "attributes": {
           "type": "array",
@@ -10040,6 +10162,7 @@
           "type": "string"
         },
         "sku": {
+          "description": "**Deprecated:**\n",
           "type": "string"
         }
       }
@@ -10159,6 +10282,7 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "customer": {
+          "description": "If order_source is self, customer must be shop information\nand customer_address, shipping_address must be shop address.\n",
           "$ref": "#/definitions/qdOrderCustomer"
         },
         "customer_address": {
@@ -10196,6 +10320,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use shop_shipping.try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "lines": {
@@ -10235,15 +10360,19 @@
           "type": "string"
         },
         "shop_address": {
+          "description": "If there are products from shop, this field should be set.\nOtherwise, use shop default address.\n",
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shop_cod": {
+          "description": "**Deprecated:** use shipping.cod_amount instead\n",
           "type": "integer"
         },
         "shop_shipping": {
+          "description": "**Deprecated:** use shipping instead\n",
           "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping instead\n",
           "type": "integer"
         },
         "source": {
@@ -10262,6 +10391,7 @@
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:** use shipping.gross_weight, shipping.chargeable_weight\n",
           "type": "integer"
         }
       }
@@ -10370,10 +10500,12 @@
           "format": "date-time"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
         "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
           "type": "string",
           "format": "date-time"
         },
@@ -10384,6 +10516,7 @@
           }
         },
         "external_id": {
+          "description": "**Deprecated:** use code\n",
           "type": "string"
         },
         "fee": {
@@ -10393,9 +10526,11 @@
           "type": "string"
         },
         "provider": {
+          "description": "**Deprecated:** use carier\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "service_fee": {
+          "description": "**Deprecated:** use fee\n",
           "type": "integer"
         }
       }
@@ -10407,9 +10542,11 @@
           "type": "integer"
         },
         "address_from": {
+          "description": "**Deprecated:** use pickup_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "address_to": {
+          "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
@@ -10461,10 +10598,12 @@
           "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
         "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
           "type": "string",
           "format": "date-time"
         },
@@ -10550,6 +10689,7 @@
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -10578,15 +10718,18 @@
           "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
           "type": "integer"
         },
         "total_items": {
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
           "type": "integer"
         },
         "try_on": {
@@ -10720,6 +10863,7 @@
           "type": "integer"
         },
         "provider": {
+          "description": "**Deprecated:** use carrier instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "to_district": {
@@ -10735,12 +10879,15 @@
           "type": "string"
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount instead\n",
           "type": "integer"
         },
         "value": {
+          "description": "**Deprecated:** use basket_value instead\n",
           "type": "integer"
         },
         "weight": {
+          "description": "**Deprecated:** use gross_weight instead\n",
           "type": "integer"
         },
         "width": {
@@ -10914,6 +11061,7 @@
           "type": "string"
         },
         "confirm": {
+          "description": "**Deprecated:** replaced by confirm_status\n",
           "$ref": "#/definitions/blStatus"
         },
         "confirm_status": {
@@ -10951,6 +11099,7 @@
           }
         },
         "ed_code": {
+          "description": "the same as external_code\n",
           "type": "string"
         },
         "etop_payment_status": {
@@ -10988,6 +11137,7 @@
           "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_status": {
+          "description": "**Deprecated:** replaced by fulfillment_shipping_status\n",
           "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_type": {
@@ -11000,6 +11150,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on_code instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -11033,6 +11184,7 @@
           "format": "date-time"
         },
         "received_amount": {
+          "description": "received_amount get from receipt\n",
           "type": "integer"
         },
         "reference_url": {
@@ -11051,12 +11203,15 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping\n",
           "type": "integer"
         },
         "shipping_note": {
+          "description": "**Deprecated:** use shop_shipping.shipping_note instead\n",
           "type": "string"
         },
         "shop_cod": {
+          "description": "@deperecated use shop_shipping.cod_amount instead\n",
           "type": "integer"
         },
         "shop_id": {
@@ -11067,9 +11222,11 @@
           "type": "string"
         },
         "shop_shipping": {
+          "description": "**Deprecated:** use shipping instead\n",
           "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
+          "description": "@deperecated use fee_lines.shipping instead\n",
           "type": "integer"
         },
         "source": {
@@ -11215,6 +11372,10 @@
     },
     "qdOrderFeeLine": {
       "type": "object",
+      "required": [
+        "name",
+        "amount"
+      ],
       "properties": {
         "amount": {
           "type": "integer"
@@ -11346,12 +11507,14 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "sh_address": {
+          "description": "**Deprecated:** use pickup_address\n",
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -11367,18 +11530,22 @@
           "$ref": "#/definitions/csTryOnCode"
         },
         "weight": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "width": {
           "type": "integer"
         },
         "x_service_id": {
+          "description": "**Deprecated:**\n",
           "type": "string"
         },
         "x_service_name": {
+          "description": "**Deprecated:**\n",
           "type": "string"
         },
         "x_shipping_fee": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         }
       }
@@ -11387,6 +11554,7 @@
       "type": "object",
       "properties": {
         "errors": {
+          "description": "**Deprecated:**\n",
           "type": "array",
           "items": {
             "$ref": "#/definitions/ktError"
@@ -11425,6 +11593,7 @@
           "format": "date-time"
         },
         "delivered_at_text": {
+          "description": "For using with ManyChat\n",
           "type": "string"
         },
         "estimated_delivery_at": {
@@ -11436,6 +11605,7 @@
           "format": "date-time"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
@@ -11648,6 +11818,7 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "customer": {
+          "description": "Customer should be shop's information\nand customer_address, shipping_address must be shop address.\n",
           "$ref": "#/definitions/qdOrderCustomer"
         },
         "customer_address": {
@@ -11705,6 +11876,9 @@
     },
     "qdUpdateOrderRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "basket_value": {
           "type": "integer"
@@ -11760,12 +11934,15 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shop_cod": {
+          "description": "**Deprecated:** use shipping.cod_amount instead\n",
           "type": "integer"
         },
         "shop_shipping": {
+          "description": "**Deprecated:** use shipping instead\n",
           "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
+          "description": "**Deprecated:** use fee_lines instead\n",
           "type": "integer"
         },
         "total_amount": {
@@ -11778,6 +11955,7 @@
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         }
       }
@@ -11858,9 +12036,11 @@
           "type": "integer"
         },
         "address_from": {
+          "description": "**Deprecated:** use pickup_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "address_to": {
+          "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
@@ -11912,14 +12092,17 @@
           "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
         "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
           "type": "string",
           "format": "date-time"
         },
         "id": {
+          "description": "backward-compatible fields from shipment\n",
           "type": "string",
           "format": "int64"
         },
@@ -12001,6 +12184,7 @@
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -12029,15 +12213,18 @@
           "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
           "type": "integer"
         },
         "total_items": {
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
           "type": "integer"
         },
         "try_on": {

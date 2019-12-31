@@ -44,6 +44,7 @@
     },
     "/api/etop.Account/GetPublicPartners": {
       "post": {
+        "description": "leave ids empty to get all connected partners\n",
         "tags": [
           "Account"
         ],
@@ -642,6 +643,7 @@
     },
     "/api/etop.User/ChangePassword": {
       "post": {
+        "description": "ChangePassword\n\nChange the user password\n",
         "tags": [
           "User"
         ],
@@ -668,6 +670,7 @@
     },
     "/api/etop.User/ChangePasswordUsingToken": {
       "post": {
+        "description": "ChangePasswordUsingToken\n\nReset password by providing the token sent to email or phone\n",
         "tags": [
           "User"
         ],
@@ -746,6 +749,7 @@
     },
     "/api/etop.User/Login": {
       "post": {
+        "description": "Login\n\nLog the user in and generate access token.\n",
         "tags": [
           "User"
         ],
@@ -772,6 +776,7 @@
     },
     "/api/etop.User/Register": {
       "post": {
+        "description": "Register\n\nRegister a new user or after a user has login using generated password.\n",
         "tags": [
           "User"
         ],
@@ -824,6 +829,7 @@
     },
     "/api/etop.User/ResetPassword": {
       "post": {
+        "description": "ResetPassword\n\nSend email or sms to allow the user reset their password.\n",
         "tags": [
           "User"
         ],
@@ -928,6 +934,7 @@
     },
     "/api/etop.User/SessionInfo": {
       "post": {
+        "description": "SessionInfo\n\nReturn current session info.\n",
         "tags": [
           "User"
         ],
@@ -954,6 +961,7 @@
     },
     "/api/etop.User/SwitchAccount": {
       "post": {
+        "description": "SwitchAccount\n\nResponse error if the user does not have permission to the requested account.\n",
         "tags": [
           "User"
         ],
@@ -1286,6 +1294,11 @@
     },
     "baAccessTokenResponse": {
       "type": "object",
+      "required": [
+        "access_token",
+        "expires_in",
+        "user"
+      ],
       "properties": {
         "access_token": {
           "type": "string"
@@ -1345,6 +1358,7 @@
           }
         },
         "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "full_name": {
@@ -1355,6 +1369,7 @@
           "format": "int64"
         },
         "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "notes": {
@@ -1497,6 +1512,11 @@
     },
     "baChangePasswordRequest": {
       "type": "object",
+      "required": [
+        "current_password",
+        "new_password",
+        "confirm_password"
+      ],
       "properties": {
         "confirm_password": {
           "type": "string"
@@ -1511,6 +1531,11 @@
     },
     "baChangePasswordUsingTokenRequest": {
       "type": "object",
+      "required": [
+        "reset_password_token",
+        "new_password",
+        "confirm_password"
+      ],
       "properties": {
         "confirm_password": {
           "type": "string"
@@ -1581,6 +1606,11 @@
     },
     "baCreateAddressRequest": {
       "type": "object",
+      "required": [
+        "province",
+        "district",
+        "ward"
+      ],
       "properties": {
         "address1": {
           "type": "string"
@@ -1643,11 +1673,16 @@
     },
     "baCreateInvitationRequest": {
       "type": "object",
+      "required": [
+        "email",
+        "roles"
+      ],
       "properties": {
         "email": {
           "type": "string"
         },
         "full_name": {
+          "description": "@Optional\n",
           "type": "string"
         },
         "position": {
@@ -1666,6 +1701,13 @@
     },
     "baCreateUserRequest": {
       "type": "object",
+      "required": [
+        "full_name",
+        "phone",
+        "password",
+        "agree_tos",
+        "agree_email_info"
+      ],
       "properties": {
         "agree_email_info": {
           "type": "boolean"
@@ -1677,6 +1719,7 @@
           "type": "boolean"
         },
         "email": {
+          "description": "It's not required if the user provides register_token\n",
           "type": "string"
         },
         "full_name": {
@@ -1689,9 +1732,11 @@
           "type": "string"
         },
         "register_token": {
+          "description": "This field must be set if the user uses generated password to register.\nAutomatically set phone_verified if it's sent within a specific time.\n",
           "type": "string"
         },
         "short_name": {
+          "description": "Can be automatically deduce from full_name.\n",
           "type": "string"
         },
         "source": {
@@ -1867,6 +1912,9 @@
     },
     "baGetUserByPhoneRequest": {
       "type": "object",
+      "required": [
+        "phone"
+      ],
       "properties": {
         "phone": {
           "type": "string"
@@ -1878,6 +1926,9 @@
     },
     "baGetUserByPhoneResponse": {
       "type": "object",
+      "required": [
+        "exists"
+      ],
       "properties": {
         "exists": {
           "type": "boolean"
@@ -1990,11 +2041,18 @@
     },
     "baLoginAccount": {
       "type": "object",
+      "required": [
+        "id",
+        "name",
+        "type"
+      ],
       "properties": {
         "access_token": {
+          "description": "Associated token for the account. It's returned when calling Login or\nSwitchAccount with regenerate_tokens set to true.\n",
           "type": "string"
         },
         "expires_in": {
+          "description": "The same as access_token.\n",
           "type": "integer"
         },
         "exported_fields": {
@@ -2026,18 +2084,26 @@
     },
     "baLoginRequest": {
       "type": "object",
+      "required": [
+        "login",
+        "password"
+      ],
       "properties": {
         "account_id": {
+          "description": "Automatically switch to this account if available.\n\nIt's *ignored* if the user *does not* have permission to this account.\n",
           "type": "string",
           "format": "int64"
         },
         "account_key": {
+          "description": "Not implemented.\n",
           "type": "string"
         },
         "account_type": {
+          "description": "Automatically switch to the only account of this account type if available.\n\nIt's *ignored* if the user *does not* have any account of this account type, or if the user *has more than one* account of this account type.\n",
           "$ref": "#/definitions/jjAccountType"
         },
         "login": {
+          "description": " Phone or email\n",
           "type": "string"
         },
         "password": {
@@ -2047,6 +2113,12 @@
     },
     "baLoginResponse": {
       "type": "object",
+      "required": [
+        "access_token",
+        "expires_in",
+        "user",
+        "available_accounts"
+      ],
       "properties": {
         "access_token": {
           "type": "string"
@@ -2180,6 +2252,9 @@
     },
     "baRegisterResponse": {
       "type": "object",
+      "required": [
+        "user"
+      ],
       "properties": {
         "user": {
           "$ref": "#/definitions/baUser"
@@ -2261,15 +2336,20 @@
       "type": "object",
       "properties": {
         "email": {
+          "description": "Email address to send reset password instruction.\n",
           "type": "string"
         },
         "phone": {
+          "description": "Phone number to send reset password instruction.\n",
           "type": "string"
         }
       }
     },
     "baSendEmailVerificationRequest": {
       "type": "object",
+      "required": [
+        "email"
+      ],
       "properties": {
         "email": {
           "type": "string"
@@ -2278,6 +2358,9 @@
     },
     "baSendPhoneVerificationRequest": {
       "type": "object",
+      "required": [
+        "phone"
+      ],
       "properties": {
         "phone": {
           "type": "string"
@@ -2286,6 +2369,10 @@
     },
     "baSendSTokenEmailRequest": {
       "type": "object",
+      "required": [
+        "email",
+        "account_id"
+      ],
       "properties": {
         "account_id": {
           "type": "string",
@@ -2335,6 +2422,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -2351,6 +2439,7 @@
           "type": "boolean"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -2435,12 +2524,16 @@
     },
     "baSwitchAccountRequest": {
       "type": "object",
+      "required": [
+        "account_id"
+      ],
       "properties": {
         "account_id": {
           "type": "string",
           "format": "int64"
         },
         "regenerate_tokens": {
+          "description": "This field should only be used after creating new accounts. If it is set,\naccount_id can be left empty.\n",
           "type": "boolean"
         }
       }
@@ -2462,6 +2555,11 @@
     },
     "baUpdateAddressRequest": {
       "type": "object",
+      "required": [
+        "province",
+        "district",
+        "ward"
+      ],
       "properties": {
         "address1": {
           "type": "string"
@@ -2579,6 +2677,9 @@
     },
     "baUpdateReferenceSaleRequest": {
       "type": "object",
+      "required": [
+        "phone"
+      ],
       "properties": {
         "phone": {
           "type": "string"
@@ -2587,6 +2688,9 @@
     },
     "baUpdateReferenceUserRequest": {
       "type": "object",
+      "required": [
+        "phone"
+      ],
       "properties": {
         "phone": {
           "type": "string"
@@ -2625,6 +2729,9 @@
     },
     "baUpgradeAccessTokenRequest": {
       "type": "object",
+      "required": [
+        "stoken"
+      ],
       "properties": {
         "password": {
           "type": "string"
@@ -2636,6 +2743,15 @@
     },
     "baUser": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
       "properties": {
         "created_at": {
           "type": "string",
@@ -2684,6 +2800,15 @@
     },
     "baUserAccountInfo": {
       "type": "object",
+      "required": [
+        "user_id",
+        "user_full_name",
+        "user_short_name",
+        "account_id",
+        "account_name",
+        "account_type",
+        "permission"
+      ],
       "properties": {
         "account_id": {
           "type": "string",
@@ -2757,6 +2882,9 @@
     },
     "baVerifyEmailUsingTokenRequest": {
       "type": "object",
+      "required": [
+        "verification_token"
+      ],
       "properties": {
         "verification_token": {
           "type": "string"
@@ -2765,6 +2893,9 @@
     },
     "baVerifyPhoneUsingTokenRequest": {
       "type": "object",
+      "required": [
+        "verification_token"
+      ],
       "properties": {
         "verification_token": {
           "type": "string"
@@ -2832,18 +2963,24 @@
       "type": "object",
       "properties": {
         "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
           "type": "string"
         },
         "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
           "type": "string"
         },
         "value": {
+          "description": "Must always be string\n",
           "type": "string"
         }
       }
     },
     "ktIDRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -2853,6 +2990,9 @@
     },
     "ktIDsRequest": {
       "type": "object",
+      "required": [
+        "ids"
+      ],
       "properties": {
         "ids": {
           "type": "array",

@@ -207,6 +207,9 @@
     },
     "ktIDRequest": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -231,6 +234,9 @@
     },
     "xlRegisterAffiliateRequest": {
       "type": "object",
+      "required": [
+        "name"
+      ],
       "properties": {
         "bank_account": {
           "$ref": "#/definitions/baBankAccount"

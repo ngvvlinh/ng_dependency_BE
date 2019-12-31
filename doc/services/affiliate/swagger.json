@@ -552,6 +552,7 @@
           }
         },
         "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "full_name": {
@@ -562,6 +563,7 @@
           "format": "int64"
         },
         "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "notes": {
@@ -746,6 +748,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -762,6 +765,7 @@
           "type": "boolean"
         },
         "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"
         },
         "name": {
@@ -828,6 +832,15 @@
     },
     "baUser": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
       "properties": {
         "created_at": {
           "type": "string",
@@ -1078,6 +1091,7 @@
       "type": "object",
       "properties": {
         "depend_on": {
+          "description": "product, customer\n",
           "type": "string"
         },
         "group": {
@@ -1096,6 +1110,7 @@
           "type": "integer"
         },
         "level1_limit_duration_type": {
+          "description": "day, month\n",
           "type": "string"
         },
         "level2_direct_commission": {
@@ -1108,6 +1123,7 @@
           "type": "integer"
         },
         "lifetime_duration_type": {
+          "description": "day, month\n",
           "type": "string"
         },
         "product_id": {
@@ -1534,12 +1550,15 @@
       "type": "object",
       "properties": {
         "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
           "type": "string"
         },
         "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
           "type": "string"
         },
         "value": {
+          "description": "Must always be string\n",
           "type": "string"
         }
       }
@@ -1630,6 +1649,7 @@
           "type": "string"
         },
         "product_source_category_id": {
+          "description": "**Deprecated:**\n",
           "type": "string",
           "format": "int64"
         },
@@ -1702,6 +1722,9 @@
     },
     "paShopProduct": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "brand_id": {
           "type": "string",
@@ -1732,6 +1755,7 @@
           "type": "string"
         },
         "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
           "type": "string"
         },
         "id": {
@@ -1788,6 +1812,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "tags": {
+          "description": "**Deprecated:** use stags instead\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -1819,6 +1844,9 @@
     },
     "paShopVariant": {
       "type": "object",
+      "required": [
+        "id"
+      ],
       "properties": {
         "attributes": {
           "type": "array",
@@ -1839,6 +1867,7 @@
           "type": "string"
         },
         "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
           "type": "string"
         },
         "id": {
@@ -1855,6 +1884,7 @@
           "$ref": "#/definitions/paEtopVariant"
         },
         "inventory_variant": {
+          "description": "**Deprecated:**\n",
           "$ref": "#/definitions/paInventoryVariantShopVariant"
         },
         "is_available": {
@@ -1897,6 +1927,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "tags": {
+          "description": "**Deprecated:** use stags instead\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -1985,9 +2016,11 @@
           "type": "integer"
         },
         "address_from": {
+          "description": "**Deprecated:** use pickup_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "address_to": {
+          "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
@@ -2039,10 +2072,12 @@
           "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
         "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
           "type": "string",
           "format": "date-time"
         },
@@ -2128,6 +2163,7 @@
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -2156,15 +2192,18 @@
           "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
           "type": "integer"
         },
         "total_items": {
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
           "type": "integer"
         },
         "try_on": {
@@ -2268,6 +2307,7 @@
           "type": "string"
         },
         "confirm": {
+          "description": "**Deprecated:** replaced by confirm_status\n",
           "$ref": "#/definitions/blStatus"
         },
         "confirm_status": {
@@ -2305,6 +2345,7 @@
           }
         },
         "ed_code": {
+          "description": "the same as external_code\n",
           "type": "string"
         },
         "etop_payment_status": {
@@ -2342,6 +2383,7 @@
           "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_status": {
+          "description": "**Deprecated:** replaced by fulfillment_shipping_status\n",
           "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_type": {
@@ -2354,6 +2396,7 @@
           }
         },
         "ghn_note_code": {
+          "description": "**Deprecated:** use try_on_code instead\n",
           "$ref": "#/definitions/pjGHNNoteCode"
         },
         "id": {
@@ -2387,6 +2430,7 @@
           "format": "date-time"
         },
         "received_amount": {
+          "description": "received_amount get from receipt\n",
           "type": "integer"
         },
         "reference_url": {
@@ -2405,12 +2449,15 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping\n",
           "type": "integer"
         },
         "shipping_note": {
+          "description": "**Deprecated:** use shop_shipping.shipping_note instead\n",
           "type": "string"
         },
         "shop_cod": {
+          "description": "@deperecated use shop_shipping.cod_amount instead\n",
           "type": "integer"
         },
         "shop_id": {
@@ -2421,9 +2468,11 @@
           "type": "string"
         },
         "shop_shipping": {
+          "description": "**Deprecated:** use shipping instead\n",
           "$ref": "#/definitions/qdOrderShipping"
         },
         "shop_shipping_fee": {
+          "description": "@deperecated use fee_lines.shipping instead\n",
           "type": "integer"
         },
         "source": {
@@ -2569,6 +2618,10 @@
     },
     "qdOrderFeeLine": {
       "type": "object",
+      "required": [
+        "name",
+        "amount"
+      ],
       "properties": {
         "amount": {
           "type": "integer"
@@ -2700,12 +2753,14 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "sh_address": {
+          "description": "**Deprecated:** use pickup_address\n",
           "$ref": "#/definitions/qdOrderAddress"
         },
         "shipping_note": {
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -2721,18 +2776,22 @@
           "$ref": "#/definitions/csTryOnCode"
         },
         "weight": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "width": {
           "type": "integer"
         },
         "x_service_id": {
+          "description": "**Deprecated:**\n",
           "type": "string"
         },
         "x_service_name": {
+          "description": "**Deprecated:**\n",
           "type": "string"
         },
         "x_shipping_fee": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         }
       }
@@ -2921,9 +2980,11 @@
           "type": "integer"
         },
         "address_from": {
+          "description": "**Deprecated:** use pickup_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "address_to": {
+          "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
         "basket_value": {
@@ -2975,14 +3036,17 @@
           "$ref": "#/definitions/bmStatus"
         },
         "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
           "type": "string",
           "format": "date-time"
         },
         "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
           "type": "string",
           "format": "date-time"
         },
         "id": {
+          "description": "backward-compatible fields from shipment\n",
           "type": "string",
           "format": "int64"
         },
@@ -3064,6 +3128,7 @@
           "type": "string"
         },
         "shipping_provider": {
+          "description": "**Deprecated:** use carrier instead\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "shipping_service_code": {
@@ -3092,15 +3157,18 @@
           "$ref": "#/definitions/bnStatus"
         },
         "total_amount": {
+          "description": "**Deprecated:**\n",
           "type": "integer"
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
           "type": "integer"
         },
         "total_items": {
           "type": "integer"
         },
         "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
           "type": "integer"
         },
         "try_on": {

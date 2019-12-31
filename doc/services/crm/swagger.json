@@ -303,6 +303,7 @@
     },
     "/api/crm.Vtiger/GetTicketStatusCount": {
       "post": {
+        "description": "GetStatus(context.Context, *cm.Empty) (*crm.GetStatusResponse, error)\n\tCountTicketByStatus(context.Context, *crm.CountTicketByStatusRequest) (*crm.CountTicketByStatusResponse, error)\n",
         "tags": [
           "Vtiger"
         ],
@@ -897,6 +898,9 @@
     },
     "jsRefreshFulfillmentFromCarrierRequest": {
       "type": "object",
+      "required": [
+        "shipping_code"
+      ],
       "properties": {
         "shipping_code": {
           "type": "string"

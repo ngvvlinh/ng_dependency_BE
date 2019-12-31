@@ -121,6 +121,7 @@
     },
     "/api/integration.Integration/RequestLogin": {
       "post": {
+        "description": "RequestLogin\n\nCheck if the requested phone or email exists and take corresponding action.\n",
         "tags": [
           "Integration"
         ],
@@ -240,6 +241,7 @@
           }
         },
         "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "full_name": {
@@ -250,6 +252,7 @@
           "format": "int64"
         },
         "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
           "type": "string"
         },
         "notes": {
@@ -334,6 +337,15 @@
     },
     "baUser": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
       "properties": {
         "created_at": {
           "type": "string",
@@ -512,6 +524,7 @@
           "format": "int64"
         },
         "image_url": {
+          "description": "   optional string website_url = 14 [(gogoproto.nullable)=false];\n",
           "type": "string"
         },
         "is_test": {
@@ -524,6 +537,7 @@
           "type": "string"
         },
         "ship_from_address_id": {
+          "description": "   optional dot.ID product_source_id = 17 [(gogoproto.nullable)=false];\n   optional dot.ID ship_to_address_id = 18 [(gogoproto.nullable)=false];\n",
           "type": "string",
           "format": "int64"
         },
@@ -534,11 +548,18 @@
     },
     "fuPartnerShopLoginAccount": {
       "type": "object",
+      "required": [
+        "id",
+        "name",
+        "type"
+      ],
       "properties": {
         "access_token": {
+          "description": "Associated token for the account. It's returned when calling Login or\nSwitchAccount with regenerate_tokens set to true.\n",
           "type": "string"
         },
         "expires_in": {
+          "description": "The same as access_token.\n",
           "type": "integer"
         },
         "external_id": {
@@ -561,6 +582,13 @@
     },
     "fuPartnerUserLogin": {
       "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email"
+      ],
       "properties": {
         "email": {
           "type": "string"
@@ -616,8 +644,13 @@
     },
     "fuRequestLoginRequest": {
       "type": "object",
+      "required": [
+        "login",
+        "recaptcha_token"
+      ],
       "properties": {
         "login": {
+          "description": " Phone or email\n",
           "type": "string"
         },
         "recaptcha_token": {
@@ -627,6 +660,11 @@
     },
     "fuRequestLoginResponse": {
       "type": "object",
+      "required": [
+        "code",
+        "msg",
+        "actions"
+      ],
       "properties": {
         "actions": {
           "type": "array",

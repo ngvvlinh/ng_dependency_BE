@@ -534,6 +534,7 @@
       "type": "object",
       "properties": {
         "basket_value": {
+          "description": "basket_value = SUM(lines.retail_price)\n",
           "type": "integer"
         },
         "customer_address": {
@@ -784,21 +785,25 @@
           "type": "integer"
         },
         "chargeable_weight": {
+          "description": "in gram (g)\n",
           "type": "integer"
         },
         "cod_amount": {
           "type": "integer"
         },
         "gross_weight": {
+          "description": "in gram (g)\n",
           "type": "integer"
         },
         "height": {
+          "description": "in centimetre (cm)\n",
           "type": "integer"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "length": {
+          "description": "in centimetre (cm)\n",
           "type": "integer"
         },
         "pickup_address": {
@@ -808,6 +813,7 @@
           "$ref": "#/definitions/mrLocationAddress"
         },
         "width": {
+          "description": "in centimetre (cm)\n",
           "type": "integer"
         }
       }
@@ -1048,6 +1054,7 @@
           "type": "integer"
         },
         "payment_price": {
+          "description": "payment_price = retail_price - discount_per_item\n",
           "type": "integer"
         },
         "product_id": {
@@ -1257,6 +1264,10 @@
     },
     "qdOrderFeeLine": {
       "type": "object",
+      "required": [
+        "name",
+        "amount"
+      ],
       "properties": {
         "amount": {
           "type": "integer"

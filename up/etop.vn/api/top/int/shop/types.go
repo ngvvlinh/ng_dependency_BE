@@ -142,8 +142,7 @@ func (m *GetLedgersRequest) Reset()         { *m = GetLedgersRequest{} }
 func (m *GetLedgersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateLedgerRequest struct {
-	Name string `json:"name"`
-	// required name, account_number, account_name
+	Name        string            `json:"name"`
 	BankAccount *etop.BankAccount `json:"bank_account"`
 	Note        string            `json:"note"`
 }
@@ -152,9 +151,8 @@ func (m *CreateLedgerRequest) Reset()         { *m = CreateLedgerRequest{} }
 func (m *CreateLedgerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateLedgerRequest struct {
-	Id   dot.ID         `json:"id"`
-	Name dot.NullString `json:"name"`
-	// required name, account_number, account_name
+	Id          dot.ID            `json:"id"`
+	Name        dot.NullString    `json:"name"`
 	BankAccount *etop.BankAccount `json:"bank_account"`
 	Note        dot.NullString    `json:"note"`
 }

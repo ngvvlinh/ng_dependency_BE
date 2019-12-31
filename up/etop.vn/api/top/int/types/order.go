@@ -360,7 +360,7 @@ type Fulfillment struct {
 	ClosedAt         dot.Time `json:"closed_at"`
 	CancelledAt      dot.Time `json:"cancelled_at"`
 	CancelReason     string   `json:"cancel_reason"`
-	// @deprecated use carrier instead
+	// deprecated: use carrier instead
 	ShippingProvider     shipping_provider.ShippingProvider `json:"shipping_provider"`
 	Carrier              shipping_provider.ShippingProvider `json:"carrier"`
 	ShippingServiceName  string                             `json:"shipping_service_name"`

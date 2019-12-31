@@ -91,15 +91,18 @@
       "type": "object",
       "properties": {
         "items_per_batch": {
+          "description": "Control how many events are dispatched asynchronously as a group.\nWe don't want to dispatch too many events together.\nExample: 100. Default: 0 - events are dispatched synchronously.\n",
           "type": "integer"
         },
         "raw_events": {
+          "description": "Be careful, as invalid message can cause errors in other services!\n\nFormat: `table:rid:op:id`\nExample: `fulfillment:81460:INSERT:1052886332676874435`\n",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "raw_events_pg": {
+          "description": "Example: `{fulfillment:81460:INSERT:1052886332676874435,fulfillment:81461:UPDATE:1052886332676874435}`\n",
           "type": "string"
         }
       }
