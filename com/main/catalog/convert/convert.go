@@ -68,11 +68,9 @@ func ShopVariantWithProduct(in *catalogmodel.ShopVariantWithProduct) (out *catal
 	if in == nil {
 		return nil
 	}
-	var shopVariant *catalog.ShopVariant
-	convert_catalogmodel_ShopVariant_catalog_ShopVariant(in.ShopVariant, shopVariant)
 	out = &catalog.ShopVariantWithProduct{
 		ShopProduct: Convert_catalogmodel_ShopProduct_catalog_ShopProduct(in.ShopProduct, nil),
-		ShopVariant: shopVariant,
+		ShopVariant: Convert_catalogmodel_ShopVariant_catalog_ShopVariant(in.ShopVariant, nil),
 	}
 	return out
 }

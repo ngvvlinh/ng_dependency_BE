@@ -215,7 +215,7 @@ func (s *QueryService) ListShopVariantsWithProductByIDs(
 	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*catalog.ShopVariantsWithProductResponse, error) {
 	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
-	variants, err := q.ListShopVariantsWithProduct()
+	variants, err := q.IncludeDeleted().ListShopVariantsWithProduct()
 	if err != nil {
 		return nil, err
 	}

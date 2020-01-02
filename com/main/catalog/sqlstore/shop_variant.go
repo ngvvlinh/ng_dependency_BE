@@ -57,6 +57,11 @@ func (s *ShopVariantStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }
 
+func (s *ShopVariantStore) IncludeDeleted() *ShopVariantStore {
+	s.includeDeleted = true
+	return s
+}
+
 func (s *ShopVariantStore) ID(id dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByVariantID(id))
 	return s

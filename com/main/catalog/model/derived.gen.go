@@ -26,7 +26,7 @@ func SQLVerifySchema(db *cmsql.Database) {
 type SQLWriter = core.SQLWriter
 
 // Type ShopVariantWithProduct represents a join
-func sqlgenShopVariantWithProduct(_ *ShopVariantWithProduct, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
+func sqlgenShopVariantWithProduct(_ *ShopVariantWithProduct, _ *ShopVariant, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopProduct, a0 sq.AS, c0 string) bool {
 	__sqlShopVariantWithProduct_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopVariantWithProduct_As = as
 	__sqlShopVariantWithProduct_JoinAs = []sq.AS{a0}
@@ -41,8 +41,8 @@ var __sqlShopVariantWithProduct_As sq.AS
 var __sqlShopVariantWithProduct_JoinAs []sq.AS
 var __sqlShopVariantWithProduct_JoinConds []string
 
-func (m *ShopVariantWithProduct) SQLTableName() string  { return "shop_product" }
-func (m *ShopVariantWithProducts) SQLTableName() string { return "shop_product" }
+func (m *ShopVariantWithProduct) SQLTableName() string  { return "shop_variant" }
+func (m *ShopVariantWithProducts) SQLTableName() string { return "shop_variant" }
 
 func (m *ShopVariantWithProduct) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
@@ -90,9 +90,9 @@ func (m *ShopVariantWithProducts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) err
 
 func (m *ShopVariantWithProduct) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_As), (*ShopProduct)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_As), (*ShopVariant)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[0]), (*ShopProduct)(nil).SQLListCols())
 }
 
 func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -100,13 +100,13 @@ func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
-	w.WriteName("shop_product")
+	w.WriteName("shop_variant")
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantWithProduct_As))
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
+	w.WriteName((*ShopProduct)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -115,10 +115,10 @@ func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 
 func (m *ShopVariantWithProduct) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
 	m.ShopVariant = new(ShopVariant)
 	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
+	m.ShopProduct = new(ShopProduct)
+	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
 
 	return args
 }
