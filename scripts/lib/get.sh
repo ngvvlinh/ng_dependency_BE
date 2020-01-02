@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-this=$0
 prog=$(basename $0)
 current=$prog
 quickusage="Run '$prog help' for usage."
@@ -44,13 +43,13 @@ The commands are:
   echo "$usage"
 }
 
-cmd_gopath() {
-    if [[ -n "$GOPATH" ]]; then
-        echo $GOPATH
-    else
-        echo ~/go
-    fi
-}
+if [[ -n "$GOPATH" ]]; then
+    gopath="$GOPATH"
+else
+    gopath="$HOME/go"
+fi
+
+cmd_gopath() { echo "$gopath" ; }
 
 cmd_dir() {
     set -eo pipefail
@@ -59,7 +58,7 @@ cmd_dir() {
         exit 1
     fi
 
-    dir=$1 ; expect "<dir>" $@ ; shift
+    dir=$1 ; expect "<dir>" "$@" ; shift
     case $dir in
     etop)
         echo $ETOPDIR
@@ -78,12 +77,12 @@ cmd_dir() {
 cmd_mod() {
     set -eo pipefail
 
-    subcmd=$1 ; expect "path [arguments]" $@ ; shift
+    subcmd=$1 ; expect "path [arguments]" "$@" ; shift
     case $subcmd in
     path)
-        import=$1 ; expect "<import>" $@ ; shift
+        import=$1 ; expect "<import>" "$@" ; shift
         path=$(go list -m $import)
-        echo $($this gopath)/pkg/mod/${path/ /@}
+        echo "${gopath}/pkg/mod/${path/ /@}"
         ;;
     *)
         quickusage
@@ -91,12 +90,16 @@ cmd_mod() {
 }
 
 cmd_cmd() {
-	path=$1 ; expect "<cmd>" $@ ; shift
+	path=$1 ; expect "<cmd>" "$@" ; shift
+	name=$(basename $path)
+
 	if [[ "$path" =~ ^etop.vn ]]; then
 		go install "$path" || exit 1
+	  cmdpath="${gopath}/bin/${name}"
+	  echo $cmdpath
+	  exit 0
 	fi
 
-	name=$(basename $path)
 	cmdpath=$(which $name)
 	if [[ $? == 0 ]]; then echo $cmdpath; exit 0; fi
 
@@ -111,12 +114,12 @@ cmd_cmd() {
 	exit 125
 }
 
-command=$1 ; expect "<command>" $@ ; shift
+command=$1 ; expect "<command>" "$@" ; shift
 case $command in
 "-h" | "--help")
     cmd_help
     ;;
 *)
-    cmd_${command} $@
+    cmd_${command} "$@"
     if [[ $? == 127 ]]; then quickusage ; fi
 esac
