@@ -18,18 +18,26 @@ func TestNormalize(t *testing.T) {
 			{
 				"Empty (Invalid)",
 				"", "", false,
-			}, {
+			},
+			{
 				"Valid",
 				"hello@example.com", "hello@example.com", true,
-			}, {
+			},
+			{
 				"Trim space",
 				"  hello.world@example.com \t ", "hello.world@example.com", true,
-			}, {
+			},
+			{
 				"Inner space (invalid)",
 				"hello.world @example.com", "", false,
-			}, {
+			},
+			{
 				"Trim dot in gmail",
 				"hello.world@gmail.com", "helloworld@gmail.com", true,
+			},
+			{
+				"Trim space and dot",
+				"uyenphuong.pollz@gmail.com ", "uyenphuongpollz@gmail.com", true,
 			},
 			{
 				"Comment is not supported",
@@ -38,7 +46,8 @@ func TestNormalize(t *testing.T) {
 			{
 				"Case insensitive",
 				"Hello@exAmple.com", "hello@example.com", true,
-			}, {
+			},
+			{
 				"Test email",
 				"test@example.com-test", "test@example.com-test", true,
 			},

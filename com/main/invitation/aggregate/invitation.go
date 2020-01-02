@@ -66,7 +66,6 @@ func (a *InvitationAggregate) MessageBus() invitation.CommandBus {
 func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
-	emailArg := args.Email
 	emailNorm, ok := validate.NormalizeEmail(args.Email)
 	if !ok {
 		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
@@ -114,8 +113,6 @@ func (a *InvitationAggregate) CreateInvitation(
 			return err
 		}
 
-		var b strings.Builder
-
 		getUserQuery := &etopmodel.GetUserByIDQuery{
 			UserID: invitation.InvitedBy,
 		}
@@ -143,6 +140,8 @@ func (a *InvitationAggregate) CreateInvitation(
 		if args.FullName != "" {
 			fullName = args.FullName
 		}
+
+		var b strings.Builder
 		if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
 			"FullName":         fullName,
 			"URL":              URL.String(),
@@ -157,7 +156,7 @@ func (a *InvitationAggregate) CreateInvitation(
 		// TODO: change content and subject
 		cmd := &email.SendEmailCommand{
 			FromName:    "eTop.vn (no-reply)",
-			ToAddresses: []string{emailArg},
+			ToAddresses: []string{string(emailNorm)},
 			Subject:     "Invitation",
 			Content:     b.String(),
 		}
