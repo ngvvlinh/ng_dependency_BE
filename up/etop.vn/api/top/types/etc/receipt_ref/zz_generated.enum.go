@@ -15,7 +15,7 @@ import (
 var __jsonNull = []byte("null")
 
 var enumReceiptRefName = map[int]string{
-	0: "unknown",
+	0: "none",
 	1: "order",
 	2: "fulfillment",
 	3: "purchase_order",
@@ -23,7 +23,7 @@ var enumReceiptRefName = map[int]string{
 }
 
 var enumReceiptRefValue = map[string]int{
-	"unknown":        0,
+	"none":           0,
 	"order":          1,
 	"fulfillment":    2,
 	"purchase_order": 3,
@@ -41,6 +41,13 @@ func ParseReceiptRefWithDefault(s string, d ReceiptRef) ReceiptRef {
 		return d
 	}
 	return ReceiptRef(val)
+}
+
+func (e ReceiptRef) Apply(d ReceiptRef) ReceiptRef {
+	if e == 0 {
+		return d
+	}
+	return e
 }
 
 func (e ReceiptRef) Enum() int {

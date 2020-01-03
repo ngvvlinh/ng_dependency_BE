@@ -59,6 +59,13 @@ func ParseStateWithDefault(s string, d State) State {
 	return State(val)
 }
 
+func (e State) Apply(d State) State {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e State) Enum() int {
 	return int(e)
 }

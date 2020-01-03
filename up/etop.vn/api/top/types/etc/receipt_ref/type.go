@@ -10,8 +10,8 @@ type NullReceiptRef struct {
 }
 
 const (
-	// +enum=unknown
-	Unknown ReceiptRef = 0
+	// +enum=none
+	None ReceiptRef = 0
 
 	// +enum=order
 	Order ReceiptRef = 1

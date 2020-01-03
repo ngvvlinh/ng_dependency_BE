@@ -51,6 +51,13 @@ func ParseSourceWithDefault(s string, d Source) Source {
 	return Source(val)
 }
 
+func (e Source) Apply(d Source) Source {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e Source) Enum() int {
 	return int(e)
 }

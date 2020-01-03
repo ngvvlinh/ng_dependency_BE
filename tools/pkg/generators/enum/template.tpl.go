@@ -50,6 +50,15 @@ func Parse{{.Name}}WithDefault(s string, d {{.Name}}) {{.Name}} {
 	return {{.Name}}(val)
 }
 
+{{if $enum|zeroAsNull}}
+func (e {{.Name}}) Apply(d {{.Name}}) {{.Name}} {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+{{end}}
+
 func (e {{.Name}}) Enum() {{$enum|valueType}} {
 	return {{$enum|valueType}}(e)
 }

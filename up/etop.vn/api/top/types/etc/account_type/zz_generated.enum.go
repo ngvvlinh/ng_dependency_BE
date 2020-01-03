@@ -43,6 +43,13 @@ func ParseAccountTypeWithDefault(s string, d AccountType) AccountType {
 	return AccountType(val)
 }
 
+func (e AccountType) Apply(d AccountType) AccountType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e AccountType) Enum() int {
 	return int(e)
 }

@@ -35,6 +35,13 @@ func ParseCreditTypeWithDefault(s string, d CreditType) CreditType {
 	return CreditType(val)
 }
 
+func (e CreditType) Apply(d CreditType) CreditType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e CreditType) Enum() int {
 	return int(e)
 }

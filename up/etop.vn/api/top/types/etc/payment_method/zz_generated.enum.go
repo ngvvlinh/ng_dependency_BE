@@ -43,6 +43,13 @@ func ParsePaymentMethodWithDefault(s string, d PaymentMethod) PaymentMethod {
 	return PaymentMethod(val)
 }
 
+func (e PaymentMethod) Apply(d PaymentMethod) PaymentMethod {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e PaymentMethod) Enum() int {
 	return int(e)
 }

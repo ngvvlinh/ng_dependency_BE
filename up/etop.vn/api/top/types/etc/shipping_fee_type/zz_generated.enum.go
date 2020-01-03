@@ -53,6 +53,13 @@ func ParseShippingFeeTypeWithDefault(s string, d ShippingFeeType) ShippingFeeTyp
 	return ShippingFeeType(val)
 }
 
+func (e ShippingFeeType) Apply(d ShippingFeeType) ShippingFeeType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ShippingFeeType) Enum() int {
 	return int(e)
 }

@@ -247,13 +247,18 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 }
 
 func validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType receipt_ref.ReceiptRef) error {
+	// receipt ref can be empty (""), in this case, we don't care receipt type
+	if receiptRefType == receipt_ref.None {
+		return nil
+	}
 	type tuple struct {
 		receiptType    receipt_type.ReceiptType
 		receiptRefType receipt_ref.ReceiptRef
 	}
 	t := tuple{receiptType, receiptRefType}
 	switch t {
-	case tuple{receipt_type.Payment, receipt_ref.PurchaseOrder},
+	case
+		tuple{receipt_type.Payment, receipt_ref.PurchaseOrder},
 		tuple{receipt_type.Payment, receipt_ref.Refund},
 		tuple{receipt_type.Receipt, receipt_ref.Order}:
 		return nil

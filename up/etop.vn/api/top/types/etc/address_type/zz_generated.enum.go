@@ -43,6 +43,13 @@ func ParseAddressTypeWithDefault(s string, d AddressType) AddressType {
 	return AddressType(val)
 }
 
+func (e AddressType) Apply(d AddressType) AddressType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e AddressType) Enum() int {
 	return int(e)
 }

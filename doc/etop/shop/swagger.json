@@ -5065,7 +5065,7 @@
     "akReceiptRef": {
       "type": "string",
       "enum": [
-        "unknown",
+        "none",
         "order",
         "fulfillment",
         "purchase_order",

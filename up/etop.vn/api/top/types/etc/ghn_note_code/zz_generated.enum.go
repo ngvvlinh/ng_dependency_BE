@@ -41,6 +41,13 @@ func ParseGHNNoteCodeWithDefault(s string, d GHNNoteCode) GHNNoteCode {
 	return GHNNoteCode(val)
 }
 
+func (e GHNNoteCode) Apply(d GHNNoteCode) GHNNoteCode {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e GHNNoteCode) Enum() int {
 	return int(e)
 }

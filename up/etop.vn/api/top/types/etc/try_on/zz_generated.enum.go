@@ -41,6 +41,13 @@ func ParseTryOnCodeWithDefault(s string, d TryOnCode) TryOnCode {
 	return TryOnCode(val)
 }
 
+func (e TryOnCode) Apply(d TryOnCode) TryOnCode {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e TryOnCode) Enum() int {
 	return int(e)
 }

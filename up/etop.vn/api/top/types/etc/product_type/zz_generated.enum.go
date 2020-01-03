@@ -39,6 +39,13 @@ func ParseProductTypeWithDefault(s string, d ProductType) ProductType {
 	return ProductType(val)
 }
 
+func (e ProductType) Apply(d ProductType) ProductType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ProductType) Enum() int {
 	return int(e)
 }

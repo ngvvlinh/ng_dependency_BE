@@ -47,6 +47,13 @@ func ParseShippingProviderWithDefault(s string, d ShippingProvider) ShippingProv
 	return ShippingProvider(val)
 }
 
+func (e ShippingProvider) Apply(d ShippingProvider) ShippingProvider {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ShippingProvider) Enum() int {
 	return int(e)
 }

@@ -39,6 +39,13 @@ func ParseFeeTypeWithDefault(s string, d FeeType) FeeType {
 	return FeeType(val)
 }
 
+func (e FeeType) Apply(d FeeType) FeeType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e FeeType) Enum() int {
 	return int(e)
 }

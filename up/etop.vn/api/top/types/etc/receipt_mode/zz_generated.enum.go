@@ -39,6 +39,13 @@ func ParseReceiptModeWithDefault(s string, d ReceiptMode) ReceiptMode {
 	return ReceiptMode(val)
 }
 
+func (e ReceiptMode) Apply(d ReceiptMode) ReceiptMode {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ReceiptMode) Enum() int {
 	return int(e)
 }

@@ -37,6 +37,13 @@ func ParsePaymentProviderWithDefault(s string, d PaymentProvider) PaymentProvide
 	return PaymentProvider(val)
 }
 
+func (e PaymentProvider) Apply(d PaymentProvider) PaymentProvider {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e PaymentProvider) Enum() int {
 	return int(e)
 }

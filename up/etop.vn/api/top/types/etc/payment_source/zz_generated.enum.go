@@ -37,6 +37,13 @@ func ParsePaymentSourceWithDefault(s string, d PaymentSource) PaymentSource {
 	return PaymentSource(val)
 }
 
+func (e PaymentSource) Apply(d PaymentSource) PaymentSource {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e PaymentSource) Enum() int {
 	return int(e)
 }

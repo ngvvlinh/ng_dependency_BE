@@ -39,6 +39,13 @@ func ParseReceiptTypeWithDefault(s string, d ReceiptType) ReceiptType {
 	return ReceiptType(val)
 }
 
+func (e ReceiptType) Apply(d ReceiptType) ReceiptType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ReceiptType) Enum() int {
 	return int(e)
 }

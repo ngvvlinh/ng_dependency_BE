@@ -41,6 +41,13 @@ func ParseChangeTypeWithDefault(s string, d ChangeType) ChangeType {
 	return ChangeType(val)
 }
 
+func (e ChangeType) Apply(d ChangeType) ChangeType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e ChangeType) Enum() int {
 	return int(e)
 }

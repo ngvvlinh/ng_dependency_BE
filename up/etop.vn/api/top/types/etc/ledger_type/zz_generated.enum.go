@@ -39,6 +39,13 @@ func ParseLedgerTypeWithDefault(s string, d LedgerType) LedgerType {
 	return LedgerType(val)
 }
 
+func (e LedgerType) Apply(d LedgerType) LedgerType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e LedgerType) Enum() int {
 	return int(e)
 }

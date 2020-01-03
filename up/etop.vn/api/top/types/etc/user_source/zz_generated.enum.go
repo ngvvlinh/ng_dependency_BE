@@ -49,6 +49,13 @@ func ParseUserSourceWithDefault(s string, d UserSource) UserSource {
 	return UserSource(val)
 }
 
+func (e UserSource) Apply(d UserSource) UserSource {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e UserSource) Enum() int {
 	return int(e)
 }

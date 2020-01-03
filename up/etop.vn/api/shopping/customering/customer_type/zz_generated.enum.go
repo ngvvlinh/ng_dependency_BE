@@ -41,6 +41,13 @@ func ParseCustomerTypeWithDefault(s string, d CustomerType) CustomerType {
 	return CustomerType(val)
 }
 
+func (e CustomerType) Apply(d CustomerType) CustomerType {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e CustomerType) Enum() int {
 	return int(e)
 }

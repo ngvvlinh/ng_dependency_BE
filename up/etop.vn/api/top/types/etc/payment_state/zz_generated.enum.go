@@ -47,6 +47,13 @@ func ParsePaymentStateWithDefault(s string, d PaymentState) PaymentState {
 	return PaymentState(val)
 }
 
+func (e PaymentState) Apply(d PaymentState) PaymentState {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e PaymentState) Enum() int {
 	return int(e)
 }

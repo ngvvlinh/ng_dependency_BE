@@ -39,6 +39,13 @@ func ParseNotifierEntityWithDefault(s string, d NotifierEntity) NotifierEntity {
 	return NotifierEntity(val)
 }
 
+func (e NotifierEntity) Apply(d NotifierEntity) NotifierEntity {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e NotifierEntity) Enum() int {
 	return int(e)
 }

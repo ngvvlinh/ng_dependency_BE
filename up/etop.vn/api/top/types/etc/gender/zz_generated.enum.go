@@ -41,6 +41,13 @@ func ParseGenderWithDefault(s string, d Gender) Gender {
 	return Gender(val)
 }
 
+func (e Gender) Apply(d Gender) Gender {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
 func (e Gender) Enum() int {
 	return int(e)
 }
