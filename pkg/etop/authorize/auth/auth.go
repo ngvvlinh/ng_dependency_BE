@@ -202,6 +202,19 @@ func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bo
 	return false
 }
 
+type Roles []string
+
+func (r Roles) Check(actionArg string) bool {
+	actions := ListActionsByRoles(r)
+
+	for _, action := range actions {
+		if actionArg == action {
+			return true
+		}
+	}
+	return false
+}
+
 func ListActionsByRoles(roles []string) (actions []string) {
 	strs := strings.Split(policy, "\n")
 
