@@ -219,7 +219,13 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 	} else {
 		customerKey = q.CustomerId.String()
 	}
-	key := fmt.Sprintf("CreateOrder %v-%v", q.Context.Shop.ID, customerKey)
+	var variantIDs []dot.ID
+	for _, line := range q.Lines {
+		variantIDs = append(variantIDs, line.VariantId)
+	}
+	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
+		q.Context.Shop.ID, customerKey,
+		q.TotalAmount, q.BasketValue, q.ShopCod, variantIDs)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
 			return s.createOrder(ctx, q)
