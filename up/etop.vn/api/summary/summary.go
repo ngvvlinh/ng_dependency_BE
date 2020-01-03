@@ -21,7 +21,7 @@ type SummaryPOSRequest struct {
 }
 
 type SummaryPOSResponse struct {
-	ListTable []*SummaryTable
+	ListTable []*SummaryTable `json:"list_table"`
 }
 
 type SummaryTopShipRequest struct {

@@ -14,7 +14,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-const currentVersion = "1"
+const currentVersion = "2"
 const dateLayout = "2016-01-02"
 const redisTime = 2 * 60
 

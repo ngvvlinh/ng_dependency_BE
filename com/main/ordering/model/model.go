@@ -371,7 +371,7 @@ type OrderLine struct {
 	Attributes    []*catalogmodel.ProductAttribute `json:"attributes" sq:"-"`
 	IsOutsideEtop bool                             `json:"is_outside_etop"`
 	Code          string                           `json:"code"`
-	MetaFields    []*MetaField
+	MetaFields    []*MetaField                     `json:"meta_fields"`
 }
 
 func (l *OrderLine) GetRetailAmount() int {

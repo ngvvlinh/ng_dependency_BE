@@ -54,10 +54,10 @@ func SetEnvironment(e string) {
 	switch e {
 	case EnvDev:
 		isDev = true
-		jsonx.EnableValidation(jsonx.Warning)
+		jsonx.EnableValidation(jsonx.Panicking)
 
 	case EnvStag:
-		jsonx.EnableValidation(jsonx.Warning)
+		jsonx.EnableValidation(jsonx.Panicking)
 
 	case EnvSandbox:
 
