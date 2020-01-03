@@ -75,11 +75,9 @@ func (a *InvitationAggregate) CreateInvitation(
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
 	}
-
 	if err := a.havePermissionToInvite(ctx, args); err != nil {
 		return nil, err
 	}
-
 	if err := a.checkUserBelongsToShop(ctx, args.Email, args.AccountID); err != nil {
 		return nil, err
 	}
@@ -96,8 +94,8 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, err
 	}
 
-	invitation := new(invitation.Invitation)
-	if err := scheme.Convert(args, invitation); err != nil {
+	invitationItem := new(invitation.Invitation)
+	if err := scheme.Convert(args, invitationItem); err != nil {
 		return nil, err
 	}
 
@@ -105,72 +103,65 @@ func (a *InvitationAggregate) CreateInvitation(
 	expiresAt := time.Now().Add(convert.ExpiresIn)
 
 	token := "iv:" + auth.RandomToken(auth.DefaultTokenLength)
-	invitation.ExpiresAt = expiresAt
-	invitation.Token = token
+	invitationItem.ExpiresAt = expiresAt
+	invitationItem.Token = token
 
-	err = a.db.InTransaction(ctx, func(s cmsql.QueryInterface) error {
-		if err := a.store(ctx).CreateInvitation(invitation); err != nil {
-			return err
-		}
-
-		getUserQuery := &etopmodel.GetUserByIDQuery{
-			UserID: invitation.InvitedBy,
-		}
-		if err := bus.Dispatch(ctx, getUserQuery); err != nil {
-			return err
-		}
-
-		getAccountQuery := &etopmodel.GetShopQuery{
-			ShopID: invitation.AccountID,
-		}
-		if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
-			return err
-		}
-
-		invitationUrl := a.cfg.URL.MainSite + "/invitation"
-		URL, err := url.Parse(invitationUrl)
-		if err != nil {
-			return cm.Errorf(cm.Internal, err, "Can not parse url")
-		}
-		urlQuery := URL.Query()
-		urlQuery.Set("t", token)
-		URL.RawQuery = urlQuery.Encode()
-
-		fullName := "bạn"
-		if args.FullName != "" {
-			fullName = args.FullName
-		}
-
-		var b strings.Builder
-		if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
-			"FullName":         fullName,
-			"URL":              URL.String(),
-			"ShopRoles":        strings.Join(authorization.ParseRoleLabels(invitation.Roles), ", "),
-			"ShopName":         getAccountQuery.Result.Name,
-			"InvitingUsername": getUserQuery.Result.FullName,
-		}); err != nil {
-			return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
-		}
-
-		// send mail
-		// TODO: change content and subject
-		cmd := &email.SendEmailCommand{
-			FromName:    "eTop.vn (no-reply)",
-			ToAddresses: []string{string(emailNorm)},
-			Subject:     "Invitation",
-			Content:     b.String(),
-		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
+	getUserQuery := &etopmodel.GetUserByIDQuery{
+		UserID: invitationItem.InvitedBy,
+	}
+	if err := bus.Dispatch(ctx, getUserQuery); err != nil {
 		return nil, err
 	}
 
-	return invitation, nil
+	getAccountQuery := &etopmodel.GetShopQuery{
+		ShopID: invitationItem.AccountID,
+	}
+	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+		return nil, err
+	}
+
+	invitationUrl := a.cfg.URL.MainSite + "/invitation"
+	URL, err := url.Parse(invitationUrl)
+	if err != nil {
+		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
+	}
+	urlQuery := URL.Query()
+	urlQuery.Set("t", token)
+	URL.RawQuery = urlQuery.Encode()
+
+	fullName := "bạn"
+	if args.FullName != "" {
+		fullName = args.FullName
+	}
+
+	var b strings.Builder
+	if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
+		"FullName":         fullName,
+		"URL":              URL.String(),
+		"ShopRoles":        strings.Join(authorization.ParseRoleLabels(invitationItem.Roles), ", "),
+		"ShopName":         getAccountQuery.Result.Name,
+		"InvitingUsername": getUserQuery.Result.FullName,
+	}); err != nil {
+		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+	}
+
+	// create invitation
+	if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
+		return nil, err
+	}
+
+	// send mail
+	// TODO: change content and subject
+	cmd := &email.SendEmailCommand{
+		FromName:    "eTop.vn (no-reply)",
+		ToAddresses: []string{string(emailNorm)},
+		Subject:     "Invitation",
+		Content:     b.String(),
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return invitationItem, nil
 }
 
 func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation) error {
