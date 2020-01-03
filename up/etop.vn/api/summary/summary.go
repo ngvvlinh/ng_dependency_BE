@@ -31,28 +31,28 @@ type SummaryTopShipRequest struct {
 }
 
 type SummaryTopShipResponse struct {
-	ListTable []*SummaryTable
+	ListTable []*SummaryTable `json:"list_table"`
 }
 
 type SummaryTable struct {
-	Label string
-	Tags  []string
-	Cols  []SummaryColRow
-	Rows  []SummaryColRow
-	Data  []SummaryItem
+	Label string          `json:"label"`
+	Tags  []string        `json:"tags"`
+	Cols  []SummaryColRow `json:"cols"`
+	Rows  []SummaryColRow `json:"rows"`
+	Data  []SummaryItem   `json:"data"`
 }
 
 type SummaryColRow struct {
-	Label  string
-	Spec   string
-	Unit   string
-	Indent int
+	Label  string `json:"label"`
+	Spec   string `json:"spec"`
+	Unit   string `json:"unit"`
+	Indent int    `json:"indent"`
 }
 
 type SummaryItem struct {
-	ImageUrls []string
-	Label     string
-	Spec      string
-	Value     int
-	Unit      string
+	ImageUrls []string `json:"image_urls"`
+	Label     string   `json:"label"`
+	Spec      string   `json:"spec"`
+	Value     int      `json:"value"`
+	Unit      string   `json:"unit"`
 }
