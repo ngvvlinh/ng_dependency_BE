@@ -150,6 +150,8 @@ func (c Code) String() string {
 
 func DefaultErrorMessage(code Code) string {
 	switch code {
+	case NoError:
+		return ""
 	case NotFound:
 		return "Không tìm thấy. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn."
 	case InvalidArgument:

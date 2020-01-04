@@ -7,7 +7,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"mime/multipart"
 	"os"
 	"path/filepath"
 
@@ -24,74 +23,56 @@ const (
 	maxWH   = 2000
 )
 
-func getImageConfig(imgType string) (*ImageConfig, error) {
-	_type := ImageType(imgType)
-	switch _type {
-	case "":
-		_type = ImageTypeDefault
-	case ImageTypeAhamoveVerification:
-		_type = ImageTypeAhamoveVerification
-	default:
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid image type")
+func getImageConfig(purpose Purpose) (*ImageConfig, error) {
+	if purpose == "" {
+		purpose = PurposeDefault
 	}
-	return imageConfigs[_type], nil
+	config := imageConfigs[purpose]
+	if config == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid image purpose")
+	}
+	return config, nil
 }
 
-func NewUploadError(code xerrors.Code, msg, filename string) error {
+func NewUploadError(code xerrors.Code, msg, filename string) *xerrors.APIError {
 	return cm.Error(code, msg, nil).
 		WithMeta("filename", filename)
 }
 
+// UploaderHandler handle uploading with 2 different cases
+//     1. Multipart form
+//       - type: ""|"ahamove_verification"
+//       - files: multiple files
+//
+//     2. Base64
+//       - type: Header
+//       - body: base64 encoded single file
 func UploadHandler(c *httpx.Context) error {
-	// Multipart form
-	form, err := c.MultipartForm()
+
+	contentType := c.Req.Header.Get("Content-Type")
+	reader := readMultipartForm
+	if contentType == "application/base64" {
+		reader = readBase64Images
+	}
+	uploadedImages, err := reader(c)
 	if err != nil {
 		return err
 	}
 
-	types := form.Value["type"]
-	imgType := ""
-	if types != nil {
-		imgType = types[0]
-	}
-	imgConfig, err := getImageConfig(imgType)
+	imgConfig, err := getImageConfig(uploadedImages.Purpose)
 	if err != nil {
 		return err
 	}
 	path := imgConfig.Path
 	urlPrefix := imgConfig.URLPrefix
 
-	files := form.File["files"]
-	if len(files) == 0 {
-		return cm.Error(cm.InvalidArgument, "No file", nil)
-	}
-
-	exts := make([]string, len(files))
-	for i, file := range files {
-		format, err := verifyImage(file)
-		if err != nil {
-			return cm.Error(cm.InvalidArgument, "Invalid ", err)
-		}
-
-		// Haravan does not accept .jpeg, so we have to change the extension
-		if format == "jpeg" {
-			format = "jpg"
-		}
-		exts[i] = format
-	}
-
 	countOK := 0
-	errors := make([]error, len(files))
-	result := make([]interface{}, len(files))
-	for i, file := range files {
+	errors := make([]*xerrors.APIError, len(uploadedImages.Images))
+	result := make([]interface{}, len(uploadedImages.Images))
+	for i, uploadedImage := range uploadedImages.Images {
 		id := cm.NewBase54ID()
-		genName := id + "." + exts[i]
+		genName := id + "." + uploadedImage.Extension
 		subFolder := genName[:3]
-		src, err := file.Open()
-		if err != nil {
-			ll.Info("Unexpected", l.Error(err))
-			return cm.Error(cm.InvalidArgument, "", err)
-		}
 
 		dirPath := filepath.Join(path, subFolder)
 		if err := ensureDir(dirPath); err != nil {
@@ -100,14 +81,14 @@ func UploadHandler(c *httpx.Context) error {
 		if !func() bool {
 			dst, err := os.Create(filepath.Join(dirPath, genName))
 			if err != nil {
-				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename)
 				return false
 			}
 			defer func() { _ = dst.Close() }()
 
-			if _, err = io.Copy(dst, src); err != nil {
+			if _, err = io.Copy(dst, uploadedImage.Source); err != nil {
 				ll.Info("Error writing file", l.Error(err))
-				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename)
 				return false
 			}
 			return true
@@ -118,13 +99,13 @@ func UploadHandler(c *httpx.Context) error {
 		ll.Debug("Uploaded", l.String("filename", genName))
 		resp := map[string]interface{}{
 			"id":       id,
-			"filename": file.Filename,
+			"filename": uploadedImage.Filename,
 		}
 		if urlPrefix != "" {
 			resp["url"] = fmt.Sprintf("%v/%v/%v", urlPrefix, subFolder, genName)
 		}
 		result[i] = resp
-		errors[i] = NewUploadError(cm.NoError, "", file.Filename)
+		errors[i] = NewUploadError(cm.NoError, "", uploadedImage.Filename)
 		countOK++
 	}
 
@@ -133,38 +114,43 @@ func UploadHandler(c *httpx.Context) error {
 	}
 	c.SetResult(map[string]interface{}{
 		"result": result,
-		"errors": errors,
+		"errors": convertAPIErrorsToTwErrors(errors),
 	})
 	return nil
 }
 
-func verifyImage(file *multipart.FileHeader) (string, error) {
-	src, err := file.Open()
-	if err != nil {
-		return "", err
+func verifyImage(filename string, size int, src *reader) (format string, err error) {
+	if size < minSize {
+		return "", NewUploadError(cm.InvalidArgument, "Invalid filesize", filename)
 	}
-	defer func() { _ = src.Close() }()
-
-	if file.Size < minSize {
-		return "", NewUploadError(cm.InvalidArgument, "Invalid filesize", file.Filename)
+	if size > maxSize {
+		return "", NewUploadError(cm.InvalidArgument, "File is too big (maximum 1MB)", filename)
 	}
-	if file.Size > maxSize {
-		return "", NewUploadError(cm.InvalidArgument, "File is too big (maximum 1MB)", file.Filename)
-	}
-
 	img, format, err := image.DecodeConfig(src)
+	src.Reset()
 	if err != nil {
-		ll.Error("Unrecognized image file", l.String("filename", file.Filename), l.Error(err))
-		return "", NewUploadError(cm.InvalidArgument, "Unrecognized image file", file.Filename)
+		ll.Error("Unrecognized image file", l.String("filename", filename), l.Error(err))
+		return "", NewUploadError(cm.InvalidArgument, "Unrecognized image file", filename)
 	}
-
 	if img.Width < minWH || img.Width > maxWH || img.Height < minWH || img.Height > maxWH {
-		return "", NewUploadError(cm.InvalidArgument, "Image must be at least 200px * 200px and at most 2500px * 2500px", file.Filename)
+		return "", NewUploadError(cm.InvalidArgument, "Image must be at least 200px * 200px and at most 2500px * 2500px", filename)
 	}
 
+	// Haravan does not accept .jpeg, so we have to change the extension
+	if format == "jpeg" {
+		format = "jpg"
+	}
 	return format, nil
 }
 
 func ensureDir(dir string) error {
 	return os.MkdirAll(dir, 0755)
+}
+
+func convertAPIErrorsToTwErrors(errs []*xerrors.APIError) []*xerrors.ErrorJSON {
+	var result []*xerrors.ErrorJSON
+	for _, err := range errs {
+		result = append(result, xerrors.ToErrorJSON(xerrors.TwirpError(err)))
+	}
+	return result
 }

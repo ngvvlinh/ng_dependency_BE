@@ -17,22 +17,24 @@ import (
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/common/l"
 )
 
+type Purpose string
+
 const (
-	ImageTypeDefault             ImageType = "default"
-	ImageTypeAhamoveVerification ImageType = "ahamove_verification"
+	PurposeDefault             Purpose = "default"
+	PurposeAhamoveVerification Purpose = "ahamove_verification"
 )
 
-type ImageType string
 type ImageConfig struct {
 	Path      string
 	URLPrefix string
 }
 
-var imageConfigs = map[ImageType]*ImageConfig{}
+var imageConfigs = map[Purpose]*ImageConfig{}
 
 var (
 	ll  = l.New()
@@ -54,12 +56,12 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to load config", l.Error(err))
 	}
-	imageConfigs = map[ImageType]*ImageConfig{
-		ImageTypeDefault: {
+	imageConfigs = map[Purpose]*ImageConfig{
+		PurposeDefault: {
 			Path:      cfg.UploadDirImg,
 			URLPrefix: cfg.URLPrefix,
 		},
-		ImageTypeAhamoveVerification: {
+		PurposeAhamoveVerification: {
 			Path:      cfg.UploadDirAhamoveVerification,
 			URLPrefix: cfg.URLPrefixAhamoveVerification,
 		},
@@ -112,7 +114,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	rt := httpx.New()
-	mux.Handle("/", rt)
+	mux.Handle("/", middleware.CORS(rt))
 
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)

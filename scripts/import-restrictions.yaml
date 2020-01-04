@@ -15,6 +15,7 @@
   - etop.vn/backend/cmd/etop-uploader
   - etop.vn/backend/pkg/common
   - etop.vn/backend/pkg/etop/authorize/tokens
+  - etop.vn/backend/pkg/etop/authorize/middleware
 
 - baseImportPath: "./cmd/supporting/crm-sync-service"
   allowedImports:
