@@ -8,6 +8,7 @@ import (
 
 	apishop "etop.vn/api/top/int/shop"
 	"etop.vn/api/top/types/etc/status4"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordering "etop.vn/backend/com/main/ordering/modelx"
 	shipping "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -26,7 +27,7 @@ var ServiceImpl = &Service{}
 
 type Service struct{}
 
-func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
+func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *identitymodel.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
 	if userID == 0 {
 		return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 	}

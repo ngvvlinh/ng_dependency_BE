@@ -436,6 +436,14 @@ type ShippingFeeLine struct {
 func (m *ShippingFeeLine) Reset()         { *m = ShippingFeeLine{} }
 func (m *ShippingFeeLine) String() string { return jsonx.MustMarshalToString(m) }
 
+type ShippingFeeShortLine struct {
+	ShippingFeeType shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
+	Cost            int                               `json:"cost"`
+}
+
+func (m *ShippingFeeShortLine) Reset()         { *m = ShippingFeeShortLine{} }
+func (m *ShippingFeeShortLine) String() string { return jsonx.MustMarshalToString(m) }
+
 type ExternalShippingLog struct {
 	StateText string `json:"state_text"`
 	Time      string `json:"time"`

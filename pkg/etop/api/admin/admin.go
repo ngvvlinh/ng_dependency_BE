@@ -3,11 +3,15 @@ package admin
 import (
 	"context"
 
+	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/int/admin"
 	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
+	creditmodelx "etop.vn/backend/com/main/credit/modelx"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -26,13 +30,16 @@ import (
 var ll = l.New()
 
 var (
-	eventBus capi.EventBus
+	eventBus     capi.EventBus
+	moneyTxQuery moneytx.QueryBus
 )
 
 func Init(
 	eventB capi.EventBus,
+	moneyTxQ moneytx.QueryBus,
 ) {
 	eventBus = eventB
+	moneyTxQuery = moneyTxQ
 }
 
 func init() {
@@ -288,7 +295,7 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx con
 }
 
 func (s *ShopService) GetShop(ctx context.Context, q *GetShopEndpoint) error {
-	query := &model.GetShopExtendedQuery{
+	query := &identitymodelx.GetShopExtendedQuery{
 		ShopID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -300,7 +307,7 @@ func (s *ShopService) GetShop(ctx context.Context, q *GetShopEndpoint) error {
 
 func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &model.GetAllShopExtendedsQuery{
+	query := &identitymodelx.GetAllShopExtendedsQuery{
 		Paging: paging,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -314,7 +321,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 }
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoint) error {
-	cmd := &model.CreateCreditCommand{
+	cmd := &creditmodelx.CreateCreditCommand{
 		Amount: q.Amount,
 		ShopID: q.ShopId,
 		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
@@ -329,7 +336,7 @@ func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoin
 }
 
 func (s *CreditService) GetCredit(ctx context.Context, q *GetCreditEndpoint) error {
-	query := &model.GetCreditQuery{
+	query := &creditmodelx.GetCreditQuery{
 		ID:     q.Id,
 		ShopID: q.ShopId,
 	}
@@ -342,7 +349,7 @@ func (s *CreditService) GetCredit(ctx context.Context, q *GetCreditEndpoint) err
 
 func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &model.GetCreditsQuery{
+	query := &creditmodelx.GetCreditsQuery{
 		ShopID: q.ShopId,
 		Paging: paging,
 	}
@@ -357,7 +364,7 @@ func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) e
 }
 
 func (s *CreditService) UpdateCredit(ctx context.Context, q *UpdateCreditEndpoint) error {
-	cmd := &model.UpdateCreditCommand{
+	cmd := &creditmodelx.UpdateCreditCommand{
 		ID:     q.Id,
 		ShopID: q.ShopId,
 		Amount: q.Amount,
@@ -371,7 +378,7 @@ func (s *CreditService) UpdateCredit(ctx context.Context, q *UpdateCreditEndpoin
 }
 
 func (s *CreditService) ConfirmCredit(ctx context.Context, q *ConfirmCreditEndpoint) error {
-	cmd := &model.ConfirmCreditCommand{
+	cmd := &creditmodelx.ConfirmCreditCommand{
 		ID:     q.Id,
 		ShopID: q.ShopId,
 	}
@@ -385,7 +392,7 @@ func (s *CreditService) ConfirmCredit(ctx context.Context, q *ConfirmCreditEndpo
 }
 
 func (s *CreditService) DeleteCredit(ctx context.Context, q *DeleteCreditEndpoint) error {
-	cmd := &model.DeleteCreditCommand{
+	cmd := &creditmodelx.DeleteCreditCommand{
 		ID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -398,7 +405,7 @@ func (s *CreditService) DeleteCredit(ctx context.Context, q *DeleteCreditEndpoin
 }
 
 func (s *AccountService) CreatePartner(ctx context.Context, q *CreatePartnerEndpoint) error {
-	cmd := &model.CreatePartnerCommand{
+	cmd := &identitymodelx.CreatePartnerCommand{
 		Partner: convertpb.CreatePartnerRequestToModel(q.CreatePartnerRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -436,7 +443,7 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *GenerateAPIKeyEn
 			Throw()
 	}
 
-	aa := &model.AccountAuth{
+	aa := &identitymodel.AccountAuth{
 		AccountID:   q.AccountId,
 		Status:      1,
 		Roles:       nil,

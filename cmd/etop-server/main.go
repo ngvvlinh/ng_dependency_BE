@@ -12,6 +12,7 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
+	"etop.vn/api/main/moneytx"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
@@ -41,6 +42,9 @@ import (
 	ledgerpm "etop.vn/backend/com/main/ledgering/pm"
 	ledgerquery "etop.vn/backend/com/main/ledgering/query"
 	servicelocation "etop.vn/backend/com/main/location"
+	moneytxaggregate "etop.vn/backend/com/main/moneytx/aggregate"
+	moneytxpm "etop.vn/backend/com/main/moneytx/pm"
+	moneytxquery "etop.vn/backend/com/main/moneytx/query"
 	serviceordering "etop.vn/backend/com/main/ordering"
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
@@ -58,6 +62,8 @@ import (
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
 	shippingaggregate "etop.vn/backend/com/main/shipping/aggregate"
 	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
+	shippingpm "etop.vn/backend/com/main/shipping/pm"
+	shippingquery "etop.vn/backend/com/main/shipping/query"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	stocktakeaggregate "etop.vn/backend/com/main/stocktaking/aggregate"
 	stocktakequery "etop.vn/backend/com/main/stocktaking/query"
@@ -161,6 +167,8 @@ var (
 
 	receiptQuery    receipting.QueryBus
 	shipmentManager *shippingcarrier.ShipmentManager
+	moneyTxQuery    moneytx.QueryBus
+	moneyTxAggr     moneytx.CommandBus
 )
 
 func main() {
@@ -444,7 +452,16 @@ func main() {
 	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
 	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, cfg.Env, redisStore)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
-	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery).MessageBus()
+	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
+	shippingPM := shippingpm.New(eventBus, shippingAggr)
+	shippingPM.RegisterEventHandlers(eventBus)
+
+	moneyTxQuery = moneytxquery.NewMoneyTxQuery(db).MessageBus()
+	shippingQuery := shippingquery.NewQueryService(db).MessageBus()
+	moneyTxAggr = moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, eventBus).MessageBus()
+
+	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, shippingQuery)
+	moneyTxPM.RegisterEvenHandlers(eventBus)
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)
@@ -517,7 +534,7 @@ func main() {
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus)
+	admin.Init(eventBus, moneyTxQuery)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cm.IsDev() {

@@ -3,7 +3,7 @@ package ledgering
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	"etop.vn/api/top/types/etc/ledger_type"
@@ -41,7 +41,7 @@ type ShopLedgersResponse struct {
 type CreateLedgerArgs struct {
 	ShopID      dot.ID
 	Name        string
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 	Note        string
 	Type        ledger_type.LedgerType
 	CreatedBy   dot.ID
@@ -52,6 +52,6 @@ type UpdateLedgerArgs struct {
 	ID          dot.ID
 	ShopID      dot.ID
 	Name        NullString
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 	Note        NullString
 }

@@ -5,18 +5,18 @@ import (
 
 	"etop.vn/api/main/catalog"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 // - Duplicated code
 // - Code exists in database
 // - Variant codes
 
-func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, codeMode Mode, rowOrders []*RowOrder) (errs []error, _ error) {
+func VerifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Indexer, codeMode Mode, rowOrders []*RowOrder) (errs []error, _ error) {
 	mapCodes := make(map[string]*RowOrder)
 	codes := make([]string, len(rowOrders))
 	variantCodesMap := make(map[string]*RowOrderLine)

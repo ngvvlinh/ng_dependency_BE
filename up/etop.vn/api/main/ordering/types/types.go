@@ -10,18 +10,18 @@ import (
 )
 
 type ItemLine struct {
-	OrderId     dot.ID
+	OrderID     dot.ID
 	Quantity    int
-	ProductId   dot.ID
-	VariantId   dot.ID
-	IsOutside   bool
+	ProductID   dot.ID
+	VariantID   dot.ID
+	IsOutSide   bool
 	ProductInfo ProductInfo
 	TotalPrice  int
 }
 
 type ProductInfo struct {
 	ProductName  string
-	ImageUrl     string
+	ImageURL     string
 	Attributes   []*types.Attribute
 	ListPrice    int
 	RetailPrice  int

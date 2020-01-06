@@ -2,14 +2,21 @@ package convertpb
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/shipping"
+	shiptypes "etop.vn/api/main/shipping/types"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/shipping_provider"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
@@ -17,6 +24,7 @@ import (
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/model"
@@ -25,9 +33,9 @@ import (
 
 var locationBus = servicelocation.New().MessageBus()
 
-func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*model.Shop) []*types.Order {
+func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*identitymodel.Shop) []*types.Order {
 	res := make([]*types.Order, len(items))
-	shopsMap := make(map[dot.ID]*model.Shop)
+	shopsMap := make(map[dot.ID]*identitymodel.Shop)
 	for _, shop := range shops {
 		shopsMap[shop.ID] = shop
 	}
@@ -358,7 +366,7 @@ func OrderAddressToModel(m *types.OrderAddress) (*ordermodel.OrderAddress, error
 		res.WardCode = loc.Ward.Code
 	}
 	if m.Coordinates != nil {
-		res.Coordinates = &ordermodel.Coordinates{
+		res.Coordinates = &addressmodel.Coordinates{
 			Latitude:  m.Coordinates.Latitude,
 			Longitude: m.Coordinates.Longitude,
 		}
@@ -397,7 +405,7 @@ func OrderAddressFulfilled(m *types.OrderAddress) (*types.OrderAddress, error) {
 	return m, nil
 }
 
-func PbOrderAddressFromAddress(m *model.Address) *types.OrderAddress {
+func PbOrderAddressFromAddress(m *addressmodel.Address) *types.OrderAddress {
 	if m == nil {
 		return nil
 	}
@@ -651,7 +659,7 @@ var exportedFulfillment = cm.SortStrings([]string{
 	"estimated_delivery_at", "estimated_pickup_at",
 })
 
-func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *types.Fulfillment {
+func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Shop, mo *ordermodel.Order) *types.Fulfillment {
 	if m == nil {
 		return nil
 	}
@@ -747,7 +755,7 @@ func XPbFulfillments(items []*ordermodelx.Fulfillment, accType int) []*types.XFu
 	return res
 }
 
-func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, mo *ordermodel.Order) *types.XFulfillment {
+func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *identitymodel.Shop, mo *ordermodel.Order) *types.XFulfillment {
 	res := &types.XFulfillment{}
 	shipment := PbFulfillment(m.Shipment, accType, shop, mo)
 	if shipment != nil {
@@ -873,7 +881,7 @@ func PbConnectionInfo(item *model.ConnectionInfo) *types.ConnectionInfo {
 	}
 }
 
-func PbShippingFeeLines(items []*model.ShippingFeeLine) []*types.ShippingFeeLine {
+func PbShippingFeeLines(items []*shippingsharemodel.ShippingFeeLine) []*types.ShippingFeeLine {
 	result := make([]*types.ShippingFeeLine, len(items))
 	for i, item := range items {
 		result[i] = PbShippingFeeLine(item)
@@ -881,7 +889,7 @@ func PbShippingFeeLines(items []*model.ShippingFeeLine) []*types.ShippingFeeLine
 	return result
 }
 
-func PbShippingFeeLine(line *model.ShippingFeeLine) *types.ShippingFeeLine {
+func PbShippingFeeLine(line *shippingsharemodel.ShippingFeeLine) *types.ShippingFeeLine {
 	return &types.ShippingFeeLine{
 		ShippingFeeType:          line.ShippingFeeType,
 		Cost:                     line.Cost,
@@ -893,7 +901,7 @@ func PbShippingFeeLine(line *model.ShippingFeeLine) *types.ShippingFeeLine {
 	}
 }
 
-func PbFulfillmentSyncStates(m *model.FulfillmentSyncStates) *types.FulfillmentSyncStates {
+func PbFulfillmentSyncStates(m *shippingsharemodel.FulfillmentSyncStates) *types.FulfillmentSyncStates {
 	if m == nil {
 		return nil
 	}
@@ -967,7 +975,7 @@ func PbMoneyTransactionShippingExternalExtended(m *txmodel.MoneyTransactionShipp
 		TotalCod:       m.TotalCOD,
 		TotalOrders:    m.TotalOrders,
 		Status:         m.Status,
-		Provider:       m.Provider,
+		Provider:       m.Provider.String(),
 		CreatedAt:      cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:      cmapi.PbTime(m.UpdatedAt),
 		ExternalPaidAt: cmapi.PbTime(m.ExternalPaidAt),
@@ -1000,7 +1008,7 @@ func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionS
 		ExternalTotalCod:                   m.ExternalTotalCOD,
 		ExternalTotalShippingFee:           m.ExternalTotalShippingFee,
 		EtopFulfillmentId:                  m.EtopFulfillmentID,
-		EtopFulfillmentIdRaw:               m.EtopFulfillmentIdRaw,
+		EtopFulfillmentIdRaw:               m.EtopFulfillmentIDRaw,
 		Note:                               m.Note,
 		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
 		ImportError:                        cmapi.PbCustomError(m.ImportError),
@@ -1092,4 +1100,352 @@ func PbMoneyTransactionShippingEtopExtendeds(items []*txmodely.MoneyTransactionS
 		result[i] = PbMoneyTransactionShippingEtopExtended(item)
 	}
 	return result
+}
+
+func Convert_core_Fulfillment_To_api_Fulfillment(m *shipping.Fulfillment, accType int, shop *identity.Shop, mo *ordering.Order) *types.Fulfillment {
+	if m == nil {
+		return nil
+	}
+	ff := &types.Fulfillment{
+		ExportedFields: exportedFulfillment,
+
+		Id:                                 m.ID,
+		OrderId:                            m.OrderID,
+		ShopId:                             m.ShopID,
+		PartnerId:                          m.PartnerID,
+		SelfUrl:                            FulfillmentSelfURL(m, accType),
+		Lines:                              Convert_core_OrderLines_To_api_OrderLines(m.Lines),
+		TotalItems:                         m.TotalItems,
+		TotalWeight:                        m.TotalWeight,
+		BasketValue:                        m.BasketValue,
+		TotalCodAmount:                     m.TotalCODAmount,
+		CodAmount:                          m.TotalCODAmount,
+		TotalAmount:                        m.BasketValue, // deprecated
+		ChargeableWeight:                   m.TotalWeight,
+		CreatedAt:                          cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:                          cmapi.PbTime(m.UpdatedAt),
+		ClosedAt:                           cmapi.PbTime(m.ClosedAt),
+		CancelledAt:                        cmapi.PbTime(m.ShippingCancelledAt),
+		CancelReason:                       m.CancelReason,
+		ShippingProvider:                   m.ShippingProvider,
+		Carrier:                            m.ShippingProvider,
+		ShippingServiceName:                m.ExternalShippingName,
+		ShippingServiceFee:                 m.ExternalShippingFee,
+		ShippingServiceCode:                m.ProviderServiceID,
+		ShippingCode:                       m.ShippingCode,
+		ShippingNote:                       m.ShippingNote,
+		TryOn:                              m.TryOn,
+		IncludeInsurance:                   m.IncludeInsurance,
+		ShConfirm:                          m.ShopConfirm,
+		ShippingState:                      m.ShippingState,
+		Status:                             m.Status,
+		ShippingStatus:                     m.ShippingStatus,
+		EtopPaymentStatus:                  m.EtopPaymentStatus,
+		ShippingFeeCustomer:                m.ShippingFeeCustomer,
+		ShippingFeeShop:                    m.ShippingFeeShop,
+		XShippingFee:                       m.ExternalShippingFee,
+		XShippingId:                        m.ExternalShippingID,
+		XShippingCode:                      m.ExternalShippingCode,
+		XShippingCreatedAt:                 cmapi.PbTime(m.ExternalShippingCreatedAt),
+		XShippingUpdatedAt:                 cmapi.PbTime(m.ExternalShippingUpdatedAt),
+		XShippingCancelledAt:               cmapi.PbTime(m.ExternalShippingCancelledAt),
+		XShippingDeliveredAt:               cmapi.PbTime(m.ExternalShippingDeliveredAt),
+		XShippingReturnedAt:                cmapi.PbTime(m.ExternalShippingReturnedAt),
+		ExpectedDeliveryAt:                 cmapi.PbTime(m.ExpectedDeliveryAt),
+		ExpectedPickAt:                     cmapi.PbTime(m.ExpectedPickAt),
+		EstimatedDeliveryAt:                cmapi.PbTime(m.ExpectedDeliveryAt),
+		EstimatedPickupAt:                  cmapi.PbTime(m.ExpectedPickAt),
+		CodEtopTransferedAt:                cmapi.PbTime(m.CODEtopTransferedAt),
+		ShippingFeeShopTransferedAt:        cmapi.PbTime(m.ShippingFeeShopTransferedAt),
+		XShippingState:                     m.ExternalShippingState,
+		XShippingStatus:                    m.ExternalShippingStatus,
+		XSyncStatus:                        m.SyncStatus,
+		XSyncStates:                        Convert_core_FulfillmentSyncStates_To_api_FulfillmentSyncStates(m.SyncStates),
+		AddressTo:                          Convert_core_OrderAddress_To_api_Address(m.AddressTo),
+		AddressFrom:                        Convert_core_OrderAddress_To_api_Address(m.AddressFrom),
+		PickupAddress:                      Convert_core_OrderAddress_To_api_OrderAddress(m.AddressFrom),
+		ReturnAddress:                      Convert_core_OrderAddress_To_api_OrderAddress(m.AddressFrom),
+		ShippingAddress:                    Convert_core_OrderAddress_To_api_OrderAddress(m.AddressTo),
+		Shop:                               nil,
+		Order:                              nil,
+		ProviderShippingFeeLines:           Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(m.ProviderShippingFeeLines),
+		ShippingFeeShopLines:               Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(m.ShippingFeeShopLines),
+		EtopDiscount:                       m.EtopDiscount,
+		MoneyTransactionShippingId:         m.MoneyTransactionID,
+		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
+		XShippingLogs:                      Convert_core_ExternalShippingLogs_To_api_ExternalShippingLogs(m.ExternalShippingLogs),
+		XShippingNote:                      m.ExternalShippingNote,
+		XShippingSubState:                  m.ExternalShippingSubState,
+		ActualCompensationAmount:           m.ActualCompensationAmount,
+	}
+	if shop != nil {
+		ff.Shop = Convert_core_Shop_To_api_Shop(shop)
+	}
+	if mo != nil {
+		ff.Order = Convert_core_Order_To_api_Order(mo, nil, accType)
+	}
+	return ff
+}
+
+func Convert_core_Fulfillments_To_api_Fulfillments(items []*shipping.Fulfillment, accType int) []*types.Fulfillment {
+	result := make([]*types.Fulfillment, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_Fulfillment_To_api_Fulfillment(item, accType, nil, nil)
+	}
+	return result
+}
+
+func Convert_core_Fulfillment_To_api_XFulfillment(m *shipping.Fulfillment, accType int, shop *identity.Shop, mo *ordering.Order) *types.XFulfillment {
+	ffm := Convert_core_Fulfillment_To_api_Fulfillment(m, accType, shop, mo)
+	res := &types.XFulfillment{
+		Shipment: ffm,
+	}
+	return res
+}
+
+func Convert_core_Fulfillments_To_api_XFulfillments(items []*shipping.Fulfillment, accType int) []*types.XFulfillment {
+	result := make([]*types.XFulfillment, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_Fulfillment_To_api_XFulfillment(item, accType, nil, nil)
+	}
+	return result
+}
+
+func FulfillmentSelfURL(ffm *shipping.Fulfillment, accType int) string {
+	baseURL := cm.MainSiteBaseURL()
+	switch accType {
+	case model.TagEtop:
+		return ""
+
+	case model.TagShop:
+		if baseURL == "" || ffm.ShopID == 0 || ffm.ID == 0 {
+			return ""
+		}
+		return fmt.Sprintf("%v/s/%v/fulfillments/%v", baseURL, ffm.ShopID, ffm.ID)
+
+	default:
+		panic(fmt.Sprintf("unsupported account type: %v", accType))
+	}
+}
+
+func Convert_core_FulfillmentSyncStates_To_api_FulfillmentSyncStates(s *shipping.FulfillmentSyncStates) *types.FulfillmentSyncStates {
+	if s == nil {
+		return nil
+	}
+	return &types.FulfillmentSyncStates{
+		SyncAt:            cmapi.PbTime(s.SyncAt),
+		NextShippingState: s.NextShippingState,
+		Error:             cmapi.PbMetaError(s.Error),
+	}
+}
+
+func Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(line *shipping.ShippingFeeLine) *types.ShippingFeeLine {
+	if line == nil {
+		return nil
+	}
+	return &types.ShippingFeeLine{
+		ShippingFeeType:     line.ShippingFeeType,
+		Cost:                line.Cost,
+		ExternalServiceId:   line.ExternalServiceID,
+		ExternalServiceName: line.ExternalServiceName,
+		ExternalServiceType: line.ExternalServiceType,
+	}
+}
+
+func Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(items []*shipping.ShippingFeeLine) []*types.ShippingFeeLine {
+	result := make([]*types.ShippingFeeLine, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(item)
+	}
+	return result
+}
+
+func Convert_core_ExternalShippingLog_To_api_ExternalShippingLog(log *shipping.ExternalShippingLog) *types.ExternalShippingLog {
+	if log == nil {
+		return nil
+	}
+	return &types.ExternalShippingLog{
+		StateText: log.StateText,
+		Time:      log.Time,
+		Message:   log.Message,
+	}
+}
+
+func Convert_core_ExternalShippingLogs_To_api_ExternalShippingLogs(items []*shipping.ExternalShippingLog) []*types.ExternalShippingLog {
+	result := make([]*types.ExternalShippingLog, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_ExternalShippingLog_To_api_ExternalShippingLog(item)
+	}
+	return result
+}
+
+func Convert_core_Order_To_api_Order(in *ordering.Order, ffms []*shipping.Fulfillment, accType int) *types.Order {
+	if in == nil {
+		return nil
+	}
+
+	fulfillments := Convert_core_Fulfillments_To_api_XFulfillments(ffms, accType)
+	order := &types.Order{
+		ExportedFields:            exportedOrder,
+		Id:                        in.ID,
+		ShopId:                    in.ShopID,
+		ShopName:                  "",
+		Code:                      in.Code,
+		EdCode:                    in.EdCode,
+		ExternalCode:              in.EdCode,
+		Source:                    in.OrderSourceType,
+		PartnerId:                 in.PartnerID,
+		ExternalId:                in.ExternalOrderID,
+		SelfUrl:                   OrderSelfURL(in.ID, in.ShopID, accType),
+		PaymentMethod:             in.PaymentMethod,
+		Customer:                  Convert_core_OrderCustomer_To_api_OrderCustomer(in.Customer),
+		CustomerAddress:           Convert_core_OrderAddress_To_api_OrderAddress(in.CustomerAddress),
+		BillingAddress:            Convert_core_OrderAddress_To_api_OrderAddress(in.BillingAddress),
+		ShippingAddress:           Convert_core_OrderAddress_To_api_OrderAddress(in.ShippingAddress),
+		CreatedAt:                 cmapi.PbTime(in.CreatedAt),
+		CreatedBy:                 in.CreatedBy,
+		ProcessedAt:               cmapi.PbTime(in.ProcessedAt),
+		UpdatedAt:                 cmapi.PbTime(in.UpdatedAt),
+		ClosedAt:                  cmapi.PbTime(in.ClosedAt),
+		ConfirmedAt:               cmapi.PbTime(in.ConfirmedAt),
+		CancelledAt:               cmapi.PbTime(in.CancelledAt),
+		CancelReason:              in.CancelReason,
+		ShConfirm:                 in.ShopConfirm,
+		Confirm:                   in.ConfirmStatus,
+		ConfirmStatus:             in.ConfirmStatus,
+		Status:                    in.Status,
+		FulfillmentStatus:         in.FulfillmentShippingStatus,
+		FulfillmentShippingStatus: in.FulfillmentShippingStatus,
+		EtopPaymentStatus:         in.EtopPaymentStatus,
+		PaymentStatus:             in.PaymentStatus,
+		Lines:                     Convert_core_OrderLines_To_api_OrderLines(in.Lines),
+		Discounts:                 Convert_core_OrderDiscounts_To_api_OrderDiscounts(in.Discounts),
+		TotalItems:                in.TotalItems,
+		BasketValue:               in.BasketValue,
+		TotalWeight:               in.TotalWeight,
+		OrderDiscount:             in.OrderDiscount,
+		TotalDiscount:             in.TotalDiscount,
+		TotalAmount:               in.TotalAmount,
+		OrderNote:                 in.OrderNote,
+		ShippingFee:               in.ShopShippingFee,
+		TotalFee:                  in.GetTotalFee(),
+		FeeLines:                  Convert_core_OrderFeeLines_To_api_OrderFeeLines(in.FeeLines),
+		ShopShippingFee:           in.ShopShippingFee,
+		ShippingNote:              in.ShippingNote,
+		ShopCod:                   in.ShopCOD,
+		ReferenceUrl:              in.ReferenceURL,
+		Fulfillments:              fulfillments,
+		ShopShipping:              nil,
+		Shipping:                  nil,
+		GhnNoteCode:               in.GhnNoteCode,
+		FulfillmentType:           in.FulfillmentType.String(),
+		FulfillmentIds:            in.FulfillmentIDs,
+		CustomerId:                in.CustomerID,
+	}
+	shipping := Convert_core_ShippingInfo_To_api_OrderShipping(in.Shipping)
+	order.ShopShipping = shipping
+	order.Shipping = shipping
+	return order
+}
+
+func OrderSelfURL(orderID dot.ID, shopID dot.ID, accType int) string {
+	baseURL := cm.MainSiteBaseURL()
+	switch accType {
+	case model.TagEtop:
+		return ""
+
+	case model.TagShop:
+		if baseURL == "" || shopID == 0 || orderID == 0 {
+			return ""
+		}
+		return fmt.Sprintf("%v/s/%v/orders/%v", baseURL, shopID, orderID)
+
+	default:
+		panic(fmt.Sprintf("unsupported account type: %v", accType))
+	}
+}
+
+func Convert_core_OrderCustomer_To_api_OrderCustomer(in *ordering.OrderCustomer) *types.OrderCustomer {
+	if in == nil {
+		return nil
+	}
+	_gender, _ := gender.ParseGender(in.Gender)
+	return &types.OrderCustomer{
+		ExportedFields: exportedOrderCustomer,
+
+		FirstName: in.FirstName,
+		LastName:  in.LastName,
+		FullName:  in.GetFullName(),
+		Email:     in.Email,
+		Phone:     in.Phone,
+		Gender:    _gender,
+	}
+}
+
+func Convert_core_OrderDiscount_To_api_OrderDiscount(in *ordering.OrderDiscount) *types.OrderDiscount {
+	if in == nil {
+		return nil
+	}
+	return &types.OrderDiscount{
+		Code:   in.Code,
+		Type:   in.Type,
+		Amount: in.Amount,
+	}
+}
+
+func Convert_core_OrderDiscounts_To_api_OrderDiscounts(items []*ordering.OrderDiscount) []*types.OrderDiscount {
+	result := make([]*types.OrderDiscount, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_OrderDiscount_To_api_OrderDiscount(item)
+	}
+	return result
+}
+
+func Convert_core_OrderFeeLine_To_api_OrderFeeLine(in ordering.OrderFeeLine) *types.OrderFeeLine {
+	return &types.OrderFeeLine{
+		Type:   in.Type,
+		Name:   in.Name,
+		Code:   in.Code,
+		Desc:   in.Desc,
+		Amount: in.Amount,
+	}
+}
+
+func Convert_core_OrderFeeLines_To_api_OrderFeeLines(items []ordering.OrderFeeLine) []*types.OrderFeeLine {
+	result := make([]*types.OrderFeeLine, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_OrderFeeLine_To_api_OrderFeeLine(item)
+	}
+	return result
+}
+
+func Convert_core_ShippingInfo_To_api_OrderShipping(in *shiptypes.ShippingInfo) *types.OrderShipping {
+	if in == nil {
+		return nil
+	}
+	return &types.OrderShipping{
+		ExportedFields: exportedOrderShipping,
+		// @deprecated fields
+		ShAddress:    Convert_core_OrderAddress_To_api_OrderAddress(in.PickupAddress),
+		XServiceId:   in.ShippingServiceCode,
+		XShippingFee: in.ShippingServiceFee,
+		XServiceName: in.ShippingServiceName,
+
+		PickupAddress:       Convert_core_OrderAddress_To_api_OrderAddress(in.PickupAddress),
+		ShippingServiceName: in.ShippingServiceName,
+		ShippingServiceCode: in.ShippingServiceCode,
+		ShippingServiceFee:  in.ShippingServiceFee,
+		ShippingProvider:    in.Carrier,
+		Carrier:             in.Carrier,
+		IncludeInsurance:    in.IncludeInsurance,
+		TryOn:               in.TryOn,
+		ShippingNote:        in.ShippingNote,
+		CodAmount:           dot.Int(in.CODAmount),
+		Weight:              dot.Int(in.ChargeableWeight),
+		GrossWeight:         dot.Int(in.GrossWeight),
+		Length:              dot.Int(in.Length),
+		Width:               dot.Int(in.Width),
+		Height:              dot.Int(in.Height),
+		ChargeableWeight:    dot.Int(in.ChargeableWeight),
+	}
 }

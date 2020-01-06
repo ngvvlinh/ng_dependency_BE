@@ -15,6 +15,8 @@ import (
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/status3"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
@@ -231,13 +233,13 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 	}
 
 	// Get all users into receipts
-	getUsersOfCurrAccount := &model.GetAccountUserExtendedsQuery{
+	getUsersOfCurrAccount := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs: []dot.ID{shopID},
 	}
 	if err := bus.Dispatch(ctx, getUsersOfCurrAccount); err != nil {
 		return nil, err
 	}
-	mapUserIDAndUser := make(map[dot.ID]*model.User)
+	mapUserIDAndUser := make(map[dot.ID]*identitymodel.User)
 	for _, accountUser := range getUsersOfCurrAccount.Result.AccountUsers {
 		mapUserIDAndUser[accountUser.User.ID] = accountUser.User
 	}

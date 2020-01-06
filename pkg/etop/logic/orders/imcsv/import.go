@@ -20,6 +20,7 @@ import (
 	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/try_on"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -58,7 +59,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	return nil
 }
 
-func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
+func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
 	if cm.NotProd() {
 		var err error
@@ -711,7 +712,7 @@ func parseAsGHNNoteCode(v string) (ghn_note_code.GHNNoteCode, error) {
 	}
 }
 
-func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *RowOrder, now time.Time) (_ *ordermodel.Order, _errs []error) {
+func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, rowOrder *RowOrder, now time.Time) (_ *ordermodel.Order, _errs []error) {
 	_errs = rowOrder.Validate(idx, mode)
 	address, err := parseAddress(rowOrder)
 	if err != nil {

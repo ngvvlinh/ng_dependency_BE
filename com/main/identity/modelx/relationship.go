@@ -1,7 +1,8 @@
-package model
+package modelx
 
 import (
 	"etop.vn/api/top/types/etc/account_type"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -11,14 +12,14 @@ type GetAccountUserQuery struct {
 	AccountID       dot.ID
 	FindByAccountID bool
 
-	Result *AccountUser
+	Result *identitymodel.AccountUser
 }
 
 type GetAccountUserExtendedQuery struct {
 	UserID    dot.ID
 	AccountID dot.ID
 
-	Result AccountUserExtended
+	Result identitymodel.AccountUserExtended
 }
 
 type GetAccountUserExtendedsQuery struct {
@@ -31,25 +32,25 @@ type GetAccountUserExtendedsQuery struct {
 	IncludeDeleted bool
 
 	Result struct {
-		AccountUsers []*AccountUserExtended
+		AccountUsers []*identitymodel.AccountUserExtended
 	}
 }
 
 type GetAccountRolesQuery = GetAccountUserExtendedQuery
 
 type CreateAccountUserCommand struct {
-	AccountUser *AccountUser
+	AccountUser *identitymodel.AccountUser
 
-	Result *AccountUser
+	Result *identitymodel.AccountUser
 }
 
 type UpdateAccountUserCommand struct {
-	AccountUser *AccountUser
+	AccountUser *identitymodel.AccountUser
 }
 
 type AccountPermission struct {
-	Account    `sq:"inline"`
-	Permission `sq:"inline"`
+	identitymodel.Account    `sq:"inline"`
+	identitymodel.Permission `sq:"inline"`
 }
 
 type RemoveUserFromAccount struct {
@@ -62,9 +63,9 @@ type RemoveUserFromAccount struct {
 type UpdateRoleCommand struct {
 	AccountID dot.ID
 	UserID    dot.ID
-	Permission
+	identitymodel.Permission
 
-	Result *AccountUser
+	Result *identitymodel.AccountUser
 }
 
 type UpdateInfosCommand struct {
@@ -74,7 +75,7 @@ type UpdateInfosCommand struct {
 	ShortName dot.NullString
 	Position  dot.NullString
 
-	Result *AccountUser
+	Result *identitymodel.AccountUser
 }
 
 type DeleteAccountUserCommand struct {
@@ -90,12 +91,12 @@ type GetAllAccountRolesQuery struct {
 	UserID dot.ID
 	Type   account_type.NullAccountType
 
-	Result []*AccountUserExtended
+	Result []*identitymodel.AccountUserExtended
 }
 
 type GetAllAccountUsersQuery struct {
 	UserIDs []dot.ID
 	Type    account_type.NullAccountType
 
-	Result []*AccountUser
+	Result []*identitymodel.AccountUser
 }

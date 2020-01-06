@@ -13,13 +13,13 @@ import (
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
@@ -124,7 +124,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	}
 
 	// Get bank_account
-	var bankAccount *model.BankAccount
+	var bankAccount *identitysharemodel.BankAccount
 	var haveBankAccount bool
 	ledgerID, err := m.getOrCreateBankAccount(getMoneyTransaction, bankAccount, haveBankAccount, event.ShopID, ctx, ledgerID)
 	if err != nil {
@@ -221,7 +221,7 @@ func createReceipts(
 }
 
 func (m *ProcessManager) getOrCreateBankAccount(
-	getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *etopmodel.BankAccount,
+	getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *identitysharemodel.BankAccount,
 	haveBankAccount bool, shopID dot.ID, ctx context.Context, ledgerID dot.ID) (dot.ID, error) {
 	if getMoneyTransaction.Result.BankAccount != nil {
 		bankAccount = getMoneyTransaction.Result.BankAccount

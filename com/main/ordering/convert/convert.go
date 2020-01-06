@@ -3,12 +3,15 @@ package convert
 import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/ordering/types"
-	ordertypes "etop.vn/api/main/ordering/types"
 	shiptypes "etop.vn/api/main/shipping/types"
+	addressconvert "etop.vn/backend/com/main/address/convert"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/ordering/model"
 	"etop.vn/common/jsonx"
 )
+
+// +gen:convert: etop.vn/backend/com/main/ordering/model->etop.vn/api/main/ordering,etop.vn/api/main/ordering/types
+// +gen:convert: etop.vn/api/main/ordering
 
 func AddressDB(in *types.Address) (out *model.OrderAddress) {
 	if in == nil {
@@ -32,7 +35,7 @@ func AddressDB(in *types.Address) (out *model.OrderAddress) {
 		Company:      "",
 		Address1:     in.Address1,
 		Address2:     in.Address2,
-		Coordinates:  CoordinatesDB(in.Coordinates),
+		Coordinates:  addressconvert.Convert_orderingtypes_Coordinates_addressmodel_Coordinates(in.Coordinates, nil),
 	}
 	return out
 }
@@ -55,54 +58,21 @@ func Address(in *model.OrderAddress) (out *types.Address) {
 			District:     in.District,
 			WardCode:     in.WardCode,
 			Ward:         in.Ward,
-			Coordinates:  Coordinates(in.Coordinates),
+			Coordinates:  addressconvert.Convert_addressmodel_Coordinates_orderingtypes_Coordinates(in.Coordinates, nil),
 		},
 	}
 	return out
 }
 
-func Order(in *model.Order) (out *ordering.Order) {
+func Order(in *model.Order) *ordering.Order {
 	if in == nil {
 		return nil
 	}
-	out = &ordering.Order{
-		ID:                        in.ID,
-		ShopID:                    in.ShopID,
-		PartnerID:                 in.PartnerID,
-		Code:                      in.Code,
-		CustomerAddress:           Address(in.CustomerAddress),
-		ShippingAddress:           Address(in.ShippingAddress),
-		CancelReason:              in.CancelReason,
-		ConfirmStatus:             in.ConfirmStatus,
-		ShopConfirm:               in.ShopConfirm,
-		Status:                    in.Status,
-		FulfillmentShippingStatus: in.FulfillmentShippingStatus,
-		EtopPaymentStatus:         in.EtopPaymentStatus,
-		Lines:                     OrderLines(in.Lines),
-		TotalItems:                in.TotalItems,
-		BasketValue:               in.BasketValue,
-		OrderDiscount:             in.OrderDiscount,
-		TotalDiscount:             in.TotalDiscount,
-		TotalFee:                  in.TotalFee,
-		TotalAmount:               in.TotalAmount,
-		ShopCOD:                   in.ShopCOD,
-		OrderNote:                 in.OrderNote,
-		FeeLines:                  FeeLines(in.FeeLines),
-		Shipping:                  OrderToShippingInfo(in),
-		CreatedAt:                 in.CreatedAt,
-		UpdatedAt:                 in.UpdatedAt,
-		ProcessedAt:               in.ProcessedAt,
-		ClosedAt:                  in.ClosedAt,
-		ConfirmedAt:               in.ConfirmedAt,
-		CancelledAt:               in.CancelledAt,
-		FulfillmentIDs:            in.FulfillmentIDs,
-		FulfillmentType:           ordertypes.ShippingType(in.FulfillmentType),
-		PaymentStatus:             in.PaymentStatus,
-		PaymentID:                 in.PaymentID,
-		CustomerID:                in.CustomerID,
-		TradingShopID:             in.TradingShopID,
-		ShopShippingFee:           in.ShopShippingFee,
-	}
+	out := &ordering.Order{}
+	convert_orderingmodel_Order_ordering_Order(in, out)
+	out.FeeLines = FeeLines(in.FeeLines)
+	out.Shipping = OrderToShippingInfo(in)
+
 	var referralMeta ordering.ReferralMeta
 	if err := jsonx.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {
 		out.ReferralMeta = &referralMeta
@@ -123,15 +93,15 @@ func OrderLineToModel(in *types.ItemLine) (out *model.OrderLine) {
 		return nil
 	}
 	return &model.OrderLine{
-		OrderID:         in.OrderId,
-		VariantID:       in.VariantId,
+		OrderID:         in.OrderID,
+		VariantID:       in.VariantID,
 		ProductName:     in.ProductInfo.ProductName,
-		ProductID:       in.ProductId,
+		ProductID:       in.ProductID,
 		Quantity:        in.Quantity,
 		TotalLineAmount: in.TotalPrice,
-		ImageURL:        in.ProductInfo.ImageUrl,
+		ImageURL:        in.ProductInfo.ImageURL,
 		Attributes:      catalogconvert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(in.ProductInfo.Attributes),
-		IsOutsideEtop:   in.IsOutside,
+		IsOutsideEtop:   in.IsOutSide,
 		Code:            "",
 	}
 }
@@ -148,15 +118,18 @@ func OrderLine(in *model.OrderLine) (out *types.ItemLine) {
 		return nil
 	}
 	return &types.ItemLine{
-		OrderId:   in.OrderID,
+		OrderID:   in.OrderID,
 		Quantity:  in.Quantity,
-		ProductId: in.ProductID,
-		VariantId: in.VariantID,
-		IsOutside: in.IsOutsideEtop,
+		ProductID: in.ProductID,
+		VariantID: in.VariantID,
+		IsOutSide: in.IsOutsideEtop,
 		ProductInfo: types.ProductInfo{
-			ProductName: in.ProductName,
-			ImageUrl:    in.ImageURL,
-			Attributes:  catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(in.Attributes),
+			ProductName:  in.ProductName,
+			ImageURL:     in.ImageURL,
+			Attributes:   catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(in.Attributes),
+			ListPrice:    in.ListPrice,
+			RetailPrice:  in.RetailPrice,
+			PaymentPrice: in.PaymentPrice,
 		},
 		TotalPrice: in.TotalLineAmount,
 	}
@@ -203,25 +176,5 @@ func OrderToShippingInfo(in *model.Order) (out *shiptypes.ShippingInfo) {
 		Length:              shopShipping.Length,
 		Height:              shopShipping.Height,
 		ChargeableWeight:    shopShipping.ChargeableWeight,
-	}
-}
-
-func Coordinates(in *model.Coordinates) (out *types.Coordinates) {
-	if in == nil {
-		return nil
-	}
-	return &types.Coordinates{
-		Latitude:  in.Latitude,
-		Longitude: in.Longitude,
-	}
-}
-
-func CoordinatesDB(in *types.Coordinates) (out *model.Coordinates) {
-	if in == nil {
-		return nil
-	}
-	return &model.Coordinates{
-		Latitude:  in.Latitude,
-		Longitude: in.Longitude,
 	}
 }

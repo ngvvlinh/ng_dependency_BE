@@ -1,29 +1,32 @@
-package model
+package modelx
 
-import "etop.vn/capi/dot"
+import (
+	"etop.vn/backend/com/main/address/model"
+	"etop.vn/capi/dot"
+)
 
 type GetAddressQuery struct {
 	AddressID dot.ID
 
-	Result *Address
+	Result *model.Address
 }
 
 type GetAddressesQuery struct {
 	AccountID dot.ID
 
 	Result struct {
-		Addresses []*Address
+		Addresses []*model.Address
 	}
 }
 
 type CreateAddressCommand struct {
-	Address *Address
-	Result  *Address
+	Address *model.Address
+	Result  *model.Address
 }
 
 type UpdateAddressCommand struct {
-	Address *Address
-	Result  *Address
+	Address *model.Address
+	Result  *model.Address
 }
 
 type DeleteAddressCommand struct {

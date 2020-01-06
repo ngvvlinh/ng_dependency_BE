@@ -8,15 +8,16 @@ import (
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipping"
+	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/connection_type"
 	shipstate "etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
+	addressconvert "etop.vn/backend/com/main/address/convert"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/shipping/carrier"
-	"etop.vn/backend/com/main/shipping/convert"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -24,6 +25,7 @@ import (
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -32,20 +34,24 @@ var _ shipping.Aggregate = &Aggregate{}
 var ll = l.New()
 
 type Aggregate struct {
+	db             cmsql.Transactioner
 	locationQS     location.QueryBus
 	orderQS        ordering.QueryBus
 	shimentManager *carrier.ShipmentManager
 	connectionQS   connectioning.QueryBus
 	ffmStore       sqlstore.FulfillmentStoreFactory
+	eventBus       capi.EventBus
 }
 
-func NewAggregate(db *cmsql.Database, locationQS location.QueryBus, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus) *Aggregate {
+func NewAggregate(db *cmsql.Database, locationQS location.QueryBus, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus, eventB capi.EventBus) *Aggregate {
 	return &Aggregate{
+		db:             db,
 		locationQS:     locationQS,
 		orderQS:        orderQS,
 		shimentManager: shipmentManager,
 		connectionQS:   connectionQS,
 		ffmStore:       sqlstore.NewFulfillmentStore(db),
+		eventBus:       eventB,
 	}
 }
 
@@ -206,7 +212,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 
 	if len(order.Lines) != 0 {
 		for _, line := range order.Lines {
-			variantIDs = append(variantIDs, line.VariantId)
+			variantIDs = append(variantIDs, line.VariantID)
 		}
 	}
 	totalItems = order.TotalItems
@@ -238,9 +244,9 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		// after this
 		TypeFrom:            typeFrom,
 		TypeTo:              typeTo,
-		AddressFrom:         convert.ModelAddress(args.PickupAddress),
-		AddressTo:           convert.ModelAddress(args.ShippingAddress),
-		AddressReturn:       convert.ModelAddress(args.ReturnAddress),
+		AddressFrom:         addressconvert.OrderAddressToModel(args.PickupAddress),
+		AddressTo:           addressconvert.OrderAddressToModel(args.ShippingAddress),
+		AddressReturn:       addressconvert.OrderAddressToModel(args.ReturnAddress),
 		ShippingFeeCustomer: order.ShopShippingFee,
 		ProviderServiceID:   args.ShippingServiceCode,
 		ShippingServiceFee:  args.ShippingServiceFee,
@@ -292,4 +298,78 @@ func CompareFulfillments(olds []*shipmodel.Fulfillment, ffm *shipmodel.Fulfillme
 	}
 	// ignore
 	return nil, nil, nil
+}
+
+func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *shipping.UpdateFulfillmentShippingStateArgs) (updated int, _ error) {
+	ffm, err := a.ffmStore(ctx).IDOrShippingCode(args.FulfillmentID, args.ShippingCode).GetFulfillment()
+	if err != nil {
+		return 0, err
+	}
+	event := &shipping.FulfillmentUpdatingEvent{
+		EventMeta:     meta.NewEvent(),
+		FulfillmentID: ffm.ID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return 0, err
+	}
+	if ffm.MoneyTransactionID != 0 {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái giao hàng. Đơn đã nằm trong phiên đối soát.")
+	}
+	if args.ActualCompensationAmount.Valid {
+		if ffm.ShippingState != shipstate.Undeliverable && args.ShippingState != shipstate.Undeliverable {
+			return 0, cm.Errorf(cm.FailedPrecondition, nil, "Chỉ cập nhật phí hoàn hàng khi đơn vận chuyển không giao được hàng")
+		}
+	}
+
+	if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args); err != nil {
+		return 0, nil
+	}
+	return 1, nil
+}
+
+func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesArgs) (updated int, _ error) {
+	ffm, err := a.ffmStore(ctx).IDOrShippingCode(args.FulfillmentID, args.ShippingCode).GetFulfillment()
+	if err != nil {
+		return 0, err
+	}
+	event := &shipping.FulfillmentUpdatingEvent{
+		EventMeta:     meta.NewEvent(),
+		FulfillmentID: ffm.ID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return 0, err
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if err := a.ffmStore(ctx).UpdateFulfillmentShippingFees(args); err != nil {
+			return err
+		}
+		eventChanged := &shipping.FulfillmentShippingFeeChangedEvent{
+			EventMeta:     meta.NewEvent(),
+			FulfillmentID: ffm.ID,
+		}
+		if err := a.eventBus.Publish(ctx, eventChanged); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	return 1, nil
+}
+
+func (a *Aggregate) UpdateFulfillmentsMoneyTxShippingExternalID(ctx context.Context, args *shipping.UpdateFulfillmentsMoneyTxShippingExternalIDArgs) (updated int, _ error) {
+	if len(args.FulfillmentIDs) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "UpdateFulfillmentsMoneyTxShippingExternalID")
+	}
+
+	if args.MoneyTxShippingExternalID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingExternalID").WithMetap("function", "UpdateFulfillmentsMoneyTxShippingExternalID")
+	}
+
+	if err := a.ffmStore(ctx).UpdateFulfillmentsMoneyTxShippingExternalID(args); err != nil {
+		return 0, err
+	}
+	return 1, nil
 }

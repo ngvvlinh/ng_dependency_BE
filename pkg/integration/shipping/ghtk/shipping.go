@@ -11,6 +11,7 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -159,7 +160,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ExternalShippingFee:       int(r.Order.Fee),
 		ShippingState:             typesshipping.Created,
 		SyncStatus:                status4.P,
-		SyncStates: &model.FulfillmentSyncStates{
+		SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 			SyncAt:    now,
 			TrySyncAt: now,
 		},
@@ -179,7 +180,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		Insurance: r.Order.InsuranceFee,
 	}
 	updateFfm.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(orderInfo)
-	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, dot.Int(updateFfm.EtopAdjustedShippingFeeMain))
+	updateFfm.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, dot.Int(updateFfm.EtopAdjustedShippingFeeMain))
 
 	return updateFfm, nil
 }

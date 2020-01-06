@@ -1,29 +1,23 @@
 package shipping
 
 import (
-	"context"
 	"time"
 
-	catalogtype "etop.vn/api/main/catalog/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/connection_type"
+	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
-	"etop.vn/capi"
 	"etop.vn/capi/dot"
 )
 
-// +gen:api
 // +gen:event:topic=event/shipping
-
-type AggregateBus struct{ capi.Bus }
-
-type Aggregate interface {
-	CreateFulfillments(context.Context, *CreateFulfillmentsArgs) (fulfillmentID []dot.ID, _ error)
-}
-
-//-- Types --//
 
 type ShippingService struct {
 	Code string
@@ -44,41 +38,91 @@ type Fulfillment struct {
 	OrderID   dot.ID
 	ShopID    dot.ID
 	PartnerID dot.ID
-	SelfURL   string
 
-	Lines []*ItemLine
+	Lines []*ordertypes.ItemLine
 
-	ShopConfirm   status3.Status
-	ConfirmStatus status3.Status
+	ShopConfirm       status3.Status
+	ConfirmStatus     status3.Status
+	Status            status5.Status
+	ShippingState     shipping.State
+	ShippingStatus    status5.Status
+	EtopPaymentStatus status4.Status
 
-	TotalItems    int
-	TotalDiscount int
-	TotalAmount   int
+	ShippingFeeShop          int
+	ProviderShippingFeeLines []*ShippingFeeLine
+	ShippingFeeShopLines     []*ShippingFeeLine
+
+	TotalItems               int
+	TotalWeight              int
+	TotalDiscount            int
+	TotalAmount              int
+	TotalCODAmount           int
+	ActualCompensationAmount int
+	EtopDiscount             int
 
 	types.WeightInfo
-
 	types.ValueInfo
+
+	CODEtopTransferedAt                time.Time
+	MoneyTransactionID                 dot.ID
+	MoneyTransactionShippingExternalID dot.ID
+
+	ShippingType        ordertypes.ShippingType
+	ConnectionID        dot.ID
+	ConnectionMethod    connection_type.ConnectionMethod
+	ShopCarrierID       dot.ID
+	ProviderServiceID   string
+	ShippingCode        string
+	ShippingServiceName string
+	ShippingNote        string
+	TryOn               try_on.TryOnCode
+	IncludeInsurance    bool
+
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	ClosedAt            time.Time
+	ShippingCancelledAt time.Time
+	CancelReason        string
+
+	ShippingProvider            shipping_provider.ShippingProvider
+	ExternalShippingName        string
+	ExternalShippingFee         int
+	ShippingFeeCustomer         int
+	ExternalShippingID          string
+	ExternalShippingCode        string
+	ExternalShippingCreatedAt   time.Time
+	ExternalShippingUpdatedAt   time.Time
+	ExternalShippingCancelledAt time.Time
+	ExternalShippingDeliveredAt time.Time
+	ExternalShippingReturnedAt  time.Time
+
+	ExternalShippingState    string
+	ExternalShippingStatus   status5.Status
+	ExternalShippingNote     string
+	ExternalShippingSubState string
+	ExternalShippingLogs     []*ExternalShippingLog
+	SyncStatus               status4.Status
+	SyncStates               *FulfillmentSyncStates
+
+	ExpectedDeliveryAt          time.Time
+	ExpectedPickAt              time.Time
+	ShippingFeeShopTransferedAt time.Time
+
+	AddressTo   *ordertypes.Address
+	AddressFrom *ordertypes.Address
 }
 
-type ItemLine struct {
-	OrderID dot.ID
-
-	ProductName string
-	ProductID   dot.ID
-	VariantID   dot.ID
-	IsOutside   bool
-	ImageURL    string
-	Attribute   []catalogtype.Attribute
-
-	Quantity     int
-	ListPrice    int
-	RetailPrice  int
-	PaymentPrice int
+type FulfillmentSyncStates struct {
+	SyncAt            time.Time
+	TrySyncAt         time.Time
+	Error             *meta.Error
+	NextShippingState shipping.State
 }
 
-type Attribute struct {
-	Name  string
-	Value string
+type ExternalShippingLog struct {
+	StateText string
+	Time      string
+	Message   string
 }
 
 type ExternalShipmentData struct {
@@ -112,7 +156,7 @@ type ExternalShipmentData struct {
 }
 
 type ShippingFeeLine struct {
-	ShippingFeeType string
+	ShippingFeeType shipping_fee_type.ShippingFeeType
 
 	Cost int
 
@@ -121,63 +165,20 @@ type ShippingFeeLine struct {
 	ExternalServiceName string
 
 	ExternalServiceType string
-
-	//
-	ExternalShipmentID string
-}
-
-//-- Commands --//
-
-type CreateFulfillmentsArgs struct {
-	ShopID dot.ID
-
-	OrderID dot.ID
-
-	PickupAddress *ordertypes.Address
-
-	ShippingAddress *ordertypes.Address
-
-	ReturnAddress *ordertypes.Address
-
-	ShippingType ordertypes.ShippingType
-
-	ShippingServiceCode string
-
-	ShippingServiceFee int
-
-	ShippingServiceName string
-
-	types.WeightInfo
-
-	types.ValueInfo
-
-	TryOn try_on.TryOnCode
-
-	ShippingNote string
-
-	ConnectionID dot.ID
-
-	ShopCarrierID dot.ID
-}
-
-type ConfirmFulfillmentArgs struct {
-	FulfillmentID dot.ID
-}
-
-type CancelFulfillmentArgs struct {
-	FulfillmentID dot.ID
-
-	CancelReason string
-}
-
-//-- Queries --//
-
-type GetFulfillmentByIDQueryArgs struct {
-	FulfillmentID dot.ID
 }
 
 type FulfillmentCreatingEvent struct {
 	meta.EventMeta
 	ShopID      dot.ID
 	ShippingFee int
+}
+
+type FulfillmentUpdatingEvent struct {
+	meta.EventMeta
+	FulfillmentID dot.ID
+}
+
+type FulfillmentShippingFeeChangedEvent struct {
+	meta.EventMeta
+	FulfillmentID dot.ID
 }

@@ -22,6 +22,7 @@ type ShippingInfo struct {
 	CODAmount           int
 	GrossWeight         int
 	Length              int
+	Width               int
 	Height              int
 	ChargeableWeight    int
 }

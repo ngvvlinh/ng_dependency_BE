@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/ledger_type"
-	"etop.vn/backend/pkg/etop/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/capi/dot"
 )
 
@@ -16,7 +16,7 @@ type ShopLedger struct {
 	ID          dot.ID
 	ShopID      dot.ID
 	Name        string
-	BankAccount *model.BankAccount
+	BankAccount *identitysharemodel.BankAccount
 	Note        string
 	Type        ledger_type.LedgerType
 	Status      int

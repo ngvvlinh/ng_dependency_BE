@@ -10,19 +10,21 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/capi/dot"
 )
@@ -50,6 +52,12 @@ import (
   }
 */
 
+var moneyTxAggr moneytx.CommandBus
+
+func Init(moneyTxA moneytx.CommandBus) {
+	moneyTxAggr = moneyTxA
+}
+
 type GHTKMoneyTransactionShippingExternalLine struct {
 	ExternalCode     string
 	ShopCode         string
@@ -72,7 +80,7 @@ func (line *GHTKMoneyTransactionShippingExternalLine) ToModel() *txmodel.MoneyTr
 		ExternalTotalCOD:     line.TotalCOD,
 		ExternalCreatedAt:    line.CreatedAt,
 		ExternalClosedAt:     line.DeliveredAt,
-		EtopFulfillmentIdRaw: line.ShopCode,
+		EtopFulfillmentIDRaw: line.ShopCode,
 	}
 }
 
@@ -183,7 +191,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if len(shippingLines) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
 	}
-	ctx := context.Background()
+	ctx := bus.Ctx()
 	fulfillments, err := UpdateShippingFeeFulfillmentsFromImportFile(ctx, shippingLines, shippingProvider)
 	if err != nil {
 		return err
@@ -197,13 +205,13 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		Provider:       provider[0],
 		ExternalPaidAt: externalPaidAt,
 		Lines:          ToMoneyTransactionShippingExternalLines(shippingLines),
-		Note:           note,
-		InvoiceNumber:  invoiceNumber,
-		BankAccount: &model.BankAccount{
+		BankAccount: &identitysharemodel.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,
 		},
+		Note:          note,
+		InvoiceNumber: invoiceNumber,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
@@ -331,7 +339,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 		}
 
 		feeLines := ffm.ProviderShippingFeeLines
-		var newFeeLines []*model.ShippingFeeLine
+		var newFeeLines []*shippingsharemodel.ShippingFeeLine
 		for _, feeLine := range feeLines {
 			if feeLine.ShippingFeeType == shipping_fee_type.Main {
 				// keep the shipping fee type main (phí dịch vụ)
@@ -354,14 +362,14 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 			continue
 		}
 		if line.InsuranceFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
 				ShippingFeeType:      shipping_fee_type.Insurance,
 				Cost:                 line.InsuranceFee,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
 		if line.ReturnFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
 				ShippingFeeType:      shipping_fee_type.Return,
 				Cost:                 line.ReturnFee,
 				ExternalShippingCode: line.ExternalCode,
@@ -372,20 +380,20 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 			if cost > 0 {
 				cost = -cost
 			}
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
 				Cost:                 cost,
 				ShippingFeeType:      shipping_fee_type.Discount,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
 		if line.ChangeAddressFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &model.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
 				ShippingFeeType:      shipping_fee_type.AddressChange,
 				Cost:                 line.ChangeAddressFee,
 				ExternalShippingCode: line.ExternalCode,
 			})
 		}
-		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		update.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		totalFee := calcTotalFee(update.ShippingFeeShopLines)
 		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(totalFee, update)
 
@@ -398,7 +406,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 	return fulfillments, nil
 }
 
-func calcTotalFee(lines []*model.ShippingFeeLine) int {
+func calcTotalFee(lines []*shippingsharemodel.ShippingFeeLine) int {
 	res := 0
 	for _, line := range lines {
 		res += line.Cost

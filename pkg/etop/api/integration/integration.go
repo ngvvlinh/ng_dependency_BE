@@ -12,6 +12,8 @@ import (
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/user_source"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
@@ -27,7 +29,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/logic/usering"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/capi/dot"
@@ -79,7 +80,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 
 	var partnerID dot.ID
 	var relationError error
-	var relationQuery *model.GetPartnerRelationQuery
+	var relationQuery *identitymodelx.GetPartnerRelationQuery
 	var requestInfo apipartner.PartnerShopToken
 
 	switch {
@@ -88,7 +89,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 		if !ok {
 			return cm.Errorf(cm.Unauthenticated, nil, "Mã xác thực không hợp lệ")
 		}
-		relationQuery = &model.GetPartnerRelationQuery{
+		relationQuery = &identitymodelx.GetPartnerRelationQuery{
 			AuthKey: q.AuthToken,
 		}
 		relationError = bus.Dispatch(ctx, relationQuery)
@@ -117,7 +118,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 				Throw()
 		}
 		partnerID = requestInfo.PartnerID
-		relationQuery = &model.GetPartnerRelationQuery{
+		relationQuery = &identitymodelx.GetPartnerRelationQuery{
 			PartnerID: requestInfo.PartnerID,
 			AccountID: requestInfo.ShopID,
 		}
@@ -170,8 +171,8 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 	}
 }
 
-func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.ID) (*model.Partner, error) {
-	partnerQuery := &model.GetPartner{PartnerID: partnerID}
+func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.ID) (*identitymodel.Partner, error) {
+	partnerQuery := &identitymodelx.GetPartner{PartnerID: partnerID}
 	if err := bus.Dispatch(ctx, partnerQuery); err != nil {
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
 	}
@@ -182,7 +183,7 @@ func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.
 	return partner, nil
 }
 
-func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
+func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *identitymodel.Partner, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -230,7 +231,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 	return resp, nil
 }
 
-func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
+func (s *IntegrationService) generateNewSession(ctx context.Context, user *identitymodel.User, partner *identitymodel.Partner, shop *identitymodel.Shop, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -291,7 +292,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		return r, cm.Errorf(cm.InvalidArgument, nil, "Email hoặc số điện thoại không hợp lệ")
 	}
 
-	userQuery := &model.GetUserByLoginQuery{
+	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
 	}
 	err := bus.Dispatch(ctx, userQuery)
@@ -493,7 +494,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		}
 	}()
 
-	userQuery := &model.GetUserByLoginQuery{
+	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
 	}
 	err = bus.Dispatch(ctx, userQuery)
@@ -550,7 +551,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	}
 
 	user := userQuery.Result.User
-	relationQuery := &model.GetPartnerRelationsQuery{
+	relationQuery := &identitymodelx.GetPartnerRelationsQuery{
 		PartnerID: partner.ID,
 		OwnerID:   user.ID,
 	}
@@ -559,7 +560,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		return err
 	}
 
-	accQuery := &model.GetAllAccountRolesQuery{UserID: user.ID}
+	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: user.ID}
 	if err := bus.Dispatch(ctx, accQuery); err != nil {
 		return err
 	}
@@ -600,7 +601,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 			ImageUrl: acc.Account.ImageURL,
 		}
 		for _, rel := range relationQuery.Result.Relations {
-			if rel.SubjectType == model.SubjectTypeAccount &&
+			if rel.SubjectType == identitymodel.SubjectTypeAccount &&
 				rel.SubjectID == acc.Account.ID {
 
 				// the partner has permission to access this account
@@ -728,7 +729,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	source := user_source.Partner
 
 	cmd := &usering.CreateUserCommand{
-		UserInner: model.UserInner{
+		UserInner: identitymodel.UserInner{
 			FullName:  r.FullName,
 			ShortName: "",
 			Phone:     string(phoneNorm),
@@ -760,7 +761,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 
 	switch {
 	case verifiedEmail != "":
-		verifyCmd := &model.UpdateUserVerificationCommand{
+		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
 		}
@@ -791,7 +792,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		}
 
 	case verifiedPhone != "":
-		verifyCmd := &model.UpdateUserVerificationCommand{
+		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
 			PhoneVerifiedAt: time.Now(),
 		}
@@ -839,7 +840,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 		return cm.Errorf(cm.FailedPrecondition, nil, "Bạn cần sử dụng tài khoản đã từng liên kết với đối tác này").WithMeta("reason", "shop_id does not match")
 	}
 
-	shopQuery := &model.GetShopQuery{
+	shopQuery := &identitymodelx.GetShopQuery{
 		ShopID: r.ShopId,
 	}
 	if err := bus.Dispatch(ctx, shopQuery); err != nil {
@@ -850,7 +851,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 		return cm.Errorf(cm.NotFound, nil, "")
 	}
 
-	relQuery := &model.GetPartnerRelationQuery{
+	relQuery := &identitymodelx.GetPartnerRelationQuery{
 		PartnerID: partner.ID,
 		AccountID: shop.ID,
 	}
@@ -864,7 +865,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 			return cm.Errorf(cm.FailedPrecondition, nil, "Bạn cần sử dụng tài khoản đã từng liên kết với đối tác này").WithMeta("reason", "external_shop_id does not match")
 		}
 		if rel.ExternalSubjectID == "" && requestInfo.ExternalShopID != "" {
-			cmd := &model.UpdatePartnerRelationCommand{
+			cmd := &identitymodelx.UpdatePartnerRelationCommand{
 				PartnerID:  partner.ID,
 				AccountID:  r.ShopId,
 				ExternalID: requestInfo.ExternalShopID,
@@ -876,7 +877,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 		}
 
 	case cm.NotFound:
-		cmd := &model.CreatePartnerRelationCommand{
+		cmd := &identitymodelx.CreatePartnerRelationCommand{
 			PartnerID:  partner.ID,
 			AccountID:  r.ShopId,
 			ExternalID: requestInfo.ExternalShopID,
@@ -908,9 +909,9 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 }
 
 func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndpoint) error {
-	var shop *model.Shop
+	var shop *identitymodel.Shop
 	if q.Context.Claim.AccountID != 0 {
-		query := &model.GetShopQuery{
+		query := &identitymodelx.GetShopQuery{
 			ShopID: q.Context.Claim.AccountID,
 		}
 		err := bus.Dispatch(ctx, query)
@@ -939,7 +940,7 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 	return nil
 }
 
-func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*integration.Action, redirectURL string) *integration.LoginResponse {
+func generateShopLoginResponse(accessToken string, expiresIn int, user *identitymodel.User, partner *identitymodel.Partner, shop *identitymodel.Shop, actions []*integration.Action, redirectURL string) *integration.LoginResponse {
 	resp := &integration.LoginResponse{
 		AccessToken:       accessToken,
 		ExpiresIn:         expiresIn,

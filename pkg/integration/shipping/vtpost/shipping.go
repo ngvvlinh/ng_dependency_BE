@@ -11,6 +11,7 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/authorize/login"
@@ -225,7 +226,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
 		ShippingState:      shipping.Created,
 		SyncStatus:         status4.P,
-		SyncStates: &model.FulfillmentSyncStates{
+		SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 			SyncAt:    now,
 			TrySyncAt: now,
 		},
@@ -243,7 +244,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	}
 	if lines, err := shippingFees.CalcAndConvertShippingFeeLines(); err == nil {
 		updateFfm.ProviderShippingFeeLines = lines
-		updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(lines, false, dot.NullInt{})
+		updateFfm.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(lines, false, dot.NullInt{})
 	}
 
 	return updateFfm, nil

@@ -3,7 +3,10 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/common/sql/sq"
@@ -20,7 +23,7 @@ var _ = sqlgenMoneyTransactionShippingExternalLine(&MoneyTransactionShippingExte
 var _ = sqlgenMoneyTransactionShippingExternalLineExtended(
 	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, "m",
 	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, "f", "f.id = m.etop_fulfillment_id",
-	sq.LEFT_JOIN, &model.Shop{}, "s", "s.id = f.shop_id",
+	sq.LEFT_JOIN, &identitymodel.Shop{}, "s", "s.id = f.shop_id",
 	sq.LEFT_JOIN, &ordermodel.Order{}, "o", "o.id = f.order_id",
 )
 
@@ -28,7 +31,7 @@ var _ = sqlgenMoneyTransactionShipping(&MoneyTransactionShipping{})
 
 var _ = sqlgenMoneyTransactionShippingFtShop(
 	&MoneyTransactionShippingFtShop{}, &MoneyTransactionShipping{}, "m",
-	sq.LEFT_JOIN, &model.Shop{}, "s", "s.id = m.shop_id",
+	sq.LEFT_JOIN, &identitymodel.Shop{}, "s", "s.id = m.shop_id",
 )
 
 var _ = sqlgenMoneyTransactionShippingEtop(&MoneyTransactionShippingEtop{})
@@ -42,8 +45,8 @@ type MoneyTransactionShippingExternal struct {
 	UpdatedAt      time.Time `sq:"update"`
 	Status         status3.Status
 	ExternalPaidAt time.Time
-	Provider       string
-	BankAccount    *model.BankAccount
+	Provider       shipping_provider.ShippingProvider
+	BankAccount    *identitysharemodel.BankAccount
 	Note           string
 	InvoiceNumber  string
 }
@@ -56,7 +59,7 @@ type MoneyTransactionShippingExternalLine struct {
 	ExternalTotalCOD                   int
 	ExternalCreatedAt                  time.Time
 	ExternalClosedAt                   time.Time
-	EtopFulfillmentIdRaw               string
+	EtopFulfillmentIDRaw               string
 	EtopFulfillmentID                  dot.ID
 	Note                               string
 	MoneyTransactionShippingExternalID dot.ID
@@ -69,7 +72,7 @@ type MoneyTransactionShippingExternalLine struct {
 type MoneyTransactionShippingExternalLineExtended struct {
 	*MoneyTransactionShippingExternalLine
 	Fulfillment *shipmodel.Fulfillment
-	Shop        *model.Shop
+	Shop        *identitymodel.Shop
 	Order       *ordermodel.Order
 }
 
@@ -94,7 +97,7 @@ type MoneyTransactionShipping struct {
 	Provider                           string
 	ConfirmedAt                        time.Time
 	EtopTransferedAt                   time.Time
-	BankAccount                        *model.BankAccount
+	BankAccount                        *identitysharemodel.BankAccount
 	Note                               string
 	InvoiceNumber                      string
 	Type                               string
@@ -102,7 +105,7 @@ type MoneyTransactionShipping struct {
 
 type MoneyTransactionShippingFtShop struct {
 	*MoneyTransactionShipping
-	Shop *model.Shop
+	Shop *identitymodel.Shop
 }
 
 type MoneyTransactionShippingEtop struct {
@@ -117,7 +120,7 @@ type MoneyTransactionShippingEtop struct {
 	UpdatedAt             time.Time `sq:"update"`
 	ConfirmedAt           time.Time
 	Status                status3.Status
-	BankAccount           *model.BankAccount
+	BankAccount           *identitysharemodel.BankAccount
 	Note                  string
 	InvoiceNumber         string
 }

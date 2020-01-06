@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -25,7 +25,7 @@ func NewAccoutnUserStore(db *cmsql.Database) AccountUserStoreFactory {
 type AccountUserStore struct {
 	query cmsql.QueryFactory
 	preds []interface{}
-	ft    sqlstore.AccountUserFilters
+	ft    AccountUserFilters
 }
 
 func (s *AccountUserStore) ByAccountID(id dot.ID) *AccountUserStore {
@@ -38,8 +38,8 @@ func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 	return s
 }
 
-func (s *AccountUserStore) GetAccountUserDB() (*model.AccountUser, error) {
-	var acc model.AccountUser
+func (s *AccountUserStore) GetAccountUserDB() (*identitymodel.AccountUser, error) {
+	var acc identitymodel.AccountUser
 	err := s.query().Where(s.preds).ShouldGet(&acc)
 	return &acc, err
 }
@@ -57,7 +57,7 @@ func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing UserID")
 	}
 
-	update := &model.AccountUser{
+	update := &identitymodel.AccountUser{
 		DeletedAt: time.Now(),
 	}
 

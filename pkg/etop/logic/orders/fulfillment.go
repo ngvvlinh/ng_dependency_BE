@@ -19,11 +19,15 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	addressmodel "etop.vn/backend/com/main/address/model"
+	addressmodelx "etop.vn/backend/com/main/address/modelx"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/com/main/shipping/carrier"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -76,7 +80,7 @@ var districtsBlockList = []string{
 	"008", // Quận Hoàng mai - Hà Nội
 }
 
-func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
+func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
 	autoInventoryVoucher := inventory.AutoInventoryVoucher(r.AutoInventoryVoucher.Apply(""))
 	if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
@@ -147,7 +151,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrder
 	return resp, nil
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &types.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -280,16 +284,16 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	return resp, nil
 }
 
-func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
+func RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
 	orderLines := []*ordertypes.ItemLine{}
 	for _, line := range order.Lines {
 		if line.VariantID != 0 {
 			_line := &ordertypes.ItemLine{
-				OrderId:    line.OrderID,
+				OrderID:    line.OrderID,
 				Quantity:   line.Quantity,
-				ProductId:  line.ProductID,
-				VariantId:  line.VariantID,
-				IsOutside:  line.IsOutsideEtop,
+				ProductID:  line.ProductID,
+				VariantID:  line.VariantID,
+				IsOutSide:  line.IsOutsideEtop,
 				TotalPrice: line.TotalLineAmount,
 			}
 			orderLines = append(orderLines, _line)
@@ -308,7 +312,7 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 	return nil
 }
 
-func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) (*shipmodel.Fulfillment, error) {
+func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *identitymodel.Shop) (*shipmodel.Fulfillment, error) {
 	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == typeshippingprovider.GHN {
 		if order.TryOn == 0 && order.GhnNoteCode == 0 {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
@@ -329,7 +333,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	ffm := prepareSingleFulfillment(order, shop, order.Lines, addressTo)
 
 	// Use shop address from order or from shop default address
-	var shopAddress *model.Address
+	var shopAddress *addressmodel.Address
 	if order.ShopShipping != nil && order.ShopShipping.ShopAddress != nil {
 		shopAddress, err = orderAddressToShippingAddress(order.ShopShipping.ShopAddress)
 		if err != nil {
@@ -340,7 +344,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 		if shop.ShipFromAddressID == 0 {
 			return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
 		}
-		addressQuery := &model.GetAddressQuery{AddressID: shop.ShipFromAddressID}
+		addressQuery := &addressmodelx.GetAddressQuery{AddressID: shop.ShipFromAddressID}
 		if err := bus.Dispatch(ctx, addressQuery); err != nil {
 			return nil, cm.Error(cm.Internal, "Lỗi khi kiểm tra thông tin địa chỉ của cửa hàng: "+err.Error(), err)
 		}
@@ -374,14 +378,14 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	return ffm, nil
 }
 
-func checkBlockDistricts(shopAddress *model.Address) error {
+func checkBlockDistricts(shopAddress *addressmodel.Address) error {
 	if cm.StringsContain(districtsBlockList, shopAddress.DistrictCode) {
 		return cm.Errorf(cm.InvalidArgument, nil, "Không thể lấy hàng tại địa chỉ này %v (%v)", shopAddress.District, shopAddress.Province)
 	}
 	return nil
 }
 
-func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines []*ordermodel.OrderLine, addressTo *model.Address) *shipmodel.Fulfillment {
+func prepareSingleFulfillment(order *ordermodel.Order, shop *identitymodel.Shop, lines []*ordermodel.OrderLine, addressTo *addressmodel.Address) *shipmodel.Fulfillment {
 
 	var variantIDs []dot.ID
 	totalItems, totalWeight, basketValue, totalAmount := 0, 0, 0, 0
@@ -409,7 +413,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 	shippingProvider := order.ShopShipping.ShippingProvider
 	providerServiceID := cm.Coalesce(order.ShopShipping.ProviderServiceID, order.ShopShipping.ExternalServiceID)
 
-	var addressReturn *model.Address
+	var addressReturn *addressmodel.Address
 	if order.ShopShipping.ReturnAddress != nil {
 		addressReturn, _ = orderAddressToShippingAddress(order.ShopShipping.ReturnAddress)
 	}
@@ -524,7 +528,7 @@ func compareFulfillments(order *ordermodel.Order, olds []*shipmodel.Fulfillment,
 	return nil, nil, nil
 }
 
-func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.Address, error) {
+func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*addressmodel.Address, error) {
 	if orderAddr == nil || orderAddr.DistrictCode == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Thiếu thông tin địa chỉ.", nil)
 	}
@@ -535,7 +539,7 @@ func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.A
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ (%v).", orderAddr.Phone)
 	}
 
-	return &model.Address{
+	return &addressmodel.Address{
 		ID:           0,
 		FullName:     orderAddr.FullName,
 		FirstName:    orderAddr.FirstName,
@@ -630,7 +634,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				update2 := &shipmodel.Fulfillment{
 					ID:         ffm.ID,
 					SyncStatus: status4.N,
-					SyncStates: &model.FulfillmentSyncStates{
+					SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 						SyncAt: time.Now(),
 						Error:  model.ToError(shippingProviderErr),
 
@@ -649,7 +653,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				ID:            ffm.ID,
 				ShippingState: shipping.Cancelled,
 				SyncStatus:    status4.P,
-				SyncStates: &model.FulfillmentSyncStates{
+				SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 					SyncAt: time.Now(),
 				},
 			}

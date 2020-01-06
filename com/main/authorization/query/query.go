@@ -5,9 +5,9 @@ import (
 
 	"etop.vn/api/main/authorization"
 	"etop.vn/backend/com/main/authorization/convert"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -27,7 +27,7 @@ func (a *AuthorizationQuery) MessageBus() authorization.QueryBus {
 func (a *AuthorizationQuery) GetAuthorization(
 	ctx context.Context, accountID, userID dot.ID,
 ) (auth *authorization.Authorization, _ error) {
-	getAccountUserQuery := &model.GetAccountUserExtendedQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		UserID:    userID,
 		AccountID: accountID,
 	}
@@ -43,7 +43,7 @@ func (a *AuthorizationQuery) GetAuthorization(
 func (a *AuthorizationQuery) GetAccountAuthorization(
 	ctx context.Context, accountID dot.ID,
 ) (auths []*authorization.Authorization, _ error) {
-	getAccountUsersQuery := &model.GetAccountUserExtendedsQuery{
+	getAccountUsersQuery := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs: []dot.ID{accountID},
 	}
 	if err := bus.Dispatch(ctx, getAccountUsersQuery); err != nil {
@@ -58,7 +58,7 @@ func (a *AuthorizationQuery) GetAccountAuthorization(
 func (a *AuthorizationQuery) GetRelationships(
 	ctx context.Context, args *authorization.GetRelationshipsArgs,
 ) (relationships []*authorization.Relationship, _ error) {
-	getAccountUsersQuery := &model.GetAccountUserExtendedsQuery{
+	getAccountUsersQuery := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs: []dot.ID{args.AccountID},
 		Filters:    args.Filters,
 	}

@@ -10,12 +10,12 @@ import (
 
 	api "etop.vn/api/top/int/integration"
 	cm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	model "etop.vn/backend/pkg/etop/model"
 )
 
 func WrapIntegrationService(s *IntegrationService) api.IntegrationService {
@@ -30,7 +30,7 @@ type GrantAccessEndpoint struct {
 	*api.GrantAccessRequest
 	Result     *api.GrantAccessResponse
 	Context    claims.UserClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantAccessRequest) (resp *api.GrantAccessResponse, err error) {
@@ -104,7 +104,7 @@ type LoginUsingTokenEndpoint struct {
 	*api.LoginUsingTokenRequest
 	Result     *api.LoginResponse
 	Context    claims.EmptyClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.LoginUsingTokenRequest) (resp *api.LoginResponse, err error) {
@@ -146,7 +146,7 @@ type RegisterEndpoint struct {
 	*api.RegisterRequest
 	Result     *api.RegisterResponse
 	Context    claims.EmptyClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterRequest) (resp *api.RegisterResponse, err error) {
@@ -188,7 +188,7 @@ type RequestLoginEndpoint struct {
 	*api.RequestLoginRequest
 	Result     *api.RequestLoginResponse
 	Context    claims.EmptyClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.RequestLoginRequest) (resp *api.RequestLoginResponse, err error) {
@@ -234,7 +234,7 @@ type SessionInfoEndpoint struct {
 	*cm.Empty
 	Result     *api.LoginResponse
 	Context    claims.EmptyClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {

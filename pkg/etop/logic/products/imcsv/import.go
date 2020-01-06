@@ -16,6 +16,8 @@ import (
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/status4"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/httpx"
@@ -50,7 +52,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
+func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	// check if shop already imports sample data
 	s := shopProductStore(ctx).
 		ShopID(shop.ID).
@@ -95,7 +97,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
+func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -108,7 +110,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model
 	return handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
+func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cm.NotProd() {

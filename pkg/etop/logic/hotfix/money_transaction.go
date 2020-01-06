@@ -8,13 +8,13 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 var db cmsql.Transactioner
@@ -95,7 +95,7 @@ func HandleImportMoneyTransactionManual(c *httpx.Context) error {
 }
 
 func createMoneyTransactionShipping(s cmsql.QueryInterface, line *Line) error {
-	var shop model.Shop
+	var shop identitymodel.Shop
 	if err := s.Table("shop").Where("code = ? AND phone = ?", line.ShopCode, line.ShopPhone).ShouldGet(&shop); err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Shop không tồn tại").WithMetap("line", line)
 	}

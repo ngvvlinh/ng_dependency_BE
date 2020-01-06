@@ -12,6 +12,7 @@ import (
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
@@ -255,7 +256,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 			}
 		}
 		update.ProviderShippingFeeLines = ffm.ProviderShippingFeeLines
-		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, dot.NullInt{})
+		update.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, dot.NullInt{})
 	}
 
 	// Only update status5 if the current status is not ending status

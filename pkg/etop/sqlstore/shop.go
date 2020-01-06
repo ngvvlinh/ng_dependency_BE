@@ -9,13 +9,13 @@ import (
 	"etop.vn/backend/com/main/catalog/convert"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func init() {
@@ -31,7 +31,7 @@ func init() {
 	)
 }
 
-func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtendedsQuery) error {
+func GetAllShopExtendedsQuery(ctx context.Context, query *identitymodelx.GetAllShopExtendedsQuery) error {
 	s := x.Table("shop").Where("s.deleted_at is NULL")
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
@@ -42,8 +42,8 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtend
 		if err != nil {
 			return err
 		}
-		var shops []*model.ShopExtended
-		if err := s2.Find((*model.ShopExtendeds)(&shops)); err != nil {
+		var shops []*identitymodel.ShopExtended
+		if err := s2.Find((*identitymodel.ShopExtendeds)(&shops)); err != nil {
 			return err
 		}
 		query.Result.Shops = shops
@@ -51,16 +51,16 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtend
 	return nil
 }
 
-func (ft ShopFilters) NotDeleted() sq.WriterTo {
-	return ft.Filter("$.deleted_at IS NULL")
-}
+// func (ft ShopFilters) NotDeleted() sq.WriterTo {
+// 	return ft.Filter("$.deleted_at IS NULL")
+// }
 
-func GetShop(ctx context.Context, query *model.GetShopQuery) error {
+func GetShop(ctx context.Context, query *identitymodelx.GetShopQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
-	shop := new(model.Shop)
+	shop := new(identitymodel.Shop)
 	if err := x.Where("id = ?", query.ShopID).
 		Where("deleted_at is NULL").
 		ShouldGet(shop); err != nil {
@@ -71,18 +71,18 @@ func GetShop(ctx context.Context, query *model.GetShopQuery) error {
 	return nil
 }
 
-func GetShops(ctx context.Context, query *model.GetShopsQuery) error {
+func GetShops(ctx context.Context, query *identitymodelx.GetShopsQuery) error {
 	return x.Table("shop").
 		In("id", query.ShopIDs).
-		Find((*model.Shops)(&query.Result.Shops))
+		Find((*identitymodel.Shops)(&query.Result.Shops))
 }
 
-func GetShopExtended(ctx context.Context, query *model.GetShopExtendedQuery) error {
+func GetShopExtended(ctx context.Context, query *identitymodelx.GetShopExtendedQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
-	var shop model.ShopExtended
+	var shop identitymodel.ShopExtended
 	s := x.Where("s.id = ?", query.ShopID)
 	if !query.IncludeDeleted {
 		s = s.Where("s.deleted_at is NULL")
@@ -93,19 +93,19 @@ func GetShopExtended(ctx context.Context, query *model.GetShopExtendedQuery) err
 	return err
 }
 
-func GetShopWithPermission(ctx context.Context, query *model.GetShopWithPermissionQuery) error {
+func GetShopWithPermission(ctx context.Context, query *identitymodelx.GetShopWithPermissionQuery) error {
 	if query.ShopID == 0 || query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
 
-	shop := new(model.Shop)
+	shop := new(identitymodel.Shop)
 	if err := x.Where("id = ?", query.ShopID).
 		ShouldGet(shop); err != nil {
 		return err
 	}
 	query.Result.Shop = shop
 
-	accUser := new(model.AccountUser)
+	accUser := new(identitymodel.AccountUser)
 	if err := x.
 		Where("account_id = ? AND user_id = ?", query.ShopID, query.UserID).
 		ShouldGet(accUser); err != nil {

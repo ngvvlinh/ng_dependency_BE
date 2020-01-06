@@ -13,12 +13,17 @@ import (
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
+	creditmodel "etop.vn/backend/com/main/credit/model"
+	creditmodelx "etop.vn/backend/com/main/credit/modelx"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
@@ -576,7 +581,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 			TotalCOD:       totalCOD,
 			TotalOrders:    totalOrders,
 			ExternalPaidAt: cmd.ExternalPaidAt,
-			Provider:       cmd.Provider,
+			Provider:       shipping_provider.ParseShippingProviderWithDefault(cmd.Provider, shipping_provider.Unknown),
 			Note:           cmd.Note,
 			InvoiceNumber:  cmd.InvoiceNumber,
 			BankAccount:    cmd.BankAccount,
@@ -592,7 +597,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 				ExternalTotalCOD:                   line.ExternalTotalCOD,
 				ExternalCreatedAt:                  line.ExternalCreatedAt,
 				ExternalClosedAt:                   line.ExternalClosedAt,
-				EtopFulfillmentIdRaw:               line.EtopFulfillmentIdRaw,
+				EtopFulfillmentIdRaw:               line.EtopFulfillmentIDRaw,
 				ExternalCustomer:                   line.ExternalCustomer,
 				ExternalAddress:                    line.ExternalAddress,
 				MoneyTransactionShippingExternalID: externalTransaction.ID,
@@ -640,7 +645,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 		ExternalClosedAt:                   cmd.ExternalClosedAt,
 		ExternalCustomer:                   cmd.ExternalCustomer,
 		ExternalAddress:                    cmd.ExternalAddress,
-		EtopFulfillmentIdRaw:               cmd.EtopFulfillmentIdRaw,
+		EtopFulfillmentIDRaw:               cmd.EtopFulfillmentIdRaw,
 		MoneyTransactionShippingExternalID: cmd.MoneyTransactionShippingExternalID,
 		ExternalTotalShippingFee:           cmd.ExternalTotalShippingFee,
 	}
@@ -994,14 +999,14 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 			}
 		}
 	}
-	shopsQuery := &model.GetShopsQuery{
+	shopsQuery := &identitymodelx.GetShopsQuery{
 		ShopIDs: shopIDs,
 	}
 	if err := bus.Dispatch(ctx, shopsQuery); err != nil {
 		return err
 	}
 
-	shopsMap := make(map[dot.ID]*model.Shop)
+	shopsMap := make(map[dot.ID]*identitymodel.Shop)
 	for _, shop := range shopsQuery.Result.Shops {
 		shopsMap[shop.ID] = shop
 	}
@@ -1228,7 +1233,7 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	return nil
 }
 
-func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
+func CreateCredit(ctx context.Context, cmd *creditmodelx.CreateCreditCommand) error {
 	switch cmd.Type {
 	case credit_type.Shop:
 		if cmd.ShopID == 0 {
@@ -1241,7 +1246,7 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 	if cmd.Amount == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing amount", nil)
 	}
-	credit := &model.Credit{
+	credit := &creditmodel.Credit{
 		ID:     cm.NewID(),
 		Amount: cmd.Amount,
 		ShopID: cmd.ShopID,
@@ -1251,7 +1256,7 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 	if err := x.Table("credit").ShouldInsert(credit); err != nil {
 		return err
 	}
-	query := &model.GetCreditQuery{
+	query := &creditmodelx.GetCreditQuery{
 		ID: credit.ID,
 	}
 	if err := GetCredit(ctx, query); err != nil {
@@ -1261,7 +1266,7 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 	return nil
 }
 
-func GetCredit(ctx context.Context, query *model.GetCreditQuery) error {
+func GetCredit(ctx context.Context, query *creditmodelx.GetCreditQuery) error {
 	if query.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1270,7 +1275,7 @@ func GetCredit(ctx context.Context, query *model.GetCreditQuery) error {
 	if query.ShopID != 0 {
 		s = s.Where("c.shop_id = ?", query.ShopID)
 	}
-	credit := new(model.CreditExtended)
+	credit := new(creditmodel.CreditExtended)
 	if err := s.ShouldGet(credit); err != nil {
 		return err
 	}
@@ -1278,7 +1283,7 @@ func GetCredit(ctx context.Context, query *model.GetCreditQuery) error {
 	return nil
 }
 
-func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
+func GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error {
 	s := x.Table("credit")
 	if query.ShopID != 0 {
 		s = s.Where("c.shop_id = ?", query.ShopID)
@@ -1292,8 +1297,8 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 		if err != nil {
 			return err
 		}
-		var credits []*model.CreditExtended
-		if err := s2.Find((*model.CreditExtendeds)(&credits)); err != nil {
+		var credits []*creditmodel.CreditExtended
+		if err := s2.Find((*creditmodel.CreditExtendeds)(&credits)); err != nil {
 			return err
 		}
 		query.Result.Credits = credits
@@ -1301,7 +1306,7 @@ func GetCredits(ctx context.Context, query *model.GetCreditsQuery) error {
 	return nil
 }
 
-func UpdateCredit(ctx context.Context, cmd *model.UpdateCreditCommand) error {
+func UpdateCredit(ctx context.Context, cmd *creditmodelx.UpdateCreditCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1309,14 +1314,14 @@ func UpdateCredit(ctx context.Context, cmd *model.UpdateCreditCommand) error {
 	if cmd.ShopID != 0 {
 		s = s.Where("shop_id = ?", cmd.ShopID)
 	}
-	credit := &model.Credit{
+	credit := &creditmodel.Credit{
 		PaidAt: cmd.PaidAt,
 		Amount: cmd.Amount,
 	}
 	if err := s.ShouldUpdate(credit); err != nil {
 		return err
 	}
-	query := &model.GetCreditQuery{
+	query := &creditmodelx.GetCreditQuery{
 		ID: cmd.ID,
 	}
 	if err := GetCredit(ctx, query); err != nil {
@@ -1326,7 +1331,7 @@ func UpdateCredit(ctx context.Context, cmd *model.UpdateCreditCommand) error {
 	return nil
 }
 
-func ConfirmCredit(ctx context.Context, cmd *model.ConfirmCreditCommand) error {
+func ConfirmCredit(ctx context.Context, cmd *creditmodelx.ConfirmCreditCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1336,7 +1341,7 @@ func ConfirmCredit(ctx context.Context, cmd *model.ConfirmCreditCommand) error {
 	}
 	{
 		s2 := s.Clone()
-		credit := new(model.Credit)
+		credit := new(creditmodel.Credit)
 		if err := s2.ShouldGet(credit); err != nil {
 			return nil
 		}
@@ -1360,7 +1365,7 @@ func ConfirmCredit(ctx context.Context, cmd *model.ConfirmCreditCommand) error {
 	return nil
 }
 
-func DeleteCredit(ctx context.Context, cmd *model.DeleteCreditCommand) error {
+func DeleteCredit(ctx context.Context, cmd *creditmodelx.DeleteCreditCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1370,7 +1375,7 @@ func DeleteCredit(ctx context.Context, cmd *model.DeleteCreditCommand) error {
 	}
 	{
 		s2 := s.Clone()
-		credit := new(model.Credit)
+		credit := new(creditmodel.Credit)
 		if err := s2.ShouldGet(credit); err != nil {
 			return nil
 		}
@@ -1381,7 +1386,7 @@ func DeleteCredit(ctx context.Context, cmd *model.DeleteCreditCommand) error {
 			return cm.Error(cm.FailedPrecondition, "Can not delete this credit", nil)
 		}
 	}
-	if deleted, err := s.Delete(&model.Credit{}); err != nil {
+	if deleted, err := s.Delete(&creditmodel.Credit{}); err != nil {
 		return err
 	} else if deleted == 0 {
 		return cm.Error(cm.NotFound, "", nil)
@@ -1677,7 +1682,7 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtI
 				break
 			}
 		}
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShipping does not exist. (money_transaction_shiping_id = %v)", errID)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShipping does not exist. (money_transaction_shipping_id = %v)", errID)
 	}
 	var fulfillments []*shipmodel.Fulfillment
 
@@ -1867,8 +1872,8 @@ func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 		return 0
 	}
 
-	returnedFee := model.GetReturnedFee(ffm.ShippingFeeShopLines)
-	totalFee := model.GetTotalShippingFee(ffm.ShippingFeeShopLines)
+	returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
+	totalFee := shippingsharemodel.GetTotalShippingFee(ffm.ShippingFeeShopLines)
 	newReturnedFee := (totalFee - returnedFee) / 2
 	return newReturnedFee
 }
@@ -1879,14 +1884,14 @@ func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 		if ffm.ShippingState != shipping.Returned && ffm.ShippingState != shipping.Returning {
 			continue
 		}
-		returnedFee := model.GetReturnedFee(ffm.ShippingFeeShopLines)
+		returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
 		newReturnedFee := CalcVtpostShippingFeeReturned(ffm)
 		if newReturnedFee == 0 || newReturnedFee == returnedFee {
 			continue
 		}
 		lines := ffm.ProviderShippingFeeLines
-		ffm.ProviderShippingFeeLines = model.UpdateShippingFees(lines, newReturnedFee, shipping_fee_type.Return)
-		ffm.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		ffm.ProviderShippingFeeLines = shippingsharemodel.UpdateShippingFees(lines, newReturnedFee, shipping_fee_type.Return)
+		ffm.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		updateFFms = append(updateFFms, &shipmodel.Fulfillment{
 			ID:                       ffm.ID,
 			ProviderShippingFeeLines: ffm.ProviderShippingFeeLines,

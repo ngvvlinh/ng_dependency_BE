@@ -8,12 +8,12 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/try_on"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -77,7 +77,7 @@ type GetOrdersQuery struct {
 
 	Result struct {
 		Orders []OrderWithFulfillments
-		Shops  []*model.Shop
+		Shops  []*identitymodel.Shop
 	}
 }
 

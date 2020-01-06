@@ -3,13 +3,13 @@ package usering
 import (
 	"context"
 
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func CreateUser(ctx context.Context, cmd *CreateUserCommand) error {
 
-	createUserCmd := (*model.CreateUserCommand)(cmd)
+	createUserCmd := (*identitymodelx.CreateUserCommand)(cmd)
 	if err := bus.Dispatch(ctx, createUserCmd); err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/cmd/etop-server/config"
 	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/com/main/invitation/convert"
 	"etop.vn/backend/com/main/invitation/model"
 	"etop.vn/backend/com/main/invitation/sqlstore"
@@ -23,7 +24,6 @@ import (
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
@@ -106,14 +106,14 @@ func (a *InvitationAggregate) CreateInvitation(
 	invitationItem.ExpiresAt = expiresAt
 	invitationItem.Token = token
 
-	getUserQuery := &etopmodel.GetUserByIDQuery{
+	getUserQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: invitationItem.InvitedBy,
 	}
 	if err := bus.Dispatch(ctx, getUserQuery); err != nil {
 		return nil, err
 	}
 
-	getAccountQuery := &etopmodel.GetShopQuery{
+	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: invitationItem.AccountID,
 	}
 	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
@@ -192,7 +192,7 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email 
 	}
 	userIsInvited := getUserQuery.Result
 
-	getAccountUserQuery := &etopmodel.GetAccountUserQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
 		UserID:    userIsInvited.ID,
 		AccountID: shopID,
 	}
@@ -208,7 +208,7 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email 
 }
 
 func (a *InvitationAggregate) havePermissionToInvite(ctx context.Context, args *invitation.CreateInvitationArgs) error {
-	getAccountUserQuery := &etopmodel.GetAccountUserQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
 		UserID:    args.InvitedBy,
 		AccountID: args.AccountID,
 	}
@@ -313,7 +313,7 @@ func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userI
 func (a *InvitationAggregate) DeleteInvitation(
 	ctx context.Context, userID, accountID dot.ID, token string,
 ) (updated int, _ error) {
-	getAccountUserQuery := &etopmodel.GetAccountUserExtendedQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		AccountID: accountID,
 		UserID:    userID,
 	}

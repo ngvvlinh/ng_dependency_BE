@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/code/gencode"
@@ -247,7 +248,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	// make sure can not update ffm's shipping fee when it belong to a money transaction
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
 		update.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(ghtkOrder)
-		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost
@@ -270,21 +271,21 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	return update
 }
 
-func CalcAndConvertShippingFeeLines(order *ghtkclient.OrderInfo) []*model.ShippingFeeLine {
-	var res []*model.ShippingFeeLine
+func CalcAndConvertShippingFeeLines(order *ghtkclient.OrderInfo) []*shippingsharemodel.ShippingFeeLine {
+	var res []*shippingsharemodel.ShippingFeeLine
 	insuranceFee := int(order.Insurance)
 	fee := int(order.ShipMoney)
 	shippingFeeMain := fee - insuranceFee
 
 	// shipping fee
-	res = append(res, &model.ShippingFeeLine{
+	res = append(res, &shippingsharemodel.ShippingFeeLine{
 		ShippingFeeType:      shipping_fee_type.Main,
 		Cost:                 shippingFeeMain,
 		ExternalShippingCode: order.LabelID.String(),
 	})
 	// insurance fee
 	if insuranceFee > 0 {
-		res = append(res, &model.ShippingFeeLine{
+		res = append(res, &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:      shipping_fee_type.Insurance,
 			Cost:                 insuranceFee,
 			ExternalShippingCode: order.LabelID.String(),

@@ -5,9 +5,9 @@ import (
 
 	"etop.vn/api/main/address"
 	"etop.vn/backend/com/main/address/convert"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -35,7 +35,7 @@ func (s *AddressStore) GetByID(ID dot.ID) (*address.Address, error) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
 	}
 
-	var res = new(model.Address)
+	var res = new(addressmodel.Address)
 	if err := s.db.WithContext(s.ctx).Where("id = ?", ID).ShouldGet(res); err != nil {
 		return nil, err
 	}

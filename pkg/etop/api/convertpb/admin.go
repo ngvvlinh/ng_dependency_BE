@@ -2,16 +2,16 @@ package convertpb
 
 import (
 	admin "etop.vn/api/top/int/admin"
-	"etop.vn/backend/pkg/etop/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 )
 
-func CreatePartnerRequestToModel(m *admin.CreatePartnerRequest) *model.Partner {
+func CreatePartnerRequestToModel(m *admin.CreatePartnerRequest) *identitymodel.Partner {
 	p := m.Partner
 	isTest := 0
 	if p.IsTest {
 		isTest = 1
 	}
-	return &model.Partner{
+	return &identitymodel.Partner{
 		ID:             0,
 		OwnerID:        p.OwnerId,
 		Status:         0,

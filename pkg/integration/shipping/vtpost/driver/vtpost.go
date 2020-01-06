@@ -14,6 +14,7 @@ import (
 	carriertypes "etop.vn/backend/com/main/shipping/carrier/types"
 	carrierutil "etop.vn/backend/com/main/shipping/carrier/types"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/randgenerator"
 	etopmodel "etop.vn/backend/pkg/etop/model"
@@ -162,7 +163,7 @@ func (d VTPostDriver) CreateFulfillment(
 		ExternalShippingFee:       r.Data.MoneyTotal,
 		ShippingState:             shippingstate.Created,
 		SyncStatus:                status4.P,
-		SyncStates: &etopmodel.FulfillmentSyncStates{
+		SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 			SyncAt:    now,
 			TrySyncAt: now,
 		},
@@ -182,7 +183,7 @@ func (d VTPostDriver) CreateFulfillment(
 	}
 	if lines, err := shippingFees.CalcAndConvertShippingFeeLines(); err == nil {
 		updateFfm.ProviderShippingFeeLines = lines
-		updateFfm.ShippingFeeShopLines = etopmodel.GetShippingFeeShopLines(lines, false, dot.NullInt{})
+		updateFfm.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(lines, false, dot.NullInt{})
 	}
 
 	return updateFfm, nil

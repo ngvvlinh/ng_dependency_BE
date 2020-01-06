@@ -9,16 +9,22 @@ import (
 
 	orderingtypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	shipping "etop.vn/api/top/types/etc/shipping"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
 
 type CommandBus struct{ bus capi.Bus }
+type QueryBus struct{ bus capi.Bus }
 
 func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
 
 func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
+}
+func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
 }
 
@@ -47,9 +53,65 @@ func (h AggregateHandler) HandleCreateFulfillments(ctx context.Context, msg *Cre
 	return err
 }
 
+type UpdateFulfillmentShippingFeesCommand struct {
+	FulfillmentID    dot.ID
+	ShippingCode     string
+	ShippingFeeLines []*ShippingFeeLine
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentShippingFees(ctx context.Context, msg *UpdateFulfillmentShippingFeesCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentShippingFees(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateFulfillmentShippingStateCommand struct {
+	FulfillmentID            dot.ID
+	ShippingCode             string
+	ShippingState            shipping.State
+	ActualCompensationAmount dot.NullInt
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentShippingState(ctx context.Context, msg *UpdateFulfillmentShippingStateCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentShippingState(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateFulfillmentsMoneyTxShippingExternalIDCommand struct {
+	FulfillmentIDs            []dot.ID
+	MoneyTxShippingExternalID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentsMoneyTxShippingExternalID(ctx context.Context, msg *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentsMoneyTxShippingExternalID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetFulfillmentByIDOrShippingCodeQuery struct {
+	ID           dot.ID
+	ShippingCode string
+
+	Result *Fulfillment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFulfillmentByIDOrShippingCode(ctx context.Context, msg *GetFulfillmentByIDOrShippingCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetFulfillmentByIDOrShippingCode(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
-func (q *CreateFulfillmentsCommand) command() {}
+func (q *CreateFulfillmentsCommand) command()                          {}
+func (q *UpdateFulfillmentShippingFeesCommand) command()               {}
+func (q *UpdateFulfillmentShippingStateCommand) command()              {}
+func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) command() {}
+
+func (q *GetFulfillmentByIDOrShippingCodeQuery) query() {}
 
 // implement conversion
 
@@ -92,6 +154,57 @@ func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfil
 	q.ShopCarrierID = args.ShopCarrierID
 }
 
+func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
+	return ctx,
+		&UpdateFulfillmentShippingFeesArgs{
+			FulfillmentID:    q.FulfillmentID,
+			ShippingCode:     q.ShippingCode,
+			ShippingFeeLines: q.ShippingFeeLines,
+		}
+}
+
+func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesArgs(args *UpdateFulfillmentShippingFeesArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+	q.ShippingFeeLines = args.ShippingFeeLines
+}
+
+func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingStateArgs) {
+	return ctx,
+		&UpdateFulfillmentShippingStateArgs{
+			FulfillmentID:            q.FulfillmentID,
+			ShippingCode:             q.ShippingCode,
+			ShippingState:            q.ShippingState,
+			ActualCompensationAmount: q.ActualCompensationAmount,
+		}
+}
+
+func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStateArgs(args *UpdateFulfillmentShippingStateArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+	q.ShippingState = args.ShippingState
+	q.ActualCompensationAmount = args.ActualCompensationAmount
+}
+
+func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) {
+	return ctx,
+		&UpdateFulfillmentsMoneyTxShippingExternalIDArgs{
+			FulfillmentIDs:            q.FulfillmentIDs,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+		}
+}
+
+func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) SetUpdateFulfillmentsMoneyTxShippingExternalIDArgs(args *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
+	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
+}
+
+func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShippingCode string) {
+	return ctx,
+		q.ID,
+		q.ShippingCode
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -105,5 +218,24 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCreateFulfillments)
+	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
+	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
+	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxShippingExternalID)
 	return CommandBus{b}
+}
+
+type QueryServiceHandler struct {
+	inner QueryService
+}
+
+func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
+	return QueryServiceHandler{service}
+}
+
+func (h QueryServiceHandler) RegisterHandlers(b interface {
+	capi.Bus
+	AddHandler(handler interface{})
+}) QueryBus {
+	b.AddHandler(h.HandleGetFulfillmentByIDOrShippingCode)
+	return QueryBus{b}
 }

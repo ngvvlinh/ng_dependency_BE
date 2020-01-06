@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
@@ -176,22 +177,22 @@ func (ft *MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalP
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByProvider(Provider shipping_provider.ShippingProvider) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
-		IsNil:  Provider == "",
+		IsNil:  Provider == 0,
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *shipping_provider.ShippingProvider) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
 		IsNil:  Provider == nil,
-		IsZero: Provider != nil && (*Provider) == "",
+		IsZero: Provider != nil && (*Provider) == 0,
 	}
 }
 
@@ -380,22 +381,22 @@ func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(Ext
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(EtopFulfillmentIdRaw string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDRaw(EtopFulfillmentIDRaw string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
-		Value:  EtopFulfillmentIdRaw,
-		IsNil:  EtopFulfillmentIdRaw == "",
+		Value:  EtopFulfillmentIDRaw,
+		IsNil:  EtopFulfillmentIDRaw == "",
 	}
 }
 
-func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(EtopFulfillmentIdRaw *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDRawPtr(EtopFulfillmentIDRaw *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
-		Value:  EtopFulfillmentIdRaw,
-		IsNil:  EtopFulfillmentIdRaw == nil,
-		IsZero: EtopFulfillmentIdRaw != nil && (*EtopFulfillmentIdRaw) == "",
+		Value:  EtopFulfillmentIDRaw,
+		IsNil:  EtopFulfillmentIDRaw == nil,
+		IsZero: EtopFulfillmentIDRaw != nil && (*EtopFulfillmentIDRaw) == "",
 	}
 }
 

@@ -10,7 +10,7 @@ import (
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/status3"
-	orderconvert "etop.vn/backend/com/main/ordering/convert"
+	addressconvert "etop.vn/backend/com/main/address/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
@@ -92,12 +92,12 @@ func shopCustomer(args *model.ShopCustomer, out *customering.ShopCustomer) {
 
 func ShopTraderAddress(args *model.ShopTraderAddress, out *addressing.ShopTraderAddress) {
 	convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(args, out)
-	out.Coordinates = orderconvert.Coordinates(args.Coordinates)
+	out.Coordinates = addressconvert.Coordinates(args.Coordinates)
 }
 
 func ShopTraderAddressDB(args *addressing.ShopTraderAddress, out *model.ShopTraderAddress) {
 	convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(args, out)
-	out.Coordinates = orderconvert.CoordinatesDB(args.Coordinates)
+	out.Coordinates = addressconvert.CoordinatesDB(args.Coordinates)
 	out.Status = status3.P
 }
 

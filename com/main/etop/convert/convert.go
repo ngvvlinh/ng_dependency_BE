@@ -8,6 +8,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
+// +gen:convert: etop.vn/backend/pkg/etop/model->etop.vn/api/meta
+
 func Status3(in status3.Status) (out status3.Status) {
 	if in < 0 {
 		return status3.Status(in + 128)

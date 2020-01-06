@@ -9,14 +9,16 @@ import (
 	apietop "etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/status3"
+	addressmodelx "etop.vn/backend/com/main/address/modelx"
 	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/com/main/invitation/convert"
 	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/bank"
 	"etop.vn/capi/dot"
@@ -193,7 +195,7 @@ func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndp
 	if err != nil {
 		return err
 	}
-	cmd := &model.CreateAddressCommand{
+	cmd := &addressmodelx.CreateAddressCommand{
 		Address: address,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -205,7 +207,7 @@ func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndp
 
 func (s *AddressService) GetAddresses(ctx context.Context, q *GetAddressesEndpoint) error {
 	accountID := q.Context.AccountID
-	query := &model.GetAddressesQuery{
+	query := &addressmodelx.GetAddressesQuery{
 		AccountID: accountID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -223,7 +225,7 @@ func (s *AddressService) UpdateAddress(ctx context.Context, q *UpdateAddressEndp
 	if err != nil {
 		return err
 	}
-	cmd := &model.UpdateAddressCommand{
+	cmd := &addressmodelx.UpdateAddressCommand{
 		Address: address,
 	}
 
@@ -236,7 +238,7 @@ func (s *AddressService) UpdateAddress(ctx context.Context, q *UpdateAddressEndp
 
 func (s *AddressService) RemoveAddress(ctx context.Context, q *RemoveAddressEndpoint) error {
 	accountID := q.Context.AccountID
-	cmd := &model.DeleteAddressCommand{
+	cmd := &addressmodelx.DeleteAddressCommand{
 		ID:        q.Id,
 		AccountID: accountID,
 	}
@@ -282,7 +284,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 	}
 	q.Result = convertpb.PbInvitation(query.Result)
 
-	getAccountQuery := &model.GetShopQuery{
+	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: query.Result.AccountID,
 	}
 	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
@@ -295,7 +297,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 		ImageUrl: getAccountQuery.Result.ImageURL,
 	}
 
-	getUserQuery := &model.GetUserByEmailOrPhoneQuery{
+	getUserQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: query.Result.Email,
 	}
 	err := bus.Dispatch(ctx, getUserQuery)
@@ -308,7 +310,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 		return err
 	}
 
-	getInvitedByUserQuery := &model.GetUserByIDQuery{
+	getInvitedByUserQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: query.Result.InvitedBy,
 	}
 	if err := bus.Dispatch(ctx, getInvitedByUserQuery); err != nil {
@@ -348,13 +350,13 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 		}
 	}
 
-	getAccountsQuery := &model.GetShopsQuery{
+	getAccountsQuery := &identitymodelx.GetShopsQuery{
 		ShopIDs: accountIDs,
 	}
 	if err := bus.Dispatch(ctx, getAccountsQuery); err != nil {
 		return err
 	}
-	mapShop := make(map[dot.ID]*model.Shop)
+	mapShop := make(map[dot.ID]*identitymodel.Shop)
 	for _, shop := range getAccountsQuery.Result.Shops {
 		mapShop[shop.ID] = shop
 	}
@@ -468,7 +470,7 @@ func (s *AccountRelationshipService) UpdateRelationship(ctx context.Context, q *
 
 func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *AccountRelationshipGetRelationshipsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &model.GetAccountUserExtendedsQuery{
+	query := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs:     []dot.ID{q.Context.Shop.ID},
 		Paging:         paging,
 		Filters:        cmapi.ToFilters(q.Filters),
@@ -486,7 +488,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *Ac
 	q.Result = &apietop.RelationshipsResponse{Relationships: convertpb.PbRelationships(relationships)}
 
 	var userIDs []dot.ID
-	mapUser := make(map[dot.ID]*model.User)
+	mapUser := make(map[dot.ID]*identitymodel.User)
 	for _, relationship := range q.Result.Relationships {
 		userIDs = append(userIDs, relationship.UserID)
 	}

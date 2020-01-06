@@ -7,9 +7,10 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/backend/com/main/authorization/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type ProcessManager struct {
@@ -57,7 +58,7 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 		return cm.Errorf(cm.FailedPrecondition, nil, "Thao tác thất bại, email chưa được xác nhận")
 	}
 
-	getAccountUserQuery := &model.GetAccountUserQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
 		UserID:    currUser.ID,
 		AccountID: currInvitation.AccountID,
 	}
@@ -79,14 +80,14 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 func (m *ProcessManager) createAccountUserWithRoles(
 	ctx context.Context, currInvitation *invitation.Invitation, currUser *identity.User,
 ) error {
-	createAccountUserCmd := &model.CreateAccountUserCommand{
-		AccountUser: &model.AccountUser{
+	createAccountUserCmd := &identitymodelx.CreateAccountUserCommand{
+		AccountUser: &identitymodel.AccountUser{
 			AccountID: currInvitation.AccountID,
 			UserID:    currUser.ID,
 			Status:    0,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
-			Permission: model.Permission{
+			Permission: identitymodel.Permission{
 				Roles: convert.ConvertRolesToStrings(currInvitation.Roles),
 			},
 			FullName:  cm.Coalesce(currInvitation.FullName, currUser.FullName),

@@ -9,6 +9,7 @@ import (
 
 	"etop.vn/api/top/types/etc/status5"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
@@ -78,7 +79,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	}
 
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
-		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost
@@ -231,7 +232,7 @@ func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, orderGHN *ghnclient.
 	update.TotalCODAmount = int(orderGHN.CoDAmount)
 
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
-		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost

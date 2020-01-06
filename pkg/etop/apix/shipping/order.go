@@ -14,6 +14,8 @@ import (
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/connection_type"
 	pbsource "etop.vn/api/top/types/etc/order_source"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -23,7 +25,6 @@ import (
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -49,9 +50,9 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.try_on")
 	}
 
-	var partner *model.Partner
+	var partner *identitymodel.Partner
 	if shopClaim.AuthPartnerID != 0 {
-		queryPartner := &model.GetPartner{
+		queryPartner := &identitymodelx.GetPartner{
 			PartnerID: shopClaim.AuthPartnerID,
 		}
 		if err := bus.Dispatch(ctx, queryPartner); err != nil {

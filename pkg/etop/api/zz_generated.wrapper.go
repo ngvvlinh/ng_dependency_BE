@@ -11,13 +11,13 @@ import (
 
 	api "etop.vn/api/top/int/etop"
 	cm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/authorize/auth"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	model "etop.vn/backend/pkg/etop/model"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {
@@ -596,7 +596,7 @@ type GetAddressesEndpoint struct {
 	*cm.Empty
 	Result     *api.GetAddressResponse
 	Context    claims.UserClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (resp *api.GetAddressResponse, err error) {

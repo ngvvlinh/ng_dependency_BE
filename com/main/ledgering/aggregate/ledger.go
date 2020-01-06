@@ -3,7 +3,7 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/top/types/etc/ledger_type"
@@ -103,7 +103,7 @@ func (a *LedgerAggregate) UpdateLedger(
 	return shopLedger, err
 }
 
-func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopID dot.ID, bankAccount *identity.BankAccount) error {
+func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopID dot.ID, bankAccount *identitytypes.BankAccount) error {
 	if bankAccount == nil {
 		return nil
 	}

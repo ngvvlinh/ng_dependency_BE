@@ -5,8 +5,8 @@ import (
 	"time"
 
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
@@ -59,7 +59,7 @@ func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, ghtkOrder *ghtkclien
 	// make sure can not update ffm's shipping fee when it belong to a money transaction
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
 		update.ProviderShippingFeeLines = ghtk.CalcAndConvertShippingFeeLines(ghtkOrder)
-		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
 			shippingFeeShop += line.Cost

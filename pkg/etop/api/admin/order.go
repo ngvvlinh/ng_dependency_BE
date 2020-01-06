@@ -98,3 +98,11 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	}
 	return nil
 }
+
+func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *UpdateFulfillmentShippingStateEndpoint) error {
+	return nil
+}
+
+func (s *FulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context, r *UpdateFulfillmentShippingFeeEndpoint) error {
+	return nil
+}

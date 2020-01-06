@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/capi/dot"
 )
 
@@ -136,7 +137,7 @@ type CreateAffiliateArgs struct {
 	Phone       string
 	Email       string
 	IsTest      bool
-	BankAccount *BankAccount
+	BankAccount *identitytypes.BankAccount
 }
 
 type UpdateAffiliateInfoArgs struct {
@@ -155,5 +156,5 @@ type DeleteAffiliateArgs struct {
 type UpdateAffiliateBankAccountArgs struct {
 	ID          dot.ID
 	OwnerID     dot.ID
-	BankAccount *BankAccount
+	BankAccount *identitytypes.BankAccount
 }

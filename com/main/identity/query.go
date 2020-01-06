@@ -5,11 +5,11 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/com/main/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -76,7 +76,7 @@ func (a *QueryService) GetAffiliateWithPermission(ctx context.Context, affID dot
 	}
 	res.Affiliate = aff
 
-	var accUser *model.AccountUser
+	var accUser *identitymodel.AccountUser
 	accUser, err = a.accountUserStore(ctx).GetAccountUserDB()
 	if err != nil {
 		return nil, err

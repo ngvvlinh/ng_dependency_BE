@@ -5,10 +5,10 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -25,7 +25,7 @@ func NewUserStore(db *cmsql.Database) UserStoreFactory {
 
 type UserStore struct {
 	query cmsql.QueryFactory
-	ft    sqlstore.UserFilters
+	ft    UserFilters
 	preds []interface{}
 }
 
@@ -44,8 +44,8 @@ func (s *UserStore) ByEmail(email string) *UserStore {
 	return s
 }
 
-func (s *UserStore) GetUserDB() (*model.User, error) {
-	var user model.User
+func (s *UserStore) GetUserDB() (*identitymodel.User, error) {
+	var user identitymodel.User
 	err := s.query().Where(s.preds).ShouldGet(&user)
 	return &user, err
 }
@@ -71,7 +71,7 @@ func (s *UserStore) UpdateUserRefferenceID(args *UpdateRefferenceIDArgs) error {
 	if args.RefUserID == 0 && args.RefSaleID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing reference userID")
 	}
-	user := &model.User{
+	user := &identitymodel.User{
 		RefUserID: args.RefUserID,
 		RefSaleID: args.RefSaleID,
 	}

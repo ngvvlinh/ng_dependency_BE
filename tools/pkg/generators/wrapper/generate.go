@@ -200,7 +200,7 @@ type {{$s.EndpointPrefix}}{{$m|methodName}}Endpoint struct {
 	{{$m.Req|type}}
 	Result {{$m.Resp|type}}
 	Context {{$m|getClaim}}
-	{{if $m|authPartner}}CtxPartner *model.Partner{{end}}
+	{{if $m|authPartner}}CtxPartner *identitymodel.Partner{{end}}
 }
 {{end}}
 
@@ -334,7 +334,7 @@ func generate(printer generator.Printer, pkg *packages.Package, services []*Serv
 	printer.Import("common", "etop.vn/backend/pkg/common")
 	printer.Import("metrics", "etop.vn/backend/pkg/common/metrics")
 	printer.Import("middleware", "etop.vn/backend/pkg/etop/authorize/middleware")
-	printer.Import("model", "etop.vn/backend/pkg/etop/model")
+	printer.Import("identitymodel", "etop.vn/backend/com/main/identity/model")
 	printer.Import("permission", "etop.vn/backend/pkg/etop/authorize/permission")
 	printer.Import("", "etop.vn/backend/pkg/etop/authorize/auth")
 

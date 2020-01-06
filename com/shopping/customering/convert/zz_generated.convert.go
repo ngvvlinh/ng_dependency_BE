@@ -11,6 +11,7 @@ import (
 	customering "etop.vn/api/shopping/customering"
 	tradering "etop.vn/api/shopping/tradering"
 	status3 "etop.vn/api/top/types/etc/status3"
+	addressconvert "etop.vn/backend/com/main/address/convert"
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -171,9 +172,9 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
-	out.Coordinates = nil               // types do not match
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.Coordinates = addressconvert.Convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg.Coordinates, nil)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
 func Convert_customeringmodel_ShopTraderAddresses_addressing_ShopTraderAddresses(args []*customeringmodel.ShopTraderAddress) (outs []*addressing.ShopTraderAddress) {
@@ -209,11 +210,11 @@ func convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
-	out.Coordinates = nil               // types do not match
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
-	out.DeletedAt = time.Time{}         // zero value
-	out.Status = 0                      // zero value
+	out.Coordinates = addressconvert.Convert_orderingtypes_Coordinates_addressmodel_Coordinates(arg.Coordinates, nil)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = time.Time{}   // zero value
+	out.Status = 0                // zero value
 }
 
 func Convert_addressing_ShopTraderAddresses_customeringmodel_ShopTraderAddresses(args []*addressing.ShopTraderAddress) (outs []*customeringmodel.ShopTraderAddress) {

@@ -6,8 +6,6 @@ package convert
 
 import (
 	conversion "etop.vn/backend/pkg/common/conversion"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	models "etop.vn/backend/zexp/etl/tests/models"
 )
 
 /*
@@ -21,80 +19,4 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*models.Account)(nil), (*etopmodel.Account)(nil), func(arg, out interface{}) error {
-		Convert_models_Account_etopmodel_Account(arg.(*models.Account), out.(*etopmodel.Account))
-		return nil
-	})
-	s.Register(([]*models.Account)(nil), (*[]*etopmodel.Account)(nil), func(arg, out interface{}) error {
-		out0 := Convert_models_Accounts_etopmodel_Accounts(arg.([]*models.Account))
-		*out.(*[]*etopmodel.Account) = out0
-		return nil
-	})
-	s.Register((*etopmodel.Account)(nil), (*models.Account)(nil), func(arg, out interface{}) error {
-		Convert_etopmodel_Account_models_Account(arg.(*etopmodel.Account), out.(*models.Account))
-		return nil
-	})
-	s.Register(([]*etopmodel.Account)(nil), (*[]*models.Account)(nil), func(arg, out interface{}) error {
-		out0 := Convert_etopmodel_Accounts_models_Accounts(arg.([]*etopmodel.Account))
-		*out.(*[]*models.Account) = out0
-		return nil
-	})
-}
-
-//-- convert etop.vn/backend/pkg/etop/model.Account --//
-
-func Convert_models_Account_etopmodel_Account(arg *models.Account, out *etopmodel.Account) *etopmodel.Account {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &etopmodel.Account{}
-	}
-	convert_models_Account_etopmodel_Account(arg, out)
-	return out
-}
-
-func convert_models_Account_etopmodel_Account(arg *models.Account, out *etopmodel.Account) {
-	out.ID = arg.ID           // simple assign
-	out.OwnerID = arg.OwnerID // simple assign
-	out.Name = arg.Name       // simple assign
-	out.Type = 0              // zero value
-	out.ImageURL = ""         // zero value
-	out.URLSlug = ""          // zero value
-}
-
-func Convert_models_Accounts_etopmodel_Accounts(args []*models.Account) (outs []*etopmodel.Account) {
-	tmps := make([]etopmodel.Account, len(args))
-	outs = make([]*etopmodel.Account, len(args))
-	for i := range tmps {
-		outs[i] = Convert_models_Account_etopmodel_Account(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_etopmodel_Account_models_Account(arg *etopmodel.Account, out *models.Account) *models.Account {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &models.Account{}
-	}
-	convert_etopmodel_Account_models_Account(arg, out)
-	return out
-}
-
-func convert_etopmodel_Account_models_Account(arg *etopmodel.Account, out *models.Account) {
-	out.ID = arg.ID           // simple assign
-	out.OwnerID = arg.OwnerID // simple assign
-	out.Name = arg.Name       // simple assign
-	out.NewName = ""          // zero value
-}
-
-func Convert_etopmodel_Accounts_models_Accounts(args []*etopmodel.Account) (outs []*models.Account) {
-	tmps := make([]models.Account, len(args))
-	outs = make([]*models.Account, len(args))
-	for i := range tmps {
-		outs[i] = Convert_etopmodel_Account_models_Account(args[i], &tmps[i])
-	}
-	return outs
 }

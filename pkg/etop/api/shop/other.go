@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/shop"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
@@ -80,7 +81,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePar
 	shopID := q.Context.Shop.ID
 	partnerID := q.PartnerId
 
-	queryPartner := &model.GetPartner{
+	queryPartner := &identitymodelx.GetPartner{
 		PartnerID: partnerID,
 	}
 	if err := bus.Dispatch(ctx, queryPartner); err != nil {
@@ -91,7 +92,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePar
 		return cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin partner (redirect_url). Vui lòng liên hệ admin để biết thêm chi tiết.")
 	}
 
-	relQuery := &model.GetPartnerRelationQuery{
+	relQuery := &identitymodelx.GetPartnerRelationQuery{
 		PartnerID: partnerID,
 		AccountID: shopID,
 	}
@@ -101,7 +102,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePar
 		// Authorize already
 		return cm.Errorf(cm.AlreadyExists, nil, "Shop đã được xác thực bởi '%v'", queryPartner.Result.Partner.Name)
 	case cm.NotFound:
-		cmd := &model.CreatePartnerRelationCommand{
+		cmd := &identitymodelx.CreatePartnerRelationCommand{
 			PartnerID: partnerID,
 			AccountID: shopID,
 		}
@@ -116,7 +117,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePar
 }
 
 func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvailablePartnersEndpoint) error {
-	query := &model.GetPartnersQuery{
+	query := &identitymodelx.GetPartnersQuery{
 		AvailableFromEtop: true,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -129,7 +130,7 @@ func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvail
 }
 
 func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *GetAuthorizedPartnersEndpoint) error {
-	query := &model.GetPartnersFromRelationQuery{
+	query := &identitymodelx.GetPartnersFromRelationQuery{
 		AccountIDs: []dot.ID{q.Context.Shop.ID},
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

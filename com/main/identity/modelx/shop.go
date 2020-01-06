@@ -1,6 +1,9 @@
-package model
+package modelx
 
 import (
+	adressmodel "etop.vn/backend/com/main/address/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -9,27 +12,27 @@ type CreateShopCommand struct {
 	Name                        string
 	OwnerID                     dot.ID
 	AddressID                   dot.ID
-	Address                     *Address
+	Address                     *adressmodel.Address
 	Phone                       string
-	BankAccount                 *BankAccount
+	BankAccount                 *identitysharemodel.BankAccount
 	WebsiteURL                  string
 	ImageURL                    string
 	Email                       string
 	AutoCreateFFM               bool
 	IsTest                      bool
 	URLSlug                     string
-	CompanyInfo                 *CompanyInfo
+	CompanyInfo                 *identitysharemodel.CompanyInfo
 	MoneyTransactionRRule       string
-	SurveyInfo                  []*SurveyInfo
-	ShippingServicePickStrategy []*ShippingServiceSelectStrategyItem
+	SurveyInfo                  []*identitymodel.SurveyInfo
+	ShippingServicePickStrategy []*identitymodel.ShippingServiceSelectStrategyItem
 
-	Result *ShopExtended
+	Result *identitymodel.ShopExtended
 }
 
 type UpdateShopCommand struct {
-	Shop          *Shop
+	Shop          *identitymodel.Shop
 	AutoCreateFFM dot.NullBool
-	Result        *ShopExtended
+	Result        *identitymodel.ShopExtended
 }
 
 type DeleteShopCommand struct {
@@ -50,14 +53,14 @@ type SetDefaultAddressShopCommand struct {
 type GetShopQuery struct {
 	ShopID dot.ID
 
-	Result *Shop
+	Result *identitymodel.Shop
 }
 
 type GetShopsQuery struct {
 	ShopIDs []dot.ID
 
 	Result struct {
-		Shops []*Shop
+		Shops []*identitymodel.Shop
 	}
 }
 
@@ -66,14 +69,14 @@ type GetShopExtendedQuery struct {
 
 	IncludeDeleted bool
 
-	Result *ShopExtended
+	Result *identitymodel.ShopExtended
 }
 
 type GetAllShopExtendedsQuery struct {
 	Paging *cm.Paging
 
 	Result struct {
-		Shops []*ShopExtended
+		Shops []*identitymodel.ShopExtended
 	}
 }
 
@@ -83,7 +86,7 @@ type GetShopWithPermissionQuery struct {
 	UserID dot.ID
 
 	Result struct {
-		Shop       *Shop
-		Permission Permission
+		Shop       *identitymodel.Shop
+		Permission identitymodel.Permission
 	}
 }

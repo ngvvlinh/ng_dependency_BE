@@ -14,6 +14,8 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	ordermodely "etop.vn/backend/com/main/ordering/modely"
@@ -271,7 +273,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	for _, shopId := range shopIdsMap {
 		shopIds = append(shopIds, shopId)
 	}
-	shopQuery := &model.GetShopsQuery{
+	shopQuery := &identitymodelx.GetShopsQuery{
 		ShopIDs: shopIds,
 	}
 	if err := bus.Dispatch(ctx, shopQuery); err != nil {
@@ -559,8 +561,8 @@ func CreateOrders(ctx context.Context, cmd *ordermodelx.CreateOrdersCommand) err
 	return nil
 }
 
-func generateShopCode(ctx context.Context, shopID dot.ID) (*model.Shop, error) {
-	queryShop := &model.GetShopQuery{
+func generateShopCode(ctx context.Context, shopID dot.ID) (*identitymodel.Shop, error) {
+	queryShop := &identitymodelx.GetShopQuery{
 		ShopID: shopID,
 	}
 	if err := GetShop(ctx, queryShop); err != nil {
@@ -571,13 +573,13 @@ func generateShopCode(ctx context.Context, shopID dot.ID) (*model.Shop, error) {
 	// generate shop code if not existed
 	if shop.Code == "" {
 		// update shop Code
-		var shopUpdate = &model.Shop{
+		var shopUpdate = &identitymodel.Shop{
 			ID: shop.ID,
 		}
 		shopCode := gencode.GenerateShopCode()
 		shopUpdate.Code = shopCode
 
-		cmd := &model.UpdateShopCommand{
+		cmd := &identitymodelx.UpdateShopCommand{
 			Shop: shopUpdate,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {

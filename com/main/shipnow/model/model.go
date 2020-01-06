@@ -11,8 +11,8 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/xerrors"
 )
@@ -62,8 +62,8 @@ type ShipnowFulfillment struct {
 
 	ShippingState        shipnow_state.State
 	ShippingCode         string
-	FeeLines             []*model.ShippingFeeLine
-	CarrierFeeLines      []*model.ShippingFeeLine
+	FeeLines             []*shippingsharemodel.ShippingFeeLine
+	CarrierFeeLines      []*shippingsharemodel.ShippingFeeLine
 	TotalFee             int
 	ShippingCreatedAt    time.Time
 	ShippingPickingAt    time.Time
@@ -72,7 +72,7 @@ type ShipnowFulfillment struct {
 	ShippingCancelledAt  time.Time
 
 	SyncStatus          status4.Status
-	SyncStates          *model.FulfillmentSyncStates
+	SyncStates          *shippingsharemodel.FulfillmentSyncStates
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
 	CODEtopTransferedAt time.Time

@@ -522,11 +522,11 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID dot
 	var promotions []*model.OrderPromotion
 	for _, line := range getOrderQ.Result.Lines {
 		var basePrice = float64(line.TotalPrice)
-		tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductId).GetProductPromotionDB()
+		tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductID).GetProductPromotionDB()
 		if err == nil {
 			promotions = append(promotions, &model.OrderPromotion{
 				ID:                   cm.NewID(),
-				ProductID:            line.ProductId,
+				ProductID:            line.ProductID,
 				OrderID:              getOrderQ.Result.ID,
 				BaseValue:            int(basePrice),
 				Amount:               tradingPromotion.Amount,
@@ -550,13 +550,13 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID dot
 		if err != nil {
 			continue
 		}
-		sellerCashback, err := a.commissionSetting(ctx).AccountID(affReferralCode.AffiliateID).ProductID(line.ProductId).GetCommissionSettingDB()
+		sellerCashback, err := a.commissionSetting(ctx).AccountID(affReferralCode.AffiliateID).ProductID(line.ProductID).GetCommissionSettingDB()
 		if err != nil {
 			continue
 		}
 		promotions = append(promotions, &model.OrderPromotion{
 			ID:                   cm.NewID(),
-			ProductID:            line.ProductId,
+			ProductID:            line.ProductID,
 			OrderID:              getOrderQ.Result.ID,
 			ProductQuantity:      line.Quantity,
 			BaseValue:            int(basePrice),
@@ -599,7 +599,7 @@ func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCrea
 	}
 
 	for _, line := range getOrderQ.Result.Lines {
-		supplyCommissionSetting, err := a.supplyCommissionSetting(ctx).ShopID(orderNotify.SupplyID).ProductID(line.ProductId).GetSupplyCommissionSettingDB()
+		supplyCommissionSetting, err := a.supplyCommissionSetting(ctx).ShopID(orderNotify.SupplyID).ProductID(line.ProductID).GetSupplyCommissionSettingDB()
 		if err != nil {
 			return err
 		}
@@ -607,7 +607,7 @@ func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCrea
 		if err := a.orderCommissionSetting(ctx).CreateOrderCommissionSetting(&model.OrderCommissionSetting{
 			OrderID:                  orderNotify.OrderID,
 			SupplyID:                 orderNotify.SupplyID,
-			ProductID:                line.ProductId,
+			ProductID:                line.ProductID,
 			ProductQuantity:          line.Quantity,
 			Level1DirectCommission:   supplyCommissionSetting.Level1DirectCommission,
 			Level1IndirectCommission: supplyCommissionSetting.Level1IndirectCommission,
@@ -726,13 +726,13 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 		userReferral, _ := a.userReferral(ctx).UserID(affReferralCode.UserID).GetUserReferralDB()
 
 		for _, line := range getOrderQ.Result.Lines {
-			orderCommissionSetting, err := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductId).GetOrderCommissionSettingDB()
+			orderCommissionSetting, err := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductID).GetOrderCommissionSettingDB()
 			if err != nil {
 				continue
 			}
 
 			basePrice := float64(line.TotalPrice)
-			tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductId).GetProductPromotionDB()
+			tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductID).GetProductPromotionDB()
 			ll.Info("TRADING", l.Object("tradingPromotion", tradingPromotion), l.Object("err", err))
 			if err == nil && tradingPromotion != nil {
 				switch tradingPromotion.Unit {
@@ -751,7 +751,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 				}
 			}
 			if orderCommissionSetting.DependOn == DependOnProduct {
-				countByProduct, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
+				countByProduct, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductID).Count()
 				if err != nil {
 					return err
 				}
@@ -770,15 +770,15 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 			directCommissionValue := math.Round(basePrice * (float64(directCommission) / 100 / 100))
 
-			if sellerPromotionByProductID[line.ProductId] != 0 {
-				directCommissionValue = directCommissionValue - float64(sellerPromotionByProductID[line.ProductId])
+			if sellerPromotionByProductID[line.ProductID] != 0 {
+				directCommissionValue = directCommissionValue - float64(sellerPromotionByProductID[line.ProductID])
 			}
 
 			if err := a.affiliateCommission(ctx).CreateAffiliateCommission(&model.SellerCommission{
 				ID:           cm.NewID(),
 				SellerID:     affReferralCode.AffiliateID,
 				FromSellerID: 0,
-				ProductID:    line.ProductId,
+				ProductID:    line.ProductID,
 				OrderId:      getOrderQ.Result.ID,
 				ShopID:       getOrderQ.Result.TradingShopID,
 				SupplyID:     getOrderQ.Result.ShopID,
@@ -802,7 +802,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 					ID:           cm.NewID(),
 					SellerID:     userReferral.ReferralID,
 					FromSellerID: affReferralCode.AffiliateID,
-					ProductID:    line.ProductId,
+					ProductID:    line.ProductID,
 					OrderId:      getOrderQ.Result.ID,
 					ShopID:       getOrderQ.Result.TradingShopID,
 					SupplyID:     getOrderQ.Result.ShopID,
@@ -824,14 +824,14 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 		// store history
 		for _, line := range getOrderQ.Result.Lines {
-			orderCommissionSetting, _ := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductId).GetOrderCommissionSettingDB()
+			orderCommissionSetting, _ := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductID).GetOrderCommissionSettingDB()
 
 			if err := a.shopOrderProductHistory(ctx).CreateShopOrderProductHistory(&model.ShopOrderProductHistory{
 				UserID:                shopQ.Result.OwnerID,
 				ShopID:                getOrderQ.Result.TradingShopID,
 				OrderID:               getOrderQ.Result.ID,
 				SupplyID:              getOrderQ.Result.ShopID,
-				ProductID:             line.ProductId,
+				ProductID:             line.ProductID,
 				ProductQuantity:       line.Quantity,
 				CustomerPolicyGroupID: orderCommissionSetting.CustomerPolicyGroupID,
 				CreatedAt:             time.Now(),

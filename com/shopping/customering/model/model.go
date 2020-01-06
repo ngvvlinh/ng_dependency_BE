@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/api/top/types/etc/status3"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	"etop.vn/capi/dot"
 )
 
@@ -64,7 +64,7 @@ type ShopTraderAddress struct {
 	DistrictCode string
 	WardCode     string
 	IsDefault    bool
-	Coordinates  *ordermodel.Coordinates
+	Coordinates  *addressmodel.Coordinates
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 	DeletedAt    time.Time

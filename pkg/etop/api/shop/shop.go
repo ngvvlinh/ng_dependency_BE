@@ -40,6 +40,7 @@ import (
 	"etop.vn/api/top/types/etc/payment_source"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
 	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	cm "etop.vn/backend/pkg/common"
@@ -1371,7 +1372,7 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *GetEx
 }
 
 func (s *AccountService) RequestVerifyExternalAccountAhamove(ctx context.Context, q *RequestVerifyExternalAccountAhamoveEndpoint) error {
-	query := &model.GetUserByIDQuery{
+	query := &identitymodelx.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -1405,7 +1406,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerification(ctx context.Co
 		return err
 	}
 
-	query := &model.GetUserByIDQuery{
+	query := &identitymodelx.GetUserByIDQuery{
 		UserID: r.Context.Shop.OwnerID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

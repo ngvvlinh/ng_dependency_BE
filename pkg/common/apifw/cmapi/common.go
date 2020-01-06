@@ -160,6 +160,17 @@ func PbCustomError(err error) *common.Error {
 	}
 }
 
+func PbMetaError(err *meta.Error) *common.Error {
+	if err == nil {
+		return nil
+	}
+	return &common.Error{
+		Code: err.Code,
+		Msg:  err.Msg,
+		Meta: err.Meta,
+	}
+}
+
 func PbErrors(errs []error) []*common.Error {
 	res := make([]*common.Error, len(errs))
 	for i, err := range errs {

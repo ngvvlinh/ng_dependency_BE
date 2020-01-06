@@ -313,6 +313,60 @@
         }
       }
     },
+    "/api/admin.Fulfillment/UpdateFulfillmentShippingFee": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "UpdateFulfillmentShippingFee",
+        "operationId": "mgUpdateFulfillmentShippingFee",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateFulfillmentShippingFeeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Fulfillment/UpdateFulfillmentShippingState": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "UpdateFulfillmentShippingState",
+        "operationId": "mgUpdateFulfillmentShippingState",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateFulfillmentShippingStateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Misc/AdminLoginAsAccount": {
       "post": {
         "tags": [
@@ -3193,6 +3247,17 @@
         }
       }
     },
+    "qdShippingFeeShortLine": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "integer"
+        },
+        "shipping_fee_type": {
+          "$ref": "#/definitions/sdShippingFeeType"
+        }
+      }
+    },
     "qdValueInfo": {
       "type": "object",
       "properties": {
@@ -3935,6 +4000,42 @@
         },
         "total_cod_amount": {
           "type": "integer"
+        }
+      }
+    },
+    "xuUpdateFulfillmentShippingFeeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_fees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShippingFeeShortLine"
+          }
+        }
+      }
+    },
+    "xuUpdateFulfillmentShippingStateRequest": {
+      "type": "object",
+      "properties": {
+        "actual_compensation_amount": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
         }
       }
     },

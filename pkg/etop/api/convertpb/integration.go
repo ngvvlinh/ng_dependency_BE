@@ -3,10 +3,10 @@ package convertpb
 import (
 	integration "etop.vn/api/top/int/integration"
 	"etop.vn/api/top/types/etc/account_type"
-	"etop.vn/backend/pkg/etop/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 )
 
-func PbPartnerUserInfo(m *model.User) *integration.PartnerUserLogin {
+func PbPartnerUserInfo(m *identitymodel.User) *integration.PartnerUserLogin {
 	if m == nil {
 		return nil
 	}
@@ -19,7 +19,7 @@ func PbPartnerUserInfo(m *model.User) *integration.PartnerUserLogin {
 	}
 }
 
-func PbPartnerShopInfo(m *model.Shop) *integration.PartnerShopInfo {
+func PbPartnerShopInfo(m *identitymodel.Shop) *integration.PartnerShopInfo {
 	return &integration.PartnerShopInfo{
 		Id:     m.ID,
 		Name:   m.Name,
@@ -33,7 +33,7 @@ func PbPartnerShopInfo(m *model.Shop) *integration.PartnerShopInfo {
 	}
 }
 
-func PbPartnerShopLoginAccount(m *model.Shop, accessToken string, expiresIn int) *integration.PartnerShopLoginAccount {
+func PbPartnerShopLoginAccount(m *identitymodel.Shop, accessToken string, expiresIn int) *integration.PartnerShopLoginAccount {
 	return &integration.PartnerShopLoginAccount{
 		Id:          m.ID,
 		Name:        m.Name,

@@ -13,13 +13,13 @@ import (
 	api "etop.vn/api/top/int/shop"
 	inttypes "etop.vn/api/top/int/types"
 	cm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/authorize/auth"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	model "etop.vn/backend/pkg/etop/model"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {
@@ -240,7 +240,7 @@ type RegisterShopEndpoint struct {
 	*api.RegisterShopRequest
 	Result     *api.RegisterShopResponse
 	Context    claims.UserClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapAccountService) RegisterShop(ctx context.Context, req *api.RegisterShopRequest) (resp *api.RegisterShopResponse, err error) {
@@ -875,7 +875,7 @@ type GetBrandsEndpoint struct {
 	*api.GetBrandsRequest
 	Result     *api.GetBrandsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsRequest) (resp *api.GetBrandsResponse, err error) {
@@ -3570,7 +3570,7 @@ type GetExternalShippingServicesEndpoint struct {
 	*inttypes.GetExternalShippingServicesRequest
 	Result     *inttypes.GetExternalShippingServicesResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context, req *inttypes.GetExternalShippingServicesRequest) (resp *inttypes.GetExternalShippingServicesResponse, err error) {
@@ -3627,7 +3627,7 @@ type GetFulfillmentEndpoint struct {
 	*cm.IDRequest
 	Result     *inttypes.Fulfillment
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Fulfillment, err error) {
@@ -3684,7 +3684,7 @@ type GetFulfillmentsEndpoint struct {
 	*api.GetFulfillmentsRequest
 	Result     *inttypes.FulfillmentsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.GetFulfillmentsRequest) (resp *inttypes.FulfillmentsResponse, err error) {
@@ -3851,7 +3851,7 @@ type GetFulfillmentHistoryEndpoint struct {
 	*api.GetFulfillmentHistoryRequest
 	Result     *etop.HistoryResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.GetFulfillmentHistoryRequest) (resp *etop.HistoryResponse, err error) {
@@ -5275,7 +5275,7 @@ type CancelOrderEndpoint struct {
 	*api.CancelOrderRequest
 	Result     *inttypes.OrderWithErrorsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderRequest) (resp *inttypes.OrderWithErrorsResponse, err error) {
@@ -5332,7 +5332,7 @@ type ConfirmOrderEndpoint struct {
 	*api.ConfirmOrderRequest
 	Result     *inttypes.Order
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrderRequest) (resp *inttypes.Order, err error) {
@@ -5389,7 +5389,7 @@ type ConfirmOrderAndCreateFulfillmentsEndpoint struct {
 	*api.OrderIDRequest
 	Result     *inttypes.OrderWithErrorsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, req *api.OrderIDRequest) (resp *inttypes.OrderWithErrorsResponse, err error) {
@@ -5446,7 +5446,7 @@ type CreateOrderEndpoint struct {
 	*inttypes.CreateOrderRequest
 	Result     *inttypes.Order
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateOrderRequest) (resp *inttypes.Order, err error) {
@@ -5503,7 +5503,7 @@ type GetOrderEndpoint struct {
 	*cm.IDRequest
 	Result     *inttypes.Order
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *inttypes.Order, err error) {
@@ -5560,7 +5560,7 @@ type GetOrdersEndpoint struct {
 	*api.GetOrdersRequest
 	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersRequest) (resp *inttypes.OrdersResponse, err error) {
@@ -5617,7 +5617,7 @@ type GetOrdersByIDsEndpoint struct {
 	*etop.IDsRequest
 	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsRequest) (resp *inttypes.OrdersResponse, err error) {
@@ -5674,7 +5674,7 @@ type GetOrdersByReceiptIDEndpoint struct {
 	*api.GetOrdersByReceiptIDRequest
 	Result     *inttypes.OrdersResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.GetOrdersByReceiptIDRequest) (resp *inttypes.OrdersResponse, err error) {
@@ -5731,7 +5731,7 @@ type UpdateOrderEndpoint struct {
 	*inttypes.UpdateOrderRequest
 	Result     *inttypes.Order
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateOrderRequest) (resp *inttypes.Order, err error) {
@@ -5788,7 +5788,7 @@ type UpdateOrderPaymentStatusEndpoint struct {
 	*api.UpdateOrderPaymentStatusRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api.UpdateOrderPaymentStatusRequest) (resp *cm.UpdatedResponse, err error) {
@@ -5845,7 +5845,7 @@ type UpdateOrderShippingInfoEndpoint struct {
 	*api.UpdateOrderShippingInfoRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.UpdateOrderShippingInfoRequest) (resp *cm.UpdatedResponse, err error) {
@@ -5902,7 +5902,7 @@ type UpdateOrdersStatusEndpoint struct {
 	*api.UpdateOrdersStatusRequest
 	Result     *cm.UpdatedResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.UpdateOrdersStatusRequest) (resp *cm.UpdatedResponse, err error) {
@@ -6245,7 +6245,7 @@ type GetProductEndpoint struct {
 	*cm.IDRequest
 	Result     *api.ShopProduct
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (resp *api.ShopProduct, err error) {
@@ -6302,7 +6302,7 @@ type GetProductsEndpoint struct {
 	*api.GetVariantsRequest
 	Result     *api.ShopProductsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariantsRequest) (resp *api.ShopProductsResponse, err error) {
@@ -6359,7 +6359,7 @@ type GetProductsByIDsEndpoint struct {
 	*cm.IDsRequest
 	Result     *api.ShopProductsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.ShopProductsResponse, err error) {
@@ -6416,7 +6416,7 @@ type GetVariantEndpoint struct {
 	*api.GetVariantRequest
 	Result     *api.ShopVariant
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductService) GetVariant(ctx context.Context, req *api.GetVariantRequest) (resp *api.ShopVariant, err error) {
@@ -6473,7 +6473,7 @@ type GetVariantsByIDsEndpoint struct {
 	*cm.IDsRequest
 	Result     *api.ShopVariantsResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.ShopVariantsResponse, err error) {
@@ -7456,7 +7456,7 @@ type DeprecatedCreateVariantEndpoint struct {
 	*api.DeprecatedCreateVariantRequest
 	Result     *api.ShopProduct
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.DeprecatedCreateVariantRequest) (resp *api.ShopProduct, err error) {
@@ -7513,7 +7513,7 @@ type GetProductSourceCategoriesEndpoint struct {
 	*api.GetProductSourceCategoriesRequest
 	Result     *api.CategoriesResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context, req *api.GetProductSourceCategoriesRequest) (resp *api.CategoriesResponse, err error) {
@@ -7570,7 +7570,7 @@ type GetProductSourceCategoryEndpoint struct {
 	*cm.IDRequest
 	Result     *api.Category
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, req *cm.IDRequest) (resp *api.Category, err error) {
@@ -7627,7 +7627,7 @@ type GetShopProductSourcesEndpoint struct {
 	*cm.Empty
 	Result     *api.ProductSourcesResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req *cm.Empty) (resp *api.ProductSourcesResponse, err error) {
@@ -10005,7 +10005,7 @@ type CalcBalanceShopEndpoint struct {
 	*cm.Empty
 	Result     *api.CalcBalanceShopResponse
 	Context    claims.ShopClaim
-	CtxPartner *model.Partner
+	CtxPartner *identitymodel.Partner
 }
 
 func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) (resp *api.CalcBalanceShopResponse, err error) {

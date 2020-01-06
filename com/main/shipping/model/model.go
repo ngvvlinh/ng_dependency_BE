@@ -13,8 +13,10 @@ import (
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
-	"etop.vn/backend/pkg/etop/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
+	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -22,6 +24,7 @@ import (
 
 var _ = sqlgenFulfillment(&Fulfillment{})
 
+// +convert:type=shipping.Fulfillment
 type Fulfillment struct {
 	ID        dot.ID
 	OrderID   dot.ID
@@ -45,10 +48,10 @@ type Fulfillment struct {
 
 	ShippingFeeCustomer      int // shop charges customer/shop
 	ShippingFeeShop          int // etop charges shop, actual_shipping_service_fee
-	ShippingFeeShopLines     []*model.ShippingFeeLine
+	ShippingFeeShopLines     []*shippingsharemodel.ShippingFeeLine
 	ShippingServiceFee       int // copy from order
 	ExternalShippingFee      int // provider charges eTop
-	ProviderShippingFeeLines []*model.ShippingFeeLine
+	ProviderShippingFeeLines []*shippingsharemodel.ShippingFeeLine
 	EtopDiscount             int
 	EtopFeeAdjustment        int // eTop điều chỉnh phi (phần thêm)
 
@@ -66,13 +69,13 @@ type Fulfillment struct {
 	EtopPriceRule bool
 
 	VariantIDs []dot.ID
-	Lines      ordermodel.OrderLinesList
+	Lines      []*ordermodel.OrderLine
 
-	TypeFrom      model.FulfillmentEndpoint
-	TypeTo        model.FulfillmentEndpoint
-	AddressFrom   *model.Address
-	AddressTo     *model.Address
-	AddressReturn *model.Address
+	TypeFrom      etopmodel.FulfillmentEndpoint
+	TypeTo        etopmodel.FulfillmentEndpoint
+	AddressFrom   *addressmodel.Address
+	AddressTo     *addressmodel.Address
+	AddressReturn *addressmodel.Address
 
 	AddressToProvinceCode string
 	AddressToDistrictCode string
@@ -146,12 +149,12 @@ type Fulfillment struct {
 	Status status5.Status
 
 	SyncStatus status4.Status // -1:error, 0:new, 1:created, 2:pending
-	SyncStates *model.FulfillmentSyncStates
+	SyncStates *shippingsharemodel.FulfillmentSyncStates
 
 	// Updated by webhook or querying GHN API
 	LastSyncAt time.Time
 
-	ExternalShippingLogs []*model.ExternalShippingLog
+	ExternalShippingLogs []*etopmodel.ExternalShippingLog
 	AdminNote            string
 	IsPartialDelivery    bool
 	CreatedBy            dot.ID
@@ -167,10 +170,10 @@ type Fulfillment struct {
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {
 	switch accType {
-	case model.TagEtop:
+	case etopmodel.TagEtop:
 		return ""
 
-	case model.TagShop:
+	case etopmodel.TagShop:
 		if baseURL == "" || f.ShopID == 0 || f.ID == 0 {
 			return ""
 		}

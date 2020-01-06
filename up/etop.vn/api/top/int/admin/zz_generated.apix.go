@@ -196,6 +196,18 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 			return s.inner.UpdateFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/admin.Fulfillment/UpdateFulfillmentShippingFee":
+		msg := &UpdateFulfillmentShippingFeeRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateFulfillmentShippingFee(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Fulfillment/UpdateFulfillmentShippingState":
+		msg := &UpdateFulfillmentShippingStateRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateFulfillmentShippingState(ctx, msg)
+		}
+		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)

@@ -11,6 +11,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/top/types/etc/shipping_provider"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -18,7 +19,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type VTPostMoneyTransactionShippingExternalLine struct {
@@ -132,7 +132,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		Lines:          ToMoneyTransactionShippingExternalLines(shippingLines),
 		Note:           note,
 		InvoiceNumber:  invoiceNumber,
-		BankAccount: &model.BankAccount{
+		BankAccount: &identitysharemodel.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,

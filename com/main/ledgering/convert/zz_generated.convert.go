@@ -8,9 +8,9 @@ import (
 	time "time"
 
 	ledgering "etop.vn/api/main/ledgering"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
-	etopconvert "etop.vn/backend/pkg/etop/convert"
 )
 
 /*
@@ -71,7 +71,7 @@ func convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
 	out.Name = arg.Name     // simple assign
-	out.BankAccount = etopconvert.Convert_etopmodel_BankAccount_identity_BankAccount(arg.BankAccount, nil)
+	out.BankAccount = identityconvert.Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note           // simple assign
 	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign
@@ -104,7 +104,7 @@ func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
 	out.Name = arg.Name     // simple assign
-	out.BankAccount = etopconvert.Convert_identity_BankAccount_etopmodel_BankAccount(arg.BankAccount, nil)
+	out.BankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note           // simple assign
 	out.Type = arg.Type           // simple assign
 	out.Status = arg.Status       // simple assign

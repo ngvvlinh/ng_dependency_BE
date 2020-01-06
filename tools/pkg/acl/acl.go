@@ -312,9 +312,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.Order/GetOrders":      {Type: EtopAdmin},
 	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin},
 
-	"admin.Fulfillment/GetFulfillment":    {Type: EtopAdmin},
-	"admin.Fulfillment/GetFulfillments":   {Type: EtopAdmin},
-	"admin.Fulfillment/UpdateFulfillment": {Type: EtopAdmin},
+	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin},
+	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin},
+	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin},
+	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin},
+	"admin.Fulfillment/UpdateFulfillmentShippingFee":   {Type: EtopAdmin},
 
 	"admin.MoneyTransaction/GetMoneyTransaction":                         {Type: EtopAdmin},
 	"admin.MoneyTransaction/GetMoneyTransactions":                        {Type: EtopAdmin},

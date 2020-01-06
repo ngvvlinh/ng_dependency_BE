@@ -14,9 +14,11 @@ import (
 	shippingstate "etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	carriertypes "etop.vn/backend/com/main/shipping/carrier/types"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/syncgroup"
 	"etop.vn/backend/pkg/common/bus"
@@ -211,7 +213,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		updateFfm2 := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: status4.N,
-			SyncStates: &model.FulfillmentSyncStates{
+			SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),
 
@@ -295,7 +297,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		if err != nil {
 			return err
 		}
-		ffmToUpdate.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
+		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
 
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
@@ -307,7 +309,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	return nil
 }
 
-func (m *ShipmentManager) VerifyDistrictCode(addr *model.Address) (*location.District, *location.Province, error) {
+func (m *ShipmentManager) VerifyDistrictCode(addr *addressmodel.Address) (*location.District, *location.Province, error) {
 	if addr == nil {
 		return nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}

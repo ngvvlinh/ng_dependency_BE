@@ -6,10 +6,10 @@ import (
 
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/com/handler/notifier/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -74,7 +74,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 		if _err != nil {
 			return 0, 0, _err
 		}
-		query := &etopmodel.GetAllAccountUsersQuery{
+		query := &identitymodelx.GetAllAccountUsersQuery{
 			UserIDs: userIDs,
 			Type:    account_type.Shop.Wrap(),
 		}

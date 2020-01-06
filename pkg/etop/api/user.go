@@ -16,6 +16,8 @@ import (
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/cmd/etop-server/config"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/idemp"
@@ -198,7 +200,7 @@ func (s *UserService) register(
 	{
 		now := time.Now()
 		shouldUpdate := false
-		updateCmd := &model.UpdateUserVerificationCommand{
+		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID: user.ID,
 		}
 		// auto verify email when accept invitation from email
@@ -240,10 +242,10 @@ func (s *UserService) register(
 	}, nil
 }
 
-func createUser(ctx context.Context, r *etop.CreateUserRequest) (*model.User, error) {
+func createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.User, error) {
 	info := r
 	cmd := &usering.CreateUserCommand{
-		UserInner: model.UserInner{
+		UserInner: identitymodel.UserInner{
 			FullName:  info.FullName,
 			ShortName: info.ShortName,
 			Phone:     info.Phone,
@@ -258,7 +260,7 @@ func createUser(ctx context.Context, r *etop.CreateUserRequest) (*model.User, er
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	query := &model.GetUserByIDQuery{
+	query := &identitymodelx.GetUserByIDQuery{
 		UserID: cmd.Result.User.ID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -320,7 +322,7 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserReg
 		return nil
 	}
 
-	userByPhoneQuery := &model.GetUserByEmailOrPhoneQuery{
+	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: q.Phone,
 	}
 	err := bus.Dispatch(ctx, userByPhoneQuery)
@@ -335,23 +337,23 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserReg
 	return nil
 }
 
-func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail model.UserExtended, err error) {
-	userByPhoneQuery := &model.GetUserByLoginQuery{
+func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail identitymodel.UserExtended, err error) {
+	userByPhoneQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: phone,
 	}
 	if err := bus.Dispatch(ctx, userByPhoneQuery); err != nil &&
 		cm.ErrorCode(err) != cm.NotFound {
-		return model.UserExtended{}, model.UserExtended{}, err
+		return identitymodel.UserExtended{}, identitymodel.UserExtended{}, err
 	}
 	userByPhone = userByPhoneQuery.Result
 
 	if email != "" {
-		userByEmailQuery := &model.GetUserByLoginQuery{
+		userByEmailQuery := &identitymodelx.GetUserByLoginQuery{
 			PhoneOrEmail: email,
 		}
 		if err := bus.Dispatch(ctx, userByEmailQuery); err != nil &&
 			cm.ErrorCode(err) != cm.NotFound {
-			return model.UserExtended{}, model.UserExtended{}, err
+			return identitymodel.UserExtended{}, identitymodel.UserExtended{}, err
 		}
 		userByEmail = userByEmailQuery.Result
 	}
@@ -403,7 +405,7 @@ func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoin
 		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
 
-	query := &model.GetUserByLoginQuery{
+	query := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Email,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -479,7 +481,7 @@ func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpo
 		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
-	cmd := &model.SetPasswordCommand{
+	cmd := &identitymodelx.SetPasswordCommand{
 		UserID:   r.Context.User.ID,
 		Password: r.NewPassword,
 	}
@@ -516,7 +518,7 @@ func (s *UserService) changePasswordUsingToken(ctx context.Context, r *ChangePas
 		return r, cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", err)
 	}
 
-	query := &model.GetUserByLoginQuery{
+	query := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: v["email"],
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -543,7 +545,7 @@ func (s *UserService) changePasswordUsingToken(ctx context.Context, r *ChangePas
 		return r, cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
-	cmd := &model.SetPasswordCommand{
+	cmd := &identitymodelx.SetPasswordCommand{
 		UserID:   user.ID,
 		Password: r.NewPassword,
 	}
@@ -596,7 +598,7 @@ func (s *UserService) SwitchAccount(ctx context.Context, r *SwitchAccountEndpoin
 	return err
 }
 
-func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*etop.AccessTokenResponse, error) {
+func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *identitymodel.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*etop.AccessTokenResponse, error) {
 	resp, err := s.CreateLoginResponse(ctx, claim, token, userID, user, preferAccountID, preferAccountType, false, adminID)
 	if err != nil {
 		return nil, err
@@ -613,19 +615,19 @@ func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.C
 	}, nil
 }
 
-func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*etop.LoginResponse, error) {
+func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *identitymodel.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*etop.LoginResponse, error) {
 	resp, _, err := s.CreateLoginResponse2(ctx, claim, token, userID, user, preferAccountID, preferAccountType, generateAllTokens, adminID)
 	return resp, err
 }
 
-func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (_ *etop.LoginResponse, respShop *model.Shop, _ error) {
+func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *identitymodel.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (_ *etop.LoginResponse, respShop *identitymodel.Shop, _ error) {
 
 	// Retrieve user info
 	if user != nil && user.ID != userID {
 		return nil, nil, cm.Error(cm.Internal, "Invalid user", nil)
 	}
 	if user == nil {
-		userQuery := &model.GetUserByIDQuery{UserID: userID}
+		userQuery := &identitymodelx.GetUserByIDQuery{UserID: userID}
 		if err := bus.Dispatch(ctx, userQuery); err != nil {
 			return nil, nil, err
 		}
@@ -633,7 +635,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	}
 
 	// Retrieve list of accounts
-	accQuery := &model.GetAllAccountRolesQuery{UserID: userID}
+	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: userID}
 	if err := bus.Dispatch(ctx, accQuery); err != nil {
 		return nil, nil, err
 	}
@@ -668,7 +670,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	if currentAccount != nil {
 		switch {
 		case model.IsShopID(currentAccountID):
-			query := &model.GetShopExtendedQuery{ShopID: currentAccountID}
+			query := &identitymodelx.GetShopExtendedQuery{ShopID: currentAccountID}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "")
 			}
@@ -840,7 +842,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
 
-	updateCmd := &model.UpdateUserVerificationCommand{
+	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
 		UserID:                  user.ID,
 		EmailVerificationSentAt: time.Now(),
 	}
@@ -875,7 +877,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	if r.Context.UserID == 0 {
 		return sendPhoneVerificationForRegister(ctx, r)
 	}
-	getUserByID := &model.GetUserByIDQuery{
+	getUserByID := &identitymodelx.GetUserByIDQuery{
 		UserID: r.Context.UserID,
 	}
 	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
@@ -907,7 +909,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
 
-	updateCmd := &model.UpdateUserVerificationCommand{
+	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
 		UserID:                  user.ID,
 		PhoneVerificationSentAt: time.Now(),
 	}
@@ -947,7 +949,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 	}
 
 	if user.EmailVerifiedAt.IsZero() {
-		cmd := &model.UpdateUserVerificationCommand{
+		cmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID: user.ID,
 
 			EmailVerifiedAt: time.Now(),
@@ -997,7 +999,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
 		return r, nil
 	}
-	getUserByID := &model.GetUserByIDQuery{
+	getUserByID := &identitymodelx.GetUserByIDQuery{
 		UserID: r.Context.UserID,
 	}
 	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
@@ -1030,7 +1032,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	}
 
 	if user.PhoneVerifiedAt.IsZero() {
-		cmd := &model.UpdateUserVerificationCommand{
+		cmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID: user.ID,
 
 			PhoneVerifiedAt: time.Now(),
@@ -1140,7 +1142,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	}
 
 	user := r.Context.User.User
-	accQuery := &model.GetAccountRolesQuery{
+	accQuery := &identitymodelx.GetAccountRolesQuery{
 		AccountID: r.AccountId,
 		UserID:    user.ID,
 	}

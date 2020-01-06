@@ -6,8 +6,8 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func init() {
@@ -54,7 +54,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 		return err
 	}
 
-	query := &model.GetUserByIDQuery{
+	query := &identitymodelx.GetUserByIDQuery{
 		UserID: r.Context.Shop.OwnerID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

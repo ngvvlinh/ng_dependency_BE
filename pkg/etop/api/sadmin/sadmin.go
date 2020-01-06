@@ -4,6 +4,8 @@ import (
 	"context"
 
 	pbcm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"
@@ -44,10 +46,10 @@ func (s *UserService) CreateUser(ctx context.Context, r *CreateUserEndpoint) err
 		if r.Permission != nil {
 
 		}
-		roleCmd := &model.UpdateRoleCommand{
+		roleCmd := &identitymodelx.UpdateRoleCommand{
 			AccountID: model.EtopAccountID,
 			UserID:    r2.Result.User.Id,
-			Permission: model.Permission{
+			Permission: identitymodel.Permission{
 				Roles:       r.Permission.GetRoles(),
 				Permissions: r.Permission.GetPermissions(),
 			},
@@ -67,7 +69,7 @@ func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoin
 		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
-	cmd := &model.SetPasswordCommand{
+	cmd := &identitymodelx.SetPasswordCommand{
 		UserID:   r.UserId,
 		Password: r.Password,
 	}

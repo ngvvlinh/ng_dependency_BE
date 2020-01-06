@@ -9,9 +9,10 @@ import (
 	"io"
 
 	"etop.vn/api/top/types/etc/status3"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -28,7 +29,7 @@ type LoginUserQuery struct {
 	Password     string
 
 	Result struct {
-		User *model.User
+		User *identitymodel.User
 	}
 }
 
@@ -44,7 +45,7 @@ const MsgLoginUnauthenticated = `Mật khẩu không đúng. Vui lòng kiểm tr
 //   - activate user
 //   - then login
 func LoginUser(ctx context.Context, query *LoginUserQuery) error {
-	userQuery := &model.GetUserByLoginQuery{
+	userQuery := &identitymodelx.GetUserByLoginQuery{
 		UserID:       query.UserID,
 		PhoneOrEmail: query.PhoneOrEmail,
 	}

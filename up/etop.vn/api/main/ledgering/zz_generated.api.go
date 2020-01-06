@@ -7,7 +7,7 @@ package ledgering
 import (
 	context "context"
 
-	identity "etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
 	ledger_type "etop.vn/api/top/types/etc/ledger_type"
@@ -31,7 +31,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 type CreateLedgerCommand struct {
 	ShopID      dot.ID
 	Name        string
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 	Note        string
 	Type        ledger_type.LedgerType
 	CreatedBy   dot.ID
@@ -60,7 +60,7 @@ type UpdateLedgerCommand struct {
 	ID          dot.ID
 	ShopID      dot.ID
 	Name        dot.NullString
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 	Note        dot.NullString
 
 	Result *ShopLedger `json:"-"`

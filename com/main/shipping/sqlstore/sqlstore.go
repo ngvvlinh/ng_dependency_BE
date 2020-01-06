@@ -3,13 +3,19 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/api/main/shipping"
 	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/backend/com/main/shipping/convert"
 	"etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
+
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type FulfillmentStoreFactory func(context.Context) *FulfillmentStore
 
@@ -33,6 +39,11 @@ type FulfillmentStore struct {
 
 func (s *FulfillmentStore) ID(id dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *FulfillmentStore) IDs(ids ...dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
@@ -68,6 +79,16 @@ func (s *FulfillmentStore) GetFfmDB() (*model.Fulfillment, error) {
 	var ffm model.Fulfillment
 	err := s.query().Where(s.preds...).ShouldGet(&ffm)
 	return &ffm, err
+}
+
+func (s *FulfillmentStore) GetFulfillment() (*shipping.Fulfillment, error) {
+	ffmDB, err := s.GetFfmDB()
+	if err != nil {
+		return nil, err
+	}
+	ffm := &shipping.Fulfillment{}
+	err = scheme.Convert(ffmDB, ffm)
+	return ffm, err
 }
 
 func (s *FulfillmentStore) ListFfmsDB() ([]*model.Fulfillment, error) {
@@ -118,4 +139,39 @@ func (s *FulfillmentStore) UpdateFulfillmentsDB(ctx context.Context, ffms []*mod
 		}
 	}
 	return nil
+}
+
+func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateFulfillmentShippingStateArgs) error {
+	if args.ActualCompensationAmount.Valid {
+		update := map[string]interface{}{
+			"shipping_state":             args.ShippingState.String(),
+			"actual_compensation_amount": args.ActualCompensationAmount.Apply(0),
+		}
+		return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
+	}
+
+	update := &model.Fulfillment{
+		ShippingState: args.ShippingState,
+	}
+	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
+}
+
+func (s *FulfillmentStore) UpdateFulfillmentShippingFees(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
+	var lines []*shippingsharemodel.ShippingFeeLine
+	if err := scheme.Convert(args.ShippingFeeLines, lines); err != nil {
+		return err
+	}
+
+	update := &model.Fulfillment{
+		ShippingFeeShopLines: lines,
+		ShippingFeeShop:      shippingsharemodel.GetTotalShippingFee(lines),
+	}
+	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
+}
+
+func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxShippingExternalID(args *shipping.UpdateFulfillmentsMoneyTxShippingExternalIDArgs) error {
+	update := &model.Fulfillment{
+		MoneyTransactionShippingExternalID: args.MoneyTxShippingExternalID,
+	}
+	return s.IDs(args.FulfillmentIDs...).query().Where(s.preds).ShouldUpdate(update)
 }

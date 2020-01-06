@@ -7,6 +7,7 @@ import (
 
 	"github.com/valyala/tsvreader"
 
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -14,7 +15,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/xerrors"
 )
 
@@ -124,7 +124,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 
 		transactionLines[code] = &txmodel.MoneyTransactionShippingExternalLine{
 			ExternalCode:         code,
-			EtopFulfillmentIdRaw: etopOrderCode,
+			EtopFulfillmentIDRaw: etopOrderCode,
 			ExternalCreatedAt:    createdAt,
 			ExternalClosedAt:     closedAt,
 			ExternalCustomer:     customer,
@@ -146,7 +146,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		Lines:          lines,
 		Note:           note,
 		InvoiceNumber:  invoiceNumber,
-		BankAccount: &model.BankAccount{
+		BankAccount: &identitysharemodel.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,

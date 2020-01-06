@@ -7,6 +7,7 @@ package identity
 import (
 	context "context"
 
+	identitytypes "etop.vn/api/main/identity/types"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -30,7 +31,7 @@ type CreateAffiliateCommand struct {
 	Phone       string
 	Email       string
 	IsTest      bool
-	BankAccount *BankAccount
+	BankAccount *identitytypes.BankAccount
 
 	Result *Affiliate `json:"-"`
 }
@@ -81,7 +82,7 @@ func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.
 type UpdateAffiliateBankAccountCommand struct {
 	ID          dot.ID
 	OwnerID     dot.ID
-	BankAccount *BankAccount
+	BankAccount *identitytypes.BankAccount
 
 	Result *Affiliate `json:"-"`
 }

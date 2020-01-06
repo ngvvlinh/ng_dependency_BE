@@ -2,73 +2,35 @@ package convert
 
 import (
 	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/top/types/etc/status3"
 	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/etop/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 )
 
-func ShopDB(in *identity.Shop) (out *model.Shop) {
+// +gen:convert: etop.vn/backend/com/main/identity/sharemodel->etop.vn/api/main/identity/types
+// +gen:convert: etop.vn/backend/com/main/identity/model->etop.vn/api/main/identity
+// +gen:convert: etop.vn/api/main/identity
+
+func ShopDB(in *identity.Shop) *identitymodel.Shop {
 	if in == nil {
 		return nil
 	}
-	out = &model.Shop{
-		ID:                            in.ID,
-		Name:                          in.Name,
-		OwnerID:                       in.OwnerID,
-		IsTest:                        in.IsTest,
-		AddressID:                     in.AddressID,
-		ShipToAddressID:               in.ShipToAddressID,
-		ShipFromAddressID:             in.ShipFromAddressID,
-		Phone:                         in.Phone,
-		BankAccount:                   nil,
-		WebsiteURL:                    in.WebsiteURL,
-		ImageURL:                      in.ImageURL,
-		Email:                         in.Email,
-		Code:                          in.Code,
-		AutoCreateFFM:                 in.AutoCreateFFM,
-		Status:                        in.Status,
-		CreatedAt:                     in.CreatedAt,
-		UpdatedAt:                     in.UpdatedAt,
-		DeletedAt:                     in.DeletedAt,
-		Address:                       nil,
-		RecognizedHosts:               nil,
-		GhnNoteCode:                   0,
-		TryOn:                         0,
-		CompanyInfo:                   nil,
-		MoneyTransactionRRule:         "",
-		SurveyInfo:                    nil,
-		ShippingServiceSelectStrategy: nil,
-	}
-	return
+	out := &identitymodel.Shop{}
+	convert_identity_Shop_identitymodel_Shop(in, out)
+	return out
 }
 
-func Shop(in *model.Shop) (out *identity.Shop) {
+func Shop(in *identitymodel.Shop) *identity.Shop {
 	if in == nil {
 		return nil
 	}
-	out = &identity.Shop{
-		ID:                in.ID,
-		Name:              in.Name,
-		OwnerID:           in.OwnerID,
-		IsTest:            in.IsTest,
-		AddressID:         in.AddressID,
-		ShipToAddressID:   in.ShipToAddressID,
-		ShipFromAddressID: in.ShipFromAddressID,
-		Phone:             in.Phone,
-		WebsiteURL:        in.WebsiteURL,
-		ImageURL:          in.ImageURL,
-		Email:             in.Email,
-		Code:              in.Code,
-		AutoCreateFFM:     in.AutoCreateFFM,
-		Status:            status3.Status(in.Status),
-		CreatedAt:         in.CreatedAt,
-		UpdatedAt:         in.UpdatedAt,
-		DeletedAt:         in.DeletedAt,
-	}
-	return
+	out := &identity.Shop{}
+	convert_identitymodel_Shop_identity_Shop(in, out)
+	return out
 }
 
-func User(in *model.User) (out *identity.User) {
+func User(in *identitymodel.User) (out *identity.User) {
 	if in == nil {
 		return nil
 	}
@@ -78,7 +40,7 @@ func User(in *model.User) (out *identity.User) {
 		ShortName:       in.ShortName,
 		Email:           in.Email,
 		Phone:           in.Phone,
-		Status:          status3.Status(in.Status),
+		Status:          in.Status,
 		EmailVerifiedAt: in.EmailVerifiedAt,
 		CreatedAt:       in.CreatedAt,
 		UpdatedAt:       in.UpdatedAt,
@@ -159,42 +121,34 @@ func AffiliateDB(in *identity.Affiliate) *identitymodel.Affiliate {
 	}
 }
 
-func Permission(in model.Permission) identity.Permission {
+func Permission(in identitymodel.Permission) identity.Permission {
 	return identity.Permission{
 		Roles:       in.Roles,
 		Permissions: in.Permissions,
 	}
 }
 
-func PermissionToModel(in identity.Permission) model.Permission {
-	return model.Permission{
+func PermissionToModel(in identity.Permission) identitymodel.Permission {
+	return identitymodel.Permission{
 		Roles:       in.Roles,
 		Permissions: in.Permissions,
 	}
 }
 
-func BankAccount(in *model.BankAccount) *identity.BankAccount {
+func BankAccount(in *identitysharemodel.BankAccount) *identitytypes.BankAccount {
 	if in == nil {
 		return nil
 	}
-	return &identity.BankAccount{
-		Name:          in.Name,
-		Province:      in.Province,
-		Branch:        in.Branch,
-		AccountNumber: in.AccountNumber,
-		AccountName:   in.AccountName,
-	}
+	out := &identitytypes.BankAccount{}
+	convert_sharemodel_BankAccount_identitytypes_BankAccount(in, out)
+	return out
 }
 
-func BankAccountDB(in *identity.BankAccount) *model.BankAccount {
+func BankAccountDB(in *identitytypes.BankAccount) *identitysharemodel.BankAccount {
 	if in == nil {
 		return nil
 	}
-	return &model.BankAccount{
-		Name:          in.Name,
-		Province:      in.Province,
-		Branch:        in.Branch,
-		AccountNumber: in.AccountNumber,
-		AccountName:   in.AccountName,
-	}
+	out := &identitysharemodel.BankAccount{}
+	convert_identitytypes_BankAccount_sharemodel_BankAccount(in, out)
+	return out
 }

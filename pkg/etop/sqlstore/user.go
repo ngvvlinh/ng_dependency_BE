@@ -6,6 +6,9 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
+	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/sq"
@@ -31,7 +34,7 @@ func init() {
 
 type UserStore struct {
 	ctx   context.Context
-	ft    UserFilters
+	ft    identitysqlstore.UserFilters
 	preds []interface{}
 }
 
@@ -45,44 +48,44 @@ func (s *UserStore) ID(id dot.ID) *UserStore {
 }
 
 func (s *UserStore) IDs(ids ...dot.ID) *UserStore {
-	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
+	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
-func (s *UserStore) Get() (*model.User, error) {
-	var user model.User
+func (s *UserStore) Get() (*identitymodel.User, error) {
+	var user identitymodel.User
 	err := x.Where(s.preds...).ShouldGet(&user)
 	return &user, err
 }
 
-func (s *UserStore) List() ([]*model.User, error) {
-	var users model.Users
+func (s *UserStore) List() ([]*identitymodel.User, error) {
+	var users identitymodel.Users
 	err := x.Where(s.preds).Find(&users)
 	return users, err
 }
 
-func GetSignedInUser(ctx context.Context, query *model.GetSignedInUserQuery) error {
-	userQuery := &model.GetUserByIDQuery{UserID: query.UserID}
+func GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error {
+	userQuery := &identitymodelx.GetUserByIDQuery{UserID: query.UserID}
 	if err := GetUserByID(ctx, userQuery); err != nil {
 		return err
 	}
-	query.Result = &model.SignedInUser{
+	query.Result = &identitymodelx.SignedInUser{
 		User: userQuery.Result,
 	}
 	return nil
 }
 
-func GetUserByID(ctx context.Context, query *model.GetUserByIDQuery) error {
+func GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) error {
 	if query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
-	query.Result = new(model.User)
+	query.Result = new(identitymodel.User)
 	return x.Where("id = ?", query.UserID).
 		ShouldGet(query.Result)
 }
 
-func GetUserByEmail(ctx context.Context, query *model.GetUserByEmailOrPhoneQuery) error {
+func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
 	count := 0
 	q := x.Table("user")
 	if query.Email != "" {
@@ -96,11 +99,11 @@ func GetUserByEmail(ctx context.Context, query *model.GetUserByEmailOrPhoneQuery
 	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
-	query.Result = new(model.User)
+	query.Result = new(identitymodel.User)
 	return q.ShouldGet(query.Result)
 }
 
-func GetUserByLogin(ctx context.Context, query *model.GetUserByLoginQuery) error {
+func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQuery) error {
 	if query.UserID == 0 && query.PhoneOrEmail == "" {
 		return cm.Error(cm.InvalidArgument, "Missing required fields", nil)
 	}
@@ -126,12 +129,12 @@ func GetUserByLogin(ctx context.Context, query *model.GetUserByLoginQuery) error
 		}
 	}
 
-	user := new(model.User)
+	user := new(identitymodel.User)
 	if err := s.ShouldGet(user); err != nil {
 		return err
 	}
 
-	userInternal := new(model.UserInternal)
+	userInternal := new(identitymodel.UserInternal)
 	if err := x.Where("id = ?", user.ID).ShouldGet(userInternal); err != nil {
 		return err
 	}
@@ -141,7 +144,7 @@ func GetUserByLogin(ctx context.Context, query *model.GetUserByLoginQuery) error
 	return nil
 }
 
-func CreateUser(ctx context.Context, cmd *model.CreateUserCommand) error {
+func CreateUser(ctx context.Context, cmd *identitymodelx.CreateUserCommand) error {
 	if cmd.Email == "" {
 		return cm.Error(cm.InvalidArgument, "Vui lòng nhập email", nil)
 	}
@@ -219,7 +222,7 @@ const (
 	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
 )
 
-func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
+func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand) error {
 	switch cmd.Status {
 	case status3.P:
 	default:
@@ -228,7 +231,7 @@ func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 
 	now := time.Now()
 	userID := cm.NewIDWithTag(model.TagUser)
-	user := &model.User{
+	user := &identitymodel.User{
 		ID:          userID,
 		UserInner:   cmd.UserInner,
 		Status:      cmd.Status,
@@ -242,7 +245,7 @@ func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 		user.IsTest = 1
 	}
 
-	userInternal := &model.UserInternal{
+	userInternal := &identitymodel.UserInternal{
 		ID: userID,
 	}
 	if cmd.Password != "" {
@@ -264,12 +267,12 @@ func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 	return err
 }
 
-func SetPassword(ctx context.Context, cmd *model.SetPasswordCommand) error {
+func SetPassword(ctx context.Context, cmd *identitymodelx.SetPasswordCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 
-	userInternal := &model.UserInternal{
+	userInternal := &identitymodel.UserInternal{
 		Hashpwd: login.EncodePassword(cmd.Password),
 	}
 	if err := x.Where("id = ?", cmd.UserID).
@@ -279,13 +282,13 @@ func SetPassword(ctx context.Context, cmd *model.SetPasswordCommand) error {
 	return nil
 }
 
-func UpdateUserVerification(ctx context.Context, cmd *model.UpdateUserVerificationCommand) error {
+func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserVerificationCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 
 	count := 0
-	var user model.User
+	var user identitymodel.User
 
 	s := x.Where("id = ?", cmd.UserID)
 	if !cmd.EmailVerifiedAt.IsZero() {
@@ -311,7 +314,7 @@ func UpdateUserVerification(ctx context.Context, cmd *model.UpdateUserVerificati
 	return s.ShouldUpdate(&user)
 }
 
-func UpdateUserIdentifier(ctx context.Context, cmd *model.UpdateUserIdentifierCommand) error {
+func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIdentifierCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
@@ -340,12 +343,12 @@ func UpdateUserIdentifier(ctx context.Context, cmd *model.UpdateUserIdentifierCo
 	// MUSTDO: Merge update user identifier and create user
 	// Handle password, agree tos, email info and other information properly
 
-	var user model.User
+	var user identitymodel.User
 	user.UserInner = cmd.UserInner
 	user.Status = cmd.Status
 	user.CreatedAt = cmd.CreatedAt
 
-	var userInternal model.UserInternal
+	var userInternal identitymodel.UserInternal
 
 	user.PhoneVerifiedAt = cmd.PhoneVerifiedAt
 	if err := x.Where("id = ?", cmd.UserID).ShouldUpdate(&user, &userInternal); err != nil {

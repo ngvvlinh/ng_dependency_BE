@@ -111,6 +111,8 @@ func startEtopServer() *http.Server {
 			// Hot-fix: trouble on 09/07/2019 (transfer money duplicate)
 			_ = hotfix.New(db)
 			rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfix.HandleImportMoneyTransactionManual)
+
+			imcsvghtk.Init(moneyTxAggr)
 		}
 
 		// Register shop import handlers

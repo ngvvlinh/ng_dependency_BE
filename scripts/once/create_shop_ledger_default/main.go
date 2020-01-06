@@ -6,11 +6,11 @@ import (
 
 	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/backend/cmd/etop-server/config"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -119,7 +119,7 @@ func main() {
 	}
 }
 
-func scanShops(fromID dot.ID) (shops model.Shops, err error) {
+func scanShops(fromID dot.ID) (shops identitymodel.Shops, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").

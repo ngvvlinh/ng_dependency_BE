@@ -1,16 +1,17 @@
-package model
+package modelx
 
 import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/user_source"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/capi/dot"
 )
 
 // SignedInUser ...
 type SignedInUser struct {
-	*User
+	*identitymodel.User
 }
 
 // GetSignedInUserQuery ...
@@ -23,31 +24,31 @@ type GetSignedInUserQuery struct {
 type GetUserByIDQuery struct {
 	UserID dot.ID
 
-	Result *User
+	Result *identitymodel.User
 }
 
 type GetUserByEmailOrPhoneQuery struct {
 	Email string
 	Phone string
 
-	Result *User
+	Result *identitymodel.User
 }
 
 type GetUsersByIDsQuery struct {
 	UserIDs []dot.ID
 
-	Result []*User
+	Result []*identitymodel.User
 }
 
 type GetUserByLoginQuery struct {
 	UserID       dot.ID
 	PhoneOrEmail string
 
-	Result UserExtended
+	Result identitymodel.UserExtended
 }
 
 type CreateUserCommand struct {
-	UserInner
+	identitymodel.UserInner
 	Password       string
 	Status         status3.Status
 	AgreeTOS       bool
@@ -55,8 +56,8 @@ type CreateUserCommand struct {
 	IsTest         bool
 	Source         user_source.UserSource
 	Result         struct {
-		User         *User
-		UserInternal *UserInternal
+		User         *identitymodel.User
+		UserInternal *identitymodel.UserInternal
 	}
 }
 
@@ -76,9 +77,9 @@ type UpdateUserVerificationCommand struct {
 }
 
 type UpdateUserIdentifierCommand struct {
-	UserID    dot.ID
-	Status    status3.Status // We don't allow update status to 0
-	UserInner                // Must be normalized identifier
+	UserID                  dot.ID
+	Status                  status3.Status // We don't allow update status to 0
+	identitymodel.UserInner                // Must be normalized identifier
 
 	Password string
 
@@ -86,7 +87,7 @@ type UpdateUserIdentifierCommand struct {
 	PhoneVerifiedAt time.Time // Automatically verify phone if the user register from phone
 
 	Result struct {
-		User *User
+		User *identitymodel.User
 	}
 }
 

@@ -4,18 +4,19 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
 // use for import csv file
 type CreateMoneyTransactions struct {
 	ShopIDMapFfms map[dot.ID][]*shipmodel.Fulfillment
-	ShopIDMap     map[dot.ID]*model.Shop
+	ShopIDMap     map[dot.ID]*identitymodel.Shop
 
 	Result struct {
 		Created int
@@ -23,7 +24,7 @@ type CreateMoneyTransactions struct {
 }
 
 type CreateMoneyTransaction struct {
-	Shop           *model.Shop
+	Shop           *identitymodel.Shop
 	FulFillmentIDs []dot.ID
 	TotalCOD       int
 	TotalAmount    int
@@ -57,7 +58,7 @@ type UpdateMoneyTransaction struct {
 	ShopID        dot.ID
 	Note          string
 	InvoiceNumber string
-	BankAccount   *model.BankAccount
+	BankAccount   *identitysharemodel.BankAccount
 
 	Result *modely.MoneyTransactionExtended
 }
@@ -103,7 +104,7 @@ type CreateMoneyTransactionShippingExternal struct {
 	Provider       string
 	ExternalPaidAt time.Time
 	Lines          []*txmodel.MoneyTransactionShippingExternalLine
-	BankAccount    *model.BankAccount
+	BankAccount    *identitysharemodel.BankAccount
 	Note           string
 	InvoiceNumber  string
 
@@ -112,7 +113,7 @@ type CreateMoneyTransactionShippingExternal struct {
 
 type UpdateMoneyTransactionShippingExternal struct {
 	ID            dot.ID
-	BankAccount   *model.BankAccount
+	BankAccount   *identitysharemodel.BankAccount
 	Note          string
 	InvoiceNumber string
 
@@ -182,7 +183,7 @@ type GetMoneyTransactionShippingExternals struct {
 
 type CreateMoneyTransactionShippingEtop struct {
 	MoneyTransactionShippingIDs []dot.ID
-	BankAccount                 *model.BankAccount
+	BankAccount                 *identitysharemodel.BankAccount
 	Note                        string
 	InvoiceNumber               string
 
@@ -210,7 +211,7 @@ type UpdateMoneyTransactionShippingEtop struct {
 	Adds          []dot.ID
 	Deletes       []dot.ID
 	ReplaceAll    []dot.ID
-	BankAccount   *model.BankAccount
+	BankAccount   *identitysharemodel.BankAccount
 	Note          string
 	InvoiceNumber string
 

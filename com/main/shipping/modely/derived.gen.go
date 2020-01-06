@@ -6,13 +6,13 @@ import (
 	"database/sql"
 	"sync"
 
+	etop_vn_backend_com_main_identity_model "etop.vn/backend/com/main/identity/model"
 	etop_vn_backend_com_main_moneytx_model "etop.vn/backend/com/main/moneytx/model"
 	etop_vn_backend_com_main_ordering_model "etop.vn/backend/com/main/ordering/model"
 	model "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	sq "etop.vn/backend/pkg/common/sql/sq"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
-	etop_vn_backend_pkg_etop_model "etop.vn/backend/pkg/etop/model"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
@@ -29,7 +29,7 @@ func SQLVerifySchema(db *cmsql.Database) {
 type SQLWriter = core.SQLWriter
 
 // Type FulfillmentExtended represents a join
-func sqlgenFulfillmentExtended(_ *FulfillmentExtended, _ *model.Fulfillment, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_etop_model.Shop, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_ordering_model.Order, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_moneytx_model.MoneyTransactionShipping, a2 sq.AS, c2 string) bool {
+func sqlgenFulfillmentExtended(_ *FulfillmentExtended, _ *model.Fulfillment, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_identity_model.Shop, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_ordering_model.Order, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_moneytx_model.MoneyTransactionShipping, a2 sq.AS, c2 string) bool {
 	__sqlFulfillmentExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
 	__sqlFulfillmentExtended_As = as
 	__sqlFulfillmentExtended_JoinAs = []sq.AS{a0, a1, a2}
@@ -95,7 +95,7 @@ func (m *FulfillmentExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
 	core.WriteCols(w, string(__sqlFulfillmentExtended_As), (*model.Fulfillment)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlFulfillmentExtended_JoinAs[0]), (*etop_vn_backend_pkg_etop_model.Shop)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlFulfillmentExtended_JoinAs[0]), (*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLListCols())
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlFulfillmentExtended_JoinAs[1]), (*etop_vn_backend_com_main_ordering_model.Order)(nil).SQLListCols())
 	w.WriteByte(',')
@@ -113,7 +113,7 @@ func (m *FulfillmentExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*etop_vn_backend_pkg_etop_model.Shop)(nil).SQLTableName())
+	w.WriteName((*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlFulfillmentExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -140,7 +140,7 @@ func (m *FulfillmentExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
 	m.Fulfillment = new(model.Fulfillment)
 	args = append(args, m.Fulfillment.SQLScanArgs(opts)...)
-	m.Shop = new(etop_vn_backend_pkg_etop_model.Shop)
+	m.Shop = new(etop_vn_backend_com_main_identity_model.Shop)
 	args = append(args, m.Shop.SQLScanArgs(opts)...)
 	m.Order = new(etop_vn_backend_com_main_ordering_model.Order)
 	args = append(args, m.Order.SQLScanArgs(opts)...)

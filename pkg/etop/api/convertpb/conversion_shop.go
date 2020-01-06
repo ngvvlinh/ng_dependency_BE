@@ -3,6 +3,7 @@ package convertpb
 import (
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
 	etop "etop.vn/api/top/int/etop"
@@ -81,11 +82,11 @@ func Convert_api_ReceiptLines_To_core_ReceiptLines(in []*shop.ReceiptLine) []*re
 	return out
 }
 
-func Convert_api_BankAccount_To_core_BankAccount(in *etop.BankAccount) *identity.BankAccount {
+func Convert_api_BankAccount_To_core_BankAccount(in *etop.BankAccount) *identitytypes.BankAccount {
 	if in == nil {
 		return nil
 	}
-	return &identity.BankAccount{
+	return &identitytypes.BankAccount{
 		Name:          in.Name,
 		Province:      in.Province,
 		Branch:        in.Branch,

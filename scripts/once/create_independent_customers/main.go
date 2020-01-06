@@ -7,11 +7,11 @@ import (
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/backend/cmd/etop-server/config"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
@@ -46,7 +46,7 @@ func main() {
 
 	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
 	{
-		var arrayShops []model.Shops
+		var arrayShops []identitymodel.Shops
 		var fromID dot.ID
 		count, errCount, createdCount, maxGoroutines := 0, 0, 0, 8
 		ch := make(chan dot.ID, maxGoroutines)
@@ -98,7 +98,7 @@ func main() {
 	}
 }
 
-func scanShops(fromID dot.ID) (shops model.Shops, err error) {
+func scanShops(fromID dot.ID) (shops identitymodel.Shops, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").

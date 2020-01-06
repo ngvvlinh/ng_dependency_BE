@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -372,7 +373,7 @@ type ShippingFeeData struct {
 	KpiHt    float32 `json:"KPI_HT"`
 }
 
-func ToShippingService(lines []*model.ShippingFeeLine, providerServiceID string, orderService VTPostOrderServiceCode, expectedPickTime, expectedDeliveryTime time.Time) *model.AvailableShippingService {
+func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServiceID string, orderService VTPostOrderServiceCode, expectedPickTime, expectedDeliveryTime time.Time) *model.AvailableShippingService {
 	if lines == nil {
 		return nil
 	}
@@ -402,13 +403,13 @@ func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string
 	}
 }
 
-func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFeeLine, error) {
-	var res []*model.ShippingFeeLine
+func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*shippingsharemodel.ShippingFeeLine, error) {
+	var res []*shippingsharemodel.ShippingFeeLine
 	total := 0
 
 	if sf.MoneyCollectionFee != 0 {
 		fee := sf.MoneyCollectionFee
-		shippingFeeLine := &model.ShippingFeeLine{
+		shippingFeeLine := &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:     shipping_fee_type.Cods,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí thu hộ",
@@ -419,7 +420,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 	if sf.MoneyOtherFee != 0 {
 		// xem như phí bảo hiểm
 		fee := sf.MoneyOtherFee
-		shippingFeeLine := &model.ShippingFeeLine{
+		shippingFeeLine := &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:     shipping_fee_type.Insurance,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí bảo hiểm",
@@ -429,7 +430,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 	}
 	if sf.MoneyFee != 0 {
 		fee := sf.MoneyFee
-		shippingFeeLine := &model.ShippingFeeLine{
+		shippingFeeLine := &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:     shipping_fee_type.Other,
 			Cost:                int(math.Floor(float64(fee) * IncludeVAT)),
 			ExternalServiceName: "Phụ phí xăng dầu",
@@ -443,7 +444,7 @@ func (sf *ShippingFeeData) CalcAndConvertShippingFeeLines() ([]*model.ShippingFe
 		if math.Abs(float64(fee-moneyTotalFee)) > 10 {
 			return nil, cm.Error(cm.FailedPrecondition, "VTPOST: Total shipping does not match", nil)
 		}
-		shippingFeeLine := &model.ShippingFeeLine{
+		shippingFeeLine := &shippingsharemodel.ShippingFeeLine{
 			ShippingFeeType:     shipping_fee_type.Main,
 			Cost:                fee,
 			ExternalServiceName: "Cước chính",

@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/top/types/etc/account_type"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -57,14 +58,14 @@ type StartSessionQuery struct {
 }
 
 type Session struct {
-	User       *model.SignedInUser
-	Admin      *model.SignedInUser
+	User       *identitymodelx.SignedInUser
+	Admin      *identitymodelx.SignedInUser
 	Claim      *claims.Claim
-	Partner    *model.Partner
-	CtxPartner *model.Partner
-	Shop       *model.Shop
+	Partner    *identitymodel.Partner
+	CtxPartner *identitymodel.Partner
+	Shop       *identitymodel.Shop
 	Affiliate  *identitymodel.Affiliate
-	model.Permission
+	identitymodel.Permission
 
 	IsOwner      bool
 	IsEtopAdmin  bool
@@ -133,7 +134,7 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 
 	var claim *claims.Claim
 	var err error
-	var account model.AccountInterface
+	var account identitymodel.AccountInterface
 	if q.RequireAPIKey {
 		var expectType account_type.AccountType
 		switch {
@@ -161,7 +162,7 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	}
 
 	if claim.AdminID != 0 {
-		query := &model.GetSignedInUserQuery{UserID: claim.AdminID}
+		query := &identitymodelx.GetSignedInUserQuery{UserID: claim.AdminID}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid AdminID", l.Error(err))
 			return nil
@@ -188,7 +189,7 @@ func startSessionUser(ctx context.Context, require bool, s *Session) bool {
 		if s.Claim.UserID == 0 {
 			return false
 		}
-		query := &model.GetSignedInUserQuery{UserID: s.Claim.UserID}
+		query := &identitymodelx.GetSignedInUserQuery{UserID: s.Claim.UserID}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid UserID", l.Error(err))
 			return false
@@ -206,10 +207,10 @@ func startSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, s 
 		return false
 	}
 
-	var partner *model.Partner
+	var partner *identitymodel.Partner
 	partnerID := s.Claim.AuthPartnerID
 	if partnerID != 0 {
-		query := &model.GetPartner{
+		query := &identitymodelx.GetPartner{
 			PartnerID: partnerID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
@@ -223,8 +224,8 @@ func startSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, s 
 	return true
 }
 
-func startSessionPartner(ctx context.Context, require bool, s *Session, account model.AccountInterface) bool {
-	if partner, ok := account.(*model.Partner); ok && s.Claim.AccountID == partner.ID {
+func startSessionPartner(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
+	if partner, ok := account.(*identitymodel.Partner); ok && s.Claim.AccountID == partner.ID {
 		s.Partner = partner
 		return true
 	}
@@ -232,7 +233,7 @@ func startSessionPartner(ctx context.Context, require bool, s *Session, account 
 		if !model.IsPartnerID(s.Claim.AccountID) {
 			return false
 		}
-		query := &model.GetPartner{
+		query := &identitymodelx.GetPartner{
 			PartnerID: s.Claim.AccountID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
@@ -244,8 +245,8 @@ func startSessionPartner(ctx context.Context, require bool, s *Session, account 
 	return true
 }
 
-func startSessionShop(ctx context.Context, require bool, s *Session, account model.AccountInterface) bool {
-	if shop, ok := account.(*model.Shop); ok && s.Claim.AccountID == shop.ID {
+func startSessionShop(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
+	if shop, ok := account.(*identitymodel.Shop); ok && s.Claim.AccountID == shop.ID {
 		s.Shop = shop
 		return true
 	}
@@ -255,7 +256,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 		}
 
 		if s.Claim.UserID != 0 {
-			query := &model.GetShopWithPermissionQuery{
+			query := &identitymodelx.GetShopWithPermissionQuery{
 				ShopID: s.Claim.AccountID,
 				UserID: s.Claim.UserID,
 			}
@@ -268,7 +269,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 			s.Permission = query.Result.Permission
 			s.IsOwner = s.Shop.OwnerID == s.Claim.UserID
 		} else {
-			query := &model.GetShopQuery{
+			query := &identitymodelx.GetShopQuery{
 				ShopID: s.Claim.AccountID,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
@@ -281,7 +282,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 	return true
 }
 
-func startSessionAffiliate(ctx context.Context, require bool, s *Session, account model.AccountInterface) bool {
+func startSessionAffiliate(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
 	if affiliate, ok := account.(*identitymodel.Affiliate); ok && s.Claim.AccountID == affiliate.ID {
 		s.Affiliate = affiliate
 		return true
@@ -323,7 +324,7 @@ func startSessionEtopAdmin(ctx context.Context, require bool, s *Session) bool {
 		if !model.IsEtopAccountID(s.Claim.AccountID) {
 			return false
 		}
-		query := &model.GetAccountRolesQuery{
+		query := &identitymodelx.GetAccountRolesQuery{
 			AccountID: model.EtopAccountID,
 			UserID:    s.Claim.UserID,
 		}
@@ -337,13 +338,13 @@ func startSessionEtopAdmin(ctx context.Context, require bool, s *Session) bool {
 	return true
 }
 
-func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, model.AccountInterface, error) {
+func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, identitymodel.AccountInterface, error) {
 	info, ok := authkey.ValidateAuthKeyWithType(authkey.TypeAPIKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
 	}
 
-	query := &model.GetAccountAuthQuery{
+	query := &identitymodelx.GetAccountAuthQuery{
 		AuthKey:     apikey,
 		AccountType: expectType,
 		AccountID:   info.AccountID,
@@ -356,7 +357,7 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 
 	switch expectType {
 	case account_type.Partner:
-		partner := query.Result.Account.(*model.Partner)
+		partner := query.Result.Account.(*identitymodel.Partner)
 		claim := &claims.Claim{
 			ClaimInfo: claims.ClaimInfo{
 				Token:           apikey,
@@ -372,7 +373,7 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 		return claim, partner, nil
 
 	case account_type.Shop:
-		shop := query.Result.Account.(*model.Shop)
+		shop := query.Result.Account.(*identitymodel.Shop)
 		claim := &claims.Claim{
 			ClaimInfo: claims.ClaimInfo{
 				Token:           apikey,
@@ -390,13 +391,13 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 	panic("unexpected")
 }
 
-func verifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, model.AccountInterface, error) {
+func verifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, identitymodel.AccountInterface, error) {
 	_, ok := authkey.ValidateAuthKeyWithType(authkey.TypePartnerShopKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
 	}
 
-	relationQuery := &model.GetPartnerRelationQuery{
+	relationQuery := &identitymodelx.GetPartnerRelationQuery{
 		AuthKey: apikey,
 	}
 	relationError := bus.Dispatch(ctx, relationQuery)

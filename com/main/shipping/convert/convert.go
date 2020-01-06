@@ -1,33 +1,33 @@
 package convert
 
 import (
-	ordertypes "etop.vn/api/main/ordering/types"
-	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/api/main/shipping"
+	shippingtypes "etop.vn/api/main/shipping/types"
+	orderconvert "etop.vn/backend/com/main/ordering/convert"
+	shippingmodel "etop.vn/backend/com/main/shipping/model"
 )
 
-func ModelAddress(in *ordertypes.Address) *etopmodel.Address {
+// +gen:convert: etop.vn/backend/com/main/shipping/model->etop.vn/api/main/shipping,etop.vn/api/main/shipping/types
+// +gen:convert: etop.vn/backend/com/main/shipping/sharemodel->etop.vn/api/main/shipping
+// +gen:convert: etop.vn/api/main/shipping
+
+func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 	if in == nil {
-		return nil
+		return
 	}
-	res := &etopmodel.Address{
-		FullName:     in.FullName,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		Province:     in.Province,
-		District:     in.District,
-		Ward:         in.Ward,
-		DistrictCode: in.DistrictCode,
-		ProvinceCode: in.ProvinceCode,
-		WardCode:     in.WardCode,
-		Company:      in.Company,
-		Address1:     in.Address1,
-		Address2:     in.Address2,
+	convert_shippingmodel_Fulfillment_shipping_Fulfillment(in, out)
+	out.Lines = orderconvert.OrderLines(in.Lines)
+	out.WeightInfo = shippingtypes.WeightInfo{
+		GrossWeight:      in.GrossWeight,
+		ChargeableWeight: in.ChargeableWeight,
+		Length:           in.Length,
+		Width:            in.Width,
+		Height:           in.Height,
 	}
-	if in.Coordinates != nil {
-		res.Coordinates = &etopmodel.Coordinates{
-			Latitude:  in.Coordinates.Latitude,
-			Longitude: in.Coordinates.Longitude,
-		}
+	out.ValueInfo = shippingtypes.ValueInfo{
+		BasketValue:      in.BasketValue,
+		CODAmount:        in.TotalCODAmount,
+		IncludeInsurance: in.IncludeInsurance,
 	}
-	return res
+	return
 }

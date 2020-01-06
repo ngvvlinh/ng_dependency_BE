@@ -7,6 +7,7 @@ import (
 	shippingtypes "etop.vn/api/main/shipping/types"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
+
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 )
 
@@ -132,15 +133,18 @@ func Convert_core_ValueInfo_To_api_ValueInfo(in shippingtypes.ValueInfo) types.V
 
 func Convert_api_OrderLine_To_core_OrderLine(in *types.OrderLine) (out *ordertypes.ItemLine) {
 	return &ordertypes.ItemLine{
-		OrderId:   in.OrderId,
-		ProductId: in.ProductId,
+		OrderID:   in.OrderId,
+		ProductID: in.ProductId,
 		Quantity:  in.Quantity,
-		VariantId: in.VariantId,
-		IsOutside: in.IsOutsideEtop,
+		VariantID: in.VariantId,
+		IsOutSide: in.IsOutsideEtop,
 		ProductInfo: ordertypes.ProductInfo{
-			ProductName: in.ProductName,
-			ImageUrl:    in.ImageUrl,
-			Attributes:  in.Attributes,
+			ProductName:  in.ProductName,
+			ImageURL:     in.ImageUrl,
+			Attributes:   in.Attributes,
+			ListPrice:    in.ListPrice,
+			RetailPrice:  in.RetailPrice,
+			PaymentPrice: in.PaymentPrice,
 		},
 	}
 }
@@ -155,14 +159,20 @@ func Convert_api_OrderLines_To_core_OrderLines(ins []*types.OrderLine) (outs []*
 
 func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *types.OrderLine {
 	return &types.OrderLine{
-		OrderId:       in.OrderId,
-		VariantId:     in.VariantId,
+		OrderId:       in.OrderID,
+		VariantId:     in.VariantID,
 		ProductName:   in.ProductInfo.ProductName,
-		IsOutsideEtop: in.IsOutside,
+		IsOutsideEtop: in.IsOutSide,
 		Quantity:      in.Quantity,
-		ImageUrl:      in.ProductInfo.ImageUrl,
+		ListPrice:     in.ProductInfo.ListPrice,
+		RetailPrice:   in.ProductInfo.RetailPrice,
+		PaymentPrice:  in.ProductInfo.PaymentPrice,
+		ImageUrl:      in.ProductInfo.ImageURL,
 		Attributes:    in.ProductInfo.Attributes,
-		ProductId:     in.ProductId,
+		ProductId:     in.ProductID,
+		TotalDiscount: 0,
+		MetaFields:    nil,
+		Code:          "",
 	}
 }
 
@@ -207,8 +217,31 @@ func Convert_core_OrderAddress_To_api_OrderAddress(in *ordertypes.Address) *type
 		Address1:     in.Address1,
 		Address2:     in.Address2,
 		ProvinceCode: in.Location.ProvinceCode,
+		Province:     in.Province,
 		DistrictCode: in.Location.DistrictCode,
+		District:     in.District,
 		WardCode:     in.Location.WardCode,
+		Ward:         in.Ward,
+		Coordinates:  Convert_core_Coordinates_To_api_Coordinates(in.Coordinates),
+	}
+}
+
+func Convert_core_OrderAddress_To_api_Address(in *ordertypes.Address) *etop.Address {
+	if in == nil {
+		return nil
+	}
+	return &etop.Address{
+		Province:     in.Province,
+		ProvinceCode: in.ProvinceCode,
+		District:     in.District,
+		DistrictCode: in.DistrictCode,
+		Ward:         in.Ward,
+		WardCode:     in.WardCode,
+		Address1:     in.Address1,
+		Address2:     in.Address2,
+		FullName:     in.FullName,
+		Phone:        in.Phone,
+		Email:        in.Email,
 		Coordinates:  Convert_core_Coordinates_To_api_Coordinates(in.Coordinates),
 	}
 }

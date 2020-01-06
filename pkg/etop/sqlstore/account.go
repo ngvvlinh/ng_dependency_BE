@@ -9,6 +9,10 @@ import (
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/try_on"
+	addressmodel "etop.vn/backend/com/main/address/model"
+	addressmodelx "etop.vn/backend/com/main/address/modelx"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -27,7 +31,7 @@ func init() {
 	)
 }
 
-func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
+func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) error {
 	if cmd.OwnerID == 0 {
 		return cm.Error(cm.Internal, "Missing OwnerID", nil)
 	}
@@ -49,18 +53,18 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 
 	id := model.NewShopID()
 	return inTransaction(func(x Qx) error {
-		account := &model.Account{
+		account := &identitymodel.Account{
 			ID:       id,
 			Name:     cmd.Name,
 			Type:     account_type.Shop,
 			ImageURL: cmd.ImageURL,
 			URLSlug:  cmd.URLSlug,
 		}
-		permission := &model.AccountUser{
+		permission := &identitymodel.AccountUser{
 			AccountID: id,
 			UserID:    cmd.OwnerID,
 			Status:    status3.P,
-			Permission: model.Permission{
+			Permission: identitymodel.Permission{
 				Roles: []string{string(authorization.RoleShopOwner)},
 			},
 		}
@@ -83,7 +87,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 			return errCode
 		}
 
-		shop := &model.Shop{
+		shop := &identitymodel.Shop{
 			ID:                            id,
 			Name:                          cmd.Name,
 			OwnerID:                       cmd.OwnerID,
@@ -116,7 +120,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 			return err
 		}
 
-		cmd.Result = new(model.ShopExtended)
+		cmd.Result = new(identitymodel.ShopExtended)
 		if has, err := x.
 			Table("shop").
 			Where("s.id = ?", shop.ID).
@@ -127,7 +131,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 	})
 }
 
-func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
+func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error {
 	shop := cmd.Shop
 	if shop.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
@@ -183,7 +187,7 @@ func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
 			}
 		}
 
-		cmd.Result = new(model.ShopExtended)
+		cmd.Result = new(identitymodel.ShopExtended)
 		if has, err := x.
 			Table("shop").
 			Where("s.id = ?", shop.ID).
@@ -194,7 +198,7 @@ func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
 	})
 }
 
-func DeleteShop(ctx context.Context, cmd *model.DeleteShopCommand) error {
+func DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) error {
 	return inTransaction(func(s Qx) error {
 		if cmd.ID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing ID", nil)
@@ -203,7 +207,7 @@ func DeleteShop(ctx context.Context, cmd *model.DeleteShopCommand) error {
 		{
 			if updated, err := s.Table("shop").
 				Where("id = ? AND owner_id = ?", cmd.ID, cmd.OwnerID).
-				Update(&model.ShopDelete{
+				Update(&identitymodel.ShopDelete{
 					DeletedAt: now,
 				}); err != nil {
 				return err
@@ -214,7 +218,7 @@ func DeleteShop(ctx context.Context, cmd *model.DeleteShopCommand) error {
 		if _, err := s.Table("account_user").
 			Where("account_id = ? AND user_id = ?", cmd.ID, cmd.OwnerID).
 			Update(
-				&model.AccountUserDelete{
+				&identitymodel.AccountUserDelete{
 					DeletedAt: now,
 				}); err != nil {
 			return err
@@ -223,12 +227,12 @@ func DeleteShop(ctx context.Context, cmd *model.DeleteShopCommand) error {
 	})
 }
 
-func UpdateOrCreateAddress(ctx context.Context, address *model.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
+func UpdateOrCreateAddress(ctx context.Context, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
 	return updateOrCreateAddress(ctx, x, address, accountID, AddressType)
 }
 
-func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
-	addressObj := &model.Address{
+func updateOrCreateAddress(ctx context.Context, x Qx, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
+	addressObj := &addressmodel.Address{
 		Province:     address.Province,
 		ProvinceCode: address.ProvinceCode,
 		District:     address.District,
@@ -248,7 +252,7 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, ac
 	if address.ID != 0 {
 		// update warehouse address
 		addressObj.ID = address.ID
-		addressCmd := &model.UpdateAddressCommand{
+		addressCmd := &addressmodelx.UpdateAddressCommand{
 			Address: addressObj,
 		}
 
@@ -260,7 +264,7 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, ac
 		// create new warehouse address
 		addressObj.AccountID = accountID
 		addressObj.Type = AddressType
-		addressCmd := &model.CreateAddressCommand{
+		addressCmd := &addressmodelx.CreateAddressCommand{
 			Address: addressObj,
 		}
 		if err := createAddress(ctx, x, addressCmd); err != nil {
@@ -270,7 +274,7 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, ac
 	}
 }
 
-func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShopCommand) error {
+func SetDefaultAddressShop(ctx context.Context, cmd *identitymodelx.SetDefaultAddressShopCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
@@ -281,12 +285,12 @@ func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShop
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
 
-	var address = new(model.Address)
+	var address = new(addressmodel.Address)
 	if err := x.Table("address").Where("id = ? AND account_id = ? and type = ?", cmd.AddressID, cmd.ShopID, cmd.Type).
 		ShouldGet(address); err != nil {
 		return err
 	}
-	shopObj := &model.Shop{
+	shopObj := &identitymodel.Shop{
 		ID: cmd.ShopID,
 	}
 
@@ -299,7 +303,7 @@ func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShop
 		return cm.Error(cm.Unimplemented, "Address type does not valid", nil)
 	}
 
-	cmdUpdateShop := &model.UpdateShopCommand{
+	cmdUpdateShop := &identitymodelx.UpdateShopCommand{
 		Shop: shopObj,
 	}
 	if err := bus.Dispatch(ctx, cmdUpdateShop); err != nil {
@@ -309,7 +313,7 @@ func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShop
 	return nil
 }
 
-func UpdateAccountURLSlug(ctx context.Context, cmd *model.UpdateAccountURLSlugCommand) error {
+func UpdateAccountURLSlug(ctx context.Context, cmd *identitymodelx.UpdateAccountURLSlugCommand) error {
 	if cmd.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
@@ -326,7 +330,7 @@ func UpdateAccountURLSlug(ctx context.Context, cmd *model.UpdateAccountURLSlugCo
 		})
 }
 
-func GetAccountAuth(ctx context.Context, query *model.GetAccountAuthQuery) error {
+func GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQuery) error {
 	if query.AuthKey == "" || query.AccountID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing key")
 	}
@@ -341,7 +345,7 @@ func GetAccountAuth(ctx context.Context, query *model.GetAccountAuthQuery) error
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
 
-		var res model.AccountAuthFtPartner
+		var res identitymodel.AccountAuthFtPartner
 		if err := s.Where("p.status = 1 AND p.deleted_at IS NULL").
 			ShouldGet(&res); err != nil {
 			return err
@@ -355,7 +359,7 @@ func GetAccountAuth(ctx context.Context, query *model.GetAccountAuthQuery) error
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
 
-		var res model.AccountAuthFtShop
+		var res identitymodel.AccountAuthFtShop
 		if err := s.Where("s.status = 1 AND s.deleted_at IS NULL").
 			ShouldGet(&res); err != nil {
 			return err

@@ -3,8 +3,10 @@ package identity
 import (
 	"time"
 
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 )
 
@@ -31,10 +33,12 @@ type Shop struct {
 	Code              string
 	AutoCreateFFM     bool
 
-	Status    status3.Status
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	Status      status3.Status
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   time.Time
+	BankAccount *identitytypes.BankAccount
+	TryOn       try_on.TryOnCode
 }
 
 type Affiliate struct {
@@ -48,7 +52,7 @@ type Affiliate struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   time.Time
-	BankAccount *BankAccount
+	BankAccount *identitytypes.BankAccount
 }
 
 type User struct {
@@ -89,14 +93,6 @@ type ExternalAccountAhamove struct {
 	CompanyImgs         []string
 	BusinessLicenseImgs []string
 	UploadedAt          time.Time
-}
-
-type BankAccount struct {
-	Name          string
-	Province      string
-	Branch        string
-	AccountNumber string
-	AccountName   string
 }
 
 type AccountCreatedEvent struct {

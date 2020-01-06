@@ -5,6 +5,8 @@ import (
 
 	"etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -33,12 +35,12 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndp
 		return cm.Error(cm.InvalidArgument, "Missing url_slug", nil)
 	}
 
-	accQuery := &model.GetAllAccountRolesQuery{UserID: r.Context.User.ID}
+	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: r.Context.User.ID}
 	if err := bus.Dispatch(ctx, accQuery); err != nil {
 		return err
 	}
 
-	var account *model.AccountUserExtended
+	var account *identitymodel.AccountUserExtended
 	for _, acc := range accQuery.Result {
 		if acc.Account.ID == r.AccountId {
 			account = acc
@@ -49,7 +51,7 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndp
 		return cm.Error(cm.InvalidArgument, "Tài khoản yêu cầu không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
 
-	cmd := &model.UpdateAccountURLSlugCommand{
+	cmd := &identitymodelx.UpdateAccountURLSlugCommand{
 		AccountID: r.AccountId,
 		URLSlug:   r.UrlSlug.String,
 	}
@@ -103,7 +105,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 	for id := range accountIDs {
 		listAccountIDs = append(listAccountIDs, id)
 	}
-	query := &model.GetPartnersFromRelationQuery{
+	query := &identitymodelx.GetPartnersFromRelationQuery{
 		AccountIDs: listAccountIDs,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

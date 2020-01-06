@@ -11,7 +11,9 @@ import (
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	"etop.vn/backend/com/main/catalog/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
@@ -29,7 +31,7 @@ func PNonZeroString(s string) dot.NullString {
 	return dot.String(s)
 }
 
-func PbPartner(m *model.Partner) *exttypes.Partner {
+func PbPartner(m *identitymodel.Partner) *exttypes.Partner {
 	return &exttypes.Partner{
 		Id:              m.ID,
 		Name:            m.Name,
@@ -313,7 +315,7 @@ func OrderAddressToPbOrder(m *exttypes.OrderAddress) *types.OrderAddress {
 	}
 }
 
-func PbOrderAddressFromAddress(m *model.Address) *exttypes.OrderAddress {
+func PbOrderAddressFromAddress(m *addressmodel.Address) *exttypes.OrderAddress {
 	if m == nil {
 		return nil
 	}

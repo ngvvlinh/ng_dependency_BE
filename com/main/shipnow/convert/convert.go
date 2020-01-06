@@ -10,7 +10,7 @@ import (
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
-	"etop.vn/backend/pkg/etop/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	"etop.vn/capi/dot"
 )
 
@@ -240,11 +240,11 @@ func GetValueInfo(orders []*ordering.Order) shippingtypes.ValueInfo {
 	}
 }
 
-func FeelineToModel(in *shippingtypes.FeeLine) (out *model.ShippingFeeLine) {
+func FeelineToModel(in *shippingtypes.FeeLine) (out *shippingsharemodel.ShippingFeeLine) {
 	if in == nil {
 		return nil
 	}
-	return &model.ShippingFeeLine{
+	return &shippingsharemodel.ShippingFeeLine{
 		ShippingFeeType:     in.ShippingFeeType,
 		Cost:                in.Cost,
 		ExternalServiceName: in.ExternalServiceName,
@@ -252,14 +252,14 @@ func FeelineToModel(in *shippingtypes.FeeLine) (out *model.ShippingFeeLine) {
 	}
 }
 
-func FeelinesToModel(ins []*shippingtypes.FeeLine) (outs []*model.ShippingFeeLine) {
+func FeelinesToModel(ins []*shippingtypes.FeeLine) (outs []*shippingsharemodel.ShippingFeeLine) {
 	for _, in := range ins {
 		outs = append(outs, FeelineToModel(in))
 	}
 	return
 }
 
-func Feeline(in *model.ShippingFeeLine) (out *shippingtypes.FeeLine) {
+func Feeline(in *shippingsharemodel.ShippingFeeLine) (out *shippingtypes.FeeLine) {
 	if in == nil {
 		return nil
 	}
@@ -271,11 +271,11 @@ func Feeline(in *model.ShippingFeeLine) (out *shippingtypes.FeeLine) {
 	}
 }
 
-func SyncStateToModel(in *shipnow.SyncStates) *model.FulfillmentSyncStates {
+func SyncStateToModel(in *shipnow.SyncStates) *shippingsharemodel.FulfillmentSyncStates {
 	if in == nil {
 		return nil
 	}
-	return &model.FulfillmentSyncStates{
+	return &shippingsharemodel.FulfillmentSyncStates{
 		SyncAt:    in.SyncAt,
 		TrySyncAt: in.TrySyncAt,
 		Error:     etopconvert.ErrorToModel(in.Error),

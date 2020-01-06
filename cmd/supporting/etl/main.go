@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"etop.vn/backend/cmd/supporting/etl/config"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	etl2 "etop.vn/backend/zexp/etl"
 	convert "etop.vn/backend/zexp/etl/tests/convert"
 	"etop.vn/backend/zexp/etl/tests/models"
@@ -70,7 +70,7 @@ func main() {
 	}
 
 	etl := etl2.NewETLEngine(nil)
-	etl.Register(db, (*etopmodel.Accounts)(nil), dbTest, (*models.Accounts)(nil))
+	etl.Register(db, (*identitymodel.Accounts)(nil), dbTest, (*models.Accounts)(nil))
 	etl.RegisterConversion(convert.RegisterConversions)
 
 	etl.Run(ctx)

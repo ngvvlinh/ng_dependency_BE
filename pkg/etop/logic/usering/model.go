@@ -1,11 +1,11 @@
 package usering
 
 import (
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 )
 
-type CreateUserCommand model.CreateUserCommand
+type CreateUserCommand identitymodelx.CreateUserCommand
 
 func (m *CreateUserCommand) Validate() []error {
 	return nil

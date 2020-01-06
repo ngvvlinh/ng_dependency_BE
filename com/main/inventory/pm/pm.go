@@ -141,10 +141,10 @@ func (m *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 	var variantIDs []dot.ID
 	for _, line := range event.Lines {
 		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
-			VariantID: line.VariantId,
+			VariantID: line.VariantID,
 			Quantity:  line.Quantity,
 		})
-		variantIDs = append(variantIDs, line.VariantId)
+		variantIDs = append(variantIDs, line.VariantID)
 	}
 	query := catalog.ValidateVariantIDsQuery{
 		ShopId:         event.ShopID,

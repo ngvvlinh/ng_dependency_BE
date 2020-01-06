@@ -16,6 +16,7 @@ import (
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
@@ -33,6 +34,7 @@ const (
 
 var _ = sqlgenOrder(&Order{})
 
+// +convert:type=ordering.Order
 type Order struct {
 	ID         dot.ID
 	ShopID     dot.ID
@@ -275,6 +277,7 @@ func (s *OrderShipping) GetPtrShippingServiceCode() dot.NullString {
 	return dot.String(s.ExternalServiceID)
 }
 
+// +convert:type=ordering.OrderDiscount
 type OrderDiscount struct {
 	Code   string `json:"code"`
 	Type   string `json:"type"`
@@ -344,6 +347,7 @@ type MetaField struct {
 
 var _ = sqlgenOrderLine(&OrderLine{})
 
+// +convert:type=ordering/types.ItemLine
 type OrderLine struct {
 	OrderID     dot.ID `json:"order_id"`
 	VariantID   dot.ID `json:"variant_id"`
@@ -389,6 +393,7 @@ func (l *OrderLine) GetTotalDiscount() int {
 	return (l.RetailPrice - l.PaymentPrice) * l.Quantity
 }
 
+// +convert:type=ordering.OrderFeeLine
 type OrderFeeLine struct {
 	Amount int         `json:"amount"`
 	Desc   string      `json:"desc"`
@@ -437,6 +442,7 @@ func (feeLines OrderFeeLines) GetOtherFee() int {
 	return s
 }
 
+// +convert:type=ordering.OrderCustomer
 type OrderCustomer struct {
 	FirstName     string `json:"first_name"`
 	LastName      string `json:"last_name"`
@@ -464,6 +470,7 @@ func (m *OrderCustomer) UpdateCustomer(fullname string) *OrderCustomer {
 	return m
 }
 
+// +convert:type=ordering/types.Address
 type OrderAddress struct {
 	FullName  string `json:"full_name"`
 	FirstName string `json:"first_name"`
@@ -482,15 +489,10 @@ type OrderAddress struct {
 	ProvinceCode string `json:"province_code"`
 	WardCode     string `json:"ward_code"`
 
-	Company     string       `json:"company"`
-	Address1    string       `json:"address1"`
-	Address2    string       `json:"address2"`
-	Coordinates *Coordinates `json:"coordinates"`
-}
-
-type Coordinates struct {
-	Latitude  float32 `json:"latitude"`
-	Longitude float32 `json:"longitude"`
+	Company     string                    `json:"company"`
+	Address1    string                    `json:"address1"`
+	Address2    string                    `json:"address2"`
+	Coordinates *addressmodel.Coordinates `json:"coordinates"`
 }
 
 func (o *OrderAddress) UpdateAddress(phone string, fullname string) *OrderAddress {

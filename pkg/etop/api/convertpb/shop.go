@@ -14,6 +14,8 @@ import (
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/summary"
 	apishop "etop.vn/api/top/int/shop"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -125,7 +127,7 @@ func PbExportAttempt(m *model.ExportAttempt) *apishop.ExportItem {
 	}
 }
 
-func PbAuthorizedPartner(item *model.Partner, s *model.Shop) *apishop.AuthorizedPartnerResponse {
+func PbAuthorizedPartner(item *identitymodel.Partner, s *identitymodel.Shop) *apishop.AuthorizedPartnerResponse {
 	redirectUrl := ""
 	if item.AvailableFromEtopConfig != nil {
 		redirectUrl = item.AvailableFromEtopConfig.RedirectUrl
@@ -137,7 +139,7 @@ func PbAuthorizedPartner(item *model.Partner, s *model.Shop) *apishop.Authorized
 	}
 }
 
-func PbAuthorizedPartners(items []*model.Partner, s *model.Shop) []*apishop.AuthorizedPartnerResponse {
+func PbAuthorizedPartners(items []*identitymodel.Partner, s *identitymodel.Shop) []*apishop.AuthorizedPartnerResponse {
 	res := make([]*apishop.AuthorizedPartnerResponse, len(items))
 	for i, item := range items {
 		res[i] = PbAuthorizedPartner(item, s)
@@ -145,7 +147,7 @@ func PbAuthorizedPartners(items []*model.Partner, s *model.Shop) []*apishop.Auth
 	return res
 }
 
-func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *model.Shop) string {
+func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *identitymodel.Shop) string {
 	u, err := url.Parse(redirectUrl)
 	if err != nil {
 		return ""
@@ -379,7 +381,7 @@ func PbLedger(m *ledgering.ShopLedger) *apishop.Ledger {
 	return &apishop.Ledger{
 		Id:          m.ID,
 		Name:        m.Name,
-		BankAccount: PbBankAccount((*model.BankAccount)(m.BankAccount)),
+		BankAccount: PbBankAccount((*identitysharemodel.BankAccount)(m.BankAccount)),
 		Note:        m.Note,
 		Type:        m.Type,
 		CreatedBy:   m.CreatedBy,

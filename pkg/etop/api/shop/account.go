@@ -7,12 +7,13 @@ import (
 	apietop "etop.vn/api/top/int/etop"
 	apishop "etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	etop "etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 )
 
@@ -31,7 +32,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 	if err != nil {
 		return err
 	}
-	cmd := &model.CreateShopCommand{
+	cmd := &identitymodelx.CreateShopCommand{
 		Name:                        q.Name,
 		OwnerID:                     q.Context.UserID,
 		Phone:                       q.Phone,
@@ -82,7 +83,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 			}
 			stokenCmd.Context.Claim = q.Context.Claim
 			stokenCmd.Context.Admin = q.Context.Admin
-			stokenCmd.Context.User = &model.SignedInUser{user} // TODO: remove this hack
+			stokenCmd.Context.User = &identitymodelx.SignedInUser{user} // TODO: remove this hack
 			if err := bus.Dispatch(ctx, stokenCmd); err != nil {
 				return err
 			}
@@ -95,8 +96,8 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 	if err != nil {
 		return err
 	}
-	cmd := &model.UpdateShopCommand{
-		Shop: &model.Shop{
+	cmd := &identitymodelx.UpdateShopCommand{
+		Shop: &identitymodel.Shop{
 			ID:                            q.Context.Shop.ID,
 			InventoryOverstock:            q.InventoryOverstock,
 			Name:                          q.Name,
@@ -126,7 +127,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 }
 
 func (s *AccountService) DeleteShop(ctx context.Context, q *DeleteShopEndpoint) error {
-	cmd := &model.DeleteShopCommand{
+	cmd := &identitymodelx.DeleteShopCommand{
 		ID:      q.Id,
 		OwnerID: q.Context.UserID,
 	}
@@ -138,7 +139,7 @@ func (s *AccountService) DeleteShop(ctx context.Context, q *DeleteShopEndpoint) 
 }
 
 func (s *AccountService) SetDefaultAddress(ctx context.Context, q *SetDefaultAddressEndpoint) error {
-	cmd := &model.SetDefaultAddressShopCommand{
+	cmd := &identitymodelx.SetDefaultAddressShopCommand{
 		ShopID:    q.Context.Shop.ID,
 		Type:      q.Type.String(),
 		AddressID: q.Id,

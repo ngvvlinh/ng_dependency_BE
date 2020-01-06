@@ -13,12 +13,13 @@ import (
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	apishop "etop.vn/backend/pkg/etop/api/shop"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -34,10 +35,10 @@ func loadAndCreateProducts(
 	idx indexes,
 	mode Mode,
 	codeMode CodeMode,
-	shop *model.Shop,
+	shop *identitymodel.Shop,
 	rowProducts []*RowProduct,
 	debug Debug,
-	user *model.SignedInUser,
+	user *identitymodelx.SignedInUser,
 ) (stocktakeId dot.ID, msgs []string, _errs []error, _cellErrs []error, _err error) {
 	var categories *Categories
 	// var collections map[string]*catalogmodel.ShopCollection
@@ -507,7 +508,7 @@ func ensureCategory(
 	ctx context.Context,
 	msgs []string,
 	categories map[[3]string]*catalogmodel.ShopCategory,
-	shop *model.Shop,
+	shop *identitymodel.Shop,
 	names [3]string,
 	cc [3]string,
 ) (*catalogmodel.ShopCategory, []string, error) {

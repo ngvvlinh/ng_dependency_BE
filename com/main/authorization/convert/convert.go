@@ -2,8 +2,8 @@ package convert
 
 import (
 	"etop.vn/api/main/authorization"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	authservice "etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func ConvertStringsToRoles(args []string) (roles []authorization.Role) {
@@ -27,7 +27,7 @@ func ConvertStringsToActions(args []string) (outs []authorization.Action) {
 	return
 }
 
-func ConvertAccountUserExtendedToAuthorization(accountUser *model.AccountUserExtended) *authorization.Authorization {
+func ConvertAccountUserExtendedToAuthorization(accountUser *identitymodel.AccountUserExtended) *authorization.Authorization {
 	user := accountUser.User
 	roles := accountUser.AccountUser.Permission.Roles
 	auth := &authorization.Authorization{
@@ -42,7 +42,7 @@ func ConvertAccountUserExtendedToAuthorization(accountUser *model.AccountUserExt
 	return auth
 }
 
-func ConvertAccountUserToRelationship(accountUser *model.AccountUser) *authorization.Relationship {
+func ConvertAccountUserToRelationship(accountUser *identitymodel.AccountUser) *authorization.Relationship {
 	var isDeleted bool
 	if !accountUser.DeletedAt.IsZero() {
 		isDeleted = true

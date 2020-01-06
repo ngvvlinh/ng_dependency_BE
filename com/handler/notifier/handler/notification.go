@@ -8,10 +8,10 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/mq"
-	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -49,7 +49,7 @@ func SendNotification(ctx context.Context, noti *notifiermodel.Notification) err
 }
 
 func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) error {
-	cmdUser := &etopmodel.GetAccountUserQuery{
+	cmdUser := &identitymodelx.GetAccountUserQuery{
 		AccountID:       noti.AccountID,
 		FindByAccountID: true,
 	}

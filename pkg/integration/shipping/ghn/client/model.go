@@ -10,6 +10,7 @@ import (
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/etop/model"
@@ -168,7 +169,7 @@ func (id ServiceFeeID) ToModel() shipping_fee_type.ShippingFeeType {
 	}
 }
 
-func (s *ShippingOrderCost) CalcAndConvertShippingFee() *model.ShippingFeeLine {
+func (s *ShippingOrderCost) CalcAndConvertShippingFee() *shippingsharemodel.ShippingFeeLine {
 	if s == nil {
 		return nil
 	}
@@ -189,7 +190,7 @@ func (s *ShippingOrderCost) CalcAndConvertShippingFee() *model.ShippingFeeLine {
 		shippingType = sID.ToModel()
 	}
 
-	return &model.ShippingFeeLine{
+	return &shippingsharemodel.ShippingFeeLine{
 		ShippingFeeType:          shippingType,
 		Cost:                     cost,
 		ExternalServiceID:        s.ServiceID.String(),
@@ -200,8 +201,8 @@ func (s *ShippingOrderCost) CalcAndConvertShippingFee() *model.ShippingFeeLine {
 	}
 }
 
-func CalcAndConvertShippingFeeLines(items []*ShippingOrderCost) []*model.ShippingFeeLine {
-	res := make([]*model.ShippingFeeLine, len(items))
+func CalcAndConvertShippingFeeLines(items []*ShippingOrderCost) []*shippingsharemodel.ShippingFeeLine {
+	res := make([]*shippingsharemodel.ShippingFeeLine, len(items))
 	for i, item := range items {
 		res[i] = item.CalcAndConvertShippingFee()
 	}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/identity/convert"
@@ -13,7 +14,6 @@ import (
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -31,7 +31,7 @@ func NewAccountStore(db *cmsql.Database) AccountStoreFactory {
 type AccountStore struct {
 	query       cmsql.QueryFactory
 	preds       []interface{}
-	shopFt      sqlstore.ShopFilters
+	shopFt      ShopFilters
 	affiliateFt AffiliateFilters
 }
 
@@ -55,8 +55,8 @@ func (s *AccountStore) AffiliatesByIDs(ids ...dot.ID) *AccountStore {
 	return s
 }
 
-func (s *AccountStore) GetShopDB() (*model.Shop, error) {
-	var shop model.Shop
+func (s *AccountStore) GetShopDB() (*identitymodel.Shop, error) {
+	var shop identitymodel.Shop
 	err := s.query().Where(s.preds).ShouldGet(&shop)
 	return &shop, err
 }
@@ -95,7 +95,7 @@ type CreateAffiliateArgs struct {
 	Phone       string
 	Email       string
 	IsTest      bool
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 }
 
 func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affiliate, error) {
@@ -104,7 +104,7 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 	}
 
 	id := model.NewAffiliateID()
-	account := &model.Account{
+	account := &identitymodel.Account{
 		ID:       id,
 		OwnerID:  args.OwnerID,
 		Name:     args.Name,
@@ -112,7 +112,7 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 		ImageURL: "",
 		URLSlug:  "",
 	}
-	permission := &model.AccountUser{
+	permission := &identitymodel.AccountUser{
 		AccountID: id,
 		UserID:    args.OwnerID,
 		Status:    status3.P,
@@ -141,7 +141,7 @@ type UpdateAffiliateArgs struct {
 	Phone       string
 	Email       string
 	Name        string
-	BankAccount *identity.BankAccount
+	BankAccount *identitytypes.BankAccount
 }
 
 func (s *AccountStore) UpdateAffiliate(args UpdateAffiliateArgs) (*identity.Affiliate, error) {

@@ -12,6 +12,7 @@ import (
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/authorize_shop_config"
 	"etop.vn/api/top/types/etc/status3"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmService "etop.vn/backend/pkg/common/apifw/service"
@@ -21,7 +22,6 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	apiconvertpb "etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -159,7 +159,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			return cm.Errorf(cm.InvalidArgument, nil, "Giá trị external_shop_id không hợp lệ")
 		}
 
-		relationQuery := &model.GetPartnerRelationQuery{
+		relationQuery := &identitymodelx.GetPartnerRelationQuery{
 			PartnerID:         partner.ID,
 			AccountID:         q.ShopId,
 			ExternalAccountID: q.ExternalShopId,

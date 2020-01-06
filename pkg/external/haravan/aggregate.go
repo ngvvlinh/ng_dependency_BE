@@ -7,11 +7,11 @@ import (
 	"etop.vn/api/external/haravan/identity"
 	"etop.vn/api/meta"
 	identitysqlstore "etop.vn/backend/com/external/haravan/identity/sqlstore"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/external/haravan/convert"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
@@ -20,7 +20,7 @@ import (
 )
 
 var _ haravan.Aggregate = &Aggregate{}
-var haravanPartner *model.Partner
+var haravanPartner *identitymodel.Partner
 
 type Aggregate struct {
 	db                   cmsql.Transactioner

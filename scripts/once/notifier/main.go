@@ -6,11 +6,11 @@ import (
 
 	"etop.vn/backend/cmd/etop-server/config"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/common/l"
 )
@@ -57,7 +57,7 @@ func main() {
 				<-ch
 				chUpdate <- _err
 			}()
-			cmdUser := &model.GetAccountUserQuery{
+			cmdUser := &identitymodelx.GetAccountUserQuery{
 				AccountID:       device.AccountID,
 				FindByAccountID: true,
 			}

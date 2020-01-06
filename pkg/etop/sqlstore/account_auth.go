@@ -3,13 +3,14 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/etop/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
 	"etop.vn/capi/dot"
 )
 
 type AccountAuthStore struct {
 	ctx   context.Context
-	ft    AccountAuthFilters
+	ft    identitysqlstore.AccountAuthFilters
 	preds []interface{}
 
 	includeDeleted
@@ -34,13 +35,13 @@ func (s *AccountAuthStore) IncludeDeleted() *AccountAuthStore {
 	return s
 }
 
-func (s *AccountAuthStore) Get() (*model.AccountAuth, error) {
-	var item model.AccountAuth
+func (s *AccountAuthStore) Get() (*identitymodel.AccountAuth, error) {
+	var item identitymodel.AccountAuth
 	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 
-func (s *AccountAuthStore) Create(m *model.AccountAuth) error {
+func (s *AccountAuthStore) Create(m *identitymodel.AccountAuth) error {
 	if err := m.BeforeInsert(); err != nil {
 		return err
 	}

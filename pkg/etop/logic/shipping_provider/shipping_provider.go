@@ -10,9 +10,11 @@ import (
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status4"
+	addressmodel "etop.vn/backend/com/main/address/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/syncgroup"
 	"etop.vn/backend/pkg/common/bus"
@@ -97,7 +99,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		updateFfm := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: status4.S,
-			SyncStates: &model.FulfillmentSyncStates{
+			SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 				TrySyncAt:         time.Now(),
 				NextShippingState: shipping.Created,
 			},
@@ -116,7 +118,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		updateFfm2 := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: status4.N,
-			SyncStates: &model.FulfillmentSyncStates{
+			SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),
 
@@ -205,7 +207,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		if err != nil {
 			return err
 		}
-		ffmToUpdate.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
+		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
 
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
@@ -261,7 +263,7 @@ func CheckShippingService(order *ordermodel.Order, services []*model.AvailableSh
 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần chọn gói dịch vụ giao hàng")
 }
 
-func (ctrl *ProviderManager) VerifyDistrictCode(addr *model.Address) (*location.District, *location.Province, error) {
+func (ctrl *ProviderManager) VerifyDistrictCode(addr *addressmodel.Address) (*location.District, *location.Province, error) {
 	if addr == nil {
 		return nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -287,7 +289,7 @@ func (ctrl *ProviderManager) VerifyDistrictCode(addr *model.Address) (*location.
 	return district, query.Result.Province, nil
 }
 
-func (ctrl *ProviderManager) VerifyWardCode(addr *model.Address) (*location.Ward, error) {
+func (ctrl *ProviderManager) VerifyWardCode(addr *addressmodel.Address) (*location.Ward, error) {
 	if addr == nil {
 		return nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -305,7 +307,7 @@ func (ctrl *ProviderManager) VerifyWardCode(addr *model.Address) (*location.Ward
 	return query.Result.Ward, nil
 }
 
-func (ctrl *ProviderManager) VerifyProvinceCode(addr *model.Address) (*location.Province, error) {
+func (ctrl *ProviderManager) VerifyProvinceCode(addr *addressmodel.Address) (*location.Province, error) {
 	if addr == nil {
 		return nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -323,7 +325,7 @@ func (ctrl *ProviderManager) VerifyProvinceCode(addr *model.Address) (*location.
 	return query.Result.Province, nil
 }
 
-func (ctrl *ProviderManager) VerifyAddress(addr *model.Address, requireWard bool) (*location.Province, *location.District, *location.Ward, error) {
+func (ctrl *ProviderManager) VerifyAddress(addr *addressmodel.Address, requireWard bool) (*location.Province, *location.District, *location.Ward, error) {
 	if addr == nil {
 		return nil, nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}

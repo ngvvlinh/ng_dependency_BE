@@ -4,6 +4,7 @@ import (
 	"time"
 
 	mdlocation "etop.vn/api/main/location"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
@@ -66,7 +67,7 @@ type GetShippingFeeLinesCommand struct {
 }
 
 type GetShippingFeeLineResponse struct {
-	ShippingFeeLines   []*model.ShippingFeeLine
+	ShippingFeeLines   []*shippingsharemodel.ShippingFeeLine
 	ExpectedPickAt     time.Time
 	ExpectedDeliveryAt time.Time
 }

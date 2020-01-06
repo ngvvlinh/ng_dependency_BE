@@ -2,6 +2,7 @@ package admin
 
 import (
 	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
 	credit_type "etop.vn/api/top/types/etc/credit_type"
 	notifier_entity "etop.vn/api/top/types/etc/notifier_entity"
@@ -287,3 +288,22 @@ type CreateNotificationsResponse struct {
 
 func (m *CreateNotificationsResponse) Reset()         { *m = CreateNotificationsResponse{} }
 func (m *CreateNotificationsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateFulfillmentShippingStateRequest struct {
+	ID                       dot.ID         `json:"id"`
+	ShippingCode             string         `json:"shipping_code"`
+	ShippingState            shipping.State `json:"shipping_state"`
+	ActualCompensationAmount dot.NullInt    `json:"actual_compensation_amount"`
+}
+
+func (m *UpdateFulfillmentShippingStateRequest) Reset()         { *m = UpdateFulfillmentShippingStateRequest{} }
+func (m *UpdateFulfillmentShippingStateRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateFulfillmentShippingFeeRequest struct {
+	ID           dot.ID                        `json:"id"`
+	ShippingCode string                        `json:"shipping_code"`
+	ShippingFees []*types.ShippingFeeShortLine `json:"shipping_fees"`
+}
+
+func (m *UpdateFulfillmentShippingFeeRequest) Reset()         { *m = UpdateFulfillmentShippingFeeRequest{} }
+func (m *UpdateFulfillmentShippingFeeRequest) String() string { return jsonx.MustMarshalToString(m) }

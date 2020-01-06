@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/identity"
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -12,18 +13,21 @@ import (
 	"etop.vn/api/top/types/etc/account_type"
 	addresstype "etop.vn/api/top/types/etc/address_type"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
+	addressmodel "etop.vn/backend/com/main/address/model"
+	creditmodel "etop.vn/backend/com/main/credit/model"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	"etop.vn/capi/dot"
 )
 
-func CompanyInfoToModel(e *etop.CompanyInfo) *model.CompanyInfo {
+func CompanyInfoToModel(e *etop.CompanyInfo) *identitysharemodel.CompanyInfo {
 	if e == nil {
 		return nil
 	}
-	return &model.CompanyInfo{
+	return &identitysharemodel.CompanyInfo{
 		Name:                e.Name,
 		TaxCode:             e.TaxCode,
 		Address:             e.Address,
@@ -32,11 +36,11 @@ func CompanyInfoToModel(e *etop.CompanyInfo) *model.CompanyInfo {
 	}
 }
 
-func BankAccountToModel(b *etop.BankAccount) *model.BankAccount {
+func BankAccountToModel(b *etop.BankAccount) *identitysharemodel.BankAccount {
 	if b == nil {
 		return nil
 	}
-	return &model.BankAccount{
+	return &identitysharemodel.BankAccount{
 		Name:          b.Name,
 		Province:      b.Province,
 		Branch:        b.Branch,
@@ -45,11 +49,11 @@ func BankAccountToModel(b *etop.BankAccount) *model.BankAccount {
 	}
 }
 
-func BankAccountToCoreBankAccount(b *etop.BankAccount) *identity.BankAccount {
+func BankAccountToCoreBankAccount(b *etop.BankAccount) *identitytypes.BankAccount {
 	if b == nil {
 		return nil
 	}
-	return &identity.BankAccount{
+	return &identitytypes.BankAccount{
 		Name:          b.Name,
 		Province:      b.Province,
 		Branch:        b.Branch,
@@ -58,11 +62,11 @@ func BankAccountToCoreBankAccount(b *etop.BankAccount) *identity.BankAccount {
 	}
 }
 
-func AddressToModel(a *etop.Address) (*model.Address, error) {
+func AddressToModel(a *etop.Address) (*addressmodel.Address, error) {
 	if a == nil {
 		return nil, nil
 	}
-	res := &model.Address{
+	res := &addressmodel.Address{
 		ID:           a.Id,
 		Province:     a.Province,
 		ProvinceCode: a.ProvinceCode,
@@ -106,7 +110,7 @@ func AddressToModel(a *etop.Address) (*model.Address, error) {
 		res.WardCode = loc.Ward.Code
 	}
 	if a.Coordinates != nil {
-		res.Coordinates = &model.Coordinates{
+		res.Coordinates = &addressmodel.Coordinates{
 			Latitude:  a.Coordinates.Latitude,
 			Longitude: a.Coordinates.Longitude,
 		}
@@ -114,7 +118,7 @@ func AddressToModel(a *etop.Address) (*model.Address, error) {
 	return res, nil
 }
 
-func PbUser(m *model.User) *etop.User {
+func PbUser(m *identitymodel.User) *etop.User {
 	if m == nil {
 		panic("Nil user")
 	}
@@ -140,7 +144,7 @@ func PbAccountType(t account_type.AccountType) account_type.AccountType {
 	return t
 }
 
-func PbLoginAccount(m *model.AccountUserExtended) *etop.LoginAccount {
+func PbLoginAccount(m *identitymodel.AccountUserExtended) *etop.LoginAccount {
 	account := m.Account
 	return &etop.LoginAccount{
 		Id:          account.ID,
@@ -154,7 +158,7 @@ func PbLoginAccount(m *model.AccountUserExtended) *etop.LoginAccount {
 	}
 }
 
-func PbUserAccount(m *model.AccountUserExtended) *etop.UserAccountInfo {
+func PbUserAccount(m *identitymodel.AccountUserExtended) *etop.UserAccountInfo {
 	account := m.Account
 	accUser := m.AccountUser
 	user := m.User
@@ -178,7 +182,7 @@ func PbUserAccount(m *model.AccountUserExtended) *etop.UserAccountInfo {
 	}
 }
 
-func PbUserAccounts(items []*model.AccountUserExtended) []*etop.UserAccountInfo {
+func PbUserAccounts(items []*identitymodel.AccountUserExtended) []*etop.UserAccountInfo {
 	result := make([]*etop.UserAccountInfo, len(items))
 	for i, item := range items {
 		result[i] = PbUserAccount(item)
@@ -186,7 +190,7 @@ func PbUserAccounts(items []*model.AccountUserExtended) []*etop.UserAccountInfo 
 	return result
 }
 
-func PbUserAccountIncomplete(accUser *model.AccountUser, account *model.Account) *etop.UserAccountInfo {
+func PbUserAccountIncomplete(accUser *identitymodel.AccountUser, account *identitymodel.Account) *etop.UserAccountInfo {
 	return &etop.UserAccountInfo{
 		UserId:               accUser.UserID,
 		UserFullName:         "",
@@ -204,14 +208,14 @@ func PbUserAccountIncomplete(accUser *model.AccountUser, account *model.Account)
 	}
 }
 
-func PbPermission(m *model.AccountUser) *etop.Permission {
+func PbPermission(m *identitymodel.AccountUser) *etop.Permission {
 	return &etop.Permission{
 		Roles:       m.Roles,
 		Permissions: m.Permissions,
 	}
 }
 
-func PbPartner(m *model.Partner) *etop.Partner {
+func PbPartner(m *identitymodel.Partner) *etop.Partner {
 	return &etop.Partner{
 		Id:             m.ID,
 		Name:           m.Name,
@@ -228,7 +232,7 @@ func PbPartner(m *model.Partner) *etop.Partner {
 	}
 }
 
-func PbPublicPartners(items []*model.Partner) []*etop.PublicAccountInfo {
+func PbPublicPartners(items []*identitymodel.Partner) []*etop.PublicAccountInfo {
 	res := make([]*etop.PublicAccountInfo, len(items))
 	for i, item := range items {
 		res[i] = PbPublicAccountInfo(item)
@@ -236,9 +240,9 @@ func PbPublicPartners(items []*model.Partner) []*etop.PublicAccountInfo {
 	return res
 }
 
-func PbPublicAccountInfo(m model.AccountInterface) *etop.PublicAccountInfo {
+func PbPublicAccountInfo(m identitymodel.AccountInterface) *etop.PublicAccountInfo {
 	switch m := m.(type) {
-	case *model.Partner:
+	case *identitymodel.Partner:
 		return &etop.PublicAccountInfo{
 			Id:       m.ID,
 			Name:     m.PublicName, // public name here!
@@ -258,7 +262,7 @@ func PbPublicAccountInfo(m model.AccountInterface) *etop.PublicAccountInfo {
 	}
 }
 
-func PbShop(m *model.Shop) *etop.Shop {
+func PbShop(m *identitymodel.Shop) *etop.Shop {
 	return &etop.Shop{
 		Id:          m.ID,
 		Name:        m.Name,
@@ -273,7 +277,30 @@ func PbShop(m *model.Shop) *etop.Shop {
 	}
 }
 
-func PbShopExtended(m *model.ShopExtended) *etop.Shop {
+func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
+	if in == nil {
+		return nil
+	}
+	return &etop.Shop{
+		Id:                in.ID,
+		Name:              in.Name,
+		Status:            in.Status,
+		IsTest:            in.IsTest == 1,
+		Phone:             in.Phone,
+		AutoCreateFfm:     in.AutoCreateFFM,
+		WebsiteUrl:        in.WebsiteURL,
+		ImageUrl:          in.ImageURL,
+		Email:             in.Email,
+		ShipToAddressId:   in.ShipToAddressID,
+		ShipFromAddressId: in.ShipFromAddressID,
+		OwnerId:           in.OwnerID,
+		Code:              in.Code,
+		BankAccount:       Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
+		TryOn:             in.TryOn,
+	}
+}
+
+func PbShopExtended(m *identitymodel.ShopExtended) *etop.Shop {
 	return &etop.Shop{
 		Id:                            m.ID,
 		InventoryOverstock:            m.InventoryOverstock.Apply(true),
@@ -303,7 +330,7 @@ func PbShopExtended(m *model.ShopExtended) *etop.Shop {
 	}
 }
 
-func PbShopExtendeds(items []*model.ShopExtended) []*etop.Shop {
+func PbShopExtendeds(items []*identitymodel.ShopExtended) []*etop.Shop {
 	result := make([]*etop.Shop, len(items))
 	for i, item := range items {
 		result[i] = PbShopExtended(item)
@@ -408,7 +435,7 @@ func PbBankBranch(item *bank.Branch) *etop.BankBranch {
 	}
 }
 
-func PbAddresses(items []*model.Address) []*etop.Address {
+func PbAddresses(items []*addressmodel.Address) []*etop.Address {
 	result := make([]*etop.Address, len(items))
 	for i, item := range items {
 		result[i] = PbAddress(item)
@@ -416,7 +443,7 @@ func PbAddresses(items []*model.Address) []*etop.Address {
 	return result
 }
 
-func PbAddress(a *model.Address) *etop.Address {
+func PbAddress(a *addressmodel.Address) *etop.Address {
 	if a == nil {
 		return nil
 	}
@@ -451,7 +478,7 @@ func PbAddress(a *model.Address) *etop.Address {
 	return res
 }
 
-func PbBankAccount(b *model.BankAccount) *etop.BankAccount {
+func PbBankAccount(b *identitysharemodel.BankAccount) *etop.BankAccount {
 	if b == nil {
 		return nil
 	}
@@ -464,7 +491,7 @@ func PbBankAccount(b *model.BankAccount) *etop.BankAccount {
 	}
 }
 
-func Convert_core_BankAccount_To_api_BankAccount(in *identity.BankAccount) *etop.BankAccount {
+func Convert_core_BankAccount_To_api_BankAccount(in *identitytypes.BankAccount) *etop.BankAccount {
 	if in == nil {
 		return nil
 	}
@@ -477,8 +504,8 @@ func Convert_core_BankAccount_To_api_BankAccount(in *identity.BankAccount) *etop
 	}
 }
 
-func ContactPersonToModel(m *etop.ContactPerson) *model.ContactPerson {
-	return &model.ContactPerson{
+func ContactPersonToModel(m *etop.ContactPerson) *identitysharemodel.ContactPerson {
+	return &identitysharemodel.ContactPerson{
 		Name:     m.Name,
 		Position: m.Position,
 		Phone:    m.Phone,
@@ -486,15 +513,15 @@ func ContactPersonToModel(m *etop.ContactPerson) *model.ContactPerson {
 	}
 }
 
-func ContactPersonsToModel(items []*etop.ContactPerson) []*model.ContactPerson {
-	result := make([]*model.ContactPerson, 0, len(items))
+func ContactPersonsToModel(items []*etop.ContactPerson) []*identitysharemodel.ContactPerson {
+	result := make([]*identitysharemodel.ContactPerson, 0, len(items))
 	for _, item := range items {
 		result = append(result, ContactPersonToModel(item))
 	}
 	return result
 }
 
-func PbContactPerson(c *model.ContactPerson) *etop.ContactPerson {
+func PbContactPerson(c *identitysharemodel.ContactPerson) *etop.ContactPerson {
 	if c == nil {
 		return nil
 	}
@@ -506,7 +533,7 @@ func PbContactPerson(c *model.ContactPerson) *etop.ContactPerson {
 	}
 }
 
-func PbContactPersons(items []*model.ContactPerson) []*etop.ContactPerson {
+func PbContactPersons(items []*identitysharemodel.ContactPerson) []*etop.ContactPerson {
 	if items == nil {
 		return nil
 	}
@@ -517,7 +544,7 @@ func PbContactPersons(items []*model.ContactPerson) []*etop.ContactPerson {
 	return result
 }
 
-func PbCompanyInfo(info *model.CompanyInfo) *etop.CompanyInfo {
+func PbCompanyInfo(info *identitysharemodel.CompanyInfo) *etop.CompanyInfo {
 	if info == nil {
 		return nil
 	}
@@ -529,7 +556,7 @@ func PbCompanyInfo(info *model.CompanyInfo) *etop.CompanyInfo {
 	}
 }
 
-func PbAddressNote(item *model.AddressNote) *etop.AddressNote {
+func PbAddressNote(item *addressmodel.AddressNote) *etop.AddressNote {
 	if item == nil {
 		return nil
 	}
@@ -541,11 +568,11 @@ func PbAddressNote(item *model.AddressNote) *etop.AddressNote {
 	}
 }
 
-func PbAddressNoteToModel(item *etop.AddressNote) *model.AddressNote {
+func PbAddressNoteToModel(item *etop.AddressNote) *addressmodel.AddressNote {
 	if item == nil {
 		return nil
 	}
-	return &model.AddressNote{
+	return &addressmodel.AddressNote{
 		OpenTime:   item.OpenTime,
 		LunchBreak: item.LunchBreak,
 		Note:       item.Note,
@@ -553,7 +580,7 @@ func PbAddressNoteToModel(item *etop.AddressNote) *model.AddressNote {
 	}
 }
 
-func PbCreateAddressToModel(accountID dot.ID, p *etop.CreateAddressRequest) (*model.Address, error) {
+func PbCreateAddressToModel(accountID dot.ID, p *etop.CreateAddressRequest) (*addressmodel.Address, error) {
 	address := &etop.Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
@@ -583,7 +610,7 @@ func PbCreateAddressToModel(accountID dot.ID, p *etop.CreateAddressRequest) (*mo
 	return res, nil
 }
 
-func PbUpdateAddressToModel(accountID dot.ID, p *etop.UpdateAddressRequest) (*model.Address, error) {
+func PbUpdateAddressToModel(accountID dot.ID, p *etop.UpdateAddressRequest) (*addressmodel.Address, error) {
 	address := &etop.Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
@@ -614,7 +641,7 @@ func PbUpdateAddressToModel(accountID dot.ID, p *etop.UpdateAddressRequest) (*mo
 	return res, nil
 }
 
-func PbCreditExtended(item *model.CreditExtended) *etop.Credit {
+func PbCreditExtended(item *creditmodel.CreditExtended) *etop.Credit {
 	if item == nil {
 		return nil
 	}
@@ -632,7 +659,7 @@ func PbCreditExtended(item *model.CreditExtended) *etop.Credit {
 	}
 }
 
-func PbCreditExtendeds(items []*model.CreditExtended) []*etop.Credit {
+func PbCreditExtendeds(items []*creditmodel.CreditExtended) []*etop.Credit {
 	result := make([]*etop.Credit, len(items))
 	for i, item := range items {
 		result[i] = PbCreditExtended(item)
@@ -640,13 +667,13 @@ func PbCreditExtendeds(items []*model.CreditExtended) []*etop.Credit {
 	return result
 }
 
-func ShippingServiceSelectStrategyToModel(s []*etop.ShippingServiceSelectStrategyItem) []*model.ShippingServiceSelectStrategyItem {
+func ShippingServiceSelectStrategyToModel(s []*etop.ShippingServiceSelectStrategyItem) []*identitymodel.ShippingServiceSelectStrategyItem {
 	if s == nil {
 		return nil
 	}
-	var result = make([]*model.ShippingServiceSelectStrategyItem, len(s))
+	var result = make([]*identitymodel.ShippingServiceSelectStrategyItem, len(s))
 	for i, item := range s {
-		result[i] = &model.ShippingServiceSelectStrategyItem{
+		result[i] = &identitymodel.ShippingServiceSelectStrategyItem{
 			Key:   item.Key,
 			Value: item.Value,
 		}
@@ -654,23 +681,23 @@ func ShippingServiceSelectStrategyToModel(s []*etop.ShippingServiceSelectStrateg
 	return result
 }
 
-func SurveyInfoToModel(m *etop.SurveyInfo) *model.SurveyInfo {
-	return &model.SurveyInfo{
+func SurveyInfoToModel(m *etop.SurveyInfo) *identitymodel.SurveyInfo {
+	return &identitymodel.SurveyInfo{
 		Key:      m.Key,
 		Question: m.Question,
 		Answer:   m.Answer,
 	}
 }
 
-func SurveyInfosToModel(items []*etop.SurveyInfo) []*model.SurveyInfo {
-	result := make([]*model.SurveyInfo, 0, len(items))
+func SurveyInfosToModel(items []*etop.SurveyInfo) []*identitymodel.SurveyInfo {
+	result := make([]*identitymodel.SurveyInfo, 0, len(items))
 	for _, item := range items {
 		result = append(result, SurveyInfoToModel(item))
 	}
 	return result
 }
 
-func PbSurveyInfo(info *model.SurveyInfo) *etop.SurveyInfo {
+func PbSurveyInfo(info *identitymodel.SurveyInfo) *etop.SurveyInfo {
 	if info == nil {
 		return nil
 	}
@@ -681,7 +708,7 @@ func PbSurveyInfo(info *model.SurveyInfo) *etop.SurveyInfo {
 	}
 }
 
-func PbSurveyInfos(items []*model.SurveyInfo) []*etop.SurveyInfo {
+func PbSurveyInfos(items []*identitymodel.SurveyInfo) []*etop.SurveyInfo {
 	result := make([]*etop.SurveyInfo, len(items))
 	for i, item := range items {
 		result[i] = PbSurveyInfo(item)
@@ -689,7 +716,7 @@ func PbSurveyInfos(items []*model.SurveyInfo) []*etop.SurveyInfo {
 	return result
 }
 
-func PbShippingServiceSelectStrategy(items []*model.ShippingServiceSelectStrategyItem) []*etop.ShippingServiceSelectStrategyItem {
+func PbShippingServiceSelectStrategy(items []*identitymodel.ShippingServiceSelectStrategyItem) []*etop.ShippingServiceSelectStrategyItem {
 	if items == nil {
 		return nil
 	}

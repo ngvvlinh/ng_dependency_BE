@@ -20,6 +20,7 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/backend/com/main/catalog/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -40,7 +41,7 @@ var ll = l.New()
 
 func CreateOrder(
 	ctx context.Context, claim *claims.ShopClaim,
-	authPartner *model.Partner, r *types.CreateOrderRequest,
+	authPartner *identitymodel.Partner, r *types.CreateOrderRequest,
 	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
@@ -475,7 +476,7 @@ func PrepareOrderLines(
 	return res, nil
 }
 
-func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
+func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *identitymodel.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID: q.Id,
 		ShopID:  claim.Shop.ID,

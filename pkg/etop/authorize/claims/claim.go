@@ -4,7 +4,7 @@ import (
 	"time"
 
 	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/etop/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/capi/dot"
 )
 
@@ -56,16 +56,16 @@ type EmptyClaim struct {
 
 type UserClaim struct {
 	*Claim
-	Admin *model.SignedInUser
-	User  *model.SignedInUser
+	Admin *identitymodelx.SignedInUser
+	User  *identitymodelx.SignedInUser
 }
 
 type PartnerClaim struct {
 	UserClaim
 	CommonAccountClaim
-	User *model.SignedInUser
+	User *identitymodelx.SignedInUser
 
-	Partner *model.Partner
+	Partner *identitymodel.Partner
 }
 
 type ShopClaim struct {
@@ -73,7 +73,7 @@ type ShopClaim struct {
 	CommonAccountClaim
 	Actions []string
 
-	Shop *model.Shop
+	Shop *identitymodel.Shop
 }
 
 type AdminClaim struct {

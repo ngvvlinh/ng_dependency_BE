@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
+	etop_vn_backend_com_main_identity_model "etop.vn/backend/com/main/identity/model"
 	etop_vn_backend_com_main_ordering_model "etop.vn/backend/com/main/ordering/model"
 	etop_vn_backend_com_main_shipping_model "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	sq "etop.vn/backend/pkg/common/sql/sq"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
-	model "etop.vn/backend/pkg/etop/model"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
@@ -74,7 +74,7 @@ func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) 
 		core.Now(m.UpdatedAt, now, true),
 		m.Status,
 		core.Time(m.ExternalPaidAt),
-		core.String(m.Provider),
+		m.Provider,
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
 		core.String(m.InvoiceNumber),
@@ -91,7 +91,7 @@ func (m *MoneyTransactionShippingExternal) SQLScanArgs(opts core.Opts) []interfa
 		(*core.Time)(&m.UpdatedAt),
 		&m.Status,
 		(*core.Time)(&m.ExternalPaidAt),
-		(*core.String)(&m.Provider),
+		&m.Provider,
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
 		(*core.String)(&m.InvoiceNumber),
@@ -237,7 +237,7 @@ func (m *MoneyTransactionShippingExternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalPaidAt)
 	}
-	if m.Provider != "" {
+	if m.Provider != 0 {
 		flag = true
 		w.WriteName("provider")
 		w.WriteByte('=')
@@ -446,7 +446,7 @@ func (m *MoneyTransactionShippingExternalLine) SQLArgs(opts core.Opts, create bo
 		core.Int(m.ExternalTotalCOD),
 		core.Time(m.ExternalCreatedAt),
 		core.Time(m.ExternalClosedAt),
-		core.String(m.EtopFulfillmentIdRaw),
+		core.String(m.EtopFulfillmentIDRaw),
 		m.EtopFulfillmentID,
 		core.String(m.Note),
 		m.MoneyTransactionShippingExternalID,
@@ -466,7 +466,7 @@ func (m *MoneyTransactionShippingExternalLine) SQLScanArgs(opts core.Opts) []int
 		(*core.Int)(&m.ExternalTotalCOD),
 		(*core.Time)(&m.ExternalCreatedAt),
 		(*core.Time)(&m.ExternalClosedAt),
-		(*core.String)(&m.EtopFulfillmentIdRaw),
+		(*core.String)(&m.EtopFulfillmentIDRaw),
 		&m.EtopFulfillmentID,
 		(*core.String)(&m.Note),
 		&m.MoneyTransactionShippingExternalID,
@@ -608,13 +608,13 @@ func (m *MoneyTransactionShippingExternalLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalClosedAt)
 	}
-	if m.EtopFulfillmentIdRaw != "" {
+	if m.EtopFulfillmentIDRaw != "" {
 		flag = true
 		w.WriteName("etop_fulfillment_id_raw")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.EtopFulfillmentIdRaw)
+		w.WriteArg(m.EtopFulfillmentIDRaw)
 	}
 	if m.EtopFulfillmentID != 0 {
 		flag = true
@@ -729,7 +729,7 @@ func (m MoneyTransactionShippingExternalLineHistory) ExternalCreatedAt() core.In
 func (m MoneyTransactionShippingExternalLineHistory) ExternalClosedAt() core.Interface {
 	return core.Interface{m["external_closed_at"]}
 }
-func (m MoneyTransactionShippingExternalLineHistory) EtopFulfillmentIdRaw() core.Interface {
+func (m MoneyTransactionShippingExternalLineHistory) EtopFulfillmentIDRaw() core.Interface {
 	return core.Interface{m["etop_fulfillment_id_raw"]}
 }
 func (m MoneyTransactionShippingExternalLineHistory) EtopFulfillmentID() core.Interface {
@@ -820,7 +820,7 @@ func (ms *MoneyTransactionShippingExternalLineHistories) SQLScan(opts core.Opts,
 }
 
 // Type MoneyTransactionShippingExternalLineExtended represents a join
-func sqlgenMoneyTransactionShippingExternalLineExtended(_ *MoneyTransactionShippingExternalLineExtended, _ *MoneyTransactionShippingExternalLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_shipping_model.Fulfillment, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.Shop, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_ordering_model.Order, a2 sq.AS, c2 string) bool {
+func sqlgenMoneyTransactionShippingExternalLineExtended(_ *MoneyTransactionShippingExternalLineExtended, _ *MoneyTransactionShippingExternalLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_shipping_model.Fulfillment, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_identity_model.Shop, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_ordering_model.Order, a2 sq.AS, c2 string) bool {
 	__sqlMoneyTransactionShippingExternalLineExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
 	__sqlMoneyTransactionShippingExternalLineExtended_As = as
 	__sqlMoneyTransactionShippingExternalLineExtended_JoinAs = []sq.AS{a0, a1, a2}
@@ -892,7 +892,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) __sqlSelect(w SQLWriter) 
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[0]), (*etop_vn_backend_com_main_shipping_model.Fulfillment)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[1]), (*model.Shop)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[1]), (*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLListCols())
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[2]), (*etop_vn_backend_com_main_ordering_model.Order)(nil).SQLListCols())
 }
@@ -916,7 +916,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) __sqlJoin(w SQLWriter, ty
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[1]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.Shop)(nil).SQLTableName())
+	w.WriteName((*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[1]))
 	w.WriteRawString(" ON ")
@@ -937,7 +937,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) SQLScanArgs(opts core.Opt
 	args = append(args, m.MoneyTransactionShippingExternalLine.SQLScanArgs(opts)...)
 	m.Fulfillment = new(etop_vn_backend_com_main_shipping_model.Fulfillment)
 	args = append(args, m.Fulfillment.SQLScanArgs(opts)...)
-	m.Shop = new(model.Shop)
+	m.Shop = new(etop_vn_backend_com_main_identity_model.Shop)
 	args = append(args, m.Shop.SQLScanArgs(opts)...)
 	m.Order = new(etop_vn_backend_com_main_ordering_model.Order)
 	args = append(args, m.Order.SQLScanArgs(opts)...)
@@ -1406,7 +1406,7 @@ func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.R
 }
 
 // Type MoneyTransactionShippingFtShop represents a join
-func sqlgenMoneyTransactionShippingFtShop(_ *MoneyTransactionShippingFtShop, _ *MoneyTransactionShipping, as sq.AS, t0 sq.JOIN_TYPE, _ *model.Shop, a0 sq.AS, c0 string) bool {
+func sqlgenMoneyTransactionShippingFtShop(_ *MoneyTransactionShippingFtShop, _ *MoneyTransactionShipping, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_com_main_identity_model.Shop, a0 sq.AS, c0 string) bool {
 	__sqlMoneyTransactionShippingFtShop_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlMoneyTransactionShippingFtShop_As = as
 	__sqlMoneyTransactionShippingFtShop_JoinAs = []sq.AS{a0}
@@ -1472,7 +1472,7 @@ func (m *MoneyTransactionShippingFtShop) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
 	core.WriteCols(w, string(__sqlMoneyTransactionShippingFtShop_As), (*MoneyTransactionShipping)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlMoneyTransactionShippingFtShop_JoinAs[0]), (*model.Shop)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlMoneyTransactionShippingFtShop_JoinAs[0]), (*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLListCols())
 }
 
 func (m *MoneyTransactionShippingFtShop) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -1486,7 +1486,7 @@ func (m *MoneyTransactionShippingFtShop) __sqlJoin(w SQLWriter, types []sq.JOIN_
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.Shop)(nil).SQLTableName())
+	w.WriteName((*etop_vn_backend_com_main_identity_model.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlMoneyTransactionShippingFtShop_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -1497,7 +1497,7 @@ func (m *MoneyTransactionShippingFtShop) SQLScanArgs(opts core.Opts) []interface
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
 	m.MoneyTransactionShipping = new(MoneyTransactionShipping)
 	args = append(args, m.MoneyTransactionShipping.SQLScanArgs(opts)...)
-	m.Shop = new(model.Shop)
+	m.Shop = new(etop_vn_backend_com_main_identity_model.Shop)
 	args = append(args, m.Shop.SQLScanArgs(opts)...)
 
 	return args

@@ -1,9 +1,10 @@
-package model
+package modelx
 
 import (
 	"time"
 
 	"etop.vn/api/top/types/etc/credit_type"
+	creditmodel "etop.vn/backend/com/main/credit/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
 )
@@ -14,14 +15,14 @@ type CreateCreditCommand struct {
 	Type   credit_type.CreditType
 	PaidAt time.Time
 
-	Result *CreditExtended
+	Result *creditmodel.CreditExtended
 }
 
 type GetCreditQuery struct {
 	ID     dot.ID
 	ShopID dot.ID
 
-	Result *CreditExtended
+	Result *creditmodel.CreditExtended
 }
 
 type GetCreditsQuery struct {
@@ -29,7 +30,7 @@ type GetCreditsQuery struct {
 	Paging *cm.Paging
 
 	Result struct {
-		Credits []*CreditExtended
+		Credits []*creditmodel.CreditExtended
 	}
 }
 
@@ -48,7 +49,7 @@ type UpdateCreditCommand struct {
 	PaidAt time.Time
 	Amount int
 
-	Result *CreditExtended
+	Result *creditmodel.CreditExtended
 }
 
 type DeleteCreditCommand struct {

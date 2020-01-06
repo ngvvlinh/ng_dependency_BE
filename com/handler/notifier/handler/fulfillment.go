@@ -12,9 +12,9 @@ import (
 	"etop.vn/backend/com/handler/pgevent"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
 	"etop.vn/common/l"
 )
@@ -134,7 +134,7 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 	default:
 	}
 
-	title := fmt.Sprintf("%v - %v %v - %v", model.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
+	title := fmt.Sprintf("%v - %v %v - %v", shippingsharemodel.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 
 	sendNotification := false
 	if cm.StringsContain(acceptNotifyStates, ffm.ShippingState.String()) {

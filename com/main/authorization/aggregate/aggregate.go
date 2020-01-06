@@ -5,10 +5,11 @@ import (
 
 	"etop.vn/api/main/authorization"
 	"etop.vn/backend/com/main/authorization/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	authservice "etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
@@ -35,10 +36,10 @@ func (a *AuthorizationAggregate) UpdatePermission(
 
 	accountUser.AccountUser.Permission.Roles = convert.ConvertRolesToStrings(args.Roles)
 
-	updateRoleCmd := &model.UpdateRoleCommand{
+	updateRoleCmd := &identitymodelx.UpdateRoleCommand{
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
-		Permission: model.Permission{
+		Permission: identitymodel.Permission{
 			Roles:       accountUser.AccountUser.Roles,
 			Permissions: accountUser.AccountUser.Permissions,
 		},
@@ -66,7 +67,7 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 	if args.UserID.Int64() == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id phải khác 0")
 	}
-	updateRelationshipCmd := &model.UpdateInfosCommand{
+	updateRelationshipCmd := &identitymodelx.UpdateInfosCommand{
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 		FullName:  args.FullName,
@@ -88,26 +89,26 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 	return relationship, nil
 }
 
-func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args *authorization.UpdatePermissionArgs) (model.AccountUserExtended, error) {
+func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args *authorization.UpdatePermissionArgs) (identitymodel.AccountUserExtended, error) {
 	var currAccountUserHasOwner, currAccountUserHasStaffManagement, accountUserHasOwner, accountUserHasStaffManagement bool
 	if len(args.Roles) == 0 {
-		return model.AccountUserExtended{}, cm.Error(cm.InvalidArgument, "roles không hợp lệ", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.InvalidArgument, "roles không hợp lệ", nil)
 	}
 	if args.CurrUserID == args.UserID {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được thay đổi quyền của tài khoản bạn đang sở hữu", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được thay đổi quyền của tài khoản bạn đang sở hữu", nil)
 	}
 	if authorization.IsContainsRole(args.Roles, authorization.RoleShopOwner) {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được gán quyền owner", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được gán quyền owner", nil)
 	}
 	if authorization.IsContainsRole(args.Roles, authorization.RoleAdmin) {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được gán quyền admin", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Không được gán quyền admin", nil)
 	}
-	getCurrAccountUserQuery := &model.GetAccountUserExtendedQuery{
+	getCurrAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		AccountID: args.AccountID,
 		UserID:    args.CurrUserID,
 	}
 	if err := bus.Dispatch(ctx, getCurrAccountUserQuery); err != nil {
-		return model.AccountUserExtended{}, err
+		return identitymodel.AccountUserExtended{}, err
 	}
 	currAccountUser := getCurrAccountUserQuery.Result
 	rolesCurrAccountUser := convert.ConvertStringsToRoles(currAccountUser.AccountUser.Permission.Roles)
@@ -118,14 +119,14 @@ func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args
 		currAccountUserHasStaffManagement = true
 	}
 	if !currAccountUserHasOwner && !currAccountUserHasStaffManagement {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Chỉ có quyền owner hoặc staff_management mới được thực hiện thao tác này", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "Chỉ có quyền owner hoặc staff_management mới được thực hiện thao tác này", nil)
 	}
-	getAccountUserQuery := &model.GetAccountUserExtendedQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}
 	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
-		return model.AccountUserExtended{}, err
+		return identitymodel.AccountUserExtended{}, err
 	}
 	accountUser := getAccountUserQuery.Result
 	rolesAccountUser := convert.ConvertStringsToRoles(accountUser.AccountUser.Permission.Roles)
@@ -137,21 +138,21 @@ func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args
 	}
 	for _, role := range rolesAccountUser {
 		if !authorization.IsRole(role) {
-			return model.AccountUserExtended{}, cm.Errorf(cm.InvalidArgument, nil, "role %v không hợp lệ", role)
+			return identitymodel.AccountUserExtended{}, cm.Errorf(cm.InvalidArgument, nil, "role %v không hợp lệ", role)
 		}
 	}
 	if !currAccountUserHasOwner && authorization.IsContainsRole(args.Roles, authorization.RoleStaffManagement) {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "bạn không có quyền owner để gán quyền staff_management", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "bạn không có quyền owner để gán quyền staff_management", nil)
 	}
 	if accountUserHasOwner {
-		return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "không được thay đổi role của owner", nil)
+		return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "không được thay đổi role của owner", nil)
 	}
 	if !currAccountUserHasOwner {
 		if accountUserHasStaffManagement {
-			return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "", nil)
+			return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "", nil)
 		} else {
 			if !currAccountUserHasStaffManagement {
-				return model.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "", nil)
+				return identitymodel.AccountUserExtended{}, cm.Error(cm.PermissionDenied, "", nil)
 			}
 		}
 	}
@@ -168,7 +169,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 		return 0, cm.Error(cm.InvalidArgument, "account_id phải khác 0", nil)
 	}
 
-	getAccountQuery := &model.GetShopQuery{
+	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: accountID,
 	}
 	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
@@ -178,7 +179,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể rời khỏi shop bạn sở hữu")
 	}
 
-	query := &model.GetAccountUserQuery{
+	query := &identitymodelx.GetAccountUserQuery{
 		UserID:    userID,
 		AccountID: accountID,
 	}
@@ -192,7 +193,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 		return 0, cm.Error(cm.FailedPrecondition, "tài khoản bạn không thuộc shop này	", nil)
 	}
 
-	cmd := &model.DeleteAccountUserCommand{
+	cmd := &identitymodelx.DeleteAccountUserCommand{
 		AccountID: accountID,
 		UserID:    userID,
 	}
@@ -210,7 +211,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		return 0, cm.Error(cm.InvalidArgument, "Không thể gỡ bỏ chính mình khỏi shop", nil)
 	}
 
-	getAccountUserQuery := &model.GetAccountUserExtendedQuery{
+	getAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}
@@ -228,7 +229,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		accountUserHasRoleStaffManagement = true
 	}
 
-	getCurrentAccountUserQuery := &model.GetAccountUserExtendedQuery{
+	getCurrentAccountUserQuery := &identitymodelx.GetAccountUserExtendedQuery{
 		AccountID: args.AccountID,
 		UserID:    args.CurrentUserID,
 	}
@@ -253,7 +254,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		return 0, cm.Error(cm.FailedPrecondition, "Bạn không có quyền để thực hiện thao tác này", nil)
 	}
 
-	cmd := &model.DeleteAccountUserCommand{
+	cmd := &identitymodelx.DeleteAccountUserCommand{
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}

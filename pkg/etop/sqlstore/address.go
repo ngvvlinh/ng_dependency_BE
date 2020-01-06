@@ -3,9 +3,10 @@ package sqlstore
 import (
 	"context"
 
+	addressmodel "etop.vn/backend/com/main/address/model"
+	addressmodelx "etop.vn/backend/com/main/address/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 func init() {
@@ -18,33 +19,33 @@ func init() {
 	)
 }
 
-func GetAddress(ctx context.Context, query *model.GetAddressQuery) error {
+func GetAddress(ctx context.Context, query *addressmodelx.GetAddressQuery) error {
 	if query.AddressID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
 
-	query.Result = new(model.Address)
+	query.Result = new(addressmodel.Address)
 	return x.Table("address").
 		Where("id = ?", query.AddressID).
 		ShouldGet(query.Result)
 }
 
-func GetAddresses(ctx context.Context, query *model.GetAddressesQuery) error {
+func GetAddresses(ctx context.Context, query *addressmodelx.GetAddressesQuery) error {
 	s := x.Table("address")
 	if query.AccountID != 0 {
 		s = s.Where("account_id = ?", query.AccountID)
 	}
-	if err := s.Find((*model.Addresses)(&query.Result.Addresses)); err != nil {
+	if err := s.Find((*addressmodel.Addresses)(&query.Result.Addresses)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func CreateAddress(ctx context.Context, cmd *model.CreateAddressCommand) error {
+func CreateAddress(ctx context.Context, cmd *addressmodelx.CreateAddressCommand) error {
 	return createAddress(ctx, x, cmd)
 }
 
-func createAddress(ctx context.Context, x Qx, cmd *model.CreateAddressCommand) error {
+func createAddress(ctx context.Context, x Qx, cmd *addressmodelx.CreateAddressCommand) error {
 	address := cmd.Address
 
 	if address.Province == "" || address.ProvinceCode == "" {
@@ -80,11 +81,11 @@ func createAddress(ctx context.Context, x Qx, cmd *model.CreateAddressCommand) e
 	return nil
 }
 
-func UpdateAddress(ctx context.Context, cmd *model.UpdateAddressCommand) error {
+func UpdateAddress(ctx context.Context, cmd *addressmodelx.UpdateAddressCommand) error {
 	return updateAddress(ctx, x, cmd)
 }
 
-func updateAddress(ctx context.Context, x Qx, cmd *model.UpdateAddressCommand) error {
+func updateAddress(ctx context.Context, x Qx, cmd *addressmodelx.UpdateAddressCommand) error {
 	address := cmd.Address
 	if address.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
@@ -99,7 +100,7 @@ func updateAddress(ctx context.Context, x Qx, cmd *model.UpdateAddressCommand) e
 	return nil
 }
 
-func DeleteAddress(ctx context.Context, cmd *model.DeleteAddressCommand) error {
+func DeleteAddress(ctx context.Context, cmd *addressmodelx.DeleteAddressCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
@@ -109,7 +110,7 @@ func DeleteAddress(ctx context.Context, cmd *model.DeleteAddressCommand) error {
 	}
 
 	s := x.Table("address").Where("id = ? AND account_id = ?", cmd.ID, cmd.AccountID)
-	if deleted, err := s.Delete(&model.Address{}); err != nil {
+	if deleted, err := s.Delete(&addressmodel.Address{}); err != nil {
 		return err
 	} else if deleted == 0 {
 		return cm.Error(cm.NotFound, "", nil)
