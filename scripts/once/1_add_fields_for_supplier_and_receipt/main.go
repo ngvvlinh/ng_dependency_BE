@@ -84,7 +84,7 @@ func main() {
 	}
 	for _, supplier := range arrSupplers {
 		update := M{}
-		companyNameNorm := validate.NormalizeSearchPhone(supplier.CompanyName)
+		companyNameNorm := validate.NormalizedSearchToTsVector(validate.NormalizeSearch(supplier.CompanyName))
 		if supplier.CompanyNameNorm == "" || supplier.CompanyNameNorm != companyNameNorm {
 			update["company_name_norm"] = companyNameNorm
 		}
