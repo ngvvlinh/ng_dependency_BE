@@ -46,7 +46,7 @@ func (s *Scheme) Convert(arg, out interface{}) error {
 	}
 	fn := s.convPairs[pair]
 	if fn == nil {
-		panic(fmt.Sprintf("no conversion between %t and %t", arg, out))
+		panic(fmt.Sprintf("no conversion between %T and %T", arg, out))
 	}
 	return fn(arg, out)
 }
