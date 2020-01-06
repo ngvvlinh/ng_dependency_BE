@@ -31,6 +31,7 @@ build:
   - redis:alpine
   script:
   - time scripts/verify-imports.sh
+  - time scripts/ci/verify-lint.sh
   - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
   - time scripts/ci/test-all.sh
