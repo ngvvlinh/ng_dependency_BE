@@ -605,6 +605,7 @@ func (h QueryServiceHandler) HandleListShopProducts(ctx context.Context, msg *Li
 type ListShopProductsByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *ShopProductsResponse `json:"-"`
 }
@@ -655,6 +656,7 @@ func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, msg *Li
 type ListShopVariantsByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
+	Paging meta.Paging
 
 	Result *ShopVariantsResponse `json:"-"`
 }
@@ -1379,17 +1381,19 @@ func (q *ListShopProductsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 	q.Filters = args.Filters
 }
 
-func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductsByIDsArgs) {
 	return ctx,
-		&shopping.IDsQueryShopArgs{
+		&ListShopProductsByIDsArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
-func (q *ListShopProductsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+func (q *ListShopProductsByIDsQuery) SetListShopProductsByIDsArgs(args *ListShopProductsByIDsArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -1435,17 +1439,19 @@ func (q *ListShopVariantsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 	q.Filters = args.Filters
 }
 
-func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopVariantsByIDsArgs) {
 	return ctx,
-		&shopping.IDsQueryShopArgs{
+		&ListShopVariantsByIDsArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+			Paging: q.Paging,
 		}
 }
 
-func (q *ListShopVariantsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+func (q *ListShopVariantsByIDsQuery) SetListShopVariantsByIDsArgs(args *ListShopVariantsByIDsArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {

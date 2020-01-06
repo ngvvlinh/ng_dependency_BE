@@ -25,6 +25,9 @@ var _ = sqlgenShopCustomer(&ShopCustomer{})
 
 // +convert:type=customering.ShopCustomer
 type ShopCustomer struct {
+	ExternalID   string
+	ExternalCode string
+
 	ID           dot.ID `paging:"id"`
 	ShopID       dot.ID
 	Code         string

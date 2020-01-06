@@ -481,3 +481,132 @@ type GetCustomersRequest struct {
 
 func (m *GetCustomersRequest) Reset()         { *m = GetCustomersRequest{} }
 func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type EtopProduct struct {
+	Id          dot.ID   `json:"id"`
+	Code        string   `json:"code"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	ShortDesc   string   `json:"short_desc"`
+	DescHtml    string   `json:"desc_html"`
+	Unit        string   `json:"unit"`
+	ImageUrls   []string `json:"image_urls"`
+	ListPrice   int      `json:"list_price"`
+	CostPrice   int      `json:"cost_price"`
+	CategoryId  dot.ID   `json:"category_id"`
+}
+
+type Tag struct {
+	Id    dot.ID `json:"id"`
+	Label string `json:"label"`
+}
+
+func (m *Tag) Reset()         { *m = Tag{} }
+func (m *Tag) String() string { return jsonx.MustMarshalToString(m) }
+
+type EtopVariant struct {
+	Id          dot.ID                    `json:"id"`
+	Code        string                    `json:"code"`
+	Name        string                    `json:"name"`
+	Description string                    `json:"description"`
+	ShortDesc   string                    `json:"short_desc"`
+	DescHtml    string                    `json:"desc_html"`
+	ImageUrls   []string                  `json:"image_urls"`
+	ListPrice   int                       `json:"list_price"`
+	CostPrice   int                       `json:"cost_price"`
+	Attributes  []*catalogtypes.Attribute `json:"attributes"`
+}
+
+func (m *EtopVariant) Reset()         { *m = EtopVariant{} }
+func (m *EtopVariant) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopVariant struct {
+	ExternalId   string `json:"external_id"`
+	ExternalCode string `json:"external_code"`
+
+	// @required
+	Id   dot.ID       `json:"id"`
+	Info *EtopVariant `json:"info"`
+
+	Code string `json:"code"`
+
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	ShortDesc   string         `json:"short_desc"`
+	DescHtml    string         `json:"desc_html"`
+	ImageUrls   []string       `json:"image_urls"`
+	ListPrice   int            `json:"list_price"`
+	RetailPrice int            `json:"retail_price"`
+	Note        string         `json:"note"`
+	Status      status3.Status `json:"status"`
+
+	CostPrice int `json:"cost_price"`
+
+	Tags []string `json:"tags"`
+
+	Attributes []*catalogtypes.Attribute `json:"attributes"`
+}
+
+func (m *ShopVariant) Reset()         { *m = ShopVariant{} }
+func (m *ShopVariant) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopVariantsResponse struct {
+	ShopVariants []*ShopVariant         `json:"shop_variants"`
+	Paging       *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *ShopVariantsResponse) Reset()         { *m = ShopVariantsResponse{} }
+func (m *ShopVariantsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopProduct struct {
+	ExternalId   string `json:"external_id"`
+	ExternalCode string `json:"external_code"`
+
+	// @required
+	Id dot.ID `json:"id"`
+
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	ShortDesc     string         `json:"short_desc"`
+	DescHtml      string         `json:"desc_html"`
+	ImageUrls     []string       `json:"image_urls"`
+	CategoryId    dot.ID         `json:"category_id"`
+	Tags          []string       `json:"tags"`
+	Note          string         `json:"note"`
+	Status        status3.Status `json:"status"`
+	ListPrice     int            `json:"list_price"`
+	RetailPrice   int            `json:"retail_price"`
+	CollectionIds []dot.ID       `json:"collection_ids"`
+	Variants      []*ShopVariant `json:"variants"`
+
+	CreatedAt dot.Time `json:"created_at"`
+	UpdatedAt dot.Time `json:"updated_at"`
+	BrandId   dot.ID   `json:"brand_id"`
+}
+
+func (m *ShopProduct) Reset()         { *m = ShopProduct{} }
+func (m *ShopProduct) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopProductsResponse struct {
+	Products []*ShopProduct         `json:"products"`
+	Paging   *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *ShopProductsResponse) Reset()         { *m = ShopProductsResponse{} }
+func (m *ShopProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetProductsRequest struct {
+	Ids    []dot.ID             `json:"ids"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *GetProductsRequest) Reset()         { *m = GetProductsRequest{} }
+func (m *GetProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetVariantsRequest struct {
+	Ids    []dot.ID             `json:"ids"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *GetVariantsRequest) Reset()         { *m = GetVariantsRequest{} }
+func (m *GetVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }

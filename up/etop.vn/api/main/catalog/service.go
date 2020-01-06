@@ -89,14 +89,14 @@ type QueryService interface {
 	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProduct, error)
 	GetShopProductWithVariantsByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductWithVariants, error)
 	ListShopProducts(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsResponse, error)
-	ListShopProductsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsResponse, error)
+	ListShopProductsByIDs(context.Context, *ListShopProductsByIDsArgs) (*ShopProductsResponse, error)
 	ListShopProductsWithVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 	ListShopProductsWithVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 
 	GetShopVariant(context.Context, *GetShopVariantQueryArgs) (*ShopVariant, error)
 	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
 	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
-	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
+	ListShopVariantsByIDs(context.Context, *ListShopVariantsByIDsArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
 	ValidateVariantIDs(ctx context.Context, shopId dot.ID, shopVariantIds []dot.ID) error
 	//--Category --//
@@ -136,6 +136,12 @@ type GetShopProductByIDQueryArgs struct {
 	ShopID    dot.ID
 }
 
+type ListShopProductsByIDsArgs struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+	Paging meta.Paging
+}
+
 type CreateVariantsSupplier struct {
 	ShopID     dot.ID
 	SupplierID dot.ID
@@ -156,6 +162,12 @@ type GetShopVariantQueryArgs struct {
 type GetShopVariantByCodeArgs struct {
 	ShopID dot.ID
 	Code   string
+}
+
+type ListShopVariantsByIDsArgs struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+	Paging meta.Paging
 }
 
 type ShopProductsResponse struct {

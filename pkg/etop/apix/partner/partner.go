@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/shopping/customering"
 	extpartner "etop.vn/api/top/external/partner"
 	pbcm "etop.vn/api/top/types/common"
@@ -27,6 +28,7 @@ var (
 	authStore     auth.Generator
 	authURL       string
 	customerQuery *customering.QueryBus
+	catalogQuery  *catalog.QueryBus
 
 	ll = l.New()
 )
@@ -52,6 +54,8 @@ type WebhookService struct{}
 type HistoryService struct{}
 type ShippingService struct{}
 type CustomerService struct{}
+type ProductService struct{}
+type VariantService struct{}
 
 var miscService = &MiscService{}
 var shopService = &ShopService{}
@@ -59,8 +63,13 @@ var webhookService = &WebhookService{}
 var historyService = &HistoryService{}
 var shippingService = &ShippingService{}
 var customerService = &CustomerService{}
+var productService = &ProductService{}
+var variantService = &VariantService{}
 
-func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator, _authURL string, customerQ *customering.QueryBus) {
+func Init(
+	sd cmService.Shutdowner, rd redis.Store,
+	s auth.Generator, _authURL string,
+	customerQ *customering.QueryBus, catalogQ *catalog.QueryBus) {
 	if _authURL == "" {
 		ll.Panic("no auth_url")
 	}
@@ -74,6 +83,7 @@ func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator, _authURL st
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerAPI, 0)
 	sd.Register(idempgroup.Shutdown)
 	customerQuery = customerQ
+	catalogQuery = catalogQ
 }
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {

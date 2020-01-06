@@ -103,11 +103,20 @@ func (q *CustomerQuery) ListCustomersByIDs(
 	if count != 1 {
 		return nil, cm.Error(cm.InvalidArgument, "Yêu cầu không hợp lệ", nil)
 	}
-	customers, err := q.store(ctx).ShopIDs(shopIDs...).IDs(args.IDs...).ListCustomers()
+	query := q.store(ctx).ShopIDs(shopIDs...)
+	if len(args.IDs) == 0 {
+		query = query.WithPaging(args.Paging)
+	} else {
+		query = query.IDs(args.IDs...)
+	}
+	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
 	}
-	return &customering.CustomersResponse{Customers: customers}, nil
+	return &customering.CustomersResponse{
+		Customers: customers,
+		Paging:    query.GetPaging(),
+	}, nil
 }
 
 func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.GetCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {

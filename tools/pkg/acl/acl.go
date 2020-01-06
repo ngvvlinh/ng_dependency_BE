@@ -259,6 +259,10 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"ext/partner.Customer/GetCustomers": {Type: Shop, Auth: APIPartnerShopKey},
 
+	"ext/partner.Product/GetProducts": {Type: Shop, Auth: APIPartnerShopKey},
+
+	"ext/partner.Variant/GetVariants": {Type: Shop, Auth: APIPartnerShopKey},
+
 	//-- external: shop --//
 
 	"ext/shop.Misc/CurrentAccount":            {Type: Shop, Auth: APIKey},

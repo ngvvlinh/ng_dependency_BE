@@ -10,6 +10,9 @@ import (
 )
 
 type ShopCustomer struct {
+	ExternalID   string
+	ExternalCode string
+
 	ID        dot.ID
 	ShopID    dot.ID
 	GroupIDs  []dot.ID

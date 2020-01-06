@@ -50,3 +50,13 @@ type ShippingService interface {
 type CustomerService interface {
 	GetCustomers(context.Context, *types.GetCustomersRequest) (*types.CustomersResponse, error)
 }
+
+// +apix:path=/partner.Product
+type ProductService interface {
+	GetProducts(context.Context, *types.GetProductsRequest) (*types.ShopProductsResponse, error)
+}
+
+// +apix:path=/partner.Variant
+type VariantService interface {
+	GetVariants(context.Context, *types.GetVariantsRequest) (*types.ShopVariantsResponse, error)
+}

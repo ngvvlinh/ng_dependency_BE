@@ -233,7 +233,7 @@ func decodeCursor(code string) (cursorItems []PagingCursorItem, descOrderBy bool
 		data[0] = -data[0]
 	}
 	r := bytes.NewBuffer(data)
-	hasID := false
+	var hasID bool
 	for r.Len() > 0 {
 		b, err := r.ReadByte()
 		if err != nil {
@@ -262,7 +262,7 @@ func decodeCursor(code string) (cursorItems []PagingCursorItem, descOrderBy bool
 
 func (p *Paging) decodeCursor() (PagingCursor, error) {
 	var result []PagingCursorItem
-
+	var hasPagingFieldID bool
 	if p.First != 0 || p.Last != 0 {
 		var hasSort, isFirst bool
 		hasSort = len(p.Sort) == 0 || !strings.HasPrefix(p.Sort[0], "-")
@@ -271,12 +271,17 @@ func (p *Paging) decodeCursor() (PagingCursor, error) {
 		if len(p.Sort) > 0 {
 			s := strings.TrimPrefix(p.Sort[0], "-")
 			pagingField := ParsePagingFieldWithDefault(s, 0)
+			if pagingField == PagingID {
+				hasPagingFieldID = true
+			}
 			if pagingField == PagingUnknown {
 				return PagingCursor{}, cm.Errorf(cm.InvalidArgument, nil, "sorting by %v is not supported", s)
 			}
 			result = append(result, PagingCursorItem{pagingField, 0})
 		}
-		result = append(result, PagingCursorItem{PagingID, 0})
+		if !hasPagingFieldID {
+			result = append(result, PagingCursorItem{PagingID, 0})
+		}
 		return PagingCursor{
 			Items:       result,
 			Reverse:     !isFirst,

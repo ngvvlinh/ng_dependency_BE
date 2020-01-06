@@ -175,7 +175,7 @@ func (s *ShopProductStore) GetShopProductWithVariants() (*catalog.ShopProductWit
 func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
-	if len(s.Paging.Sort) == 0 {
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
 	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopProduct, s.FtShopProduct.prefix)
@@ -189,7 +189,11 @@ func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 
 	var products model.ShopProducts
 	err = query.Find(&products)
-	return products, err
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(products)
+	return products, nil
 }
 
 func (s *ShopProductStore) ListShopProducts() ([]*catalog.ShopProduct, error) {

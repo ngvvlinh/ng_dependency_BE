@@ -252,6 +252,59 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
+func WrapProductService(s *ProductService) api.ProductService {
+	return wrapProductService{s: s}
+}
+
+type wrapProductService struct {
+	s *ProductService
+}
+
+type GetProductsEndpoint struct {
+	*externaltypes.GetProductsRequest
+	Result  *externaltypes.ShopProductsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapProductService) GetProducts(ctx context.Context, req *externaltypes.GetProductsRequest) (resp *externaltypes.ShopProductsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Product/GetProducts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetProductsEndpoint{GetProductsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetProducts(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapShippingService(s *ShippingService) api.ShippingService {
 	return wrapShippingService{s: s}
 }
@@ -572,6 +625,59 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CurrentShop(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapVariantService(s *VariantService) api.VariantService {
+	return wrapVariantService{s: s}
+}
+
+type wrapVariantService struct {
+	s *VariantService
+}
+
+type GetVariantsEndpoint struct {
+	*externaltypes.GetVariantsRequest
+	Result  *externaltypes.ShopVariantsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapVariantService) GetVariants(ctx context.Context, req *externaltypes.GetVariantsRequest) (resp *externaltypes.ShopVariantsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Variant/GetVariants"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetVariantsEndpoint{GetVariantsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetVariants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

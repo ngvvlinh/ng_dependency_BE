@@ -30,14 +30,16 @@ func (ft ShopBrandFilters) NotDeleted() sq.WriterTo {
 }
 
 var SortShopVariant = map[string]string{
-	"id":         "",
+	"id":         "variant_id",
+	"updated_at": "updated_at",
 	"created_at": "",
 }
 
 var SortShopProduct = map[string]string{
+	"id":         "product_id",
 	"product_id": "",
 	"created_at": "",
-	"updated_at": "",
+	"updated_at": "updated_at",
 }
 
 var SortShopCategory = map[string]string{

@@ -4,18 +4,18 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
-	externaltypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/external/types"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 )
 
-func (s *ProductService) GetProducts(ctx context.Context, r *GetProductsEndpoint) error {
+func (s *VariantService) GetVariants(ctx context.Context, r *GetVariantsEndpoint) error {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return err
 	}
 
-	query := &catalog.ListShopProductsByIDsQuery{
+	query := &catalog.ListShopVariantsByIDsQuery{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
 		Paging: *paging,
@@ -23,9 +23,9 @@ func (s *ProductService) GetProducts(ctx context.Context, r *GetProductsEndpoint
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &externaltypes.ShopProductsResponse{
-		Products: convertpb.PbShopProducts(query.Result.Products),
-		Paging:   convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+	r.Result = &types.ShopVariantsResponse{
+		ShopVariants: convertpb.PbShopVariants(query.Result.Variants),
+		Paging:       convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
 	}
 	return nil
 }

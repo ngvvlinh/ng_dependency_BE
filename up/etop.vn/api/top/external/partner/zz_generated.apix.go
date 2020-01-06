@@ -167,6 +167,51 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	}
 }
 
+type ProductServiceServer struct {
+	inner ProductService
+}
+
+func NewProductServiceServer(svc ProductService) Server {
+	return &ProductServiceServer{
+		inner: svc,
+	}
+}
+
+const ProductServicePathPrefix = "/partner.Product/"
+
+func (s *ProductServiceServer) PathPrefix() string {
+	return ProductServicePathPrefix
+}
+
+func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.Product/GetProducts":
+		msg := &externaltypes.GetProductsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetProducts(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type ShippingServiceServer struct {
 	inner ShippingService
 }
@@ -279,6 +324,51 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CurrentShop(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type VariantServiceServer struct {
+	inner VariantService
+}
+
+func NewVariantServiceServer(svc VariantService) Server {
+	return &VariantServiceServer{
+		inner: svc,
+	}
+}
+
+const VariantServicePathPrefix = "/partner.Variant/"
+
+func (s *VariantServiceServer) PathPrefix() string {
+	return VariantServicePathPrefix
+}
+
+func (s *VariantServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *VariantServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.Variant/GetVariants":
+		msg := &externaltypes.GetVariantsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetVariants(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

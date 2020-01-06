@@ -15,8 +15,9 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 		return err
 	}
 
-	query := &customering.ListCustomersQuery{
+	query := &customering.ListCustomersByIDsQuery{
 		ShopID: r.Context.Shop.ID,
+		IDs:    r.Ids,
 		Paging: *paging,
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
@@ -25,7 +26,7 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 
 	r.Result = &externaltypes.CustomersResponse{
 		Customers: convertpb.PbShopCustomers(query.Result.Customers),
-		Paging:    convertpb.PbPageInfo(&query.Result.Paging),
+		Paging:    convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
 	}
 	return nil
 }

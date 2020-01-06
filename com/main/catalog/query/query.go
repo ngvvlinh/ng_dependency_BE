@@ -173,15 +173,21 @@ func (s *QueryService) ListShopVariants(
 }
 
 func (s *QueryService) ListShopProductsByIDs(
-	ctx context.Context, args *shopping.IDsQueryShopArgs,
+	ctx context.Context, args *catalog.ListShopProductsByIDsArgs,
 ) (*catalog.ShopProductsResponse, error) {
-	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
-	products, err := q.ListShopProducts()
+	query := s.shopProduct(ctx).OptionalShopID(args.ShopID)
+	if len(args.IDs) > 0 {
+		query = query.IDs(args.IDs...)
+	} else {
+		query = query.WithPaging(args.Paging)
+	}
+	products, err := query.ListShopProducts()
 	if err != nil {
 		return nil, err
 	}
 	return &catalog.ShopProductsResponse{
 		Products: products,
+		Paging:   query.GetPaging(),
 	}, nil
 }
 
@@ -199,15 +205,21 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 }
 
 func (s *QueryService) ListShopVariantsByIDs(
-	ctx context.Context, args *shopping.IDsQueryShopArgs,
+	ctx context.Context, args *catalog.ListShopVariantsByIDsArgs,
 ) (*catalog.ShopVariantsResponse, error) {
-	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
-	variants, err := q.ListShopVariants()
+	query := s.shopVariant(ctx).OptionalShopID(args.ShopID)
+	if len(args.IDs) > 0 {
+		query = query.IDs(args.IDs...)
+	} else {
+		query = query.WithPaging(args.Paging)
+	}
+	variants, err := query.ListShopVariants()
 	if err != nil {
 		return nil, err
 	}
 	return &catalog.ShopVariantsResponse{
 		Variants: variants,
+		Paging:   query.GetPaging(),
 	}, nil
 }
 

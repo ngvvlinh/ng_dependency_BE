@@ -13,6 +13,10 @@ import (
 // +gen:event:topic=event/catalog
 
 type ShopProduct struct {
+	ExternalID string
+
+	ExternalCode string
+
 	ShopID dot.ID
 
 	ProductID dot.ID
@@ -61,6 +65,10 @@ type ShopProduct struct {
 }
 
 type ShopVariant struct {
+	ExternalID string
+
+	ExternalCode string
+
 	ShopID dot.ID
 
 	ProductID dot.ID

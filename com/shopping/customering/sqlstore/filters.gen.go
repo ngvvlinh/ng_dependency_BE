@@ -97,6 +97,44 @@ func (ft ShopCustomerFilters) Prefix() string {
 	return ft.prefix
 }
 
+func (ft *ShopCustomerFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *ShopCustomerFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *ShopCustomerFilters) ByExternalCode(ExternalCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_code",
+		Value:  ExternalCode,
+		IsNil:  ExternalCode == "",
+	}
+}
+
+func (ft *ShopCustomerFilters) ByExternalCodePtr(ExternalCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_code",
+		Value:  ExternalCode,
+		IsNil:  ExternalCode == nil,
+		IsZero: ExternalCode != nil && (*ExternalCode) == "",
+	}
+}
+
 func (ft *ShopCustomerFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -69,8 +69,11 @@ var _ = sqlgenShopVariant(&ShopVariant{})
 
 // +convert:type=catalog.ShopVariant
 type ShopVariant struct {
+	ExternalID   string
+	ExternalCode string
+
 	ShopID    dot.ID
-	VariantID dot.ID
+	VariantID dot.ID `paging:"id"`
 	ProductID dot.ID
 
 	Code        string
@@ -90,7 +93,7 @@ type ShopVariant struct {
 	Attributes ProductAttributes
 
 	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt time.Time
 
 	NameNorm string
@@ -108,8 +111,11 @@ var _ = sqlgenShopProduct(&ShopProduct{})
 
 // +convert:type=catalog.ShopProduct
 type ShopProduct struct {
+	ExternalID   string
+	ExternalCode string
+
 	ShopID        dot.ID
-	ProductID     dot.ID
+	ProductID     dot.ID   `paging:"id"`
 	CollectionIDs []dot.ID `sq:"-"`
 
 	Code        string
@@ -131,7 +137,7 @@ type ShopProduct struct {
 	Status status3.Status
 
 	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt time.Time
 
 	NameNorm    string

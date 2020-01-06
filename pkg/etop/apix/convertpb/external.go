@@ -1,11 +1,12 @@
 package convertpb
 
 import (
-	"strings"
-
+	"etop.vn/api/main/catalog"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
 	exttypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
@@ -18,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 )
 
 func PNonZeroString(s string) dot.NullString {
@@ -480,25 +482,48 @@ func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.F
 	}
 }
 
+func PbPageInfo(arg *common.CursorPaging, metaPageInfo *meta.PageInfo) *common.CursorPageInfo {
+	if metaPageInfo == nil {
+		return nil
+	}
+	if arg == nil {
+		return nil
+	}
+	return &common.CursorPageInfo{
+		First:  arg.First,
+		Last:   arg.Last,
+		Before: arg.Before,
+		After:  arg.After,
+
+		Limit: metaPageInfo.Limit,
+		Sort:  arg.Sort,
+
+		Prev: metaPageInfo.Prev,
+		Next: metaPageInfo.Next,
+	}
+}
+
 func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
 	if customer == nil {
 		return nil
 	}
 	return &exttypes.Customer{
-		Id:        customer.ID,
-		ShopId:    customer.ShopID,
-		FullName:  customer.FullName,
-		Code:      customer.Code,
-		Note:      customer.Note,
-		Phone:     customer.Phone,
-		Email:     customer.Email,
-		Gender:    customer.Gender.String(),
-		Type:      customer.Type.String(),
-		Birthday:  customer.Birthday,
-		CreatedAt: dot.Time(customer.CreatedAt),
-		UpdatedAt: dot.Time(customer.UpdatedAt),
-		Status:    customer.Status,
-		GroupIds:  customer.GroupIDs,
+		Id:           customer.ID,
+		ShopId:       customer.ShopID,
+		ExternalId:   customer.ExternalID,
+		ExternalCode: customer.ExternalCode,
+		FullName:     customer.FullName,
+		Code:         customer.Code,
+		Note:         customer.Note,
+		Phone:        customer.Phone,
+		Email:        customer.Email,
+		Gender:       customer.Gender.String(),
+		Type:         customer.Type.String(),
+		Birthday:     customer.Birthday,
+		CreatedAt:    dot.Time(customer.CreatedAt),
+		UpdatedAt:    dot.Time(customer.UpdatedAt),
+		Status:       customer.Status,
+		GroupIds:     customer.GroupIDs,
 	}
 }
 
@@ -510,20 +535,103 @@ func PbShopCustomers(customers []*customering.ShopCustomer) []*exttypes.Customer
 	return out
 }
 
-func PbPageInfo(arg *meta.PageInfo) *common.CursorPageInfo {
+func PbCoordinates(in *ordertypes.Coordinates) *etop.Coordinates {
+	if in == nil {
+		return nil
+	}
+	return &etop.Coordinates{
+		Latitude:  in.Latitude,
+		Longitude: in.Longitude,
+	}
+}
+
+func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {
 	if arg == nil {
 		return nil
 	}
-	return &common.CursorPageInfo{
-		First:  arg.First,
-		Last:   arg.Last,
-		Before: arg.Before,
-		After:  arg.After,
-
-		Limit: arg.Limit,
-		Sort:  strings.Join(arg.Sort, ","),
-
-		Prev: arg.Prev,
-		Next: arg.Next,
+	return &exttypes.ShopProduct{
+		ExternalId:    arg.ExternalID,
+		ExternalCode:  arg.ExternalCode,
+		Id:            arg.ProductID,
+		Name:          arg.Name,
+		Description:   arg.Description,
+		ShortDesc:     arg.ShortDesc,
+		DescHtml:      arg.DescHTML,
+		ImageUrls:     arg.ImageURLs,
+		CategoryId:    arg.CategoryID,
+		Tags:          arg.Tags,
+		Note:          arg.Note,
+		Status:        arg.Status,
+		ListPrice:     arg.ListPrice,
+		RetailPrice:   arg.RetailPrice,
+		CollectionIds: arg.CollectionIDs,
+		CreatedAt:     cmapi.PbTime(arg.CreatedAt),
+		UpdatedAt:     cmapi.PbTime(arg.UpdatedAt),
+		BrandId:       arg.BrandID,
 	}
+}
+
+func PbShopProducts(args []*catalog.ShopProduct) []*exttypes.ShopProduct {
+	outs := make([]*exttypes.ShopProduct, len(args))
+	for i, arg := range args {
+		outs[i] = PbShopProduct(arg)
+	}
+	return outs
+}
+
+func ConvertProductWithVariantsToPbProduct(arg *catalog.ShopProductWithVariants) *exttypes.ShopProduct {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.ShopProduct{
+		ExternalId:    arg.ExternalID,
+		ExternalCode:  arg.ExternalCode,
+		Id:            arg.ProductID,
+		Name:          arg.Name,
+		Description:   arg.Description,
+		ShortDesc:     arg.ShortDesc,
+		DescHtml:      arg.DescHTML,
+		ImageUrls:     arg.ImageURLs,
+		CategoryId:    arg.CategoryID,
+		Tags:          arg.Tags,
+		Note:          arg.Note,
+		Status:        arg.Status,
+		ListPrice:     arg.ListPrice,
+		RetailPrice:   arg.RetailPrice,
+		CollectionIds: arg.CollectionIDs,
+		CreatedAt:     cmapi.PbTime(arg.CreatedAt),
+		UpdatedAt:     cmapi.PbTime(arg.UpdatedAt),
+		BrandId:       arg.BrandID,
+	}
+}
+
+func PbShopVariant(arg *catalog.ShopVariant) *exttypes.ShopVariant {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.ShopVariant{
+		ExternalId:   arg.ExternalID,
+		ExternalCode: arg.ExternalCode,
+		Id:           arg.VariantID,
+		Code:         arg.Code,
+		Name:         arg.Name,
+		Description:  arg.Description,
+		ShortDesc:    arg.ShortDesc,
+		DescHtml:     arg.DescHTML,
+		ImageUrls:    arg.ImageURLs,
+		ListPrice:    arg.ListPrice,
+		RetailPrice:  util.CoalesceInt(arg.RetailPrice, arg.ListPrice),
+		Note:         arg.Note,
+		Status:       arg.Status,
+		CostPrice:    arg.CostPrice,
+		Attributes:   arg.Attributes,
+	}
+}
+
+func PbShopVariants(args []*catalog.ShopVariant) []*exttypes.ShopVariant {
+	outs := make([]*exttypes.ShopVariant, len(args))
+	for i, arg := range args {
+		outs[i] = PbShopVariant(arg)
+	}
+	return outs
 }

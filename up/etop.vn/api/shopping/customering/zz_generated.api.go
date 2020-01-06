@@ -239,6 +239,7 @@ type ListCustomersByIDsQuery struct {
 	IDs     []dot.ID
 	ShopIDs []dot.ID
 	ShopID  dot.ID
+	Paging  meta.Paging
 
 	Result *CustomersResponse `json:"-"`
 }
@@ -479,6 +480,7 @@ func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Contex
 			IDs:     q.IDs,
 			ShopIDs: q.ShopIDs,
 			ShopID:  q.ShopID,
+			Paging:  q.Paging,
 		}
 }
 
@@ -486,6 +488,7 @@ func (q *ListCustomersByIDsQuery) SetListCustomerByIDsArgs(args *ListCustomerByI
 	q.IDs = args.IDs
 	q.ShopIDs = args.ShopIDs
 	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

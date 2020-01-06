@@ -61,6 +61,7 @@ type ListCustomerByIDsArgs struct {
 	IDs     []dot.ID
 	ShopIDs []dot.ID
 	ShopID  dot.ID
+	Paging  meta.Paging
 }
 
 type ListCustomerGroupArgs struct {
