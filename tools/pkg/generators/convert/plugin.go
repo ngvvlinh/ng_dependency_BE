@@ -234,6 +234,9 @@ type conversionFunc struct {
 	Mode int
 	Func *types.Func
 
+	// ConverterPkg points to the generated convert package which converts from
+	// pair.Arg to pair.Out. If this field is nil, you may forget to include the
+	// convert package in generating patterns.
 	ConverterPkg *packages.Package
 }
 
@@ -714,7 +717,8 @@ func generateConverts(
 				panic("unexpected")
 			}
 			if err != nil {
-				return count, generator.Errorf(err, "can not convert between %v and %v: %v", g.obj.Name(), m.src.Name(), err)
+				return count, generator.Errorf(err, "can not convert between %v.%v and %v.%v: %v",
+					g.obj.Pkg().Path(), g.obj.Name(), g.obj.Pkg().Path(), m.src.Name(), err)
 			}
 			count++
 		}

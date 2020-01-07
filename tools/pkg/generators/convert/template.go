@@ -142,6 +142,16 @@ func renderCustomConversion0(plural bool, in, out *types.Named, conv *conversion
 	} else {
 		result = "Convert_" + inStr + "_" + outStr + "(" + inField + ", nil)"
 	}
+	if conv.ConverterPkg == nil {
+		panic(fmt.Sprintf(
+			"There is custom conversion function %v.%v to convert between %v.%v and %v.%v, but no generated conversion package between %v and %v. You must create one (+gen:convert: %v->%v) or delete the custom conversion function.",
+			conv.Func.Pkg().Path(), conv.Func.Name(),
+			in.Obj().Pkg().Path(), in.Obj().Name(),
+			out.Obj().Pkg().Path(), out.Obj().Name(),
+			in.Obj().Pkg().Path(), out.Obj().Pkg().Path(),
+			out.Obj().Pkg().Path(), in.Obj().Pkg().Path(),
+		))
+	}
 	alias := p.Qualifier(conv.ConverterPkg.Types)
 	if alias != "" {
 		return alias + "." + result
