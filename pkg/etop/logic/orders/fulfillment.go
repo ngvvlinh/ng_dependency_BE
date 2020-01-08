@@ -66,6 +66,12 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	eventBus = eventB
 }
 
+var districtsBlockList = []string{
+	"001", // Quận Ba Đình - Hà Nội
+	"005", // Quận Cầu Giấy - Hà Nội
+	"008", // Quận Hoàng mai - Hà Nội
+}
+
 func ConfirmOrder(ctx context.Context, shop *model.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
 	autoInventoryVoucher := inventory.AutoInventoryVoucher(r.AutoInventoryVoucher.Apply(""))
 	if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
@@ -341,7 +347,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 		return nil, cm.Error(cm.FailedPrecondition, "Thông tin địa chỉ cửa hàng trong cấu hình cửa hàng: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
 
-	if err := blockRachGiaDistrict(shopAddress); err != nil {
+	if err := checkBlockDistricts(shopAddress); err != nil {
 		return nil, err
 	}
 
@@ -364,9 +370,8 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	return ffm, nil
 }
 
-// block create ffm from Rach Gia District: district_code = 899
-func blockRachGiaDistrict(shopAddress *model.Address) error {
-	if shopAddress.DistrictCode == "899" {
+func checkBlockDistricts(shopAddress *model.Address) error {
+	if cm.StringsContain(districtsBlockList, shopAddress.DistrictCode) {
 		return cm.Errorf(cm.InvalidArgument, nil, "Không thể lấy hàng tại địa chỉ này %v (%v)", shopAddress.District, shopAddress.Province)
 	}
 	return nil
