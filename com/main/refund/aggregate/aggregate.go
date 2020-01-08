@@ -163,13 +163,28 @@ func (a *RefundAggregate) CancelRefund(ctx context.Context, args *refund.CancelR
 	if err != nil {
 		return nil, err
 	}
-	if refundDB.Status != status3.Z {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu trả hàng %v đã hủy hoặc đã xác nhận không thể cập nhập trạng thái")
-	}
 	refundDB.CancelledAt = time.Now()
 	refundDB.Status = status3.N
 	refundDB.CancelReason = args.CancelReason
-	err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdateRefundAll(refundDB)
+	refundDB.UpdatedAt = time.Now()
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdateRefundAll(refundDB)
+		if err != nil {
+			return err
+		}
+		event := &refund.RefundCancelledEvent{
+			ShopID:               args.ShopID,
+			RefundID:             args.ID,
+			UpdatedBy:            args.UpdatedBy,
+			AutoInventoryVoucher: args.AutoInventoryVoucher,
+		}
+		err = a.eventBus.Publish(ctx, event)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
 	return refundDB, err
 }
 
@@ -187,7 +202,7 @@ func (a *RefundAggregate) ConfirmRefund(ctx context.Context, args *refund.Confir
 	if err != nil {
 		return nil, err
 	}
-	event := &refund.ConfirmedRefundEvent{
+	event := &refund.RefundConfirmedEvent{
 		ShopID:               args.ShopID,
 		RefundID:             args.ID,
 		AutoInventoryVoucher: args.AutoInventoryVoucher,

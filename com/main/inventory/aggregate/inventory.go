@@ -543,8 +543,11 @@ func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) 
 			return cm.Error(cm.InvalidArgument, "'type' không đúng. Hủy nhập hàng chỉ có thể là type 'out'", nil)
 		}
 	case inventory_voucher_ref.Refund:
-		if inventoryVoucher.Type != inventory_type.In {
+		if inventoryVoucher.Type == inventory_type.Out && !inventoryVoucher.Rollback {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Trả hàng chỉ có thể là 'in'", nil)
+		}
+		if inventoryVoucher.Type == inventory_type.In && inventoryVoucher.Rollback {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Hủy trả hàng chỉ có thể là 'out'", nil)
 		}
 	case inventory_voucher_ref.PurchaseRefund:
 		if inventoryVoucher.Type != inventory_type.In && inventoryVoucher.Rollback {
@@ -972,16 +975,22 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 	if args.AutoInventoryVoucher == inventory_auto.Unknown {
 		return nil, nil
 	}
-	isConfirm := false
-	if args.AutoInventoryVoucher == inventory_auto.Confirm {
-		isConfirm = true
-	}
 
 	var inventoryVouchers []*inventory.InventoryVoucher
 	inventoryVouchersData, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefID(args.RefID).ListInventoryVoucher()
 	if err != nil {
 		return nil, err
 	}
+
+	// return if have any inventory voucher rollback
+	for _, value := range inventoryVouchersData {
+		if value.Rollback == true {
+			return &inventory.CancelInventoryByRefIDResponse{
+				InventoryVouchers: inventoryVouchers,
+			}, nil
+		}
+	}
+
 	for _, value := range inventoryVouchersData {
 		switch value.Status {
 		case status3.P:
@@ -1026,7 +1035,7 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 			continue
 		}
 	}
-	if isConfirm {
+	if args.AutoInventoryVoucher == inventory_auto.Confirm {
 		for _, value := range inventoryVouchers {
 			if value.Status == status3.Z {
 				_, err = q.ConfirmInventoryVoucher(ctx, &inventory.ConfirmInventoryVoucherArgs{

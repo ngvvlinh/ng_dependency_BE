@@ -58,3 +58,10 @@ func (q *RefundQueryService) GetRefundsByIDs(ctx context.Context, args *refund.G
 	}
 	return q.RefundStore(ctx).ShopID(args.ShopID).IDs(args.IDs...).ListRefunds()
 }
+
+func (q *RefundQueryService) GetRefundsByOrderID(ctx context.Context, args *refund.GetRefundsByOrderID) ([]*refund.Refund, error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	return q.RefundStore(ctx).ShopID(args.ShopID).OrderID(args.OrderID).ListRefunds()
+}

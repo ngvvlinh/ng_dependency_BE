@@ -49,6 +49,40 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.PurchaseRefundConfirmedEvent)
 	eventBus.AddEventListener(m.PurchaseOrderCancelledEvent)
 	eventBus.AddEventListener(m.PurchaseRefundCancelledEvent)
+	eventBus.AddEventListener(m.RefundCancelledEvent)
+}
+
+func (m *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
+	if event.AutoInventoryVoucher == inventory_auto.Unknown {
+		return nil
+	}
+	cmd := &inventory.CancelInventoryByRefIDCommand{
+		RefID:                event.OrderID,
+		ShopID:               event.ShopID,
+		InventoryOverStock:   true,
+		AutoInventoryVoucher: event.AutoInventoryVoucher,
+		UpdateBy:             event.UpdatedBy,
+	}
+	err := m.inventoryAgg.Dispatch(ctx, cmd)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ProcessManager) RefundCancelledEvent(ctx context.Context, event *refund.RefundCancelledEvent) error {
+	cmd := &inventory.CancelInventoryByRefIDCommand{
+		RefID:                event.RefundID,
+		ShopID:               event.ShopID,
+		InventoryOverStock:   true,
+		AutoInventoryVoucher: event.AutoInventoryVoucher,
+		UpdateBy:             event.UpdatedBy,
+	}
+	err := m.inventoryAgg.Dispatch(ctx, cmd)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *ProcessManager) PurchaseOrderCancelledEvent(ctx context.Context, event *purchaseorder.PurchaseOrderCancelledEvent) error {
@@ -250,52 +284,7 @@ func (m *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 	return nil
 }
 
-func (m *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
-	if event.AutoInventoryVoucher == inventory_auto.Unknown {
-		return nil
-	}
-	var isCreate, isConfirm bool
-	if event.AutoInventoryVoucher == inventory_auto.Create {
-		isCreate = true
-	}
-	if event.AutoInventoryVoucher == inventory_auto.Confirm {
-		isCreate = true
-		isConfirm = true
-	}
-
-	var err error
-	var inventoryVoucherID dot.ID
-	if isCreate {
-		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
-			RefType:   inventory_voucher_ref.Order,
-			RefID:     event.OrderID,
-			ShopID:    event.ShopID,
-			UserID:    event.UpdatedBy,
-			Type:      inventory_type.In,
-			OverStock: false,
-		}
-		err = m.inventoryAgg.Dispatch(ctx, cmdCreate)
-		if err != nil {
-			return err
-		}
-		if len(cmdCreate.Result) == 0 {
-			return nil
-		}
-		inventoryVoucherID = cmdCreate.Result[0].ID
-	}
-
-	if isConfirm {
-		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
-			ShopID:    event.ShopID,
-			ID:        inventoryVoucherID,
-			UpdatedBy: event.UpdatedBy,
-		}
-		err = m.inventoryAgg.Dispatch(ctx, cmdConfirm)
-	}
-	return err
-}
-
-func (m *ProcessManager) RefundConfirmedEvent(ctx context.Context, event *refund.ConfirmedRefundEvent) error {
+func (m *ProcessManager) RefundConfirmedEvent(ctx context.Context, event *refund.RefundConfirmedEvent) error {
 	if event.AutoInventoryVoucher == inventory_auto.Unknown {
 		return nil
 	}

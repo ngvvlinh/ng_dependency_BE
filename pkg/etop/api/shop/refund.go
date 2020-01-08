@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/capi/dot"
 )
 
@@ -89,11 +90,12 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
+	roles := auth.Roles(q.Context.Roles)
 	cmd := refund.ConfirmRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
-		AutoInventoryVoucher: q.AutoInventoryVoucher,
+		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
 	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
@@ -114,11 +116,13 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
+	roles := auth.Roles(q.Context.Roles)
 	cmd := refund.CancelRefundCommand{
-		ShopID:       shopID,
-		ID:           q.ID,
-		UpdatedBy:    userID,
-		CancelReason: q.CancelReason,
+		ShopID:               shopID,
+		ID:                   q.ID,
+		UpdatedBy:            userID,
+		CancelReason:         q.CancelReason,
+		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
 	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err

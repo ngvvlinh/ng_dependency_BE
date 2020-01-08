@@ -47,7 +47,14 @@ type RefundLine struct {
 	Attributes  []*catalog.Attribute
 }
 
-type ConfirmedRefundEvent struct {
+type RefundConfirmedEvent struct {
+	ShopID               dot.ID
+	RefundID             dot.ID
+	UpdatedBy            dot.ID
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
+}
+
+type RefundCancelledEvent struct {
 	ShopID               dot.ID
 	RefundID             dot.ID
 	UpdatedBy            dot.ID

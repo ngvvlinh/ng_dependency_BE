@@ -11,16 +11,22 @@ import (
 // +gen:api
 
 type Aggregate interface {
-	CreateRefund(ctx context.Context, _ *CreateRefundArgs) (*Refund, error)
-	UpdateRefund(ctx context.Context, _ *UpdateRefundArgs) (*Refund, error)
-	CancelRefund(ctx context.Context, _ *CancelRefundArgs) (*Refund, error)
-	ConfirmRefund(ctx context.Context, _ *ConfirmRefundArgs) (*Refund, error)
+	CreateRefund(context.Context, *CreateRefundArgs) (*Refund, error)
+	UpdateRefund(context.Context, *UpdateRefundArgs) (*Refund, error)
+	CancelRefund(context.Context, *CancelRefundArgs) (*Refund, error)
+	ConfirmRefund(context.Context, *ConfirmRefundArgs) (*Refund, error)
 }
 
 type QueryService interface {
 	GetRefunds(context.Context, *GetRefundsArgs) (*GetRefundsResponse, error)
 	GetRefundByID(context.Context, *GetRefundByIDArgs) (*Refund, error)
 	GetRefundsByIDs(context.Context, *GetRefundsByIDsArgs) ([]*Refund, error)
+	GetRefundsByOrderID(context.Context, *GetRefundsByOrderID) ([]*Refund, error)
+}
+
+type GetRefundsByOrderID struct {
+	OrderID dot.ID
+	ShopID  dot.ID
 }
 
 type GetRefundsResponse struct {
@@ -49,10 +55,11 @@ type UpdateRefundArgs struct {
 }
 
 type CancelRefundArgs struct {
-	ShopID       dot.ID
-	ID           dot.ID
-	UpdatedBy    dot.ID
-	CancelReason string
+	ShopID               dot.ID
+	ID                   dot.ID
+	UpdatedBy            dot.ID
+	CancelReason         string
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 }
 
 type ConfirmRefundArgs struct {

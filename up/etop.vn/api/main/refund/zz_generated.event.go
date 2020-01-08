@@ -4,4 +4,5 @@
 
 package refund
 
-func (e *ConfirmedRefundEvent) GetTopic() string { return "event/refund" }
+func (e *RefundCancelledEvent) GetTopic() string { return "event/refund" }
+func (e *RefundConfirmedEvent) GetTopic() string { return "event/refund" }

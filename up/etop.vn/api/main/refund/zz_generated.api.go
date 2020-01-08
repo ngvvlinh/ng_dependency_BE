@@ -27,10 +27,11 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CancelRefundCommand struct {
-	ShopID       dot.ID
-	ID           dot.ID
-	UpdatedBy    dot.ID
-	CancelReason string
+	ShopID               dot.ID
+	ID                   dot.ID
+	UpdatedBy            dot.ID
+	CancelReason         string
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 
 	Result *Refund `json:"-"`
 }
@@ -123,6 +124,18 @@ func (h QueryServiceHandler) HandleGetRefundsByIDs(ctx context.Context, msg *Get
 	return err
 }
 
+type GetRefundsByOrderIDQuery struct {
+	OrderID dot.ID
+	ShopID  dot.ID
+
+	Result []*Refund `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetRefundsByOrderID(ctx context.Context, msg *GetRefundsByOrderIDQuery) (err error) {
+	msg.Result, err = h.inner.GetRefundsByOrderID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CancelRefundCommand) command()  {}
@@ -130,19 +143,21 @@ func (q *ConfirmRefundCommand) command() {}
 func (q *CreateRefundCommand) command()  {}
 func (q *UpdateRefundCommand) command()  {}
 
-func (q *GetRefundByIDQuery) query()   {}
-func (q *GetRefundsQuery) query()      {}
-func (q *GetRefundsByIDsQuery) query() {}
+func (q *GetRefundByIDQuery) query()       {}
+func (q *GetRefundsQuery) query()          {}
+func (q *GetRefundsByIDsQuery) query()     {}
+func (q *GetRefundsByOrderIDQuery) query() {}
 
 // implement conversion
 
 func (q *CancelRefundCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelRefundArgs) {
 	return ctx,
 		&CancelRefundArgs{
-			ShopID:       q.ShopID,
-			ID:           q.ID,
-			UpdatedBy:    q.UpdatedBy,
-			CancelReason: q.CancelReason,
+			ShopID:               q.ShopID,
+			ID:                   q.ID,
+			UpdatedBy:            q.UpdatedBy,
+			CancelReason:         q.CancelReason,
+			AutoInventoryVoucher: q.AutoInventoryVoucher,
 		}
 }
 
@@ -151,6 +166,7 @@ func (q *CancelRefundCommand) SetCancelRefundArgs(args *CancelRefundArgs) {
 	q.ID = args.ID
 	q.UpdatedBy = args.UpdatedBy
 	q.CancelReason = args.CancelReason
+	q.AutoInventoryVoucher = args.AutoInventoryVoucher
 }
 
 func (q *ConfirmRefundCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmRefundArgs) {
@@ -253,6 +269,19 @@ func (q *GetRefundsByIDsQuery) SetGetRefundsByIDsArgs(args *GetRefundsByIDsArgs)
 	q.ShopID = args.ShopID
 }
 
+func (q *GetRefundsByOrderIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetRefundsByOrderID) {
+	return ctx,
+		&GetRefundsByOrderID{
+			OrderID: q.OrderID,
+			ShopID:  q.ShopID,
+		}
+}
+
+func (q *GetRefundsByOrderIDQuery) SetGetRefundsByOrderID(args *GetRefundsByOrderID) {
+	q.OrderID = args.OrderID
+	q.ShopID = args.ShopID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -287,5 +316,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetRefundByID)
 	b.AddHandler(h.HandleGetRefunds)
 	b.AddHandler(h.HandleGetRefundsByIDs)
+	b.AddHandler(h.HandleGetRefundsByOrderID)
 	return QueryBus{b}
 }

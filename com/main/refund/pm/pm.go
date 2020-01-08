@@ -3,6 +3,7 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/top/types/etc/receipt_ref"
@@ -16,19 +17,51 @@ import (
 type ProcessManager struct {
 	refundQuery  *refund.QueryBus
 	receiptQuery *receipting.QueryBus
+	refundAggr   *refund.CommandBus
 }
 
 func New(
 	refundQ *refund.QueryBus,
 	receiptQ *receipting.QueryBus,
+	refundA *refund.CommandBus,
 ) *ProcessManager {
 	return &ProcessManager{
 		refundQuery:  refundQ,
 		receiptQuery: receiptQ,
+		refundAggr:   refundA,
 	}
 }
 func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptCreating)
+	eventBus.AddEventListener(p.OrderCancelledEvent)
+}
+
+func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
+	query := &refund.GetRefundsByOrderIDQuery{
+		OrderID: event.OrderID,
+		ShopID:  event.ShopID,
+	}
+	err := p.refundQuery.Dispatch(ctx, query)
+	if err != nil {
+		return err
+	}
+	if len(query.Result) == 0 {
+		return nil
+	}
+	for _, value := range query.Result {
+		cmd := &refund.CancelRefundCommand{
+			ShopID:               event.ShopID,
+			ID:                   value.ID,
+			UpdatedBy:            event.UpdatedBy,
+			CancelReason:         "Hủy đơn bán hàng",
+			AutoInventoryVoucher: event.AutoInventoryVoucher,
+		}
+		err = p.refundAggr.Dispatch(ctx, cmd)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (p *ProcessManager) ReceiptCreating(

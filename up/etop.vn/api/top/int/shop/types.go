@@ -2007,8 +2007,9 @@ type GetRefundsRequest struct {
 func (m *GetRefundsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelRefundRequest struct {
-	ID           dot.ID `json:"id"`
-	CancelReason string `json:"cancel_reason"`
+	ID                   dot.ID                              `json:"id"`
+	CancelReason         string                              `json:"cancel_reason"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
 
 func (m *CancelRefundRequest) String() string { return jsonx.MustMarshalToString(m) }

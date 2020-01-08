@@ -39,12 +39,12 @@ type Refund struct {
 }
 
 type RefundLine struct {
-	VariantID   dot.ID `json:"variant_id"`
-	Quantity    int    `json:"count"`
-	Code        string `json:"code"`
-	ImageURL    string `json:"image_url"`
-	ProductName string `json:"product_name"`
-	RetailPrice int    `json:"retail_price"`
-	ProductID   dot.ID `json:"product_id"`
-	Attributes  []*catalogmodel.ProductAttribute
+	VariantID   dot.ID                           `json:"variant_id"`
+	Quantity    int                              `json:"count"`
+	Code        string                           `json:"code"`
+	ImageURL    string                           `json:"image_url"`
+	ProductName string                           `json:"product_name"`
+	RetailPrice int                              `json:"retail_price"`
+	ProductID   dot.ID                           `json:"product_id"`
+	Attributes  []*catalogmodel.ProductAttribute `json:"attributes"`
 }

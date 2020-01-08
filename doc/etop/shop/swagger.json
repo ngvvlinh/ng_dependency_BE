@@ -6844,6 +6844,9 @@
     "paCancelRefundRequest": {
       "type": "object",
       "properties": {
+        "auto_inventory_voucher": {
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
         "cancel_reason": {
           "type": "string"
         },

@@ -443,7 +443,7 @@ func main() {
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
-	refundPm := refundpm.New(&refundQuery, &receiptQuery)
+	refundPm := refundpm.New(&refundQuery, &receiptQuery, &refundAggr)
 	refundPm.RegisterEventHandlers(eventBus)
 	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg).MessageBus()
 	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
