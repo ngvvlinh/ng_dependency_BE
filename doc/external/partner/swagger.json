@@ -20,7 +20,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomers",
+        "summary": "GetCustomers",
+        "operationId": "idGetCustomers",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "History"
         ],
-        "operationId": "GetChanges",
+        "summary": "GetChanges",
+        "operationId": "zxGetChanges",
         "parameters": [
           {
             "name": "body",
@@ -72,7 +74,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "CurrentAccount",
+        "summary": "CurrentAccount",
+        "operationId": "xyCurrentAccount",
         "parameters": [
           {
             "name": "body",
@@ -98,7 +101,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "GetLocationList",
+        "summary": "GetLocationList",
+        "operationId": "xyGetLocationList",
         "parameters": [
           {
             "name": "body",
@@ -124,7 +128,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "xyVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -150,7 +155,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetProducts",
+        "summary": "GetProducts",
+        "operationId": "cgGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -176,7 +182,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "CancelOrder",
+        "summary": "CancelOrder",
+        "operationId": "ovCancelOrder",
         "parameters": [
           {
             "name": "body",
@@ -202,7 +209,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "CreateAndConfirmOrder",
+        "summary": "CreateAndConfirmOrder",
+        "operationId": "ovCreateAndConfirmOrder",
         "parameters": [
           {
             "name": "body",
@@ -228,7 +236,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetFulfillment",
+        "summary": "GetFulfillment",
+        "operationId": "ovGetFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -254,7 +263,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetOrder",
+        "summary": "GetOrder",
+        "operationId": "ovGetOrder",
         "parameters": [
           {
             "name": "body",
@@ -280,7 +290,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetShippingServices",
+        "summary": "GetShippingServices",
+        "operationId": "ovGetShippingServices",
         "parameters": [
           {
             "name": "body",
@@ -306,7 +317,8 @@
         "tags": [
           "Shop"
         ],
-        "operationId": "AuthorizeShop",
+        "summary": "AuthorizeShop",
+        "operationId": "hrAuthorizeShop",
         "parameters": [
           {
             "name": "body",
@@ -332,7 +344,8 @@
         "tags": [
           "Shop"
         ],
-        "operationId": "CurrentShop",
+        "summary": "CurrentShop",
+        "operationId": "hrCurrentShop",
         "parameters": [
           {
             "name": "body",
@@ -358,7 +371,8 @@
         "tags": [
           "Variant"
         ],
-        "operationId": "GetVariants",
+        "summary": "GetVariants",
+        "operationId": "huGetVariants",
         "parameters": [
           {
             "name": "body",
@@ -384,7 +398,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "CreateWebhook",
+        "summary": "CreateWebhook",
+        "operationId": "oeCreateWebhook",
         "parameters": [
           {
             "name": "body",
@@ -410,7 +425,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "DeleteWebhook",
+        "summary": "DeleteWebhook",
+        "operationId": "oeDeleteWebhook",
         "parameters": [
           {
             "name": "body",
@@ -436,7 +452,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "GetWebhooks",
+        "summary": "GetWebhooks",
+        "operationId": "oeGetWebhooks",
         "parameters": [
           {
             "name": "body",

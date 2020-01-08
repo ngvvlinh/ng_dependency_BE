@@ -120,9 +120,9 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 						OperationProps: spec.OperationProps{
 							Description: desc.FormattedDescription,
 							Deprecated:  desc.Deprecated,
-							Summary:     desc.Summary,
+							Summary:     method.Name,
 							Tags:        []string{service.Name},
-							ID:          method.Name,
+							ID:          getOperationID(method),
 							Parameters: []spec.Parameter{
 								{
 									ParamProps: spec.ParamProps{
@@ -195,16 +195,9 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 var mapComp2OrigPath = map[string]string{}
 var mapOrig2CompPath = map[string]string{}
 
-func getDefinitionID(typ types.Type) string {
-	typ = parse.UnwrapNull(parse.SkipPointer(typ))
-	named, ok := typ.(*types.Named)
-	if !ok {
-		panic(fmt.Sprintf("must be named type (got %v)", typ))
-	}
-
-	origPath := named.Obj().Pkg().Path()
+func getCompactPath(origPath string) string {
 	if compPath := mapOrig2CompPath[origPath]; compPath != "" {
-		return compPath + named.Obj().Name()
+		return compPath
 	}
 
 	compPath := origPath
@@ -221,7 +214,23 @@ func getDefinitionID(typ types.Type) string {
 	}
 	mapComp2OrigPath[compPath] = origPath
 	mapOrig2CompPath[origPath] = compPath
-	return compPath + named.Obj().Name()
+	return compPath
+}
+
+func getDefinitionID(typ types.Type) string {
+	typ = parse.UnwrapNull(parse.SkipPointer(typ))
+	named, ok := typ.(*types.Named)
+	if !ok {
+		panic(fmt.Sprintf("must be named type (got %v)", typ))
+	}
+
+	pkgPath := named.Obj().Pkg().Path()
+	return getCompactPath(pkgPath) + named.Obj().Name()
+}
+
+func getOperationID(m *defs.Method) string {
+	origPath := m.Method.Pkg().Path() + "." + m.Service.FullName
+	return getCompactPath(origPath) + m.Name
 }
 
 func compactPath(s string) string {

@@ -20,7 +20,8 @@
         "tags": [
           "History"
         ],
-        "operationId": "GetChanges",
+        "summary": "GetChanges",
+        "operationId": "ldGetChanges",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "CurrentAccount",
+        "summary": "CurrentAccount",
+        "operationId": "cxCurrentAccount",
         "parameters": [
           {
             "name": "body",
@@ -72,7 +74,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "GetLocationList",
+        "summary": "GetLocationList",
+        "operationId": "cxGetLocationList",
         "parameters": [
           {
             "name": "body",
@@ -98,7 +101,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "cxVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -124,7 +128,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "CancelOrder",
+        "summary": "CancelOrder",
+        "operationId": "ayCancelOrder",
         "parameters": [
           {
             "name": "body",
@@ -150,7 +155,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "CreateAndConfirmOrder",
+        "summary": "CreateAndConfirmOrder",
+        "operationId": "ayCreateAndConfirmOrder",
         "parameters": [
           {
             "name": "body",
@@ -176,7 +182,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetFulfillment",
+        "summary": "GetFulfillment",
+        "operationId": "ayGetFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -202,7 +209,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetOrder",
+        "summary": "GetOrder",
+        "operationId": "ayGetOrder",
         "parameters": [
           {
             "name": "body",
@@ -228,7 +236,8 @@
         "tags": [
           "Shipping"
         ],
-        "operationId": "GetShippingServices",
+        "summary": "GetShippingServices",
+        "operationId": "ayGetShippingServices",
         "parameters": [
           {
             "name": "body",
@@ -254,7 +263,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "CreateWebhook",
+        "summary": "CreateWebhook",
+        "operationId": "fgCreateWebhook",
         "parameters": [
           {
             "name": "body",
@@ -280,7 +290,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "DeleteWebhook",
+        "summary": "DeleteWebhook",
+        "operationId": "fgDeleteWebhook",
         "parameters": [
           {
             "name": "body",
@@ -306,7 +317,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "GetWebhooks",
+        "summary": "GetWebhooks",
+        "operationId": "fgGetWebhooks",
         "parameters": [
           {
             "name": "body",

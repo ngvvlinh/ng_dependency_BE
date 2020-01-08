@@ -20,7 +20,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "okVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Webhook"
         ],
-        "operationId": "ResetState",
+        "summary": "ResetState",
+        "operationId": "feResetState",
         "parameters": [
           {
             "name": "body",

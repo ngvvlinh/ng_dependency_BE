@@ -20,7 +20,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "AffiliateGetProducts",
+        "summary": "AffiliateGetProducts",
+        "operationId": "yeAffiliateGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "CreateOrUpdateAffiliateCommissionSetting",
+        "summary": "CreateOrUpdateAffiliateCommissionSetting",
+        "operationId": "yeCreateOrUpdateAffiliateCommissionSetting",
         "parameters": [
           {
             "name": "body",
@@ -72,7 +74,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "CreateReferralCode",
+        "summary": "CreateReferralCode",
+        "operationId": "yeCreateReferralCode",
         "parameters": [
           {
             "name": "body",
@@ -98,7 +101,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "GetCommissions",
+        "summary": "GetCommissions",
+        "operationId": "yeGetCommissions",
         "parameters": [
           {
             "name": "body",
@@ -124,7 +128,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "GetProductPromotionByProductID",
+        "summary": "GetProductPromotionByProductID",
+        "operationId": "yeGetProductPromotionByProductID",
         "parameters": [
           {
             "name": "body",
@@ -150,7 +155,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "GetReferralCodes",
+        "summary": "GetReferralCodes",
+        "operationId": "yeGetReferralCodes",
         "parameters": [
           {
             "name": "body",
@@ -176,7 +182,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "GetReferrals",
+        "summary": "GetReferrals",
+        "operationId": "yeGetReferrals",
         "parameters": [
           {
             "name": "body",
@@ -202,7 +209,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "GetTransactions",
+        "summary": "GetTransactions",
+        "operationId": "yeGetTransactions",
         "parameters": [
           {
             "name": "body",
@@ -228,7 +236,8 @@
         "tags": [
           "Affiliate"
         ],
-        "operationId": "NotifyNewShopPurchase",
+        "summary": "NotifyNewShopPurchase",
+        "operationId": "yeNotifyNewShopPurchase",
         "parameters": [
           {
             "name": "body",
@@ -254,7 +263,8 @@
         "tags": [
           "Shop"
         ],
-        "operationId": "CheckReferralCodeValid",
+        "summary": "CheckReferralCodeValid",
+        "operationId": "ncCheckReferralCodeValid",
         "parameters": [
           {
             "name": "body",
@@ -280,7 +290,8 @@
         "tags": [
           "Shop"
         ],
-        "operationId": "GetProductPromotion",
+        "summary": "GetProductPromotion",
+        "operationId": "ncGetProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -306,7 +317,8 @@
         "tags": [
           "Shop"
         ],
-        "operationId": "ShopGetProducts",
+        "summary": "ShopGetProducts",
+        "operationId": "ncShopGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -332,7 +344,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "CreateOrUpdateTradingCommissionSetting",
+        "summary": "CreateOrUpdateTradingCommissionSetting",
+        "operationId": "gyCreateOrUpdateTradingCommissionSetting",
         "parameters": [
           {
             "name": "body",
@@ -358,7 +371,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "CreateTradingProductPromotion",
+        "summary": "CreateTradingProductPromotion",
+        "operationId": "gyCreateTradingProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -384,7 +398,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "GetTradingProductPromotionByProductIDs",
+        "summary": "GetTradingProductPromotionByProductIDs",
+        "operationId": "gyGetTradingProductPromotionByProductIDs",
         "parameters": [
           {
             "name": "body",
@@ -410,7 +425,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "GetTradingProductPromotions",
+        "summary": "GetTradingProductPromotions",
+        "operationId": "gyGetTradingProductPromotions",
         "parameters": [
           {
             "name": "body",
@@ -436,7 +452,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingGetProducts",
+        "summary": "TradingGetProducts",
+        "operationId": "gyTradingGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -462,7 +479,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "UpdateTradingProductPromotion",
+        "summary": "UpdateTradingProductPromotion",
+        "operationId": "gyUpdateTradingProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -488,7 +506,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "UpdateReferral",
+        "summary": "UpdateReferral",
+        "operationId": "gbUpdateReferral",
         "parameters": [
           {
             "name": "body",

@@ -20,7 +20,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "CreateExternalAccountAhamove",
+        "summary": "CreateExternalAccountAhamove",
+        "operationId": "egCreateExternalAccountAhamove",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "DeleteShop",
+        "summary": "DeleteShop",
+        "operationId": "egDeleteShop",
         "parameters": [
           {
             "name": "body",
@@ -72,7 +74,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "GetBalanceShop",
+        "summary": "GetBalanceShop",
+        "operationId": "egGetBalanceShop",
         "parameters": [
           {
             "name": "body",
@@ -98,7 +101,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "GetExternalAccountAhamove",
+        "summary": "GetExternalAccountAhamove",
+        "operationId": "egGetExternalAccountAhamove",
         "parameters": [
           {
             "name": "body",
@@ -124,7 +128,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "RegisterShop",
+        "summary": "RegisterShop",
+        "operationId": "egRegisterShop",
         "parameters": [
           {
             "name": "body",
@@ -150,7 +155,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "RequestVerifyExternalAccountAhamove",
+        "summary": "RequestVerifyExternalAccountAhamove",
+        "operationId": "egRequestVerifyExternalAccountAhamove",
         "parameters": [
           {
             "name": "body",
@@ -176,7 +182,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "SetDefaultAddress",
+        "summary": "SetDefaultAddress",
+        "operationId": "egSetDefaultAddress",
         "parameters": [
           {
             "name": "body",
@@ -202,7 +209,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "UpdateExternalAccountAhamoveVerification",
+        "summary": "UpdateExternalAccountAhamoveVerification",
+        "operationId": "egUpdateExternalAccountAhamoveVerification",
         "parameters": [
           {
             "name": "body",
@@ -229,7 +237,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "UpdateExternalAccountAhamoveVerificationImages",
+        "summary": "UpdateExternalAccountAhamoveVerificationImages",
+        "operationId": "egUpdateExternalAccountAhamoveVerificationImages",
         "deprecated": true,
         "parameters": [
           {
@@ -256,7 +265,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "UpdateShop",
+        "summary": "UpdateShop",
+        "operationId": "egUpdateShop",
         "parameters": [
           {
             "name": "body",
@@ -282,7 +292,8 @@
         "tags": [
           "Authorize"
         ],
-        "operationId": "AuthorizePartner",
+        "summary": "AuthorizePartner",
+        "operationId": "joAuthorizePartner",
         "parameters": [
           {
             "name": "body",
@@ -308,7 +319,8 @@
         "tags": [
           "Authorize"
         ],
-        "operationId": "GetAuthorizedPartners",
+        "summary": "GetAuthorizedPartners",
+        "operationId": "joGetAuthorizedPartners",
         "parameters": [
           {
             "name": "body",
@@ -334,7 +346,8 @@
         "tags": [
           "Authorize"
         ],
-        "operationId": "GetAvailablePartners",
+        "summary": "GetAvailablePartners",
+        "operationId": "joGetAvailablePartners",
         "parameters": [
           {
             "name": "body",
@@ -360,7 +373,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "CreateBrand",
+        "summary": "CreateBrand",
+        "operationId": "ozCreateBrand",
         "parameters": [
           {
             "name": "body",
@@ -386,7 +400,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "DeleteBrand",
+        "summary": "DeleteBrand",
+        "operationId": "ozDeleteBrand",
         "parameters": [
           {
             "name": "body",
@@ -412,7 +427,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "GetBrandByID",
+        "summary": "GetBrandByID",
+        "operationId": "ozGetBrandByID",
         "parameters": [
           {
             "name": "body",
@@ -438,7 +454,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "GetBrands",
+        "summary": "GetBrands",
+        "operationId": "ozGetBrands",
         "parameters": [
           {
             "name": "body",
@@ -464,7 +481,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "GetBrandsByIDs",
+        "summary": "GetBrandsByIDs",
+        "operationId": "ozGetBrandsByIDs",
         "parameters": [
           {
             "name": "body",
@@ -490,7 +508,8 @@
         "tags": [
           "Brand"
         ],
-        "operationId": "UpdateBrandInfo",
+        "summary": "UpdateBrandInfo",
+        "operationId": "ozUpdateBrandInfo",
         "parameters": [
           {
             "name": "body",
@@ -516,7 +535,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "CreateCarrier",
+        "summary": "CreateCarrier",
+        "operationId": "ocCreateCarrier",
         "parameters": [
           {
             "name": "body",
@@ -542,7 +562,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "DeleteCarrier",
+        "summary": "DeleteCarrier",
+        "operationId": "ocDeleteCarrier",
         "parameters": [
           {
             "name": "body",
@@ -568,7 +589,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "GetCarrier",
+        "summary": "GetCarrier",
+        "operationId": "ocGetCarrier",
         "parameters": [
           {
             "name": "body",
@@ -594,7 +616,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "GetCarriers",
+        "summary": "GetCarriers",
+        "operationId": "ocGetCarriers",
         "parameters": [
           {
             "name": "body",
@@ -620,7 +643,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "GetCarriersByIDs",
+        "summary": "GetCarriersByIDs",
+        "operationId": "ocGetCarriersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -646,7 +670,8 @@
         "tags": [
           "Carrier"
         ],
-        "operationId": "UpdateCarrier",
+        "summary": "UpdateCarrier",
+        "operationId": "ocUpdateCarrier",
         "parameters": [
           {
             "name": "body",
@@ -672,7 +697,8 @@
         "tags": [
           "Category"
         ],
-        "operationId": "CreateCategory",
+        "summary": "CreateCategory",
+        "operationId": "vmCreateCategory",
         "parameters": [
           {
             "name": "body",
@@ -698,7 +724,8 @@
         "tags": [
           "Category"
         ],
-        "operationId": "DeleteCategory",
+        "summary": "DeleteCategory",
+        "operationId": "vmDeleteCategory",
         "parameters": [
           {
             "name": "body",
@@ -724,7 +751,8 @@
         "tags": [
           "Category"
         ],
-        "operationId": "GetCategories",
+        "summary": "GetCategories",
+        "operationId": "vmGetCategories",
         "parameters": [
           {
             "name": "body",
@@ -750,7 +778,8 @@
         "tags": [
           "Category"
         ],
-        "operationId": "GetCategory",
+        "summary": "GetCategory",
+        "operationId": "vmGetCategory",
         "parameters": [
           {
             "name": "body",
@@ -776,7 +805,8 @@
         "tags": [
           "Category"
         ],
-        "operationId": "UpdateCategory",
+        "summary": "UpdateCategory",
+        "operationId": "vmUpdateCategory",
         "parameters": [
           {
             "name": "body",
@@ -802,7 +832,8 @@
         "tags": [
           "Collection"
         ],
-        "operationId": "CreateCollection",
+        "summary": "CreateCollection",
+        "operationId": "jdCreateCollection",
         "parameters": [
           {
             "name": "body",
@@ -828,7 +859,8 @@
         "tags": [
           "Collection"
         ],
-        "operationId": "GetCollection",
+        "summary": "GetCollection",
+        "operationId": "jdGetCollection",
         "parameters": [
           {
             "name": "body",
@@ -854,7 +886,8 @@
         "tags": [
           "Collection"
         ],
-        "operationId": "GetCollections",
+        "summary": "GetCollections",
+        "operationId": "jdGetCollections",
         "parameters": [
           {
             "name": "body",
@@ -880,7 +913,8 @@
         "tags": [
           "Collection"
         ],
-        "operationId": "GetCollectionsByProductID",
+        "summary": "GetCollectionsByProductID",
+        "operationId": "jdGetCollectionsByProductID",
         "parameters": [
           {
             "name": "body",
@@ -906,7 +940,8 @@
         "tags": [
           "Collection"
         ],
-        "operationId": "UpdateCollection",
+        "summary": "UpdateCollection",
+        "operationId": "jdUpdateCollection",
         "parameters": [
           {
             "name": "body",
@@ -933,7 +968,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "AddCustomersToGroup",
+        "summary": "AddCustomersToGroup",
+        "operationId": "ggAddCustomersToGroup",
         "parameters": [
           {
             "name": "body",
@@ -959,7 +995,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "BatchSetCustomersStatus",
+        "summary": "BatchSetCustomersStatus",
+        "operationId": "ggBatchSetCustomersStatus",
         "parameters": [
           {
             "name": "body",
@@ -985,7 +1022,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "CreateCustomer",
+        "summary": "CreateCustomer",
+        "operationId": "ggCreateCustomer",
         "parameters": [
           {
             "name": "body",
@@ -1011,7 +1049,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "CreateCustomerAddress",
+        "summary": "CreateCustomerAddress",
+        "operationId": "ggCreateCustomerAddress",
         "parameters": [
           {
             "name": "body",
@@ -1037,7 +1076,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "DeleteCustomer",
+        "summary": "DeleteCustomer",
+        "operationId": "ggDeleteCustomer",
         "parameters": [
           {
             "name": "body",
@@ -1063,7 +1103,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "DeleteCustomerAddress",
+        "summary": "DeleteCustomerAddress",
+        "operationId": "ggDeleteCustomerAddress",
         "parameters": [
           {
             "name": "body",
@@ -1089,7 +1130,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomer",
+        "summary": "GetCustomer",
+        "operationId": "ggGetCustomer",
         "parameters": [
           {
             "name": "body",
@@ -1115,7 +1157,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomerAddresses",
+        "summary": "GetCustomerAddresses",
+        "operationId": "ggGetCustomerAddresses",
         "parameters": [
           {
             "name": "body",
@@ -1141,7 +1184,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomerDetails",
+        "summary": "GetCustomerDetails",
+        "operationId": "ggGetCustomerDetails",
         "parameters": [
           {
             "name": "body",
@@ -1167,7 +1211,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomers",
+        "summary": "GetCustomers",
+        "operationId": "ggGetCustomers",
         "parameters": [
           {
             "name": "body",
@@ -1193,7 +1238,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "GetCustomersByIDs",
+        "summary": "GetCustomersByIDs",
+        "operationId": "ggGetCustomersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -1219,7 +1265,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "RemoveCustomersFromGroup",
+        "summary": "RemoveCustomersFromGroup",
+        "operationId": "ggRemoveCustomersFromGroup",
         "parameters": [
           {
             "name": "body",
@@ -1245,7 +1292,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "SetDefaultCustomerAddress",
+        "summary": "SetDefaultCustomerAddress",
+        "operationId": "ggSetDefaultCustomerAddress",
         "parameters": [
           {
             "name": "body",
@@ -1271,7 +1319,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "UpdateCustomer",
+        "summary": "UpdateCustomer",
+        "operationId": "ggUpdateCustomer",
         "parameters": [
           {
             "name": "body",
@@ -1297,7 +1346,8 @@
         "tags": [
           "Customer"
         ],
-        "operationId": "UpdateCustomerAddress",
+        "summary": "UpdateCustomerAddress",
+        "operationId": "ggUpdateCustomerAddress",
         "parameters": [
           {
             "name": "body",
@@ -1323,7 +1373,8 @@
         "tags": [
           "CustomerGroup"
         ],
-        "operationId": "CreateCustomerGroup",
+        "summary": "CreateCustomerGroup",
+        "operationId": "ebCreateCustomerGroup",
         "parameters": [
           {
             "name": "body",
@@ -1349,7 +1400,8 @@
         "tags": [
           "CustomerGroup"
         ],
-        "operationId": "GetCustomerGroup",
+        "summary": "GetCustomerGroup",
+        "operationId": "ebGetCustomerGroup",
         "parameters": [
           {
             "name": "body",
@@ -1375,7 +1427,8 @@
         "tags": [
           "CustomerGroup"
         ],
-        "operationId": "GetCustomerGroups",
+        "summary": "GetCustomerGroups",
+        "operationId": "ebGetCustomerGroups",
         "parameters": [
           {
             "name": "body",
@@ -1401,7 +1454,8 @@
         "tags": [
           "CustomerGroup"
         ],
-        "operationId": "UpdateCustomerGroup",
+        "summary": "UpdateCustomerGroup",
+        "operationId": "ebUpdateCustomerGroup",
         "parameters": [
           {
             "name": "body",
@@ -1427,7 +1481,8 @@
         "tags": [
           "Export"
         ],
-        "operationId": "GetExports",
+        "summary": "GetExports",
+        "operationId": "psGetExports",
         "parameters": [
           {
             "name": "body",
@@ -1453,7 +1508,8 @@
         "tags": [
           "Export"
         ],
-        "operationId": "RequestExport",
+        "summary": "RequestExport",
+        "operationId": "psRequestExport",
         "parameters": [
           {
             "name": "body",
@@ -1479,7 +1535,8 @@
         "tags": [
           "ExternalAccount"
         ],
-        "operationId": "ConnectCarrierServiceExternalAccountHaravan",
+        "summary": "ConnectCarrierServiceExternalAccountHaravan",
+        "operationId": "clConnectCarrierServiceExternalAccountHaravan",
         "parameters": [
           {
             "name": "body",
@@ -1505,7 +1562,8 @@
         "tags": [
           "ExternalAccount"
         ],
-        "operationId": "CreateExternalAccountHaravan",
+        "summary": "CreateExternalAccountHaravan",
+        "operationId": "clCreateExternalAccountHaravan",
         "parameters": [
           {
             "name": "body",
@@ -1531,7 +1589,8 @@
         "tags": [
           "ExternalAccount"
         ],
-        "operationId": "DeleteConnectedCarrierServiceExternalAccountHaravan",
+        "summary": "DeleteConnectedCarrierServiceExternalAccountHaravan",
+        "operationId": "clDeleteConnectedCarrierServiceExternalAccountHaravan",
         "parameters": [
           {
             "name": "body",
@@ -1557,7 +1616,8 @@
         "tags": [
           "ExternalAccount"
         ],
-        "operationId": "GetExternalAccountHaravan",
+        "summary": "GetExternalAccountHaravan",
+        "operationId": "clGetExternalAccountHaravan",
         "parameters": [
           {
             "name": "body",
@@ -1583,7 +1643,8 @@
         "tags": [
           "ExternalAccount"
         ],
-        "operationId": "UpdateExternalAccountHaravanToken",
+        "summary": "UpdateExternalAccountHaravanToken",
+        "operationId": "clUpdateExternalAccountHaravanToken",
         "parameters": [
           {
             "name": "body",
@@ -1609,7 +1670,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "GetExternalShippingServices",
+        "summary": "GetExternalShippingServices",
+        "operationId": "gsGetExternalShippingServices",
         "parameters": [
           {
             "name": "body",
@@ -1635,7 +1697,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "GetFulfillment",
+        "summary": "GetFulfillment",
+        "operationId": "gsGetFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -1661,7 +1724,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "GetFulfillments",
+        "summary": "GetFulfillments",
+        "operationId": "gsGetFulfillments",
         "parameters": [
           {
             "name": "body",
@@ -1687,7 +1751,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "GetPublicExternalShippingServices",
+        "summary": "GetPublicExternalShippingServices",
+        "operationId": "gsGetPublicExternalShippingServices",
         "parameters": [
           {
             "name": "body",
@@ -1713,7 +1778,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "GetPublicFulfillment",
+        "summary": "GetPublicFulfillment",
+        "operationId": "gsGetPublicFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -1739,7 +1805,8 @@
         "tags": [
           "Fulfillment"
         ],
-        "operationId": "UpdateFulfillmentsShippingState",
+        "summary": "UpdateFulfillmentsShippingState",
+        "operationId": "gsUpdateFulfillmentsShippingState",
         "parameters": [
           {
             "name": "body",
@@ -1765,7 +1832,8 @@
         "tags": [
           "History"
         ],
-        "operationId": "GetFulfillmentHistory",
+        "summary": "GetFulfillmentHistory",
+        "operationId": "rgGetFulfillmentHistory",
         "parameters": [
           {
             "name": "body",
@@ -1791,7 +1859,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "AdjustInventoryQuantity",
+        "summary": "AdjustInventoryQuantity",
+        "operationId": "jbAdjustInventoryQuantity",
         "parameters": [
           {
             "name": "body",
@@ -1817,7 +1886,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "CancelInventoryVoucher",
+        "summary": "CancelInventoryVoucher",
+        "operationId": "jbCancelInventoryVoucher",
         "parameters": [
           {
             "name": "body",
@@ -1843,7 +1913,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "ConfirmInventoryVoucher",
+        "summary": "ConfirmInventoryVoucher",
+        "operationId": "jbConfirmInventoryVoucher",
         "parameters": [
           {
             "name": "body",
@@ -1869,7 +1940,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "CreateInventoryVoucher",
+        "summary": "CreateInventoryVoucher",
+        "operationId": "jbCreateInventoryVoucher",
         "parameters": [
           {
             "name": "body",
@@ -1895,7 +1967,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVariant",
+        "summary": "GetInventoryVariant",
+        "operationId": "jbGetInventoryVariant",
         "parameters": [
           {
             "name": "body",
@@ -1921,7 +1994,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVariants",
+        "summary": "GetInventoryVariants",
+        "operationId": "jbGetInventoryVariants",
         "parameters": [
           {
             "name": "body",
@@ -1947,7 +2021,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVariantsByVariantIDs",
+        "summary": "GetInventoryVariantsByVariantIDs",
+        "operationId": "jbGetInventoryVariantsByVariantIDs",
         "parameters": [
           {
             "name": "body",
@@ -1973,7 +2048,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVoucher",
+        "summary": "GetInventoryVoucher",
+        "operationId": "jbGetInventoryVoucher",
         "parameters": [
           {
             "name": "body",
@@ -1999,7 +2075,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVouchers",
+        "summary": "GetInventoryVouchers",
+        "operationId": "jbGetInventoryVouchers",
         "parameters": [
           {
             "name": "body",
@@ -2025,7 +2102,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVouchersByIDs",
+        "summary": "GetInventoryVouchersByIDs",
+        "operationId": "jbGetInventoryVouchersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -2051,7 +2129,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "GetInventoryVouchersByReference",
+        "summary": "GetInventoryVouchersByReference",
+        "operationId": "jbGetInventoryVouchersByReference",
         "parameters": [
           {
             "name": "body",
@@ -2077,7 +2156,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "UpdateInventoryVariantCostPrice",
+        "summary": "UpdateInventoryVariantCostPrice",
+        "operationId": "jbUpdateInventoryVariantCostPrice",
         "parameters": [
           {
             "name": "body",
@@ -2103,7 +2183,8 @@
         "tags": [
           "Inventory"
         ],
-        "operationId": "UpdateInventoryVoucher",
+        "summary": "UpdateInventoryVoucher",
+        "operationId": "jbUpdateInventoryVoucher",
         "parameters": [
           {
             "name": "body",
@@ -2129,7 +2210,8 @@
         "tags": [
           "Ledger"
         ],
-        "operationId": "CreateLedger",
+        "summary": "CreateLedger",
+        "operationId": "omCreateLedger",
         "parameters": [
           {
             "name": "body",
@@ -2155,7 +2237,8 @@
         "tags": [
           "Ledger"
         ],
-        "operationId": "DeleteLedger",
+        "summary": "DeleteLedger",
+        "operationId": "omDeleteLedger",
         "parameters": [
           {
             "name": "body",
@@ -2181,7 +2264,8 @@
         "tags": [
           "Ledger"
         ],
-        "operationId": "GetLedger",
+        "summary": "GetLedger",
+        "operationId": "omGetLedger",
         "parameters": [
           {
             "name": "body",
@@ -2207,7 +2291,8 @@
         "tags": [
           "Ledger"
         ],
-        "operationId": "GetLedgers",
+        "summary": "GetLedgers",
+        "operationId": "omGetLedgers",
         "parameters": [
           {
             "name": "body",
@@ -2233,7 +2318,8 @@
         "tags": [
           "Ledger"
         ],
-        "operationId": "UpdateLedger",
+        "summary": "UpdateLedger",
+        "operationId": "omUpdateLedger",
         "parameters": [
           {
             "name": "body",
@@ -2259,7 +2345,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "bcVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -2285,7 +2372,8 @@
         "tags": [
           "MoneyTransaction"
         ],
-        "operationId": "GetMoneyTransaction",
+        "summary": "GetMoneyTransaction",
+        "operationId": "vzGetMoneyTransaction",
         "parameters": [
           {
             "name": "body",
@@ -2311,7 +2399,8 @@
         "tags": [
           "MoneyTransaction"
         ],
-        "operationId": "GetMoneyTransactions",
+        "summary": "GetMoneyTransactions",
+        "operationId": "vzGetMoneyTransactions",
         "parameters": [
           {
             "name": "body",
@@ -2337,7 +2426,8 @@
         "tags": [
           "Notification"
         ],
-        "operationId": "CreateDevice",
+        "summary": "CreateDevice",
+        "operationId": "eoCreateDevice",
         "parameters": [
           {
             "name": "body",
@@ -2363,7 +2453,8 @@
         "tags": [
           "Notification"
         ],
-        "operationId": "DeleteDevice",
+        "summary": "DeleteDevice",
+        "operationId": "eoDeleteDevice",
         "parameters": [
           {
             "name": "body",
@@ -2389,7 +2480,8 @@
         "tags": [
           "Notification"
         ],
-        "operationId": "GetNotification",
+        "summary": "GetNotification",
+        "operationId": "eoGetNotification",
         "parameters": [
           {
             "name": "body",
@@ -2415,7 +2507,8 @@
         "tags": [
           "Notification"
         ],
-        "operationId": "GetNotifications",
+        "summary": "GetNotifications",
+        "operationId": "eoGetNotifications",
         "parameters": [
           {
             "name": "body",
@@ -2441,7 +2534,8 @@
         "tags": [
           "Notification"
         ],
-        "operationId": "UpdateNotifications",
+        "summary": "UpdateNotifications",
+        "operationId": "eoUpdateNotifications",
         "parameters": [
           {
             "name": "body",
@@ -2467,7 +2561,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "CancelOrder",
+        "summary": "CancelOrder",
+        "operationId": "tgCancelOrder",
         "parameters": [
           {
             "name": "body",
@@ -2493,7 +2588,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "ConfirmOrder",
+        "summary": "ConfirmOrder",
+        "operationId": "tgConfirmOrder",
         "parameters": [
           {
             "name": "body",
@@ -2519,7 +2615,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "ConfirmOrderAndCreateFulfillments",
+        "summary": "ConfirmOrderAndCreateFulfillments",
+        "operationId": "tgConfirmOrderAndCreateFulfillments",
         "parameters": [
           {
             "name": "body",
@@ -2545,7 +2642,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "CreateOrder",
+        "summary": "CreateOrder",
+        "operationId": "tgCreateOrder",
         "parameters": [
           {
             "name": "body",
@@ -2571,7 +2669,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "GetOrder",
+        "summary": "GetOrder",
+        "operationId": "tgGetOrder",
         "parameters": [
           {
             "name": "body",
@@ -2597,7 +2696,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "GetOrders",
+        "summary": "GetOrders",
+        "operationId": "tgGetOrders",
         "parameters": [
           {
             "name": "body",
@@ -2623,7 +2723,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "GetOrdersByIDs",
+        "summary": "GetOrdersByIDs",
+        "operationId": "tgGetOrdersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -2649,7 +2750,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "GetOrdersByReceiptID",
+        "summary": "GetOrdersByReceiptID",
+        "operationId": "tgGetOrdersByReceiptID",
         "parameters": [
           {
             "name": "body",
@@ -2675,7 +2777,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "UpdateOrder",
+        "summary": "UpdateOrder",
+        "operationId": "tgUpdateOrder",
         "parameters": [
           {
             "name": "body",
@@ -2701,7 +2804,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "UpdateOrderPaymentStatus",
+        "summary": "UpdateOrderPaymentStatus",
+        "operationId": "tgUpdateOrderPaymentStatus",
         "parameters": [
           {
             "name": "body",
@@ -2727,7 +2831,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "UpdateOrderShippingInfo",
+        "summary": "UpdateOrderShippingInfo",
+        "operationId": "tgUpdateOrderShippingInfo",
         "parameters": [
           {
             "name": "body",
@@ -2754,7 +2859,8 @@
         "tags": [
           "Order"
         ],
-        "operationId": "UpdateOrdersStatus",
+        "summary": "UpdateOrdersStatus",
+        "operationId": "tgUpdateOrdersStatus",
         "deprecated": true,
         "parameters": [
           {
@@ -2781,7 +2887,8 @@
         "tags": [
           "Payment"
         ],
-        "operationId": "PaymentCheckReturnData",
+        "summary": "PaymentCheckReturnData",
+        "operationId": "pfPaymentCheckReturnData",
         "parameters": [
           {
             "name": "body",
@@ -2807,7 +2914,8 @@
         "tags": [
           "Payment"
         ],
-        "operationId": "PaymentTradingOrder",
+        "summary": "PaymentTradingOrder",
+        "operationId": "pfPaymentTradingOrder",
         "parameters": [
           {
             "name": "body",
@@ -2834,7 +2942,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "AddProductCollection",
+        "summary": "AddProductCollection",
+        "operationId": "slAddProductCollection",
         "parameters": [
           {
             "name": "body",
@@ -2860,7 +2969,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "CreateProduct",
+        "summary": "CreateProduct",
+        "operationId": "slCreateProduct",
         "parameters": [
           {
             "name": "body",
@@ -2886,7 +2996,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "CreateVariant",
+        "summary": "CreateVariant",
+        "operationId": "slCreateVariant",
         "parameters": [
           {
             "name": "body",
@@ -2912,7 +3023,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetProduct",
+        "summary": "GetProduct",
+        "operationId": "slGetProduct",
         "parameters": [
           {
             "name": "body",
@@ -2938,7 +3050,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetProducts",
+        "summary": "GetProducts",
+        "operationId": "slGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -2964,7 +3077,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetProductsByIDs",
+        "summary": "GetProductsByIDs",
+        "operationId": "slGetProductsByIDs",
         "parameters": [
           {
             "name": "body",
@@ -2990,7 +3104,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetVariant",
+        "summary": "GetVariant",
+        "operationId": "slGetVariant",
         "parameters": [
           {
             "name": "body",
@@ -3016,7 +3131,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetVariantsByIDs",
+        "summary": "GetVariantsByIDs",
+        "operationId": "slGetVariantsByIDs",
         "parameters": [
           {
             "name": "body",
@@ -3042,7 +3158,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "GetVariantsBySupplierID",
+        "summary": "GetVariantsBySupplierID",
+        "operationId": "slGetVariantsBySupplierID",
         "parameters": [
           {
             "name": "body",
@@ -3068,7 +3185,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "RemoveProductCategory",
+        "summary": "RemoveProductCategory",
+        "operationId": "slRemoveProductCategory",
         "parameters": [
           {
             "name": "body",
@@ -3094,7 +3212,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "RemoveProductCollection",
+        "summary": "RemoveProductCollection",
+        "operationId": "slRemoveProductCollection",
         "parameters": [
           {
             "name": "body",
@@ -3120,7 +3239,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "RemoveProducts",
+        "summary": "RemoveProducts",
+        "operationId": "slRemoveProducts",
         "parameters": [
           {
             "name": "body",
@@ -3146,7 +3266,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "RemoveVariants",
+        "summary": "RemoveVariants",
+        "operationId": "slRemoveVariants",
         "parameters": [
           {
             "name": "body",
@@ -3172,7 +3293,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProduct",
+        "summary": "UpdateProduct",
+        "operationId": "slUpdateProduct",
         "parameters": [
           {
             "name": "body",
@@ -3199,7 +3321,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProductCategory",
+        "summary": "UpdateProductCategory",
+        "operationId": "slUpdateProductCategory",
         "parameters": [
           {
             "name": "body",
@@ -3225,7 +3348,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProductImages",
+        "summary": "UpdateProductImages",
+        "operationId": "slUpdateProductImages",
         "parameters": [
           {
             "name": "body",
@@ -3251,7 +3375,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProductMetaFields",
+        "summary": "UpdateProductMetaFields",
+        "operationId": "slUpdateProductMetaFields",
         "parameters": [
           {
             "name": "body",
@@ -3277,7 +3402,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProductsStatus",
+        "summary": "UpdateProductsStatus",
+        "operationId": "slUpdateProductsStatus",
         "parameters": [
           {
             "name": "body",
@@ -3303,7 +3429,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateProductsTags",
+        "summary": "UpdateProductsTags",
+        "operationId": "slUpdateProductsTags",
         "parameters": [
           {
             "name": "body",
@@ -3329,7 +3456,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateVariant",
+        "summary": "UpdateVariant",
+        "operationId": "slUpdateVariant",
         "parameters": [
           {
             "name": "body",
@@ -3355,7 +3483,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateVariantAttributes",
+        "summary": "UpdateVariantAttributes",
+        "operationId": "slUpdateVariantAttributes",
         "parameters": [
           {
             "name": "body",
@@ -3381,7 +3510,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateVariantImages",
+        "summary": "UpdateVariantImages",
+        "operationId": "slUpdateVariantImages",
         "parameters": [
           {
             "name": "body",
@@ -3407,7 +3537,8 @@
         "tags": [
           "Product"
         ],
-        "operationId": "UpdateVariantsStatus",
+        "summary": "UpdateVariantsStatus",
+        "operationId": "slUpdateVariantsStatus",
         "parameters": [
           {
             "name": "body",
@@ -3433,7 +3564,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "CreateProductSource",
+        "summary": "CreateProductSource",
+        "operationId": "cyCreateProductSource",
         "parameters": [
           {
             "name": "body",
@@ -3459,7 +3591,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "CreateProductSourceCategory",
+        "summary": "CreateProductSourceCategory",
+        "operationId": "cyCreateProductSourceCategory",
         "parameters": [
           {
             "name": "body",
@@ -3486,7 +3619,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "CreateVariant",
+        "summary": "CreateVariant",
+        "operationId": "cyCreateVariant",
         "deprecated": true,
         "parameters": [
           {
@@ -3513,7 +3647,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "GetProductSourceCategories",
+        "summary": "GetProductSourceCategories",
+        "operationId": "cyGetProductSourceCategories",
         "parameters": [
           {
             "name": "body",
@@ -3539,7 +3674,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "GetProductSourceCategory",
+        "summary": "GetProductSourceCategory",
+        "operationId": "cyGetProductSourceCategory",
         "parameters": [
           {
             "name": "body",
@@ -3565,7 +3701,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "GetShopProductSources",
+        "summary": "GetShopProductSources",
+        "operationId": "cyGetShopProductSources",
         "parameters": [
           {
             "name": "body",
@@ -3591,7 +3728,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "RemoveProductSourceCategory",
+        "summary": "RemoveProductSourceCategory",
+        "operationId": "cyRemoveProductSourceCategory",
         "parameters": [
           {
             "name": "body",
@@ -3617,7 +3755,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "UpdateProductSourceCategory",
+        "summary": "UpdateProductSourceCategory",
+        "operationId": "cyUpdateProductSourceCategory",
         "parameters": [
           {
             "name": "body",
@@ -3643,7 +3782,8 @@
         "tags": [
           "ProductSource"
         ],
-        "operationId": "UpdateProductsPSCategory",
+        "summary": "UpdateProductsPSCategory",
+        "operationId": "cyUpdateProductsPSCategory",
         "parameters": [
           {
             "name": "body",
@@ -3669,7 +3809,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "CancelPurchaseOrder",
+        "summary": "CancelPurchaseOrder",
+        "operationId": "tsCancelPurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3695,7 +3836,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "ConfirmPurchaseOrder",
+        "summary": "ConfirmPurchaseOrder",
+        "operationId": "tsConfirmPurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3721,7 +3863,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "CreatePurchaseOrder",
+        "summary": "CreatePurchaseOrder",
+        "operationId": "tsCreatePurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3747,7 +3890,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "DeletePurchaseOrder",
+        "summary": "DeletePurchaseOrder",
+        "operationId": "tsDeletePurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3773,7 +3917,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "GetPurchaseOrder",
+        "summary": "GetPurchaseOrder",
+        "operationId": "tsGetPurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3799,7 +3944,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "GetPurchaseOrders",
+        "summary": "GetPurchaseOrders",
+        "operationId": "tsGetPurchaseOrders",
         "parameters": [
           {
             "name": "body",
@@ -3825,7 +3971,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "GetPurchaseOrdersByIDs",
+        "summary": "GetPurchaseOrdersByIDs",
+        "operationId": "tsGetPurchaseOrdersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -3851,7 +3998,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "GetPurchaseOrdersByReceiptID",
+        "summary": "GetPurchaseOrdersByReceiptID",
+        "operationId": "tsGetPurchaseOrdersByReceiptID",
         "parameters": [
           {
             "name": "body",
@@ -3877,7 +4025,8 @@
         "tags": [
           "PurchaseOrder"
         ],
-        "operationId": "UpdatePurchaseOrder",
+        "summary": "UpdatePurchaseOrder",
+        "operationId": "tsUpdatePurchaseOrder",
         "parameters": [
           {
             "name": "body",
@@ -3903,7 +4052,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "CancelReceipt",
+        "summary": "CancelReceipt",
+        "operationId": "rtCancelReceipt",
         "parameters": [
           {
             "name": "body",
@@ -3929,7 +4079,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "ConfirmReceipt",
+        "summary": "ConfirmReceipt",
+        "operationId": "rtConfirmReceipt",
         "parameters": [
           {
             "name": "body",
@@ -3955,7 +4106,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "CreateReceipt",
+        "summary": "CreateReceipt",
+        "operationId": "rtCreateReceipt",
         "parameters": [
           {
             "name": "body",
@@ -3981,7 +4133,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "GetReceipt",
+        "summary": "GetReceipt",
+        "operationId": "rtGetReceipt",
         "parameters": [
           {
             "name": "body",
@@ -4007,7 +4160,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "GetReceipts",
+        "summary": "GetReceipts",
+        "operationId": "rtGetReceipts",
         "parameters": [
           {
             "name": "body",
@@ -4033,7 +4187,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "GetReceiptsByLedgerType",
+        "summary": "GetReceiptsByLedgerType",
+        "operationId": "rtGetReceiptsByLedgerType",
         "parameters": [
           {
             "name": "body",
@@ -4059,7 +4214,8 @@
         "tags": [
           "Receipt"
         ],
-        "operationId": "UpdateReceipt",
+        "summary": "UpdateReceipt",
+        "operationId": "rtUpdateReceipt",
         "parameters": [
           {
             "name": "body",
@@ -4085,7 +4241,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "CancelRefund",
+        "summary": "CancelRefund",
+        "operationId": "wbCancelRefund",
         "parameters": [
           {
             "name": "body",
@@ -4111,7 +4268,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "ConfirmRefund",
+        "summary": "ConfirmRefund",
+        "operationId": "wbConfirmRefund",
         "parameters": [
           {
             "name": "body",
@@ -4137,7 +4295,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "CreateRefund",
+        "summary": "CreateRefund",
+        "operationId": "wbCreateRefund",
         "parameters": [
           {
             "name": "body",
@@ -4163,7 +4322,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "GetRefund",
+        "summary": "GetRefund",
+        "operationId": "wbGetRefund",
         "parameters": [
           {
             "name": "body",
@@ -4189,7 +4349,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "GetRefunds",
+        "summary": "GetRefunds",
+        "operationId": "wbGetRefunds",
         "parameters": [
           {
             "name": "body",
@@ -4215,7 +4376,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "GetRefundsByIDs",
+        "summary": "GetRefundsByIDs",
+        "operationId": "wbGetRefundsByIDs",
         "parameters": [
           {
             "name": "body",
@@ -4241,7 +4403,8 @@
         "tags": [
           "Refund"
         ],
-        "operationId": "UpdateRefund",
+        "summary": "UpdateRefund",
+        "operationId": "wbUpdateRefund",
         "parameters": [
           {
             "name": "body",
@@ -4267,7 +4430,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "CancelShipnowFulfillment",
+        "summary": "CancelShipnowFulfillment",
+        "operationId": "bpCancelShipnowFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -4293,7 +4457,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "ConfirmShipnowFulfillment",
+        "summary": "ConfirmShipnowFulfillment",
+        "operationId": "bpConfirmShipnowFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -4319,7 +4484,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "CreateShipnowFulfillment",
+        "summary": "CreateShipnowFulfillment",
+        "operationId": "bpCreateShipnowFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -4345,7 +4511,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "GetShipnowFulfillment",
+        "summary": "GetShipnowFulfillment",
+        "operationId": "bpGetShipnowFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -4371,7 +4538,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "GetShipnowFulfillments",
+        "summary": "GetShipnowFulfillments",
+        "operationId": "bpGetShipnowFulfillments",
         "parameters": [
           {
             "name": "body",
@@ -4397,7 +4565,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "GetShipnowServices",
+        "summary": "GetShipnowServices",
+        "operationId": "bpGetShipnowServices",
         "parameters": [
           {
             "name": "body",
@@ -4423,7 +4592,8 @@
         "tags": [
           "Shipnow"
         ],
-        "operationId": "UpdateShipnowFulfillment",
+        "summary": "UpdateShipnowFulfillment",
+        "operationId": "bpUpdateShipnowFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -4449,7 +4619,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "CancelStocktake",
+        "summary": "CancelStocktake",
+        "operationId": "auCancelStocktake",
         "parameters": [
           {
             "name": "body",
@@ -4475,7 +4646,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "ConfirmStocktake",
+        "summary": "ConfirmStocktake",
+        "operationId": "auConfirmStocktake",
         "parameters": [
           {
             "name": "body",
@@ -4501,7 +4673,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "CreateStocktake",
+        "summary": "CreateStocktake",
+        "operationId": "auCreateStocktake",
         "parameters": [
           {
             "name": "body",
@@ -4527,7 +4700,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "GetStocktake",
+        "summary": "GetStocktake",
+        "operationId": "auGetStocktake",
         "parameters": [
           {
             "name": "body",
@@ -4553,7 +4727,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "GetStocktakes",
+        "summary": "GetStocktakes",
+        "operationId": "auGetStocktakes",
         "parameters": [
           {
             "name": "body",
@@ -4579,7 +4754,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "GetStocktakesByIDs",
+        "summary": "GetStocktakesByIDs",
+        "operationId": "auGetStocktakesByIDs",
         "parameters": [
           {
             "name": "body",
@@ -4605,7 +4781,8 @@
         "tags": [
           "Stocktake"
         ],
-        "operationId": "UpdateStocktake",
+        "summary": "UpdateStocktake",
+        "operationId": "auUpdateStocktake",
         "parameters": [
           {
             "name": "body",
@@ -4631,7 +4808,8 @@
         "tags": [
           "Summary"
         ],
-        "operationId": "CalcBalanceShop",
+        "summary": "CalcBalanceShop",
+        "operationId": "vwCalcBalanceShop",
         "parameters": [
           {
             "name": "body",
@@ -4657,7 +4835,8 @@
         "tags": [
           "Summary"
         ],
-        "operationId": "SummarizeFulfillments",
+        "summary": "SummarizeFulfillments",
+        "operationId": "vwSummarizeFulfillments",
         "parameters": [
           {
             "name": "body",
@@ -4683,7 +4862,8 @@
         "tags": [
           "Summary"
         ],
-        "operationId": "SummarizePOS",
+        "summary": "SummarizePOS",
+        "operationId": "vwSummarizePOS",
         "parameters": [
           {
             "name": "body",
@@ -4709,7 +4889,8 @@
         "tags": [
           "Summary"
         ],
-        "operationId": "SummarizeTopShip",
+        "summary": "SummarizeTopShip",
+        "operationId": "vwSummarizeTopShip",
         "parameters": [
           {
             "name": "body",
@@ -4735,7 +4916,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "CreateSupplier",
+        "summary": "CreateSupplier",
+        "operationId": "bfCreateSupplier",
         "parameters": [
           {
             "name": "body",
@@ -4761,7 +4943,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "DeleteSupplier",
+        "summary": "DeleteSupplier",
+        "operationId": "bfDeleteSupplier",
         "parameters": [
           {
             "name": "body",
@@ -4787,7 +4970,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "GetSupplier",
+        "summary": "GetSupplier",
+        "operationId": "bfGetSupplier",
         "parameters": [
           {
             "name": "body",
@@ -4813,7 +4997,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "GetSuppliers",
+        "summary": "GetSuppliers",
+        "operationId": "bfGetSuppliers",
         "parameters": [
           {
             "name": "body",
@@ -4839,7 +5024,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "GetSuppliersByIDs",
+        "summary": "GetSuppliersByIDs",
+        "operationId": "bfGetSuppliersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -4865,7 +5051,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "GetSuppliersByVariantID",
+        "summary": "GetSuppliersByVariantID",
+        "operationId": "bfGetSuppliersByVariantID",
         "parameters": [
           {
             "name": "body",
@@ -4891,7 +5078,8 @@
         "tags": [
           "Supplier"
         ],
-        "operationId": "UpdateSupplier",
+        "summary": "UpdateSupplier",
+        "operationId": "bfUpdateSupplier",
         "parameters": [
           {
             "name": "body",
@@ -4917,7 +5105,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingCreateOrder",
+        "summary": "TradingCreateOrder",
+        "operationId": "isTradingCreateOrder",
         "parameters": [
           {
             "name": "body",
@@ -4943,7 +5132,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingGetOrder",
+        "summary": "TradingGetOrder",
+        "operationId": "isTradingGetOrder",
         "parameters": [
           {
             "name": "body",
@@ -4969,7 +5159,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingGetOrders",
+        "summary": "TradingGetOrders",
+        "operationId": "isTradingGetOrders",
         "parameters": [
           {
             "name": "body",
@@ -4995,7 +5186,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingGetProduct",
+        "summary": "TradingGetProduct",
+        "operationId": "isTradingGetProduct",
         "parameters": [
           {
             "name": "body",
@@ -5021,7 +5213,8 @@
         "tags": [
           "Trading"
         ],
-        "operationId": "TradingGetProducts",
+        "summary": "TradingGetProducts",
+        "operationId": "isTradingGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -8328,7 +8521,7 @@
         },
         "created_type": {
           "description": "**Deprecated:** use mode\n",
-          "$ref": "#/definitions/rdReceiptMode"
+          "$ref": "#/definitions/peReceiptMode"
         },
         "description": {
           "type": "string"
@@ -8351,7 +8544,7 @@
           }
         },
         "mode": {
-          "$ref": "#/definitions/rdReceiptMode"
+          "$ref": "#/definitions/peReceiptMode"
         },
         "paid_at": {
           "type": "string",
@@ -10202,6 +10395,14 @@
           "type": "string"
         }
       }
+    },
+    "peReceiptMode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "manual",
+        "auto"
+      ]
     },
     "pjGHNNoteCode": {
       "type": "string",
@@ -12288,14 +12489,6 @@
           "$ref": "#/definitions/bmStatus"
         }
       }
-    },
-    "rdReceiptMode": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "manual",
-        "auto"
-      ]
     },
     "sdShippingFeeType": {
       "type": "string",

@@ -20,7 +20,8 @@
         "tags": [
           "Event"
         ],
-        "operationId": "GenerateEvents",
+        "summary": "GenerateEvents",
+        "operationId": "reGenerateEvents",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "unVersionInfo",
         "parameters": [
           {
             "name": "body",

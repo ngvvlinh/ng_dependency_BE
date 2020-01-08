@@ -21,7 +21,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "GetPublicPartnerInfo",
+        "summary": "GetPublicPartnerInfo",
+        "operationId": "voGetPublicPartnerInfo",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +49,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "GetPublicPartners",
+        "summary": "GetPublicPartners",
+        "operationId": "voGetPublicPartners",
         "parameters": [
           {
             "name": "body",
@@ -74,7 +76,8 @@
         "tags": [
           "Account"
         ],
-        "operationId": "UpdateURLSlug",
+        "summary": "UpdateURLSlug",
+        "operationId": "voUpdateURLSlug",
         "parameters": [
           {
             "name": "body",
@@ -100,7 +103,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "CreateInvitation",
+        "summary": "CreateInvitation",
+        "operationId": "qgCreateInvitation",
         "parameters": [
           {
             "name": "body",
@@ -126,7 +130,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "DeleteInvitation",
+        "summary": "DeleteInvitation",
+        "operationId": "qgDeleteInvitation",
         "parameters": [
           {
             "name": "body",
@@ -152,7 +157,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "GetInvitations",
+        "summary": "GetInvitations",
+        "operationId": "qgGetInvitations",
         "parameters": [
           {
             "name": "body",
@@ -178,7 +184,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "GetRelationships",
+        "summary": "GetRelationships",
+        "operationId": "qgGetRelationships",
         "parameters": [
           {
             "name": "body",
@@ -204,7 +211,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "RemoveUser",
+        "summary": "RemoveUser",
+        "operationId": "qgRemoveUser",
         "parameters": [
           {
             "name": "body",
@@ -230,7 +238,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "UpdatePermission",
+        "summary": "UpdatePermission",
+        "operationId": "qgUpdatePermission",
         "parameters": [
           {
             "name": "body",
@@ -256,7 +265,8 @@
         "tags": [
           "AccountRelationship"
         ],
-        "operationId": "UpdateRelationship",
+        "summary": "UpdateRelationship",
+        "operationId": "qgUpdateRelationship",
         "parameters": [
           {
             "name": "body",
@@ -282,7 +292,8 @@
         "tags": [
           "Address"
         ],
-        "operationId": "CreateAddress",
+        "summary": "CreateAddress",
+        "operationId": "hdCreateAddress",
         "parameters": [
           {
             "name": "body",
@@ -308,7 +319,8 @@
         "tags": [
           "Address"
         ],
-        "operationId": "GetAddresses",
+        "summary": "GetAddresses",
+        "operationId": "hdGetAddresses",
         "parameters": [
           {
             "name": "body",
@@ -334,7 +346,8 @@
         "tags": [
           "Address"
         ],
-        "operationId": "RemoveAddress",
+        "summary": "RemoveAddress",
+        "operationId": "hdRemoveAddress",
         "parameters": [
           {
             "name": "body",
@@ -360,7 +373,8 @@
         "tags": [
           "Address"
         ],
-        "operationId": "UpdateAddress",
+        "summary": "UpdateAddress",
+        "operationId": "hdUpdateAddress",
         "parameters": [
           {
             "name": "body",
@@ -386,7 +400,8 @@
         "tags": [
           "Bank"
         ],
-        "operationId": "GetBanks",
+        "summary": "GetBanks",
+        "operationId": "azGetBanks",
         "parameters": [
           {
             "name": "body",
@@ -412,7 +427,8 @@
         "tags": [
           "Bank"
         ],
-        "operationId": "GetBranchesByBankProvince",
+        "summary": "GetBranchesByBankProvince",
+        "operationId": "azGetBranchesByBankProvince",
         "parameters": [
           {
             "name": "body",
@@ -438,7 +454,8 @@
         "tags": [
           "Bank"
         ],
-        "operationId": "GetProvincesByBank",
+        "summary": "GetProvincesByBank",
+        "operationId": "azGetProvincesByBank",
         "parameters": [
           {
             "name": "body",
@@ -464,7 +481,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "GetDistricts",
+        "summary": "GetDistricts",
+        "operationId": "acGetDistricts",
         "parameters": [
           {
             "name": "body",
@@ -490,7 +508,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "GetDistrictsByProvince",
+        "summary": "GetDistrictsByProvince",
+        "operationId": "acGetDistrictsByProvince",
         "parameters": [
           {
             "name": "body",
@@ -516,7 +535,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "GetProvinces",
+        "summary": "GetProvinces",
+        "operationId": "acGetProvinces",
         "parameters": [
           {
             "name": "body",
@@ -542,7 +562,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "GetWards",
+        "summary": "GetWards",
+        "operationId": "acGetWards",
         "parameters": [
           {
             "name": "body",
@@ -568,7 +589,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "GetWardsByDistrict",
+        "summary": "GetWardsByDistrict",
+        "operationId": "acGetWardsByDistrict",
         "parameters": [
           {
             "name": "body",
@@ -594,7 +616,8 @@
         "tags": [
           "Location"
         ],
-        "operationId": "ParseLocation",
+        "summary": "ParseLocation",
+        "operationId": "acParseLocation",
         "parameters": [
           {
             "name": "body",
@@ -620,7 +643,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "hmVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -647,7 +671,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "ChangePassword",
+        "summary": "ChangePassword",
+        "operationId": "qbChangePassword",
         "parameters": [
           {
             "name": "body",
@@ -674,7 +699,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "ChangePasswordUsingToken",
+        "summary": "ChangePasswordUsingToken",
+        "operationId": "qbChangePasswordUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -700,7 +726,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "CheckUserRegistration",
+        "summary": "CheckUserRegistration",
+        "operationId": "qbCheckUserRegistration",
         "parameters": [
           {
             "name": "body",
@@ -726,7 +753,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "InitSession",
+        "summary": "InitSession",
+        "operationId": "qbInitSession",
         "parameters": [
           {
             "name": "body",
@@ -753,7 +781,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "Login",
+        "summary": "Login",
+        "operationId": "qbLogin",
         "parameters": [
           {
             "name": "body",
@@ -780,7 +809,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "Register",
+        "summary": "Register",
+        "operationId": "qbRegister",
         "parameters": [
           {
             "name": "body",
@@ -806,7 +836,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "RegisterUsingToken",
+        "summary": "RegisterUsingToken",
+        "operationId": "qbRegisterUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -833,7 +864,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "ResetPassword",
+        "summary": "ResetPassword",
+        "operationId": "qbResetPassword",
         "parameters": [
           {
             "name": "body",
@@ -859,7 +891,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "SendEmailVerification",
+        "summary": "SendEmailVerification",
+        "operationId": "qbSendEmailVerification",
         "parameters": [
           {
             "name": "body",
@@ -885,7 +918,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "SendPhoneVerification",
+        "summary": "SendPhoneVerification",
+        "operationId": "qbSendPhoneVerification",
         "parameters": [
           {
             "name": "body",
@@ -911,7 +945,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "SendSTokenEmail",
+        "summary": "SendSTokenEmail",
+        "operationId": "qbSendSTokenEmail",
         "parameters": [
           {
             "name": "body",
@@ -938,7 +973,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "SessionInfo",
+        "summary": "SessionInfo",
+        "operationId": "qbSessionInfo",
         "parameters": [
           {
             "name": "body",
@@ -965,7 +1001,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "SwitchAccount",
+        "summary": "SwitchAccount",
+        "operationId": "qbSwitchAccount",
         "parameters": [
           {
             "name": "body",
@@ -991,7 +1028,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "UpdatePermission",
+        "summary": "UpdatePermission",
+        "operationId": "qbUpdatePermission",
         "parameters": [
           {
             "name": "body",
@@ -1017,7 +1055,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "UpdateReferenceSale",
+        "summary": "UpdateReferenceSale",
+        "operationId": "qbUpdateReferenceSale",
         "parameters": [
           {
             "name": "body",
@@ -1043,7 +1082,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "UpdateReferenceUser",
+        "summary": "UpdateReferenceUser",
+        "operationId": "qbUpdateReferenceUser",
         "parameters": [
           {
             "name": "body",
@@ -1069,7 +1109,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "UpgradeAccessToken",
+        "summary": "UpgradeAccessToken",
+        "operationId": "qbUpgradeAccessToken",
         "parameters": [
           {
             "name": "body",
@@ -1095,7 +1136,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "VerifyEmailUsingToken",
+        "summary": "VerifyEmailUsingToken",
+        "operationId": "qbVerifyEmailUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -1121,7 +1163,8 @@
         "tags": [
           "User"
         ],
-        "operationId": "VerifyPhoneUsingToken",
+        "summary": "VerifyPhoneUsingToken",
+        "operationId": "qbVerifyPhoneUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -1147,7 +1190,8 @@
         "tags": [
           "UserRelationship"
         ],
-        "operationId": "AcceptInvitation",
+        "summary": "AcceptInvitation",
+        "operationId": "vdAcceptInvitation",
         "parameters": [
           {
             "name": "body",
@@ -1173,7 +1217,8 @@
         "tags": [
           "UserRelationship"
         ],
-        "operationId": "GetInvitationByToken",
+        "summary": "GetInvitationByToken",
+        "operationId": "vdGetInvitationByToken",
         "parameters": [
           {
             "name": "body",
@@ -1199,7 +1244,8 @@
         "tags": [
           "UserRelationship"
         ],
-        "operationId": "GetInvitations",
+        "summary": "GetInvitations",
+        "operationId": "vdGetInvitations",
         "parameters": [
           {
             "name": "body",
@@ -1225,7 +1271,8 @@
         "tags": [
           "UserRelationship"
         ],
-        "operationId": "LeaveAccount",
+        "summary": "LeaveAccount",
+        "operationId": "vdLeaveAccount",
         "parameters": [
           {
             "name": "body",
@@ -1251,7 +1298,8 @@
         "tags": [
           "UserRelationship"
         ],
-        "operationId": "RejectInvitation",
+        "summary": "RejectInvitation",
+        "operationId": "vdRejectInvitation",
         "parameters": [
           {
             "name": "body",

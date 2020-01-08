@@ -20,7 +20,8 @@
         "tags": [
           "Crm"
         ],
-        "operationId": "RefreshFulfillmentFromCarrier",
+        "summary": "RefreshFulfillmentFromCarrier",
+        "operationId": "jkRefreshFulfillmentFromCarrier",
         "parameters": [
           {
             "name": "body",
@@ -46,7 +47,8 @@
         "tags": [
           "Crm"
         ],
-        "operationId": "SendNotification",
+        "summary": "SendNotification",
+        "operationId": "jkSendNotification",
         "parameters": [
           {
             "name": "body",
@@ -72,7 +74,8 @@
         "tags": [
           "Misc"
         ],
-        "operationId": "VersionInfo",
+        "summary": "VersionInfo",
+        "operationId": "aeVersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -98,7 +101,8 @@
         "tags": [
           "Vht"
         ],
-        "operationId": "CreateOrUpdateCallHistoryByCallID",
+        "summary": "CreateOrUpdateCallHistoryByCallID",
+        "operationId": "yfCreateOrUpdateCallHistoryByCallID",
         "parameters": [
           {
             "name": "body",
@@ -124,7 +128,8 @@
         "tags": [
           "Vht"
         ],
-        "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
+        "summary": "CreateOrUpdateCallHistoryBySDKCallID",
+        "operationId": "yfCreateOrUpdateCallHistoryBySDKCallID",
         "parameters": [
           {
             "name": "body",
@@ -150,7 +155,8 @@
         "tags": [
           "Vht"
         ],
-        "operationId": "GetCallHistories",
+        "summary": "GetCallHistories",
+        "operationId": "yfGetCallHistories",
         "parameters": [
           {
             "name": "body",
@@ -176,7 +182,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "CreateOrUpdateContact",
+        "summary": "CreateOrUpdateContact",
+        "operationId": "dnCreateOrUpdateContact",
         "parameters": [
           {
             "name": "body",
@@ -202,7 +209,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "CreateOrUpdateLead",
+        "summary": "CreateOrUpdateLead",
+        "operationId": "dnCreateOrUpdateLead",
         "parameters": [
           {
             "name": "body",
@@ -228,7 +236,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "CreateTicket",
+        "summary": "CreateTicket",
+        "operationId": "dnCreateTicket",
         "parameters": [
           {
             "name": "body",
@@ -254,7 +263,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "GetCategories",
+        "summary": "GetCategories",
+        "operationId": "dnGetCategories",
         "parameters": [
           {
             "name": "body",
@@ -280,7 +290,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "GetContacts",
+        "summary": "GetContacts",
+        "operationId": "dnGetContacts",
         "parameters": [
           {
             "name": "body",
@@ -307,7 +318,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "GetTicketStatusCount",
+        "summary": "GetTicketStatusCount",
+        "operationId": "dnGetTicketStatusCount",
         "parameters": [
           {
             "name": "body",
@@ -333,7 +345,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "GetTickets",
+        "summary": "GetTickets",
+        "operationId": "dnGetTickets",
         "parameters": [
           {
             "name": "body",
@@ -359,7 +372,8 @@
         "tags": [
           "Vtiger"
         ],
-        "operationId": "UpdateTicket",
+        "summary": "UpdateTicket",
+        "operationId": "dnUpdateTicket",
         "parameters": [
           {
             "name": "body",
