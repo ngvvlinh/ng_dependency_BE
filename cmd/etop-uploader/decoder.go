@@ -20,10 +20,16 @@ func newBufferReader(r io.Reader) (*reader, error) {
 	buf := make([]byte, 4096)
 	for n := 0; n < 4096; {
 		readN, err := r.Read(buf[n:])
-		if err != nil {
+		n += readN
+		switch err {
+		case nil:
+			// no-op
+		case io.EOF:
+			buf = buf[n:]
+			break
+		default:
 			return nil, err
 		}
-		n += readN
 	}
 	return &reader{r: r, buf: buf, n: 0}, nil
 }
