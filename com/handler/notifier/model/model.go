@@ -69,7 +69,7 @@ type NotiDataAddition struct {
 	MetaData json.RawMessage `json:"meta_data"`
 }
 
-func PrepareNotiData(args NotiDataAddition) json.RawMessage {
+func PrepareNotiData(args *NotiDataAddition) json.RawMessage {
 	dataRaw, _ := jsonx.Marshal(args)
 	return dataRaw
 }

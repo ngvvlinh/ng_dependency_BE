@@ -69,7 +69,7 @@ func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) erro
 	}
 	deviceIDs := FilterDevicesByConfig(devices, noti.AccountID)
 
-	data := notifiermodel.PrepareNotiData(notifiermodel.NotiDataAddition{
+	data := notifiermodel.PrepareNotiData(&notifiermodel.NotiDataAddition{
 		Entity:   noti.Entity,
 		EntityID: noti.EntityID.String(),
 		NotiID:   noti.ID.String(),
