@@ -44,11 +44,10 @@ type LoginAsAccountRequest struct {
 func (m *LoginAsAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetMoneyTransactionsRequest struct {
-	Ids                                []dot.ID         `json:"ids"`
-	ShopId                             dot.ID           `json:"shop_id"`
-	MoneyTransactionShippingExternalId dot.ID           `json:"money_transaction_shipping_external_id"`
-	Paging                             *common.Paging   `json:"paging"`
-	Filters                            []*common.Filter `json:"filters"`
+	Ids     []dot.ID         `json:"ids"`
+	ShopId  dot.ID           `json:"shop_id"`
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
 }
 
 func (m *GetMoneyTransactionsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -104,7 +103,8 @@ type DeleteMoneyTransactionRequest struct {
 func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShopsRequest struct {
-	Paging *common.Paging `json:"paging"`
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
 }
 
 func (m *GetShopsRequest) String() string { return jsonx.MustMarshalToString(m) }

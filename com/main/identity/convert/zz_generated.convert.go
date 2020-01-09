@@ -10,10 +10,10 @@ import (
 	identity "etop.vn/api/main/identity"
 	identitytypes "etop.vn/api/main/identity/types"
 	inttypes "etop.vn/api/top/int/types"
+	addressconvert "etop.vn/backend/com/main/address/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	sharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	conversion "etop.vn/backend/pkg/common/conversion"
-	dot "etop.vn/capi/dot"
 )
 
 /*
@@ -110,6 +110,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.Permission) = out0
 		return nil
 	})
+	s.Register((*identitymodel.ShippingServiceSelectStrategyItem)(nil), (*identity.ShippingServiceSelectStrategyItem)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(arg.(*identitymodel.ShippingServiceSelectStrategyItem), out.(*identity.ShippingServiceSelectStrategyItem))
+		return nil
+	})
+	s.Register(([]*identitymodel.ShippingServiceSelectStrategyItem)(nil), (*[]*identity.ShippingServiceSelectStrategyItem)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_ShippingServiceSelectStrategyItems_identity_ShippingServiceSelectStrategyItems(arg.([]*identitymodel.ShippingServiceSelectStrategyItem))
+		*out.(*[]*identity.ShippingServiceSelectStrategyItem) = out0
+		return nil
+	})
+	s.Register((*identity.ShippingServiceSelectStrategyItem)(nil), (*identitymodel.ShippingServiceSelectStrategyItem)(nil), func(arg, out interface{}) error {
+		Convert_identity_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(arg.(*identity.ShippingServiceSelectStrategyItem), out.(*identitymodel.ShippingServiceSelectStrategyItem))
+		return nil
+	})
+	s.Register(([]*identity.ShippingServiceSelectStrategyItem)(nil), (*[]*identitymodel.ShippingServiceSelectStrategyItem)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(arg.([]*identity.ShippingServiceSelectStrategyItem))
+		*out.(*[]*identitymodel.ShippingServiceSelectStrategyItem) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Shop)(nil), (*identity.Shop)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Shop_identity_Shop(arg.(*identitymodel.Shop), out.(*identity.Shop))
 		return nil
@@ -126,6 +144,42 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identity.Shop)(nil), (*[]*identitymodel.Shop)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identity_Shops_identitymodel_Shops(arg.([]*identity.Shop))
 		*out.(*[]*identitymodel.Shop) = out0
+		return nil
+	})
+	s.Register((*identitymodel.ShopExtended)(nil), (*identity.ShopExtended)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_ShopExtended_identity_ShopExtended(arg.(*identitymodel.ShopExtended), out.(*identity.ShopExtended))
+		return nil
+	})
+	s.Register(([]*identitymodel.ShopExtended)(nil), (*[]*identity.ShopExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_ShopExtendeds_identity_ShopExtendeds(arg.([]*identitymodel.ShopExtended))
+		*out.(*[]*identity.ShopExtended) = out0
+		return nil
+	})
+	s.Register((*identity.ShopExtended)(nil), (*identitymodel.ShopExtended)(nil), func(arg, out interface{}) error {
+		Convert_identity_ShopExtended_identitymodel_ShopExtended(arg.(*identity.ShopExtended), out.(*identitymodel.ShopExtended))
+		return nil
+	})
+	s.Register(([]*identity.ShopExtended)(nil), (*[]*identitymodel.ShopExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_ShopExtendeds_identitymodel_ShopExtendeds(arg.([]*identity.ShopExtended))
+		*out.(*[]*identitymodel.ShopExtended) = out0
+		return nil
+	})
+	s.Register((*identitymodel.SurveyInfo)(nil), (*identity.SurveyInfo)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_SurveyInfo_identity_SurveyInfo(arg.(*identitymodel.SurveyInfo), out.(*identity.SurveyInfo))
+		return nil
+	})
+	s.Register(([]*identitymodel.SurveyInfo)(nil), (*[]*identity.SurveyInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_SurveyInfoes_identity_SurveyInfoes(arg.([]*identitymodel.SurveyInfo))
+		*out.(*[]*identity.SurveyInfo) = out0
+		return nil
+	})
+	s.Register((*identity.SurveyInfo)(nil), (*identitymodel.SurveyInfo)(nil), func(arg, out interface{}) error {
+		Convert_identity_SurveyInfo_identitymodel_SurveyInfo(arg.(*identity.SurveyInfo), out.(*identitymodel.SurveyInfo))
+		return nil
+	})
+	s.Register(([]*identity.SurveyInfo)(nil), (*[]*identitymodel.SurveyInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_SurveyInfoes_identitymodel_SurveyInfoes(arg.([]*identity.SurveyInfo))
+		*out.(*[]*identitymodel.SurveyInfo) = out0
 		return nil
 	})
 	s.Register((*identitymodel.User)(nil), (*identity.User)(nil), func(arg, out interface{}) error {
@@ -162,6 +216,42 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identitytypes.BankAccount)(nil), (*[]*sharemodel.BankAccount)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(arg.([]*identitytypes.BankAccount))
 		*out.(*[]*sharemodel.BankAccount) = out0
+		return nil
+	})
+	s.Register((*sharemodel.CompanyInfo)(nil), (*identitytypes.CompanyInfo)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg.(*sharemodel.CompanyInfo), out.(*identitytypes.CompanyInfo))
+		return nil
+	})
+	s.Register(([]*sharemodel.CompanyInfo)(nil), (*[]*identitytypes.CompanyInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_CompanyInfoes_identitytypes_CompanyInfoes(arg.([]*sharemodel.CompanyInfo))
+		*out.(*[]*identitytypes.CompanyInfo) = out0
+		return nil
+	})
+	s.Register((*identitytypes.CompanyInfo)(nil), (*sharemodel.CompanyInfo)(nil), func(arg, out interface{}) error {
+		Convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(arg.(*identitytypes.CompanyInfo), out.(*sharemodel.CompanyInfo))
+		return nil
+	})
+	s.Register(([]*identitytypes.CompanyInfo)(nil), (*[]*sharemodel.CompanyInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitytypes_CompanyInfoes_sharemodel_CompanyInfoes(arg.([]*identitytypes.CompanyInfo))
+		*out.(*[]*sharemodel.CompanyInfo) = out0
+		return nil
+	})
+	s.Register((*sharemodel.ContactPerson)(nil), (*identitytypes.ContactPerson)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg.(*sharemodel.ContactPerson), out.(*identitytypes.ContactPerson))
+		return nil
+	})
+	s.Register(([]*sharemodel.ContactPerson)(nil), (*[]*identitytypes.ContactPerson)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_ContactPersons_identitytypes_ContactPersons(arg.([]*sharemodel.ContactPerson))
+		*out.(*[]*identitytypes.ContactPerson) = out0
+		return nil
+	})
+	s.Register((*identitytypes.ContactPerson)(nil), (*sharemodel.ContactPerson)(nil), func(arg, out interface{}) error {
+		Convert_identitytypes_ContactPerson_sharemodel_ContactPerson(arg.(*identitytypes.ContactPerson), out.(*sharemodel.ContactPerson))
+		return nil
+	})
+	s.Register(([]*identitytypes.ContactPerson)(nil), (*[]*sharemodel.ContactPerson)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitytypes_ContactPersons_sharemodel_ContactPersons(arg.([]*identitytypes.ContactPerson))
+		*out.(*[]*sharemodel.ContactPerson) = out0
 		return nil
 	})
 	s.Register((*sharemodel.AdjustmentLine)(nil), (*inttypes.AdjustmentLine)(nil), func(arg, out interface{}) error {
@@ -507,6 +597,64 @@ func Convert_identity_Permissions_identitymodel_Permissions(args []*identity.Per
 	return outs
 }
 
+//-- convert etop.vn/api/main/identity.ShippingServiceSelectStrategyItem --//
+
+func Convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(arg *identitymodel.ShippingServiceSelectStrategyItem, out *identity.ShippingServiceSelectStrategyItem) *identity.ShippingServiceSelectStrategyItem {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.ShippingServiceSelectStrategyItem{}
+	}
+	convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(arg, out)
+	return out
+}
+
+func convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(arg *identitymodel.ShippingServiceSelectStrategyItem, out *identity.ShippingServiceSelectStrategyItem) {
+	out.Key = arg.Key     // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_identitymodel_ShippingServiceSelectStrategyItems_identity_ShippingServiceSelectStrategyItems(args []*identitymodel.ShippingServiceSelectStrategyItem) (outs []*identity.ShippingServiceSelectStrategyItem) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.ShippingServiceSelectStrategyItem, len(args))
+	outs = make([]*identity.ShippingServiceSelectStrategyItem, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(arg *identity.ShippingServiceSelectStrategyItem, out *identitymodel.ShippingServiceSelectStrategyItem) *identitymodel.ShippingServiceSelectStrategyItem {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.ShippingServiceSelectStrategyItem{}
+	}
+	convert_identity_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(arg, out)
+	return out
+}
+
+func convert_identity_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(arg *identity.ShippingServiceSelectStrategyItem, out *identitymodel.ShippingServiceSelectStrategyItem) {
+	out.Key = arg.Key     // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_identity_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(args []*identity.ShippingServiceSelectStrategyItem) (outs []*identitymodel.ShippingServiceSelectStrategyItem) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.ShippingServiceSelectStrategyItem, len(args))
+	outs = make([]*identitymodel.ShippingServiceSelectStrategyItem, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert etop.vn/api/main/identity.Shop --//
 
 func Convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *identity.Shop) *identity.Shop {
@@ -514,25 +662,32 @@ func Convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *iden
 }
 
 func convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *identity.Shop) {
-	out.ID = arg.ID                               // simple assign
-	out.Name = arg.Name                           // simple assign
-	out.OwnerID = arg.OwnerID                     // simple assign
-	out.IsTest = arg.IsTest                       // simple assign
-	out.AddressID = arg.AddressID                 // simple assign
-	out.ShipToAddressID = arg.ShipToAddressID     // simple assign
-	out.ShipFromAddressID = arg.ShipFromAddressID // simple assign
-	out.Phone = arg.Phone                         // simple assign
-	out.WebsiteURL = arg.WebsiteURL               // simple assign
-	out.ImageURL = arg.ImageURL                   // simple assign
-	out.Email = arg.Email                         // simple assign
-	out.Code = arg.Code                           // simple assign
-	out.AutoCreateFFM = arg.AutoCreateFFM         // simple assign
-	out.Status = arg.Status                       // simple assign
-	out.CreatedAt = arg.CreatedAt                 // simple assign
-	out.UpdatedAt = arg.UpdatedAt                 // simple assign
-	out.DeletedAt = arg.DeletedAt                 // simple assign
+	out.ID = arg.ID                                       // simple assign
+	out.Name = arg.Name                                   // simple assign
+	out.OwnerID = arg.OwnerID                             // simple assign
+	out.IsTest = arg.IsTest                               // simple assign
+	out.AddressID = arg.AddressID                         // simple assign
+	out.ShipToAddressID = arg.ShipToAddressID             // simple assign
+	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
+	out.Phone = arg.Phone                                 // simple assign
+	out.WebsiteURL = arg.WebsiteURL                       // simple assign
+	out.ImageURL = arg.ImageURL                           // simple assign
+	out.Email = arg.Email                                 // simple assign
+	out.Code = arg.Code                                   // simple assign
+	out.AutoCreateFFM = arg.AutoCreateFFM                 // simple assign
+	out.InventoryOverstock = arg.InventoryOverstock       // simple assign
+	out.GhnNoteCode = arg.GhnNoteCode                     // simple assign
+	out.RecognizedHosts = arg.RecognizedHosts             // simple assign
+	out.MoneyTransactionRRule = arg.MoneyTransactionRRule // simple assign
+	out.SurveyInfo = Convert_identitymodel_SurveyInfoes_identity_SurveyInfoes(arg.SurveyInfo)
+	out.ShippingServiceSelectStrategy = Convert_identitymodel_ShippingServiceSelectStrategyItems_identity_ShippingServiceSelectStrategyItems(arg.ShippingServiceSelectStrategy)
+	out.Status = arg.Status       // simple assign
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
 	out.BankAccount = Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.BankAccount, nil)
 	out.TryOn = arg.TryOn // simple assign
+	out.CompanyInfo = Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg.CompanyInfo, nil)
 }
 
 func Convert_identitymodel_Shops_identity_Shops(args []*identitymodel.Shop) (outs []*identity.Shop) {
@@ -561,27 +716,27 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.ShipFromAddressID = arg.ShipFromAddressID // simple assign
 	out.Phone = arg.Phone                         // simple assign
 	out.BankAccount = Convert_identitytypes_BankAccount_sharemodel_BankAccount(arg.BankAccount, nil)
-	out.WebsiteURL = arg.WebsiteURL         // simple assign
-	out.ImageURL = arg.ImageURL             // simple assign
-	out.Email = arg.Email                   // simple assign
-	out.Code = arg.Code                     // simple assign
-	out.AutoCreateFFM = arg.AutoCreateFFM   // simple assign
-	out.OrderSourceID = 0                   // zero value
-	out.Status = arg.Status                 // simple assign
-	out.CreatedAt = arg.CreatedAt           // simple assign
-	out.UpdatedAt = arg.UpdatedAt           // simple assign
-	out.DeletedAt = arg.DeletedAt           // simple assign
-	out.Address = nil                       // zero value
-	out.RecognizedHosts = nil               // zero value
-	out.GhnNoteCode = 0                     // zero value
-	out.TryOn = arg.TryOn                   // simple assign
-	out.CompanyInfo = nil                   // zero value
-	out.MoneyTransactionRRule = ""          // zero value
-	out.SurveyInfo = nil                    // zero value
-	out.ShippingServiceSelectStrategy = nil // zero value
-	out.InventoryOverstock = dot.NullBool{} // zero value
-	out.WLPartnerID = 0                     // zero value
-	out.Rid = 0                             // zero value
+	out.WebsiteURL = arg.WebsiteURL           // simple assign
+	out.ImageURL = arg.ImageURL               // simple assign
+	out.Email = arg.Email                     // simple assign
+	out.Code = arg.Code                       // simple assign
+	out.AutoCreateFFM = arg.AutoCreateFFM     // simple assign
+	out.OrderSourceID = 0                     // zero value
+	out.Status = arg.Status                   // simple assign
+	out.CreatedAt = arg.CreatedAt             // simple assign
+	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.DeletedAt = arg.DeletedAt             // simple assign
+	out.Address = nil                         // zero value
+	out.RecognizedHosts = arg.RecognizedHosts // simple assign
+	out.GhnNoteCode = arg.GhnNoteCode         // simple assign
+	out.TryOn = arg.TryOn                     // simple assign
+	out.CompanyInfo = Convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(arg.CompanyInfo, nil)
+	out.MoneyTransactionRRule = arg.MoneyTransactionRRule // simple assign
+	out.SurveyInfo = Convert_identity_SurveyInfoes_identitymodel_SurveyInfoes(arg.SurveyInfo)
+	out.ShippingServiceSelectStrategy = Convert_identity_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(arg.ShippingServiceSelectStrategy)
+	out.InventoryOverstock = arg.InventoryOverstock // simple assign
+	out.WLPartnerID = 0                             // zero value
+	out.Rid = 0                                     // zero value
 }
 
 func Convert_identity_Shops_identitymodel_Shops(args []*identity.Shop) (outs []*identitymodel.Shop) {
@@ -596,6 +751,126 @@ func Convert_identity_Shops_identitymodel_Shops(args []*identity.Shop) (outs []*
 	return outs
 }
 
+//-- convert etop.vn/api/main/identity.ShopExtended --//
+
+func Convert_identitymodel_ShopExtended_identity_ShopExtended(arg *identitymodel.ShopExtended, out *identity.ShopExtended) *identity.ShopExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.ShopExtended{}
+	}
+	convert_identitymodel_ShopExtended_identity_ShopExtended(arg, out)
+	return out
+}
+
+func convert_identitymodel_ShopExtended_identity_ShopExtended(arg *identitymodel.ShopExtended, out *identity.ShopExtended) {
+	out.Shop = Convert_identitymodel_Shop_identity_Shop(arg.Shop, nil)
+	out.Address = addressconvert.Convert_addressmodel_Address_address_Address(arg.Address, nil)
+	out.User = Convert_identitymodel_User_identity_User(arg.User, nil)
+}
+
+func Convert_identitymodel_ShopExtendeds_identity_ShopExtendeds(args []*identitymodel.ShopExtended) (outs []*identity.ShopExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.ShopExtended, len(args))
+	outs = make([]*identity.ShopExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_ShopExtended_identity_ShopExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_ShopExtended_identitymodel_ShopExtended(arg *identity.ShopExtended, out *identitymodel.ShopExtended) *identitymodel.ShopExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.ShopExtended{}
+	}
+	convert_identity_ShopExtended_identitymodel_ShopExtended(arg, out)
+	return out
+}
+
+func convert_identity_ShopExtended_identitymodel_ShopExtended(arg *identity.ShopExtended, out *identitymodel.ShopExtended) {
+	out.Shop = Convert_identity_Shop_identitymodel_Shop(arg.Shop, nil)
+	out.Address = addressconvert.Convert_address_Address_addressmodel_Address(arg.Address, nil)
+	out.User = Convert_identity_User_identitymodel_User(arg.User, nil)
+}
+
+func Convert_identity_ShopExtendeds_identitymodel_ShopExtendeds(args []*identity.ShopExtended) (outs []*identitymodel.ShopExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.ShopExtended, len(args))
+	outs = make([]*identitymodel.ShopExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_ShopExtended_identitymodel_ShopExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/identity.SurveyInfo --//
+
+func Convert_identitymodel_SurveyInfo_identity_SurveyInfo(arg *identitymodel.SurveyInfo, out *identity.SurveyInfo) *identity.SurveyInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.SurveyInfo{}
+	}
+	convert_identitymodel_SurveyInfo_identity_SurveyInfo(arg, out)
+	return out
+}
+
+func convert_identitymodel_SurveyInfo_identity_SurveyInfo(arg *identitymodel.SurveyInfo, out *identity.SurveyInfo) {
+	out.Key = arg.Key           // simple assign
+	out.Question = arg.Question // simple assign
+	out.Answer = arg.Answer     // simple assign
+}
+
+func Convert_identitymodel_SurveyInfoes_identity_SurveyInfoes(args []*identitymodel.SurveyInfo) (outs []*identity.SurveyInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.SurveyInfo, len(args))
+	outs = make([]*identity.SurveyInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_SurveyInfo_identity_SurveyInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_SurveyInfo_identitymodel_SurveyInfo(arg *identity.SurveyInfo, out *identitymodel.SurveyInfo) *identitymodel.SurveyInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.SurveyInfo{}
+	}
+	convert_identity_SurveyInfo_identitymodel_SurveyInfo(arg, out)
+	return out
+}
+
+func convert_identity_SurveyInfo_identitymodel_SurveyInfo(arg *identity.SurveyInfo, out *identitymodel.SurveyInfo) {
+	out.Key = arg.Key           // simple assign
+	out.Question = arg.Question // simple assign
+	out.Answer = arg.Answer     // simple assign
+}
+
+func Convert_identity_SurveyInfoes_identitymodel_SurveyInfoes(args []*identity.SurveyInfo) (outs []*identitymodel.SurveyInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.SurveyInfo, len(args))
+	outs = make([]*identitymodel.SurveyInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_SurveyInfo_identitymodel_SurveyInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert etop.vn/api/main/identity.User --//
 
 func Convert_identitymodel_User_identity_User(arg *identitymodel.User, out *identity.User) *identity.User {
@@ -603,19 +878,23 @@ func Convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 }
 
 func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *identity.User) {
-	out.ID = arg.ID                           // simple assign
-	out.FullName = ""                         // zero value
-	out.ShortName = ""                        // zero value
-	out.Email = ""                            // zero value
-	out.Phone = ""                            // zero value
-	out.Status = arg.Status                   // simple assign
-	out.EmailVerifiedAt = arg.EmailVerifiedAt // simple assign
-	out.PhoneVerifiedAt = arg.PhoneVerifiedAt // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.RefUserID = arg.RefUserID             // simple assign
-	out.RefSaleID = arg.RefSaleID             // simple assign
-	out.WLPartnerID = arg.WLPartnerID         // simple assign
+	out.ID = arg.ID                                           // simple assign
+	out.FullName = ""                                         // zero value
+	out.ShortName = ""                                        // zero value
+	out.Email = ""                                            // zero value
+	out.Phone = ""                                            // zero value
+	out.Status = arg.Status                                   // simple assign
+	out.EmailVerifiedAt = arg.EmailVerifiedAt                 // simple assign
+	out.PhoneVerifiedAt = arg.PhoneVerifiedAt                 // simple assign
+	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
+	out.PhoneVerificationSentAt = arg.PhoneVerificationSentAt // simple assign
+	out.IsTest = arg.IsTest                                   // simple assign
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.RefUserID = arg.RefUserID                             // simple assign
+	out.RefSaleID = arg.RefSaleID                             // simple assign
+	out.WLPartnerID = arg.WLPartnerID                         // simple assign
+	out.Source = arg.Source                                   // simple assign
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
@@ -642,23 +921,23 @@ func Convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 }
 
 func convert_identity_User_identitymodel_User(arg *identity.User, out *identitymodel.User) {
-	out.ID = arg.ID                           // simple assign
-	out.UserInner = identitymodel.UserInner{} // zero value
-	out.Status = arg.Status                   // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.AgreedTOSAt = time.Time{}             // zero value
-	out.AgreedEmailInfoAt = time.Time{}       // zero value
-	out.EmailVerifiedAt = arg.EmailVerifiedAt // simple assign
-	out.PhoneVerifiedAt = arg.PhoneVerifiedAt // simple assign
-	out.EmailVerificationSentAt = time.Time{} // zero value
-	out.PhoneVerificationSentAt = time.Time{} // zero value
-	out.IsTest = 0                            // zero value
-	out.Source = 0                            // zero value
-	out.RefUserID = arg.RefUserID             // simple assign
-	out.RefSaleID = arg.RefSaleID             // simple assign
-	out.WLPartnerID = arg.WLPartnerID         // simple assign
-	out.Rid = 0                               // zero value
+	out.ID = arg.ID                                           // simple assign
+	out.UserInner = identitymodel.UserInner{}                 // zero value
+	out.Status = arg.Status                                   // simple assign
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.AgreedTOSAt = time.Time{}                             // zero value
+	out.AgreedEmailInfoAt = time.Time{}                       // zero value
+	out.EmailVerifiedAt = arg.EmailVerifiedAt                 // simple assign
+	out.PhoneVerifiedAt = arg.PhoneVerifiedAt                 // simple assign
+	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
+	out.PhoneVerificationSentAt = arg.PhoneVerificationSentAt // simple assign
+	out.IsTest = arg.IsTest                                   // simple assign
+	out.Source = arg.Source                                   // simple assign
+	out.RefUserID = arg.RefUserID                             // simple assign
+	out.RefSaleID = arg.RefSaleID                             // simple assign
+	out.WLPartnerID = arg.WLPartnerID                         // simple assign
+	out.Rid = 0                                               // zero value
 }
 
 func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*identitymodel.User) {
@@ -719,6 +998,132 @@ func Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(args []*identity
 	outs = make([]*sharemodel.BankAccount, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identitytypes_BankAccount_sharemodel_BankAccount(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/identity/types.CompanyInfo --//
+
+func Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg *sharemodel.CompanyInfo, out *identitytypes.CompanyInfo) *identitytypes.CompanyInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitytypes.CompanyInfo{}
+	}
+	convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg, out)
+	return out
+}
+
+func convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg *sharemodel.CompanyInfo, out *identitytypes.CompanyInfo) {
+	out.Name = arg.Name       // simple assign
+	out.TaxCode = arg.TaxCode // simple assign
+	out.Address = arg.Address // simple assign
+	out.Website = arg.Website // simple assign
+	out.LegalRepresentative = Convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg.LegalRepresentative, nil)
+}
+
+func Convert_sharemodel_CompanyInfoes_identitytypes_CompanyInfoes(args []*sharemodel.CompanyInfo) (outs []*identitytypes.CompanyInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitytypes.CompanyInfo, len(args))
+	outs = make([]*identitytypes.CompanyInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(arg *identitytypes.CompanyInfo, out *sharemodel.CompanyInfo) *sharemodel.CompanyInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.CompanyInfo{}
+	}
+	convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(arg, out)
+	return out
+}
+
+func convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(arg *identitytypes.CompanyInfo, out *sharemodel.CompanyInfo) {
+	out.Name = arg.Name       // simple assign
+	out.TaxCode = arg.TaxCode // simple assign
+	out.Address = arg.Address // simple assign
+	out.Website = arg.Website // simple assign
+	out.LegalRepresentative = Convert_identitytypes_ContactPerson_sharemodel_ContactPerson(arg.LegalRepresentative, nil)
+}
+
+func Convert_identitytypes_CompanyInfoes_sharemodel_CompanyInfoes(args []*identitytypes.CompanyInfo) (outs []*sharemodel.CompanyInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]sharemodel.CompanyInfo, len(args))
+	outs = make([]*sharemodel.CompanyInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitytypes_CompanyInfo_sharemodel_CompanyInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/identity/types.ContactPerson --//
+
+func Convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg *sharemodel.ContactPerson, out *identitytypes.ContactPerson) *identitytypes.ContactPerson {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitytypes.ContactPerson{}
+	}
+	convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg, out)
+	return out
+}
+
+func convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg *sharemodel.ContactPerson, out *identitytypes.ContactPerson) {
+	out.Name = arg.Name         // simple assign
+	out.Position = arg.Position // simple assign
+	out.Phone = arg.Phone       // simple assign
+	out.Email = arg.Email       // simple assign
+}
+
+func Convert_sharemodel_ContactPersons_identitytypes_ContactPersons(args []*sharemodel.ContactPerson) (outs []*identitytypes.ContactPerson) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitytypes.ContactPerson, len(args))
+	outs = make([]*identitytypes.ContactPerson, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_ContactPerson_identitytypes_ContactPerson(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identitytypes_ContactPerson_sharemodel_ContactPerson(arg *identitytypes.ContactPerson, out *sharemodel.ContactPerson) *sharemodel.ContactPerson {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.ContactPerson{}
+	}
+	convert_identitytypes_ContactPerson_sharemodel_ContactPerson(arg, out)
+	return out
+}
+
+func convert_identitytypes_ContactPerson_sharemodel_ContactPerson(arg *identitytypes.ContactPerson, out *sharemodel.ContactPerson) {
+	out.Name = arg.Name         // simple assign
+	out.Position = arg.Position // simple assign
+	out.Phone = arg.Phone       // simple assign
+	out.Email = arg.Email       // simple assign
+}
+
+func Convert_identitytypes_ContactPersons_sharemodel_ContactPersons(args []*identitytypes.ContactPerson) (outs []*sharemodel.ContactPerson) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]sharemodel.ContactPerson, len(args))
+	outs = make([]*sharemodel.ContactPerson, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitytypes_ContactPerson_sharemodel_ContactPerson(args[i], &tmps[i])
 	}
 	return outs
 }

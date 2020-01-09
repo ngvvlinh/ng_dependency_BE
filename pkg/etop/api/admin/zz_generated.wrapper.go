@@ -1405,52 +1405,6 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx con
 	return resp, nil
 }
 
-type ConfirmMoneyTransactionShippingExternalEndpoint struct {
-	*cm.IDRequest
-	Result  *cm.UpdatedResponse
-	Context claims.AdminClaim
-}
-
-func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternal(ctx context.Context, req *cm.IDRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		RequireAuth:      true,
-		RequireEtopAdmin: true,
-	}
-	ctx, err = middleware.StartSession(ctx, sessionQuery)
-	if err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &ConfirmMoneyTransactionShippingExternalEndpoint{IDRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.IsEtopAdmin = session.IsEtopAdmin
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmMoneyTransactionShippingExternal(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type ConfirmMoneyTransactionShippingExternalsEndpoint struct {
 	*cm.IDsRequest
 	Result  *cm.UpdatedResponse
@@ -3312,6 +3266,52 @@ func (s wrapShopService) GetShops(ctx context.Context, req *api.GetShopsRequest)
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShops(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShopsByIDsEndpoint struct {
+	*cm.IDsRequest
+	Result  *api.GetShopsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShopService) GetShopsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.GetShopsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Shop/GetShopsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShopsByIDsEndpoint{IDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetShopsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

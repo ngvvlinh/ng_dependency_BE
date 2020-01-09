@@ -6,48 +6,205 @@ import (
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/main/shipping"
+	shippingstate "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_fee_type"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/com/main/shipping/carrier"
+	shippingconvert "etop.vn/backend/com/main/shipping/convert"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
-	eventBus   capi.EventBus
-	shippingA  shipping.CommandBus
-	redisStore redis.Store
+	eventBus      capi.EventBus
+	shippingAggr  shipping.CommandBus
+	shippingQuery shipping.QueryBus
+	redisStore    redis.Store
 }
 
-func New(eventBus capi.EventBus, shippingAggregate shipping.CommandBus, redisS redis.Store) *ProcessManager {
+func New(eventBus capi.EventBus, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store) *ProcessManager {
 	return &ProcessManager{
-		eventBus:   eventBus,
-		shippingA:  shippingAggregate,
-		redisStore: redisS,
+		eventBus:      eventBus,
+		shippingQuery: shippingQ,
+		shippingAggr:  shippingA,
+		redisStore:    redisS,
 	}
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
-	eventBus.AddEventListener(m.MoneyTxShippingExternalCreated)
 	eventBus.AddEventListener(m.ConnectionUpdated)
 	eventBus.AddEventListener(m.ShopConnectionUpdated)
+	eventBus.AddEventListener(m.MoneyTxShippingExternalCreated)
+	eventBus.AddEventListener(m.MoneyTxShippingExternalLinesDeleted)
+	eventBus.AddEventListener(m.MoneyTxShippingExternalDeleted)
+	eventBus.AddEventListener(m.MoneyTxShippingExternalsConfirming)
+	eventBus.AddEventListener(m.MoneyTxShippingCreated)
+	eventBus.AddEventListener(m.MoneyTxShippingConfirmed)
+	eventBus.AddEventListener(m.MoneyTxShippingDeleted)
+	eventBus.AddEventListener(m.MoneyTxShippingRemoveFfms)
+	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
 }
 
-func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, event *moneytx.MoneyTransactionShippingExternalCreatedEvent) error {
+func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, event *moneytx.MoneyTxShippingExternalCreatedEvent) error {
 	if event.MoneyTxShippingExternalID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Event MoneyTransactionShippingExternalCreated missing ID")
 	}
 	if len(event.FulfillementIDs) == 0 {
 		return nil
 	}
-	cmd := &shipping.UpdateFulfillmentsMoneyTxShippingExternalIDCommand{
+	cmd := &shipping.UpdateFulfillmentsMoneyTxIDCommand{
 		FulfillmentIDs:            event.FulfillementIDs,
 		MoneyTxShippingExternalID: event.MoneyTxShippingExternalID,
 	}
-	if err := m.shippingA.Dispatch(ctx, cmd); err != nil {
+	return m.shippingAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) MoneyTxShippingExternalLinesDeleted(ctx context.Context, event *moneytx.MoneyTxShippingExternalLinesDeletedEvent) error {
+	if len(event.FulfillmentIDs) == 0 {
+		return nil
+	}
+	cmd := &shipping.RemoveFulfillmentsMoneyTxIDCommand{
+		FulfillmentIDs: event.FulfillmentIDs,
+	}
+	if err := m.shippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (m *ProcessManager) MoneyTxShippingExternalDeleted(ctx context.Context, event *moneytx.MoneyTxShippingExternalDeletedEvent) error {
+	if event.MoneyTxShippingExternalID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingExternalID").WithMetap("event", "MoneyTxShippingExternalDeleted")
+	}
+
+	cmd := &shipping.RemoveFulfillmentsMoneyTxIDCommand{
+		MoneyTxShippingExternalID: event.MoneyTxShippingExternalID,
+	}
+	if err := m.shippingAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ProcessManager) MoneyTxShippingCreated(ctx context.Context, event *moneytx.MoneyTxShippingCreatedEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingID").WithMetap("event", "MoneyTxShippingCreatedEvent")
+	}
+	if len(event.FulfillmentIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "FulfillmentIDs can not be empty").WithMetap("event", "MoneyTxShippingCreatedEvent")
+	}
+	cmd := &shipping.UpdateFulfillmentsMoneyTxIDCommand{
+		FulfillmentIDs:    event.FulfillmentIDs,
+		MoneyTxShippingID: event.MoneyTxShippingID,
+	}
+	return m.shippingAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) MoneyTxShippingConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingConfirmedEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingID").WithMetap("event", "MoneyTxShippingConfirmed")
+	}
+	cmd := &shipping.UpdateFulfillmentsCODTransferedAtCommand{
+		MoneyTxShippingIDs: []dot.ID{event.MoneyTxShippingID},
+		CODTransferedAt:    event.ConfirmedAt,
+	}
+	return m.shippingAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) MoneyTxShippingDeleted(ctx context.Context, event *moneytx.MoneyTxShippingDeletedEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingID").WithMetap("event", "MoneyTxShippingDeleted")
+	}
+	cmd := &shipping.RemoveFulfillmentsMoneyTxIDCommand{
+		MoneyTxShippingID: event.MoneyTxShippingID,
+	}
+	return m.shippingAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) MoneyTxShippingRemoveFfms(ctx context.Context, event *moneytx.MoneyTxShippingRemovedFfmsEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingID").WithMetap("event", "MoneyTxShippingRemoveFfms")
+	}
+	cmd := &shipping.RemoveFulfillmentsMoneyTxIDCommand{
+		FulfillmentIDs: event.FulfillmentIDs,
+	}
+	return m.shippingAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) MoneyTxShippingExternalsConfirming(ctx context.Context, event *moneytx.MoneyTxShippingExternalsConfirmingEvent) error {
+	// Lọc tất cả các đơn trả hàng và đang trả hàng của VTPOST
+	// Dùng ListFulfillmentsForMoneyTxQuery để lấy những đơn chưa đối soát
+	// Cập nhật phí trả hàng nếu chưa có
+	query := &shipping.ListFulfillmentsForMoneyTxQuery{
+		ShippingProvider: shipping_provider.VTPost,
+		ShippingStates:   []shippingstate.State{shippingstate.Returning, shippingstate.Returned},
+	}
+	if err := m.shippingQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	var ffms []*shipmodel.Fulfillment
+
+	ffms = shippingconvert.Convert_shipping_Fulfillments_shippingmodel_Fulfillments(query.Result)
+
+	for _, ffm := range ffms {
+		if ffm.ShippingState != shippingstate.Returned && ffm.ShippingState != shippingstate.Returning {
+			continue
+		}
+		returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
+		newReturnedFee := CalcVtpostShippingFeeReturned(ffm)
+		if newReturnedFee == 0 || newReturnedFee == returnedFee {
+			continue
+		}
+		lines := ffm.ProviderShippingFeeLines
+		providerShippingFeeLines := shippingsharemodel.UpdateShippingFees(lines, newReturnedFee, shipping_fee_type.Return)
+		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		update := &shipping.UpdateFulfillmentShippingFeesCommand{
+			FulfillmentID:            ffm.ID,
+			ProviderShippingFeeLines: shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(providerShippingFeeLines),
+			ShippingFeeLines:         shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(shippingFeeShopLines),
+		}
+		if err := m.shippingAggr.Dispatch(ctx, update); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CalcVtpostShippingFeeReturned: Tính cước phí trả hàng vtpost
+func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
+	// Nội tỉnh miễn phí trả hàng
+	// Liên tỉnh 50% cước phí chiều đi
+	from := ffm.AddressFrom
+	to := ffm.AddressTo
+	if from.ProvinceCode == to.ProvinceCode {
+		return 0
+	}
+
+	returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
+	totalFee := shippingsharemodel.GetTotalShippingFee(ffm.ShippingFeeShopLines)
+	newReturnedFee := (totalFee - returnedFee) / 2
+	return newReturnedFee
+}
+
+func (m *ProcessManager) MoneyTxShippingEtopConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingEtopConfirmedEvent) error {
+	if event.MoneyTxShippingEtopID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingEtopID").WithMetap("event", "MoneyTxShippingEtopConfirmed")
+	}
+	if len(event.MoneyTxShippingIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "MoneyTxShippingIDs can not be empty").WithMetap("event", "MoneyTxShippingEtopConfirmed")
+	}
+
+	cmd := &shipping.UpdateFulfillmentsCODTransferedAtCommand{
+		MoneyTxShippingIDs: event.MoneyTxShippingIDs,
+		CODTransferedAt:    event.ConfirmedAt,
+	}
+	return m.shippingAggr.Dispatch(ctx, cmd)
 }
 
 func (m *ProcessManager) ConnectionUpdated(ctx context.Context, event *connectioning.ConnectionUpdatedEvent) error {

@@ -13,14 +13,17 @@ import (
 
 type ProcessManager struct {
 	eventBus      capi.EventBus
-	moneytxQuery  moneytx.QueryBus
+	moneyTxQuery  moneytx.QueryBus
+	moneyTxAggr   moneytx.CommandBus
 	shippingQuery shipping.QueryBus
 }
 
-func New(eventB capi.EventBus, moneyTxQ moneytx.QueryBus, shippingQ shipping.QueryBus) *ProcessManager {
+func New(eventB capi.EventBus, moneyTxQ moneytx.QueryBus,
+	moneyTxA moneytx.CommandBus, shippingQ shipping.QueryBus) *ProcessManager {
 	return &ProcessManager{
 		eventBus:      eventB,
-		moneytxQuery:  moneyTxQ,
+		moneyTxQuery:  moneyTxQ,
+		moneyTxAggr:   moneyTxA,
 		shippingQuery: shippingQ,
 	}
 }
@@ -28,9 +31,13 @@ func New(eventB capi.EventBus, moneyTxQ moneytx.QueryBus, shippingQ shipping.Que
 func (m *ProcessManager) RegisterEvenHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.FulfillmentUpdating)
 	eventBus.AddEventListener(m.FulfillmentShippingFeeChanged)
+	eventBus.AddEventListener(m.MoneyTxShippingExternalDeleted)
 }
 
 func (m *ProcessManager) FulfillmentUpdating(ctx context.Context, event *shipping.FulfillmentUpdatingEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return nil
+	}
 	query := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
 		ID: event.FulfillmentID,
 	}
@@ -47,10 +54,10 @@ func (m *ProcessManager) FulfillmentUpdating(ctx context.Context, event *shippin
 	}
 
 	queryMoneyTx := &moneytx.GetMoneyTxShippingByIDQuery{
-		ID:     ffm.MoneyTransactionID,
-		ShopID: ffm.ShopID,
+		MoneyTxShippingID: ffm.MoneyTransactionID,
+		ShopID:            ffm.ShopID,
 	}
-	if err := m.moneytxQuery.Dispatch(ctx, queryMoneyTx); err != nil {
+	if err := m.moneyTxQuery.Dispatch(ctx, queryMoneyTx); err != nil {
 		return err
 	}
 	moneyTx := queryMoneyTx.Result
@@ -68,6 +75,9 @@ func canUpdateFulfillment(ffm *shipping.Fulfillment) error {
 }
 
 func (m *ProcessManager) FulfillmentShippingFeeChanged(ctx context.Context, event *shipping.FulfillmentShippingFeeChangedEvent) error {
+	if event.MoneyTxShippingID == 0 {
+		return nil
+	}
 	query := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
 		ID: event.FulfillmentID,
 	}
@@ -78,5 +88,16 @@ func (m *ProcessManager) FulfillmentShippingFeeChanged(ctx context.Context, even
 	if ffm.MoneyTransactionID == 0 {
 		return nil
 	}
+	// TODO: change total_cod, total_amount ... if needed
 	return nil
+}
+
+func (m *ProcessManager) MoneyTxShippingExternalDeleted(ctx context.Context, event *moneytx.MoneyTxShippingExternalDeletedEvent) error {
+	if event.MoneyTxShippingExternalID == 0 {
+		return nil
+	}
+	cmd := &moneytx.DeleteMoneyTxShippingExternalLinesCommand{
+		MoneyTxShippingExternalID: event.MoneyTxShippingExternalID,
+	}
+	return m.moneyTxAggr.Dispatch(ctx, cmd)
 }

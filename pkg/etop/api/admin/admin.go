@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/connectioning"
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/main/shipmentpricing/pricelist"
@@ -17,7 +18,6 @@ import (
 	creditmodelx "etop.vn/backend/com/main/credit/modelx"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -38,8 +38,10 @@ var ll = l.New()
 var (
 	eventBus               capi.EventBus
 	moneyTxQuery           moneytx.QueryBus
+	moneyTxAggr            moneytx.CommandBus
 	connectionAggr         connectioning.CommandBus
 	connectionQuery        connectioning.QueryBus
+	identityQuery          identity.QueryBus
 	shipmentPriceAggr      shipmentprice.CommandBus
 	shipmentPriceQuery     shipmentprice.QueryBus
 	shipmentServiceAggr    shipmentservice.CommandBus
@@ -54,8 +56,10 @@ var (
 func Init(
 	eventB capi.EventBus,
 	moneyTxQ moneytx.QueryBus,
+	moneyTxA moneytx.CommandBus,
 	connectionA connectioning.CommandBus,
 	connectionQ connectioning.QueryBus,
+	identityQ identity.QueryBus,
 	shipmentpriceA shipmentprice.CommandBus,
 	shipmentpriceQ shipmentprice.QueryBus,
 	shipmentServiceA shipmentservice.CommandBus,
@@ -68,8 +72,10 @@ func Init(
 ) {
 	eventBus = eventB
 	moneyTxQuery = moneyTxQ
+	moneyTxAggr = moneyTxA
 	connectionAggr = connectionA
 	connectionQuery = connectionQ
+	identityQuery = identityQ
 	shipmentPriceAggr = shipmentpriceA
 	shipmentPriceQuery = shipmentpriceQ
 	shipmentServiceAggr = shipmentServiceA
@@ -93,7 +99,6 @@ func init() {
 		moneyTransactionService.GetMoneyTransactionShippingExternals,
 		moneyTransactionService.RemoveMoneyTransactionShippingExternalLines,
 		moneyTransactionService.DeleteMoneyTransactionShippingExternal,
-		moneyTransactionService.ConfirmMoneyTransactionShippingExternal,
 		moneyTransactionService.ConfirmMoneyTransactionShippingExternals,
 		moneyTransactionService.UpdateMoneyTransactionShippingExternal,
 		shopService.GetShop,
@@ -184,158 +189,144 @@ func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, use
 }
 
 func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *GetMoneyTransactionEndpoint) error {
-	query := &modelx.GetMoneyTransaction{
-		ID: q.Id,
+	query := &moneytx.GetMoneyTxShippingByIDQuery{
+		MoneyTxShippingID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionExtended(query.Result)
+	q.Result = convertpb.PbMoneyTxShipping(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *GetMoneyTransactionsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &modelx.GetMoneyTransactions{
-		IDs:                                q.Ids,
-		ShopID:                             q.ShopId,
-		Paging:                             paging,
-		MoneyTransactionShippingExternalID: q.MoneyTransactionShippingExternalId,
-		Filters:                            cmapi.ToFilters(q.Filters),
+	query := &moneytx.ListMoneyTxShippingsQuery{
+		MoneyTxShippingIDs: q.Ids,
+		ShopID:             q.ShopId,
+		Paging:             *paging,
+		Filters:            cmapi.ToFilters(q.Filters),
+		Result:             nil,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.MoneyTransactionsResponse{
-		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmapi.PbPageInfo(paging),
+		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
+		MoneyTransactions: convertpb.PbMoneyTxShippings(query.Result.MoneyTxShippings),
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) UpdateMoneyTransaction(ctx context.Context, q *UpdateMoneyTransactionEndpoint) error {
-	cmd := &modelx.UpdateMoneyTransaction{
-		ID:            q.Id,
-		Note:          q.Note,
-		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
+	cmd := &moneytx.UpdateMoneyTxShippingInfoCommand{
+		MoneyTxShippingID: q.Id,
+		Note:              q.Note,
+		InvoiceNumber:     q.InvoiceNumber,
+		BankAccount:       convertpb.Convert_api_BankAccount_To_core_BankAccount(q.BankAccount),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTxShipping(cmd.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context, q *ConfirmMoneyTransactionEndpoint) error {
-	cmd := &modelx.ConfirmMoneyTransaction{
-		MoneyTransactionID: q.MoneyTransactionId,
-		ShopID:             q.ShopId,
-		TotalCOD:           q.TotalCod,
-		TotalAmount:        q.TotalAmount,
-		TotalOrders:        q.TotalOrders,
+	cmd := &moneytx.ConfirmMoneyTxShippingCommand{
+		MoneyTxShippingID: q.MoneyTransactionId,
+		ShopID:            q.ShopId,
+		TotalCOD:          q.TotalCod,
+		TotalAmount:       q.TotalAmount,
+		TotalOrders:       q.TotalOrders,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
+		Updated: 1,
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingExternal(ctx context.Context, q *GetMoneyTransactionShippingExternalEndpoint) error {
-	query := &modelx.GetMoneyTransactionShippingExternal{
+	query := &moneytx.GetMoneyTxShippingExternalQuery{
 		ID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(query.Result)
+	q.Result = convertpb.PbMoneyTxShippingExternalFtLine(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx context.Context, q *GetMoneyTransactionShippingExternalsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &modelx.GetMoneyTransactionShippingExternals{
-		IDs:     q.Ids,
-		Paging:  paging,
-		Filters: cmapi.ToFilters(q.Filters),
+	query := &moneytx.ListMoneyTxShippingExternalsQuery{
+		MoneyTxShippingExternalIDs: q.Ids,
+		Paging:                     *paging,
+		Filters:                    cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.MoneyTransactionShippingExternalsResponse{
-		MoneyTransactions: convertpb.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
-		Paging:            cmapi.PbPageInfo(paging),
+		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
+		MoneyTransactions: convertpb.PbMoneyTxShippingExternalsFtLine(query.Result.MoneyTxShippingExternals),
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) RemoveMoneyTransactionShippingExternalLines(ctx context.Context, q *RemoveMoneyTransactionShippingExternalLinesEndpoint) error {
-	cmd := &modelx.RemoveMoneyTransactionShippingExternalLines{
-		MoneyTransactionShippingExternalID: q.MoneyTransactionShippingExternalId,
-		LineIDs:                            q.LineIds,
+	cmd := &moneytx.RemoveMoneyTxShippingExternalLinesCommand{
+		MoneyTxShippingExternalID: q.MoneyTransactionShippingExternalId,
+		LineIDs:                   q.LineIds,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx context.Context, q *DeleteMoneyTransactionShippingExternalEndpoint) error {
-	cmd := &modelx.DeleteMoneyTransactionShippingExternal{
+	cmd := &moneytx.DeleteMoneyTxShippingExternalCommand{
 		ID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: cmd.Result.Deleted,
-	}
-	return nil
-}
-
-func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingExternal(ctx context.Context, q *ConfirmMoneyTransactionShippingExternalEndpoint) error {
-	cmd := &modelx.ConfirmMoneyTransactionShippingExternal{
-		ID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
+		Removed: cmd.Result,
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ctx context.Context, q *ConfirmMoneyTransactionShippingExternalsEndpoint) error {
-	cmd := &modelx.ConfirmMoneyTransactionShippingExternals{
+	cmd := &moneytx.ConfirmMoneyTxShippingExternalsCommand{
 		IDs: q.Ids,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
+		Updated: cmd.Result,
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx context.Context, q *UpdateMoneyTransactionShippingExternalEndpoint) error {
-	cmd := &modelx.UpdateMoneyTransactionShippingExternal{
-		ID:            q.Id,
-		Note:          q.Note,
-		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
+	cmd := &moneytx.UpdateMoneyTxShippingExternalInfoCommand{
+		MoneyTxShippingExternalID: q.Id,
+		BankAccount:               convertpb.BankAccountToCoreBankAccount(q.BankAccount),
+		Note:                      q.Note,
+		InvoiceNumber:             q.InvoiceNumber,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result)
 	return nil
 }
 
@@ -352,15 +343,30 @@ func (s *ShopService) GetShop(ctx context.Context, q *GetShopEndpoint) error {
 
 func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &identitymodelx.GetAllShopExtendedsQuery{
-		Paging: paging,
+	query := &identity.ListShopExtendedsQuery{
+		Paging:  *paging,
+		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := identityQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	q.Result = &admin.GetShopsResponse{
+		Paging: cmapi.PbPageInfo(paging),
+		Shops:  convertpb.Convert_core_ShopExtendeds_To_api_ShopExtendeds(query.Result.Shops),
+	}
+	return nil
+}
+
+func (s *ShopService) GetShopsByIDs(ctx context.Context, q *GetShopsByIDsEndpoint) error {
+	query := &identity.ListShopsByIDsQuery{
+		IDs: q.Ids,
+	}
+	if err := identityQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &admin.GetShopsResponse{
-		Paging: cmapi.PbPageInfo(paging),
-		Shops:  convertpb.PbShopExtendeds(query.Result.Shops),
+		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result),
 	}
 	return nil
 }
@@ -503,88 +509,84 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *GenerateAPIKeyEn
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Context, q *GetMoneyTransactionShippingEtopEndpoint) error {
-	query := &modelx.GetMoneyTransactionShippingEtop{
+	query := &moneytx.GetMoneyTxShippingEtopQuery{
 		ID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(query.Result)
+	q.Result = convertpb.PbMoneyTxShippingEtop(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.Context, q *GetMoneyTransactionShippingEtopsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &modelx.GetMoneyTransactionShippingEtops{
-		IDs:     q.Ids,
-		Status:  q.Status,
-		Paging:  paging,
-		Filters: cmapi.ToFilters(q.Filters),
+	query := &moneytx.ListMoneyTxShippingEtopsQuery{
+		MoneyTxShippingEtopIDs: q.Ids,
+		Status:                 q.Status,
+		Paging:                 *paging,
+		Filter:                 cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.MoneyTransactionShippingEtopsResponse{
-		Paging:                        cmapi.PbPageInfo(paging),
-		MoneyTransactionShippingEtops: convertpb.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
+		Paging:                        cmapi.PbMetaPageInfo(query.Result.Paging),
+		MoneyTransactionShippingEtops: convertpb.PbMoneyTxShippingEtops(query.Result.MoneyTxShippingEtops),
 	}
 	return nil
 }
 
 func (s *MoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx context.Context, q *CreateMoneyTransactionShippingEtopEndpoint) error {
-	cmd := &modelx.CreateMoneyTransactionShippingEtop{
-		MoneyTransactionShippingIDs: q.Ids,
+	cmd := &moneytx.CreateMoneyTxShippingEtopCommand{
+		MoneyTxShippingIDs: q.Ids,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTxShippingEtop(cmd.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx context.Context, q *UpdateMoneyTransactionShippingEtopEndpoint) error {
-	cmd := &modelx.UpdateMoneyTransactionShippingEtop{
-		ID:            q.Id,
-		Adds:          q.Adds,
-		Deletes:       q.Deletes,
-		ReplaceAll:    q.ReplaceAll,
-		Note:          q.Note,
-		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
+	cmd := &moneytx.UpdateMoneyTxShippingEtopCommand{
+		MoneyTxShippingEtopID: q.Id,
+		BankAccount:           convertpb.Convert_api_BankAccount_To_core_BankAccount(q.BankAccount),
+		Note:                  q.Note,
+		InvoiceNumber:         q.InvoiceNumber,
+		Adds:                  q.Adds,
+		Deletes:               q.Deletes,
+		ReplaceAll:            q.ReplaceAll,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTxShippingEtop(cmd.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx context.Context, q *DeleteMoneyTransactionShippingEtopEndpoint) error {
-	cmd := &modelx.DeleteMoneyTransactionShippingEtop{
+	cmd := &moneytx.DeleteMoneyTxShippingEtopCommand{
 		ID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.DeletedResponse{
-		Deleted: cmd.Result.Deleted,
-	}
+	q.Result = &pbcm.DeletedResponse{Deleted: 1}
 	return nil
 }
 
 func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx context.Context, q *ConfirmMoneyTransactionShippingEtopEndpoint) error {
-	cmd := &modelx.ConfirmMoneyTransactionShippingEtop{
-		ID:          q.Id,
-		TotalCOD:    q.TotalCod,
-		TotalAmount: q.TotalAmount,
-		TotalOrders: q.TotalOrders,
+	cmd := &moneytx.ConfirmMoneyTxShippingEtopCommand{
+		MoneyTxShippingEtopID: q.Id,
+		TotalCOD:              q.TotalCod,
+		TotalAmount:           q.TotalAmount,
+		TotalOrders:           q.TotalOrders,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
-	}
+	q.Result = &pbcm.UpdatedResponse{Updated: 1}
 	return nil
 }
 

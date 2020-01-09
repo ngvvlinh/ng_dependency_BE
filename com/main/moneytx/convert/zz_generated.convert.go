@@ -9,6 +9,7 @@ import (
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	moneytxmodel "etop.vn/backend/com/main/moneytx/model"
+	txmodely "etop.vn/backend/com/main/moneytx/txmodely"
 	orderingconvert "etop.vn/backend/com/main/ordering/convert"
 	shippingconvert "etop.vn/backend/com/main/shipping/convert"
 	conversion "etop.vn/backend/pkg/common/conversion"
@@ -61,6 +62,42 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*moneytxmodel.MoneyTransactionShippingEtop) = out0
 		return nil
 	})
+	s.Register((*txmodely.MoneyTransactionShippingEtopExtended)(nil), (*moneytx.MoneyTransactionShippingEtopExtended)(nil), func(arg, out interface{}) error {
+		Convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(arg.(*txmodely.MoneyTransactionShippingEtopExtended), out.(*moneytx.MoneyTransactionShippingEtopExtended))
+		return nil
+	})
+	s.Register(([]*txmodely.MoneyTransactionShippingEtopExtended)(nil), (*[]*moneytx.MoneyTransactionShippingEtopExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_txmodely_MoneyTransactionShippingEtopExtendeds_moneytx_MoneyTransactionShippingEtopExtendeds(arg.([]*txmodely.MoneyTransactionShippingEtopExtended))
+		*out.(*[]*moneytx.MoneyTransactionShippingEtopExtended) = out0
+		return nil
+	})
+	s.Register((*moneytx.MoneyTransactionShippingEtopExtended)(nil), (*txmodely.MoneyTransactionShippingEtopExtended)(nil), func(arg, out interface{}) error {
+		Convert_moneytx_MoneyTransactionShippingEtopExtended_txmodely_MoneyTransactionShippingEtopExtended(arg.(*moneytx.MoneyTransactionShippingEtopExtended), out.(*txmodely.MoneyTransactionShippingEtopExtended))
+		return nil
+	})
+	s.Register(([]*moneytx.MoneyTransactionShippingEtopExtended)(nil), (*[]*txmodely.MoneyTransactionShippingEtopExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytx_MoneyTransactionShippingEtopExtendeds_txmodely_MoneyTransactionShippingEtopExtendeds(arg.([]*moneytx.MoneyTransactionShippingEtopExtended))
+		*out.(*[]*txmodely.MoneyTransactionShippingEtopExtended) = out0
+		return nil
+	})
+	s.Register((*txmodely.MoneyTransactionExtended)(nil), (*moneytx.MoneyTransactionShippingExtended)(nil), func(arg, out interface{}) error {
+		Convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(arg.(*txmodely.MoneyTransactionExtended), out.(*moneytx.MoneyTransactionShippingExtended))
+		return nil
+	})
+	s.Register(([]*txmodely.MoneyTransactionExtended)(nil), (*[]*moneytx.MoneyTransactionShippingExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_txmodely_MoneyTransactionExtendeds_moneytx_MoneyTransactionShippingExtendeds(arg.([]*txmodely.MoneyTransactionExtended))
+		*out.(*[]*moneytx.MoneyTransactionShippingExtended) = out0
+		return nil
+	})
+	s.Register((*moneytx.MoneyTransactionShippingExtended)(nil), (*txmodely.MoneyTransactionExtended)(nil), func(arg, out interface{}) error {
+		Convert_moneytx_MoneyTransactionShippingExtended_txmodely_MoneyTransactionExtended(arg.(*moneytx.MoneyTransactionShippingExtended), out.(*txmodely.MoneyTransactionExtended))
+		return nil
+	})
+	s.Register(([]*moneytx.MoneyTransactionShippingExtended)(nil), (*[]*txmodely.MoneyTransactionExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytx_MoneyTransactionShippingExtendeds_txmodely_MoneyTransactionExtendeds(arg.([]*moneytx.MoneyTransactionShippingExtended))
+		*out.(*[]*txmodely.MoneyTransactionExtended) = out0
+		return nil
+	})
 	s.Register((*moneytxmodel.MoneyTransactionShippingExternal)(nil), (*moneytx.MoneyTransactionShippingExternal)(nil), func(arg, out interface{}) error {
 		Convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransactionShippingExternal(arg.(*moneytxmodel.MoneyTransactionShippingExternal), out.(*moneytx.MoneyTransactionShippingExternal))
 		return nil
@@ -95,6 +132,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*moneytx.MoneyTransactionShippingExternalExtended)(nil), (*[]*moneytxmodel.MoneyTransactionShippingExternalExtended)(nil), func(arg, out interface{}) error {
 		out0 := Convert_moneytx_MoneyTransactionShippingExternalExtendeds_moneytxmodel_MoneyTransactionShippingExternalExtendeds(arg.([]*moneytx.MoneyTransactionShippingExternalExtended))
 		*out.(*[]*moneytxmodel.MoneyTransactionShippingExternalExtended) = out0
+		return nil
+	})
+	s.Register((*moneytxmodel.MoneyTransactionShippingExternalFtLine)(nil), (*moneytx.MoneyTransactionShippingExternalFtLine)(nil), func(arg, out interface{}) error {
+		Convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(arg.(*moneytxmodel.MoneyTransactionShippingExternalFtLine), out.(*moneytx.MoneyTransactionShippingExternalFtLine))
+		return nil
+	})
+	s.Register(([]*moneytxmodel.MoneyTransactionShippingExternalFtLine)(nil), (*[]*moneytx.MoneyTransactionShippingExternalFtLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytxmodel_MoneyTransactionShippingExternalFtLines_moneytx_MoneyTransactionShippingExternalFtLines(arg.([]*moneytxmodel.MoneyTransactionShippingExternalFtLine))
+		*out.(*[]*moneytx.MoneyTransactionShippingExternalFtLine) = out0
+		return nil
+	})
+	s.Register((*moneytx.MoneyTransactionShippingExternalFtLine)(nil), (*moneytxmodel.MoneyTransactionShippingExternalFtLine)(nil), func(arg, out interface{}) error {
+		Convert_moneytx_MoneyTransactionShippingExternalFtLine_moneytxmodel_MoneyTransactionShippingExternalFtLine(arg.(*moneytx.MoneyTransactionShippingExternalFtLine), out.(*moneytxmodel.MoneyTransactionShippingExternalFtLine))
+		return nil
+	})
+	s.Register(([]*moneytx.MoneyTransactionShippingExternalFtLine)(nil), (*[]*moneytxmodel.MoneyTransactionShippingExternalFtLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytx_MoneyTransactionShippingExternalFtLines_moneytxmodel_MoneyTransactionShippingExternalFtLines(arg.([]*moneytx.MoneyTransactionShippingExternalFtLine))
+		*out.(*[]*moneytxmodel.MoneyTransactionShippingExternalFtLine) = out0
 		return nil
 	})
 	s.Register((*moneytxmodel.MoneyTransactionShippingExternalLine)(nil), (*moneytx.MoneyTransactionShippingExternalLine)(nil), func(arg, out interface{}) error {
@@ -310,6 +365,122 @@ func Convert_moneytx_MoneyTransactionShippingEtops_moneytxmodel_MoneyTransaction
 	return outs
 }
 
+//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingEtopExtended --//
+
+func Convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(arg *txmodely.MoneyTransactionShippingEtopExtended, out *moneytx.MoneyTransactionShippingEtopExtended) *moneytx.MoneyTransactionShippingEtopExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytx.MoneyTransactionShippingEtopExtended{}
+	}
+	convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(arg, out)
+	return out
+}
+
+func convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(arg *txmodely.MoneyTransactionShippingEtopExtended, out *moneytx.MoneyTransactionShippingEtopExtended) {
+	out.MoneyTransactionShippingEtop = Convert_moneytxmodel_MoneyTransactionShippingEtop_moneytx_MoneyTransactionShippingEtop(arg.MoneyTransactionShippingEtop, nil)
+	out.MoneyTransactions = Convert_txmodely_MoneyTransactionExtendeds_moneytx_MoneyTransactionShippingExtendeds(arg.MoneyTransactions)
+}
+
+func Convert_txmodely_MoneyTransactionShippingEtopExtendeds_moneytx_MoneyTransactionShippingEtopExtendeds(args []*txmodely.MoneyTransactionShippingEtopExtended) (outs []*moneytx.MoneyTransactionShippingEtopExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytx.MoneyTransactionShippingEtopExtended, len(args))
+	outs = make([]*moneytx.MoneyTransactionShippingEtopExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_moneytx_MoneyTransactionShippingEtopExtended_txmodely_MoneyTransactionShippingEtopExtended(arg *moneytx.MoneyTransactionShippingEtopExtended, out *txmodely.MoneyTransactionShippingEtopExtended) *txmodely.MoneyTransactionShippingEtopExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &txmodely.MoneyTransactionShippingEtopExtended{}
+	}
+	convert_moneytx_MoneyTransactionShippingEtopExtended_txmodely_MoneyTransactionShippingEtopExtended(arg, out)
+	return out
+}
+
+func convert_moneytx_MoneyTransactionShippingEtopExtended_txmodely_MoneyTransactionShippingEtopExtended(arg *moneytx.MoneyTransactionShippingEtopExtended, out *txmodely.MoneyTransactionShippingEtopExtended) {
+	out.MoneyTransactionShippingEtop = Convert_moneytx_MoneyTransactionShippingEtop_moneytxmodel_MoneyTransactionShippingEtop(arg.MoneyTransactionShippingEtop, nil)
+	out.MoneyTransactions = Convert_moneytx_MoneyTransactionShippingExtendeds_txmodely_MoneyTransactionExtendeds(arg.MoneyTransactions)
+}
+
+func Convert_moneytx_MoneyTransactionShippingEtopExtendeds_txmodely_MoneyTransactionShippingEtopExtendeds(args []*moneytx.MoneyTransactionShippingEtopExtended) (outs []*txmodely.MoneyTransactionShippingEtopExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]txmodely.MoneyTransactionShippingEtopExtended, len(args))
+	outs = make([]*txmodely.MoneyTransactionShippingEtopExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytx_MoneyTransactionShippingEtopExtended_txmodely_MoneyTransactionShippingEtopExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExtended --//
+
+func Convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(arg *txmodely.MoneyTransactionExtended, out *moneytx.MoneyTransactionShippingExtended) *moneytx.MoneyTransactionShippingExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytx.MoneyTransactionShippingExtended{}
+	}
+	convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(arg, out)
+	return out
+}
+
+func convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(arg *txmodely.MoneyTransactionExtended, out *moneytx.MoneyTransactionShippingExtended) {
+	out.MoneyTransactionShipping = Convert_moneytxmodel_MoneyTransactionShipping_moneytx_MoneyTransactionShipping(arg.MoneyTransactionShipping, nil)
+	out.Fulfillments = shippingconvert.Convert_modely_FulfillmentExtendeds_shipping_FulfillmentExtendeds(arg.Fulfillments)
+}
+
+func Convert_txmodely_MoneyTransactionExtendeds_moneytx_MoneyTransactionShippingExtendeds(args []*txmodely.MoneyTransactionExtended) (outs []*moneytx.MoneyTransactionShippingExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytx.MoneyTransactionShippingExtended, len(args))
+	outs = make([]*moneytx.MoneyTransactionShippingExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_moneytx_MoneyTransactionShippingExtended_txmodely_MoneyTransactionExtended(arg *moneytx.MoneyTransactionShippingExtended, out *txmodely.MoneyTransactionExtended) *txmodely.MoneyTransactionExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &txmodely.MoneyTransactionExtended{}
+	}
+	convert_moneytx_MoneyTransactionShippingExtended_txmodely_MoneyTransactionExtended(arg, out)
+	return out
+}
+
+func convert_moneytx_MoneyTransactionShippingExtended_txmodely_MoneyTransactionExtended(arg *moneytx.MoneyTransactionShippingExtended, out *txmodely.MoneyTransactionExtended) {
+	out.MoneyTransactionShipping = Convert_moneytx_MoneyTransactionShipping_moneytxmodel_MoneyTransactionShipping(arg.MoneyTransactionShipping, nil)
+	out.Fulfillments = shippingconvert.Convert_shipping_FulfillmentExtendeds_modely_FulfillmentExtendeds(arg.Fulfillments)
+}
+
+func Convert_moneytx_MoneyTransactionShippingExtendeds_txmodely_MoneyTransactionExtendeds(args []*moneytx.MoneyTransactionShippingExtended) (outs []*txmodely.MoneyTransactionExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]txmodely.MoneyTransactionExtended, len(args))
+	outs = make([]*txmodely.MoneyTransactionExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytx_MoneyTransactionShippingExtended_txmodely_MoneyTransactionExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternal --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransactionShippingExternal(arg *moneytxmodel.MoneyTransactionShippingExternal, out *moneytx.MoneyTransactionShippingExternal) *moneytx.MoneyTransactionShippingExternal {
@@ -442,6 +613,64 @@ func Convert_moneytx_MoneyTransactionShippingExternalExtendeds_moneytxmodel_Mone
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalExtended, len(args))
 	for i := range tmps {
 		outs[i] = Convert_moneytx_MoneyTransactionShippingExternalExtended_moneytxmodel_MoneyTransactionShippingExternalExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternalFtLine --//
+
+func Convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(arg *moneytxmodel.MoneyTransactionShippingExternalFtLine, out *moneytx.MoneyTransactionShippingExternalFtLine) *moneytx.MoneyTransactionShippingExternalFtLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytx.MoneyTransactionShippingExternalFtLine{}
+	}
+	convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(arg, out)
+	return out
+}
+
+func convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(arg *moneytxmodel.MoneyTransactionShippingExternalFtLine, out *moneytx.MoneyTransactionShippingExternalFtLine) {
+	out.MoneyTransactionShippingExternal = Convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransactionShippingExternal(arg.MoneyTransactionShippingExternal, nil)
+	out.Lines = Convert_moneytxmodel_MoneyTransactionShippingExternalLines_moneytx_MoneyTransactionShippingExternalLines(arg.Lines)
+}
+
+func Convert_moneytxmodel_MoneyTransactionShippingExternalFtLines_moneytx_MoneyTransactionShippingExternalFtLines(args []*moneytxmodel.MoneyTransactionShippingExternalFtLine) (outs []*moneytx.MoneyTransactionShippingExternalFtLine) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytx.MoneyTransactionShippingExternalFtLine, len(args))
+	outs = make([]*moneytx.MoneyTransactionShippingExternalFtLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_moneytx_MoneyTransactionShippingExternalFtLine_moneytxmodel_MoneyTransactionShippingExternalFtLine(arg *moneytx.MoneyTransactionShippingExternalFtLine, out *moneytxmodel.MoneyTransactionShippingExternalFtLine) *moneytxmodel.MoneyTransactionShippingExternalFtLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytxmodel.MoneyTransactionShippingExternalFtLine{}
+	}
+	convert_moneytx_MoneyTransactionShippingExternalFtLine_moneytxmodel_MoneyTransactionShippingExternalFtLine(arg, out)
+	return out
+}
+
+func convert_moneytx_MoneyTransactionShippingExternalFtLine_moneytxmodel_MoneyTransactionShippingExternalFtLine(arg *moneytx.MoneyTransactionShippingExternalFtLine, out *moneytxmodel.MoneyTransactionShippingExternalFtLine) {
+	out.MoneyTransactionShippingExternal = Convert_moneytx_MoneyTransactionShippingExternal_moneytxmodel_MoneyTransactionShippingExternal(arg.MoneyTransactionShippingExternal, nil)
+	out.Lines = Convert_moneytx_MoneyTransactionShippingExternalLines_moneytxmodel_MoneyTransactionShippingExternalLines(arg.Lines)
+}
+
+func Convert_moneytx_MoneyTransactionShippingExternalFtLines_moneytxmodel_MoneyTransactionShippingExternalFtLines(args []*moneytx.MoneyTransactionShippingExternalFtLine) (outs []*moneytxmodel.MoneyTransactionShippingExternalFtLine) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytxmodel.MoneyTransactionShippingExternalFtLine, len(args))
+	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalFtLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytx_MoneyTransactionShippingExternalFtLine_moneytxmodel_MoneyTransactionShippingExternalFtLine(args[i], &tmps[i])
 	}
 	return outs
 }

@@ -10,6 +10,9 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/connection_type"
 	shippingstate "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
+	"etop.vn/api/top/types/etc/status3"
+	moneytxsqlstore "etop.vn/backend/com/main/moneytx/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
@@ -17,11 +20,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var acceptStates = []string{
-	shippingstate.Returned.String(), shippingstate.Returning.String(), shippingstate.Delivered.String(), shippingstate.Undeliverable.String(),
-}
-
-func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, args *moneytx.CreateMoneyTxShippingExternalArgs) (*moneytx.MoneyTransactionShippingExternalExtended, error) {
+func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, args *moneytx.CreateMoneyTxShippingExternalArgs) (*moneytx.MoneyTransactionShippingExternalFtLine, error) {
 	if args.Provider == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn nhà vận chuyển")
 	}
@@ -80,7 +79,8 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, ar
 			}
 		}
 
-		event := &moneytx.MoneyTransactionShippingExternalCreatedEvent{
+		event := &moneytx.MoneyTxShippingExternalCreatedEvent{
+			EventMeta:                 meta.NewEvent(),
 			MoneyTxShippingExternalID: externalTxID,
 			FulfillementIDs:           ffmIDs,
 		}
@@ -92,7 +92,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, ar
 	if err != nil {
 		return nil, err
 	}
-	return a.moneyTxShippingExternalStore(ctx).ID(externalTxID).GetMoneyTxShippingExternalExtended()
+	return a.moneyTxShippingExternalStore(ctx).ID(externalTxID).GetMoneyTxShippingExternalFtLine()
 }
 
 func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context, args *moneytx.CreateMoneyTxShippingExternalLineArgs) (*moneytx.MoneyTransactionShippingExternalLine, error) {
@@ -134,7 +134,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 					Code: "ffm_exist_money_transaction_shipping_external",
 					Msg:  "Vận đơn nằm trong phiên thanh toán nhà vận chuyển khác: " + strconv.Itoa(int(ffm.MoneyTransactionShippingExternalID)),
 				}
-			} else if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
+			} else if !cm.StringsContain(moneytx.ShippingAcceptStates, ffm.ShippingState.String()) {
 				line.ImportError = &meta.Error{
 					Code: "ffm_not_done",
 					Msg:  "Vận đơn chưa hoàn thành trên Etop",
@@ -188,18 +188,330 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 	return line, nil
 }
 
-func (a *MoneyTxAggregate) UpdateMoneyTxShippingExternalInfo(ctx context.Context, args *moneytx.UpdateMoneyTxShippingExternalInfoArgs) (*moneytx.MoneyTransactionShippingExternalExtended, error) {
-	return nil, nil
+func (a *MoneyTxAggregate) UpdateMoneyTxShippingExternalInfo(ctx context.Context, args *moneytx.UpdateMoneyTxShippingExternalInfoArgs) (*moneytx.MoneyTransactionShippingExternalFtLine, error) {
+	if args.MoneyTxShippingExternalID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing money transaction ID")
+	}
+	moneyTx, err := a.moneyTxShippingExternalStore(ctx).ID(args.MoneyTxShippingExternalID).
+		GetMoneyTxShippingExternal()
+	if err != nil {
+		return nil, err
+	}
+	if moneyTx.Status == status3.P {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this money transaction")
+	}
+	if err := a.moneyTxShippingExternalStore(ctx).UpdateMoneyTxShippingExternalInfo(args); err != nil {
+		return nil, err
+	}
+	return a.moneyTxShippingExternalStore(ctx).ID(args.MoneyTxShippingExternalID).GetMoneyTxShippingExternalFtLine()
 }
+
+func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternal(ctx context.Context, id dot.ID) (updated int, _ error) {
+	panic("implement me")
+}
+
+/*
+# Khi tạo phiên thanh toán cho Shop (ConfirmMoneyTxShippingExternals)
+	- Thêm các ffms vào phiên
+		+ GHN
+			- returned
+			- COD = 0 (state: delivered & total_cod_amount = 0)
+		+ Vtpost
+			- returned
+			- returning
+			- COD = 0 (state: delivered & total_cod_amount = 0)
+*/
 
 func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternals(ctx context.Context, ids []dot.ID) (updated int, _ error) {
-	return 0, nil
+	if len(ids) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing money transaction shipping external IDs")
+	}
+	moneyTxs, err := a.moneyTxShippingExternalStore(ctx).IDs(ids...).ListMoneyTxShippingExternalsFtLine()
+	if err != nil {
+		return 0, err
+	}
+
+	var moneyTxExternalIDs []dot.ID
+	var shopIDs []dot.ID
+	shopFfmsMap := make(map[dot.ID][]*shipping.Fulfillment)
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		// raise event confirming
+		// cập nhật phí trả hàng vtpost (requirement: Lọc tất cả đơn trả hàng, đang trả hàng của VTPOST, tính toán & thêm phí trả hàng vào)
+		// Công thức tính cụ thể xem ở shipping pm
+		event := &moneytx.MoneyTxShippingExternalsConfirmingEvent{
+			EventMeta:                  meta.NewEvent(),
+			MoneyTxShippingExternalIDs: moneyTxExternalIDs,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+
+		for _, moneyTx := range moneyTxs {
+			_shopFfmsMap, err := a.preprocessConfirmMoneyTxExternal(ctx, moneyTx)
+			if err != nil {
+				return err
+			}
+			moneyTxExternalIDs = append(moneyTxExternalIDs, moneyTx.ID)
+			for shopID, ffms := range _shopFfmsMap {
+				if !cm.IDsContain(shopIDs, shopID) {
+					shopIDs = append(shopIDs, shopID)
+				}
+				shopFfmsMap[shopID] = mergeFulfillments(shopFfmsMap[shopID], ffms)
+			}
+		}
+
+		shopFfmsAdditionMap := a.combineWithExtraFfms(ctx)
+		// make sure do not dupplicate ffm
+		for shopID, ffms := range shopFfmsAdditionMap {
+			shopFfmsMap[shopID] = mergeFulfillments(shopFfmsMap[shopID], ffms)
+			if !cm.IDsContain(shopIDs, shopID) {
+				shopIDs = append(shopIDs, shopID)
+			}
+		}
+
+		cmd := &moneytx.CreateMoneyTxShippingsArgs{
+			ShopIDMapFfms: shopFfmsMap,
+		}
+		if _, err := a.CreateMoneyTxShippings(ctx, cmd); err != nil {
+			return err
+		}
+		return a.moneyTxShippingExternalStore(ctx).ConfirmMoneyTxShippingExternals(moneyTxExternalIDs)
+	})
+	if err != nil {
+		return 0, err
+	}
+	return len(moneyTxExternalIDs), nil
 }
 
-func (a *MoneyTxAggregate) RemoveMoneyTxShippingExternalLines(ctx context.Context, args *moneytx.RemoveMoneyTxShippingExternalLinesArgs) (*moneytx.MoneyTransactionShippingExternalExtended, error) {
-	panic("implement me")
+func (a *MoneyTxAggregate) RemoveMoneyTxShippingExternalLines(ctx context.Context, args *moneytx.RemoveMoneyTxShippingExternalLinesArgs) (*moneytx.MoneyTransactionShippingExternalFtLine, error) {
+	if args.MoneyTxShippingExternalID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing money transaction shipping external ID")
+	}
+	moneyTx, err := a.moneyTxShippingExternalStore(ctx).ID(args.MoneyTxShippingExternalID).GetMoneyTxShippingExternal()
+	if err != nil {
+		return nil, err
+	}
+	if moneyTx.Status == status3.P {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update money transaction shipping external")
+	}
+	if len(args.LineIDs) == 0 {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "LineIDs can not be empty")
+	}
+
+	lines, err := a.moneyTxShippingExternalStore(ctx).Line_by_MoneyTxShippingExternalID(args.MoneyTxShippingExternalID).Line_by_LineIDs(args.LineIDs...).ListMoneyTxShippingExternalLinesDB()
+	if err != nil {
+		return nil, err
+	}
+
+	ffmIDs := make([]dot.ID, 0, len(args.LineIDs))
+	for _, id := range args.LineIDs {
+		found := false
+		for _, line := range lines {
+			if id == line.ID {
+				found = true
+				if line.EtopFulfillmentID != 0 {
+					ffmIDs = append(ffmIDs, line.EtopFulfillmentID)
+				}
+				break
+			}
+		}
+		if !found {
+			return nil, cm.Errorf(cm.NotFound, nil, "Line #%v does not exist in this money transaction", id)
+		}
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		totalCOD, totalOrders := 0, 0
+		for _, line := range lines {
+			if cm.IDsContain(args.LineIDs, line.ID) {
+				continue
+			}
+			totalCOD += line.ExternalTotalCOD
+			totalOrders++
+		}
+
+		if err := a.moneyTxShippingExternalStore(ctx).Line_by_LineIDs(args.LineIDs...).DeleteMoneyTxShippingExternalLines(); err != nil {
+			return err
+		}
+		event := &moneytx.MoneyTxShippingExternalLinesDeletedEvent{
+			EventMeta:                 meta.NewEvent(),
+			MoneyTxShippingExternalID: args.MoneyTxShippingExternalID,
+			FulfillmentIDs:            ffmIDs,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+
+		update := &moneytxsqlstore.UpdateMoneyTxShippingExternalStatisticsArgs{
+			MoneyTxShippingExternalID: args.MoneyTxShippingExternalID,
+			TotalCOD:                  dot.Int(totalCOD),
+			TotalOrders:               dot.Int(totalOrders),
+		}
+		if err := a.moneyTxShippingExternalStore(ctx).UpdateMoneyTxShippingExternalStatistics(update); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return a.moneyTxShippingExternalStore(ctx).ID(args.MoneyTxShippingExternalID).GetMoneyTxShippingExternalFtLine()
 }
 
-func (a *MoneyTxAggregate) DeleteMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (deleted int, _ error) {
-	panic("implement me")
+func (a *MoneyTxAggregate) DeleteMoneyTxShippingExternal(ctx context.Context, id dot.ID) (deleted int, _ error) {
+	if id == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing money transaction ID").WithMetap("aggregate", "DeleteMoneyTxShippingExternal")
+	}
+	moneyTx, err := a.moneyTxShippingExternalStore(ctx).ID(id).GetMoneyTxShippingExternal()
+	if err != nil {
+		return 0, err
+	}
+	if moneyTx.Status == status3.P {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Cannot delete this money transaction external").WithMetap("aggregate", "DeleteMoneyTxShippingExternal")
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		// raise event:
+		// deleted money transaction shipping external line
+		// remove money_transaction_shipping_id in fulfillment
+		event := &moneytx.MoneyTxShippingExternalDeletedEvent{
+			EventMeta:                 meta.NewEvent(),
+			MoneyTxShippingExternalID: id,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		return a.moneyTxShippingExternalStore(ctx).DeleteMoneyTxShippingExternal(id)
+	})
+	if err != nil {
+		return 0, err
+	}
+	return 1, nil
+}
+
+func (a *MoneyTxAggregate) DeleteMoneyTxShippingExternalLines(ctx context.Context, moneyTxShippingExternalID dot.ID) error {
+	if moneyTxShippingExternalID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing money_tx_shipping_external_id")
+	}
+	return a.moneyTxShippingExternalStore(ctx).Line_by_MoneyTxShippingExternalID(moneyTxShippingExternalID).DeleteMoneyTxShippingExternalLines()
+}
+
+func (a *MoneyTxAggregate) preprocessConfirmMoneyTxExternal(ctx context.Context, moneyTx *moneytx.MoneyTransactionShippingExternalFtLine) (shopFfmIDMap map[dot.ID][]*shipping.Fulfillment, _err error) {
+	shopFfmIDMap = make(map[dot.ID][]*shipping.Fulfillment)
+	if moneyTx.Status != status3.Z {
+		return shopFfmIDMap, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this money transaction").WithMetap("id", moneyTx.ID)
+	}
+	lines := moneyTx.Lines
+	if len(lines) == 0 {
+		return shopFfmIDMap, cm.Errorf(cm.FailedPrecondition, nil, "There are no lines in this money transaction").WithMetap("id", moneyTx.ID)
+	}
+
+	ffmCodes := make([]string, len(lines))
+	for i, line := range lines {
+		if line.ImportError != nil && line.ImportError.Code != "" {
+			return shopFfmIDMap, cm.Errorf(cm.FailedPrecondition, nil, "Please handle error before confirm money transaction").WithMetap("id", moneyTx.ID)
+		}
+		ffmCodes[i] = line.ExternalCode
+	}
+	ffmQuery := &shipping.ListFulfillmentsByShippingCodesQuery{
+		IDs: ffmCodes,
+	}
+	if err := a.shippingQuery.Dispatch(ctx, ffmQuery); err != nil {
+		return nil, err
+	}
+	fulfillments := ffmQuery.Result
+
+	for _, line := range lines {
+		found := false
+		for _, ffm := range fulfillments {
+			if line.ExternalCode == ffm.ShippingCode {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return shopFfmIDMap, cm.Errorf(cm.NotFound, nil, "Fulfillment not found %v", line.ExternalCode)
+		}
+	}
+	for _, ffm := range fulfillments {
+		shopFfmIDMap[ffm.ShopID] = append(shopFfmIDMap[ffm.ShopID], ffm)
+	}
+	return shopFfmIDMap, nil
+}
+
+func mergeFulfillments(ffms []*shipping.Fulfillment, subFfms []*shipping.Fulfillment) []*shipping.Fulfillment {
+	mergeFfms := append(ffms, subFfms...)
+	ffmMap := make(map[dot.ID]*shipping.Fulfillment)
+	for _, ffm := range mergeFfms {
+		ffmMap[ffm.ID] = ffm
+	}
+	var res []*shipping.Fulfillment
+	for _, ffm := range ffmMap {
+		res = append(res, ffm)
+	}
+	return res
+}
+
+/*
+	+ GHN
+		- returned
+		- COD = 0 (state: delivered & total_cod_amount = 0)
+	+ Vtpost
+		- returned
+		- returning
+		- COD = 0 (state: delivered & total_cod_amount = 0)
+*/
+
+func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMap map[dot.ID][]*shipping.Fulfillment) {
+	var ffmsAddition []*shipping.Fulfillment
+	shopFfmsMap = make(map[dot.ID][]*shipping.Fulfillment)
+
+	queryGHN := &shipping.ListFulfillmentsForMoneyTxQuery{
+		ShippingProvider: shipping_provider.GHN,
+		ShippingStates:   []shippingstate.State{shippingstate.Returned},
+		IsNoneCOD:        dot.Bool(true),
+	}
+	if err := a.shippingQuery.Dispatch(ctx, queryGHN); err == nil {
+		ffmsAddition = append(ffmsAddition, queryGHN.Result...)
+	}
+
+	queryVtpost := &shipping.ListFulfillmentsForMoneyTxQuery{
+		ShippingProvider: shipping_provider.VTPost,
+		ShippingStates:   []shippingstate.State{shippingstate.Returning, shippingstate.Returned},
+		IsNoneCOD:        dot.Bool(true),
+	}
+	if err := a.shippingQuery.Dispatch(ctx, queryVtpost); err == nil {
+		ffmsAddition = append(ffmsAddition, queryVtpost.Result...)
+	}
+
+	ffms := filterCombineExtraFfms(ffmsAddition)
+
+	for _, ffm := range ffms {
+		if ffm.ID == 0 {
+			continue
+		}
+		shopFfmsMap[ffm.ShopID] = append(shopFfmsMap[ffm.ShopID], ffm)
+	}
+	return shopFfmsMap
+}
+
+func filterCombineExtraFfms(ffms []*shipping.Fulfillment) []*shipping.Fulfillment {
+	// Sau khi lấy extra ffms, chỉ lấy những ffm có ConnectionMethod là TOPSHIP
+	// Xử lý backward compatible cho trường hợp ffm cũ, ko có ConnectionMethod, ShippingType (mặc định cho vào phiên luôn)
+	var res []*shipping.Fulfillment
+	for _, ffm := range ffms {
+		// backward compatible
+		// remove later
+		if ffm.ShippingType == 0 && ffm.ConnectionMethod == 0 {
+			res = append(res, ffm)
+			continue
+		}
+		// -- end backward compatible
+
+		if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+			continue
+		}
+		res = append(res, ffm)
+	}
+	return res
 }

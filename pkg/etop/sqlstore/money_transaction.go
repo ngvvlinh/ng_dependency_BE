@@ -20,7 +20,7 @@ import (
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
-	txmodely "etop.vn/backend/com/main/moneytx/modely"
+	txmodely "etop.vn/backend/com/main/moneytx/txmodely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	shipmodely "etop.vn/backend/com/main/shipping/modely"
@@ -218,7 +218,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 	if totalCOD != cmd.TotalCOD {
 		return cm.Error(cm.FailedPrecondition, "Total COD does not match", nil)
 	}
-	if totalCOD != cmd.TotalCOD {
+	if totalAmount != cmd.TotalAmount {
 		return cm.Error(cm.FailedPrecondition, "Total Amount does not match", nil)
 	}
 	if totalOrders != cmd.TotalOrders {
@@ -523,9 +523,9 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		}
 		cmd.Result.Updated = 1
 
-		event := &moneytx.MoneyTransactionConfirmedEvent{
-			ShopID:             cmd.ShopID,
-			MoneyTransactionID: cmd.MoneyTransactionID,
+		event := &moneytx.MoneyTxShippingConfirmedEvent{
+			ShopID:            cmd.ShopID,
+			MoneyTxShippingID: cmd.MoneyTransactionID,
 		}
 		if err := eventBus.Publish(ctx, event); err != nil {
 			return err
@@ -1681,21 +1681,7 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtI
 
 	moneyTransactions := query.Result.MoneyTransactions
 	if len(mtIDs) != len(moneyTransactions) {
-		var errID dot.ID
-		stop := false
-		for _, id := range mtIDs {
-			for _, mt := range moneyTransactions {
-				if id != mt.ID {
-					errID = id
-					stop = true
-					break
-				}
-			}
-			if stop {
-				break
-			}
-		}
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShipping does not exist. (money_transaction_shipping_id = %v)", errID)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShippings does not valid")
 	}
 	var fulfillments []*shipmodel.Fulfillment
 

@@ -113,12 +113,12 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 			return err
 		}
 		if creates != nil {
-			if err := a.ffmStore(ctx).CreateFulfillmentsDB(ctx, creates); err != nil {
+			if err := a.ffmStore(ctx).CreateFulfillmentsDB(creates); err != nil {
 				return err
 			}
 		}
 		if updates != nil {
-			if err := a.ffmStore(ctx).UpdateFulfillmentsDB(ctx, updates); err != nil {
+			if err := a.ffmStore(ctx).StatusNotIn(status5.N, status5.NS, status5.P).UpdateFulfillmentsDB(updates); err != nil {
 				return err
 			}
 		}
@@ -368,13 +368,17 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 }
 
 func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesArgs) (updated int, _ error) {
-	ffm, err := a.ffmStore(ctx).IDOrShippingCode(args.FulfillmentID, args.ShippingCode).GetFulfillment()
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFulfillment()
 	if err != nil {
 		return 0, err
 	}
 	event := &shipping.FulfillmentUpdatingEvent{
-		EventMeta:     meta.NewEvent(),
-		FulfillmentID: ffm.ID,
+		EventMeta:         meta.NewEvent(),
+		FulfillmentID:     ffm.ID,
+		MoneyTxShippingID: ffm.MoneyTransactionID,
 	}
 	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return 0, err
@@ -385,8 +389,9 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			return err
 		}
 		eventChanged := &shipping.FulfillmentShippingFeeChangedEvent{
-			EventMeta:     meta.NewEvent(),
-			FulfillmentID: ffm.ID,
+			EventMeta:         meta.NewEvent(),
+			FulfillmentID:     ffm.ID,
+			MoneyTxShippingID: ffm.MoneyTransactionID,
 		}
 		if err := a.eventBus.Publish(ctx, eventChanged); err != nil {
 			return err
@@ -399,19 +404,44 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 	return 1, nil
 }
 
-func (a *Aggregate) UpdateFulfillmentsMoneyTxShippingExternalID(ctx context.Context, args *shipping.UpdateFulfillmentsMoneyTxShippingExternalIDArgs) (updated int, _ error) {
+func (a *Aggregate) UpdateFulfillmentsMoneyTxID(ctx context.Context, args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
 	if len(args.FulfillmentIDs) == 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "UpdateFulfillmentsMoneyTxShippingExternalID")
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "UpdateFulfillmentsMoneyTxID")
 	}
 
-	if args.MoneyTxShippingExternalID == 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxShippingExternalID").WithMetap("function", "UpdateFulfillmentsMoneyTxShippingExternalID")
+	if args.MoneyTxShippingExternalID == 0 && args.MoneyTxShippingID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing MoneyTxID").WithMetap("function", "UpdateFulfillmentsMoneyTxID")
 	}
 
-	if err := a.ffmStore(ctx).UpdateFulfillmentsMoneyTxShippingExternalID(args); err != nil {
-		return 0, err
+	return a.ffmStore(ctx).UpdateFulfillmentsMoneyTxID(args)
+}
+
+func (a *Aggregate) UpdateFulfillmentsCODTransferedAt(ctx context.Context, args *shipping.UpdateFulfillmentsCODTransferedAtArgs) error {
+	if len(args.MoneyTxShippingIDs) == 0 &&
+		len(args.FulfillmentIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing required fields").WithMetap("func", "UpdateFulfillmentsCODTransferedAt")
 	}
-	return 1, nil
+	if args.CODTransferedAt.IsZero() {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing cod_transfered_at").WithMetap("func", "UpdateFulfillmentsCODTransferedAt")
+	}
+	query := a.ffmStore(ctx)
+	if len(args.MoneyTxShippingIDs) > 0 {
+		query = query.MoneyTxShippingIDs(args.MoneyTxShippingIDs...)
+	}
+	if len(args.FulfillmentIDs) > 0 {
+		query = query.IDs(args.FulfillmentIDs...)
+	}
+	update := &shipmodel.Fulfillment{
+		CODEtopTransferedAt: args.CODTransferedAt,
+	}
+	return query.UpdateFulfillmentDB(update)
+}
+
+func (a *Aggregate) RemoveFulfillmentsMoneyTxID(ctx context.Context, args *shipping.RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
+	if len(args.FulfillmentIDs) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "RemoveFulfillmentsMoneyTxShippingExternalID")
+	}
+	return a.ffmStore(ctx).RemoveFulfillmentsMoneyTxID(args)
 }
 
 func (a *Aggregate) UpdateFulfillmentsStatus(ctx context.Context, args *shipping.UpdateFulfillmentsStatusArgs) error {

@@ -78,6 +78,13 @@ func PbPageInfo(p *cm.Paging) *common.PageInfo {
 	}
 }
 
+func PbMetaPageInfo(p meta.PageInfo) *common.PageInfo {
+	return &common.PageInfo{
+		Limit: p.Limit,
+		Sort:  p.Sort,
+	}
+}
+
 func PbPaging(p cm.Paging) *common.PageInfo {
 	return &common.PageInfo{
 		Limit: p.Limit,

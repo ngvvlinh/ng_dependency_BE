@@ -3,6 +3,8 @@ package shipping
 import (
 	"time"
 
+	"etop.vn/api/main/identity"
+	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
@@ -167,6 +169,13 @@ type ShippingFeeLine struct {
 	ExternalServiceType string
 }
 
+type FulfillmentExtended struct {
+	*Fulfillment
+	Shop  *identity.Shop
+	Order *ordering.Order
+	// MoneyTxShipping *moneytx.MoneyTransactionShipping
+}
+
 type FulfillmentsCreatingEvent struct {
 	meta.EventMeta
 	ShopID      dot.ID
@@ -183,10 +192,12 @@ type FulfillmentsCreatedEvent struct {
 
 type FulfillmentUpdatingEvent struct {
 	meta.EventMeta
-	FulfillmentID dot.ID
+	FulfillmentID     dot.ID
+	MoneyTxShippingID dot.ID
 }
 
 type FulfillmentShippingFeeChangedEvent struct {
 	meta.EventMeta
-	FulfillmentID dot.ID
+	FulfillmentID     dot.ID
+	MoneyTxShippingID dot.ID
 }

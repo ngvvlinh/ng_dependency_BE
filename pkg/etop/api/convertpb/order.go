@@ -18,7 +18,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
-	txmodely "etop.vn/backend/com/main/moneytx/modely"
+	txmodely "etop.vn/backend/com/main/moneytx/txmodely"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -733,6 +733,9 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 	if mo != nil {
 		ff.Order = PbOrder(mo, nil, accType)
 	}
+	if accType == model.TagEtop {
+		ff.AdminNote = m.AdminNote
+	}
 	return ff
 }
 
@@ -1361,7 +1364,7 @@ func Convert_core_Order_To_api_Order(in *ordering.Order, ffms []*shipping.Fulfil
 		FulfillmentIds:            in.FulfillmentIDs,
 		CustomerId:                in.CustomerID,
 	}
-	shipping := Convert_core_ShippingInfo_To_api_OrderShipping(in.Shipping)
+	shipping := Convert_core_ShippingInfo_To_api_OrderShipping(in)
 	order.ShopShipping = shipping
 	order.Shipping = shipping
 	return order
@@ -1438,9 +1441,13 @@ func Convert_core_OrderFeeLines_To_api_OrderFeeLines(items []ordering.OrderFeeLi
 	return result
 }
 
-func Convert_core_ShippingInfo_To_api_OrderShipping(in *shiptypes.ShippingInfo) *types.OrderShipping {
-	if in == nil {
+func Convert_core_ShippingInfo_To_api_OrderShipping(m *ordering.Order) *types.OrderShipping {
+	if m == nil {
 		return nil
+	}
+	in := m.Shipping
+	if in == nil {
+		in = &shiptypes.ShippingInfo{}
 	}
 	return &types.OrderShipping{
 		ExportedFields: exportedOrderShipping,
@@ -1460,11 +1467,11 @@ func Convert_core_ShippingInfo_To_api_OrderShipping(in *shiptypes.ShippingInfo) 
 		TryOn:               in.TryOn,
 		ShippingNote:        in.ShippingNote,
 		CodAmount:           dot.Int(in.CODAmount),
-		Weight:              dot.Int(in.ChargeableWeight),
-		GrossWeight:         dot.Int(in.GrossWeight),
+		Weight:              dot.Int(cm.CoalesceInt(in.ChargeableWeight, m.TotalWeight)),
+		GrossWeight:         dot.Int(cm.CoalesceInt(in.GrossWeight, m.TotalWeight)),
 		Length:              dot.Int(in.Length),
 		Width:               dot.Int(in.Width),
 		Height:              dot.Int(in.Height),
-		ChargeableWeight:    dot.Int(in.ChargeableWeight),
+		ChargeableWeight:    dot.Int(cm.CoalesceInt(in.ChargeableWeight, m.TotalWeight)),
 	}
 }

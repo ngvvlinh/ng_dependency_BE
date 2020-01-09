@@ -799,33 +799,6 @@
         }
       }
     },
-    "/api/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal": {
-      "post": {
-        "tags": [
-          "MoneyTransaction"
-        ],
-        "summary": "ConfirmMoneyTransactionShippingExternal",
-        "operationId": "admin.MoneyTransaction-ConfirmMoneyTransactionShippingExternal",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals": {
       "post": {
         "tags": [
@@ -1893,6 +1866,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/xuGetShopsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShopsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Shop/GetShopsByIDs": {
+      "post": {
+        "tags": [
+          "Shop"
+        ],
+        "summary": "GetShopsByIDs",
+        "operationId": "admin.Shop-GetShopsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
             }
           }
         ],
@@ -3106,6 +3106,9 @@
           "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
+        "admin_note": {
+          "type": "string"
+        },
         "basket_value": {
           "type": "integer"
         },
@@ -3533,6 +3536,7 @@
           "type": "string"
         },
         "money_transactions": {
+          "description": "**Deprecated:**\n",
           "type": "array",
           "items": {
             "$ref": "#/definitions/qdMoneyTransaction"
@@ -3551,6 +3555,9 @@
           "type": "integer"
         },
         "total_fee": {
+          "type": "integer"
+        },
+        "total_money_tx_shippings": {
           "type": "integer"
         },
         "total_orders": {
@@ -4160,10 +4167,6 @@
         "cod_amount": {
           "type": "integer"
         },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "exported_fields": {
           "type": "array",
           "items": {
@@ -4207,10 +4210,6 @@
         },
         "shipping_service_name": {
           "type": "string"
-        },
-        "shop_carrier_id": {
-          "type": "string",
-          "format": "int64"
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
@@ -5358,10 +5357,6 @@
             "format": "int64"
           }
         },
-        "money_transaction_shipping_external_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "paging": {
           "$ref": "#/definitions/ktPaging"
         },
@@ -5474,6 +5469,12 @@
     "xuGetShopsRequest": {
       "type": "object",
       "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
         "paging": {
           "$ref": "#/definitions/ktPaging"
         }

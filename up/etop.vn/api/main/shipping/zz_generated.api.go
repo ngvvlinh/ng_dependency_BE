@@ -6,10 +6,12 @@ package shipping
 
 import (
 	context "context"
+	time "time"
 
 	orderingtypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	shipping "etop.vn/api/top/types/etc/shipping"
+	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
 	try_on "etop.vn/api/top/types/etc/try_on"
@@ -67,10 +69,24 @@ func (h AggregateHandler) HandleCreateFulfillments(ctx context.Context, msg *Cre
 	return err
 }
 
+type RemoveFulfillmentsMoneyTxIDCommand struct {
+	FulfillmentIDs            []dot.ID
+	MoneyTxShippingID         dot.ID
+	MoneyTxShippingExternalID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveFulfillmentsMoneyTxID(ctx context.Context, msg *RemoveFulfillmentsMoneyTxIDCommand) (err error) {
+	msg.Result, err = h.inner.RemoveFulfillmentsMoneyTxID(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateFulfillmentShippingFeesCommand struct {
-	FulfillmentID    dot.ID
-	ShippingCode     string
-	ShippingFeeLines []*ShippingFeeLine
+	FulfillmentID            dot.ID
+	ShippingCode             string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	ShippingFeeLines         []*ShippingFeeLine
 
 	Result int `json:"-"`
 }
@@ -96,15 +112,29 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingState(ctx context.Conte
 	return err
 }
 
-type UpdateFulfillmentsMoneyTxShippingExternalIDCommand struct {
+type UpdateFulfillmentsCODTransferedAtCommand struct {
+	FulfillmentIDs     []dot.ID
+	MoneyTxShippingIDs []dot.ID
+	CODTransferedAt    time.Time
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentsCODTransferedAt(ctx context.Context, msg *UpdateFulfillmentsCODTransferedAtCommand) (err error) {
+	return h.inner.UpdateFulfillmentsCODTransferedAt(msg.GetArgs(ctx))
+}
+
+type UpdateFulfillmentsMoneyTxIDCommand struct {
 	FulfillmentIDs            []dot.ID
 	MoneyTxShippingExternalID dot.ID
+	MoneyTxShippingID         dot.ID
 
 	Result int `json:"-"`
 }
 
-func (h AggregateHandler) HandleUpdateFulfillmentsMoneyTxShippingExternalID(ctx context.Context, msg *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) (err error) {
-	msg.Result, err = h.inner.UpdateFulfillmentsMoneyTxShippingExternalID(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleUpdateFulfillmentsMoneyTxID(ctx context.Context, msg *UpdateFulfillmentsMoneyTxIDCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentsMoneyTxID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -134,29 +164,109 @@ func (h QueryServiceHandler) HandleGetFulfillmentByIDOrShippingCode(ctx context.
 	return err
 }
 
-type ListFulfillmentByIDsQuery struct {
+type GetFulfillmentExtendedQuery struct {
+	ID           dot.ID
+	ShippingCode string
+
+	Result *FulfillmentExtended `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFulfillmentExtended(ctx context.Context, msg *GetFulfillmentExtendedQuery) (err error) {
+	msg.Result, err = h.inner.GetFulfillmentExtended(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentExtendedsByIDsQuery struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+
+	Result []*FulfillmentExtended `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentExtendedsByIDs(ctx context.Context, msg *ListFulfillmentExtendedsByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentExtendedsByIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentExtendedsByMoneyTxShippingIDQuery struct {
+	ShopID            dot.ID
+	MoneyTxShippingID dot.ID
+
+	Result []*FulfillmentExtended `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentExtendedsByMoneyTxShippingID(ctx context.Context, msg *ListFulfillmentExtendedsByMoneyTxShippingIDQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentExtendedsByMoneyTxShippingID(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentsByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
 
 	Result []*Fulfillment `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListFulfillmentByIDs(ctx context.Context, msg *ListFulfillmentByIDsQuery) (err error) {
-	msg.Result, err = h.inner.ListFulfillmentByIDs(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListFulfillmentsByIDs(ctx context.Context, msg *ListFulfillmentsByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentsByIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentsByMoneyTxQuery struct {
+	MoneyTxShippingIDs        []dot.ID
+	MoneyTxShippingExternalID dot.ID
+
+	Result []*Fulfillment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentsByMoneyTx(ctx context.Context, msg *ListFulfillmentsByMoneyTxQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentsByMoneyTx(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentsByShippingCodesQuery struct {
+	IDs []string
+
+	Result []*Fulfillment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentsByShippingCodes(ctx context.Context, msg *ListFulfillmentsByShippingCodesQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentsByShippingCodes(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFulfillmentsForMoneyTxQuery struct {
+	ShippingProvider shipping_provider.ShippingProvider
+	ShippingStates   []shipping.State
+	IsNoneCOD        dot.NullBool
+
+	Result []*Fulfillment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentsForMoneyTx(ctx context.Context, msg *ListFulfillmentsForMoneyTxQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentsForMoneyTx(msg.GetArgs(ctx))
 	return err
 }
 
 // implement interfaces
 
-func (q *CancelFulfillmentCommand) command()                           {}
-func (q *CreateFulfillmentsCommand) command()                          {}
-func (q *UpdateFulfillmentShippingFeesCommand) command()               {}
-func (q *UpdateFulfillmentShippingStateCommand) command()              {}
-func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) command() {}
-func (q *UpdateFulfillmentsStatusCommand) command()                    {}
+func (q *CancelFulfillmentCommand) command()                 {}
+func (q *CreateFulfillmentsCommand) command()                {}
+func (q *RemoveFulfillmentsMoneyTxIDCommand) command()       {}
+func (q *UpdateFulfillmentShippingFeesCommand) command()     {}
+func (q *UpdateFulfillmentShippingStateCommand) command()    {}
+func (q *UpdateFulfillmentsCODTransferedAtCommand) command() {}
+func (q *UpdateFulfillmentsMoneyTxIDCommand) command()       {}
+func (q *UpdateFulfillmentsStatusCommand) command()          {}
 
-func (q *GetFulfillmentByIDOrShippingCodeQuery) query() {}
-func (q *ListFulfillmentByIDsQuery) query()             {}
+func (q *GetFulfillmentByIDOrShippingCodeQuery) query()            {}
+func (q *GetFulfillmentExtendedQuery) query()                      {}
+func (q *ListFulfillmentExtendedsByIDsQuery) query()               {}
+func (q *ListFulfillmentExtendedsByMoneyTxShippingIDQuery) query() {}
+func (q *ListFulfillmentsByIDsQuery) query()                       {}
+func (q *ListFulfillmentsByMoneyTxQuery) query()                   {}
+func (q *ListFulfillmentsByShippingCodesQuery) query()             {}
+func (q *ListFulfillmentsForMoneyTxQuery) query()                  {}
 
 // implement conversion
 
@@ -212,18 +322,35 @@ func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfil
 	q.ShopCarrierID = args.ShopCarrierID
 }
 
+func (q *RemoveFulfillmentsMoneyTxIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveFulfillmentsMoneyTxIDArgs) {
+	return ctx,
+		&RemoveFulfillmentsMoneyTxIDArgs{
+			FulfillmentIDs:            q.FulfillmentIDs,
+			MoneyTxShippingID:         q.MoneyTxShippingID,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+		}
+}
+
+func (q *RemoveFulfillmentsMoneyTxIDCommand) SetRemoveFulfillmentsMoneyTxIDArgs(args *RemoveFulfillmentsMoneyTxIDArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
+	q.MoneyTxShippingID = args.MoneyTxShippingID
+	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
+}
+
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingFeesArgs{
-			FulfillmentID:    q.FulfillmentID,
-			ShippingCode:     q.ShippingCode,
-			ShippingFeeLines: q.ShippingFeeLines,
+			FulfillmentID:            q.FulfillmentID,
+			ShippingCode:             q.ShippingCode,
+			ProviderShippingFeeLines: q.ProviderShippingFeeLines,
+			ShippingFeeLines:         q.ShippingFeeLines,
 		}
 }
 
 func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesArgs(args *UpdateFulfillmentShippingFeesArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingCode = args.ShippingCode
+	q.ProviderShippingFeeLines = args.ProviderShippingFeeLines
 	q.ShippingFeeLines = args.ShippingFeeLines
 }
 
@@ -248,17 +375,34 @@ func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStat
 	q.ConnectionIDs = args.ConnectionIDs
 }
 
-func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) {
+func (q *UpdateFulfillmentsCODTransferedAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsCODTransferedAtArgs) {
 	return ctx,
-		&UpdateFulfillmentsMoneyTxShippingExternalIDArgs{
-			FulfillmentIDs:            q.FulfillmentIDs,
-			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+		&UpdateFulfillmentsCODTransferedAtArgs{
+			FulfillmentIDs:     q.FulfillmentIDs,
+			MoneyTxShippingIDs: q.MoneyTxShippingIDs,
+			CODTransferedAt:    q.CODTransferedAt,
 		}
 }
 
-func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) SetUpdateFulfillmentsMoneyTxShippingExternalIDArgs(args *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) {
+func (q *UpdateFulfillmentsCODTransferedAtCommand) SetUpdateFulfillmentsCODTransferedAtArgs(args *UpdateFulfillmentsCODTransferedAtArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
+	q.MoneyTxShippingIDs = args.MoneyTxShippingIDs
+	q.CODTransferedAt = args.CODTransferedAt
+}
+
+func (q *UpdateFulfillmentsMoneyTxIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsMoneyTxIDArgs) {
+	return ctx,
+		&UpdateFulfillmentsMoneyTxIDArgs{
+			FulfillmentIDs:            q.FulfillmentIDs,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+			MoneyTxShippingID:         q.MoneyTxShippingID,
+		}
+}
+
+func (q *UpdateFulfillmentsMoneyTxIDCommand) SetUpdateFulfillmentsMoneyTxIDArgs(args *UpdateFulfillmentsMoneyTxIDArgs) {
 	q.FulfillmentIDs = args.FulfillmentIDs
 	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
+	q.MoneyTxShippingID = args.MoneyTxShippingID
 }
 
 func (q *UpdateFulfillmentsStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsStatusArgs) {
@@ -284,10 +428,61 @@ func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ 
 		q.ShippingCode
 }
 
-func (q *ListFulfillmentByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID) {
+func (q *GetFulfillmentExtendedQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShippingCode string) {
+	return ctx,
+		q.ID,
+		q.ShippingCode
+}
+
+func (q *ListFulfillmentExtendedsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.IDs,
 		q.ShopID
+}
+
+func (q *ListFulfillmentExtendedsByMoneyTxShippingIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, moneyTxShippingID dot.ID) {
+	return ctx,
+		q.ShopID,
+		q.MoneyTxShippingID
+}
+
+func (q *ListFulfillmentsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID) {
+	return ctx,
+		q.IDs,
+		q.ShopID
+}
+
+func (q *ListFulfillmentsByMoneyTxQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFullfillmentsByMoneyTxArgs) {
+	return ctx,
+		&ListFullfillmentsByMoneyTxArgs{
+			MoneyTxShippingIDs:        q.MoneyTxShippingIDs,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+		}
+}
+
+func (q *ListFulfillmentsByMoneyTxQuery) SetListFullfillmentsByMoneyTxArgs(args *ListFullfillmentsByMoneyTxArgs) {
+	q.MoneyTxShippingIDs = args.MoneyTxShippingIDs
+	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
+}
+
+func (q *ListFulfillmentsByShippingCodesQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []string) {
+	return ctx,
+		q.IDs
+}
+
+func (q *ListFulfillmentsForMoneyTxQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFulfillmentForMoneyTxArgs) {
+	return ctx,
+		&ListFulfillmentForMoneyTxArgs{
+			ShippingProvider: q.ShippingProvider,
+			ShippingStates:   q.ShippingStates,
+			IsNoneCOD:        q.IsNoneCOD,
+		}
+}
+
+func (q *ListFulfillmentsForMoneyTxQuery) SetListFulfillmentForMoneyTxArgs(args *ListFulfillmentForMoneyTxArgs) {
+	q.ShippingProvider = args.ShippingProvider
+	q.ShippingStates = args.ShippingStates
+	q.IsNoneCOD = args.IsNoneCOD
 }
 
 // implement dispatching
@@ -304,9 +499,11 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
+	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
-	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxShippingExternalID)
+	b.AddHandler(h.HandleUpdateFulfillmentsCODTransferedAt)
+	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleUpdateFulfillmentsStatus)
 	return CommandBus{b}
 }
@@ -324,6 +521,12 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetFulfillmentByIDOrShippingCode)
-	b.AddHandler(h.HandleListFulfillmentByIDs)
+	b.AddHandler(h.HandleGetFulfillmentExtended)
+	b.AddHandler(h.HandleListFulfillmentExtendedsByIDs)
+	b.AddHandler(h.HandleListFulfillmentExtendedsByMoneyTxShippingID)
+	b.AddHandler(h.HandleListFulfillmentsByIDs)
+	b.AddHandler(h.HandleListFulfillmentsByMoneyTx)
+	b.AddHandler(h.HandleListFulfillmentsByShippingCodes)
+	b.AddHandler(h.HandleListFulfillmentsForMoneyTx)
 	return QueryBus{b}
 }

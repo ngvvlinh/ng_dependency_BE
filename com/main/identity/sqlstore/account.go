@@ -6,13 +6,16 @@ import (
 
 	"etop.vn/api/main/identity"
 	identitytypes "etop.vn/api/main/identity/types"
+	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -24,6 +27,7 @@ func NewAccountStore(db *cmsql.Database) AccountStoreFactory {
 	return func(ctx context.Context) *AccountStore {
 		return &AccountStore{
 			query: cmsql.NewQueryFactory(ctx, db),
+			ctx:   ctx,
 		}
 	}
 }
@@ -33,10 +37,38 @@ type AccountStore struct {
 	preds       []interface{}
 	shopFt      ShopFilters
 	affiliateFt AffiliateFilters
+	sqlstore.Paging
+	filter         meta.Filters
+	ctx            context.Context
+	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *AccountStore) extend() *AccountStore {
+	s.shopFt.prefix = "s"
+	return s
+}
+
+func (s *AccountStore) WithPaging(paging meta.Paging) *AccountStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
+func (s *AccountStore) Filters(filters meta.Filters) *AccountStore {
+	if s.filter == nil {
+		s.filter = filters
+	} else {
+		s.filter = append(s.filter, filters...)
+	}
+	return s
 }
 
 func (s *AccountStore) ShopByID(id dot.ID) *AccountStore {
 	s.preds = append(s.preds, s.shopFt.ByID(id))
+	return s
+}
+
+func (s *AccountStore) ShopByIDs(ids ...dot.ID) *AccountStore {
+	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
@@ -57,7 +89,9 @@ func (s *AccountStore) AffiliatesByIDs(ids ...dot.ID) *AccountStore {
 
 func (s *AccountStore) GetShopDB() (*identitymodel.Shop, error) {
 	var shop identitymodel.Shop
-	err := s.query().Where(s.preds).ShouldGet(&shop)
+	query := s.query().Where(s.preds)
+	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	err := query.ShouldGet(&shop)
 	return &shop, err
 }
 
@@ -67,6 +101,63 @@ func (s *AccountStore) GetShop() (*identity.Shop, error) {
 		return nil, err
 	}
 	return convert.Shop(shop), nil
+}
+
+func (s *AccountStore) ListShopDBs() (res []*identitymodel.Shop, err error) {
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query := s.query().Where(s.preds)
+	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	query, err = sqlstore.LimitSort(query, &s.Paging, map[string]string{"created_at": "created_at"})
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filter, filterShopExtendedWhitelist)
+
+	err = s.query().Where(s.preds).Find((*identitymodel.Shops)(&res))
+	return
+}
+
+func (s *AccountStore) ListShops() ([]*identity.Shop, error) {
+	shops, err := s.ListShopDBs()
+	if err != nil {
+		return nil, err
+	}
+	var res []*identity.Shop
+	if err := scheme.Convert(shops, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (s *AccountStore) ListShopExtendedDBs() (res []*identitymodel.ShopExtended, err error) {
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query := s.extend().query().Where(s.preds)
+	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	query = s.includeDeleted.Check(query, s.shopFt.NotDeleted())
+	query, err = sqlstore.LimitSort(query, &s.Paging, map[string]string{"created_at": "created_at"}, s.shopFt.prefix)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filter, filterShopExtendedWhitelist)
+
+	err = query.Find((*identitymodel.ShopExtendeds)(&res))
+	return
+}
+
+func (s *AccountStore) ListShopExtendeds() ([]*identity.ShopExtended, error) {
+	shops, err := s.ListShopExtendedDBs()
+	if err != nil {
+		return nil, err
+	}
+	var res []*identity.ShopExtended
+	if err := scheme.Convert(shops, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (s *AccountStore) GetAffiliateDB() (*identitymodel.Affiliate, error) {
@@ -179,4 +270,11 @@ func (s *AccountStore) DeleteAffiliate(args DeleteAffiliateArgs) error {
 		return err
 	}
 	return nil
+}
+
+func (s *AccountStore) FilterByWhiteLabelPartner(query cmsql.Query, wlPartnerID dot.ID) cmsql.Query {
+	if wlPartnerID != 0 {
+		return query.Where(s.shopFt.ByWLPartnerID(wlPartnerID))
+	}
+	return query.Where(s.shopFt.NotBelongWLPartner())
 }

@@ -11,8 +11,10 @@ import (
 	shippingtypes "etop.vn/api/main/shipping/types"
 	addressconvert "etop.vn/backend/com/main/address/convert"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
 	orderingconvert "etop.vn/backend/com/main/ordering/convert"
 	shippingmodel "etop.vn/backend/com/main/shipping/model"
+	modely "etop.vn/backend/com/main/shipping/modely"
 	sharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -45,6 +47,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*shipping.Fulfillment)(nil), (*[]*shippingmodel.Fulfillment)(nil), func(arg, out interface{}) error {
 		out0 := Convert_shipping_Fulfillments_shippingmodel_Fulfillments(arg.([]*shipping.Fulfillment))
 		*out.(*[]*shippingmodel.Fulfillment) = out0
+		return nil
+	})
+	s.Register((*modely.FulfillmentExtended)(nil), (*shipping.FulfillmentExtended)(nil), func(arg, out interface{}) error {
+		Convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg.(*modely.FulfillmentExtended), out.(*shipping.FulfillmentExtended))
+		return nil
+	})
+	s.Register(([]*modely.FulfillmentExtended)(nil), (*[]*shipping.FulfillmentExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_modely_FulfillmentExtendeds_shipping_FulfillmentExtendeds(arg.([]*modely.FulfillmentExtended))
+		*out.(*[]*shipping.FulfillmentExtended) = out0
+		return nil
+	})
+	s.Register((*shipping.FulfillmentExtended)(nil), (*modely.FulfillmentExtended)(nil), func(arg, out interface{}) error {
+		Convert_shipping_FulfillmentExtended_modely_FulfillmentExtended(arg.(*shipping.FulfillmentExtended), out.(*modely.FulfillmentExtended))
+		return nil
+	})
+	s.Register(([]*shipping.FulfillmentExtended)(nil), (*[]*modely.FulfillmentExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipping_FulfillmentExtendeds_modely_FulfillmentExtendeds(arg.([]*shipping.FulfillmentExtended))
+		*out.(*[]*modely.FulfillmentExtended) = out0
 		return nil
 	})
 	s.Register((*sharemodel.FulfillmentSyncStates)(nil), (*shipping.FulfillmentSyncStates)(nil), func(arg, out interface{}) error {
@@ -303,6 +323,67 @@ func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.F
 	outs = make([]*shippingmodel.Fulfillment, len(args))
 	for i := range tmps {
 		outs[i] = Convert_shipping_Fulfillment_shippingmodel_Fulfillment(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/shipping.FulfillmentExtended --//
+
+func Convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg *modely.FulfillmentExtended, out *shipping.FulfillmentExtended) *shipping.FulfillmentExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipping.FulfillmentExtended{}
+	}
+	convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg, out)
+	return out
+}
+
+func convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg *modely.FulfillmentExtended, out *shipping.FulfillmentExtended) {
+	out.Fulfillment = Convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg.Fulfillment, nil)
+	out.Shop = identityconvert.Convert_identitymodel_Shop_identity_Shop(arg.Shop, nil)
+	out.Order = orderingconvert.Convert_orderingmodel_Order_ordering_Order(arg.Order, nil)
+}
+
+func Convert_modely_FulfillmentExtendeds_shipping_FulfillmentExtendeds(args []*modely.FulfillmentExtended) (outs []*shipping.FulfillmentExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipping.FulfillmentExtended, len(args))
+	outs = make([]*shipping.FulfillmentExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipping_FulfillmentExtended_modely_FulfillmentExtended(arg *shipping.FulfillmentExtended, out *modely.FulfillmentExtended) *modely.FulfillmentExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &modely.FulfillmentExtended{}
+	}
+	convert_shipping_FulfillmentExtended_modely_FulfillmentExtended(arg, out)
+	return out
+}
+
+func convert_shipping_FulfillmentExtended_modely_FulfillmentExtended(arg *shipping.FulfillmentExtended, out *modely.FulfillmentExtended) {
+	out.Fulfillment = Convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg.Fulfillment, nil)
+	out.Shop = identityconvert.Convert_identity_Shop_identitymodel_Shop(arg.Shop, nil)
+	out.Order = orderingconvert.Convert_ordering_Order_orderingmodel_Order(arg.Order, nil)
+	out.MoneyTransactionShipping = nil // zero value
+}
+
+func Convert_shipping_FulfillmentExtendeds_modely_FulfillmentExtendeds(args []*shipping.FulfillmentExtended) (outs []*modely.FulfillmentExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]modely.FulfillmentExtended, len(args))
+	outs = make([]*modely.FulfillmentExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipping_FulfillmentExtended_modely_FulfillmentExtended(args[i], &tmps[i])
 	}
 	return outs
 }

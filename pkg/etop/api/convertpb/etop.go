@@ -300,6 +300,14 @@ func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
 	}
 }
 
+func Convert_core_Shops_To_api_Shops(items []*identity.Shop) []*etop.Shop {
+	result := make([]*etop.Shop, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_Shop_To_api_Shop(item)
+	}
+	return result
+}
+
 func PbShopExtended(m *identitymodel.ShopExtended) *etop.Shop {
 	return &etop.Shop{
 		Id:                            m.ID,
@@ -336,6 +344,65 @@ func PbShopExtendeds(items []*identitymodel.ShopExtended) []*etop.Shop {
 		result[i] = PbShopExtended(item)
 	}
 	return result
+}
+
+func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended) *etop.Shop {
+	if m == nil {
+		return nil
+	}
+	return &etop.Shop{
+		Id:                            m.ID,
+		InventoryOverstock:            m.InventoryOverstock.Apply(true),
+		Name:                          m.Name,
+		Status:                        m.Status,
+		Address:                       Convert_core_Address_To_api_Address(m.Address),
+		Phone:                         m.Phone,
+		BankAccount:                   Convert_core_BankAccount_To_api_BankAccount(m.BankAccount),
+		WebsiteUrl:                    m.WebsiteURL,
+		ImageUrl:                      m.ImageURL,
+		Email:                         m.Email,
+		ShipToAddressId:               m.ShipToAddressID,
+		ShipFromAddressId:             m.ShipFromAddressID,
+		AutoCreateFfm:                 m.AutoCreateFFM,
+		TryOn:                         m.TryOn,
+		GhnNoteCode:                   m.GhnNoteCode,
+		OwnerId:                       m.OwnerID,
+		User:                          Convert_core_User_To_api_User(m.User),
+		CompanyInfo:                   Convert_core_CompanyInfo_To_api_CompanyInfo(m.CompanyInfo),
+		MoneyTransactionRrule:         m.MoneyTransactionRRule,
+		SurveyInfo:                    Convert_core_SurveyInfos_To_api_SurveyInfors(m.SurveyInfo),
+		ShippingServiceSelectStrategy: Convert_core_ShippingServiceSelectStrategy_To_api_ShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
+		Code:                          m.Code,
+
+		// deprecated: 2018.07.24+14
+		ProductSourceId: m.ID,
+	}
+}
+
+func Convert_core_ShopExtendeds_To_api_ShopExtendeds(items []*identity.ShopExtended) []*etop.Shop {
+	result := make([]*etop.Shop, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_ShopExtended_To_api_ShopExtended(item)
+	}
+	return result
+}
+
+func Convert_core_User_To_api_User(in *identity.User) *etop.User {
+	if in == nil {
+		return nil
+	}
+	return &etop.User{
+		Id:              in.ID,
+		FullName:        in.FullName,
+		ShortName:       in.ShortName,
+		Phone:           in.Phone,
+		Email:           in.Email,
+		CreatedAt:       cmapi.PbTime(in.CreatedAt),
+		UpdatedAt:       cmapi.PbTime(in.UpdatedAt),
+		EmailVerifiedAt: cmapi.PbTime(in.EmailVerifiedAt),
+		PhoneVerifiedAt: cmapi.PbTime(in.PhoneVerifiedAt),
+		Source:          in.Source,
+	}
 }
 
 func PbProvinces(items []*location.Province) []*etop.Province {
@@ -533,6 +600,18 @@ func PbContactPerson(c *identitysharemodel.ContactPerson) *etop.ContactPerson {
 	}
 }
 
+func Convert_core_ContactPerson_To_api_ContactPerson(in *identitytypes.ContactPerson) *etop.ContactPerson {
+	if in == nil {
+		return nil
+	}
+	return &etop.ContactPerson{
+		Name:     in.Name,
+		Position: in.Position,
+		Email:    in.Email,
+		Phone:    in.Phone,
+	}
+}
+
 func PbContactPersons(items []*identitysharemodel.ContactPerson) []*etop.ContactPerson {
 	if items == nil {
 		return nil
@@ -540,6 +619,14 @@ func PbContactPersons(items []*identitysharemodel.ContactPerson) []*etop.Contact
 	result := make([]*etop.ContactPerson, 0, len(items))
 	for _, item := range items {
 		result = append(result, PbContactPerson(item))
+	}
+	return result
+}
+
+func Convert_core_ContactPersons_To_api_ContactPersons(items []*identitytypes.ContactPerson) []*etop.ContactPerson {
+	result := make([]*etop.ContactPerson, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_ContactPerson_To_api_ContactPerson(item)
 	}
 	return result
 }
@@ -553,6 +640,18 @@ func PbCompanyInfo(info *identitysharemodel.CompanyInfo) *etop.CompanyInfo {
 		TaxCode:             info.TaxCode,
 		Address:             info.Address,
 		LegalRepresentative: PbContactPerson(info.LegalRepresentative),
+	}
+}
+
+func Convert_core_CompanyInfo_To_api_CompanyInfo(in *identitytypes.CompanyInfo) *etop.CompanyInfo {
+	if in == nil {
+		return nil
+	}
+	return &etop.CompanyInfo{
+		Name:                in.Name,
+		TaxCode:             in.TaxCode,
+		Address:             in.Address,
+		LegalRepresentative: Convert_core_ContactPerson_To_api_ContactPerson(in.LegalRepresentative),
 	}
 }
 
@@ -716,12 +815,45 @@ func PbSurveyInfos(items []*identitymodel.SurveyInfo) []*etop.SurveyInfo {
 	return result
 }
 
+func Convert_core_SurveyInfo_To_api_SurveyInfo(in *identity.SurveyInfo) *etop.SurveyInfo {
+	if in == nil {
+		return nil
+	}
+	return &etop.SurveyInfo{
+		Key:      in.Key,
+		Question: in.Question,
+		Answer:   in.Answer,
+	}
+}
+
+func Convert_core_SurveyInfos_To_api_SurveyInfors(items []*identity.SurveyInfo) []*etop.SurveyInfo {
+	result := make([]*etop.SurveyInfo, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_SurveyInfo_To_api_SurveyInfo(item)
+	}
+	return result
+}
+
 func PbShippingServiceSelectStrategy(items []*identitymodel.ShippingServiceSelectStrategyItem) []*etop.ShippingServiceSelectStrategyItem {
 	if items == nil {
 		return nil
 	}
 	var result = make([]*etop.ShippingServiceSelectStrategyItem, len(items))
 	for i, item := range items {
+		result[i] = &etop.ShippingServiceSelectStrategyItem{
+			Key:   item.Key,
+			Value: item.Value,
+		}
+	}
+	return result
+}
+
+func Convert_core_ShippingServiceSelectStrategy_To_api_ShippingServiceSelectStrategy(ins []*identity.ShippingServiceSelectStrategyItem) []*etop.ShippingServiceSelectStrategyItem {
+	if ins == nil {
+		return nil
+	}
+	var result = make([]*etop.ShippingServiceSelectStrategyItem, len(ins))
+	for i, item := range ins {
 		result[i] = &etop.ShippingServiceSelectStrategyItem{
 			Key:   item.Key,
 			Value: item.Value,
@@ -750,7 +882,7 @@ func PbNotification(m *notimodel.Notification) *etop.Notification {
 		Title:            m.Title,
 		Message:          m.Message,
 		IsRead:           m.IsRead,
-		Entity:           string(m.Entity),
+		Entity:           m.Entity.String(),
 		EntityId:         m.EntityID,
 		SendNotification: m.SendNotification,
 		SyncStatus:       m.SyncStatus,

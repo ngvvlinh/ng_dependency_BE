@@ -2,7 +2,6 @@ package vtpostimxlsx
 
 import (
 	"bytes"
-	"context"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -10,10 +9,9 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	identitytypes "etop.vn/api/main/identity/types"
+	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/types/etc/shipping_provider"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
@@ -21,6 +19,12 @@ import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 )
+
+var moneyTxAggr moneytx.CommandBus
+
+func Init(moneyTxA moneytx.CommandBus) {
+	moneyTxAggr = moneyTxA
+}
 
 type VTPostMoneyTransactionShippingExternalLine struct {
 	ExternalCode     string
@@ -32,8 +36,8 @@ type VTPostMoneyTransactionShippingExternalLine struct {
 
 var dateTimeLayouts = []string{"01-02-06", "02/01/2006 15:04"}
 
-func (line *VTPostMoneyTransactionShippingExternalLine) ToModel() *txmodel.MoneyTransactionShippingExternalLine {
-	return &txmodel.MoneyTransactionShippingExternalLine{
+func (line *VTPostMoneyTransactionShippingExternalLine) ToModel() *moneytx.MoneyTransactionShippingExternalLine {
+	return &moneytx.MoneyTransactionShippingExternalLine{
 		ExternalCode:             line.ExternalCode,
 		ExternalTotalCOD:         line.TotalCOD,
 		ExternalClosedAt:         line.DeliveredAt,
@@ -41,11 +45,11 @@ func (line *VTPostMoneyTransactionShippingExternalLine) ToModel() *txmodel.Money
 	}
 }
 
-func ToMoneyTransactionShippingExternalLines(lines []*VTPostMoneyTransactionShippingExternalLine) []*txmodel.MoneyTransactionShippingExternalLine {
+func ToMoneyTransactionShippingExternalLines(lines []*VTPostMoneyTransactionShippingExternalLine) []*moneytx.MoneyTransactionShippingExternalLine {
 	if lines == nil {
 		return nil
 	}
-	res := make([]*txmodel.MoneyTransactionShippingExternalLine, len(lines))
+	res := make([]*moneytx.MoneyTransactionShippingExternalLine, len(lines))
 	for i, line := range lines {
 		res[i] = line.ToModel()
 	}
@@ -127,24 +131,24 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if len(shippingLines) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(c.Context()).CSEmail).WithMeta("reason", "no rows")
 	}
-	ctx := context.Background()
+	ctx := bus.Ctx()
 
-	cmd := &txmodelx.CreateMoneyTransactionShippingExternal{
-		Provider:       provider[0],
+	cmd := &moneytx.CreateMoneyTxShippingExternalCommand{
+		Provider:       shippingProvider,
 		ExternalPaidAt: externalPaidAt,
 		Lines:          ToMoneyTransactionShippingExternalLines(shippingLines),
 		Note:           note,
 		InvoiceNumber:  invoiceNumber,
-		BankAccount: &identitysharemodel.BankAccount{
+		BankAccount: &identitytypes.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,
 		},
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))
 	return nil
 }
 

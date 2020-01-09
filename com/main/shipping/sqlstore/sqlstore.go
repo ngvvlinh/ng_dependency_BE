@@ -6,10 +6,12 @@ import (
 	"etop.vn/api/main/shipping"
 	"etop.vn/api/meta"
 	shippingstate "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/shipping/convert"
 	"etop.vn/backend/com/main/shipping/model"
+	shippingmodely "etop.vn/backend/com/main/shipping/modely"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/conversion"
@@ -52,6 +54,11 @@ func (s *FulfillmentStore) ID(id dot.ID) *FulfillmentStore {
 	return s
 }
 
+func (s *FulfillmentStore) OptionalID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByID(id).Optional())
+	return s
+}
+
 func (s *FulfillmentStore) IDs(ids ...dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
@@ -62,16 +69,23 @@ func (s *FulfillmentStore) ShippingCode(code string) *FulfillmentStore {
 	return s
 }
 
-func (s *FulfillmentStore) IDOrShippingCode(id dot.ID, shippingCode string) *FulfillmentStore {
-	s.preds = append(s.preds, sq.Or{
-		s.ft.ByID(id),
-		s.ft.ByShippingCode(shippingCode),
-	})
+func (s *FulfillmentStore) OptionalShippingCode(code string) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByShippingCode(code).Optional())
+	return s
+}
+
+func (s *FulfillmentStore) ShippingCodes(codes []string) *FulfillmentStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "shipping_code", codes))
 	return s
 }
 
 func (s *FulfillmentStore) ShopID(id dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *FulfillmentStore) OptionalShopID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
 }
 
@@ -82,6 +96,31 @@ func (s *FulfillmentStore) PartnerID(id dot.ID) *FulfillmentStore {
 
 func (s *FulfillmentStore) OptionalPartnerID(id dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(id).Optional())
+	return s
+}
+
+func (s *FulfillmentStore) MoneyTxShippingID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByMoneyTransactionID(id))
+	return s
+}
+
+func (s *FulfillmentStore) MoneyTxShippingIDs(ids ...dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "money_transaction_id", ids))
+	return s
+}
+
+func (s *FulfillmentStore) MoneyTxShippingExternalID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByMoneyTransactionShippingExternalID(id))
+	return s
+}
+
+func (s *FulfillmentStore) OptionalMoneyTxShippingID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByMoneyTransactionID(id).Optional())
+	return s
+}
+
+func (s *FulfillmentStore) OptionalMoneyTxShippingExternalID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByMoneyTransactionShippingExternalID(id).Optional())
 	return s
 }
 
@@ -97,6 +136,48 @@ func (s *FulfillmentStore) OrderIDs(ids ...dot.ID) *FulfillmentStore {
 
 func (s *FulfillmentStore) ConnectionIDs(ids ...dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, sq.In("connection_id", ids))
+	return s
+}
+
+func (s *FulfillmentStore) ShippingProvider(carrier shipping_provider.ShippingProvider) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByShippingProvider(carrier))
+	return s
+}
+
+func (s *FulfillmentStore) ShippingStates(states ...shippingstate.State) *FulfillmentStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "shipping_state", states))
+	return s
+}
+
+func (s *FulfillmentStore) NotBelongToMoneyTx() *FulfillmentStore {
+	preds := sq.And{
+		sq.NewIsNullPart("money_transaction_id", true),
+		sq.NewIsNullPart("cod_etop_transfered_at", true),
+	}
+	s.preds = append(s.preds, preds)
+	return s
+}
+
+func (s *FulfillmentStore) StatusNotIn(statuses ...status5.Status) *FulfillmentStore {
+	s.preds = append(s.preds, sq.NotIn("status", statuses))
+	return s
+}
+
+func (s *FulfillmentStore) FilterForMoneyTx(isNoneCOD bool, states []shippingstate.State) *FulfillmentStore {
+	var preds sq.WriterTo
+	if isNoneCOD {
+		amount := 0
+		preds = sq.Or{
+			sq.PrefixedIn(&s.ft.prefix, "shipping_state", states),
+			sq.And{
+				s.ft.ByShippingState(shippingstate.Delivered),
+				s.ft.ByTotalCODAmountPtr(&amount),
+			},
+		}
+	} else {
+		preds = sq.PrefixedIn(&s.ft.prefix, "shipping_state", states)
+	}
+	s.preds = append(s.preds, preds)
 	return s
 }
 
@@ -141,7 +222,7 @@ func (s *FulfillmentStore) ListFfms() ([]*shipping.Fulfillment, error) {
 	return ffms, err
 }
 
-func (s *FulfillmentStore) CreateFulfillmentDB(ctx context.Context, ffm *model.Fulfillment) (*model.Fulfillment, error) {
+func (s *FulfillmentStore) CreateFulfillmentDB(ffm *model.Fulfillment) (*model.Fulfillment, error) {
 	if ffm.ID == 0 {
 		ffm.ID = cm.NewID()
 	}
@@ -154,7 +235,7 @@ func (s *FulfillmentStore) CreateFulfillmentDB(ctx context.Context, ffm *model.F
 	return s.ID(ffm.ID).GetFfmDB()
 }
 
-func (s *FulfillmentStore) CreateFulfillmentsDB(ctx context.Context, ffms []*model.Fulfillment) error {
+func (s *FulfillmentStore) CreateFulfillmentsDB(ffms []*model.Fulfillment) error {
 	for _, ffm := range ffms {
 		if err := ffm.BeforeInsert(); err != nil {
 			return err
@@ -166,19 +247,19 @@ func (s *FulfillmentStore) CreateFulfillmentsDB(ctx context.Context, ffms []*mod
 	return nil
 }
 
-func (s *FulfillmentStore) UpdateFulfillmentDB(ctx context.Context, ffm *model.Fulfillment) (*model.Fulfillment, error) {
-	if err := s.query().Where(s.ft.ByID(ffm.ID)).Where("status not in (?, ?, ?)", status5.N, status5.NS, status5.P).ShouldUpdate(ffm); err != nil {
-		return nil, err
+func (s *FulfillmentStore) UpdateFulfillmentDB(ffm *model.Fulfillment) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
-	return s.ID(ffm.ID).GetFfmDB()
+	return s.query().Where(s.preds).ShouldUpdate(ffm)
 }
 
-func (s *FulfillmentStore) UpdateFulfillmentsDB(ctx context.Context, ffms []*model.Fulfillment) error {
+func (s *FulfillmentStore) UpdateFulfillmentsDB(ffms []*model.Fulfillment) error {
 	for _, ffm := range ffms {
 		if err := ffm.BeforeInsert(); err != nil {
 			return err
 		}
-		if err := s.query().Where(s.ft.ByID(ffm.ID)).Where("status not in (?, ?, ?)", status5.N, status5.NS, status5.P).ShouldUpdate(ffm); err != nil {
+		if err := s.query().Where(s.ft.ByID(ffm.ID)).ShouldUpdate(ffm); err != nil {
 			return err
 		}
 	}
@@ -202,22 +283,51 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 
 func (s *FulfillmentStore) UpdateFulfillmentShippingFees(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
 	var lines []*shippingsharemodel.ShippingFeeLine
-	if err := scheme.Convert(args.ShippingFeeLines, lines); err != nil {
+	var providerShippingFeeLines []*shippingsharemodel.ShippingFeeLine
+	if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
+		return err
+	}
+	if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
 		return err
 	}
 
 	update := &model.Fulfillment{
-		ShippingFeeShopLines: lines,
-		ShippingFeeShop:      shippingsharemodel.GetTotalShippingFee(lines),
+		ProviderShippingFeeLines: providerShippingFeeLines,
+		ShippingFeeShopLines:     lines,
+		ShippingFeeShop:          shippingsharemodel.GetTotalShippingFee(lines),
 	}
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }
 
-func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxShippingExternalID(args *shipping.UpdateFulfillmentsMoneyTxShippingExternalIDArgs) error {
+func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxID(args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
 	update := &model.Fulfillment{
 		MoneyTransactionShippingExternalID: args.MoneyTxShippingExternalID,
+		MoneyTransactionID:                 args.MoneyTxShippingID,
 	}
-	return s.IDs(args.FulfillmentIDs...).query().Where(s.preds).ShouldUpdate(update)
+	return s.IDs(args.FulfillmentIDs...).query().Where(s.preds).Update(update)
+}
+
+func (s *FulfillmentStore) RemoveFulfillmentsMoneyTxID(args *shipping.RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
+	count := 0
+	if len(args.FulfillmentIDs) > 0 {
+		s = s.IDs(args.FulfillmentIDs...)
+		count++
+	}
+	if args.MoneyTxShippingID != 0 {
+		s = s.MoneyTxShippingID(args.MoneyTxShippingID)
+		count++
+	}
+	if args.MoneyTxShippingExternalID != 0 {
+		s = s.MoneyTxShippingExternalID(args.MoneyTxShippingExternalID)
+		count++
+	}
+	if count == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing required fields").WithMetap("func", "RemoveFulfillmentsMoneyTxID")
+	}
+	return s.query().Table("fulfillment").Where(s.preds).UpdateMap(map[string]interface{}{
+		"money_transaction_id":                   nil,
+		"money_transaction_shipping_external_id": nil,
+	})
 }
 
 func (s *FulfillmentStore) UpdateFulfillmentsStatus(args *shipping.UpdateFulfillmentsStatusArgs) error {
@@ -241,4 +351,53 @@ func (s *FulfillmentStore) CancelFulfillment(args *shipping.CancelFulfillmentArg
 		ShippingState: shippingstate.Cancelled,
 	}
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
+}
+
+// FulfillmentExtended
+func (s *FulfillmentStore) GetFulfillmentExtendedDB() (*shippingmodely.FulfillmentExtended, error) {
+	query := s.query().Where(s.preds)
+	ffm := &shippingmodely.FulfillmentExtended{}
+	err := query.ShouldGet(ffm)
+	return ffm, err
+}
+
+func (s *FulfillmentStore) GetFulfillmentExtended() (*shipping.FulfillmentExtended, error) {
+	ffmDB, err := s.GetFulfillmentExtendedDB()
+	if err != nil {
+		return nil, err
+	}
+	var ffm shipping.FulfillmentExtended
+	if err := scheme.Convert(ffmDB, ffm); err != nil {
+		return nil, err
+	}
+	return &ffm, nil
+}
+
+func (s *FulfillmentStore) ListFulfillmentExtendedsDB() ([]*shippingmodely.FulfillmentExtended, error) {
+	var ffms shippingmodely.FulfillmentExtendeds
+	query := s.query().Where(s.preds...)
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFulfillment)
+	if err != nil {
+		return nil, err
+	}
+	err = query.Find(&ffms)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(ffms)
+	return ffms, nil
+}
+
+func (s *FulfillmentStore) ListFulfillmentExtendeds() (res []*shipping.FulfillmentExtended, _ error) {
+	ffmsDB, err := s.ListFulfillmentExtendedsDB()
+	if err != nil {
+		return nil, err
+	}
+	if err := scheme.Convert(ffmsDB, &res); err != nil {
+		return nil, err
+	}
+	return
 }

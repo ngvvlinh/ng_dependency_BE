@@ -4,6 +4,12 @@
 
 package moneytx
 
-func (e *MoneyTransactionConfirmedEvent) GetTopic() string               { return "event/moneytx" }
-func (e *MoneyTransactionShippingExternalCreatedEvent) GetTopic() string { return "event/moneytx" }
-func (e *MoneyTxShippingEtopConfirmedEvent) GetTopic() string            { return "event/moneytx" }
+func (e *MoneyTxShippingConfirmedEvent) GetTopic() string            { return "event/moneytx" }
+func (e *MoneyTxShippingCreatedEvent) GetTopic() string              { return "event/moneytx" }
+func (e *MoneyTxShippingDeletedEvent) GetTopic() string              { return "event/moneytx" }
+func (e *MoneyTxShippingEtopConfirmedEvent) GetTopic() string        { return "event/moneytx" }
+func (e *MoneyTxShippingExternalCreatedEvent) GetTopic() string      { return "event/moneytx" }
+func (e *MoneyTxShippingExternalDeletedEvent) GetTopic() string      { return "event/moneytx" }
+func (e *MoneyTxShippingExternalLinesDeletedEvent) GetTopic() string { return "event/moneytx" }
+func (e *MoneyTxShippingExternalsConfirmingEvent) GetTopic() string  { return "event/moneytx" }
+func (e *MoneyTxShippingRemovedFfmsEvent) GetTopic() string          { return "event/moneytx" }

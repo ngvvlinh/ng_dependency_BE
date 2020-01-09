@@ -44,6 +44,10 @@ type QueryService interface {
 	// -- Shop -- //
 	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
 
+	ListShopsByIDs(ctx context.Context, IDs []dot.ID) ([]*Shop, error)
+
+	ListShopExtendeds(context.Context, *ListShopQuery) (*ListShopExtendedsResponse, error)
+
 	// -- User -- //
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
 
@@ -183,4 +187,14 @@ type GetPartnerByIDArgs struct {
 
 type ListUsersByWLPartnerID struct {
 	ID dot.ID
+}
+
+type ListShopQuery struct {
+	Paging  meta.Paging
+	Filters meta.Filters
+}
+
+type ListShopExtendedsResponse struct {
+	Shops  []*ShopExtended
+	Paging meta.PageInfo
 }

@@ -58,7 +58,6 @@ type MoneyTransactionService interface {
 	GetMoneyTransactionShippingExternals(context.Context, *GetMoneyTransactionShippingExternalsRequest) (*types.MoneyTransactionShippingExternalsResponse, error)
 	RemoveMoneyTransactionShippingExternalLines(context.Context, *RemoveMoneyTransactionShippingExternalLinesRequest) (*types.MoneyTransactionShippingExternal, error)
 	DeleteMoneyTransactionShippingExternal(context.Context, *cm.IDRequest) (*cm.RemovedResponse, error)
-	ConfirmMoneyTransactionShippingExternal(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	ConfirmMoneyTransactionShippingExternals(context.Context, *cm.IDsRequest) (*cm.UpdatedResponse, error)
 	UpdateMoneyTransactionShippingExternal(context.Context, *UpdateMoneyTransactionShippingExternalRequest) (*types.MoneyTransactionShippingExternal, error)
 
@@ -74,6 +73,7 @@ type MoneyTransactionService interface {
 type ShopService interface {
 	GetShop(context.Context, *cm.IDRequest) (*etop.Shop, error)
 	GetShops(context.Context, *GetShopsRequest) (*GetShopsResponse, error)
+	GetShopsByIDs(context.Context, *cm.IDsRequest) (*GetShopsResponse, error)
 }
 
 // +apix:path=/admin.Credit

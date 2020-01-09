@@ -31,44 +31,56 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
-type AddFulfillmentMoneyTxShippingCommand struct {
-	FulfillmentID     dot.ID
+type AddFulfillmentsMoneyTxShippingCommand struct {
+	FulfillmentIDs    []dot.ID
 	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
-func (h AggregateHandler) HandleAddFulfillmentMoneyTxShipping(ctx context.Context, msg *AddFulfillmentMoneyTxShippingCommand) (err error) {
-	msg.Result, err = h.inner.AddFulfillmentMoneyTxShipping(msg.GetArgs(ctx))
-	return err
+func (h AggregateHandler) HandleAddFulfillmentsMoneyTxShipping(ctx context.Context, msg *AddFulfillmentsMoneyTxShippingCommand) (err error) {
+	return h.inner.AddFulfillmentsMoneyTxShipping(msg.GetArgs(ctx))
 }
 
 type ConfirmMoneyTxShippingCommand struct {
-	ID          dot.ID
-	ShopID      dot.ID
-	TotalCOD    int
-	TotalAmount int
-	TotalOrders int
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
+	TotalCOD          int
+	TotalAmount       int
+	TotalOrders       int
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
 func (h AggregateHandler) HandleConfirmMoneyTxShipping(ctx context.Context, msg *ConfirmMoneyTxShippingCommand) (err error) {
-	msg.Result, err = h.inner.ConfirmMoneyTxShipping(msg.GetArgs(ctx))
-	return err
+	return h.inner.ConfirmMoneyTxShipping(msg.GetArgs(ctx))
 }
 
 type ConfirmMoneyTxShippingEtopCommand struct {
-	ID          dot.ID
-	TotalCOD    int
-	TotalAmount int
-	TotalOrders int
+	MoneyTxShippingEtopID dot.ID
+	TotalCOD              int
+	TotalAmount           int
+	TotalOrders           int
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleConfirmMoneyTxShippingEtop(ctx context.Context, msg *ConfirmMoneyTxShippingEtopCommand) (err error) {
+	return h.inner.ConfirmMoneyTxShippingEtop(msg.GetArgs(ctx))
+}
+
+type ConfirmMoneyTxShippingExternalCommand struct {
+	ID dot.ID
 
 	Result int `json:"-"`
 }
 
-func (h AggregateHandler) HandleConfirmMoneyTxShippingEtop(ctx context.Context, msg *ConfirmMoneyTxShippingEtopCommand) (err error) {
-	msg.Result, err = h.inner.ConfirmMoneyTxShippingEtop(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleConfirmMoneyTxShippingExternal(ctx context.Context, msg *ConfirmMoneyTxShippingExternalCommand) (err error) {
+	msg.Result, err = h.inner.ConfirmMoneyTxShippingExternal(msg.GetArgs(ctx))
 	return err
 }
 
@@ -90,7 +102,7 @@ type CreateMoneyTxShippingCommand struct {
 	TotalAmount    int
 	TotalOrders    int
 
-	Result *MoneyTransactionShippingExtended `json:"-"`
+	Result *MoneyTransactionShipping `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateMoneyTxShipping(ctx context.Context, msg *CreateMoneyTxShippingCommand) (err error) {
@@ -99,12 +111,12 @@ func (h AggregateHandler) HandleCreateMoneyTxShipping(ctx context.Context, msg *
 }
 
 type CreateMoneyTxShippingEtopCommand struct {
-	MoneyTransactionShippingIDs []dot.ID
-	BankAccount                 *identitytypes.BankAccount
-	Note                        string
-	InvoiceNumber               string
+	MoneyTxShippingIDs []dot.ID
+	BankAccount        *identitytypes.BankAccount
+	Note               string
+	InvoiceNumber      string
 
-	Result *MoneyTransactionShippingEtopExtended `json:"-"`
+	Result *MoneyTransactionShippingEtop `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateMoneyTxShippingEtop(ctx context.Context, msg *CreateMoneyTxShippingEtopCommand) (err error) {
@@ -120,7 +132,7 @@ type CreateMoneyTxShippingExternalCommand struct {
 	Note           string
 	InvoiceNumber  string
 
-	Result *MoneyTransactionShippingExternalExtended `json:"-"`
+	Result *MoneyTransactionShippingExternalFtLine `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateMoneyTxShippingExternal(ctx context.Context, msg *CreateMoneyTxShippingExternalCommand) (err error) {
@@ -149,7 +161,6 @@ func (h AggregateHandler) HandleCreateMoneyTxShippingExternalLine(ctx context.Co
 
 type CreateMoneyTxShippingsCommand struct {
 	ShopIDMapFfms map[dot.ID][]*shipping.Fulfillment
-	ShopIDMap     map[dot.ID]*identity.Shop
 
 	Result int `json:"-"`
 }
@@ -160,26 +171,26 @@ func (h AggregateHandler) HandleCreateMoneyTxShippings(ctx context.Context, msg 
 }
 
 type DeleteMoneyTxShippingCommand struct {
-	ID     dot.ID
-	ShopID dot.ID
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
 func (h AggregateHandler) HandleDeleteMoneyTxShipping(ctx context.Context, msg *DeleteMoneyTxShippingCommand) (err error) {
-	msg.Result, err = h.inner.DeleteMoneyTxShipping(msg.GetArgs(ctx))
-	return err
+	return h.inner.DeleteMoneyTxShipping(msg.GetArgs(ctx))
 }
 
 type DeleteMoneyTxShippingEtopCommand struct {
 	ID dot.ID
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
 func (h AggregateHandler) HandleDeleteMoneyTxShippingEtop(ctx context.Context, msg *DeleteMoneyTxShippingEtopCommand) (err error) {
-	msg.Result, err = h.inner.DeleteMoneyTxShippingEtop(msg.GetArgs(ctx))
-	return err
+	return h.inner.DeleteMoneyTxShippingEtop(msg.GetArgs(ctx))
 }
 
 type DeleteMoneyTxShippingExternalCommand struct {
@@ -193,6 +204,17 @@ func (h AggregateHandler) HandleDeleteMoneyTxShippingExternal(ctx context.Contex
 	return err
 }
 
+type DeleteMoneyTxShippingExternalLinesCommand struct {
+	MoneyTxShippingExternalID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteMoneyTxShippingExternalLines(ctx context.Context, msg *DeleteMoneyTxShippingExternalLinesCommand) (err error) {
+	return h.inner.DeleteMoneyTxShippingExternalLines(msg.GetArgs(ctx))
+}
+
 type ReCalcMoneyTxShippingCommand struct {
 	MoneyTxShippingID dot.ID
 
@@ -204,23 +226,24 @@ func (h AggregateHandler) HandleReCalcMoneyTxShipping(ctx context.Context, msg *
 	return h.inner.ReCalcMoneyTxShipping(msg.GetArgs(ctx))
 }
 
-type RemoveFulfillmentMoneyTxShippingCommand struct {
-	FulfillmentID     dot.ID
+type RemoveFulfillmentsMoneyTxShippingCommand struct {
+	FulfillmentIDs    []dot.ID
 	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
-func (h AggregateHandler) HandleRemoveFulfillmentMoneyTxShipping(ctx context.Context, msg *RemoveFulfillmentMoneyTxShippingCommand) (err error) {
-	msg.Result, err = h.inner.RemoveFulfillmentMoneyTxShipping(msg.GetArgs(ctx))
-	return err
+func (h AggregateHandler) HandleRemoveFulfillmentsMoneyTxShipping(ctx context.Context, msg *RemoveFulfillmentsMoneyTxShippingCommand) (err error) {
+	return h.inner.RemoveFulfillmentsMoneyTxShipping(msg.GetArgs(ctx))
 }
 
 type RemoveMoneyTxShippingExternalLinesCommand struct {
-	ID      dot.ID
-	LineIDs []dot.ID
+	MoneyTxShippingExternalID dot.ID
+	LineIDs                   []dot.ID
 
-	Result *MoneyTransactionShippingExternalExtended `json:"-"`
+	Result *MoneyTransactionShippingExternalFtLine `json:"-"`
 }
 
 func (h AggregateHandler) HandleRemoveMoneyTxShippingExternalLines(ctx context.Context, msg *RemoveMoneyTxShippingExternalLinesCommand) (err error) {
@@ -229,15 +252,15 @@ func (h AggregateHandler) HandleRemoveMoneyTxShippingExternalLines(ctx context.C
 }
 
 type UpdateMoneyTxShippingEtopCommand struct {
-	ID            dot.ID
-	BankAccount   *identitytypes.BankAccount
-	Note          string
-	InvoiceNumber string
-	Adds          []dot.ID
-	Deletes       []dot.ID
-	ReplaceAll    []dot.ID
+	MoneyTxShippingEtopID dot.ID
+	BankAccount           *identitytypes.BankAccount
+	Note                  string
+	InvoiceNumber         string
+	Adds                  []dot.ID
+	Deletes               []dot.ID
+	ReplaceAll            []dot.ID
 
-	Result *MoneyTransactionShippingEtopExtended `json:"-"`
+	Result *MoneyTransactionShippingEtop `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateMoneyTxShippingEtop(ctx context.Context, msg *UpdateMoneyTxShippingEtopCommand) (err error) {
@@ -246,12 +269,12 @@ func (h AggregateHandler) HandleUpdateMoneyTxShippingEtop(ctx context.Context, m
 }
 
 type UpdateMoneyTxShippingExternalInfoCommand struct {
-	ID            dot.ID
-	BankAccount   *identitytypes.BankAccount
-	Note          string
-	InvoiceNumber string
+	MoneyTxShippingExternalID dot.ID
+	BankAccount               *identitytypes.BankAccount
+	Note                      string
+	InvoiceNumber             string
 
-	Result *MoneyTransactionShippingExternalExtended `json:"-"`
+	Result *MoneyTransactionShippingExternalFtLine `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateMoneyTxShippingExternalInfo(ctx context.Context, msg *UpdateMoneyTxShippingExternalInfoCommand) (err error) {
@@ -260,13 +283,13 @@ func (h AggregateHandler) HandleUpdateMoneyTxShippingExternalInfo(ctx context.Co
 }
 
 type UpdateMoneyTxShippingInfoCommand struct {
-	ID            dot.ID
-	ShopID        dot.ID
-	Note          string
-	InvoiceNumber string
-	BankAccount   *identitytypes.BankAccount
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
+	Note              string
+	InvoiceNumber     string
+	BankAccount       *identitytypes.BankAccount
 
-	Result *MoneyTransactionShippingExtended `json:"-"`
+	Result *MoneyTransactionShipping `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateMoneyTxShippingInfo(ctx context.Context, msg *UpdateMoneyTxShippingInfoCommand) (err error) {
@@ -275,10 +298,10 @@ func (h AggregateHandler) HandleUpdateMoneyTxShippingInfo(ctx context.Context, m
 }
 
 type GetMoneyTxShippingByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 
-	Result *MoneyTransactionShippingExtended `json:"-"`
+	Result *MoneyTransactionShipping `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetMoneyTxShippingByID(ctx context.Context, msg *GetMoneyTxShippingByIDQuery) (err error) {
@@ -289,7 +312,7 @@ func (h QueryServiceHandler) HandleGetMoneyTxShippingByID(ctx context.Context, m
 type GetMoneyTxShippingEtopQuery struct {
 	ID dot.ID
 
-	Result *MoneyTransactionShippingEtopExtended `json:"-"`
+	Result *MoneyTransactionShippingEtop `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetMoneyTxShippingEtop(ctx context.Context, msg *GetMoneyTxShippingEtopQuery) (err error) {
@@ -300,7 +323,7 @@ func (h QueryServiceHandler) HandleGetMoneyTxShippingEtop(ctx context.Context, m
 type GetMoneyTxShippingExternalQuery struct {
 	ID dot.ID
 
-	Result *MoneyTransactionShippingExternalExtended `json:"-"`
+	Result *MoneyTransactionShippingExternalFtLine `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetMoneyTxShippingExternal(ctx context.Context, msg *GetMoneyTxShippingExternalQuery) (err error) {
@@ -309,10 +332,10 @@ func (h QueryServiceHandler) HandleGetMoneyTxShippingExternal(ctx context.Contex
 }
 
 type ListMoneyTxShippingEtopsQuery struct {
-	IDs    []dot.ID
-	Status status3.NullStatus
-	Paging meta.Paging
-	Filter meta.Filters
+	MoneyTxShippingEtopIDs []dot.ID
+	Status                 status3.NullStatus
+	Paging                 meta.Paging
+	Filter                 meta.Filters
 
 	Result *ListMoneyTxShippingEtopsResponse `json:"-"`
 }
@@ -323,9 +346,9 @@ func (h QueryServiceHandler) HandleListMoneyTxShippingEtops(ctx context.Context,
 }
 
 type ListMoneyTxShippingExternalsQuery struct {
-	IDs     []dot.ID
-	Paging  meta.Paging
-	Filters meta.Filters
+	MoneyTxShippingExternalIDs []dot.ID
+	Paging                     meta.Paging
+	Filters                    meta.Filters
 
 	Result *ListMoneyTxShippingExternalsResponse `json:"-"`
 }
@@ -336,11 +359,11 @@ func (h QueryServiceHandler) HandleListMoneyTxShippingExternals(ctx context.Cont
 }
 
 type ListMoneyTxShippingsQuery struct {
-	IDs                []dot.ID
-	ShopID             dot.ID
-	IncludeFulfillment bool
-	Paging             meta.Paging
-	Filters            meta.Filters
+	MoneyTxShippingIDs    []dot.ID
+	MoneyTxShippingEtopID dot.ID
+	ShopID                dot.ID
+	Paging                meta.Paging
+	Filters               meta.Filters
 
 	Result *ListMoneyTxShippingsResponse `json:"-"`
 }
@@ -353,7 +376,7 @@ func (h QueryServiceHandler) HandleListMoneyTxShippings(ctx context.Context, msg
 type ListMoneyTxShippingsByMoneyTxShippingExternalIDQuery struct {
 	MoneyTxShippingExternalID dot.ID
 
-	Result []*MoneyTransactionShippingExtended `json:"-"`
+	Result []*MoneyTransactionShipping `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListMoneyTxShippingsByMoneyTxShippingExternalID(ctx context.Context, msg *ListMoneyTxShippingsByMoneyTxShippingExternalIDQuery) (err error) {
@@ -363,9 +386,10 @@ func (h QueryServiceHandler) HandleListMoneyTxShippingsByMoneyTxShippingExternal
 
 // implement interfaces
 
-func (q *AddFulfillmentMoneyTxShippingCommand) command()      {}
+func (q *AddFulfillmentsMoneyTxShippingCommand) command()     {}
 func (q *ConfirmMoneyTxShippingCommand) command()             {}
 func (q *ConfirmMoneyTxShippingEtopCommand) command()         {}
+func (q *ConfirmMoneyTxShippingExternalCommand) command()     {}
 func (q *ConfirmMoneyTxShippingExternalsCommand) command()    {}
 func (q *CreateMoneyTxShippingCommand) command()              {}
 func (q *CreateMoneyTxShippingEtopCommand) command()          {}
@@ -375,8 +399,9 @@ func (q *CreateMoneyTxShippingsCommand) command()             {}
 func (q *DeleteMoneyTxShippingCommand) command()              {}
 func (q *DeleteMoneyTxShippingEtopCommand) command()          {}
 func (q *DeleteMoneyTxShippingExternalCommand) command()      {}
+func (q *DeleteMoneyTxShippingExternalLinesCommand) command() {}
 func (q *ReCalcMoneyTxShippingCommand) command()              {}
-func (q *RemoveFulfillmentMoneyTxShippingCommand) command()   {}
+func (q *RemoveFulfillmentsMoneyTxShippingCommand) command()  {}
 func (q *RemoveMoneyTxShippingExternalLinesCommand) command() {}
 func (q *UpdateMoneyTxShippingEtopCommand) command()          {}
 func (q *UpdateMoneyTxShippingExternalInfoCommand) command()  {}
@@ -392,32 +417,34 @@ func (q *ListMoneyTxShippingsByMoneyTxShippingExternalIDQuery) query() {}
 
 // implement conversion
 
-func (q *AddFulfillmentMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FfmMoneyTxShippingArgs) {
+func (q *AddFulfillmentsMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FfmsMoneyTxShippingArgs) {
 	return ctx,
-		&FfmMoneyTxShippingArgs{
-			FulfillmentID:     q.FulfillmentID,
+		&FfmsMoneyTxShippingArgs{
+			FulfillmentIDs:    q.FulfillmentIDs,
 			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
 		}
 }
 
-func (q *AddFulfillmentMoneyTxShippingCommand) SetFfmMoneyTxShippingArgs(args *FfmMoneyTxShippingArgs) {
-	q.FulfillmentID = args.FulfillmentID
+func (q *AddFulfillmentsMoneyTxShippingCommand) SetFfmsMoneyTxShippingArgs(args *FfmsMoneyTxShippingArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
 	q.MoneyTxShippingID = args.MoneyTxShippingID
+	q.ShopID = args.ShopID
 }
 
 func (q *ConfirmMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmMoneyTxShippingArgs) {
 	return ctx,
 		&ConfirmMoneyTxShippingArgs{
-			ID:          q.ID,
-			ShopID:      q.ShopID,
-			TotalCOD:    q.TotalCOD,
-			TotalAmount: q.TotalAmount,
-			TotalOrders: q.TotalOrders,
+			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
+			TotalCOD:          q.TotalCOD,
+			TotalAmount:       q.TotalAmount,
+			TotalOrders:       q.TotalOrders,
 		}
 }
 
 func (q *ConfirmMoneyTxShippingCommand) SetConfirmMoneyTxShippingArgs(args *ConfirmMoneyTxShippingArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingID = args.MoneyTxShippingID
 	q.ShopID = args.ShopID
 	q.TotalCOD = args.TotalCOD
 	q.TotalAmount = args.TotalAmount
@@ -427,18 +454,23 @@ func (q *ConfirmMoneyTxShippingCommand) SetConfirmMoneyTxShippingArgs(args *Conf
 func (q *ConfirmMoneyTxShippingEtopCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmMoneyTxShippingEtopArgs) {
 	return ctx,
 		&ConfirmMoneyTxShippingEtopArgs{
-			ID:          q.ID,
-			TotalCOD:    q.TotalCOD,
-			TotalAmount: q.TotalAmount,
-			TotalOrders: q.TotalOrders,
+			MoneyTxShippingEtopID: q.MoneyTxShippingEtopID,
+			TotalCOD:              q.TotalCOD,
+			TotalAmount:           q.TotalAmount,
+			TotalOrders:           q.TotalOrders,
 		}
 }
 
 func (q *ConfirmMoneyTxShippingEtopCommand) SetConfirmMoneyTxShippingEtopArgs(args *ConfirmMoneyTxShippingEtopArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingEtopID = args.MoneyTxShippingEtopID
 	q.TotalCOD = args.TotalCOD
 	q.TotalAmount = args.TotalAmount
 	q.TotalOrders = args.TotalOrders
+}
+
+func (q *ConfirmMoneyTxShippingExternalCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *ConfirmMoneyTxShippingExternalsCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
@@ -446,9 +478,9 @@ func (q *ConfirmMoneyTxShippingExternalsCommand) GetArgs(ctx context.Context) (_
 		q.IDs
 }
 
-func (q *CreateMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ CreateMoneyTxShippingArgs) {
+func (q *CreateMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateMoneyTxShippingArgs) {
 	return ctx,
-		CreateMoneyTxShippingArgs{
+		&CreateMoneyTxShippingArgs{
 			Shop:           q.Shop,
 			FulfillmentIDs: q.FulfillmentIDs,
 			TotalCOD:       q.TotalCOD,
@@ -457,7 +489,7 @@ func (q *CreateMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
-func (q *CreateMoneyTxShippingCommand) SetCreateMoneyTxShippingArgs(args CreateMoneyTxShippingArgs) {
+func (q *CreateMoneyTxShippingCommand) SetCreateMoneyTxShippingArgs(args *CreateMoneyTxShippingArgs) {
 	q.Shop = args.Shop
 	q.FulfillmentIDs = args.FulfillmentIDs
 	q.TotalCOD = args.TotalCOD
@@ -468,15 +500,15 @@ func (q *CreateMoneyTxShippingCommand) SetCreateMoneyTxShippingArgs(args CreateM
 func (q *CreateMoneyTxShippingEtopCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateMoneyTxShippingEtopArgs) {
 	return ctx,
 		&CreateMoneyTxShippingEtopArgs{
-			MoneyTransactionShippingIDs: q.MoneyTransactionShippingIDs,
-			BankAccount:                 q.BankAccount,
-			Note:                        q.Note,
-			InvoiceNumber:               q.InvoiceNumber,
+			MoneyTxShippingIDs: q.MoneyTxShippingIDs,
+			BankAccount:        q.BankAccount,
+			Note:               q.Note,
+			InvoiceNumber:      q.InvoiceNumber,
 		}
 }
 
 func (q *CreateMoneyTxShippingEtopCommand) SetCreateMoneyTxShippingEtopArgs(args *CreateMoneyTxShippingEtopArgs) {
-	q.MoneyTransactionShippingIDs = args.MoneyTransactionShippingIDs
+	q.MoneyTxShippingIDs = args.MoneyTxShippingIDs
 	q.BankAccount = args.BankAccount
 	q.Note = args.Note
 	q.InvoiceNumber = args.InvoiceNumber
@@ -534,25 +566,23 @@ func (q *CreateMoneyTxShippingsCommand) GetArgs(ctx context.Context) (_ context.
 	return ctx,
 		&CreateMoneyTxShippingsArgs{
 			ShopIDMapFfms: q.ShopIDMapFfms,
-			ShopIDMap:     q.ShopIDMap,
 		}
 }
 
 func (q *CreateMoneyTxShippingsCommand) SetCreateMoneyTxShippingsArgs(args *CreateMoneyTxShippingsArgs) {
 	q.ShopIDMapFfms = args.ShopIDMapFfms
-	q.ShopIDMap = args.ShopIDMap
 }
 
 func (q *DeleteMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteMoneyTxShippingArgs) {
 	return ctx,
 		&DeleteMoneyTxShippingArgs{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
 		}
 }
 
 func (q *DeleteMoneyTxShippingCommand) SetDeleteMoneyTxShippingArgs(args *DeleteMoneyTxShippingArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingID = args.MoneyTxShippingID
 	q.ShopID = args.ShopID
 }
 
@@ -566,52 +596,59 @@ func (q *DeleteMoneyTxShippingExternalCommand) GetArgs(ctx context.Context) (_ c
 		q.ID
 }
 
+func (q *DeleteMoneyTxShippingExternalLinesCommand) GetArgs(ctx context.Context) (_ context.Context, MoneyTxShippingExternalID dot.ID) {
+	return ctx,
+		q.MoneyTxShippingExternalID
+}
+
 func (q *ReCalcMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, MoneyTxShippingID dot.ID) {
 	return ctx,
 		q.MoneyTxShippingID
 }
 
-func (q *RemoveFulfillmentMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FfmMoneyTxShippingArgs) {
+func (q *RemoveFulfillmentsMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FfmsMoneyTxShippingArgs) {
 	return ctx,
-		&FfmMoneyTxShippingArgs{
-			FulfillmentID:     q.FulfillmentID,
+		&FfmsMoneyTxShippingArgs{
+			FulfillmentIDs:    q.FulfillmentIDs,
 			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
 		}
 }
 
-func (q *RemoveFulfillmentMoneyTxShippingCommand) SetFfmMoneyTxShippingArgs(args *FfmMoneyTxShippingArgs) {
-	q.FulfillmentID = args.FulfillmentID
+func (q *RemoveFulfillmentsMoneyTxShippingCommand) SetFfmsMoneyTxShippingArgs(args *FfmsMoneyTxShippingArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
 	q.MoneyTxShippingID = args.MoneyTxShippingID
+	q.ShopID = args.ShopID
 }
 
 func (q *RemoveMoneyTxShippingExternalLinesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveMoneyTxShippingExternalLinesArgs) {
 	return ctx,
 		&RemoveMoneyTxShippingExternalLinesArgs{
-			ID:      q.ID,
-			LineIDs: q.LineIDs,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+			LineIDs:                   q.LineIDs,
 		}
 }
 
 func (q *RemoveMoneyTxShippingExternalLinesCommand) SetRemoveMoneyTxShippingExternalLinesArgs(args *RemoveMoneyTxShippingExternalLinesArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
 	q.LineIDs = args.LineIDs
 }
 
 func (q *UpdateMoneyTxShippingEtopCommand) GetArgs(ctx context.Context) (_ context.Context, _ UpdateMoneyTxShippingEtopArgs) {
 	return ctx,
 		UpdateMoneyTxShippingEtopArgs{
-			ID:            q.ID,
-			BankAccount:   q.BankAccount,
-			Note:          q.Note,
-			InvoiceNumber: q.InvoiceNumber,
-			Adds:          q.Adds,
-			Deletes:       q.Deletes,
-			ReplaceAll:    q.ReplaceAll,
+			MoneyTxShippingEtopID: q.MoneyTxShippingEtopID,
+			BankAccount:           q.BankAccount,
+			Note:                  q.Note,
+			InvoiceNumber:         q.InvoiceNumber,
+			Adds:                  q.Adds,
+			Deletes:               q.Deletes,
+			ReplaceAll:            q.ReplaceAll,
 		}
 }
 
 func (q *UpdateMoneyTxShippingEtopCommand) SetUpdateMoneyTxShippingEtopArgs(args UpdateMoneyTxShippingEtopArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingEtopID = args.MoneyTxShippingEtopID
 	q.BankAccount = args.BankAccount
 	q.Note = args.Note
 	q.InvoiceNumber = args.InvoiceNumber
@@ -623,15 +660,15 @@ func (q *UpdateMoneyTxShippingEtopCommand) SetUpdateMoneyTxShippingEtopArgs(args
 func (q *UpdateMoneyTxShippingExternalInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateMoneyTxShippingExternalInfoArgs) {
 	return ctx,
 		&UpdateMoneyTxShippingExternalInfoArgs{
-			ID:            q.ID,
-			BankAccount:   q.BankAccount,
-			Note:          q.Note,
-			InvoiceNumber: q.InvoiceNumber,
+			MoneyTxShippingExternalID: q.MoneyTxShippingExternalID,
+			BankAccount:               q.BankAccount,
+			Note:                      q.Note,
+			InvoiceNumber:             q.InvoiceNumber,
 		}
 }
 
 func (q *UpdateMoneyTxShippingExternalInfoCommand) SetUpdateMoneyTxShippingExternalInfoArgs(args *UpdateMoneyTxShippingExternalInfoArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
 	q.BankAccount = args.BankAccount
 	q.Note = args.Note
 	q.InvoiceNumber = args.InvoiceNumber
@@ -640,16 +677,16 @@ func (q *UpdateMoneyTxShippingExternalInfoCommand) SetUpdateMoneyTxShippingExter
 func (q *UpdateMoneyTxShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateMoneyTxShippingInfoArgs) {
 	return ctx,
 		&UpdateMoneyTxShippingInfoArgs{
-			ID:            q.ID,
-			ShopID:        q.ShopID,
-			Note:          q.Note,
-			InvoiceNumber: q.InvoiceNumber,
-			BankAccount:   q.BankAccount,
+			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
+			Note:              q.Note,
+			InvoiceNumber:     q.InvoiceNumber,
+			BankAccount:       q.BankAccount,
 		}
 }
 
 func (q *UpdateMoneyTxShippingInfoCommand) SetUpdateMoneyTxShippingInfoArgs(args *UpdateMoneyTxShippingInfoArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingID = args.MoneyTxShippingID
 	q.ShopID = args.ShopID
 	q.Note = args.Note
 	q.InvoiceNumber = args.InvoiceNumber
@@ -659,13 +696,13 @@ func (q *UpdateMoneyTxShippingInfoCommand) SetUpdateMoneyTxShippingInfoArgs(args
 func (q *GetMoneyTxShippingByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetMoneyTxByIDQueryArgs) {
 	return ctx,
 		&GetMoneyTxByIDQueryArgs{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			MoneyTxShippingID: q.MoneyTxShippingID,
+			ShopID:            q.ShopID,
 		}
 }
 
 func (q *GetMoneyTxShippingByIDQuery) SetGetMoneyTxByIDQueryArgs(args *GetMoneyTxByIDQueryArgs) {
-	q.ID = args.ID
+	q.MoneyTxShippingID = args.MoneyTxShippingID
 	q.ShopID = args.ShopID
 }
 
@@ -682,15 +719,15 @@ func (q *GetMoneyTxShippingExternalQuery) GetArgs(ctx context.Context) (_ contex
 func (q *ListMoneyTxShippingEtopsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListMoneyTxShippingEtopsArgs) {
 	return ctx,
 		&ListMoneyTxShippingEtopsArgs{
-			IDs:    q.IDs,
-			Status: q.Status,
-			Paging: q.Paging,
-			Filter: q.Filter,
+			MoneyTxShippingEtopIDs: q.MoneyTxShippingEtopIDs,
+			Status:                 q.Status,
+			Paging:                 q.Paging,
+			Filter:                 q.Filter,
 		}
 }
 
 func (q *ListMoneyTxShippingEtopsQuery) SetListMoneyTxShippingEtopsArgs(args *ListMoneyTxShippingEtopsArgs) {
-	q.IDs = args.IDs
+	q.MoneyTxShippingEtopIDs = args.MoneyTxShippingEtopIDs
 	q.Status = args.Status
 	q.Paging = args.Paging
 	q.Filter = args.Filter
@@ -699,33 +736,33 @@ func (q *ListMoneyTxShippingEtopsQuery) SetListMoneyTxShippingEtopsArgs(args *Li
 func (q *ListMoneyTxShippingExternalsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListMoneyTxShippingExternalsArgs) {
 	return ctx,
 		&ListMoneyTxShippingExternalsArgs{
-			IDs:     q.IDs,
-			Paging:  q.Paging,
-			Filters: q.Filters,
+			MoneyTxShippingExternalIDs: q.MoneyTxShippingExternalIDs,
+			Paging:                     q.Paging,
+			Filters:                    q.Filters,
 		}
 }
 
 func (q *ListMoneyTxShippingExternalsQuery) SetListMoneyTxShippingExternalsArgs(args *ListMoneyTxShippingExternalsArgs) {
-	q.IDs = args.IDs
+	q.MoneyTxShippingExternalIDs = args.MoneyTxShippingExternalIDs
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 }
 
-func (q *ListMoneyTxShippingsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListMoneyTxArgs) {
+func (q *ListMoneyTxShippingsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListMoneyTxShippingArgs) {
 	return ctx,
-		&ListMoneyTxArgs{
-			IDs:                q.IDs,
-			ShopID:             q.ShopID,
-			IncludeFulfillment: q.IncludeFulfillment,
-			Paging:             q.Paging,
-			Filters:            q.Filters,
+		&ListMoneyTxShippingArgs{
+			MoneyTxShippingIDs:    q.MoneyTxShippingIDs,
+			MoneyTxShippingEtopID: q.MoneyTxShippingEtopID,
+			ShopID:                q.ShopID,
+			Paging:                q.Paging,
+			Filters:               q.Filters,
 		}
 }
 
-func (q *ListMoneyTxShippingsQuery) SetListMoneyTxArgs(args *ListMoneyTxArgs) {
-	q.IDs = args.IDs
+func (q *ListMoneyTxShippingsQuery) SetListMoneyTxShippingArgs(args *ListMoneyTxShippingArgs) {
+	q.MoneyTxShippingIDs = args.MoneyTxShippingIDs
+	q.MoneyTxShippingEtopID = args.MoneyTxShippingEtopID
 	q.ShopID = args.ShopID
-	q.IncludeFulfillment = args.IncludeFulfillment
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 }
@@ -747,9 +784,10 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleAddFulfillmentMoneyTxShipping)
+	b.AddHandler(h.HandleAddFulfillmentsMoneyTxShipping)
 	b.AddHandler(h.HandleConfirmMoneyTxShipping)
 	b.AddHandler(h.HandleConfirmMoneyTxShippingEtop)
+	b.AddHandler(h.HandleConfirmMoneyTxShippingExternal)
 	b.AddHandler(h.HandleConfirmMoneyTxShippingExternals)
 	b.AddHandler(h.HandleCreateMoneyTxShipping)
 	b.AddHandler(h.HandleCreateMoneyTxShippingEtop)
@@ -759,8 +797,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteMoneyTxShipping)
 	b.AddHandler(h.HandleDeleteMoneyTxShippingEtop)
 	b.AddHandler(h.HandleDeleteMoneyTxShippingExternal)
+	b.AddHandler(h.HandleDeleteMoneyTxShippingExternalLines)
 	b.AddHandler(h.HandleReCalcMoneyTxShipping)
-	b.AddHandler(h.HandleRemoveFulfillmentMoneyTxShipping)
+	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxShipping)
 	b.AddHandler(h.HandleRemoveMoneyTxShippingExternalLines)
 	b.AddHandler(h.HandleUpdateMoneyTxShippingEtop)
 	b.AddHandler(h.HandleUpdateMoneyTxShippingExternalInfo)

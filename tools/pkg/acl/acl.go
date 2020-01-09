@@ -481,7 +481,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.MoneyTransaction/GetMoneyTransactionShippingExternals":        {Type: EtopAdmin},
 	"admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines": {Type: EtopAdmin},
 	"admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":      {Type: EtopAdmin},
-	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal":     {Type: EtopAdmin},
 	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin},
 	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin},
 	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":             {Type: EtopAdmin},
@@ -491,8 +490,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":          {Type: EtopAdmin},
 	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":         {Type: EtopAdmin},
 
-	"admin.Shop/GetShop":  {Type: EtopAdmin},
-	"admin.Shop/GetShops": {Type: EtopAdmin},
+	"admin.Shop/GetShop":       {Type: EtopAdmin},
+	"admin.Shop/GetShops":      {Type: EtopAdmin},
+	"admin.Shop/GetShopsByIDs": {Type: EtopAdmin},
 
 	"admin.Credit/GetCredit":     {Type: EtopAdmin},
 	"admin.Credit/GetCredits":    {Type: EtopAdmin},

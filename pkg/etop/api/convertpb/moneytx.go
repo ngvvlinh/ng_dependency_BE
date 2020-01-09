@@ -4,10 +4,17 @@ import (
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/int/types"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/model"
 )
 
-func PbMoneyTxShippingExternalExtended(m *moneytx.MoneyTransactionShippingExternalExtended) *types.MoneyTransactionShippingExternal {
+func PbMoneyTxShippingExternalsFtLine(items []*moneytx.MoneyTransactionShippingExternalFtLine) []*types.MoneyTransactionShippingExternal {
+	result := make([]*types.MoneyTransactionShippingExternal, len(items))
+	for i, item := range items {
+		result[i] = PbMoneyTxShippingExternalFtLine(item)
+	}
+	return result
+}
+
+func PbMoneyTxShippingExternalFtLine(m *moneytx.MoneyTransactionShippingExternalFtLine) *types.MoneyTransactionShippingExternal {
 	if m == nil {
 		return nil
 	}
@@ -18,7 +25,7 @@ func PbMoneyTxShippingExternalExtended(m *moneytx.MoneyTransactionShippingExtern
 		TotalOrders:    m.TotalOrders,
 		Status:         m.Status,
 		Provider:       m.Provider.String(),
-		Lines:          PbMoneyTxShippingExternalLineExtendeds(m.Lines),
+		Lines:          PbMoneyTxShippingExternalLines(m.Lines),
 		CreatedAt:      cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:      cmapi.PbTime(m.UpdatedAt),
 		ExternalPaidAt: cmapi.PbTime(m.ExternalPaidAt),
@@ -29,15 +36,15 @@ func PbMoneyTxShippingExternalExtended(m *moneytx.MoneyTransactionShippingExtern
 	return res
 }
 
-func PbMoneyTxShippingExternalLineExtendeds(items []*moneytx.MoneyTransactionShippingExternalLineExtended) []*types.MoneyTransactionShippingExternalLine {
+func PbMoneyTxShippingExternalLines(items []*moneytx.MoneyTransactionShippingExternalLine) []*types.MoneyTransactionShippingExternalLine {
 	result := make([]*types.MoneyTransactionShippingExternalLine, len(items))
 	for i, item := range items {
-		result[i] = PbMoneyTxShippingExternalLineExtended(item)
+		result[i] = PbMoneyTxShippingExternalLine(item)
 	}
 	return result
 }
 
-func PbMoneyTxShippingExternalLineExtended(m *moneytx.MoneyTransactionShippingExternalLineExtended) *types.MoneyTransactionShippingExternalLine {
+func PbMoneyTxShippingExternalLine(m *moneytx.MoneyTransactionShippingExternalLine) *types.MoneyTransactionShippingExternalLine {
 	if m == nil {
 		return nil
 	}
@@ -58,8 +65,69 @@ func PbMoneyTxShippingExternalLineExtended(m *moneytx.MoneyTransactionShippingEx
 		ExternalCreatedAt:                  cmapi.PbTime(m.ExternalCreatedAt),
 		ExternalClosedAt:                   cmapi.PbTime(m.ExternalClosedAt),
 	}
-	if m.Fulfillment != nil && m.Fulfillment.ID != 0 {
-		res.Fulfillment = Convert_core_Fulfillment_To_api_Fulfillment(m.Fulfillment, model.TagEtop, m.Shop, m.Order)
-	}
 	return res
+}
+
+func PbMoneyTxShipping(m *moneytx.MoneyTransactionShipping) *types.MoneyTransaction {
+	if m == nil {
+		return nil
+	}
+	return &types.MoneyTransaction{
+		Id:                                 m.ID,
+		ShopId:                             m.ShopID,
+		Status:                             m.Status,
+		TotalCod:                           m.TotalCOD,
+		TotalOrders:                        m.TotalOrders,
+		TotalAmount:                        m.TotalAmount,
+		Code:                               m.Code,
+		Provider:                           m.Provider,
+		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
+		MoneyTransactionShippingEtopId:     m.MoneyTransactionShippingEtopID,
+		CreatedAt:                          cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:                          cmapi.PbTime(m.UpdatedAt),
+		ClosedAt:                           cmapi.PbTime(m.ClosedAt),
+		ConfirmedAt:                        cmapi.PbTime(m.ConfirmedAt),
+		EtopTransferedAt:                   cmapi.PbTime(m.EtopTransferedAt),
+		Note:                               m.Note,
+		BankAccount:                        Convert_core_BankAccount_To_api_BankAccount(m.BankAccount),
+		InvoiceNumber:                      m.InvoiceNumber,
+	}
+}
+
+func PbMoneyTxShippings(items []*moneytx.MoneyTransactionShipping) []*types.MoneyTransaction {
+	result := make([]*types.MoneyTransaction, len(items))
+	for i, item := range items {
+		result[i] = PbMoneyTxShipping(item)
+	}
+	return result
+}
+
+func PbMoneyTxShippingEtop(m *moneytx.MoneyTransactionShippingEtop) *types.MoneyTransactionShippingEtop {
+	if m == nil {
+		return nil
+	}
+	return &types.MoneyTransactionShippingEtop{
+		Id:                    m.ID,
+		Code:                  m.Code,
+		TotalCod:              m.TotalCOD,
+		TotalOrders:           m.TotalOrders,
+		TotalAmount:           m.TotalAmount,
+		TotalFee:              m.TotalFee,
+		TotalMoneyTxShippings: m.TotalMoneyTransaction,
+		Status:                m.Status,
+		CreatedAt:             cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:             cmapi.PbTime(m.UpdatedAt),
+		ConfirmedAt:           cmapi.PbTime(m.ConfirmedAt),
+		Note:                  m.Note,
+		InvoiceNumber:         m.InvoiceNumber,
+		BankAccount:           Convert_core_BankAccount_To_api_BankAccount(m.BankAccount),
+	}
+}
+
+func PbMoneyTxShippingEtops(items []*moneytx.MoneyTransactionShippingEtop) []*types.MoneyTransactionShippingEtop {
+	result := make([]*types.MoneyTransactionShippingEtop, len(items))
+	for i, item := range items {
+		result[i] = PbMoneyTxShippingEtop(item)
+	}
+	return result
 }

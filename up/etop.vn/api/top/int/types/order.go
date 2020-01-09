@@ -322,8 +322,6 @@ type OrderShipping struct {
 	Width            dot.NullInt `json:"width"`
 	Height           dot.NullInt `json:"height"`
 	ChargeableWeight dot.NullInt `json:"chargeable_weight"`
-	ConnectionID     dot.ID      `json:"connection_id"`
-	ShopCarrierID    dot.ID      `json:"shop_carrier_id"`
 }
 
 func (m *OrderShipping) String() string { return jsonx.MustMarshalToString(m) }
@@ -407,6 +405,7 @@ type Fulfillment struct {
 	XShippingSubState                  string                 `json:"x_shipping_sub_state"`
 	Code                               string                 `json:"code"`
 	ActualCompensationAmount           int                    `json:"actual_compensation_amount"`
+	AdminNote                          string                 `json:"admin_note"`
 
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
@@ -636,13 +635,15 @@ func (m *MoneyTransactionShippingExternalsResponse) String() string {
 }
 
 type MoneyTransactionShippingEtop struct {
-	Id                dot.ID              `json:"id"`
-	Code              string              `json:"code"`
-	TotalCod          int                 `json:"total_cod"`
-	TotalOrders       int                 `json:"total_orders"`
-	TotalAmount       int                 `json:"total_amount"`
-	TotalFee          int                 `json:"total_fee"`
-	Status            status3.Status      `json:"status"`
+	Id                    dot.ID         `json:"id"`
+	Code                  string         `json:"code"`
+	TotalCod              int            `json:"total_cod"`
+	TotalOrders           int            `json:"total_orders"`
+	TotalAmount           int            `json:"total_amount"`
+	TotalFee              int            `json:"total_fee"`
+	TotalMoneyTxShippings int            `json:"total_money_tx_shippings"`
+	Status                status3.Status `json:"status"`
+	// @deprecated
 	MoneyTransactions []*MoneyTransaction `json:"money_transactions"`
 	CreatedAt         dot.Time            `json:"created_at"`
 	UpdatedAt         dot.Time            `json:"updated_at"`

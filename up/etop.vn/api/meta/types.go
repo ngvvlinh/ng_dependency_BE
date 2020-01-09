@@ -66,6 +66,10 @@ type Filter struct {
 
 type Filters []Filter
 
+func (f Filters) ListFilters() []Filter {
+	return f
+}
+
 type Error struct {
 	Code string
 	Msg  string

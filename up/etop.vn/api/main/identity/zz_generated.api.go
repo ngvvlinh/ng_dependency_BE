@@ -331,6 +331,29 @@ func (h QueryServiceHandler) HandleListPartnersForWhiteLabel(ctx context.Context
 	return err
 }
 
+type ListShopExtendedsQuery struct {
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *ListShopExtendedsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopExtendeds(ctx context.Context, msg *ListShopExtendedsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopExtendeds(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopsByIDsQuery struct {
+	IDs []dot.ID
+
+	Result []*Shop `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopsByIDs(ctx context.Context, msg *ListShopsByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopsByIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListUsersByWLPartnerIDQuery struct {
 	ID dot.ID
 
@@ -370,6 +393,8 @@ func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
 func (q *GetUserByPhoneOrEmailQuery) query()                 {}
 func (q *ListPartnersForWhiteLabelQuery) query()             {}
+func (q *ListShopExtendedsQuery) query()                     {}
+func (q *ListShopsByIDsQuery) query()                        {}
 func (q *ListUsersByWLPartnerIDQuery) query()                {}
 
 // implement conversion
@@ -665,6 +690,24 @@ func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context
 func (q *ListPartnersForWhiteLabelQuery) SetEmpty(args *meta.Empty) {
 }
 
+func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopQuery) {
+	return ctx,
+		&ListShopQuery{
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
+}
+
+func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
+func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
+	return ctx,
+		q.IDs
+}
+
 func (q *ListUsersByWLPartnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersByWLPartnerID) {
 	return ctx,
 		&ListUsersByWLPartnerID{
@@ -728,6 +771,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByPhone)
 	b.AddHandler(h.HandleGetUserByPhoneOrEmail)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
+	b.AddHandler(h.HandleListShopExtendeds)
+	b.AddHandler(h.HandleListShopsByIDs)
 	b.AddHandler(h.HandleListUsersByWLPartnerID)
 	return QueryBus{b}
 }

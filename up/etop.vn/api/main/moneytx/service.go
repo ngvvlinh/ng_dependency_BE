@@ -17,53 +17,56 @@ import (
 
 type Aggregate interface {
 	// -- Money transaction shipping -- //
-	CreateMoneyTxShipping(context.Context, CreateMoneyTxShippingArgs) (*MoneyTransactionShippingExtended, error)
+	CreateMoneyTxShipping(context.Context, *CreateMoneyTxShippingArgs) (*MoneyTransactionShipping, error)
 	CreateMoneyTxShippings(context.Context, *CreateMoneyTxShippingsArgs) (created int, _ error)
-	UpdateMoneyTxShippingInfo(context.Context, *UpdateMoneyTxShippingInfoArgs) (*MoneyTransactionShippingExtended, error)
-	ConfirmMoneyTxShipping(context.Context, *ConfirmMoneyTxShippingArgs) (updated int, _ error)
-	DeleteMoneyTxShipping(context.Context, *DeleteMoneyTxShippingArgs) (deleted int, _ error)
-	AddFulfillmentMoneyTxShipping(context.Context, *FfmMoneyTxShippingArgs) (updated int, _ error)
-	RemoveFulfillmentMoneyTxShipping(context.Context, *FfmMoneyTxShippingArgs) (removed int, _ error)
+	UpdateMoneyTxShippingInfo(context.Context, *UpdateMoneyTxShippingInfoArgs) (*MoneyTransactionShipping, error)
+	ConfirmMoneyTxShipping(context.Context, *ConfirmMoneyTxShippingArgs) error
+	DeleteMoneyTxShipping(context.Context, *DeleteMoneyTxShippingArgs) error
+	AddFulfillmentsMoneyTxShipping(context.Context, *FfmsMoneyTxShippingArgs) error
+	RemoveFulfillmentsMoneyTxShipping(context.Context, *FfmsMoneyTxShippingArgs) error
 	ReCalcMoneyTxShipping(ctx context.Context, MoneyTxShippingID dot.ID) error
 
 	// -- Money transaction shipping external -- //
-	CreateMoneyTxShippingExternal(context.Context, *CreateMoneyTxShippingExternalArgs) (*MoneyTransactionShippingExternalExtended, error)
+	CreateMoneyTxShippingExternal(context.Context, *CreateMoneyTxShippingExternalArgs) (*MoneyTransactionShippingExternalFtLine, error)
 	CreateMoneyTxShippingExternalLine(context.Context, *CreateMoneyTxShippingExternalLineArgs) (*MoneyTransactionShippingExternalLine, error)
-	UpdateMoneyTxShippingExternalInfo(context.Context, *UpdateMoneyTxShippingExternalInfoArgs) (*MoneyTransactionShippingExternalExtended, error)
+	UpdateMoneyTxShippingExternalInfo(context.Context, *UpdateMoneyTxShippingExternalInfoArgs) (*MoneyTransactionShippingExternalFtLine, error)
+	ConfirmMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (updated int, _ error)
 	ConfirmMoneyTxShippingExternals(ctx context.Context, IDs []dot.ID) (updated int, _ error)
-	RemoveMoneyTxShippingExternalLines(context.Context, *RemoveMoneyTxShippingExternalLinesArgs) (*MoneyTransactionShippingExternalExtended, error)
+	RemoveMoneyTxShippingExternalLines(context.Context, *RemoveMoneyTxShippingExternalLinesArgs) (*MoneyTransactionShippingExternalFtLine, error)
 	DeleteMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (deleted int, _ error)
+	DeleteMoneyTxShippingExternalLines(ctx context.Context, MoneyTxShippingExternalID dot.ID) error
 
 	// -- Money transaction shipping etop -- //
-	CreateMoneyTxShippingEtop(context.Context, *CreateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtopExtended, error)
-	UpdateMoneyTxShippingEtop(context.Context, UpdateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtopExtended, error)
-	ConfirmMoneyTxShippingEtop(context.Context, *ConfirmMoneyTxShippingEtopArgs) (updated int, _ error)
-	DeleteMoneyTxShippingEtop(ctx context.Context, ID dot.ID) (deleted int, _ error)
+	CreateMoneyTxShippingEtop(context.Context, *CreateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtop, error)
+	UpdateMoneyTxShippingEtop(context.Context, UpdateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtop, error)
+	ConfirmMoneyTxShippingEtop(context.Context, *ConfirmMoneyTxShippingEtopArgs) error
+	DeleteMoneyTxShippingEtop(ctx context.Context, ID dot.ID) error
 }
 
 type QueryService interface {
 	// -- Money transaction shipping -- //
-	GetMoneyTxShippingByID(context.Context, *GetMoneyTxByIDQueryArgs) (*MoneyTransactionShippingExtended, error)
-	ListMoneyTxShippings(context.Context, *ListMoneyTxArgs) (*ListMoneyTxShippingsResponse, error)
-	ListMoneyTxShippingsByMoneyTxShippingExternalID(ctx context.Context, MoneyTxShippingExternalID dot.ID) ([]*MoneyTransactionShippingExtended, error)
+	GetMoneyTxShippingByID(context.Context, *GetMoneyTxByIDQueryArgs) (*MoneyTransactionShipping, error)
+	ListMoneyTxShippings(context.Context, *ListMoneyTxShippingArgs) (*ListMoneyTxShippingsResponse, error)
+	ListMoneyTxShippingsByMoneyTxShippingExternalID(ctx context.Context, MoneyTxShippingExternalID dot.ID) ([]*MoneyTransactionShipping, error)
 
 	// -- Money transaction shipping external -- //
-	GetMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (*MoneyTransactionShippingExternalExtended, error)
+	GetMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (*MoneyTransactionShippingExternalFtLine, error)
 	ListMoneyTxShippingExternals(context.Context, *ListMoneyTxShippingExternalsArgs) (*ListMoneyTxShippingExternalsResponse, error)
 
 	// -- Money transaction shipping etop -- //
-	GetMoneyTxShippingEtop(ctx context.Context, ID dot.ID) (*MoneyTransactionShippingEtopExtended, error)
+	GetMoneyTxShippingEtop(ctx context.Context, ID dot.ID) (*MoneyTransactionShippingEtop, error)
 	ListMoneyTxShippingEtops(context.Context, *ListMoneyTxShippingEtopsArgs) (*ListMoneyTxShippingEtopsResponse, error)
 }
 
-type FfmMoneyTxShippingArgs struct {
-	FulfillmentID     dot.ID
+type FfmsMoneyTxShippingArgs struct {
+	FulfillmentIDs    []dot.ID
 	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 }
 
 type GetMoneyTxByIDQueryArgs struct {
-	ID     dot.ID
-	ShopID dot.ID
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 }
 
 type CreateMoneyTxShippingArgs struct {
@@ -76,28 +79,27 @@ type CreateMoneyTxShippingArgs struct {
 
 type CreateMoneyTxShippingsArgs struct {
 	ShopIDMapFfms map[dot.ID][]*shipping.Fulfillment
-	ShopIDMap     map[dot.ID]*identity.Shop
 }
 
 type UpdateMoneyTxShippingInfoArgs struct {
-	ID            dot.ID
-	ShopID        dot.ID
-	Note          string
-	InvoiceNumber string
-	BankAccount   *identitytypes.BankAccount
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
+	Note              string
+	InvoiceNumber     string
+	BankAccount       *identitytypes.BankAccount
 }
 
 type ConfirmMoneyTxShippingArgs struct {
-	ID          dot.ID
-	ShopID      dot.ID
-	TotalCOD    int
-	TotalAmount int
-	TotalOrders int
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
+	TotalCOD          int
+	TotalAmount       int
+	TotalOrders       int
 }
 
 type DeleteMoneyTxShippingArgs struct {
-	ID     dot.ID
-	ShopID dot.ID
+	MoneyTxShippingID dot.ID
+	ShopID            dot.ID
 }
 
 type CreateMoneyTxShippingExternalArgs struct {
@@ -122,29 +124,29 @@ type CreateMoneyTxShippingExternalLineArgs struct {
 }
 
 type UpdateMoneyTxShippingExternalInfoArgs struct {
-	ID            dot.ID
-	BankAccount   *identitytypes.BankAccount
-	Note          string
-	InvoiceNumber string
+	MoneyTxShippingExternalID dot.ID
+	BankAccount               *identitytypes.BankAccount
+	Note                      string
+	InvoiceNumber             string
 }
 
 type RemoveMoneyTxShippingExternalLinesArgs struct {
-	ID      dot.ID
-	LineIDs []dot.ID
+	MoneyTxShippingExternalID dot.ID
+	LineIDs                   []dot.ID
 }
 
 type CreateMoneyTxShippingEtopArgs struct {
-	MoneyTransactionShippingIDs []dot.ID
-	BankAccount                 *identitytypes.BankAccount
-	Note                        string
-	InvoiceNumber               string
+	MoneyTxShippingIDs []dot.ID
+	BankAccount        *identitytypes.BankAccount
+	Note               string
+	InvoiceNumber      string
 }
 
 type UpdateMoneyTxShippingEtopArgs struct {
-	ID            dot.ID
-	BankAccount   *identitytypes.BankAccount
-	Note          string
-	InvoiceNumber string
+	MoneyTxShippingEtopID dot.ID
+	BankAccount           *identitytypes.BankAccount
+	Note                  string
+	InvoiceNumber         string
 
 	// MoneyTransactionShipping IDs
 	Adds       []dot.ID
@@ -153,44 +155,44 @@ type UpdateMoneyTxShippingEtopArgs struct {
 }
 
 type ConfirmMoneyTxShippingEtopArgs struct {
-	ID          dot.ID
-	TotalCOD    int
-	TotalAmount int
-	TotalOrders int
+	MoneyTxShippingEtopID dot.ID
+	TotalCOD              int
+	TotalAmount           int
+	TotalOrders           int
 }
 
-type ListMoneyTxArgs struct {
-	IDs                []dot.ID
-	ShopID             dot.ID
-	IncludeFulfillment bool
-	Paging             meta.Paging
-	Filters            meta.Filters
+type ListMoneyTxShippingArgs struct {
+	MoneyTxShippingIDs    []dot.ID
+	MoneyTxShippingEtopID dot.ID
+	ShopID                dot.ID
+	Paging                meta.Paging
+	Filters               meta.Filters
 }
 
 type ListMoneyTxShippingsResponse struct {
-	MoneyTxShippings []*MoneyTransactionShippingExtended
+	MoneyTxShippings []*MoneyTransactionShipping
 	Paging           meta.PageInfo
 }
 
 type ListMoneyTxShippingExternalsArgs struct {
-	IDs     []dot.ID
-	Paging  meta.Paging
-	Filters meta.Filters
+	MoneyTxShippingExternalIDs []dot.ID
+	Paging                     meta.Paging
+	Filters                    meta.Filters
 }
 
 type ListMoneyTxShippingExternalsResponse struct {
-	MoneyTxShippingExternals []*MoneyTransactionShippingExternalExtended
+	MoneyTxShippingExternals []*MoneyTransactionShippingExternalFtLine
 	Paging                   meta.PageInfo
 }
 
 type ListMoneyTxShippingEtopsArgs struct {
-	IDs    []dot.ID
-	Status status3.NullStatus
-	Paging meta.Paging
-	Filter meta.Filters
+	MoneyTxShippingEtopIDs []dot.ID
+	Status                 status3.NullStatus
+	Paging                 meta.Paging
+	Filter                 meta.Filters
 }
 
 type ListMoneyTxShippingEtopsResponse struct {
-	MoneyTxShippingEtops []*MoneyTransactionShippingEtopExtended
+	MoneyTxShippingEtops []*MoneyTransactionShippingEtop
 	Paging               meta.PageInfo
 }

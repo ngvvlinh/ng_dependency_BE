@@ -13044,6 +13044,9 @@
           "description": "**Deprecated:** use shipping_address instead\n",
           "$ref": "#/definitions/baAddress"
         },
+        "admin_note": {
+          "type": "string"
+        },
         "basket_value": {
           "type": "integer"
         },
@@ -14093,10 +14096,6 @@
         "cod_amount": {
           "type": "integer"
         },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "exported_fields": {
           "type": "array",
           "items": {
@@ -14140,10 +14139,6 @@
         },
         "shipping_service_name": {
           "type": "string"
-        },
-        "shop_carrier_id": {
-          "type": "string",
-          "format": "int64"
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"

@@ -10,13 +10,11 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/types/etc/shipping_fee_type"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status5"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
@@ -74,8 +72,8 @@ type GHTKMoneyTransactionShippingExternalLine struct {
 	DeliveredAt      time.Time
 }
 
-func (line *GHTKMoneyTransactionShippingExternalLine) ToModel() *txmodel.MoneyTransactionShippingExternalLine {
-	return &txmodel.MoneyTransactionShippingExternalLine{
+func (line *GHTKMoneyTransactionShippingExternalLine) ToModel() *moneytx.MoneyTransactionShippingExternalLine {
+	return &moneytx.MoneyTransactionShippingExternalLine{
 		ExternalCode:         line.ExternalCode,
 		ExternalCustomer:     line.Customer,
 		ExternalTotalCOD:     line.TotalCOD,
@@ -85,11 +83,11 @@ func (line *GHTKMoneyTransactionShippingExternalLine) ToModel() *txmodel.MoneyTr
 	}
 }
 
-func ToMoneyTransactionShippingExternalLines(lines []*GHTKMoneyTransactionShippingExternalLine) []*txmodel.MoneyTransactionShippingExternalLine {
+func ToMoneyTransactionShippingExternalLines(lines []*GHTKMoneyTransactionShippingExternalLine) []*moneytx.MoneyTransactionShippingExternalLine {
 	if lines == nil {
 		return nil
 	}
-	res := make([]*txmodel.MoneyTransactionShippingExternalLine, len(lines))
+	res := make([]*moneytx.MoneyTransactionShippingExternalLine, len(lines))
 	for i, line := range lines {
 		res[i] = line.ToModel()
 	}
@@ -202,11 +200,11 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		return err
 	}
 
-	cmd := &txmodelx.CreateMoneyTransactionShippingExternal{
-		Provider:       provider[0],
+	cmd := &moneytx.CreateMoneyTxShippingExternalCommand{
+		Provider:       shippingProvider,
 		ExternalPaidAt: externalPaidAt,
 		Lines:          ToMoneyTransactionShippingExternalLines(shippingLines),
-		BankAccount: &identitysharemodel.BankAccount{
+		BankAccount: &identitytypes.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,
@@ -214,10 +212,10 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		Note:          note,
 		InvoiceNumber: invoiceNumber,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))
 	return nil
 }
 

@@ -7,7 +7,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
-	"etop.vn/backend/com/main/moneytx/modely"
+	"etop.vn/backend/com/main/moneytx/txmodely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/capi/dot"
@@ -30,14 +30,14 @@ type CreateMoneyTransaction struct {
 	TotalAmount    int
 	TotalOrders    int
 
-	Result *modely.MoneyTransactionExtended
+	Result *txmodely.MoneyTransactionExtended
 }
 
 type GetMoneyTransaction struct {
 	ID     dot.ID
 	ShopID dot.ID
 
-	Result *modely.MoneyTransactionExtended
+	Result *txmodely.MoneyTransactionExtended
 }
 
 type GetMoneyTransactions struct {
@@ -49,7 +49,7 @@ type GetMoneyTransactions struct {
 	Filters                            []cm.Filter
 
 	Result struct {
-		MoneyTransactions []*modely.MoneyTransactionExtended
+		MoneyTransactions []*txmodely.MoneyTransactionExtended
 	}
 }
 
@@ -68,7 +68,7 @@ type UpdateMoneyTransaction struct {
 	InvoiceNumber string
 	BankAccount   *identitysharemodel.BankAccount
 
-	Result *modely.MoneyTransactionExtended
+	Result *txmodely.MoneyTransactionExtended
 }
 
 type AddFfmsMoneyTransaction struct {
@@ -76,7 +76,7 @@ type AddFfmsMoneyTransaction struct {
 	MoneyTransactionID dot.ID
 	ShopID             dot.ID
 
-	Result *modely.MoneyTransactionExtended
+	Result *txmodely.MoneyTransactionExtended
 }
 
 type RemoveFfmsMoneyTransaction struct {
@@ -84,7 +84,7 @@ type RemoveFfmsMoneyTransaction struct {
 	ShopID             dot.ID
 	MoneyTransactionID dot.ID
 
-	Result *modely.MoneyTransactionExtended
+	Result *txmodely.MoneyTransactionExtended
 }
 
 type ConfirmMoneyTransaction struct {
@@ -149,14 +149,6 @@ type RemoveMoneyTransactionShippingExternalLines struct {
 	Result *txmodel.MoneyTransactionShippingExternalExtended
 }
 
-type ConfirmMoneyTransactionShippingExternal struct {
-	ID dot.ID
-
-	Result struct {
-		Updated int
-	}
-}
-
 type ConfirmMoneyTransactionShippingExternals struct {
 	IDs []dot.ID
 
@@ -195,13 +187,13 @@ type CreateMoneyTransactionShippingEtop struct {
 	Note                        string
 	InvoiceNumber               string
 
-	Result *modely.MoneyTransactionShippingEtopExtended
+	Result *txmodely.MoneyTransactionShippingEtopExtended
 }
 
 type GetMoneyTransactionShippingEtop struct {
 	ID dot.ID
 
-	Result *modely.MoneyTransactionShippingEtopExtended
+	Result *txmodely.MoneyTransactionShippingEtopExtended
 }
 
 type GetMoneyTransactionShippingEtops struct {
@@ -211,7 +203,7 @@ type GetMoneyTransactionShippingEtops struct {
 	Filters []cm.Filter
 
 	Result struct {
-		MoneyTransactionShippingEtops []*modely.MoneyTransactionShippingEtopExtended
+		MoneyTransactionShippingEtops []*txmodely.MoneyTransactionShippingEtopExtended
 	}
 }
 type UpdateMoneyTransactionShippingEtop struct {
@@ -223,7 +215,7 @@ type UpdateMoneyTransactionShippingEtop struct {
 	Note          string
 	InvoiceNumber string
 
-	Result *modely.MoneyTransactionShippingEtopExtended
+	Result *txmodely.MoneyTransactionShippingEtopExtended
 }
 
 type ConfirmMoneyTransactionShippingEtop struct {

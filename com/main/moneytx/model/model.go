@@ -64,6 +64,11 @@ type MoneyTransactionShippingExternalExtended struct {
 	Lines []*MoneyTransactionShippingExternalLineExtended
 }
 
+type MoneyTransactionShippingExternalFtLine struct {
+	*MoneyTransactionShippingExternal
+	Lines []*MoneyTransactionShippingExternalLine
+}
+
 // +sqlgen
 type MoneyTransactionShipping struct {
 	ID                                 dot.ID

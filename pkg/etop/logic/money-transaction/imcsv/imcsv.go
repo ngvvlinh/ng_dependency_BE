@@ -12,9 +12,9 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/valyala/tsvreader"
 
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
+	identitytypes "etop.vn/api/main/identity/types"
+	"etop.vn/api/main/moneytx"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
@@ -27,6 +27,12 @@ const (
 	xlsxFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	csvFileType  = "text/csv"
 )
+
+var moneyTxAggr moneytx.CommandBus
+
+func Init(moneyTxA moneytx.CommandBus) {
+	moneyTxAggr = moneyTxA
+}
 
 func HandleImportMoneyTransactions(c *httpx.Context) error {
 	form, err := c.MultipartForm()
@@ -61,6 +67,10 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if provider == nil || provider[0] == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Provider", nil)
 	}
+	shippingProvider, ok := shipping_provider.ParseShippingProvider(provider[0])
+	if !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "invalid carrier %v", provider[0])
+	}
 	var externalPaidAt time.Time
 	if externalPaidAtStr != nil {
 		externalPaidAt, err = time.Parse(time.RFC3339, externalPaidAtStr[0])
@@ -69,7 +79,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		}
 	}
 
-	var lines []*txmodel.MoneyTransactionShippingExternalLine
+	var lines []*moneytx.MoneyTransactionShippingExternalLine
 	var rows [][]string
 	fileType := fileTypes[0]
 	switch fileType {
@@ -104,24 +114,24 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		lines = append(lines, line)
 	}
 
-	cmd := &txmodelx.CreateMoneyTransactionShippingExternal{
-		Provider:       provider[0],
+	cmd := &moneytx.CreateMoneyTxShippingExternalCommand{
+		Provider:       shippingProvider,
 		ExternalPaidAt: externalPaidAt,
 		Lines:          lines,
 		Note:           note,
 		InvoiceNumber:  invoiceNumber,
-		BankAccount: &identitysharemodel.BankAccount{
+		BankAccount: &identitytypes.BankAccount{
 			Name:          bankName,
 			AccountNumber: accountNumber,
 			AccountName:   accountName,
 		},
 	}
 
-	ctx := context.Background()
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	ctx := bus.Ctx()
+	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))
 	return nil
 }
 
@@ -179,7 +189,7 @@ func parseRows(schema imcsv.Schema, idx indexes, rows [][]string) (res []*RowMon
 	return
 }
 
-func (m *RowMoneyTransaction) ToModel() (*txmodel.MoneyTransactionShippingExternalLine, error) {
+func (m *RowMoneyTransaction) ToModel() (*moneytx.MoneyTransactionShippingExternalLine, error) {
 	layout := "01/02/06 15:04"
 	createdAt, err := time.ParseInLocation(layout, strings.TrimSpace(m.CreatedAt), time.Local)
 	if err != nil {
@@ -194,7 +204,7 @@ func (m *RowMoneyTransaction) ToModel() (*txmodel.MoneyTransactionShippingExtern
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "TotalCOD is invalid!").WithMetap("total COD", m.TotalCOD).WithMetap("row", m)
 	}
-	return &txmodel.MoneyTransactionShippingExternalLine{
+	return &moneytx.MoneyTransactionShippingExternalLine{
 		ExternalCode:         m.ExCode,
 		EtopFulfillmentIDRaw: m.EtopCode,
 		ExternalCreatedAt:    createdAt,

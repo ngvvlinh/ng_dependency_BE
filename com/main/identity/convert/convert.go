@@ -46,6 +46,7 @@ func User(in *identitymodel.User) (out *identity.User) {
 		EmailVerifiedAt: in.EmailVerifiedAt,
 		CreatedAt:       in.CreatedAt,
 		UpdatedAt:       in.UpdatedAt,
+		Source:          in.Source,
 	}
 	return
 }

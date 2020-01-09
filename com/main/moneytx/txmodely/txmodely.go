@@ -1,13 +1,14 @@
-package modely
+package txmodely
 
 import (
 	"etop.vn/backend/com/main/moneytx/model"
-	"etop.vn/backend/com/main/shipping/modely"
+	shippingmodely "etop.vn/backend/com/main/shipping/modely"
 )
 
+// +convert:type=moneytx.MoneyTransactionShippingExtended
 type MoneyTransactionExtended struct {
 	*model.MoneyTransactionShipping
-	Fulfillments []*modely.FulfillmentExtended
+	Fulfillments []*shippingmodely.FulfillmentExtended
 }
 
 type MoneyTransactionShippingEtopExtended struct {

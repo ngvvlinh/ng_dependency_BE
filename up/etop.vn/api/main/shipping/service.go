@@ -2,10 +2,12 @@ package shipping
 
 import (
 	"context"
+	"time"
 
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipping/types"
-	"etop.vn/api/top/types/etc/shipping"
+	shippingstate "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/try_on"
@@ -21,7 +23,11 @@ type Aggregate interface {
 
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
-	UpdateFulfillmentsMoneyTxShippingExternalID(context.Context, *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) (updated int, _ error)
+	UpdateFulfillmentsMoneyTxID(context.Context, *UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error)
+
+	UpdateFulfillmentsCODTransferedAt(context.Context, *UpdateFulfillmentsCODTransferedAtArgs) error
+
+	RemoveFulfillmentsMoneyTxID(context.Context, *RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error)
 
 	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
 
@@ -30,7 +36,23 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetFulfillmentByIDOrShippingCode(ctx context.Context, ID dot.ID, ShippingCode string) (*Fulfillment, error)
-	ListFulfillmentByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*Fulfillment, error)
+
+	ListFulfillmentsByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*Fulfillment, error)
+
+	ListFulfillmentsByMoneyTx(context.Context, *ListFullfillmentsByMoneyTxArgs) ([]*Fulfillment, error)
+
+	/*
+		ListFulfillmentsForMoneyTx: Lọc tất cả ffms thõa điều kiện để thêm vào phiên chuyển tiền shop
+	*/
+	ListFulfillmentsForMoneyTx(context.Context, *ListFulfillmentForMoneyTxArgs) ([]*Fulfillment, error)
+
+	GetFulfillmentExtended(ctx context.Context, ID dot.ID, ShippingCode string) (*FulfillmentExtended, error)
+
+	ListFulfillmentExtendedsByIDs(ctx context.Context, IDs []dot.ID, ShopID dot.ID) ([]*FulfillmentExtended, error)
+
+	ListFulfillmentExtendedsByMoneyTxShippingID(ctx context.Context, shopID dot.ID, moneyTxShippingID dot.ID) ([]*FulfillmentExtended, error)
+
+	ListFulfillmentsByShippingCodes(ctx context.Context, IDs []string) ([]*Fulfillment, error)
 }
 
 //-- Commands --//
@@ -87,19 +109,27 @@ type UpdateFulfillmentShippingStateArgs struct {
 	PartnerID                dot.ID
 	FulfillmentID            dot.ID
 	ShippingCode             string
-	ShippingState            shipping.State
+	ShippingState            shippingstate.State
 	ActualCompensationAmount dot.NullInt
 	ConnectionIDs            []dot.ID
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {
-	FulfillmentID    dot.ID
-	ShippingCode     string
-	ShippingFeeLines []*ShippingFeeLine
+	FulfillmentID            dot.ID
+	ShippingCode             string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	ShippingFeeLines         []*ShippingFeeLine
 }
 
-type UpdateFulfillmentsMoneyTxShippingExternalIDArgs struct {
+type UpdateFulfillmentsMoneyTxIDArgs struct {
 	FulfillmentIDs            []dot.ID
+	MoneyTxShippingExternalID dot.ID
+	MoneyTxShippingID         dot.ID
+}
+
+type RemoveFulfillmentsMoneyTxIDArgs struct {
+	FulfillmentIDs            []dot.ID
+	MoneyTxShippingID         dot.ID
 	MoneyTxShippingExternalID dot.ID
 }
 
@@ -108,4 +138,21 @@ type UpdateFulfillmentsStatusArgs struct {
 	Status         status4.NullStatus
 	ShopConfirm    status3.NullStatus
 	SyncStatus     status4.NullStatus
+}
+
+type UpdateFulfillmentsCODTransferedAtArgs struct {
+	FulfillmentIDs     []dot.ID
+	MoneyTxShippingIDs []dot.ID
+	CODTransferedAt    time.Time
+}
+
+type ListFulfillmentForMoneyTxArgs struct {
+	ShippingProvider shipping_provider.ShippingProvider
+	ShippingStates   []shippingstate.State
+	IsNoneCOD        dot.NullBool
+}
+
+type ListFullfillmentsByMoneyTxArgs struct {
+	MoneyTxShippingIDs        []dot.ID
+	MoneyTxShippingExternalID dot.ID
 }

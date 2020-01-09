@@ -461,12 +461,6 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 			return s.inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal":
-		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmMoneyTransactionShippingExternal(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -861,6 +855,12 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &GetShopsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShops(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Shop/GetShopsByIDs":
+		msg := &common.IDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShopsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

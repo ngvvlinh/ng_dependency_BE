@@ -9,6 +9,7 @@ import (
 
 // +gen:convert: etop.vn/backend/com/main/shipping/model->etop.vn/api/main/shipping,etop.vn/api/main/shipping/types
 // +gen:convert: etop.vn/backend/com/main/shipping/sharemodel->etop.vn/api/main/shipping
+// +gen:convert: etop.vn/backend/com/main/shipping/modely->etop.vn/api/main/shipping
 // +gen:convert: etop.vn/api/main/shipping
 
 func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/shipping"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/shipping/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -42,7 +43,7 @@ func (q *QueryService) GetFulfillmentByIDOrShippingCode(ctx context.Context, id 
 	return query.GetFulfillment()
 }
 
-func (q *QueryService) ListFulfillmentByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*shipping.Fulfillment, error) {
+func (q *QueryService) ListFulfillmentsByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*shipping.Fulfillment, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shopID")
 	}
@@ -51,4 +52,57 @@ func (q *QueryService) ListFulfillmentByIDs(ctx context.Context, IDs []dot.ID, s
 		return nil, err
 	}
 	return fulfillments, nil
+}
+
+func (q *QueryService) ListFulfillmentsByMoneyTx(ctx context.Context, args *shipping.ListFullfillmentsByMoneyTxArgs) ([]*shipping.Fulfillment, error) {
+	if len(args.MoneyTxShippingIDs) == 0 && args.MoneyTxShippingExternalID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing moneyTx ID")
+	}
+
+	query := q.store(ctx).OptionalMoneyTxShippingExternalID(args.MoneyTxShippingExternalID)
+	query.WithPaging(meta.Paging{
+		Limit: 10000,
+	})
+	if len(args.MoneyTxShippingIDs) > 0 {
+		query = query.MoneyTxShippingIDs(args.MoneyTxShippingIDs...)
+	}
+
+	return query.ListFfms()
+}
+
+func (q *QueryService) GetFulfillmentExtended(ctx context.Context, id dot.ID, shippingCode string) (*shipping.FulfillmentExtended, error) {
+	if id == 0 && shippingCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	return q.store(ctx).OptionalID(id).OptionalShippingCode(shippingCode).GetFulfillmentExtended()
+}
+
+func (q *QueryService) ListFulfillmentExtendedsByIDs(ctx context.Context, ids []dot.ID, shopID dot.ID) ([]*shipping.FulfillmentExtended, error) {
+	return q.store(ctx).IDs(ids...).OptionalShopID(shopID).ListFulfillmentExtendeds()
+}
+
+func (q *QueryService) ListFulfillmentExtendedsByMoneyTxShippingID(ctx context.Context, shopID dot.ID, moneyTxShippingID dot.ID) ([]*shipping.FulfillmentExtended, error) {
+	return q.store(ctx).ShopID(shopID).MoneyTxShippingID(moneyTxShippingID).ListFulfillmentExtendeds()
+}
+
+func (q *QueryService) ListFulfillmentsByShippingCodes(ctx context.Context, codes []string) ([]*shipping.Fulfillment, error) {
+	if len(codes) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping codes")
+	}
+	return q.store(ctx).ShippingCodes(codes).ListFfms()
+}
+
+func (q *QueryService) ListFulfillmentsForMoneyTx(ctx context.Context, args *shipping.ListFulfillmentForMoneyTxArgs) ([]*shipping.Fulfillment, error) {
+	if args.ShippingProvider == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping provider")
+	}
+	if args.ShippingStates == nil && !args.IsNoneCOD.Valid {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required arguments")
+	}
+	// Chỉ lấy những ffms chưa đối soát và chưa nằm trong phiên thanh toán nào
+	query := q.store(ctx).ShippingProvider(args.ShippingProvider).NotBelongToMoneyTx()
+
+	query = query.FilterForMoneyTx(args.IsNoneCOD.Bool, args.ShippingStates)
+
+	return query.ListFfms()
 }

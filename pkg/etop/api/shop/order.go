@@ -433,7 +433,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 
 func (s *FulfillmentService) GetFulfillmentsByIDs(ctx context.Context, q *GetFulfillmentsByIDsEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &shipping.ListFulfillmentByIDsQuery{
+	query := &shipping.ListFulfillmentsByIDsQuery{
 		IDs:    q.IDs,
 		ShopID: shopID,
 	}

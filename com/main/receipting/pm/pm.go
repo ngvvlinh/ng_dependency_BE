@@ -68,7 +68,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
 }
 
-func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *moneytx.MoneyTransactionConfirmedEvent) error {
+func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingConfirmedEvent) error {
 	var (
 		ledgerID         dot.ID
 		totalShippingFee int
@@ -80,7 +80,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 	mapOrderFulfillment := make(map[dot.ID]*modely.FulfillmentExtended)
 
 	getMoneyTransaction := &modelx.GetMoneyTransaction{
-		ID:     event.MoneyTransactionID,
+		ID:     event.MoneyTxShippingID,
 		ShopID: event.ShopID,
 	}
 	if err := sqlstore.GetMoneyTransaction(ctx, getMoneyTransaction); err != nil {
@@ -153,21 +153,21 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 		// Bỏ qua trường hợp không tìm thấy sổ quỹ
 		// Một số shop nạp tiền trước (credit) để xài nên không cập nhật thông tin tài khoản ngân hàng
 		// -> Giải pháp tạm thời: bỏ qua, ko tạo receipt
-		ll.Error("MoneyTransactionConfirmedEvent failed: không tìm thấy tài khoản ngân hàng", l.ID("shop_id", event.ShopID), l.ID("money_transaction_id", event.MoneyTransactionID))
+		ll.Error("MoneyTxShippingConfirmedEvent failed: không tìm thấy tài khoản ngân hàng", l.ID("shop_id", event.ShopID), l.ID("money_transaction_id", event.MoneyTxShippingID))
 		return nil
 	}
 	ledgerID, err := m.getOrCreateLedgerID(ctx, bankAccount, event.ShopID)
 	if err != nil {
-		return cm.Errorf(cm.NotFound, err, "Không tìm thấy sổ quỹ").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
+		return cm.Errorf(cm.NotFound, err, "Không tìm thấy sổ quỹ").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTxShippingID)
 	}
 
 	if err := m.createReceipts(ctx, mapOrderFulfillment, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu thu thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu thu thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTxShippingID)
 	}
 
 	// Create receipt type payment
 	if err := m.createPayment(ctx, totalShippingFee, fulfillments, event.ShopID, ledgerID); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu chi thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu chi thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTxShippingID)
 	}
 
 	return nil
@@ -349,9 +349,9 @@ func (m *ProcessManager) MoneyTxShippingEtopConfirmed(ctx context.Context, event
 	}
 	moneyTxs := query.Result.MoneyTransactions
 	for _, moneyTx := range moneyTxs {
-		cmd := &moneytx.MoneyTransactionConfirmedEvent{
-			ShopID:             moneyTx.ShopID,
-			MoneyTransactionID: moneyTx.ID,
+		cmd := &moneytx.MoneyTxShippingConfirmedEvent{
+			ShopID:            moneyTx.ShopID,
+			MoneyTxShippingID: moneyTx.ID,
 		}
 		if err := m.MoneyTransactionConfirmed(ctx, cmd); err != nil {
 			return err

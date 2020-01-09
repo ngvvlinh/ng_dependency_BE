@@ -1,13 +1,13 @@
 package convertpb
 
 import (
+	"etop.vn/api/main/address"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
-
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 )
 
@@ -227,6 +227,26 @@ func Convert_core_OrderAddress_To_api_OrderAddress(in *ordertypes.Address) *type
 }
 
 func Convert_core_OrderAddress_To_api_Address(in *ordertypes.Address) *etop.Address {
+	if in == nil {
+		return nil
+	}
+	return &etop.Address{
+		Province:     in.Province,
+		ProvinceCode: in.ProvinceCode,
+		District:     in.District,
+		DistrictCode: in.DistrictCode,
+		Ward:         in.Ward,
+		WardCode:     in.WardCode,
+		Address1:     in.Address1,
+		Address2:     in.Address2,
+		FullName:     in.FullName,
+		Phone:        in.Phone,
+		Email:        in.Email,
+		Coordinates:  Convert_core_Coordinates_To_api_Coordinates(in.Coordinates),
+	}
+}
+
+func Convert_core_Address_To_api_Address(in *address.Address) *etop.Address {
 	if in == nil {
 		return nil
 	}

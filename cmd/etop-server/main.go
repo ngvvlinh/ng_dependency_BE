@@ -458,12 +458,12 @@ func main() {
 	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
-	shippingPM := shippingpm.New(eventBus, shippingAggr, redisStore)
+	shippingQuery := shippingquery.NewQueryService(db).MessageBus()
+	shippingPM := shippingpm.New(eventBus, shippingQuery, shippingAggr, redisStore)
 	shippingPM.RegisterEventHandlers(eventBus)
 
-	moneyTxQuery = moneytxquery.NewMoneyTxQuery(db).MessageBus()
-	shippingQuery := shippingquery.NewQueryService(db).MessageBus()
-	moneyTxAggr = moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, eventBus).MessageBus()
+	moneyTxQuery = moneytxquery.NewMoneyTxQuery(db, shippingQuery).MessageBus()
+	moneyTxAggr = moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, identityQuery, eventBus).MessageBus()
 
 	dbWebServer, err = cmsql.Connect(cfg.PostgresWebServer)
 	if err != nil {
@@ -472,7 +472,7 @@ func main() {
 	webServerAggregate := webserveraggregate.New(eventBus, dbWebServer, catalogQuery).MessageBus()
 	webServerQuery := webserverquery.New(eventBus, dbWebServer, catalogQuery).MessageBus()
 
-	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, shippingQuery)
+	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, moneyTxAggr, shippingQuery)
 	moneyTxPM.RegisterEvenHandlers(eventBus)
 
 	whiteLabel := wl.Init(cmenv.Env())
@@ -591,7 +591,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus, shipmentManager)
+	admin.Init(eventBus, moneyTxQuery, moneyTxAggr, connectionAggregate, connectionQuery, identityQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus, shipmentManager)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

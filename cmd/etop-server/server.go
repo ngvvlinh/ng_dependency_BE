@@ -121,6 +121,8 @@ func startEtopServer() *http.Server {
 			rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfix.HandleImportMoneyTransactionManual)
 
 			imcsvghtk.Init(moneyTxAggr)
+			vtpostimxlsx.Init(moneyTxAggr)
+			imcsvghn.Init(moneyTxAggr)
 		}
 
 		// Register shop import handlers
