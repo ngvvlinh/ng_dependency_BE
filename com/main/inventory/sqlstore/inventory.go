@@ -31,7 +31,7 @@ func NewInventoryStore(db *cmsql.Database) InventoryFactory {
 type InventoryStore struct {
 	query cmsql.QueryFactory
 	ft    InventoryVariantFilters
-	*sqlstore.Paging
+	sqlstore.Paging
 	preds []interface{}
 }
 
@@ -99,7 +99,7 @@ func (s *InventoryStore) GetDB() (*model.InventoryVariant, error) {
 
 func (s *InventoryStore) ListInventoryDB() ([]*model.InventoryVariant, error) {
 	query := s.query().Where(s.preds)
-	query, err := sqlstore.LimitSort(query, s.Paging, Sort)
+	query, err := sqlstore.LimitSort(query, &s.Paging, Sort)
 	if err != nil {
 		return nil, err
 	}
