@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"database/sql"
 	"fmt"
 	"io"
 	"os"
@@ -50,9 +49,16 @@ type ExportOption struct {
 	ExcelMode bool
 }
 
+type rowsInterface interface {
+	Err() error
+	Next() bool
+	Scan(args ...interface{}) error
+	Close() error
+}
+
 type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
 	result chan<- *shop.ExportStatusItem,
-	total int, rows *sql.Rows, opts core.Opts) (_err error)
+	total int, rows rowsInterface, opts core.Opts) (_err error)
 
 func Init(sd cmService.Shutdowner, rd redis.Store, p eventstream.Publisher, cfg Config) {
 	idempgroup = idemp.NewRedisGroup(rd, "export", 60)
@@ -93,7 +99,7 @@ func ensureDir(dir string) error {
 func exportAndReportProgress(
 	cleanup func(),
 	exportResult *model.ExportAttempt, bareFilename string, exportOpts ExportOption,
-	total int, rows *sql.Rows, opts core.Opts,
+	total int, rows rowsInterface, opts core.Opts,
 	exportFunction ExportFunction) (_err error) {
 
 	exportResult.StartedAt = time.Now()

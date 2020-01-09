@@ -881,6 +881,14 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	// for exporting data
 	if query.ResultAsRows {
 		{
+			s2 := s.Clone()
+			total, err := s2.Count(&shipmodely.FulfillmentExtendeds{})
+			if err != nil {
+				return err
+			}
+			query.Result.Total = total
+		}
+		{
 			if query.Paging != nil && len(query.Paging.Sort) != 0 {
 				s = s.OrderBy(query.Paging.Sort...)
 			} else {

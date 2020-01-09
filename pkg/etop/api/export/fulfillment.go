@@ -2,7 +2,6 @@ package export
 
 import (
 	"context"
-	"database/sql"
 	"encoding/csv"
 	"io"
 	"strconv"
@@ -20,7 +19,7 @@ const exportFulfillmentLines = false
 func ExportFulfillments(
 	ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
 	result chan<- *shop.ExportStatusItem,
-	total int, rows *sql.Rows, opts core.Opts,
+	total int, rows rowsInterface, opts core.Opts,
 ) (_err error) {
 
 	var count, countError, line int
