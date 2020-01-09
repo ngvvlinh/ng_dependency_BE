@@ -62,11 +62,11 @@ type Device struct {
 }
 
 type NotiDataAddition struct {
-	Entity   NotiEntity
-	EntityID string
-	NotiID   string
-	ShopID   string
-	MetaData json.RawMessage
+	Entity   NotiEntity      `json:"entity"`
+	EntityID string          `json:"entity_id"`
+	NotiID   string          `json:"noti_id"`
+	ShopID   string          `json:"shop_id"`
+	MetaData json.RawMessage `json:"meta_data"`
 }
 
 func PrepareNotiData(args NotiDataAddition) json.RawMessage {
