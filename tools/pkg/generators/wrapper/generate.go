@@ -296,9 +296,15 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	{{end -}}
 	{{if requireCaptcha $m -}}
 	// Verify captcha token
+	{{if requireCaptcha $m | eq "custom" -}}
+	if req.RecaptchaToken != "" || req.RequireCaptcha() {
+	{{end -}}
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
 		return nil, err
 	}
+	{{if requireCaptcha $m | eq "custom" -}}
+	}
+	{{end -}}
 	{{end -}}
 	ctx = bus.NewRootContext(ctx)
 	{{if $m.Kind|eq 1 -}}
