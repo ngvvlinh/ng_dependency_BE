@@ -197,6 +197,10 @@ func (t Time) MarshalJSON() ([]byte, error) {
 }
 
 func (t *Time) UnmarshalJSON(data []byte) error {
+	if string(data) == null || string(data) == `""` {
+		*t = Time{}
+		return nil
+	}
 	var tt time.Time
 	err := tt.UnmarshalJSON(data)
 	if err != nil || IsZeroTime(tt) {

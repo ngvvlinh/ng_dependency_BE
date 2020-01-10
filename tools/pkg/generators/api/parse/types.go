@@ -206,6 +206,15 @@ func (inf *Info) IsID(typ types.Type) bool {
 	return typ == inf.typeID
 }
 
+func (inf *Info) IsNamed(typ types.Type, inner *types.Type) bool {
+	typ = SkipPointer(typ)
+	named, ok := typ.(*types.Named)
+	if ok {
+		*inner = named
+	}
+	return ok
+}
+
 func (inf *Info) IsNamedInterface(typ types.Type, inner *types.Type) bool {
 	named, ok := typ.(*types.Named)
 	if !ok {

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/go-openapi/jsonreference"
@@ -129,11 +130,7 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 										Name:     "body",
 										In:       "body",
 										Required: true,
-										Schema: &spec.Schema{
-											SchemaProps: spec.SchemaProps{
-												Ref: requestRef,
-											},
-										},
+										Schema:   requestRef,
 									},
 								},
 							},
@@ -143,11 +140,7 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 										200: {
 											ResponseProps: spec.ResponseProps{
 												Description: "A successful response",
-												Schema: &spec.Schema{
-													SchemaProps: spec.SchemaProps{
-														Ref: responseRef,
-													},
-												},
+												Schema:      responseRef,
 											},
 										},
 									},
@@ -258,7 +251,7 @@ func rotateChar(c byte, i byte) byte {
 	return c
 }
 
-func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ types.Type) spec.Ref {
+func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ types.Type) *spec.Schema {
 	typs, inner := genutil.ExtractType(typ)
 	if typs[len(typs)-1] != genutil.Named {
 		panic(fmt.Sprintf("must be named type (got %v)", inner))
@@ -272,7 +265,19 @@ func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ t
 		}
 		parseSchema(ng, name, definitions, inner)
 	}
-	return spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)}
+	return &spec.Schema{
+		SchemaProps: spec.SchemaProps{
+			Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
+		},
+	}
+}
+
+func getReferenceByID(id string) spec.Schema {
+	return spec.Schema{
+		SchemaProps: spec.SchemaProps{
+			Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
+		},
+	}
 }
 
 func parseSchema(ng generator.Engine, path string, definitions map[string]spec.Schema, typ types.Type) spec.Schema {
@@ -312,17 +317,10 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 			return simpleType("string", "")
 		}
 
-	case currentInfo.IsEnum(typ):
-		id := getDefinitionID(typ)
-		refSchema := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
-			},
-		}
-		if _, ok := definitions[id]; ok {
-			return refSchema
-		}
+	case currentInfo.IsID(typ):
+		return simpleType("string", "int64")
 
+	case currentInfo.IsEnum(typ):
 		enum := currentInfo.GetEnum(typ)
 		var enumNames []interface{}
 		for _, value := range enum.Values {
@@ -345,59 +343,72 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		if len(deprecatedEnumNames) != 0 {
 			s.Description = fmt.Sprintf(`Deprecated values: "%v"`, strings.Join(deprecatedEnumNames, `", "`))
 		}
-		definitions[id] = s
-		return refSchema
 
-	case currentInfo.IsNamedStruct(typ, &inner):
 		id := getDefinitionID(typ)
-		refSchema := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
-			},
-		}
-		if _, ok := definitions[id]; ok {
-			return refSchema
-		}
-
-		// placeholder to prevent infinite recursion
-		definitions[id] = spec.Schema{}
-		props := map[string]spec.Schema{}
-		st := inner.(*types.Struct)
-
-		// TODO: use message.Walk
-		var requiredFields []string
-		for i, n := 0, st.NumFields(); i < n; i++ {
-			field := st.Field(i)
-			if !field.Exported() {
-				continue
-			}
-			jsonTag := parseJsonTag(st.Tag(i))
-			switch jsonTag {
-			case "":
-				panic(fmt.Sprintf("no tag on field %v of struct %v", field.Name(), typ))
-			case "-":
-				continue
-			}
-			fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
-			desc, err := parseItemDescription(ng, field)
-			if err != nil {
-				panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err))
-			}
-			fieldSchema.Description = desc.FormattedDescription
-			if desc.Required {
-				requiredFields = append(requiredFields, jsonTag)
-			}
-			props[jsonTag] = fieldSchema
-		}
-		s := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type:       spec.StringOrArray{"object"},
-				Properties: props,
-				Required:   requiredFields,
-			},
-		}
 		definitions[id] = s
-		return refSchema
+		return getReferenceByID(id)
+
+	case currentInfo.IsNamed(typ, &inner):
+		id := getDefinitionID(typ)
+		if _, ok := definitions[id]; ok {
+			return getReferenceByID(id)
+		}
+
+		// types with custom +swagger directive
+		schema, err := parseSchemaDirectives(ng, inner.(*types.Named))
+		if err != nil {
+			panic(err)
+		}
+		if schema != nil {
+			definitions[id] = *schema
+			return getReferenceByID(id)
+		}
+
+		switch {
+		case currentInfo.IsNamedStruct(typ, &inner):
+			// placeholder to prevent infinite recursion
+			definitions[id] = spec.Schema{}
+			props := map[string]spec.Schema{}
+			st := inner.(*types.Struct)
+
+			// TODO: use message.Walk
+			var requiredFields []string
+			for i, n := 0, st.NumFields(); i < n; i++ {
+				field := st.Field(i)
+				if !field.Exported() {
+					continue
+				}
+				jsonTag := parseJsonTag(st.Tag(i))
+				switch jsonTag {
+				case "":
+					panic(fmt.Sprintf("no json tag on field %v of struct %v", field.Name(), typ))
+				case "-":
+					continue
+				}
+				fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
+				desc, err := parseItemDescription(ng, field)
+				if err != nil {
+					panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err))
+				}
+				fieldSchema.Description = desc.FormattedDescription
+				if desc.Required {
+					requiredFields = append(requiredFields, jsonTag)
+				}
+				props[jsonTag] = fieldSchema
+			}
+			s := spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Type:       spec.StringOrArray{"object"},
+					Properties: props,
+					Required:   requiredFields,
+				},
+			}
+			definitions[id] = s
+			return getReferenceByID(id)
+
+		case currentInfo.IsNamedInterface(typ, &inner):
+			panic(fmt.Sprintf("oneof is not supported"))
+		}
 
 	case currentInfo.IsArray(typ, &inner):
 		refSchema := parseSchema(ng, path+"[]", definitions, inner)
@@ -424,11 +435,6 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		}
 		return s
 
-	case currentInfo.IsID(typ):
-		return simpleType("string", "int64")
-
-	case currentInfo.IsNamedInterface(typ, &inner):
-		panic(fmt.Sprintf("oneof is not supported"))
 	}
 
 	panic(fmt.Sprintf("unsupported %v (%v)", typ, path))
@@ -484,7 +490,7 @@ var reDeprecated = regexp.MustCompile(`(?i)((?:^|\n)@?(deprecated|required|defau
 
 func parseItemDescription(ng generator.Engine, pos generator.Positioner) (ItemDescription, error) {
 	cmt := ng.GetComment(pos)
-	doc := cmt.Doc.Text()
+	doc := cmt.Text()
 	desc, err := parseItemDescriptionText(doc)
 	if err != nil {
 		return desc, generator.Errorf(err, "%v: %v", pos, err)
@@ -531,4 +537,36 @@ func parseItemDescriptionText(doc string) (res ItemDescription, _ error) {
 	}
 	res.FormattedDescription = strings.TrimLeft(formattedDescription, "\n")
 	return
+}
+
+func parseSchemaDirectives(ng generator.Engine, typ *types.Named) (*spec.Schema, error) {
+	desc, err := parseItemDescription(ng, typ.Obj())
+	if err != nil {
+		return nil, err
+	}
+
+	directives := ng.GetDirectives(typ.Obj())
+	swaggerType := directives.GetArg("swagger:type")
+	swaggerNullable := directives.GetArg("swagger:nullable")
+	swaggerFormat := directives.GetArg("swagger:format")
+	if swaggerType == "" {
+		return nil, nil
+	}
+
+	var nullable bool
+	if swaggerNullable != "" {
+		nullable, err = strconv.ParseBool(swaggerNullable)
+		if err != nil {
+			return nil, generator.Errorf(nil, "type %v: invalid directive +swagger:nullable=%v", typ, swaggerNullable)
+		}
+	}
+
+	return &spec.Schema{
+		SchemaProps: spec.SchemaProps{
+			Description: desc.FormattedDescription,
+			Type:        spec.StringOrArray{swaggerType},
+			Nullable:    nullable,
+			Format:      swaggerFormat,
+		},
+	}, nil
 }

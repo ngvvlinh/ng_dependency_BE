@@ -123,6 +123,10 @@ func IsZeroTime(t time.Time) bool {
 
 type Time time.Time
 
+func (t Time) String() string {
+	return t.ToTime().Format(time.RFC3339)
+}
+
 func (t Time) ToTime() time.Time {
 	return time.Time(t)
 }
