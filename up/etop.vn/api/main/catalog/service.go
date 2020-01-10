@@ -291,7 +291,7 @@ type UpdateShopProductInfoArgs struct {
 	RetailPrice NullInt
 	BrandID     NullID
 	ProductType product_type.ProductType
-	CategoryID  dot.ID
+	CategoryID  dot.NullID
 }
 
 // +convert:update=ShopProduct

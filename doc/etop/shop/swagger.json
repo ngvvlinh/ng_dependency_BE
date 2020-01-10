@@ -10909,6 +10909,10 @@
           "type": "string",
           "format": "int64"
         },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "code": {
           "type": "string"
         },

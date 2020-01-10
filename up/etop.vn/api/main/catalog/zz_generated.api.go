@@ -342,7 +342,7 @@ type UpdateShopProductInfoCommand struct {
 	RetailPrice dot.NullInt
 	BrandID     dot.NullID
 	ProductType product_type.ProductType
-	CategoryID  dot.ID
+	CategoryID  dot.NullID
 
 	Result *ShopProductWithVariants `json:"-"`
 }

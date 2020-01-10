@@ -665,7 +665,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndp
 		ShortDesc:   q.ShortDesc,
 		Description: q.Description,
 		DescHTML:    q.DescHtml,
-
+		CategoryID:  q.CategoryID,
 		CostPrice:   q.CostPrice,
 		ListPrice:   q.ListPrice,
 		RetailPrice: q.RetailPrice,

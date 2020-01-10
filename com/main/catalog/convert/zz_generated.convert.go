@@ -692,7 +692,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.CostPrice = arg.CostPrice.Apply(out.CostPrice)       // apply change
 	out.ListPrice = arg.ListPrice.Apply(out.ListPrice)       // apply change
 	out.RetailPrice = arg.RetailPrice.Apply(out.RetailPrice) // apply change
-	out.CategoryID = arg.CategoryID                          // simple assign
+	out.CategoryID = arg.CategoryID.Apply(out.CategoryID)    // apply change
 	out.CollectionIDs = out.CollectionIDs                    // no change
 	out.Tags = out.Tags                                      // no change
 	out.Status = out.Status                                  // no change

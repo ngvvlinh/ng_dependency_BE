@@ -496,6 +496,7 @@ type UpdateProductRequest struct {
 	CostPrice   dot.NullInt               `json:"cost_price"`
 	ListPrice   dot.NullInt               `json:"list_price"`
 	RetailPrice dot.NullInt               `json:"retail_price"`
+	CategoryID  dot.NullID                `json:"category_id"`
 	ProductType *product_type.ProductType `json:"product_type"`
 	MetaFields  *common.MetaField         `json:"meta_fields"`
 	BrandId     dot.NullID                `json:"brand_id"`
