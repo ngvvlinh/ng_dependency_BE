@@ -28,6 +28,9 @@ Custom conversions:
     updateShopVariant            // in use
 
 Ignored functions:
+    GenerateCodeProduct         // params are not pointer to named types
+    GenerateCodeVariant         // not recognized
+    ParseCodeNorm               // not recognized
     ShopProductsWithVariants    // params are not pointer to named types
     ShopVariantsWithProduct     // params are not pointer to named types
 */
@@ -549,6 +552,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.ShopID = arg.ShopID               // simple assign
 	out.ProductID = arg.ProductID         // simple assign
 	out.Code = arg.Code                   // simple assign
+	out.CodeNorm = arg.CodeNorm           // simple assign
 	out.Name = arg.Name                   // simple assign
 	out.Unit = arg.Unit                   // simple assign
 	out.ImageURLs = arg.ImageURLs         // simple assign
@@ -599,6 +603,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.ProductID = arg.ProductID         // simple assign
 	out.CollectionIDs = arg.CollectionIDs // simple assign
 	out.Code = arg.Code                   // simple assign
+	out.CodeNorm = arg.CodeNorm           // simple assign
 	out.Name = arg.Name                   // simple assign
 	out.Description = arg.Description     // simple assign
 	out.DescHTML = arg.DescHTML           // simple assign
@@ -642,6 +647,7 @@ func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 	out.ShopID = arg.ShopID               // simple assign
 	out.ProductID = arg.ProductID         // simple assign
 	out.Code = out.Code                   // no change
+	out.CodeNorm = out.CodeNorm           // no change
 	out.Name = out.Name                   // no change
 	out.Unit = out.Unit                   // no change
 	out.ImageURLs = out.ImageURLs         // no change
@@ -675,6 +681,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.ShopID = arg.ShopID                                  // simple assign
 	out.ProductID = arg.ProductID                            // simple assign
 	out.Code = arg.Code.Apply(out.Code)                      // apply change
+	out.CodeNorm = out.CodeNorm                              // no change
 	out.Name = arg.Name.Apply(out.Name)                      // apply change
 	out.Unit = arg.Unit.Apply(out.Unit)                      // apply change
 	out.ImageURLs = out.ImageURLs                            // no change
@@ -776,6 +783,7 @@ func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.Shop
 	out.ProductID = arg.ProductID       // simple assign
 	out.VariantID = arg.VariantID       // simple assign
 	out.Code = arg.Code                 // simple assign
+	out.CodeNorm = arg.CodeNorm         // simple assign
 	out.Name = arg.Name                 // simple assign
 	out.ShortDesc = arg.ShortDesc       // simple assign
 	out.Description = arg.Description   // simple assign
@@ -820,6 +828,7 @@ func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVaria
 	out.VariantID = arg.VariantID       // simple assign
 	out.ProductID = arg.ProductID       // simple assign
 	out.Code = arg.Code                 // simple assign
+	out.CodeNorm = arg.CodeNorm         // simple assign
 	out.Name = arg.Name                 // simple assign
 	out.Description = arg.Description   // simple assign
 	out.DescHTML = arg.DescHTML         // simple assign
@@ -860,6 +869,7 @@ func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 	out.ProductID = out.ProductID                            // no change
 	out.VariantID = arg.VariantID                            // simple assign
 	out.Code = arg.Code.Apply(out.Code)                      // apply change
+	out.CodeNorm = out.CodeNorm                              // no change
 	out.Name = arg.Name.Apply(out.Name)                      // apply change
 	out.ShortDesc = arg.ShortDesc.Apply(out.ShortDesc)       // apply change
 	out.Description = out.Description                        // no change

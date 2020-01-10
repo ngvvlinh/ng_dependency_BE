@@ -25,6 +25,8 @@ type ShopProduct struct {
 
 	Code string
 
+	CodeNorm int
+
 	Name string
 
 	Unit string
@@ -81,6 +83,8 @@ type ShopVariant struct {
 
 	// variant.code is also known as sku
 	Code string
+
+	CodeNorm int
 
 	Name string
 

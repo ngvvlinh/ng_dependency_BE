@@ -121,6 +121,11 @@ func (s *ShopProductStore) ByNameNormUas(names ...string) *ShopProductStore {
 	return s
 }
 
+func (s *ShopProductStore) IncludeDeleted() *ShopProductStore {
+	s.includeDeleted = true
+	return s
+}
+
 func (s *ShopProductStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
@@ -325,6 +330,10 @@ func checkProductOrVariantError(e error, code string) error {
 			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
 		case strings.Contains(errMsg, "shop_variant_shop_id_code_idx"):
 			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
+		case strings.Contains(errMsg, "shop_variant_shop_id_code_code_norm_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
+		case strings.Contains(errMsg, "shop_product_shop_id_code_code_norm_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
 		}
 	}
 	return e
@@ -337,6 +346,17 @@ func (s *ShopProductStore) RemoveShopProductCategory() (int, error) {
 		"category_id": nil,
 	})
 	return _deleted, err
+}
+
+func (s *ShopProductStore) GetProductByMaximumCodeNorm() (*model.ShopProduct, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var product model.ShopProduct
+	if err := query.ShouldGet(&product); err != nil {
+		return nil, err
+	}
+	return &product, nil
 }
 
 func CheckProductExternalError(e error, externalID, externalCode string) error {

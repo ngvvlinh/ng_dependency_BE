@@ -254,3 +254,14 @@ func CheckShopVariantExternalError(e error, externalID, externalCode string) err
 	}
 	return e
 }
+
+func (s *ShopVariantStore) GetVariantByMaximumCodeNorm(productID dot.ID) (*model.ShopVariant, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0 AND product_id = ?", productID)
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var variant model.ShopVariant
+	if err := query.ShouldGet(&variant); err != nil {
+		return nil, err
+	}
+	return &variant, nil
+}

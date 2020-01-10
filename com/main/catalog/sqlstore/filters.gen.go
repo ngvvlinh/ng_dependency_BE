@@ -158,6 +158,25 @@ func (ft *ShopVariantFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopVariantFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *ShopVariantFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
+	}
+}
+
 func (ft *ShopVariantFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -549,6 +568,25 @@ func (ft *ShopProductFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 		Value:  Code,
 		IsNil:  Code == nil,
 		IsZero: Code != nil && (*Code) == "",
+	}
+}
+
+func (ft *ShopProductFilters) ByCodeNorm(CodeNorm int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *ShopProductFilters) ByCodeNormPtr(CodeNorm *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
 	}
 }
 

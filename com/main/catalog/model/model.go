@@ -78,6 +78,7 @@ type ShopVariant struct {
 	ProductID dot.ID
 
 	Code        string
+	CodeNorm    int
 	Name        string
 	Description string
 	DescHTML    string
@@ -121,6 +122,7 @@ type ShopProduct struct {
 	CollectionIDs []dot.ID `sq:"-"`
 
 	Code        string
+	CodeNorm    int
 	Name        string
 	Description string
 	DescHTML    string

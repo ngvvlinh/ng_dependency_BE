@@ -2,6 +2,9 @@ package aggregate
 
 import (
 	"context"
+	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"etop.vn/api/main/catalog"
@@ -83,6 +86,30 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		MetaFields:  args.MetaFields,
 		BrandID:     args.BrandID,
 	}
+	if product.Code != "" {
+		number, ok := convert.ParseCodeNorm(product.Code)
+		if ok {
+			product.CodeNorm = number
+		}
+	}
+	if product.Code == "" {
+		var maxCodeNorm int
+		productTemp, err := a.shopProduct(ctx).ShopID(args.ShopID).IncludeDeleted().GetProductByMaximumCodeNorm()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			maxCodeNorm = productTemp.CodeNorm
+		case cm.NotFound:
+			// no-op
+		default:
+			return nil, err
+		}
+		if maxCodeNorm >= convert.MaxCodeNorm {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+		}
+		codeNorm := maxCodeNorm + 1
+		product.Code = convert.GenerateCodeProduct(codeNorm)
+		product.CodeNorm = codeNorm
+	}
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
 		return nil, sqlstore.CheckProductExternalError(err, args.ExternalID, args.ExternalCode)
 	}
@@ -152,7 +179,7 @@ func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQu
 }
 
 func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateShopVariantArgs) (*catalog.ShopVariant, error) {
-	_, err := a.shopProduct(ctx).
+	prodcut, err := a.shopProduct(ctx).
 		ShopID(args.ShopID).
 		ID(args.ProductID).
 		GetShopProductDB()
@@ -180,6 +207,38 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 		RetailPrice:  args.RetailPrice,
 		Note:         args.Note,
 	}
+	if variant.Code != "" {
+		ss := strings.Split(variant.Code, "-")
+		if len(ss) == 2 {
+			_, ok := convert.ParseCodeNorm(ss[0])
+			if ok {
+				log.Println(ss[1])
+				codeNorm, err := strconv.Atoi(ss[1])
+				if err == nil {
+					variant.CodeNorm = codeNorm
+				}
+			}
+		}
+	}
+	if variant.Code == "" {
+		var maxCodeNorm int
+		variantTemp, err := a.shopVariant(ctx).ShopID(args.ShopID).IncludeDeleted().GetVariantByMaximumCodeNorm(variant.ProductID)
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			maxCodeNorm = variantTemp.CodeNorm
+		case cm.NotFound:
+			// no-op
+		default:
+			return nil, err
+		}
+		if maxCodeNorm >= convert.MaxCodeNormVariant {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+		}
+		codeNorm := maxCodeNorm + 1
+		variant.Code = convert.GenerateCodeVariant(prodcut.Code, codeNorm)
+		variant.CodeNorm = codeNorm
+	}
+
 	if err = a.shopVariant(ctx).CreateShopVariant(variant); err != nil {
 		return nil, sqlstore.CheckShopVariantExternalError(err, args.ExternalID, args.ExternalCode)
 	}

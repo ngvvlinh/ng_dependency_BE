@@ -1,15 +1,50 @@
 package convert
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
 	"time"
 
 	"etop.vn/api/main/catalog"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/l"
 )
 
 // +gen:convert: etop.vn/backend/com/main/catalog/model->etop.vn/api/main/catalog,etop.vn/api/main/catalog/types
 // +gen:convert: etop.vn/api/main/catalog
+
+var ll = l.New()
+
+const (
+	MaxCodeNorm        = 999999
+	MaxCodeNormVariant = 100
+	codeRegex          = "^SP([0-9]{6})$"
+	codePrefix         = "SP"
+)
+
+var reCode = regexp.MustCompile(codeRegex)
+
+func ParseCodeNorm(code string) (_ int, ok bool) {
+	parts := reCode.FindStringSubmatch(code)
+	if len(parts) == 0 {
+		return 0, false
+	}
+	number, err := strconv.Atoi(parts[1])
+	if err != nil {
+		ll.Panic("unexpected", l.Error(err))
+	}
+	return number, true
+}
+
+func GenerateCodeProduct(codeNorm int) string {
+	return fmt.Sprintf("%v%06v", codePrefix, codeNorm)
+}
+
+func GenerateCodeVariant(productCode string, codeNorm int) string {
+	return fmt.Sprintf("%v-%02v", productCode, codeNorm)
+}
 
 func shopProduct(in *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
 	metaFields := []*catalog.MetaField{}

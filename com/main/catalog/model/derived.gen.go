@@ -129,8 +129,8 @@ func sqlgenShopVariant(_ *ShopVariant) bool { return true }
 type ShopVariants []*ShopVariant
 
 const __sqlShopVariant_Table = "shop_variant"
-const __sqlShopVariant_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"shop_id\",\"variant_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"attributes\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"attr_norm_kv\""
-const __sqlShopVariant_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"status\" = EXCLUDED.\"status\",\"attributes\" = EXCLUDED.\"attributes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"attr_norm_kv\" = EXCLUDED.\"attr_norm_kv\""
+const __sqlShopVariant_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"shop_id\",\"variant_id\",\"product_id\",\"code\",\"code_norm\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"attributes\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"attr_norm_kv\""
+const __sqlShopVariant_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"variant_id\" = EXCLUDED.\"variant_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"status\" = EXCLUDED.\"status\",\"attributes\" = EXCLUDED.\"attributes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"attr_norm_kv\" = EXCLUDED.\"attr_norm_kv\""
 const __sqlShopVariant_Insert = "INSERT INTO \"shop_variant\" (" + __sqlShopVariant_ListCols + ") VALUES"
 const __sqlShopVariant_Select = "SELECT " + __sqlShopVariant_ListCols + " FROM \"shop_variant\""
 const __sqlShopVariant_Select_history = "SELECT " + __sqlShopVariant_ListCols + " FROM history.\"shop_variant\""
@@ -162,6 +162,7 @@ func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.VariantID,
 		m.ProductID,
 		core.String(m.Code),
+		core.Int(m.CodeNorm),
 		core.String(m.Name),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -191,6 +192,7 @@ func (m *ShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.VariantID,
 		&m.ProductID,
 		(*core.String)(&m.Code),
+		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -245,7 +247,7 @@ func (_ *ShopVariants) SQLSelect(w SQLWriter) error {
 func (m *ShopVariant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -255,7 +257,7 @@ func (ms ShopVariants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(24)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -341,6 +343,14 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Code)
+	}
+	if m.CodeNorm != 0 {
+		flag = true
+		w.WriteName("code_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CodeNorm)
 	}
 	if m.Name != "" {
 		flag = true
@@ -488,7 +498,7 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 func (m *ShopVariant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -517,6 +527,7 @@ func (m ShopVariantHistory) ShopID() core.Interface       { return core.Interfac
 func (m ShopVariantHistory) VariantID() core.Interface    { return core.Interface{m["variant_id"]} }
 func (m ShopVariantHistory) ProductID() core.Interface    { return core.Interface{m["product_id"]} }
 func (m ShopVariantHistory) Code() core.Interface         { return core.Interface{m["code"]} }
+func (m ShopVariantHistory) CodeNorm() core.Interface     { return core.Interface{m["code_norm"]} }
 func (m ShopVariantHistory) Name() core.Interface         { return core.Interface{m["name"]} }
 func (m ShopVariantHistory) Description() core.Interface  { return core.Interface{m["description"]} }
 func (m ShopVariantHistory) DescHTML() core.Interface     { return core.Interface{m["desc_html"]} }
@@ -536,15 +547,15 @@ func (m ShopVariantHistory) NameNorm() core.Interface     { return core.Interfac
 func (m ShopVariantHistory) AttrNormKv() core.Interface   { return core.Interface{m["attr_norm_kv"]} }
 
 func (m *ShopVariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopVariantHistory, 24)
+	res := make(ShopVariantHistory, 25)
 	res["external_id"] = data[0]
 	res["external_code"] = data[1]
 	res["partner_id"] = data[2]
@@ -552,31 +563,32 @@ func (m *ShopVariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["variant_id"] = data[4]
 	res["product_id"] = data[5]
 	res["code"] = data[6]
-	res["name"] = data[7]
-	res["description"] = data[8]
-	res["desc_html"] = data[9]
-	res["short_desc"] = data[10]
-	res["image_urls"] = data[11]
-	res["note"] = data[12]
-	res["tags"] = data[13]
-	res["cost_price"] = data[14]
-	res["list_price"] = data[15]
-	res["retail_price"] = data[16]
-	res["status"] = data[17]
-	res["attributes"] = data[18]
-	res["created_at"] = data[19]
-	res["updated_at"] = data[20]
-	res["deleted_at"] = data[21]
-	res["name_norm"] = data[22]
-	res["attr_norm_kv"] = data[23]
+	res["code_norm"] = data[7]
+	res["name"] = data[8]
+	res["description"] = data[9]
+	res["desc_html"] = data[10]
+	res["short_desc"] = data[11]
+	res["image_urls"] = data[12]
+	res["note"] = data[13]
+	res["tags"] = data[14]
+	res["cost_price"] = data[15]
+	res["list_price"] = data[16]
+	res["retail_price"] = data[17]
+	res["status"] = data[18]
+	res["attributes"] = data[19]
+	res["created_at"] = data[20]
+	res["updated_at"] = data[21]
+	res["deleted_at"] = data[22]
+	res["name_norm"] = data[23]
+	res["attr_norm_kv"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *ShopVariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopVariantHistories, 0, 128)
@@ -592,23 +604,24 @@ func (ms *ShopVariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["variant_id"] = data[4]
 		m["product_id"] = data[5]
 		m["code"] = data[6]
-		m["name"] = data[7]
-		m["description"] = data[8]
-		m["desc_html"] = data[9]
-		m["short_desc"] = data[10]
-		m["image_urls"] = data[11]
-		m["note"] = data[12]
-		m["tags"] = data[13]
-		m["cost_price"] = data[14]
-		m["list_price"] = data[15]
-		m["retail_price"] = data[16]
-		m["status"] = data[17]
-		m["attributes"] = data[18]
-		m["created_at"] = data[19]
-		m["updated_at"] = data[20]
-		m["deleted_at"] = data[21]
-		m["name_norm"] = data[22]
-		m["attr_norm_kv"] = data[23]
+		m["code_norm"] = data[7]
+		m["name"] = data[8]
+		m["description"] = data[9]
+		m["desc_html"] = data[10]
+		m["short_desc"] = data[11]
+		m["image_urls"] = data[12]
+		m["note"] = data[13]
+		m["tags"] = data[14]
+		m["cost_price"] = data[15]
+		m["list_price"] = data[16]
+		m["retail_price"] = data[17]
+		m["status"] = data[18]
+		m["attributes"] = data[19]
+		m["created_at"] = data[20]
+		m["updated_at"] = data[21]
+		m["deleted_at"] = data[22]
+		m["name_norm"] = data[23]
+		m["attr_norm_kv"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -624,8 +637,8 @@ func sqlgenShopProduct(_ *ShopProduct) bool { return true }
 type ShopProducts []*ShopProduct
 
 const __sqlShopProduct_Table = "shop_product"
-const __sqlShopProduct_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"cost_price\",\"list_price\",\"retail_price\",\"brand_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
-const __sqlShopProduct_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"unit\" = EXCLUDED.\"unit\",\"category_id\" = EXCLUDED.\"category_id\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"brand_id\" = EXCLUDED.\"brand_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"name_norm_ua\" = EXCLUDED.\"name_norm_ua\",\"product_type\" = EXCLUDED.\"product_type\",\"meta_fields\" = EXCLUDED.\"meta_fields\""
+const __sqlShopProduct_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"shop_id\",\"product_id\",\"code\",\"code_norm\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"cost_price\",\"list_price\",\"retail_price\",\"brand_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
+const __sqlShopProduct_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"product_id\" = EXCLUDED.\"product_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"image_urls\" = EXCLUDED.\"image_urls\",\"note\" = EXCLUDED.\"note\",\"tags\" = EXCLUDED.\"tags\",\"unit\" = EXCLUDED.\"unit\",\"category_id\" = EXCLUDED.\"category_id\",\"cost_price\" = EXCLUDED.\"cost_price\",\"list_price\" = EXCLUDED.\"list_price\",\"retail_price\" = EXCLUDED.\"retail_price\",\"brand_id\" = EXCLUDED.\"brand_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"name_norm\" = EXCLUDED.\"name_norm\",\"name_norm_ua\" = EXCLUDED.\"name_norm_ua\",\"product_type\" = EXCLUDED.\"product_type\",\"meta_fields\" = EXCLUDED.\"meta_fields\""
 const __sqlShopProduct_Insert = "INSERT INTO \"shop_product\" (" + __sqlShopProduct_ListCols + ") VALUES"
 const __sqlShopProduct_Select = "SELECT " + __sqlShopProduct_ListCols + " FROM \"shop_product\""
 const __sqlShopProduct_Select_history = "SELECT " + __sqlShopProduct_ListCols + " FROM history.\"shop_product\""
@@ -656,6 +669,7 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ShopID,
 		m.ProductID,
 		core.String(m.Code),
+		core.Int(m.CodeNorm),
 		core.String(m.Name),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -688,6 +702,7 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ShopID,
 		&m.ProductID,
 		(*core.String)(&m.Code),
+		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -746,7 +761,7 @@ func (_ *ShopProducts) SQLSelect(w SQLWriter) error {
 func (m *ShopProduct) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(28)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -756,7 +771,7 @@ func (ms ShopProducts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(27)
+		w.WriteMarkers(28)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -834,6 +849,14 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Code)
+	}
+	if m.CodeNorm != 0 {
+		flag = true
+		w.WriteName("code_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CodeNorm)
 	}
 	if m.Name != "" {
 		flag = true
@@ -1013,7 +1036,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 func (m *ShopProduct) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(28)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1041,6 +1064,7 @@ func (m ShopProductHistory) PartnerID() core.Interface    { return core.Interfac
 func (m ShopProductHistory) ShopID() core.Interface       { return core.Interface{m["shop_id"]} }
 func (m ShopProductHistory) ProductID() core.Interface    { return core.Interface{m["product_id"]} }
 func (m ShopProductHistory) Code() core.Interface         { return core.Interface{m["code"]} }
+func (m ShopProductHistory) CodeNorm() core.Interface     { return core.Interface{m["code_norm"]} }
 func (m ShopProductHistory) Name() core.Interface         { return core.Interface{m["name"]} }
 func (m ShopProductHistory) Description() core.Interface  { return core.Interface{m["description"]} }
 func (m ShopProductHistory) DescHTML() core.Interface     { return core.Interface{m["desc_html"]} }
@@ -1064,50 +1088,51 @@ func (m ShopProductHistory) ProductType() core.Interface  { return core.Interfac
 func (m ShopProductHistory) MetaFields() core.Interface   { return core.Interface{m["meta_fields"]} }
 
 func (m *ShopProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 28)
+	args := make([]interface{}, 28)
+	for i := 0; i < 28; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopProductHistory, 27)
+	res := make(ShopProductHistory, 28)
 	res["external_id"] = data[0]
 	res["external_code"] = data[1]
 	res["partner_id"] = data[2]
 	res["shop_id"] = data[3]
 	res["product_id"] = data[4]
 	res["code"] = data[5]
-	res["name"] = data[6]
-	res["description"] = data[7]
-	res["desc_html"] = data[8]
-	res["short_desc"] = data[9]
-	res["image_urls"] = data[10]
-	res["note"] = data[11]
-	res["tags"] = data[12]
-	res["unit"] = data[13]
-	res["category_id"] = data[14]
-	res["cost_price"] = data[15]
-	res["list_price"] = data[16]
-	res["retail_price"] = data[17]
-	res["brand_id"] = data[18]
-	res["status"] = data[19]
-	res["created_at"] = data[20]
-	res["updated_at"] = data[21]
-	res["deleted_at"] = data[22]
-	res["name_norm"] = data[23]
-	res["name_norm_ua"] = data[24]
-	res["product_type"] = data[25]
-	res["meta_fields"] = data[26]
+	res["code_norm"] = data[6]
+	res["name"] = data[7]
+	res["description"] = data[8]
+	res["desc_html"] = data[9]
+	res["short_desc"] = data[10]
+	res["image_urls"] = data[11]
+	res["note"] = data[12]
+	res["tags"] = data[13]
+	res["unit"] = data[14]
+	res["category_id"] = data[15]
+	res["cost_price"] = data[16]
+	res["list_price"] = data[17]
+	res["retail_price"] = data[18]
+	res["brand_id"] = data[19]
+	res["status"] = data[20]
+	res["created_at"] = data[21]
+	res["updated_at"] = data[22]
+	res["deleted_at"] = data[23]
+	res["name_norm"] = data[24]
+	res["name_norm_ua"] = data[25]
+	res["product_type"] = data[26]
+	res["meta_fields"] = data[27]
 	*m = res
 	return nil
 }
 
 func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 28)
+	args := make([]interface{}, 28)
+	for i := 0; i < 28; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopProductHistories, 0, 128)
@@ -1122,27 +1147,28 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["shop_id"] = data[3]
 		m["product_id"] = data[4]
 		m["code"] = data[5]
-		m["name"] = data[6]
-		m["description"] = data[7]
-		m["desc_html"] = data[8]
-		m["short_desc"] = data[9]
-		m["image_urls"] = data[10]
-		m["note"] = data[11]
-		m["tags"] = data[12]
-		m["unit"] = data[13]
-		m["category_id"] = data[14]
-		m["cost_price"] = data[15]
-		m["list_price"] = data[16]
-		m["retail_price"] = data[17]
-		m["brand_id"] = data[18]
-		m["status"] = data[19]
-		m["created_at"] = data[20]
-		m["updated_at"] = data[21]
-		m["deleted_at"] = data[22]
-		m["name_norm"] = data[23]
-		m["name_norm_ua"] = data[24]
-		m["product_type"] = data[25]
-		m["meta_fields"] = data[26]
+		m["code_norm"] = data[6]
+		m["name"] = data[7]
+		m["description"] = data[8]
+		m["desc_html"] = data[9]
+		m["short_desc"] = data[10]
+		m["image_urls"] = data[11]
+		m["note"] = data[12]
+		m["tags"] = data[13]
+		m["unit"] = data[14]
+		m["category_id"] = data[15]
+		m["cost_price"] = data[16]
+		m["list_price"] = data[17]
+		m["retail_price"] = data[18]
+		m["brand_id"] = data[19]
+		m["status"] = data[20]
+		m["created_at"] = data[21]
+		m["updated_at"] = data[22]
+		m["deleted_at"] = data[23]
+		m["name_norm"] = data[24]
+		m["name_norm_ua"] = data[25]
+		m["product_type"] = data[26]
+		m["meta_fields"] = data[27]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
