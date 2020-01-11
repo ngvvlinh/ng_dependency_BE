@@ -21,7 +21,7 @@
           "Integration"
         ],
         "summary": "GrantAccess",
-        "operationId": "flGrantAccess",
+        "operationId": "integration.Integration-GrantAccess",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Integration"
         ],
         "summary": "Init",
-        "operationId": "flInit",
+        "operationId": "integration.Integration-Init",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "Integration"
         ],
         "summary": "LoginUsingToken",
-        "operationId": "flLoginUsingToken",
+        "operationId": "integration.Integration-LoginUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "Integration"
         ],
         "summary": "Register",
-        "operationId": "flRegister",
+        "operationId": "integration.Integration-Register",
         "parameters": [
           {
             "name": "body",
@@ -130,7 +130,7 @@
           "Integration"
         ],
         "summary": "RequestLogin",
-        "operationId": "flRequestLogin",
+        "operationId": "integration.Integration-RequestLogin",
         "parameters": [
           {
             "name": "body",
@@ -157,7 +157,7 @@
           "Integration"
         ],
         "summary": "SessionInfo",
-        "operationId": "flSessionInfo",
+        "operationId": "integration.Integration-SessionInfo",
         "parameters": [
           {
             "name": "body",
@@ -184,7 +184,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "wfVersionInfo",
+        "operationId": "integration.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",

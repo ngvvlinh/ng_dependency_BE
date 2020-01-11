@@ -21,7 +21,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "plVersionInfo",
+        "operationId": "sadmin.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "User"
         ],
         "summary": "CreateUser",
-        "operationId": "gfCreateUser",
+        "operationId": "sadmin.User-CreateUser",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "User"
         ],
         "summary": "LoginAsAccount",
-        "operationId": "gfLoginAsAccount",
+        "operationId": "sadmin.User-LoginAsAccount",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "User"
         ],
         "summary": "ResetPassword",
-        "operationId": "gfResetPassword",
+        "operationId": "sadmin.User-ResetPassword",
         "parameters": [
           {
             "name": "body",

@@ -21,7 +21,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "okVersionInfo",
+        "operationId": "handler.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Webhook"
         ],
         "summary": "ResetState",
-        "operationId": "feResetState",
+        "operationId": "handler.Webhook-ResetState",
         "parameters": [
           {
             "name": "body",

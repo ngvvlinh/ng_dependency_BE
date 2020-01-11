@@ -21,7 +21,7 @@
           "Affiliate"
         ],
         "summary": "AffiliateGetProducts",
-        "operationId": "yeAffiliateGetProducts",
+        "operationId": "affiliate.Affiliate-AffiliateGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Affiliate"
         ],
         "summary": "CreateOrUpdateAffiliateCommissionSetting",
-        "operationId": "yeCreateOrUpdateAffiliateCommissionSetting",
+        "operationId": "affiliate.Affiliate-CreateOrUpdateAffiliateCommissionSetting",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "Affiliate"
         ],
         "summary": "CreateReferralCode",
-        "operationId": "yeCreateReferralCode",
+        "operationId": "affiliate.Affiliate-CreateReferralCode",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "Affiliate"
         ],
         "summary": "GetCommissions",
-        "operationId": "yeGetCommissions",
+        "operationId": "affiliate.Affiliate-GetCommissions",
         "parameters": [
           {
             "name": "body",
@@ -129,7 +129,7 @@
           "Affiliate"
         ],
         "summary": "GetProductPromotionByProductID",
-        "operationId": "yeGetProductPromotionByProductID",
+        "operationId": "affiliate.Affiliate-GetProductPromotionByProductID",
         "parameters": [
           {
             "name": "body",
@@ -156,7 +156,7 @@
           "Affiliate"
         ],
         "summary": "GetReferralCodes",
-        "operationId": "yeGetReferralCodes",
+        "operationId": "affiliate.Affiliate-GetReferralCodes",
         "parameters": [
           {
             "name": "body",
@@ -183,7 +183,7 @@
           "Affiliate"
         ],
         "summary": "GetReferrals",
-        "operationId": "yeGetReferrals",
+        "operationId": "affiliate.Affiliate-GetReferrals",
         "parameters": [
           {
             "name": "body",
@@ -210,7 +210,7 @@
           "Affiliate"
         ],
         "summary": "GetTransactions",
-        "operationId": "yeGetTransactions",
+        "operationId": "affiliate.Affiliate-GetTransactions",
         "parameters": [
           {
             "name": "body",
@@ -237,7 +237,7 @@
           "Affiliate"
         ],
         "summary": "NotifyNewShopPurchase",
-        "operationId": "yeNotifyNewShopPurchase",
+        "operationId": "affiliate.Affiliate-NotifyNewShopPurchase",
         "parameters": [
           {
             "name": "body",
@@ -264,7 +264,7 @@
           "Shop"
         ],
         "summary": "CheckReferralCodeValid",
-        "operationId": "ncCheckReferralCodeValid",
+        "operationId": "affiliate.Shop-CheckReferralCodeValid",
         "parameters": [
           {
             "name": "body",
@@ -291,7 +291,7 @@
           "Shop"
         ],
         "summary": "GetProductPromotion",
-        "operationId": "ncGetProductPromotion",
+        "operationId": "affiliate.Shop-GetProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -318,7 +318,7 @@
           "Shop"
         ],
         "summary": "ShopGetProducts",
-        "operationId": "ncShopGetProducts",
+        "operationId": "affiliate.Shop-ShopGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -345,7 +345,7 @@
           "Trading"
         ],
         "summary": "CreateOrUpdateTradingCommissionSetting",
-        "operationId": "gyCreateOrUpdateTradingCommissionSetting",
+        "operationId": "affiliate.Trading-CreateOrUpdateTradingCommissionSetting",
         "parameters": [
           {
             "name": "body",
@@ -372,7 +372,7 @@
           "Trading"
         ],
         "summary": "CreateTradingProductPromotion",
-        "operationId": "gyCreateTradingProductPromotion",
+        "operationId": "affiliate.Trading-CreateTradingProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -399,7 +399,7 @@
           "Trading"
         ],
         "summary": "GetTradingProductPromotionByProductIDs",
-        "operationId": "gyGetTradingProductPromotionByProductIDs",
+        "operationId": "affiliate.Trading-GetTradingProductPromotionByProductIDs",
         "parameters": [
           {
             "name": "body",
@@ -426,7 +426,7 @@
           "Trading"
         ],
         "summary": "GetTradingProductPromotions",
-        "operationId": "gyGetTradingProductPromotions",
+        "operationId": "affiliate.Trading-GetTradingProductPromotions",
         "parameters": [
           {
             "name": "body",
@@ -453,7 +453,7 @@
           "Trading"
         ],
         "summary": "TradingGetProducts",
-        "operationId": "gyTradingGetProducts",
+        "operationId": "affiliate.Trading-TradingGetProducts",
         "parameters": [
           {
             "name": "body",
@@ -480,7 +480,7 @@
           "Trading"
         ],
         "summary": "UpdateTradingProductPromotion",
-        "operationId": "gyUpdateTradingProductPromotion",
+        "operationId": "affiliate.Trading-UpdateTradingProductPromotion",
         "parameters": [
           {
             "name": "body",
@@ -507,7 +507,7 @@
           "User"
         ],
         "summary": "UpdateReferral",
-        "operationId": "gbUpdateReferral",
+        "operationId": "affiliate.User-UpdateReferral",
         "parameters": [
           {
             "name": "body",

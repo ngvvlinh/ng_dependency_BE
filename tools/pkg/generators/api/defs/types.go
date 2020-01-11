@@ -13,11 +13,12 @@ const (
 )
 
 type Service struct {
-	Kind     Kind
-	Name     string
-	FullName string
-	APIPath  string
-	Methods  []*Method
+	Kind      Kind
+	Name      string
+	FullName  string
+	APIPath   string
+	APIPathID string
+	Methods   []*Method
 }
 
 type Method struct {

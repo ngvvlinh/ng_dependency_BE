@@ -40,12 +40,15 @@ func Services(ng generator.Engine, pkg *packages.Package, kinds []defs.Kind) (se
 						return nil, generator.Errorf(err, "service %v: %v", obj.Name(), err)
 					}
 
+					apiPath := directives.GetArg("apix:path")
+					apiPathID := strings.Replace(strings.TrimPrefix(apiPath, "/"), "/", "-", -1)
 					service := &defs.Service{
-						Kind:     kind,
-						Name:     strings.TrimSuffix(obj.Name(), string(kind)),
-						FullName: obj.Name(),
-						APIPath:  directives.GetArg("apix:path"),
-						Methods:  methods,
+						Kind:      kind,
+						Name:      strings.TrimSuffix(obj.Name(), string(kind)),
+						FullName:  obj.Name(),
+						APIPath:   apiPath,
+						APIPathID: apiPathID,
+						Methods:   methods,
 					}
 					services = append(services, service)
 					for _, m := range methods {

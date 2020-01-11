@@ -21,7 +21,7 @@
           "Account"
         ],
         "summary": "DeleteAffiliate",
-        "operationId": "rdDeleteAffiliate",
+        "operationId": "affiliate.Account-DeleteAffiliate",
         "parameters": [
           {
             "name": "body",
@@ -48,14 +48,14 @@
           "Account"
         ],
         "summary": "RegisterAffiliate",
-        "operationId": "rdRegisterAffiliate",
+        "operationId": "affiliate.Account-RegisterAffiliate",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mbRegisterAffiliateRequest"
+              "$ref": "#/definitions/xlRegisterAffiliateRequest"
             }
           }
         ],
@@ -75,14 +75,14 @@
           "Account"
         ],
         "summary": "UpdateAffiliate",
-        "operationId": "rdUpdateAffiliate",
+        "operationId": "affiliate.Account-UpdateAffiliate",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mbUpdateAffiliateRequest"
+              "$ref": "#/definitions/xlUpdateAffiliateRequest"
             }
           }
         ],
@@ -102,14 +102,14 @@
           "Account"
         ],
         "summary": "UpdateAffiliateBankAccount",
-        "operationId": "rdUpdateAffiliateBankAccount",
+        "operationId": "affiliate.Account-UpdateAffiliateBankAccount",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mbUpdateAffiliateBankAccountRequest"
+              "$ref": "#/definitions/xlUpdateAffiliateBankAccountRequest"
             }
           }
         ],
@@ -129,7 +129,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "ogVersionInfo",
+        "operationId": "affiliate.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -237,7 +237,7 @@
         }
       }
     },
-    "mbRegisterAffiliateRequest": {
+    "xlRegisterAffiliateRequest": {
       "type": "object",
       "required": [
         "name"
@@ -257,7 +257,7 @@
         }
       }
     },
-    "mbUpdateAffiliateBankAccountRequest": {
+    "xlUpdateAffiliateBankAccountRequest": {
       "type": "object",
       "properties": {
         "bank_account": {
@@ -265,7 +265,7 @@
         }
       }
     },
-    "mbUpdateAffiliateRequest": {
+    "xlUpdateAffiliateRequest": {
       "type": "object",
       "properties": {
         "email": {

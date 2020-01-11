@@ -22,7 +22,7 @@
           "Account"
         ],
         "summary": "GetPublicPartnerInfo",
-        "operationId": "voGetPublicPartnerInfo",
+        "operationId": "etop.Account-GetPublicPartnerInfo",
         "parameters": [
           {
             "name": "body",
@@ -50,7 +50,7 @@
           "Account"
         ],
         "summary": "GetPublicPartners",
-        "operationId": "voGetPublicPartners",
+        "operationId": "etop.Account-GetPublicPartners",
         "parameters": [
           {
             "name": "body",
@@ -77,7 +77,7 @@
           "Account"
         ],
         "summary": "UpdateURLSlug",
-        "operationId": "voUpdateURLSlug",
+        "operationId": "etop.Account-UpdateURLSlug",
         "parameters": [
           {
             "name": "body",
@@ -104,7 +104,7 @@
           "AccountRelationship"
         ],
         "summary": "CreateInvitation",
-        "operationId": "qgCreateInvitation",
+        "operationId": "etop.AccountRelationship-CreateInvitation",
         "parameters": [
           {
             "name": "body",
@@ -131,7 +131,7 @@
           "AccountRelationship"
         ],
         "summary": "DeleteInvitation",
-        "operationId": "qgDeleteInvitation",
+        "operationId": "etop.AccountRelationship-DeleteInvitation",
         "parameters": [
           {
             "name": "body",
@@ -158,7 +158,7 @@
           "AccountRelationship"
         ],
         "summary": "GetInvitations",
-        "operationId": "qgGetInvitations",
+        "operationId": "etop.AccountRelationship-GetInvitations",
         "parameters": [
           {
             "name": "body",
@@ -185,7 +185,7 @@
           "AccountRelationship"
         ],
         "summary": "GetRelationships",
-        "operationId": "qgGetRelationships",
+        "operationId": "etop.AccountRelationship-GetRelationships",
         "parameters": [
           {
             "name": "body",
@@ -212,7 +212,7 @@
           "AccountRelationship"
         ],
         "summary": "RemoveUser",
-        "operationId": "qgRemoveUser",
+        "operationId": "etop.AccountRelationship-RemoveUser",
         "parameters": [
           {
             "name": "body",
@@ -239,7 +239,7 @@
           "AccountRelationship"
         ],
         "summary": "UpdatePermission",
-        "operationId": "qgUpdatePermission",
+        "operationId": "etop.AccountRelationship-UpdatePermission",
         "parameters": [
           {
             "name": "body",
@@ -266,7 +266,7 @@
           "AccountRelationship"
         ],
         "summary": "UpdateRelationship",
-        "operationId": "qgUpdateRelationship",
+        "operationId": "etop.AccountRelationship-UpdateRelationship",
         "parameters": [
           {
             "name": "body",
@@ -293,7 +293,7 @@
           "Address"
         ],
         "summary": "CreateAddress",
-        "operationId": "hdCreateAddress",
+        "operationId": "etop.Address-CreateAddress",
         "parameters": [
           {
             "name": "body",
@@ -320,7 +320,7 @@
           "Address"
         ],
         "summary": "GetAddresses",
-        "operationId": "hdGetAddresses",
+        "operationId": "etop.Address-GetAddresses",
         "parameters": [
           {
             "name": "body",
@@ -347,7 +347,7 @@
           "Address"
         ],
         "summary": "RemoveAddress",
-        "operationId": "hdRemoveAddress",
+        "operationId": "etop.Address-RemoveAddress",
         "parameters": [
           {
             "name": "body",
@@ -374,7 +374,7 @@
           "Address"
         ],
         "summary": "UpdateAddress",
-        "operationId": "hdUpdateAddress",
+        "operationId": "etop.Address-UpdateAddress",
         "parameters": [
           {
             "name": "body",
@@ -401,7 +401,7 @@
           "Bank"
         ],
         "summary": "GetBanks",
-        "operationId": "azGetBanks",
+        "operationId": "etop.Bank-GetBanks",
         "parameters": [
           {
             "name": "body",
@@ -428,7 +428,7 @@
           "Bank"
         ],
         "summary": "GetBranchesByBankProvince",
-        "operationId": "azGetBranchesByBankProvince",
+        "operationId": "etop.Bank-GetBranchesByBankProvince",
         "parameters": [
           {
             "name": "body",
@@ -455,7 +455,7 @@
           "Bank"
         ],
         "summary": "GetProvincesByBank",
-        "operationId": "azGetProvincesByBank",
+        "operationId": "etop.Bank-GetProvincesByBank",
         "parameters": [
           {
             "name": "body",
@@ -482,7 +482,7 @@
           "Location"
         ],
         "summary": "GetDistricts",
-        "operationId": "acGetDistricts",
+        "operationId": "etop.Location-GetDistricts",
         "parameters": [
           {
             "name": "body",
@@ -509,7 +509,7 @@
           "Location"
         ],
         "summary": "GetDistrictsByProvince",
-        "operationId": "acGetDistrictsByProvince",
+        "operationId": "etop.Location-GetDistrictsByProvince",
         "parameters": [
           {
             "name": "body",
@@ -536,7 +536,7 @@
           "Location"
         ],
         "summary": "GetProvinces",
-        "operationId": "acGetProvinces",
+        "operationId": "etop.Location-GetProvinces",
         "parameters": [
           {
             "name": "body",
@@ -563,7 +563,7 @@
           "Location"
         ],
         "summary": "GetWards",
-        "operationId": "acGetWards",
+        "operationId": "etop.Location-GetWards",
         "parameters": [
           {
             "name": "body",
@@ -590,7 +590,7 @@
           "Location"
         ],
         "summary": "GetWardsByDistrict",
-        "operationId": "acGetWardsByDistrict",
+        "operationId": "etop.Location-GetWardsByDistrict",
         "parameters": [
           {
             "name": "body",
@@ -617,7 +617,7 @@
           "Location"
         ],
         "summary": "ParseLocation",
-        "operationId": "acParseLocation",
+        "operationId": "etop.Location-ParseLocation",
         "parameters": [
           {
             "name": "body",
@@ -644,7 +644,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "hmVersionInfo",
+        "operationId": "etop.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -672,7 +672,7 @@
           "User"
         ],
         "summary": "ChangePassword",
-        "operationId": "qbChangePassword",
+        "operationId": "etop.User-ChangePassword",
         "parameters": [
           {
             "name": "body",
@@ -700,7 +700,7 @@
           "User"
         ],
         "summary": "ChangePasswordUsingToken",
-        "operationId": "qbChangePasswordUsingToken",
+        "operationId": "etop.User-ChangePasswordUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -727,7 +727,7 @@
           "User"
         ],
         "summary": "CheckUserRegistration",
-        "operationId": "qbCheckUserRegistration",
+        "operationId": "etop.User-CheckUserRegistration",
         "parameters": [
           {
             "name": "body",
@@ -754,7 +754,7 @@
           "User"
         ],
         "summary": "InitSession",
-        "operationId": "qbInitSession",
+        "operationId": "etop.User-InitSession",
         "parameters": [
           {
             "name": "body",
@@ -782,7 +782,7 @@
           "User"
         ],
         "summary": "Login",
-        "operationId": "qbLogin",
+        "operationId": "etop.User-Login",
         "parameters": [
           {
             "name": "body",
@@ -810,7 +810,7 @@
           "User"
         ],
         "summary": "Register",
-        "operationId": "qbRegister",
+        "operationId": "etop.User-Register",
         "parameters": [
           {
             "name": "body",
@@ -837,7 +837,7 @@
           "User"
         ],
         "summary": "RegisterUsingToken",
-        "operationId": "qbRegisterUsingToken",
+        "operationId": "etop.User-RegisterUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -865,7 +865,7 @@
           "User"
         ],
         "summary": "ResetPassword",
-        "operationId": "qbResetPassword",
+        "operationId": "etop.User-ResetPassword",
         "parameters": [
           {
             "name": "body",
@@ -892,7 +892,7 @@
           "User"
         ],
         "summary": "SendEmailVerification",
-        "operationId": "qbSendEmailVerification",
+        "operationId": "etop.User-SendEmailVerification",
         "parameters": [
           {
             "name": "body",
@@ -919,7 +919,7 @@
           "User"
         ],
         "summary": "SendPhoneVerification",
-        "operationId": "qbSendPhoneVerification",
+        "operationId": "etop.User-SendPhoneVerification",
         "parameters": [
           {
             "name": "body",
@@ -946,7 +946,7 @@
           "User"
         ],
         "summary": "SendSTokenEmail",
-        "operationId": "qbSendSTokenEmail",
+        "operationId": "etop.User-SendSTokenEmail",
         "parameters": [
           {
             "name": "body",
@@ -974,7 +974,7 @@
           "User"
         ],
         "summary": "SessionInfo",
-        "operationId": "qbSessionInfo",
+        "operationId": "etop.User-SessionInfo",
         "parameters": [
           {
             "name": "body",
@@ -1002,7 +1002,7 @@
           "User"
         ],
         "summary": "SwitchAccount",
-        "operationId": "qbSwitchAccount",
+        "operationId": "etop.User-SwitchAccount",
         "parameters": [
           {
             "name": "body",
@@ -1029,7 +1029,7 @@
           "User"
         ],
         "summary": "UpdatePermission",
-        "operationId": "qbUpdatePermission",
+        "operationId": "etop.User-UpdatePermission",
         "parameters": [
           {
             "name": "body",
@@ -1056,7 +1056,7 @@
           "User"
         ],
         "summary": "UpdateReferenceSale",
-        "operationId": "qbUpdateReferenceSale",
+        "operationId": "etop.User-UpdateReferenceSale",
         "parameters": [
           {
             "name": "body",
@@ -1083,7 +1083,7 @@
           "User"
         ],
         "summary": "UpdateReferenceUser",
-        "operationId": "qbUpdateReferenceUser",
+        "operationId": "etop.User-UpdateReferenceUser",
         "parameters": [
           {
             "name": "body",
@@ -1110,7 +1110,7 @@
           "User"
         ],
         "summary": "UpgradeAccessToken",
-        "operationId": "qbUpgradeAccessToken",
+        "operationId": "etop.User-UpgradeAccessToken",
         "parameters": [
           {
             "name": "body",
@@ -1137,7 +1137,7 @@
           "User"
         ],
         "summary": "VerifyEmailUsingToken",
-        "operationId": "qbVerifyEmailUsingToken",
+        "operationId": "etop.User-VerifyEmailUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -1164,7 +1164,7 @@
           "User"
         ],
         "summary": "VerifyPhoneUsingToken",
-        "operationId": "qbVerifyPhoneUsingToken",
+        "operationId": "etop.User-VerifyPhoneUsingToken",
         "parameters": [
           {
             "name": "body",
@@ -1191,7 +1191,7 @@
           "UserRelationship"
         ],
         "summary": "AcceptInvitation",
-        "operationId": "vdAcceptInvitation",
+        "operationId": "etop.UserRelationship-AcceptInvitation",
         "parameters": [
           {
             "name": "body",
@@ -1218,7 +1218,7 @@
           "UserRelationship"
         ],
         "summary": "GetInvitationByToken",
-        "operationId": "vdGetInvitationByToken",
+        "operationId": "etop.UserRelationship-GetInvitationByToken",
         "parameters": [
           {
             "name": "body",
@@ -1245,7 +1245,7 @@
           "UserRelationship"
         ],
         "summary": "GetInvitations",
-        "operationId": "vdGetInvitations",
+        "operationId": "etop.UserRelationship-GetInvitations",
         "parameters": [
           {
             "name": "body",
@@ -1272,7 +1272,7 @@
           "UserRelationship"
         ],
         "summary": "LeaveAccount",
-        "operationId": "vdLeaveAccount",
+        "operationId": "etop.UserRelationship-LeaveAccount",
         "parameters": [
           {
             "name": "body",
@@ -1299,7 +1299,7 @@
           "UserRelationship"
         ],
         "summary": "RejectInvitation",
-        "operationId": "vdRejectInvitation",
+        "operationId": "etop.UserRelationship-RejectInvitation",
         "parameters": [
           {
             "name": "body",

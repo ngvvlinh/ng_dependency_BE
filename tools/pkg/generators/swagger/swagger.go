@@ -222,8 +222,7 @@ func getDefinitionID(typ types.Type) string {
 }
 
 func getOperationID(m *defs.Method) string {
-	origPath := m.Method.Pkg().Path() + "." + m.Service.FullName
-	return getCompactPath(origPath) + m.Name
+	return m.Service.APIPathID + "-" + m.Name
 }
 
 func compactPath(s string) string {

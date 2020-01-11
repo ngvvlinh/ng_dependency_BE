@@ -21,7 +21,7 @@
           "History"
         ],
         "summary": "GetChanges",
-        "operationId": "ldGetChanges",
+        "operationId": "shop.History-GetChanges",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Misc"
         ],
         "summary": "CurrentAccount",
-        "operationId": "cxCurrentAccount",
+        "operationId": "shop.Misc-CurrentAccount",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "Misc"
         ],
         "summary": "GetLocationList",
-        "operationId": "cxGetLocationList",
+        "operationId": "shop.Misc-GetLocationList",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "cxVersionInfo",
+        "operationId": "shop.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -129,7 +129,7 @@
           "Shipping"
         ],
         "summary": "CancelOrder",
-        "operationId": "ayCancelOrder",
+        "operationId": "shop.Shipping-CancelOrder",
         "parameters": [
           {
             "name": "body",
@@ -156,7 +156,7 @@
           "Shipping"
         ],
         "summary": "CreateAndConfirmOrder",
-        "operationId": "ayCreateAndConfirmOrder",
+        "operationId": "shop.Shipping-CreateAndConfirmOrder",
         "parameters": [
           {
             "name": "body",
@@ -183,7 +183,7 @@
           "Shipping"
         ],
         "summary": "GetFulfillment",
-        "operationId": "ayGetFulfillment",
+        "operationId": "shop.Shipping-GetFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -210,7 +210,7 @@
           "Shipping"
         ],
         "summary": "GetOrder",
-        "operationId": "ayGetOrder",
+        "operationId": "shop.Shipping-GetOrder",
         "parameters": [
           {
             "name": "body",
@@ -237,7 +237,7 @@
           "Shipping"
         ],
         "summary": "GetShippingServices",
-        "operationId": "ayGetShippingServices",
+        "operationId": "shop.Shipping-GetShippingServices",
         "parameters": [
           {
             "name": "body",
@@ -264,7 +264,7 @@
           "Webhook"
         ],
         "summary": "CreateWebhook",
-        "operationId": "fgCreateWebhook",
+        "operationId": "shop.Webhook-CreateWebhook",
         "parameters": [
           {
             "name": "body",
@@ -291,7 +291,7 @@
           "Webhook"
         ],
         "summary": "DeleteWebhook",
-        "operationId": "fgDeleteWebhook",
+        "operationId": "shop.Webhook-DeleteWebhook",
         "parameters": [
           {
             "name": "body",
@@ -318,7 +318,7 @@
           "Webhook"
         ],
         "summary": "GetWebhooks",
-        "operationId": "fgGetWebhooks",
+        "operationId": "shop.Webhook-GetWebhooks",
         "parameters": [
           {
             "name": "body",

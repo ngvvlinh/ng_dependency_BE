@@ -21,7 +21,7 @@
           "Crm"
         ],
         "summary": "RefreshFulfillmentFromCarrier",
-        "operationId": "jkRefreshFulfillmentFromCarrier",
+        "operationId": "crm.Crm-RefreshFulfillmentFromCarrier",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Crm"
         ],
         "summary": "SendNotification",
-        "operationId": "jkSendNotification",
+        "operationId": "crm.Crm-SendNotification",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "aeVersionInfo",
+        "operationId": "crm.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "Vht"
         ],
         "summary": "CreateOrUpdateCallHistoryByCallID",
-        "operationId": "yfCreateOrUpdateCallHistoryByCallID",
+        "operationId": "crm.Vht-CreateOrUpdateCallHistoryByCallID",
         "parameters": [
           {
             "name": "body",
@@ -129,7 +129,7 @@
           "Vht"
         ],
         "summary": "CreateOrUpdateCallHistoryBySDKCallID",
-        "operationId": "yfCreateOrUpdateCallHistoryBySDKCallID",
+        "operationId": "crm.Vht-CreateOrUpdateCallHistoryBySDKCallID",
         "parameters": [
           {
             "name": "body",
@@ -156,7 +156,7 @@
           "Vht"
         ],
         "summary": "GetCallHistories",
-        "operationId": "yfGetCallHistories",
+        "operationId": "crm.Vht-GetCallHistories",
         "parameters": [
           {
             "name": "body",
@@ -183,7 +183,7 @@
           "Vtiger"
         ],
         "summary": "CreateOrUpdateContact",
-        "operationId": "dnCreateOrUpdateContact",
+        "operationId": "crm.Vtiger-CreateOrUpdateContact",
         "parameters": [
           {
             "name": "body",
@@ -210,7 +210,7 @@
           "Vtiger"
         ],
         "summary": "CreateOrUpdateLead",
-        "operationId": "dnCreateOrUpdateLead",
+        "operationId": "crm.Vtiger-CreateOrUpdateLead",
         "parameters": [
           {
             "name": "body",
@@ -237,7 +237,7 @@
           "Vtiger"
         ],
         "summary": "CreateTicket",
-        "operationId": "dnCreateTicket",
+        "operationId": "crm.Vtiger-CreateTicket",
         "parameters": [
           {
             "name": "body",
@@ -264,7 +264,7 @@
           "Vtiger"
         ],
         "summary": "GetCategories",
-        "operationId": "dnGetCategories",
+        "operationId": "crm.Vtiger-GetCategories",
         "parameters": [
           {
             "name": "body",
@@ -291,7 +291,7 @@
           "Vtiger"
         ],
         "summary": "GetContacts",
-        "operationId": "dnGetContacts",
+        "operationId": "crm.Vtiger-GetContacts",
         "parameters": [
           {
             "name": "body",
@@ -319,7 +319,7 @@
           "Vtiger"
         ],
         "summary": "GetTicketStatusCount",
-        "operationId": "dnGetTicketStatusCount",
+        "operationId": "crm.Vtiger-GetTicketStatusCount",
         "parameters": [
           {
             "name": "body",
@@ -346,7 +346,7 @@
           "Vtiger"
         ],
         "summary": "GetTickets",
-        "operationId": "dnGetTickets",
+        "operationId": "crm.Vtiger-GetTickets",
         "parameters": [
           {
             "name": "body",
@@ -373,7 +373,7 @@
           "Vtiger"
         ],
         "summary": "UpdateTicket",
-        "operationId": "dnUpdateTicket",
+        "operationId": "crm.Vtiger-UpdateTicket",
         "parameters": [
           {
             "name": "body",

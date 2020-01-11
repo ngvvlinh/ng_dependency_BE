@@ -21,7 +21,7 @@
           "Account"
         ],
         "summary": "CreatePartner",
-        "operationId": "xlCreatePartner",
+        "operationId": "admin.Account-CreatePartner",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Account"
         ],
         "summary": "GenerateAPIKey",
-        "operationId": "xlGenerateAPIKey",
+        "operationId": "admin.Account-GenerateAPIKey",
         "parameters": [
           {
             "name": "body",
@@ -75,7 +75,7 @@
           "Credit"
         ],
         "summary": "ConfirmCredit",
-        "operationId": "ofConfirmCredit",
+        "operationId": "admin.Credit-ConfirmCredit",
         "parameters": [
           {
             "name": "body",
@@ -102,7 +102,7 @@
           "Credit"
         ],
         "summary": "CreateCredit",
-        "operationId": "ofCreateCredit",
+        "operationId": "admin.Credit-CreateCredit",
         "parameters": [
           {
             "name": "body",
@@ -129,7 +129,7 @@
           "Credit"
         ],
         "summary": "DeleteCredit",
-        "operationId": "ofDeleteCredit",
+        "operationId": "admin.Credit-DeleteCredit",
         "parameters": [
           {
             "name": "body",
@@ -156,7 +156,7 @@
           "Credit"
         ],
         "summary": "GetCredit",
-        "operationId": "ofGetCredit",
+        "operationId": "admin.Credit-GetCredit",
         "parameters": [
           {
             "name": "body",
@@ -183,7 +183,7 @@
           "Credit"
         ],
         "summary": "GetCredits",
-        "operationId": "ofGetCredits",
+        "operationId": "admin.Credit-GetCredits",
         "parameters": [
           {
             "name": "body",
@@ -210,7 +210,7 @@
           "Credit"
         ],
         "summary": "UpdateCredit",
-        "operationId": "ofUpdateCredit",
+        "operationId": "admin.Credit-UpdateCredit",
         "parameters": [
           {
             "name": "body",
@@ -237,7 +237,7 @@
           "Fulfillment"
         ],
         "summary": "GetFulfillment",
-        "operationId": "mgGetFulfillment",
+        "operationId": "admin.Fulfillment-GetFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -264,7 +264,7 @@
           "Fulfillment"
         ],
         "summary": "GetFulfillments",
-        "operationId": "mgGetFulfillments",
+        "operationId": "admin.Fulfillment-GetFulfillments",
         "parameters": [
           {
             "name": "body",
@@ -292,7 +292,7 @@
           "Fulfillment"
         ],
         "summary": "UpdateFulfillment",
-        "operationId": "mgUpdateFulfillment",
+        "operationId": "admin.Fulfillment-UpdateFulfillment",
         "parameters": [
           {
             "name": "body",
@@ -319,7 +319,7 @@
           "Fulfillment"
         ],
         "summary": "UpdateFulfillmentShippingFee",
-        "operationId": "mgUpdateFulfillmentShippingFee",
+        "operationId": "admin.Fulfillment-UpdateFulfillmentShippingFee",
         "parameters": [
           {
             "name": "body",
@@ -346,7 +346,7 @@
           "Fulfillment"
         ],
         "summary": "UpdateFulfillmentShippingState",
-        "operationId": "mgUpdateFulfillmentShippingState",
+        "operationId": "admin.Fulfillment-UpdateFulfillmentShippingState",
         "parameters": [
           {
             "name": "body",
@@ -373,7 +373,7 @@
           "Misc"
         ],
         "summary": "AdminLoginAsAccount",
-        "operationId": "roAdminLoginAsAccount",
+        "operationId": "admin.Misc-AdminLoginAsAccount",
         "parameters": [
           {
             "name": "body",
@@ -400,7 +400,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "roVersionInfo",
+        "operationId": "admin.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
@@ -427,7 +427,7 @@
           "MoneyTransaction"
         ],
         "summary": "ConfirmMoneyTransaction",
-        "operationId": "ddConfirmMoneyTransaction",
+        "operationId": "admin.MoneyTransaction-ConfirmMoneyTransaction",
         "parameters": [
           {
             "name": "body",
@@ -454,7 +454,7 @@
           "MoneyTransaction"
         ],
         "summary": "ConfirmMoneyTransactionShippingEtop",
-        "operationId": "ddConfirmMoneyTransactionShippingEtop",
+        "operationId": "admin.MoneyTransaction-ConfirmMoneyTransactionShippingEtop",
         "parameters": [
           {
             "name": "body",
@@ -481,7 +481,7 @@
           "MoneyTransaction"
         ],
         "summary": "ConfirmMoneyTransactionShippingExternal",
-        "operationId": "ddConfirmMoneyTransactionShippingExternal",
+        "operationId": "admin.MoneyTransaction-ConfirmMoneyTransactionShippingExternal",
         "parameters": [
           {
             "name": "body",
@@ -508,7 +508,7 @@
           "MoneyTransaction"
         ],
         "summary": "ConfirmMoneyTransactionShippingExternals",
-        "operationId": "ddConfirmMoneyTransactionShippingExternals",
+        "operationId": "admin.MoneyTransaction-ConfirmMoneyTransactionShippingExternals",
         "parameters": [
           {
             "name": "body",
@@ -535,7 +535,7 @@
           "MoneyTransaction"
         ],
         "summary": "CreateMoneyTransactionShippingEtop",
-        "operationId": "ddCreateMoneyTransactionShippingEtop",
+        "operationId": "admin.MoneyTransaction-CreateMoneyTransactionShippingEtop",
         "parameters": [
           {
             "name": "body",
@@ -562,7 +562,7 @@
           "MoneyTransaction"
         ],
         "summary": "DeleteMoneyTransactionShippingEtop",
-        "operationId": "ddDeleteMoneyTransactionShippingEtop",
+        "operationId": "admin.MoneyTransaction-DeleteMoneyTransactionShippingEtop",
         "parameters": [
           {
             "name": "body",
@@ -589,7 +589,7 @@
           "MoneyTransaction"
         ],
         "summary": "DeleteMoneyTransactionShippingExternal",
-        "operationId": "ddDeleteMoneyTransactionShippingExternal",
+        "operationId": "admin.MoneyTransaction-DeleteMoneyTransactionShippingExternal",
         "parameters": [
           {
             "name": "body",
@@ -616,7 +616,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransaction",
-        "operationId": "ddGetMoneyTransaction",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransaction",
         "parameters": [
           {
             "name": "body",
@@ -643,7 +643,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransactionShippingEtop",
-        "operationId": "ddGetMoneyTransactionShippingEtop",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransactionShippingEtop",
         "parameters": [
           {
             "name": "body",
@@ -670,7 +670,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransactionShippingEtops",
-        "operationId": "ddGetMoneyTransactionShippingEtops",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransactionShippingEtops",
         "parameters": [
           {
             "name": "body",
@@ -697,7 +697,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransactionShippingExternal",
-        "operationId": "ddGetMoneyTransactionShippingExternal",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransactionShippingExternal",
         "parameters": [
           {
             "name": "body",
@@ -724,7 +724,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransactionShippingExternals",
-        "operationId": "ddGetMoneyTransactionShippingExternals",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransactionShippingExternals",
         "parameters": [
           {
             "name": "body",
@@ -751,7 +751,7 @@
           "MoneyTransaction"
         ],
         "summary": "GetMoneyTransactions",
-        "operationId": "ddGetMoneyTransactions",
+        "operationId": "admin.MoneyTransaction-GetMoneyTransactions",
         "parameters": [
           {
             "name": "body",
@@ -778,7 +778,7 @@
           "MoneyTransaction"
         ],
         "summary": "RemoveMoneyTransactionShippingExternalLines",
-        "operationId": "ddRemoveMoneyTransactionShippingExternalLines",
+        "operationId": "admin.MoneyTransaction-RemoveMoneyTransactionShippingExternalLines",
         "parameters": [
           {
             "name": "body",
@@ -805,7 +805,7 @@
           "MoneyTransaction"
         ],
         "summary": "UpdateMoneyTransaction",
-        "operationId": "ddUpdateMoneyTransaction",
+        "operationId": "admin.MoneyTransaction-UpdateMoneyTransaction",
         "parameters": [
           {
             "name": "body",
@@ -832,7 +832,7 @@
           "MoneyTransaction"
         ],
         "summary": "UpdateMoneyTransactionShippingEtop",
-        "operationId": "ddUpdateMoneyTransactionShippingEtop",
+        "operationId": "admin.MoneyTransaction-UpdateMoneyTransactionShippingEtop",
         "parameters": [
           {
             "name": "body",
@@ -859,7 +859,7 @@
           "MoneyTransaction"
         ],
         "summary": "UpdateMoneyTransactionShippingExternal",
-        "operationId": "ddUpdateMoneyTransactionShippingExternal",
+        "operationId": "admin.MoneyTransaction-UpdateMoneyTransactionShippingExternal",
         "parameters": [
           {
             "name": "body",
@@ -886,7 +886,7 @@
           "Notification"
         ],
         "summary": "CreateNotifications",
-        "operationId": "wzCreateNotifications",
+        "operationId": "admin.Notification-CreateNotifications",
         "parameters": [
           {
             "name": "body",
@@ -913,7 +913,7 @@
           "Order"
         ],
         "summary": "GetOrder",
-        "operationId": "wcGetOrder",
+        "operationId": "admin.Order-GetOrder",
         "parameters": [
           {
             "name": "body",
@@ -940,7 +940,7 @@
           "Order"
         ],
         "summary": "GetOrders",
-        "operationId": "wcGetOrders",
+        "operationId": "admin.Order-GetOrders",
         "parameters": [
           {
             "name": "body",
@@ -967,7 +967,7 @@
           "Order"
         ],
         "summary": "GetOrdersByIDs",
-        "operationId": "wcGetOrdersByIDs",
+        "operationId": "admin.Order-GetOrdersByIDs",
         "parameters": [
           {
             "name": "body",
@@ -994,7 +994,7 @@
           "Shop"
         ],
         "summary": "GetShop",
-        "operationId": "dmGetShop",
+        "operationId": "admin.Shop-GetShop",
         "parameters": [
           {
             "name": "body",
@@ -1021,7 +1021,7 @@
           "Shop"
         ],
         "summary": "GetShops",
-        "operationId": "dmGetShops",
+        "operationId": "admin.Shop-GetShops",
         "parameters": [
           {
             "name": "body",

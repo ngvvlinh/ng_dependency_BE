@@ -21,7 +21,7 @@
           "Event"
         ],
         "summary": "GenerateEvents",
-        "operationId": "reGenerateEvents",
+        "operationId": "pgevent.Event-GenerateEvents",
         "parameters": [
           {
             "name": "body",
@@ -48,7 +48,7 @@
           "Misc"
         ],
         "summary": "VersionInfo",
-        "operationId": "unVersionInfo",
+        "operationId": "pgevent.Misc-VersionInfo",
         "parameters": [
           {
             "name": "body",
