@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/ordering"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
@@ -12,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ ordering.Aggregate = &Aggregate{}
@@ -74,7 +76,7 @@ func (a *Aggregate) ReserveOrdersForFfm(ctx context.Context, args *ordering.Rese
 		return nil, err
 	}
 	for _, order := range orders {
-		if err := ValidateOrderForReserveFfm(order); err != nil {
+		if err := ValidateOrderForReserveFfm(order, args.Fulfill); err != nil {
 			return nil, err
 		}
 	}
@@ -93,9 +95,12 @@ func (a *Aggregate) ReserveOrdersForFfm(ctx context.Context, args *ordering.Rese
 	}, nil
 }
 
-func ValidateOrderForReserveFfm(order *ordering.Order) error {
+func ValidateOrderForReserveFfm(order *ordering.Order, shippingType ordertypes.ShippingType) error {
 	if err := ValidateOrderStatus(order); err != nil {
 		return err
+	}
+	if shippingType != ordertypes.ShippingTypeShipnow {
+		return nil
 	}
 	if len(order.FulfillmentIDs) != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Order has been reserved").WithMetaID("order_id", order.ID)
@@ -160,4 +165,13 @@ func (a *Aggregate) UpdateOrderPaymentInfo(ctx context.Context, args *ordering.U
 	// ignore err
 	_ = a.eventBus.Publish(ctx, event)
 	return nil
+}
+
+func (a *Aggregate) CompleteOrder(ctx context.Context, orderID dot.ID, shopID dot.ID) error {
+	update := &sqlstore.UpdateOrderStatus{
+		ID:     orderID,
+		ShopID: shopID,
+		Status: status5.P,
+	}
+	return a.store(ctx).UpdateOrderStatus(update)
 }

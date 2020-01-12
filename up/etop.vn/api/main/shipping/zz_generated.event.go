@@ -7,3 +7,4 @@ package shipping
 func (e *FulfillmentCreatingEvent) GetTopic() string           { return "event/shipping" }
 func (e *FulfillmentShippingFeeChangedEvent) GetTopic() string { return "event/shipping" }
 func (e *FulfillmentUpdatingEvent) GetTopic() string           { return "event/shipping" }
+func (e *FulfillmentsCreatedEvent) GetTopic() string           { return "event/shipping" }

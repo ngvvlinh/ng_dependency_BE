@@ -962,6 +962,33 @@
         }
       }
     },
+    "/api/shop.Connection/DeleteShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "DeleteShopConnection",
+        "operationId": "shop.Connection-DeleteShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paDeleteShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Connection/GetAvailableConnections": {
       "post": {
         "tags": [
@@ -2713,6 +2740,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/qdOrderWithErrorsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/CompleteOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CompleteOrder",
+        "operationId": "shop.Order-CompleteOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -4749,6 +4803,33 @@
         }
       }
     },
+    "/api/shop.Shipment/CancelFulfillment": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "CancelFulfillment",
+        "operationId": "shop.Shipment-CancelFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCancelFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Shipment/CreateFulfillments": {
       "post": {
         "tags": [
@@ -6669,6 +6750,18 @@
         }
       }
     },
+    "paCancelFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "paCancelInventoryVoucherRequest": {
       "type": "object",
       "properties": {
@@ -7131,7 +7224,7 @@
         "gross_weight": {
           "type": "integer"
         },
-        "heigh": {
+        "height": {
           "type": "integer"
         },
         "include_insurance": {
@@ -7708,6 +7801,15 @@
       "properties": {
         "count": {
           "type": "integer"
+        }
+      }
+    },
+    "paDeleteShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

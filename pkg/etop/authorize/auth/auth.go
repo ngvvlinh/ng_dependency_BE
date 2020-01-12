@@ -73,6 +73,7 @@ const (
 	# order
 	p, shop/order:create, admin, owner, salesman
 	p, shop/order:confirm, admin, owner, salesman
+	p, shop/order:complete, admin, owner, salesman
 	p, shop/order:update, admin, owner, salesman
 	p, shop/order:cancel, admin, owner, salesman
     # order: hotfix, all users can access order page

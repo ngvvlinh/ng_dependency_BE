@@ -173,6 +173,13 @@ type FulfillmentCreatingEvent struct {
 	ShippingFee int
 }
 
+type FulfillmentsCreatedEvent struct {
+	meta.EventMeta
+	FulfillmentIDs []dot.ID
+	ShippingType   ordertypes.ShippingType
+	OrderID        dot.ID
+}
+
 type FulfillmentUpdatingEvent struct {
 	meta.EventMeta
 	FulfillmentID dot.ID

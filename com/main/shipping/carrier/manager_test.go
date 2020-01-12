@@ -26,7 +26,9 @@ func init() {
 
 func TestShipmentManager(t *testing.T) {
 	ctx := bus.Ctx()
-	cm.SetEnvironment(cm.EnvDev)
+	if cm.Env() == "" {
+		cm.SetEnvironment(cm.EnvDev)
+	}
 	mockBus := bus.New()
 	mockBus.MockHandler(func(query *connectioning.GetConnectionByIDQuery) error {
 		query.Result = &connectioning.Connection{

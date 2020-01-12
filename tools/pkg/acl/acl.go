@@ -88,11 +88,12 @@ const (
 	ShopMoneyTransactionView   permission.ActionType = "shop/money_transaction:view"
 	ShopMoneyTransactionExport permission.ActionType = "shop/money_transaction:export"
 
-	ShopOrderCreate  permission.ActionType = "shop/order:create"
-	ShopOrderConfirm permission.ActionType = "shop/order:confirm"
-	ShopOrderUpdate  permission.ActionType = "shop/order:update"
-	ShopOrderCancel  permission.ActionType = "shop/order:cancel"
-	ShopOrderView    permission.ActionType = "shop/order:view"
+	ShopOrderCreate   permission.ActionType = "shop/order:create"
+	ShopOrderConfirm  permission.ActionType = "shop/order:confirm"
+	ShopOrderComplete permission.ActionType = "shop/order:complete"
+	ShopOrderUpdate   permission.ActionType = "shop/order:update"
+	ShopOrderCancel   permission.ActionType = "shop/order:cancel"
+	ShopOrderView     permission.ActionType = "shop/order:view"
 
 	ShopPurchaseOrderCreate  permission.ActionType = "shop/purchase_order:create"
 	ShopPurchaseOrderConfirm permission.ActionType = "shop/purchase_order:confirm"
@@ -530,6 +531,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Order/ConfirmOrder":                       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
 	"shop.Order/ConfirmOrderAndCreateFulfillments":  {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
 	"shop.Order/ConfirmOrdersAndCreateFulfillments": {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
+	"shop.Order/CompleteOrder":                      {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderComplete)},
 	"shop.Order/CancelOrder":                        {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderCancel)},
 	"shop.Order/UpdateOrderPaymentStatus":           {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
 	"shop.Order/UpdateOrderShippingInfo":            {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
@@ -545,6 +547,7 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"shop.Shipment/GetShippingServices": {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
 	"shop.Shipment/CreateFulfillments":  {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CancelFulfillment":   {Type: Shop, Actions: actions(ShopFulfillmentCancel)},
 
 	"shop.Shipnow/GetShipnowFulfillment":      {Type: Shop, Actions: actions(ShopShipNowView)},
 	"shop.Shipnow/GetShipnowFulfillments":     {Type: Shop, Actions: actions(ShopShipNowView)},
@@ -626,6 +629,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Connection/GetShopConnections":      {Type: Shop},
 	"shop.Connection/LoginShopConnection":     {Type: Shop},
 	"shop.Connection/RegisterShopConnection":  {Type: Shop},
+	"shop.Connection/DeleteShopConnection":    {Type: Shop},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

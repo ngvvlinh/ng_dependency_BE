@@ -128,6 +128,17 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 	for _, ffm := range ffms {
 		res = append(res, ffm.ID)
 	}
+	// TODO: kiểm tra trường hợp tự giao hoặc giao qua NVC
+	// rollback khi gặp lỗi. VD: hủy ffm bên NVC
+	event := &shipping.FulfillmentsCreatedEvent{
+		EventMeta:      meta.NewEvent(),
+		FulfillmentIDs: res,
+		ShippingType:   args.ShippingType,
+		OrderID:        order.ID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return nil, err
+	}
 	return res, nil
 }
 
@@ -372,4 +383,53 @@ func (a *Aggregate) UpdateFulfillmentsMoneyTxShippingExternalID(ctx context.Cont
 		return 0, err
 	}
 	return 1, nil
+}
+
+func (a *Aggregate) UpdateFulfillmentsStatus(ctx context.Context, args *shipping.UpdateFulfillmentsStatusArgs) error {
+	if len(args.FulfillmentIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "UpdateFulfillmentsStatus")
+	}
+
+	return a.ffmStore(ctx).UpdateFulfillmentsStatus(args)
+}
+
+func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.CancelFulfillmentArgs) error {
+	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFfmDB()
+	if err != nil {
+		return err
+	}
+	switch ffm.Status {
+	case status5.P, status5.NS:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hoàn thành. Không thể hủy")
+	case status5.N:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hủy.")
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
+			return err
+		}
+
+		// backward compatible
+		if ffm.ShippingType == 0 {
+			switch ffm.ShippingProvider {
+			case shipping_provider.GHN:
+				ffm.ConnectionID = connectioning.DefaultTopshipGHNConnectionID
+			case shipping_provider.GHTK:
+				ffm.ConnectionID = connectioning.DefaultTopshipGHTKConnectionID
+			case shipping_provider.VTPost:
+				ffm.ConnectionID = connectioning.DefaultTopshipVTPostConnectionID
+			default:
+
+			}
+		}
+
+		// case shipment: cancel ffm from carrier
+		if ffm.ConnectionID != 0 {
+			return a.shimentManager.CancelFulfillment(ctx, ffm)
+		}
+		return nil
+	})
+
+	return err
 }

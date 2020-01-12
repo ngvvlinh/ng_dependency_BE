@@ -5,6 +5,8 @@ import (
 
 	"etop.vn/api/main/shipping"
 	"etop.vn/api/meta"
+	shippingstate "etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/shipping/convert"
 	"etop.vn/backend/com/main/shipping/model"
@@ -196,4 +198,27 @@ func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxShippingExternalID(args *shi
 		MoneyTransactionShippingExternalID: args.MoneyTxShippingExternalID,
 	}
 	return s.IDs(args.FulfillmentIDs...).query().Where(s.preds).ShouldUpdate(update)
+}
+
+func (s *FulfillmentStore) UpdateFulfillmentsStatus(args *shipping.UpdateFulfillmentsStatusArgs) error {
+	update := map[string]interface{}{}
+	if args.Status.Valid {
+		update["status"] = args.Status.Enum
+	}
+	if args.ShopConfirm.Valid {
+		update["shop_confirm"] = args.ShopConfirm.Enum
+	}
+	if args.SyncStatus.Valid {
+		update["sync_status"] = args.SyncStatus.Enum
+	}
+	return s.query().Table("fulfillment").Where(sq.In("id", args.FulfillmentIDs)).ShouldUpdateMap(update)
+}
+
+func (s *FulfillmentStore) CancelFulfillment(args *shipping.CancelFulfillmentArgs) error {
+	update := &model.Fulfillment{
+		ShopConfirm:   status3.N,
+		CancelReason:  args.CancelReason,
+		ShippingState: shippingstate.Cancelled,
+	}
+	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }

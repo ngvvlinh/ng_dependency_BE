@@ -498,6 +498,12 @@ func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 
 func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Connection/DeleteShopConnection":
+		msg := &DeleteShopConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteShopConnection(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Connection/GetAvailableConnections":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -1356,6 +1362,12 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 			return s.inner.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Order/CompleteOrder":
+		msg := &OrderIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CompleteOrder(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Order/ConfirmOrder":
 		msg := &ConfirmOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -2118,6 +2130,12 @@ func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *ShipmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Shipment/CancelFulfillment":
+		msg := &CancelFulfillmentRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CancelFulfillment(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Shipment/CreateFulfillments":
 		msg := &CreateFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

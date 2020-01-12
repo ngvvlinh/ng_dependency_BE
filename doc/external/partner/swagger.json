@@ -3236,7 +3236,7 @@
       "type": "object",
       "properties": {
         "carrier": {
-          "description": "**Deprecated:** use connection_id instead\n",
+          "description": "**Deprecated:**\n",
           "$ref": "#/definitions/bwShippingProvider"
         },
         "chargeable_weight": {
@@ -3244,10 +3244,6 @@
         },
         "cod_amount": {
           "type": "integer"
-        },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
         },
         "gross_weight": {
           "type": "integer"

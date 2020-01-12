@@ -2002,6 +2002,52 @@ type wrapConnectionService struct {
 	s *ConnectionService
 }
 
+type DeleteShopConnectionEndpoint struct {
+	*api.DeleteShopConnectionRequest
+	Result  *cm.DeletedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *api.DeleteShopConnectionRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/DeleteShopConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteShopConnectionEndpoint{DeleteShopConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteShopConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type GetAvailableConnectionsEndpoint struct {
 	*cm.Empty
 	Result  *api.GetConnectionsResponse
@@ -5544,6 +5590,65 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderR
 	query.Context.Actions = strings.Split("shop/order:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelOrder(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CompleteOrderEndpoint struct {
+	*api.OrderIDRequest
+	Result     *cm.UpdatedResponse
+	Context    claims.ShopClaim
+	CtxPartner *identitymodel.Partner
+}
+
+func (s wrapOrderService) CompleteOrder(ctx context.Context, req *api.OrderIDRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Order/CompleteOrder"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CompleteOrderEndpoint{OrderIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/order:complete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:complete", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CompleteOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9867,6 +9972,62 @@ func WrapShipmentService(s *ShipmentService) api.ShipmentService {
 
 type wrapShipmentService struct {
 	s *ShipmentService
+}
+
+type CancelFulfillmentEndpoint struct {
+	*api.CancelFulfillmentRequest
+	Result  *cm.UpdatedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapShipmentService) CancelFulfillment(ctx context.Context, req *api.CancelFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipment/CancelFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelFulfillmentEndpoint{CancelFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:cancel", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CancelFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
 }
 
 type CreateFulfillmentsEndpoint struct {

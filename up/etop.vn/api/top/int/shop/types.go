@@ -2344,6 +2344,17 @@ func (m *GetShopConnectionsResponse) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
+type DeleteShopConnectionRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (m *DeleteShopConnectionRequest) Reset() {
+	*m = DeleteShopConnectionRequest{}
+}
+func (m *DeleteShopConnectionRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type CreateFulfillmentsRequest struct {
 	OrderID             dot.ID                  `json:"order_id"`
 	ShippingType        ordertypes.ShippingType `json:"shipping_type"`
@@ -2357,7 +2368,7 @@ type CreateFulfillmentsRequest struct {
 	TryOn               try_on.TryOnCode        `json:"try_on"`
 	ChargeableWeight    int                     `json:"chargeable_weight"`
 	GrossWeight         int                     `json:"gross_weight"`
-	Heigh               int                     `json:"heigh"`
+	Height              int                     `json:"height"`
 	Width               int                     `json:"width"`
 	Length              int                     `json:"length"`
 	CODAmount           int                     `json:"cod_amount"`
@@ -2381,3 +2392,13 @@ func (m *CreateFulfillmentsResponse) Reset() {
 	*m = CreateFulfillmentsResponse{}
 }
 func (m *CreateFulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CancelFulfillmentRequest struct {
+	FulfillmentID dot.ID `json:"fulfillment_id"`
+	CancelReason  string `json:"cancel_reason"`
+}
+
+func (m *CancelFulfillmentRequest) Reset() {
+	*m = CancelFulfillmentRequest{}
+}
+func (m *CancelFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }

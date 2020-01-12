@@ -6,6 +6,8 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/top/types/etc/shipping"
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 )
@@ -20,6 +22,10 @@ type Aggregate interface {
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
 	UpdateFulfillmentsMoneyTxShippingExternalID(context.Context, *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) (updated int, _ error)
+
+	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
+
+	CancelFulfillment(context.Context, *CancelFulfillmentArgs) error
 }
 
 type QueryService interface {
@@ -92,4 +98,11 @@ type UpdateFulfillmentShippingFeesArgs struct {
 type UpdateFulfillmentsMoneyTxShippingExternalIDArgs struct {
 	FulfillmentIDs            []dot.ID
 	MoneyTxShippingExternalID dot.ID
+}
+
+type UpdateFulfillmentsStatusArgs struct {
+	FulfillmentIDs []dot.ID
+	Status         status4.NullStatus
+	ShopConfirm    status3.NullStatus
+	SyncStatus     status4.NullStatus
 }

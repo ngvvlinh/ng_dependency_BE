@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/main/shipping"
 	"etop.vn/api/services/affiliate"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
@@ -58,6 +59,7 @@ func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptConfirmed)
 	eventBus.AddEventListener(p.ReceiptCancelled)
 	eventBus.AddEventListener(p.ReceiptCreating)
+	eventBus.AddEventListener(p.FulfillmentsCreatedEvent)
 }
 
 func (p *ProcessManager) CheckTradingOrderValid(ctx context.Context, event *ordertrading.TradingOrderCreatingEvent) error {
@@ -307,4 +309,14 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 		}
 	}
 	return nil
+}
+
+func (p *ProcessManager) FulfillmentsCreatedEvent(ctx context.Context, event *shipping.FulfillmentsCreatedEvent) error {
+	// Update order: fulfillmentIDs & fulfillmentType (shippingType)
+	cmd := &ordering.ReserveOrdersForFfmCommand{
+		OrderIDs:   []dot.ID{event.OrderID},
+		Fulfill:    event.ShippingType,
+		FulfillIDs: event.FulfillmentIDs,
+	}
+	return p.order.Dispatch(ctx, cmd)
 }

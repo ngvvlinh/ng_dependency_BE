@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/top/int/shop"
+	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/com/main/shipping/carrier"
 )
@@ -79,5 +80,19 @@ func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *LoginSho
 		return err
 	}
 	q.Result = PbShopConnection(shopConnection)
+	return nil
+}
+
+func (s *ConnectionService) DeleteShopConnection(ctx context.Context, q *DeleteShopConnectionEndpoint) error {
+	cmd := &connectioning.DeleteShopConnectionCommand{
+		ConnectionID: q.ConnectionID,
+		ShopID:       q.Context.Shop.ID,
+	}
+	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbcm.DeletedResponse{
+		Deleted: cmd.Result,
+	}
 	return nil
 }

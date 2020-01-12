@@ -239,7 +239,7 @@ func CreateOrder(
 	order.ShopID = shop.ID
 	order.OrderSourceType = r.Source
 	// fulfillment_type will be filled after create fulfillment
-	order.FulfillmentType = ordertypes.ShippingTypeManual
+	order.FulfillmentType = ordertypes.ShippingTypeNone
 	if tradingShopID != nil {
 		order.TradingShopID = *tradingShopID
 	}

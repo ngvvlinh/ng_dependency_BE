@@ -253,3 +253,18 @@ func (s *OrderStore) UpdateOrderPaymentInfo(args UpdateOrderPaymentInfoArgs) err
 	}
 	return nil
 }
+
+type UpdateOrderStatus struct {
+	ID     dot.ID
+	ShopID dot.ID
+	Status status5.Status
+}
+
+func (s *OrderStore) UpdateOrderStatus(args *UpdateOrderStatus) error {
+	if args.ID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
+	}
+	return s.query().Table("order").Where(s.ft.ByID(args.ID)).Where(s.ft.ByShopID(args.ShopID).Optional()).ShouldUpdateMap(map[string]interface{}{
+		"status": args.Status,
+	})
+}

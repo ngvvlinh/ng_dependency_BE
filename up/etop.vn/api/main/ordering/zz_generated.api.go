@@ -29,6 +29,18 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
+type CompleteOrderCommand struct {
+	OrderID dot.ID
+	ShopID  dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleCompleteOrder(ctx context.Context, msg *CompleteOrderCommand) (err error) {
+	return h.inner.CompleteOrder(msg.GetArgs(ctx))
+}
+
 type ReleaseOrdersForFfmCommand struct {
 	OrderIDs []dot.ID
 
@@ -179,6 +191,7 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, 
 
 // implement interfaces
 
+func (q *CompleteOrderCommand) command()             {}
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
 func (q *UpdateOrderPaymentInfoCommand) command()    {}
@@ -194,6 +207,12 @@ func (q *ListOrdersByCustomerIDQuery) query()      {}
 func (q *ListOrdersByCustomerIDsQuery) query()     {}
 
 // implement conversion
+
+func (q *CompleteOrderCommand) GetArgs(ctx context.Context) (_ context.Context, OrderID dot.ID, ShopID dot.ID) {
+	return ctx,
+		q.OrderID,
+		q.ShopID
+}
 
 func (q *ReleaseOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReleaseOrdersForFfmArgs) {
 	return ctx,
@@ -349,6 +368,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleCompleteOrder)
 	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
 	b.AddHandler(h.HandleUpdateOrderPaymentInfo)

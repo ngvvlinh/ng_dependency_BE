@@ -31,6 +31,7 @@ type Aggregate interface {
 	UpdateOrdersConfirmStatus(context.Context, *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
 
 	UpdateOrderPaymentInfo(context.Context, *UpdateOrderPaymentInfoArgs) error
+	CompleteOrder(_ context.Context, OrderID dot.ID, ShopID dot.ID) error
 }
 
 type QueryService interface {

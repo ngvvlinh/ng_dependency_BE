@@ -29,7 +29,8 @@ CREATE TABLE shop_connection (
     , external_data JSONB
 );
 
-CREATE UNIQUE INDEX ON shop_connection (shop_id, connection_id);
+CREATE UNIQUE INDEX ON shop_connection (shop_id, connection_id) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX ON shop_connection(connection_id) WHERE is_global IS TRUE;
 
 ALTER TABLE fulfillment
     ADD COLUMN shipping_type INT2
@@ -199,36 +200,93 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION coalesce_order_status_v2(
+    confirm_status INT2,
+    payment_status INT2,
+    fulfillment_status INT2
+) RETURNS INT2 IMMUTABLE
+LANGUAGE plpgsql AS $$
+BEGIN
+    IF fulfillment_status = 2 THEN
+        RETURN 2;
+    END IF;
+    IF fulfillment_status = 1 OR fulfillment_status = -2 THEN
+        IF payment_status = 1 THEN
+            RETURN fulfillment_status;
+        ELSE
+            RETURN 2;
+        END IF;
+    END IF;
+    IF fulfillment_status = -1 THEN
+        IF confirm_status = -1 THEN
+            RETURN -1;
+        ELSE
+            RETURN 2;
+        END IF;
+    END IF;
+    RETURN 2;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION coalesce_order_status_v2(
+  confirm_status INT2,
+  payment_status INT2
+) RETURNS INT2 IMMUTABLE
+LANGUAGE plpgsql AS $$
+BEGIN
+    IF confirm_status = 1 THEN
+        IF payment_status = 1 THEN
+            RETURN 1;
+        ELSE
+            RETURN 2;
+        END IF;
+    ELSE
+        return confirm_status;
+    END IF;
+END;
+$$;
+
 -- this function overwrites 030_shipping_fee.sql
 CREATE OR REPLACE FUNCTION order_update_status() RETURNS trigger
 LANGUAGE plpgsql AS $$
+DECLARE
+    fulfillment_status INT2;
 BEGIN
+    -- update fulfillment and payment status from fulfillments
+    NEW.fulfillment_shipping_status = coalesce_shipping_states(NEW.fulfillment_shipping_states);
+    NEW.etop_payment_status = coalesce_status4(NEW.fulfillment_payment_statuses);
+
     -- no longer change order.status if it's either done or cancelled
     IF TG_OP='UPDATE' AND (OLD.status = 1 OR OLD.status = -1) THEN
         RETURN NEW;
     END IF;
-
-    IF NEW.fulfillment_statuses IS NULL THEN
+    IF NEW.status = 1 OR NEW.status = -1 THEN
         RETURN NEW;
     END IF;
 
-    -- update confirm_status from shop or external, prioritize shop_confirm
+     -- update confirm_status from shop or external, prioritize shop_confirm
     IF NEW.shop_confirm != 0 THEN
 		NEW.confirm_status = NEW.shop_confirm;
 	ELSE
 		NEW.confirm_status = LEAST(NEW.shop_confirm, NEW.customer_confirm, NEW.external_confirm);
 	END IF;
 
-	IF (NEW.confirm_status = -1) THEN
-        NEW.status = -1;
-    ELSE
-        NEW.status = coalesce_status5(NEW.fulfillment_statuses);
+    -- Trường hợp không có đơn giao hàng
+    IF NEW.fulfillment_type IS NULL OR NEW.fulfillment_type = 0 THEN
+        NEW.status = coalesce_order_status_v2(
+            NEW.confirm_status, NEW.payment_status
+        );
+        RETURN NEW;
     END IF;
 
-    -- update fulfillment and payment status from fulfillments
-    -- remove if it is unnecessary
-    NEW.fulfillment_shipping_status = coalesce_shipping_states(NEW.fulfillment_shipping_states);
-    NEW.etop_payment_status = coalesce_status4(NEW.fulfillment_payment_statuses);
+    -- Trường hợp có đơn giao hàng
+    IF NEW.fulfillment_statuses IS NULL THEN
+        RETURN NEW;
+    END IF;
+    fulfillment_status = coalesce_status5(NEW.fulfillment_statuses);
+    NEW.status = coalesce_order_status_v2(
+        NEW.confirm_status, NEW.payment_status, fulfillment_status
+    );
 
     RETURN NEW;
 END;

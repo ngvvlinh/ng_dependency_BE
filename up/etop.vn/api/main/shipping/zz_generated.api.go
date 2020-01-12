@@ -10,6 +10,8 @@ import (
 	orderingtypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	shipping "etop.vn/api/top/types/etc/shipping"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -26,6 +28,18 @@ func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) er
 }
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
+}
+
+type CancelFulfillmentCommand struct {
+	FulfillmentID dot.ID
+	CancelReason  string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, msg *CancelFulfillmentCommand) (err error) {
+	return h.inner.CancelFulfillment(msg.GetArgs(ctx))
 }
 
 type CreateFulfillmentsCommand struct {
@@ -92,6 +106,20 @@ func (h AggregateHandler) HandleUpdateFulfillmentsMoneyTxShippingExternalID(ctx 
 	return err
 }
 
+type UpdateFulfillmentsStatusCommand struct {
+	FulfillmentIDs []dot.ID
+	Status         status4.NullStatus
+	ShopConfirm    status3.NullStatus
+	SyncStatus     status4.NullStatus
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentsStatus(ctx context.Context, msg *UpdateFulfillmentsStatusCommand) (err error) {
+	return h.inner.UpdateFulfillmentsStatus(msg.GetArgs(ctx))
+}
+
 type GetFulfillmentByIDOrShippingCodeQuery struct {
 	ID           dot.ID
 	ShippingCode string
@@ -106,14 +134,29 @@ func (h QueryServiceHandler) HandleGetFulfillmentByIDOrShippingCode(ctx context.
 
 // implement interfaces
 
+func (q *CancelFulfillmentCommand) command()                           {}
 func (q *CreateFulfillmentsCommand) command()                          {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()               {}
 func (q *UpdateFulfillmentShippingStateCommand) command()              {}
 func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) command() {}
+func (q *UpdateFulfillmentsStatusCommand) command()                    {}
 
 func (q *GetFulfillmentByIDOrShippingCodeQuery) query() {}
 
 // implement conversion
+
+func (q *CancelFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelFulfillmentArgs) {
+	return ctx,
+		&CancelFulfillmentArgs{
+			FulfillmentID: q.FulfillmentID,
+			CancelReason:  q.CancelReason,
+		}
+}
+
+func (q *CancelFulfillmentCommand) SetCancelFulfillmentArgs(args *CancelFulfillmentArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.CancelReason = args.CancelReason
+}
 
 func (q *CreateFulfillmentsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentsArgs) {
 	return ctx,
@@ -199,6 +242,23 @@ func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) SetUpdateFulfillmen
 	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
 }
 
+func (q *UpdateFulfillmentsStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsStatusArgs) {
+	return ctx,
+		&UpdateFulfillmentsStatusArgs{
+			FulfillmentIDs: q.FulfillmentIDs,
+			Status:         q.Status,
+			ShopConfirm:    q.ShopConfirm,
+			SyncStatus:     q.SyncStatus,
+		}
+}
+
+func (q *UpdateFulfillmentsStatusCommand) SetUpdateFulfillmentsStatusArgs(args *UpdateFulfillmentsStatusArgs) {
+	q.FulfillmentIDs = args.FulfillmentIDs
+	q.Status = args.Status
+	q.ShopConfirm = args.ShopConfirm
+	q.SyncStatus = args.SyncStatus
+}
+
 func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShippingCode string) {
 	return ctx,
 		q.ID,
@@ -217,10 +277,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
 	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxShippingExternalID)
+	b.AddHandler(h.HandleUpdateFulfillmentsStatus)
 	return CommandBus{b}
 }
 

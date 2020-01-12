@@ -188,6 +188,7 @@ type OrderService interface {
 	ConfirmOrder(context.Context, *ConfirmOrderRequest) (*types.Order, error)
 	ConfirmOrderAndCreateFulfillments(context.Context, *OrderIDRequest) (*types.OrderWithErrorsResponse, error)
 	CancelOrder(context.Context, *CancelOrderRequest) (*types.OrderWithErrorsResponse, error)
+	CompleteOrder(context.Context, *OrderIDRequest) (*cm.UpdatedResponse, error)
 	UpdateOrderPaymentStatus(context.Context, *UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error)
 	UpdateOrderShippingInfo(context.Context, *UpdateOrderShippingInfoRequest) (*cm.UpdatedResponse, error)
 }
@@ -206,8 +207,8 @@ type FulfillmentService interface {
 // +apix:path=/shop.Shipment
 type ShipmentService interface {
 	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
-
 	CreateFulfillments(context.Context, *CreateFulfillmentsRequest) (*CreateFulfillmentsResponse, error)
+	CancelFulfillment(context.Context, *CancelFulfillmentRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Shipnow
@@ -358,6 +359,7 @@ type ConnectionService interface {
 	GetShopConnections(context.Context, *cm.Empty) (*GetShopConnectionsResponse, error)
 	RegisterShopConnection(context.Context, *RegisterShopConnectionRequest) (*ShopConnection, error)
 	LoginShopConnection(context.Context, *LoginShopConnectionRequest) (*ShopConnection, error)
+	DeleteShopConnection(context.Context, *DeleteShopConnectionRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.Refund

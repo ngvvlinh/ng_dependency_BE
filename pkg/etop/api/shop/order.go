@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipping"
 	shippingtypes "etop.vn/api/main/shipping/types"
@@ -274,6 +275,19 @@ func (s *OrderService) cancelOrder(ctx context.Context, q *CancelOrderEndpoint) 
 	return q, err
 }
 
+func (s *OrderService) CompleteOrder(ctx context.Context, q *CompleteOrderEndpoint) error {
+	cmd := &ordering.CompleteOrderCommand{
+		OrderID: q.OrderId,
+		ShopID:  q.Context.Shop.ID,
+	}
+	if err := orderAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbcm.UpdatedResponse{Updated: 1}
+	return nil
+
+}
+
 func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) error {
 	key := fmt.Sprintf("ConfirmOrder %v-%v", q.Context.Shop.ID, q.OrderId)
 	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
@@ -523,7 +537,7 @@ func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfi
 		return err
 	}
 	q.Result = res.(*CreateFulfillmentsEndpoint).Result
-	return err
+	return nil
 }
 
 func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) (_ *CreateFulfillmentsEndpoint, _err error) {
@@ -542,7 +556,7 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfi
 			ChargeableWeight: q.ChargeableWeight,
 			Length:           q.Length,
 			Width:            q.Width,
-			Height:           q.Heigh,
+			Height:           q.Height,
 		},
 		ValueInfo: shippingtypes.ValueInfo{
 			CODAmount:        q.CODAmount,
@@ -571,4 +585,31 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfi
 		},
 	}
 	return res, nil
+}
+
+func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) error {
+	key := fmt.Sprintf("CancelFulfillment %v-%v", q.Context.Shop.ID, q.FulfillmentID)
+	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+		func() (interface{}, error) {
+			return s.cancelFulfillment(ctx, q)
+		}, "tạo đơn giao hàng")
+
+	if err != nil {
+		return err
+	}
+	q.Result = res.(*CancelFulfillmentEndpoint).Result
+	return nil
+}
+
+func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) (*CancelFulfillmentEndpoint, error) {
+	cmd := &shipping.CancelFulfillmentCommand{
+		FulfillmentID: q.FulfillmentID,
+		CancelReason:  q.CancelReason,
+	}
+	if err := shippingAggregate.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &CancelFulfillmentEndpoint{
+		Result: &pbcm.UpdatedResponse{Updated: 1},
+	}, nil
 }
