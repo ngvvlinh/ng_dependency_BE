@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"etop.vn/backend/doc"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	"etop.vn/backend/res/dl/imports"
 	"etop.vn/common/l"
@@ -48,6 +49,12 @@ func SwaggerHandler(docFile string) http.Handler {
 		panic(err)
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if cm.IsDev() { // always reload file on dev
+			data, err = doc.Asset(docFile)
+			if err != nil {
+				panic(err)
+			}
+		}
 		_, _ = w.Write(data)
 	})
 }
@@ -112,7 +119,7 @@ func RedocHandler() http.HandlerFunc {
 	</head>
 	<body>
 	<redoc spec-url='%v'></redoc>
-	<script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
 	</body>
 </html>`
 

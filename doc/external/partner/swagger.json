@@ -477,6 +477,7 @@
     },
     "/v1/partner.History/GetChanges": {
       "post": {
+        "description": "This API provides an example for webhook request content. It's not a real API.\n",
         "tags": [
           "History"
         ],
@@ -1555,17 +1556,6 @@
         }
       }
     },
-    "ktForwardPaging": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer"
-        },
-        "since": {
-          "type": "string"
-        }
-      }
-    },
     "ktIDRequest": {
       "type": "object",
       "required": [
@@ -2467,18 +2457,7 @@
       }
     },
     "mrGetChangesRequest": {
-      "type": "object",
-      "properties": {
-        "entity": {
-          "type": "string"
-        },
-        "entity_id": {
-          "type": "string"
-        },
-        "paging": {
-          "$ref": "#/definitions/ktForwardPaging"
-        }
-      }
+      "type": "object"
     },
     "mrGetCustomerRequest": {
       "type": "object",

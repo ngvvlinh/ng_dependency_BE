@@ -34,6 +34,7 @@ type WebhookService interface {
 
 // +apix:path=/partner.History
 type HistoryService interface {
+	// This API provides an example for webhook request content. It's not a real API.
 	GetChanges(context.Context, *types.GetChangesRequest) (*types.Callback, error)
 }
 

@@ -95,9 +95,6 @@ func (m *WebhookError) Reset()         { *m = WebhookError{} }
 func (m *WebhookError) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetChangesRequest struct {
-	Paging   *common.ForwardPaging `json:"paging"`
-	Entity   dot.NullString        `json:"entity"`
-	EntityId dot.NullString        `json:"entity_id"`
 }
 
 func (m *GetChangesRequest) Reset()         { *m = GetChangesRequest{} }
@@ -271,7 +268,7 @@ type CreateOrderRequest struct {
 	TotalAmount   int                   `json:"total_amount"`
 	OrderNote     string                `json:"order_note"`
 	Shipping      *OrderShipping        `json:"shipping"`
-	ExternalMeta  map[string]string     `json:"external_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ExternalMeta  map[string]string     `json:"external_meta"`
 }
 
 func (m *CreateOrderRequest) Reset()         { *m = CreateOrderRequest{} }
