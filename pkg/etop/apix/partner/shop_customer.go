@@ -206,7 +206,11 @@ func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAdd
 	return nil
 }
 
-func (s *CustomerGroupService) AddCustomer(ctx context.Context, r *AddCustomerEndpoint) error {
+func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context, r *CustomerGroupListRelationshipsEndpoint) error {
+	panic("TODO")
+}
+
+func (s *CustomerGroupRelationshipService) CreateRelationship(ctx context.Context, r *CustomerGroupCreateRelationshipEndpoint) error {
 	cmd := &customering.AddCustomersToGroupCommand{
 		ShopID:      r.Context.Shop.ID,
 		GroupID:     r.GroupID,
@@ -219,7 +223,7 @@ func (s *CustomerGroupService) AddCustomer(ctx context.Context, r *AddCustomerEn
 	return nil
 }
 
-func (s *CustomerGroupService) RemoveCustomer(ctx context.Context, r *RemoveCustomerEndpoint) error {
+func (s *CustomerGroupRelationshipService) DeleteRelationship(ctx context.Context, r *CustomerGroupDeleteRelationshipEndpoint) error {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
 		ShopID:      r.Context.Shop.ID,
 		GroupID:     r.GroupID,

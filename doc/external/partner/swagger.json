@@ -285,33 +285,6 @@
         }
       }
     },
-    "/v1/partner.CustomerGroup/AddCustomer": {
-      "post": {
-        "tags": [
-          "CustomerGroup"
-        ],
-        "summary": "AddCustomer",
-        "operationId": "partner.CustomerGroup-AddCustomer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/mrAddCustomerRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/v1/partner.CustomerGroup/CreateGroup": {
       "post": {
         "tags": [
@@ -420,33 +393,6 @@
         }
       }
     },
-    "/v1/partner.CustomerGroup/RemoveCustomer": {
-      "post": {
-        "tags": [
-          "CustomerGroup"
-        ],
-        "summary": "RemoveCustomer",
-        "operationId": "partner.CustomerGroup-RemoveCustomer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/mrRemoveCustomerRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/v1/partner.CustomerGroup/UpdateGroup": {
       "post": {
         "tags": [
@@ -469,6 +415,87 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroupRelationship/CreateRelationship": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "CreateRelationship",
+        "operationId": "partner.CustomerGroupRelationship-CreateRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrAddCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroupRelationship/DeleteRelationship": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "DeleteRelationship",
+        "operationId": "partner.CustomerGroupRelationship-DeleteRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.CustomerGroupRelationship/ListRelationships": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "ListRelationships",
+        "operationId": "partner.CustomerGroupRelationship-ListRelationships",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerGroupRelationshipsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroupRelationshipsResponse"
             }
           }
         }
@@ -935,33 +962,6 @@
         }
       }
     },
-    "/v1/partner.ProductCollection/AddProduct": {
-      "post": {
-        "tags": [
-          "ProductCollection"
-        ],
-        "summary": "AddProduct",
-        "operationId": "partner.ProductCollection-AddProduct",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/mrAddProductCollectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/v1/partner.ProductCollection/CreateCollection": {
       "post": {
         "tags": [
@@ -1070,33 +1070,6 @@
         }
       }
     },
-    "/v1/partner.ProductCollection/RemoveProduct": {
-      "post": {
-        "tags": [
-          "ProductCollection"
-        ],
-        "summary": "RemoveProduct",
-        "operationId": "partner.ProductCollection-RemoveProduct",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/mrRemoveProductCollectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/v1/partner.ProductCollection/UpdateCollection": {
       "post": {
         "tags": [
@@ -1119,6 +1092,87 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrProductCollection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.ProductCollectionRelationship/CreateRelationship": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "CreateRelationship",
+        "operationId": "partner.ProductCollectionRelationship-CreateRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateProductCollectionRelationshipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.ProductCollectionRelationship/DeleteRelationship": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "DeleteRelationship",
+        "operationId": "partner.ProductCollectionRelationship-DeleteRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.ProductCollectionRelationship/ListRelationships": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "ListRelationships",
+        "operationId": "partner.ProductCollectionRelationship-ListRelationships",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListProductCollectionRelationshipsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollectionRelationshipsResponse"
             }
           }
         }
@@ -1809,19 +1863,6 @@
         }
       }
     },
-    "mrAddProductCollectionRequest": {
-      "type": "object",
-      "properties": {
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "mrCallback": {
       "type": "object",
       "properties": {
@@ -2092,6 +2133,19 @@
         },
         "total_items": {
           "type": "integer"
+        }
+      }
+    },
+    "mrCreateProductCollectionRelationshipRequest": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2373,6 +2427,44 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroupRelationship": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCustomerGroupRelationshipFilter": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "$ref": "#/definitions/kfIDs"
+        },
+        "group_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroupRelationshipsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerGroupRelationship"
+          }
         }
       }
     },
@@ -2812,6 +2904,17 @@
         }
       }
     },
+    "mrListCustomerGroupRelationshipsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerGroupRelationshipFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
     "mrListCustomerGroupsRequest": {
       "type": "object",
       "properties": {
@@ -2885,6 +2988,28 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/mrListOrdersFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListProductCollectionRelationshipsFilter": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "$ref": "#/definitions/kfIDs"
+        },
+        "product_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListProductCollectionRelationshipsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListProductCollectionRelationshipsFilter"
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -3291,6 +3416,33 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "mrProductCollectionRelationship": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrProductCollectionRelationshipsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrProductCollectionRelationship"
+          }
         }
       }
     },
@@ -3934,6 +4086,9 @@
       "name": "CustomerGroup"
     },
     {
+      "name": "CustomerGroupRelationship"
+    },
+    {
       "name": "Fulfillment"
     },
     {
@@ -3953,6 +4108,9 @@
     },
     {
       "name": "ProductCollection"
+    },
+    {
+      "name": "ProductCollectionRelationship"
     },
     {
       "name": "Shipping"

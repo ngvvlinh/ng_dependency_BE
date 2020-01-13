@@ -692,6 +692,34 @@ type UpdateCustomerGroupRequest struct {
 
 func (m *UpdateCustomerGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type CustomerGroupRelationship struct {
+	CustomerID dot.ID `json:"customer_id"`
+	GroupID    dot.ID `json:"group_id"`
+}
+
+func (m *CustomerGroupRelationship) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerGroupRelationshipFilter struct {
+	CustomerID filter.IDs `json:"customer_id"`
+	GroupID    filter.IDs `json:"group_id"`
+}
+
+func (m *CustomerGroupRelationshipFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCustomerGroupRelationshipsRequest struct {
+	Filter CustomerGroupRelationshipFilter `json:"filter"`
+	Paging *common.CursorPaging            `json:"paging"`
+}
+
+func (m *ListCustomerGroupRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerGroupRelationshipsResponse struct {
+	Relationships []*CustomerGroupRelationship `json:"relationship"`
+	Paging        *common.CursorPageInfo       `json:"paging"`
+}
+
+func (m *CustomerGroupRelationshipsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
 type ListInventoryLevelsFilter struct {
 	VariantID filter.IDs `json:"variant_id"`
 }
@@ -899,6 +927,33 @@ type ProductCollection struct {
 
 func (m *ProductCollection) String() string { return jsonx.MustMarshalToString(m) }
 
+type ListProductCollectionRelationshipsFilter struct {
+	ProductID    filter.IDs `json:"product_id"`
+	CollectionID filter.IDs `json:"collection_id"`
+}
+
+func (m *ListProductCollectionRelationshipsFilter) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type ListProductCollectionRelationshipsRequest struct {
+	Filter ListProductCollectionRelationshipsFilter `json:"filter"`
+	Paging *common.CursorPaging                     `json:"paging"`
+}
+
+func (m *ListProductCollectionRelationshipsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type ProductCollectionRelationshipsResponse struct {
+	Relationships []*ProductCollectionRelationship `json:"relationships"`
+	Paging        *common.CursorPageInfo           `json:"paging"`
+}
+
+func (m *ProductCollectionRelationshipsResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type CreateCollectionRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -916,12 +971,21 @@ type UpdateCollectionRequest struct {
 
 func (m *UpdateCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type AddProductCollectionRequest struct {
+type ProductCollectionRelationship struct {
 	ProductId    dot.ID `json:"product_id"`
 	CollectionId dot.ID `json:"collection_id"`
 }
 
-func (m *AddProductCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ProductCollectionRelationship) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateProductCollectionRelationshipRequest struct {
+	ProductId    dot.ID `json:"product_id"`
+	CollectionId dot.ID `json:"collection_id"`
+}
+
+func (m *CreateProductCollectionRelationshipRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type RemoveProductCollectionRequest struct {
 	ProductId    dot.ID `json:"product_id"`

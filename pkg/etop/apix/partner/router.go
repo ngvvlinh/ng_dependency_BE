@@ -19,10 +19,14 @@ func NewPartnerServer(m httprpc.Muxer) {
 		service.NewOrderServiceServer(WrapOrderService(orderService)),
 		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService)),
 		service.NewCustomerServiceServer(WrapCustomerService(customerService)),
+		service.NewCustomerAddressServiceServer(WrapCustomerAddressService(customerAddressService)),
 		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService)),
+		service.NewCustomerGroupRelationshipServiceServer(WrapCustomerGroupRelationshipService(customerGroupRelationshipService)),
 		service.NewInventoryServiceServer(WrapInventoryService(inventoryService)),
 		service.NewVariantServiceServer(WrapVariantService(variantService)),
 		service.NewProductServiceServer(WrapProductService(productService)),
+		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService)),
+		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

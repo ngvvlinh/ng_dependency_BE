@@ -107,10 +107,16 @@ type CustomerGroupService interface {
 	UpdateGroup(context.Context, *types.UpdateCustomerGroupRequest) (*types.CustomerGroup, error)
 
 	DeleteGroup(context.Context, *cm.IDRequest) (*cm.Empty, error)
+}
 
-	AddCustomer(context.Context, *types.AddCustomerRequest) (*cm.Empty, error)
+// +apix:path=/partner.CustomerGroupRelationship
+// +wrapper:endpoint-prefix=CustomerGroup
+type CustomerGroupRelationshipService interface {
+	ListRelationships(context.Context, *types.ListCustomerGroupRelationshipsRequest) (*types.CustomerGroupRelationshipsResponse, error)
 
-	RemoveCustomer(context.Context, *types.RemoveCustomerRequest) (*cm.Empty, error)
+	CreateRelationship(context.Context, *types.AddCustomerRequest) (*cm.Empty, error)
+
+	DeleteRelationship(context.Context, *types.RemoveCustomerRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/partner.Inventory
@@ -142,10 +148,16 @@ type ProductCollectionService interface {
 	UpdateCollection(context.Context, *types.UpdateCollectionRequest) (*types.ProductCollection, error)
 
 	DeleteCollection(context.Context, *types.GetCollectionRequest) (*cm.Empty, error)
+}
 
-	AddProduct(context.Context, *types.AddProductCollectionRequest) (*cm.Empty, error)
+// +apix:path=/partner.ProductCollectionRelationship
+// +wrapper:endpoint-prefix=ProductCollection
+type ProductCollectionRelationshipService interface {
+	ListRelationships(context.Context, *types.ListProductCollectionRelationshipsRequest) (*types.ProductCollectionRelationshipsResponse, error)
 
-	RemoveProduct(context.Context, *types.RemoveProductCollectionRequest) (*cm.Empty, error)
+	CreateRelationship(context.Context, *types.CreateProductCollectionRelationshipRequest) (*cm.Empty, error)
+
+	DeleteRelationship(context.Context, *types.RemoveProductCollectionRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/partner.Variant

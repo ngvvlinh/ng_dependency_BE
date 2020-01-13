@@ -513,53 +513,6 @@ type wrapCustomerGroupService struct {
 	s *CustomerGroupService
 }
 
-type AddCustomerEndpoint struct {
-	*externaltypes.AddCustomerRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerGroupService) AddCustomer(ctx context.Context, req *externaltypes.AddCustomerRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/AddCustomer"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AddCustomerEndpoint{AddCustomerRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddCustomer(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type CreateGroupEndpoint struct {
 	*externaltypes.CreateCustomerGroupRequest
 	Result  *externaltypes.CustomerGroup
@@ -748,53 +701,6 @@ func (s wrapCustomerGroupService) ListGroups(ctx context.Context, req *externalt
 	return resp, nil
 }
 
-type RemoveCustomerEndpoint struct {
-	*externaltypes.RemoveCustomerRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerGroupService) RemoveCustomer(ctx context.Context, req *externaltypes.RemoveCustomerRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/RemoveCustomer"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &RemoveCustomerEndpoint{RemoveCustomerRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveCustomer(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type UpdateGroupEndpoint struct {
 	*externaltypes.UpdateCustomerGroupRequest
 	Result  *externaltypes.CustomerGroup
@@ -831,6 +737,155 @@ func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *external
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateGroup(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapCustomerGroupRelationshipService(s *CustomerGroupRelationshipService) api.CustomerGroupRelationshipService {
+	return wrapCustomerGroupRelationshipService{s: s}
+}
+
+type wrapCustomerGroupRelationshipService struct {
+	s *CustomerGroupRelationshipService
+}
+
+type CustomerGroupCreateRelationshipEndpoint struct {
+	*externaltypes.AddCustomerRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerGroupRelationshipService) CreateRelationship(ctx context.Context, req *externaltypes.AddCustomerRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerGroupRelationship/CreateRelationship"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CustomerGroupCreateRelationshipEndpoint{AddCustomerRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateRelationship(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CustomerGroupDeleteRelationshipEndpoint struct {
+	*externaltypes.RemoveCustomerRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerGroupRelationshipService) DeleteRelationship(ctx context.Context, req *externaltypes.RemoveCustomerRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerGroupRelationship/DeleteRelationship"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CustomerGroupDeleteRelationshipEndpoint{RemoveCustomerRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteRelationship(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CustomerGroupListRelationshipsEndpoint struct {
+	*externaltypes.ListCustomerGroupRelationshipsRequest
+	Result  *externaltypes.CustomerGroupRelationshipsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerGroupRelationshipService) ListRelationships(ctx context.Context, req *externaltypes.ListCustomerGroupRelationshipsRequest) (resp *externaltypes.CustomerGroupRelationshipsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerGroupRelationship/ListRelationships"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CustomerGroupListRelationshipsEndpoint{ListCustomerGroupRelationshipsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ListRelationships(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1690,53 +1745,6 @@ type wrapProductCollectionService struct {
 	s *ProductCollectionService
 }
 
-type AddProductEndpoint struct {
-	*externaltypes.AddProductCollectionRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapProductCollectionService) AddProduct(ctx context.Context, req *externaltypes.AddProductCollectionRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.ProductCollection/AddProduct"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AddProductEndpoint{AddProductCollectionRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddProduct(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type CreateCollectionEndpoint struct {
 	*externaltypes.CreateCollectionRequest
 	Result  *externaltypes.ProductCollection
@@ -1925,53 +1933,6 @@ func (s wrapProductCollectionService) ListCollections(ctx context.Context, req *
 	return resp, nil
 }
 
-type RemoveProductEndpoint struct {
-	*externaltypes.RemoveProductCollectionRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapProductCollectionService) RemoveProduct(ctx context.Context, req *externaltypes.RemoveProductCollectionRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.ProductCollection/RemoveProduct"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &RemoveProductEndpoint{RemoveProductCollectionRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProduct(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type UpdateCollectionEndpoint struct {
 	*externaltypes.UpdateCollectionRequest
 	Result  *externaltypes.ProductCollection
@@ -2008,6 +1969,155 @@ func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req 
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCollection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapProductCollectionRelationshipService(s *ProductCollectionRelationshipService) api.ProductCollectionRelationshipService {
+	return wrapProductCollectionRelationshipService{s: s}
+}
+
+type wrapProductCollectionRelationshipService struct {
+	s *ProductCollectionRelationshipService
+}
+
+type ProductCollectionCreateRelationshipEndpoint struct {
+	*externaltypes.CreateProductCollectionRelationshipRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionRelationshipService) CreateRelationship(ctx context.Context, req *externaltypes.CreateProductCollectionRelationshipRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollectionRelationship/CreateRelationship"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ProductCollectionCreateRelationshipEndpoint{CreateProductCollectionRelationshipRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateRelationship(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ProductCollectionDeleteRelationshipEndpoint struct {
+	*externaltypes.RemoveProductCollectionRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionRelationshipService) DeleteRelationship(ctx context.Context, req *externaltypes.RemoveProductCollectionRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollectionRelationship/DeleteRelationship"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ProductCollectionDeleteRelationshipEndpoint{RemoveProductCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteRelationship(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ProductCollectionListRelationshipsEndpoint struct {
+	*externaltypes.ListProductCollectionRelationshipsRequest
+	Result  *externaltypes.ProductCollectionRelationshipsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.Context, req *externaltypes.ListProductCollectionRelationshipsRequest) (resp *externaltypes.ProductCollectionRelationshipsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollectionRelationship/ListRelationships"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ProductCollectionListRelationshipsEndpoint{ListProductCollectionRelationshipsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ListRelationships(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

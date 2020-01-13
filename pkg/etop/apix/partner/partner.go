@@ -68,11 +68,13 @@ type ShippingService struct{}
 type CustomerService struct{}
 type CustomerAddressService struct{}
 type CustomerGroupService struct{}
+type CustomerGroupRelationshipService struct{}
 type InventoryService struct{}
 type OrderService struct{}
 type FulfillmentService struct{}
 type ProductService struct{}
 type ProductCollectionService struct{}
+type ProductCollectionRelationshipService struct{}
 type VariantService struct{}
 
 var miscService = &MiscService{}
@@ -83,11 +85,13 @@ var shippingService = &ShippingService{}
 var customerService = &CustomerService{}
 var customerAddressService = &CustomerAddressService{}
 var customerGroupService = &CustomerGroupService{}
+var customerGroupRelationshipService = &CustomerGroupRelationshipService{}
 var inventoryService = &InventoryService{}
 var orderService = &OrderService{}
 var fulfillmentService = &FulfillmentService{}
 var productService = &ProductService{}
 var productCollectionService = &ProductCollectionService{}
+var productCollectionRelationshipService = &ProductCollectionRelationshipService{}
 var variantService = &VariantService{}
 
 func Init(

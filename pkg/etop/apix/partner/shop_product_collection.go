@@ -28,7 +28,11 @@ func (s *ProductCollectionService) DeleteCollection(ctx context.Context, r *Dele
 	panic("TODO")
 }
 
-func (s *ProductCollectionService) AddProduct(ctx context.Context, r *AddProductEndpoint) error {
+func (s *ProductCollectionRelationshipService) ListRelationships(ctx context.Context, r *ProductCollectionListRelationshipsEndpoint) error {
+	panic("TODO")
+}
+
+func (s *ProductCollectionRelationshipService) CreateRelationship(ctx context.Context, r *ProductCollectionCreateRelationshipEndpoint) error {
 	cmd := &catalog.AddShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		ShopID:        r.Context.Shop.ID,
@@ -41,7 +45,7 @@ func (s *ProductCollectionService) AddProduct(ctx context.Context, r *AddProduct
 	return nil
 }
 
-func (s *ProductCollectionService) RemoveProduct(ctx context.Context, r *RemoveProductEndpoint) error {
+func (s *ProductCollectionRelationshipService) DeleteRelationship(ctx context.Context, r *ProductCollectionDeleteRelationshipEndpoint) error {
 	cmd := &catalog.RemoveShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		ShopID:        r.Context.Shop.ID,

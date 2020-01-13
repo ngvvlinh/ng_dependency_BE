@@ -89,6 +89,63 @@ func (s *CustomerAddressServiceServer) parseRoute(path string) (reqMsg capi.Mess
 	}
 }
 
+type CustomerGroupRelationshipServiceServer struct {
+	inner CustomerGroupRelationshipService
+}
+
+func NewCustomerGroupRelationshipServiceServer(svc CustomerGroupRelationshipService) Server {
+	return &CustomerGroupRelationshipServiceServer{
+		inner: svc,
+	}
+}
+
+const CustomerGroupRelationshipServicePathPrefix = "/partner.CustomerGroupRelationship/"
+
+func (s *CustomerGroupRelationshipServiceServer) PathPrefix() string {
+	return CustomerGroupRelationshipServicePathPrefix
+}
+
+func (s *CustomerGroupRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *CustomerGroupRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.CustomerGroupRelationship/CreateRelationship":
+		msg := &externaltypes.AddCustomerRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateRelationship(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerGroupRelationship/DeleteRelationship":
+		msg := &externaltypes.RemoveCustomerRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteRelationship(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerGroupRelationship/ListRelationships":
+		msg := &externaltypes.ListCustomerGroupRelationshipsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ListRelationships(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type CustomerGroupServiceServer struct {
 	inner CustomerGroupService
 }
@@ -122,12 +179,6 @@ func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 
 func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.CustomerGroup/AddCustomer":
-		msg := &externaltypes.AddCustomerRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AddCustomer(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.CustomerGroup/CreateGroup":
 		msg := &externaltypes.CreateCustomerGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -150,12 +201,6 @@ func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		msg := &externaltypes.ListCustomerGroupsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ListGroups(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.CustomerGroup/RemoveCustomer":
-		msg := &externaltypes.RemoveCustomerRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveCustomer(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.CustomerGroup/UpdateGroup":
@@ -506,6 +551,63 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 	}
 }
 
+type ProductCollectionRelationshipServiceServer struct {
+	inner ProductCollectionRelationshipService
+}
+
+func NewProductCollectionRelationshipServiceServer(svc ProductCollectionRelationshipService) Server {
+	return &ProductCollectionRelationshipServiceServer{
+		inner: svc,
+	}
+}
+
+const ProductCollectionRelationshipServicePathPrefix = "/partner.ProductCollectionRelationship/"
+
+func (s *ProductCollectionRelationshipServiceServer) PathPrefix() string {
+	return ProductCollectionRelationshipServicePathPrefix
+}
+
+func (s *ProductCollectionRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ProductCollectionRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.ProductCollectionRelationship/CreateRelationship":
+		msg := &externaltypes.CreateProductCollectionRelationshipRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateRelationship(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollectionRelationship/DeleteRelationship":
+		msg := &externaltypes.RemoveProductCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteRelationship(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollectionRelationship/ListRelationships":
+		msg := &externaltypes.ListProductCollectionRelationshipsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ListRelationships(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type ProductCollectionServiceServer struct {
 	inner ProductCollectionService
 }
@@ -539,12 +641,6 @@ func (s *ProductCollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req
 
 func (s *ProductCollectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.ProductCollection/AddProduct":
-		msg := &externaltypes.AddProductCollectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AddProduct(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.ProductCollection/CreateCollection":
 		msg := &externaltypes.CreateCollectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -567,12 +663,6 @@ func (s *ProductCollectionServiceServer) parseRoute(path string) (reqMsg capi.Me
 		msg := &externaltypes.ListCollectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ListCollections(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.ProductCollection/RemoveProduct":
-		msg := &externaltypes.RemoveProductCollectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveProduct(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.ProductCollection/UpdateCollection":
