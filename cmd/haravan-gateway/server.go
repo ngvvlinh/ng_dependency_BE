@@ -38,7 +38,7 @@ func startServers() *http.Server {
 	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
 	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
-	shipmentManager := shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, cfg.Env, redisStore)
+	shipmentManager := shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore)
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderAggr := serviceordering.NewAggregate(eventBus, db).MessageBus()

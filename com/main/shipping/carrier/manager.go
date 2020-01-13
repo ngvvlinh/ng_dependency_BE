@@ -57,13 +57,13 @@ type ShipmentManager struct {
 	_cipherx       *cipherx.Cipherx
 }
 
-func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning.QueryBus, connectionAggr connectioning.CommandBus, env string, redisS redis.Store) *ShipmentManager {
+func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning.QueryBus, connectionAggr connectioning.CommandBus, redisS redis.Store) *ShipmentManager {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	return &ShipmentManager{
 		LocationQS:     locationQS,
 		ConnectionQS:   connectionQS,
 		connectionAggr: connectionAggr,
-		Env:            env,
+		Env:            cm.PartnerEnv(),
 		redisStore:     redisS,
 		_cipherx:       _cipherx,
 	}

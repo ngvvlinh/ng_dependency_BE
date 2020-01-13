@@ -450,7 +450,7 @@ func main() {
 	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
 	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
 	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
-	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, cfg.Env, redisStore)
+	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
 	shippingPM := shippingpm.New(eventBus, shippingAggr)

@@ -89,6 +89,17 @@ func IsProd() bool {
 	return !notProd
 }
 
+func PartnerEnv() string {
+	switch env {
+	case EnvDev, EnvStag, EnvSandbox:
+		return PartnerEnvTest
+	case EnvProd:
+		return PartnerEnvProd
+	default:
+		return env
+	}
+}
+
 func SetMainSiteBaseURL(s string) {
 	if mainSiteBaseUrl != "" {
 		ll.Panic("already init base url")
