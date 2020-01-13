@@ -3,6 +3,8 @@ package carrier
 import (
 	"testing"
 
+	cm "etop.vn/backend/pkg/common"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/api/main/connectioning"
@@ -25,6 +27,7 @@ func init() {
 
 func TestShipmentManager(t *testing.T) {
 	ctx := bus.Ctx()
+	cm.SetEnvironment(cm.EnvDev)
 	mockBus := bus.New()
 	mockBus.MockHandler(func(query *connectioning.GetConnectionByIDQuery) error {
 		query.Result = &connectioning.Connection{
@@ -54,7 +57,7 @@ func TestShipmentManager(t *testing.T) {
 	})
 	connectionQS := connectioning.NewQueryBus(mockBus)
 	connectionAggr := connectioning.NewCommandBus(mockBus)
-	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, "test", nil)
+	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil)
 	Convey("Get Shipment driver", t, func() {
 		shipmentType, err := shipmentManager.getShipmentDriver(ctx, connID, 0)
 		So(err, ShouldBeNil)
