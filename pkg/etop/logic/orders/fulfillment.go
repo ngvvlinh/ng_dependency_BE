@@ -74,10 +74,12 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	shipmentManager = shipmentCarrierCtrl
 }
 
-var districtsBlockList = []string{
-	"001", // Quận Ba Đình - Hà Nội
-	"005", // Quận Cầu Giấy - Hà Nội
-	"008", // Quận Hoàng mai - Hà Nội
+var blockCarrierByDistricts = map[typeshippingprovider.ShippingProvider][]string{
+	typeshippingprovider.GHN: []string{},
+}
+
+var blockCarrierByProvinces = map[typeshippingprovider.ShippingProvider][]string{
+	typeshippingprovider.GHN: []string{},
 }
 
 func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
@@ -355,7 +357,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 		return nil, cm.Error(cm.FailedPrecondition, "Thông tin địa chỉ cửa hàng trong cấu hình cửa hàng: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
 
-	if err := checkBlockDistricts(shopAddress); err != nil {
+	if err := checkBlockCarrier(shopAddress, order.ShopShipping.ShippingProvider); err != nil {
 		return nil, err
 	}
 
@@ -378,9 +380,20 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	return ffm, nil
 }
 
-func checkBlockDistricts(shopAddress *addressmodel.Address) error {
-	if cm.StringsContain(districtsBlockList, shopAddress.DistrictCode) {
-		return cm.Errorf(cm.InvalidArgument, nil, "Không thể lấy hàng tại địa chỉ này %v (%v)", shopAddress.District, shopAddress.Province)
+func checkBlockCarrier(shopAddress *addressmodel.Address, provider typeshippingprovider.ShippingProvider) error {
+	if provider == 0 {
+		return nil
+	}
+	provinces := blockCarrierByProvinces[provider]
+	if cm.StringsContain(provinces, shopAddress.ProvinceCode) {
+		return cm.Errorf(cm.InvalidArgument, nil, "%v không thể lấy hàng tại địa chỉ này %v (%v)", provider.Label(), shopAddress.District, shopAddress.Province)
+	}
+	districts, ok := blockCarrierByDistricts[provider]
+	if !ok {
+		return nil
+	}
+	if cm.StringsContain(districts, shopAddress.DistrictCode) {
+		return cm.Errorf(cm.InvalidArgument, nil, "%v không thể lấy hàng tại địa chỉ này %v (%v)", provider.Label(), shopAddress.District, shopAddress.Province)
 	}
 	return nil
 }
