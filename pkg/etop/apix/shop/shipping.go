@@ -41,7 +41,7 @@ func (s *ShippingService) GetShippingServices(ctx context.Context, r *GetShippin
 }
 
 func (s *ShippingService) CreateAndConfirmOrder(ctx context.Context, r *CreateAndConfirmOrderEndpoint) error {
-	resp, err := shipping.CreateAndConfirmOrder(ctx, r.Context.Shop.ID, &r.Context, r.CreateOrderRequest)
+	resp, err := shipping.CreateAndConfirmOrder(ctx, r.Context.Shop.ID, &r.Context, r.CreateAndConfirmOrderRequest)
 	r.Result = resp
 	return err
 }

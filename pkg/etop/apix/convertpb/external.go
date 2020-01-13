@@ -173,6 +173,39 @@ func PbOrderShipping(m *ordermodel.Order) *exttypes.OrderShipping {
 	}
 }
 
+func PbOrderWithoutShipping(m *ordermodel.Order) *exttypes.OrderWithoutShipping {
+	res := &exttypes.OrderWithoutShipping{
+		Id:              m.ID,
+		ShopId:          m.ShopID,
+		Code:            dot.String(m.Code),
+		ExternalId:      dot.String(m.ExternalOrderID),
+		ExternalCode:    dot.String(m.EdCode),
+		ExternalUrl:     dot.String(m.ExternalURL),
+		SelfUrl:         PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		CustomerAddress: PbOrderAddress(m.CustomerAddress),
+		ShippingAddress: PbOrderAddress(m.ShippingAddress),
+		CreatedAt:       cmapi.PbTime(m.CreatedAt),
+		ProcessedAt:     cmapi.PbTime(m.ProcessedAt),
+		UpdatedAt:       cmapi.PbTime(m.UpdatedAt),
+		ClosedAt:        cmapi.PbTime(m.ClosedAt),
+		ConfirmedAt:     cmapi.PbTime(m.ConfirmedAt),
+		CancelledAt:     cmapi.PbTime(m.CancelledAt),
+		CancelReason:    dot.String(m.CancelReason),
+		ConfirmStatus:   m.ConfirmStatus.Wrap(),
+		Status:          m.Status.Wrap(),
+		Lines:           PbOrderLines(m.Lines),
+		TotalItems:      cmapi.PbPtrInt(m.TotalItems),
+		BasketValue:     cmapi.PbPtrInt(m.BasketValue),
+		OrderDiscount:   cmapi.PbPtrInt(m.OrderDiscount),
+		TotalDiscount:   cmapi.PbPtrInt(m.TotalDiscount),
+		TotalFee:        cmapi.PbPtrInt(m.GetTotalFee()),
+		FeeLines:        convertpb.PbOrderFeeLines(m.GetFeeLines()),
+		TotalAmount:     cmapi.PbPtrInt(m.TotalAmount),
+		OrderNote:       dot.String(m.OrderNote),
+	}
+	return res
+}
+
 func PbOrderHistories(items []ordermodel.OrderHistory) []*exttypes.Order {
 	res := make([]*exttypes.Order, len(items))
 	for i, item := range items {

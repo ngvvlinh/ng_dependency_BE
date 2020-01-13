@@ -4,15 +4,11 @@ import (
 	"context"
 
 	"etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_policy"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 )
-
-func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
-	resp, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
-	r.Result = resp
-	return err
-}
 
 func (s *OrderService) GetOrder(ctx context.Context, r *OrderGetOrderEndpoint) error {
 	resp, err := shipping.GetOrder(ctx, r.Context.Shop.ID, r.OrderIDRequest)
@@ -31,7 +27,17 @@ func (s *OrderService) CreateOrder(ctx context.Context, r *OrderCreateOrderEndpo
 }
 
 func (s *OrderService) ConfirmOrder(ctx context.Context, r *OrderConfirmOrderEndpoint) error {
-	_, err := shipping.ConfirmOrder(ctx, r.Context.Shop.ID, &r.Context, r.OrderId)
+	autoInventoryVoucher := inventory_auto.Unknown
+	if r.InventoryPolicy == inventory_policy.Obey {
+		autoInventoryVoucher = r.AutoInventoryVoucher
+	}
+	err := shipping.ConfirmOrder(ctx, &r.Context, r.OrderId, autoInventoryVoucher)
+	r.Result = &common.Empty{}
+	return err
+}
+
+func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
+	_, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
 	r.Result = &common.Empty{}
 	return err
 }

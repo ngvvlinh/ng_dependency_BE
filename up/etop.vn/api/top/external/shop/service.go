@@ -35,7 +35,7 @@ type HistoryService interface {
 // +apix:path=/shop.Shipping
 type ShippingService interface {
 	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
-	CreateAndConfirmOrder(context.Context, *types.CreateOrderRequest) (*types.OrderAndFulfillments, error)
+	CreateAndConfirmOrder(context.Context, *types.CreateAndConfirmOrderRequest) (*types.OrderAndFulfillments, error)
 	CancelOrder(context.Context, *types.CancelOrderRequest) (*types.OrderAndFulfillments, error)
 	GetOrder(context.Context, *types.OrderIDRequest) (*types.OrderAndFulfillments, error)
 	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)

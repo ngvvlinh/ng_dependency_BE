@@ -174,7 +174,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *ordering.Order, ffms []*shipmodel.Fulfillment) error {
 	// check balance of shop
 	// if balance < MinShopBalance => can not create order
-	// TODO: raise event FulfillmentCreatingEvent after merge wallet (amount-available serivice)
+	// TODO: raise event FulfillmentCreatingEvent after merge wallet (amount-available service)
 	{
 		query := &model.GetBalanceShopCommand{
 			ShopID: order.ShopID,

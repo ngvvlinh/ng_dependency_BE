@@ -41,7 +41,7 @@ type HistoryService interface {
 // +apix:path=/partner.Shipping
 type ShippingService interface {
 	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
-	CreateAndConfirmOrder(context.Context, *types.CreateOrderRequest) (*types.OrderAndFulfillments, error)
+	CreateAndConfirmOrder(context.Context, *types.CreateAndConfirmOrderRequest) (*types.OrderAndFulfillments, error)
 	CancelOrder(context.Context, *types.CancelOrderRequest) (*types.OrderAndFulfillments, error)
 	GetOrder(context.Context, *types.OrderIDRequest) (*types.OrderAndFulfillments, error)
 	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)
@@ -50,12 +50,11 @@ type ShippingService interface {
 // +apix:path=/partner.Order
 // +wrapper:endpoint-prefix=Order
 type OrderService interface {
-	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.Order, error)
+	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.OrderWithoutShipping, error)
 
-	// TODO:
 	ConfirmOrder(context.Context, *types.ConfirmOrderRequest) (*cm.Empty, error)
 
-	CancelOrder(context.Context, *types.CancelOrderRequest) (*types.OrderAndFulfillments, error)
+	CancelOrder(context.Context, *types.CancelOrderRequest) (*cm.Empty, error)
 
 	GetOrder(context.Context, *types.OrderIDRequest) (*types.OrderAndFulfillments, error)
 
@@ -68,6 +67,10 @@ type FulfillmentService interface {
 	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)
 
 	ListFulfillments(context.Context, *types.ListFulfillmentsRequest) (*types.FulfillmentsResponse, error)
+
+	CreateFulfillment(context.Context, *types.CreateFulfillmentRequest) (*types.Fulfillment, error)
+
+	CancelFulfillment(context.Context, *types.CancelFulfillmentRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/partner.Customer

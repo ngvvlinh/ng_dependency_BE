@@ -279,12 +279,12 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 }
 
 type CreateAndConfirmOrderEndpoint struct {
-	*externaltypes.CreateOrderRequest
+	*externaltypes.CreateAndConfirmOrderRequest
 	Result  *externaltypes.OrderAndFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *externaltypes.CreateOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
+func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *externaltypes.CreateAndConfirmOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -304,7 +304,7 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateAndConfirmOrderEndpoint{CreateOrderRequest: req}
+	query := &CreateAndConfirmOrderEndpoint{CreateAndConfirmOrderRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}

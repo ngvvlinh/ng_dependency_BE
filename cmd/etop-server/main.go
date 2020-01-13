@@ -554,7 +554,7 @@ func main() {
 	xshop.Init(shutdowner, redisStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
-	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, connectionQuery)
+	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, shippingQuery, connectionQuery)
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)

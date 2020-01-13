@@ -162,7 +162,7 @@ func (s *ShippingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/shop.Shipping/CreateAndConfirmOrder":
-		msg := &externaltypes.CreateOrderRequest{}
+		msg := &externaltypes.CreateAndConfirmOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateAndConfirmOrder(ctx, msg)
 		}

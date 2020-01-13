@@ -179,7 +179,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		ExternalFulfillmentID: externalFulfillmentID,
 	}
 	tryonNone := pbtryon.None
-	reqCreateOrder := &exttypes.CreateOrderRequest{
+	reqCreateOrder := &exttypes.CreateAndConfirmOrderRequest{
 		ExternalId:      externalID,
 		ExternalCode:    externalID,
 		ExternalMeta:    cm.ConvertStructToMapStringString(externalMeta),

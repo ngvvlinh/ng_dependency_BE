@@ -294,8 +294,10 @@ var ACL = map[string]*permission.PermissionDecl{
 	"ext/partner.CustomerGroupRelationship/CreateRelationship": {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.CustomerGroupRelationship/DeleteRelationship": {Type: Shop, Auth: APIPartnerShopKey},
 
-	"ext/partner.Fulfillment/GetFulfillment":   {Type: Shop, Auth: APIPartnerShopKey},
-	"ext/partner.Fulfillment/ListFulfillments": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Fulfillment/GetFulfillment":    {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Fulfillment/ListFulfillments":  {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Fulfillment/CreateFulfillment": {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Fulfillment/CancelFulfillment": {Type: Shop, Auth: APIPartnerShopKey},
 
 	"ext/partner.Inventory/ListInventoryLevels": {Type: Shop, Auth: APIPartnerShopKey},
 

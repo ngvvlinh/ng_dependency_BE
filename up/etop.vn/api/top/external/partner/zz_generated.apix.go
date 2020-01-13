@@ -317,6 +317,18 @@ func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 
 func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/partner.Fulfillment/CancelFulfillment":
+		msg := &externaltypes.CancelFulfillmentRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CancelFulfillment(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.Fulfillment/CreateFulfillment":
+		msg := &externaltypes.CreateFulfillmentRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateFulfillment(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/partner.Fulfillment/GetFulfillment":
 		msg := &externaltypes.FulfillmentIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -786,7 +798,7 @@ func (s *ShippingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/CreateAndConfirmOrder":
-		msg := &externaltypes.CreateOrderRequest{}
+		msg := &externaltypes.CreateAndConfirmOrderRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateAndConfirmOrder(ctx, msg)
 		}

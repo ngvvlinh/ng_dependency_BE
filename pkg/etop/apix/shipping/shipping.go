@@ -29,15 +29,17 @@ var (
 	fulfillmentStore shipsqlstore.FulfillmentStoreFactory
 	shipmentManager  *shippingcarrier.ShipmentManager
 	shippingAggr     shipping.CommandBus
+	shippingQuery    shipping.QueryBus
 	connectionQS     connectioning.QueryBus
 )
 
-func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory, shipmentM *shippingcarrier.ShipmentManager, shippingA shipping.CommandBus, connectionQueryService connectioning.QueryBus) {
+func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory, shipmentM *shippingcarrier.ShipmentManager, shippingA shipping.CommandBus, shippingQ shipping.QueryBus, connectionQueryService connectioning.QueryBus) {
 	shippingCtrl = _shippingCtrl
 	orderStore = _orderStore
 	fulfillmentStore = ffmStore
 	shipmentManager = shipmentM
 	shippingAggr = shippingA
+	shippingQuery = shippingQ
 	connectionQS = connectionQueryService
 }
 

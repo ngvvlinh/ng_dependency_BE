@@ -1,6 +1,8 @@
 package types
 
 import (
+	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
@@ -88,3 +90,34 @@ func (m *Fulfillment) HasChanged() bool {
 		m.ShippingNote.Valid ||
 		m.ChargeableWeight.Valid
 }
+
+type CreateFulfillmentRequest struct {
+	OrderID             dot.ID                  `json:"order_id"`
+	ShippingType        ordertypes.ShippingType `json:"shipping_type"`
+	ShippingServiceCode string                  `json:"shipping_service_code"`
+	ShippingServiceFee  int                     `json:"shipping_service_fee"`
+	ShippingServiceName string                  `json:"shipping_service_name"`
+	ShippingNote        string                  `json:"shipping_note"`
+	PickupAddress       *types.OrderAddress     `json:"pickup_address"`
+	ReturnAddress       *types.OrderAddress     `json:"return_address"`
+	ShippingAddress     *types.OrderAddress     `json:"shipping_address"`
+	TryOn               try_on.TryOnCode        `json:"try_on"`
+	ChargeableWeight    int                     `json:"chargeable_weight"`
+	GrossWeight         int                     `json:"gross_weight"`
+	Height              int                     `json:"height"`
+	Width               int                     `json:"width"`
+	Length              int                     `json:"length"`
+	CODAmount           int                     `json:"cod_amount"`
+	IncludeInsurance    bool                    `json:"include_insurance"`
+
+	ShopCarrierID dot.ID `json:"shop_carrier_id"`
+}
+
+func (m *CreateFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CancelFulfillmentRequest struct {
+	FulfillmentID dot.ID `json:"fulfillment_id"`
+	CancelReason  string `json:"cancel_reason"`
+}
+
+func (m *CancelFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }

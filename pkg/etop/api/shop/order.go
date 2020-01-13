@@ -592,7 +592,7 @@ func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfil
 	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
 		func() (interface{}, error) {
 			return s.cancelFulfillment(ctx, q)
-		}, "tạo đơn giao hàng")
+		}, "huỷ đơn giao hàng")
 
 	if err != nil {
 		return err

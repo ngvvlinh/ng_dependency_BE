@@ -5,6 +5,9 @@ import (
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/gender"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_policy"
+	"etop.vn/api/top/types/etc/payment_method"
 	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
@@ -121,6 +124,38 @@ type Order struct {
 
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }
 
+type OrderWithoutShipping struct {
+	Id              dot.ID                `json:"id"`
+	ShopId          dot.ID                `json:"shop_id"`
+	Code            dot.NullString        `json:"code"`
+	ExternalId      dot.NullString        `json:"external_id"`
+	ExternalCode    dot.NullString        `json:"external_code"`
+	ExternalUrl     dot.NullString        `json:"external_url"`
+	SelfUrl         dot.NullString        `json:"self_url"`
+	CustomerAddress *OrderAddress         `json:"customer_address"`
+	ShippingAddress *OrderAddress         `json:"shipping_address"`
+	CreatedAt       dot.Time              `json:"created_at"`
+	ProcessedAt     dot.Time              `json:"processed_at"`
+	UpdatedAt       dot.Time              `json:"updated_at"`
+	ClosedAt        dot.Time              `json:"closed_at"`
+	ConfirmedAt     dot.Time              `json:"confirmed_at"`
+	CancelledAt     dot.Time              `json:"cancelled_at"`
+	CancelReason    dot.NullString        `json:"cancel_reason"`
+	ConfirmStatus   status3.NullStatus    `json:"confirm_status"`
+	Status          status5.NullStatus    `json:"status"`
+	Lines           []*OrderLine          `json:"lines"`
+	TotalItems      dot.NullInt           `json:"total_items"`
+	BasketValue     dot.NullInt           `json:"basket_value"`
+	OrderDiscount   dot.NullInt           `json:"order_discount"`
+	TotalDiscount   dot.NullInt           `json:"total_discount"`
+	TotalFee        dot.NullInt           `json:"total_fee"`
+	FeeLines        []*types.OrderFeeLine `json:"fee_lines"`
+	TotalAmount     dot.NullInt           `json:"total_amount"`
+	OrderNote       dot.NullString        `json:"order_note"`
+}
+
+func (m *OrderWithoutShipping) String() string { return jsonx.MustMarshalToString(m) }
+
 type OrderShipping struct {
 	PickupAddress       *OrderAddress  `json:"pickup_address"`
 	ReturnAddress       *OrderAddress  `json:"return_address"`
@@ -143,7 +178,7 @@ type OrderShipping struct {
 
 func (m *OrderShipping) String() string { return jsonx.MustMarshalToString(m) }
 
-type CreateOrderRequest struct {
+type CreateAndConfirmOrderRequest struct {
 	ExternalId      string        `json:"external_id"`
 	ExternalCode    string        `json:"external_code"`
 	ExternalUrl     string        `json:"external_url"`
@@ -151,6 +186,29 @@ type CreateOrderRequest struct {
 	ShippingAddress *OrderAddress `json:"shipping_address"`
 	Lines           []*OrderLine  `json:"lines"`
 	TotalItems      int           `json:"total_items"`
+	// basket_value = SUM(lines.retail_price)
+	BasketValue   int                   `json:"basket_value"`
+	OrderDiscount int                   `json:"order_discount"`
+	TotalDiscount int                   `json:"total_discount"`
+	TotalFee      int                   `json:"total_fee"`
+	FeeLines      []*types.OrderFeeLine `json:"fee_lines"`
+	TotalAmount   int                   `json:"total_amount"`
+	OrderNote     string                `json:"order_note"`
+	Shipping      *OrderShipping        `json:"shipping"`
+	ExternalMeta  map[string]string     `json:"external_meta"`
+}
+
+func (m *CreateAndConfirmOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateOrderRequest struct {
+	ExternalId      string                       `json:"external_id"`
+	ExternalCode    string                       `json:"external_code"`
+	ExternalUrl     string                       `json:"external_url"`
+	CustomerAddress *OrderAddress                `json:"customer_address"`
+	ShippingAddress *OrderAddress                `json:"shipping_address"`
+	Lines           []*OrderLine                 `json:"lines"`
+	TotalItems      int                          `json:"total_items"`
+	PaymentMethod   payment_method.PaymentMethod `json:"payment_method"`
 	// basket_value = SUM(lines.retail_price)
 	BasketValue   int                   `json:"basket_value"`
 	OrderDiscount int                   `json:"order_discount"`
@@ -191,9 +249,9 @@ func (m *OrderAndFulfillments) String() string { return jsonx.MustMarshalToStrin
 type ConfirmOrderRequest struct {
 	OrderId dot.ID `json:"order_id"`
 	// enum ('create', 'confirm')
-	AutoInventoryVoucher dot.NullString `json:"auto_inventory_voucher"`
+	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 	// enum ('obey', 'ignore')
-	InventoryPolicy bool `json:"inventory_policy"`
+	InventoryPolicy inventory_policy.InventoryPolicy `json:"inventory_policy"`
 }
 
 func (m *ConfirmOrderRequest) String() string { return jsonx.MustMarshalToString(m) }

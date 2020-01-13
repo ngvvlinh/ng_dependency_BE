@@ -905,6 +905,100 @@ type wrapFulfillmentService struct {
 	s *FulfillmentService
 }
 
+type FulfillmentCancelFulfillmentEndpoint struct {
+	*externaltypes.CancelFulfillmentRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapFulfillmentService) CancelFulfillment(ctx context.Context, req *externaltypes.CancelFulfillmentRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Fulfillment/CancelFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &FulfillmentCancelFulfillmentEndpoint{CancelFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CancelFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type FulfillmentCreateFulfillmentEndpoint struct {
+	*externaltypes.CreateFulfillmentRequest
+	Result  *externaltypes.Fulfillment
+	Context claims.ShopClaim
+}
+
+func (s wrapFulfillmentService) CreateFulfillment(ctx context.Context, req *externaltypes.CreateFulfillmentRequest) (resp *externaltypes.Fulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Fulfillment/CreateFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &FulfillmentCreateFulfillmentEndpoint{CreateFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type FulfillmentGetFulfillmentEndpoint struct {
 	*externaltypes.FulfillmentIDRequest
 	Result  *externaltypes.Fulfillment
@@ -1261,11 +1355,11 @@ type wrapOrderService struct {
 
 type OrderCancelOrderEndpoint struct {
 	*externaltypes.CancelOrderRequest
-	Result  *externaltypes.OrderAndFulfillments
+	Result  *cm.Empty
 	Context claims.ShopClaim
 }
 
-func (s wrapOrderService) CancelOrder(ctx context.Context, req *externaltypes.CancelOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
+func (s wrapOrderService) CancelOrder(ctx context.Context, req *externaltypes.CancelOrderRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1355,11 +1449,11 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *externaltypes.C
 
 type OrderCreateOrderEndpoint struct {
 	*externaltypes.CreateOrderRequest
-	Result  *externaltypes.Order
+	Result  *externaltypes.OrderWithoutShipping
 	Context claims.ShopClaim
 }
 
-func (s wrapOrderService) CreateOrder(ctx context.Context, req *externaltypes.CreateOrderRequest) (resp *externaltypes.Order, err error) {
+func (s wrapOrderService) CreateOrder(ctx context.Context, req *externaltypes.CreateOrderRequest) (resp *externaltypes.OrderWithoutShipping, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2185,12 +2279,12 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 }
 
 type CreateAndConfirmOrderEndpoint struct {
-	*externaltypes.CreateOrderRequest
+	*externaltypes.CreateAndConfirmOrderRequest
 	Result  *externaltypes.OrderAndFulfillments
 	Context claims.ShopClaim
 }
 
-func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *externaltypes.CreateOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
+func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *externaltypes.CreateAndConfirmOrderRequest) (resp *externaltypes.OrderAndFulfillments, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2210,7 +2304,7 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateAndConfirmOrderEndpoint{CreateOrderRequest: req}
+	query := &CreateAndConfirmOrderEndpoint{CreateAndConfirmOrderRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
