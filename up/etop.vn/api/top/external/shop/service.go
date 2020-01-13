@@ -29,7 +29,7 @@ type WebhookService interface {
 // +apix:path=/shop.History
 type HistoryService interface {
 	// This API provides an example for webhook request content. It's not a real API.
-	GetChanges(context.Context, *types.GetChangesRequest) (*types.Callback, error)
+	GetChanges(context.Context, *cm.Empty) (*types.Callback, error)
 }
 
 // +apix:path=/shop.Shipping

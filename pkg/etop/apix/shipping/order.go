@@ -90,7 +90,7 @@ func CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.C
 		BasketValue:     r.BasketValue,
 		TotalWeight:     shipping.ChargeableWeight.Apply(0),
 		OrderDiscount:   r.OrderDiscount,
-		TotalFee:        r.TotalFee.Apply(0),
+		TotalFee:        r.TotalFee,
 		FeeLines:        r.FeeLines,
 		TotalDiscount:   dot.Int(r.TotalDiscount),
 		TotalAmount:     r.TotalAmount,
@@ -275,7 +275,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 		BasketValue:     r.BasketValue,
 		TotalWeight:     shipping.ChargeableWeight.Apply(0),
 		OrderDiscount:   r.OrderDiscount,
-		TotalFee:        r.TotalFee.Apply(0),
+		TotalFee:        r.TotalFee,
 		FeeLines:        r.FeeLines,
 		TotalDiscount:   dot.Int(r.TotalDiscount),
 		TotalAmount:     r.TotalAmount,
@@ -448,8 +448,8 @@ func ListFulfillments(ctx context.Context, shopID dot.ID, r *exttypes.ListFulfil
 		return nil, err
 	}
 	s := fulfillmentStore(ctx).ShopID(shopID).WithPaging(*paging)
-	if r.OrderID != 0 {
-		s = s.OrderID(r.OrderID)
+	if len(r.Filter.OrderID) != 0 {
+		s = s.OrderIDs(r.Filter.OrderID...)
 	}
 
 	ffms, err := s.ListFfmsDB()

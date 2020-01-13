@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/top/external/types"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/capi/filter"
@@ -64,7 +65,6 @@ func (s *VariantService) CreateVariant(ctx context.Context, r *CreateVariantEndp
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   r.ShortDesc,
 			Description: r.Description,
-			DescHTML:    r.DescHtml,
 		},
 		PriceInfo: catalog.PriceInfo{
 			CostPrice:   r.CostPrice,
@@ -90,7 +90,6 @@ func (s *VariantService) UpdateVariant(ctx context.Context, r *UpdateVariantEndp
 
 		ShortDesc:    r.ShortDesc,
 		Descripttion: r.Description,
-		DescHTML:     r.DescHtml,
 
 		CostPrice:   r.CostPrice,
 		ListPrice:   r.ListPrice,
@@ -103,6 +102,6 @@ func (s *VariantService) UpdateVariant(ctx context.Context, r *UpdateVariantEndp
 	return nil
 }
 
-func (s *VariantService) BatchUpdateVariants(ctx context.Context, r *BatchUpdateVariantsEndpoint) error {
-	return nil
+func (s *VariantService) DeleteVariant(ctx context.Context, r *DeleteVariantEndpoint) error {
+	return cm.ErrTODO
 }

@@ -17,7 +17,6 @@ type AuthorizeShopRequest struct {
 	Config []authorize_shop_config.AuthorizeShopConfig `json:"config"`
 }
 
-func (m *AuthorizeShopRequest) Reset()         { *m = AuthorizeShopRequest{} }
 func (m *AuthorizeShopRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AuthorizeShopResponse struct {
@@ -29,5 +28,4 @@ type AuthorizeShopResponse struct {
 	AuthUrl   string `json:"auth_url"`
 }
 
-func (m *AuthorizeShopResponse) Reset()         { *m = AuthorizeShopResponse{} }
 func (m *AuthorizeShopResponse) String() string { return jsonx.MustMarshalToString(m) }

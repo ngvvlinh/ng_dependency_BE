@@ -15,7 +15,6 @@ type UpdateReferralRequest struct {
 	SaleReferralCode string `json:"sale_referral_code"`
 }
 
-func (m *UpdateReferralRequest) Reset()         { *m = UpdateReferralRequest{} }
 func (m *UpdateReferralRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UserReferral struct {
@@ -24,7 +23,6 @@ type UserReferral struct {
 	SaleReferralCode string `json:"sale_referral_code"`
 }
 
-func (m *UserReferral) Reset()         { *m = UserReferral{} }
 func (m *UserReferral) String() string { return jsonx.MustMarshalToString(m) }
 
 type SellerCommission struct {
@@ -44,35 +42,30 @@ type SellerCommission struct {
 	UpdatedAt   dot.Time          `json:"updated_at"`
 }
 
-func (m *SellerCommission) Reset()         { *m = SellerCommission{} }
 func (m *SellerCommission) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCommissionsResponse struct {
 	Commissions []*SellerCommission `json:"commissions"`
 }
 
-func (m *GetCommissionsResponse) Reset()         { *m = GetCommissionsResponse{} }
 func (m *GetCommissionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type NotifyNewShopPurchaseRequest struct {
 	OrderId dot.ID `json:"order_id"`
 }
 
-func (m *NotifyNewShopPurchaseRequest) Reset()         { *m = NotifyNewShopPurchaseRequest{} }
 func (m *NotifyNewShopPurchaseRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type NotifyNewShopPurchaseResponse struct {
 	Message string `json:"message"`
 }
 
-func (m *NotifyNewShopPurchaseResponse) Reset()         { *m = NotifyNewShopPurchaseResponse{} }
 func (m *NotifyNewShopPurchaseResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCouponsResponse struct {
 	Coupons []*Coupon `json:"coupons"`
 }
 
-func (m *GetCouponsResponse) Reset()         { *m = GetCouponsResponse{} }
 func (m *GetCouponsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCouponRequest struct {
@@ -82,7 +75,6 @@ type CreateCouponRequest struct {
 	ProductId   dot.ID         `json:"product_id"`
 }
 
-func (m *CreateCouponRequest) Reset()         { *m = CreateCouponRequest{} }
 func (m *CreateCouponRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Coupon struct {
@@ -99,20 +91,17 @@ type Coupon struct {
 	UpdatedAt   dot.Time       `json:"updated_at"`
 }
 
-func (m *Coupon) Reset()         { *m = Coupon{} }
 func (m *Coupon) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetTransactionsResponse struct {
 	Transactions []*Transaction `json:"transactions"`
 }
 
-func (m *GetTransactionsResponse) Reset()         { *m = GetTransactionsResponse{} }
 func (m *GetTransactionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Transaction struct {
 }
 
-func (m *Transaction) Reset()         { *m = Transaction{} }
 func (m *Transaction) String() string { return jsonx.MustMarshalToString(m) }
 
 type CommissionSetting struct {
@@ -123,7 +112,6 @@ type CommissionSetting struct {
 	UpdatedAt dot.Time `json:"updated_at"`
 }
 
-func (m *CommissionSetting) Reset()         { *m = CommissionSetting{} }
 func (m *CommissionSetting) String() string { return jsonx.MustMarshalToString(m) }
 
 type SupplyCommissionSetting struct {
@@ -141,7 +129,6 @@ type SupplyCommissionSetting struct {
 	Group                    string                                 `json:"group"`
 }
 
-func (m *SupplyCommissionSetting) Reset()         { *m = SupplyCommissionSetting{} }
 func (m *SupplyCommissionSetting) String() string { return jsonx.MustMarshalToString(m) }
 
 type SupplyCommissionSettingDurationObject struct {
@@ -149,7 +136,6 @@ type SupplyCommissionSettingDurationObject struct {
 	Type     string `json:"type"`
 }
 
-func (m *SupplyCommissionSettingDurationObject) Reset()         { *m = SupplyCommissionSettingDurationObject{} }
 func (m *SupplyCommissionSettingDurationObject) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetEtopCommissionSettingByProductIDsRequest struct {
@@ -239,7 +225,6 @@ type ProductPromotion struct {
 	Type      string            `json:"type"`
 }
 
-func (m *ProductPromotion) Reset()         { *m = ProductPromotion{} }
 func (m *ProductPromotion) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateOrUpdateProductPromotionRequest struct {
@@ -253,13 +238,11 @@ type CreateOrUpdateProductPromotionRequest struct {
 	Type        string `json:"type"`
 }
 
-func (m *CreateOrUpdateProductPromotionRequest) Reset()         { *m = CreateOrUpdateProductPromotionRequest{} }
 func (m *CreateOrUpdateProductPromotionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionByProductIDRequest struct {
 }
 
-func (m *GetProductPromotionByProductIDRequest) Reset()         { *m = GetProductPromotionByProductIDRequest{} }
 func (m *GetProductPromotionByProductIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionByProductIDResponse struct {
@@ -276,7 +259,6 @@ type SupplyProductResponse struct {
 	Promotion               *ProductPromotion        `json:"promotion"`
 }
 
-func (m *SupplyProductResponse) Reset()         { *m = SupplyProductResponse{} }
 func (m *SupplyProductResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopProductResponse struct {
@@ -284,7 +266,6 @@ type ShopProductResponse struct {
 	Promotion *ProductPromotion `json:"promotion"`
 }
 
-func (m *ShopProductResponse) Reset()         { *m = ShopProductResponse{} }
 func (m *ShopProductResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type AffiliateProductResponse struct {
@@ -294,7 +275,6 @@ type AffiliateProductResponse struct {
 	Promotion                  *ProductPromotion  `json:"promotion"`
 }
 
-func (m *AffiliateProductResponse) Reset()         { *m = AffiliateProductResponse{} }
 func (m *AffiliateProductResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SupplyGetProductsResponse struct {
@@ -302,7 +282,6 @@ type SupplyGetProductsResponse struct {
 	Products []*SupplyProductResponse `json:"products"`
 }
 
-func (m *SupplyGetProductsResponse) Reset()         { *m = SupplyGetProductsResponse{} }
 func (m *SupplyGetProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopGetProductsResponse struct {
@@ -310,7 +289,6 @@ type ShopGetProductsResponse struct {
 	Products []*ShopProductResponse `json:"products"`
 }
 
-func (m *ShopGetProductsResponse) Reset()         { *m = ShopGetProductsResponse{} }
 func (m *ShopGetProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CheckReferralCodeValidRequest struct {
@@ -318,7 +296,6 @@ type CheckReferralCodeValidRequest struct {
 	ReferralCode string `json:"referral_code"`
 }
 
-func (m *CheckReferralCodeValidRequest) Reset()         { *m = CheckReferralCodeValidRequest{} }
 func (m *CheckReferralCodeValidRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AffiliateGetProductsResponse struct {
@@ -326,7 +303,6 @@ type AffiliateGetProductsResponse struct {
 	Products []*AffiliateProductResponse `json:"products"`
 }
 
-func (m *AffiliateGetProductsResponse) Reset()         { *m = AffiliateGetProductsResponse{} }
 func (m *AffiliateGetProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionRequest struct {
@@ -334,7 +310,6 @@ type GetProductPromotionRequest struct {
 	ReferralCode dot.NullString `json:"referral_code"`
 }
 
-func (m *GetProductPromotionRequest) Reset()         { *m = GetProductPromotionRequest{} }
 func (m *GetProductPromotionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionResponse struct {
@@ -342,7 +317,6 @@ type GetProductPromotionResponse struct {
 	ReferralDiscount *CommissionSetting `json:"referral_discount"`
 }
 
-func (m *GetProductPromotionResponse) Reset()         { *m = GetProductPromotionResponse{} }
 func (m *GetProductPromotionResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProductPromotionsResponse struct {
@@ -350,7 +324,6 @@ type GetProductPromotionsResponse struct {
 	Promotions []*ProductPromotion `json:"promotions"`
 }
 
-func (m *GetProductPromotionsResponse) Reset()         { *m = GetProductPromotionsResponse{} }
 func (m *GetProductPromotionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetTradingProductPromotionByIDsRequest struct {
@@ -375,21 +348,18 @@ type CreateReferralCodeRequest struct {
 	Code string `json:"code"`
 }
 
-func (m *CreateReferralCodeRequest) Reset()         { *m = CreateReferralCodeRequest{} }
 func (m *CreateReferralCodeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ReferralCode struct {
 	Code string `json:"code"`
 }
 
-func (m *ReferralCode) Reset()         { *m = ReferralCode{} }
 func (m *ReferralCode) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetReferralCodesResponse struct {
 	ReferralCodes []*ReferralCode `json:"referral_codes"`
 }
 
-func (m *GetReferralCodesResponse) Reset()         { *m = GetReferralCodesResponse{} }
 func (m *GetReferralCodesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Referral struct {
@@ -402,12 +372,10 @@ type Referral struct {
 	CreatedAt       dot.Time `json:"created_at"`
 }
 
-func (m *Referral) Reset()         { *m = Referral{} }
 func (m *Referral) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetReferralsResponse struct {
 	Referrals []*Referral `json:"referrals"`
 }
 
-func (m *GetReferralsResponse) Reset()         { *m = GetReferralsResponse{} }
 func (m *GetReferralsResponse) String() string { return jsonx.MustMarshalToString(m) }

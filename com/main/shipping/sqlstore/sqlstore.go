@@ -83,6 +83,11 @@ func (s *FulfillmentStore) OrderID(id dot.ID) *FulfillmentStore {
 	return s
 }
 
+func (s *FulfillmentStore) OrderIDs(ids ...dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, sq.In("order_id", ids))
+	return s
+}
+
 func (s *FulfillmentStore) GetFfmDB() (*model.Fulfillment, error) {
 	var ffm model.Fulfillment
 	err := s.query().Where(s.preds...).ShouldGet(&ffm)

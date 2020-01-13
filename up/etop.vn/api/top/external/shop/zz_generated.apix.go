@@ -54,7 +54,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.History/GetChanges":
-		msg := &externaltypes.GetChangesRequest{}
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetChanges(ctx, msg)
 		}

@@ -49,7 +49,6 @@ type PurchaseOrder struct {
 	PaidAmount       int                    `json:"paid_amount"`
 }
 
-func (m *PurchaseOrder) Reset()         { *m = PurchaseOrder{} }
 func (m *PurchaseOrder) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseOrderSupplier struct {
@@ -62,7 +61,6 @@ type PurchaseOrderSupplier struct {
 	Deleted            bool   `json:"deleted"`
 }
 
-func (m *PurchaseOrderSupplier) Reset()         { *m = PurchaseOrderSupplier{} }
 func (m *PurchaseOrderSupplier) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetPurchaseOrdersRequest struct {
@@ -70,7 +68,6 @@ type GetPurchaseOrdersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetPurchaseOrdersRequest) Reset()         { *m = GetPurchaseOrdersRequest{} }
 func (m *GetPurchaseOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseOrdersResponse struct {
@@ -78,7 +75,6 @@ type PurchaseOrdersResponse struct {
 	Paging         *common.PageInfo `json:"paging"`
 }
 
-func (m *PurchaseOrdersResponse) Reset()         { *m = PurchaseOrdersResponse{} }
 func (m *PurchaseOrdersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreatePurchaseOrderRequest struct {
@@ -90,7 +86,6 @@ type CreatePurchaseOrderRequest struct {
 	Lines         []*PurchaseOrderLine `json:"lines"`
 }
 
-func (m *CreatePurchaseOrderRequest) Reset()         { *m = CreatePurchaseOrderRequest{} }
 func (m *CreatePurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatePurchaseOrderRequest struct {
@@ -102,7 +97,6 @@ type UpdatePurchaseOrderRequest struct {
 	Lines         []*PurchaseOrderLine `json:"lines"`
 }
 
-func (m *UpdatePurchaseOrderRequest) Reset()         { *m = UpdatePurchaseOrderRequest{} }
 func (m *UpdatePurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseOrderLine struct {
@@ -116,7 +110,6 @@ type PurchaseOrderLine struct {
 	Attributes   []*catalogtypes.Attribute `json:"attributes"`
 }
 
-func (m *PurchaseOrderLine) Reset()         { *m = PurchaseOrderLine{} }
 func (m *PurchaseOrderLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelPurchaseOrderRequest struct {
@@ -124,7 +117,6 @@ type CancelPurchaseOrderRequest struct {
 	Reason string `json:"reason"`
 }
 
-func (m *CancelPurchaseOrderRequest) Reset()         { *m = CancelPurchaseOrderRequest{} }
 func (m *CancelPurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmPurchaseOrderRequest struct {
@@ -133,7 +125,6 @@ type ConfirmPurchaseOrderRequest struct {
 	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
 }
 
-func (m *ConfirmPurchaseOrderRequest) Reset()         { *m = ConfirmPurchaseOrderRequest{} }
 func (m *ConfirmPurchaseOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetLedgersRequest struct {
@@ -141,7 +132,6 @@ type GetLedgersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetLedgersRequest) Reset()         { *m = GetLedgersRequest{} }
 func (m *GetLedgersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateLedgerRequest struct {
@@ -150,7 +140,6 @@ type CreateLedgerRequest struct {
 	Note        string            `json:"note"`
 }
 
-func (m *CreateLedgerRequest) Reset()         { *m = CreateLedgerRequest{} }
 func (m *CreateLedgerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateLedgerRequest struct {
@@ -160,7 +149,6 @@ type UpdateLedgerRequest struct {
 	Note        dot.NullString    `json:"note"`
 }
 
-func (m *UpdateLedgerRequest) Reset()         { *m = UpdateLedgerRequest{} }
 func (m *UpdateLedgerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LedgersResponse struct {
@@ -168,7 +156,6 @@ type LedgersResponse struct {
 	Paging  *common.PageInfo `json:"paging"`
 }
 
-func (m *LedgersResponse) Reset()         { *m = LedgersResponse{} }
 func (m *LedgersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Ledger struct {
@@ -183,7 +170,6 @@ type Ledger struct {
 	UpdatedAt dot.Time               `json:"updated_at"`
 }
 
-func (m *Ledger) Reset()         { *m = Ledger{} }
 func (m *Ledger) String() string { return jsonx.MustMarshalToString(m) }
 
 type RegisterShopRequest struct {
@@ -203,7 +189,6 @@ type RegisterShopRequest struct {
 	ShippingServiceSelectStrategy []*etop.ShippingServiceSelectStrategyItem `json:"shipping_service_select_strategy"`
 }
 
-func (m *RegisterShopRequest) Reset()         { *m = RegisterShopRequest{} }
 func (m *RegisterShopRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RegisterShopResponse struct {
@@ -211,7 +196,6 @@ type RegisterShopResponse struct {
 	Shop *etop.Shop `json:"shop"`
 }
 
-func (m *RegisterShopResponse) Reset()         { *m = RegisterShopResponse{} }
 func (m *RegisterShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShopRequest struct {
@@ -234,14 +218,12 @@ type UpdateShopRequest struct {
 	ShippingServiceSelectStrategy []*etop.ShippingServiceSelectStrategyItem `json:"shipping_service_select_strategy"`
 }
 
-func (m *UpdateShopRequest) Reset()         { *m = UpdateShopRequest{} }
 func (m *UpdateShopRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShopResponse struct {
 	Shop *etop.Shop `json:"shop"`
 }
 
-func (m *UpdateShopResponse) Reset()         { *m = UpdateShopResponse{} }
 func (m *UpdateShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Collection struct {
@@ -259,7 +241,6 @@ type Collection struct {
 	UpdatedAt dot.Time `json:"updated_at"`
 }
 
-func (m *Collection) Reset()         { *m = Collection{} }
 func (m *Collection) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCollectionRequest struct {
@@ -270,7 +251,6 @@ type CreateCollectionRequest struct {
 	DescHtml    string `json:"desc_html"`
 }
 
-func (m *CreateCollectionRequest) Reset()         { *m = CreateCollectionRequest{} }
 func (m *CreateCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductCategoryRequest struct {
@@ -278,14 +258,12 @@ type UpdateProductCategoryRequest struct {
 	CategoryId dot.ID `json:"category_id"`
 }
 
-func (m *UpdateProductCategoryRequest) Reset()         { *m = UpdateProductCategoryRequest{} }
 func (m *UpdateProductCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CollectionsResponse struct {
 	Collections []*ShopCollection `json:"collections"`
 }
 
-func (m *CollectionsResponse) Reset()         { *m = CollectionsResponse{} }
 func (m *CollectionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCollectionRequest struct {
@@ -298,7 +276,6 @@ type UpdateCollectionRequest struct {
 	DescHtml    dot.NullString `json:"desc_html"`
 }
 
-func (m *UpdateCollectionRequest) Reset()         { *m = UpdateCollectionRequest{} }
 func (m *UpdateCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductsCollectionRequest struct {
@@ -307,7 +284,6 @@ type UpdateProductsCollectionRequest struct {
 	ProductIds   []dot.ID `json:"product_ids"`
 }
 
-func (m *UpdateProductsCollectionRequest) Reset()         { *m = UpdateProductsCollectionRequest{} }
 func (m *UpdateProductsCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveProductsCollectionRequest struct {
@@ -316,7 +292,6 @@ type RemoveProductsCollectionRequest struct {
 	ProductIds   []dot.ID `json:"product_ids"`
 }
 
-func (m *RemoveProductsCollectionRequest) Reset()         { *m = RemoveProductsCollectionRequest{} }
 func (m *RemoveProductsCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type EtopVariant struct {
@@ -332,7 +307,6 @@ type EtopVariant struct {
 	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
-func (m *EtopVariant) Reset()         { *m = EtopVariant{} }
 func (m *EtopVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type EtopProduct struct {
@@ -351,7 +325,6 @@ type EtopProduct struct {
 	ProductSourceCategoryId dot.ID `json:"product_source_category_id"`
 }
 
-func (m *EtopProduct) Reset()         { *m = EtopProduct{} }
 func (m *EtopProduct) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopVariant struct {
@@ -389,7 +362,6 @@ type ShopVariant struct {
 	Product    *ShopShortProduct         `json:"product"`
 }
 
-func (m *ShopVariant) Reset()         { *m = ShopVariant{} }
 func (m *ShopVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVariantShopVariant struct {
@@ -399,7 +371,6 @@ type InventoryVariantShopVariant struct {
 	Quantity       int `json:"quantity"`
 }
 
-func (m *InventoryVariantShopVariant) Reset()         { *m = InventoryVariantShopVariant{} }
 func (m *InventoryVariantShopVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopProduct struct {
@@ -433,7 +404,6 @@ type ShopProduct struct {
 	BrandId         dot.ID                       `json:"brand_id"`
 }
 
-func (m *ShopProduct) Reset()         { *m = ShopProduct{} }
 func (m *ShopProduct) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopShortProduct struct {
@@ -441,7 +411,6 @@ type ShopShortProduct struct {
 	Name string `json:"name"`
 }
 
-func (m *ShopShortProduct) Reset()         { *m = ShopShortProduct{} }
 func (m *ShopShortProduct) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopCollection struct {
@@ -453,7 +422,6 @@ type ShopCollection struct {
 	ShortDesc   string `json:"short_desc"`
 }
 
-func (m *ShopCollection) Reset()         { *m = ShopCollection{} }
 func (m *ShopCollection) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetVariantsRequest struct {
@@ -461,7 +429,6 @@ type GetVariantsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetVariantsRequest) Reset()         { *m = GetVariantsRequest{} }
 func (m *GetVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCategoriesRequest struct {
@@ -469,7 +436,6 @@ type GetCategoriesRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetCategoriesRequest) Reset()         { *m = GetCategoriesRequest{} }
 func (m *GetCategoriesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopVariantsResponse struct {
@@ -477,7 +443,6 @@ type ShopVariantsResponse struct {
 	Variants []*ShopVariant   `json:"variants"`
 }
 
-func (m *ShopVariantsResponse) Reset()         { *m = ShopVariantsResponse{} }
 func (m *ShopVariantsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopProductsResponse struct {
@@ -485,7 +450,6 @@ type ShopProductsResponse struct {
 	Products []*ShopProduct   `json:"products"`
 }
 
-func (m *ShopProductsResponse) Reset()         { *m = ShopProductsResponse{} }
 func (m *ShopProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopCategoriesResponse struct {
@@ -493,7 +457,6 @@ type ShopCategoriesResponse struct {
 	Categories []*ShopCategory  `json:"categories"`
 }
 
-func (m *ShopCategoriesResponse) Reset()         { *m = ShopCategoriesResponse{} }
 func (m *ShopCategoriesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantRequest struct {
@@ -513,7 +476,6 @@ type UpdateVariantRequest struct {
 	Sku string `json:"sku"`
 }
 
-func (m *UpdateVariantRequest) Reset()         { *m = UpdateVariantRequest{} }
 func (m *UpdateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductRequest struct {
@@ -534,7 +496,6 @@ type UpdateProductRequest struct {
 	BrandId     dot.NullID                `json:"brand_id"`
 }
 
-func (m *UpdateProductRequest) Reset()         { *m = UpdateProductRequest{} }
 func (m *UpdateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCategoryRequest struct {
@@ -543,14 +504,12 @@ type UpdateCategoryRequest struct {
 	ParentId dot.ID         `json:"parent_id"`
 }
 
-func (m *UpdateCategoryRequest) Reset()         { *m = UpdateCategoryRequest{} }
 func (m *UpdateCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantsRequest struct {
 	Updates []*UpdateVariantRequest `json:"updates"`
 }
 
-func (m *UpdateVariantsRequest) Reset()         { *m = UpdateVariantsRequest{} }
 func (m *UpdateVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductsTagsRequest struct {
@@ -562,7 +521,6 @@ type UpdateProductsTagsRequest struct {
 	DeleteAll  bool     `json:"delete_all"`
 }
 
-func (m *UpdateProductsTagsRequest) Reset()         { *m = UpdateProductsTagsRequest{} }
 func (m *UpdateProductsTagsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantsResponse struct {
@@ -570,7 +528,6 @@ type UpdateVariantsResponse struct {
 	Errors   []*common.Error `json:"errors"`
 }
 
-func (m *UpdateVariantsResponse) Reset()         { *m = UpdateVariantsResponse{} }
 func (m *UpdateVariantsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddVariantsRequest struct {
@@ -579,7 +536,6 @@ type AddVariantsRequest struct {
 	CollectionId dot.ID   `json:"collection_id"`
 }
 
-func (m *AddVariantsRequest) Reset()         { *m = AddVariantsRequest{} }
 func (m *AddVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddVariantsResponse struct {
@@ -587,14 +543,12 @@ type AddVariantsResponse struct {
 	Errors   []*common.Error `json:"errors"`
 }
 
-func (m *AddVariantsResponse) Reset()         { *m = AddVariantsResponse{} }
 func (m *AddVariantsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveVariantsRequest struct {
 	Ids []dot.ID `json:"ids"`
 }
 
-func (m *RemoveVariantsRequest) Reset()         { *m = RemoveVariantsRequest{} }
 func (m *RemoveVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetOrdersRequest struct {
@@ -603,7 +557,6 @@ type GetOrdersRequest struct {
 	Mixed   *etop.MixedAccount `json:"mixed"`
 }
 
-func (m *GetOrdersRequest) Reset()         { *m = GetOrdersRequest{} }
 func (m *GetOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateOrdersStatusRequest struct {
@@ -615,7 +568,6 @@ type UpdateOrdersStatusRequest struct {
 	Status       status4.Status     `json:"status"`
 }
 
-func (m *UpdateOrdersStatusRequest) Reset()         { *m = UpdateOrdersStatusRequest{} }
 func (m *UpdateOrdersStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmOrderRequest struct {
@@ -625,21 +577,18 @@ type ConfirmOrderRequest struct {
 	AutoCreateFulfillment bool           `json:"auto_create_fulfillment"`
 }
 
-func (m *ConfirmOrderRequest) Reset()         { *m = ConfirmOrderRequest{} }
 func (m *ConfirmOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderIDRequest struct {
 	OrderId dot.ID `json:"order_id"`
 }
 
-func (m *OrderIDRequest) Reset()         { *m = OrderIDRequest{} }
 func (m *OrderIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderIDsRequest struct {
 	OrderIds []dot.ID `json:"order_ids"`
 }
 
-func (m *OrderIDsRequest) Reset()         { *m = OrderIDsRequest{} }
 func (m *OrderIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateFulfillmentsForOrderRequest struct {
@@ -647,7 +596,6 @@ type CreateFulfillmentsForOrderRequest struct {
 	VariantIds []dot.ID `json:"variant_ids"`
 }
 
-func (m *CreateFulfillmentsForOrderRequest) Reset()         { *m = CreateFulfillmentsForOrderRequest{} }
 func (m *CreateFulfillmentsForOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelOrderRequest struct {
@@ -656,7 +604,6 @@ type CancelOrderRequest struct {
 	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
 }
 
-func (m *CancelOrderRequest) Reset()         { *m = CancelOrderRequest{} }
 func (m *CancelOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelOrdersRequest struct {
@@ -664,7 +611,6 @@ type CancelOrdersRequest struct {
 	Reason string   `json:"reason"`
 }
 
-func (m *CancelOrdersRequest) Reset()         { *m = CancelOrdersRequest{} }
 func (m *CancelOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ProductSource struct {
@@ -676,21 +622,18 @@ type ProductSource struct {
 	CreatedAt dot.Time       `json:"created_at"`
 }
 
-func (m *ProductSource) Reset()         { *m = ProductSource{} }
 func (m *ProductSource) String() string { return jsonx.MustMarshalToString(m) }
 
 // deprecated
 type CreateProductSourceRequest struct {
 }
 
-func (m *CreateProductSourceRequest) Reset()         { *m = CreateProductSourceRequest{} }
 func (m *CreateProductSourceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ProductSourcesResponse struct {
 	ProductSources []*ProductSource `json:"product_sources"`
 }
 
-func (m *ProductSourcesResponse) Reset()         { *m = ProductSourcesResponse{} }
 func (m *ProductSourcesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCategoryRequest struct {
@@ -698,7 +641,6 @@ type CreateCategoryRequest struct {
 	ParentId dot.ID `json:"parent_id"`
 }
 
-func (m *CreateCategoryRequest) Reset()         { *m = CreateCategoryRequest{} }
 func (m *CreateCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateProductRequest struct {
@@ -718,7 +660,6 @@ type CreateProductRequest struct {
 	MetaFields  []*common.MetaField          `json:"meta_fields"`
 }
 
-func (m *CreateProductRequest) Reset()         { *m = CreateProductRequest{} }
 func (m *CreateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateVariantRequest struct {
@@ -736,7 +677,6 @@ type CreateVariantRequest struct {
 	RetailPrice int                       `json:"retail_price"`
 }
 
-func (m *CreateVariantRequest) Reset()         { *m = CreateVariantRequest{} }
 func (m *CreateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeprecatedCreateVariantRequest struct {
@@ -766,14 +706,12 @@ type DeprecatedCreateVariantRequest struct {
 	Sku string `json:"sku"`
 }
 
-func (m *DeprecatedCreateVariantRequest) Reset()         { *m = DeprecatedCreateVariantRequest{} }
 func (m *DeprecatedCreateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConnectProductSourceResquest struct {
 	ProductSourceId dot.ID `json:"product_source_id"`
 }
 
-func (m *ConnectProductSourceResquest) Reset()         { *m = ConnectProductSourceResquest{} }
 func (m *ConnectProductSourceResquest) String() string { return jsonx.MustMarshalToString(m) }
 
 // deprecated
@@ -782,7 +720,6 @@ type CreatePSCategoryRequest struct {
 	ParentId dot.ID `json:"parent_id"`
 }
 
-func (m *CreatePSCategoryRequest) Reset()         { *m = CreatePSCategoryRequest{} }
 func (m *CreatePSCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductsPSCategoryRequest struct {
@@ -790,7 +727,6 @@ type UpdateProductsPSCategoryRequest struct {
 	ProductIds []dot.ID `json:"product_ids"`
 }
 
-func (m *UpdateProductsPSCategoryRequest) Reset()         { *m = UpdateProductsPSCategoryRequest{} }
 func (m *UpdateProductsPSCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductsCollectionResponse struct {
@@ -798,7 +734,6 @@ type UpdateProductsCollectionResponse struct {
 	Errors  []*common.Error `json:"errors"`
 }
 
-func (m *UpdateProductsCollectionResponse) Reset()         { *m = UpdateProductsCollectionResponse{} }
 func (m *UpdateProductsCollectionResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductSourceCategoryRequest struct {
@@ -807,14 +742,12 @@ type UpdateProductSourceCategoryRequest struct {
 	Name     string `json:"name"`
 }
 
-func (m *UpdateProductSourceCategoryRequest) Reset()         { *m = UpdateProductSourceCategoryRequest{} }
 func (m *UpdateProductSourceCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // deprecated
 type GetProductSourceCategoriesRequest struct {
 }
 
-func (m *GetProductSourceCategoriesRequest) Reset()         { *m = GetProductSourceCategoriesRequest{} }
 func (m *GetProductSourceCategoriesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentsRequest struct {
@@ -825,7 +758,6 @@ type GetFulfillmentsRequest struct {
 	Status  status3.NullStatus `json:"status"`
 }
 
-func (m *GetFulfillmentsRequest) Reset()         { *m = GetFulfillmentsRequest{} }
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentHistoryRequest struct {
@@ -835,14 +767,12 @@ type GetFulfillmentHistoryRequest struct {
 	OrderId dot.ID         `json:"order_id"`
 }
 
-func (m *GetFulfillmentHistoryRequest) Reset()         { *m = GetFulfillmentHistoryRequest{} }
 func (m *GetFulfillmentHistoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBalanceShopResponse struct {
 	Amount int `json:"amount"`
 }
 
-func (m *GetBalanceShopResponse) Reset()         { *m = GetBalanceShopResponse{} }
 func (m *GetBalanceShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetMoneyTransactionsRequest struct {
@@ -850,7 +780,6 @@ type GetMoneyTransactionsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetMoneyTransactionsRequest) Reset()         { *m = GetMoneyTransactionsRequest{} }
 func (m *GetMoneyTransactionsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetPublicFulfillmentRequest struct {
@@ -858,7 +787,6 @@ type GetPublicFulfillmentRequest struct {
 	Code string `json:"code"`
 }
 
-func (m *GetPublicFulfillmentRequest) Reset()         { *m = GetPublicFulfillmentRequest{} }
 func (m *GetPublicFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentsShippingStateRequest struct {
@@ -878,7 +806,6 @@ type UpdateOrderPaymentStatusRequest struct {
 	Status  status3.NullStatus `json:"status"`
 }
 
-func (m *UpdateOrderPaymentStatusRequest) Reset()         { *m = UpdateOrderPaymentStatusRequest{} }
 func (m *UpdateOrderPaymentStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummarizeFulfillmentsRequest struct {
@@ -886,14 +813,12 @@ type SummarizeFulfillmentsRequest struct {
 	DateTo   string `json:"date_to"`
 }
 
-func (m *SummarizeFulfillmentsRequest) Reset()         { *m = SummarizeFulfillmentsRequest{} }
 func (m *SummarizeFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummarizeFulfillmentsResponse struct {
 	Tables []*SummaryTable `json:"tables"`
 }
 
-func (m *SummarizeFulfillmentsResponse) Reset()         { *m = SummarizeFulfillmentsResponse{} }
 func (m *SummarizeFulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummarizeTopShipRequest struct {
@@ -913,7 +838,6 @@ type SummarizePOSResponse struct {
 	Tables []*SummaryTable `json:"tables"`
 }
 
-func (m *SummarizePOSResponse) Reset()         { *m = SummarizePOSResponse{} }
 func (m *SummarizePOSResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummarizePOSRequest struct {
@@ -921,7 +845,6 @@ type SummarizePOSRequest struct {
 	DateTo   string `json:"date_to"`
 }
 
-func (m *SummarizePOSRequest) Reset()         { *m = SummarizePOSRequest{} }
 func (m *SummarizePOSRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummaryTable struct {
@@ -932,7 +855,6 @@ type SummaryTable struct {
 	Data    []SummaryItem   `json:"data"`
 }
 
-func (m *SummaryTable) Reset()         { *m = SummaryTable{} }
 func (m *SummaryTable) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummaryColRow struct {
@@ -942,7 +864,6 @@ type SummaryColRow struct {
 	Indent int    `json:"indent"`
 }
 
-func (m *SummaryColRow) Reset()         { *m = SummaryColRow{} }
 func (m *SummaryColRow) String() string { return jsonx.MustMarshalToString(m) }
 
 type SummaryItem struct {
@@ -953,7 +874,6 @@ type SummaryItem struct {
 	ImageUrls []string `json:"image_urls"`
 }
 
-func (m *SummaryItem) Reset()         { *m = SummaryItem{} }
 func (m *SummaryItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type ImportProductsResponse struct {
@@ -964,14 +884,12 @@ type ImportProductsResponse struct {
 	StocktakeID  dot.ID                       `json:"stocktake_id"`
 }
 
-func (m *ImportProductsResponse) Reset()         { *m = ImportProductsResponse{} }
 func (m *ImportProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CalcBalanceShopResponse struct {
 	Balance int `json:"balance"`
 }
 
-func (m *CalcBalanceShopResponse) Reset()         { *m = CalcBalanceShopResponse{} }
 func (m *CalcBalanceShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RequestExportRequest struct {
@@ -987,7 +905,6 @@ type RequestExportRequest struct {
 	Ids []dot.ID `json:"ids"`
 }
 
-func (m *RequestExportRequest) Reset()         { *m = RequestExportRequest{} }
 func (m *RequestExportRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RequestExportResponse struct {
@@ -997,20 +914,17 @@ type RequestExportResponse struct {
 	Status     status4.Status `json:"status"`
 }
 
-func (m *RequestExportResponse) Reset()         { *m = RequestExportResponse{} }
 func (m *RequestExportResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetExportsRequest struct {
 }
 
-func (m *GetExportsRequest) Reset()         { *m = GetExportsRequest{} }
 func (m *GetExportsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetExportsResponse struct {
 	ExportItems []*ExportItem `json:"export_items"`
 }
 
-func (m *GetExportsResponse) Reset()         { *m = GetExportsResponse{} }
 func (m *GetExportsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ExportItem struct {
@@ -1030,13 +944,11 @@ type ExportItem struct {
 	Error        *common.Error   `json:"error"`
 }
 
-func (m *ExportItem) Reset()         { *m = ExportItem{} }
 func (m *ExportItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetExportsStatusRequest struct {
 }
 
-func (m *GetExportsStatusRequest) Reset()         { *m = GetExportsStatusRequest{} }
 func (m *GetExportsStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ExportStatusItem struct {
@@ -1047,21 +959,18 @@ type ExportStatusItem struct {
 	Error         *common.Error `json:"error"`
 }
 
-func (m *ExportStatusItem) Reset()         { *m = ExportStatusItem{} }
 func (m *ExportStatusItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type AuthorizePartnerRequest struct {
 	PartnerId dot.ID `json:"partner_id"`
 }
 
-func (m *AuthorizePartnerRequest) Reset()         { *m = AuthorizePartnerRequest{} }
 func (m *AuthorizePartnerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetPartnersResponse struct {
 	Partners []*etop.PublicAccountInfo `json:"partners"`
 }
 
-func (m *GetPartnersResponse) Reset()         { *m = GetPartnersResponse{} }
 func (m *GetPartnersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type AuthorizedPartnerResponse struct {
@@ -1069,14 +978,12 @@ type AuthorizedPartnerResponse struct {
 	RedirectUrl string                  `json:"redirect_url"`
 }
 
-func (m *AuthorizedPartnerResponse) Reset()         { *m = AuthorizedPartnerResponse{} }
 func (m *AuthorizedPartnerResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetAuthorizedPartnersResponse struct {
 	Partners []*AuthorizedPartnerResponse `json:"partners"`
 }
 
-func (m *GetAuthorizedPartnersResponse) Reset()         { *m = GetAuthorizedPartnersResponse{} }
 func (m *GetAuthorizedPartnersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantImagesRequest struct {
@@ -1088,7 +995,6 @@ type UpdateVariantImagesRequest struct {
 	DeleteAll  bool     `json:"delete_all"`
 }
 
-func (m *UpdateVariantImagesRequest) Reset()         { *m = UpdateVariantImagesRequest{} }
 func (m *UpdateVariantImagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductMetaFieldsRequest struct {
@@ -1097,14 +1003,12 @@ type UpdateProductMetaFieldsRequest struct {
 	MetaFields []*common.MetaField `json:"meta_fields"`
 }
 
-func (m *UpdateProductMetaFieldsRequest) Reset()         { *m = UpdateProductMetaFieldsRequest{} }
 func (m *UpdateProductMetaFieldsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CategoriesResponse struct {
 	Categories []*Category `json:"categories"`
 }
 
-func (m *CategoriesResponse) Reset()         { *m = CategoriesResponse{} }
 func (m *CategoriesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Category struct {
@@ -1115,7 +1019,6 @@ type Category struct {
 	ShopId          dot.ID `json:"shop_id"`
 }
 
-func (m *Category) Reset()         { *m = Category{} }
 func (m *Category) String() string { return jsonx.MustMarshalToString(m) }
 
 type Tag struct {
@@ -1123,7 +1026,6 @@ type Tag struct {
 	Label string `json:"label"`
 }
 
-func (m *Tag) Reset()         { *m = Tag{} }
 func (m *Tag) String() string { return jsonx.MustMarshalToString(m) }
 
 type ExternalAccountAhamove struct {
@@ -1147,7 +1049,6 @@ type ExternalAccountAhamove struct {
 	BusinessLicenseImgs []string `json:"business_license_imgs"`
 }
 
-func (m *ExternalAccountAhamove) Reset()         { *m = ExternalAccountAhamove{} }
 func (m *ExternalAccountAhamove) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateXAccountAhamoveVerificationRequest struct {
@@ -1179,7 +1080,6 @@ type ExternalAccountHaravan struct {
 	UpdatedAt                         dot.Time `json:"updated_at"`
 }
 
-func (m *ExternalAccountHaravan) Reset()         { *m = ExternalAccountHaravan{} }
 func (m *ExternalAccountHaravan) String() string { return jsonx.MustMarshalToString(m) }
 
 type ExternalAccountHaravanRequest struct {
@@ -1191,7 +1091,6 @@ type ExternalAccountHaravanRequest struct {
 	RedirectUri string `json:"redirect_uri"`
 }
 
-func (m *ExternalAccountHaravanRequest) Reset()         { *m = ExternalAccountHaravanRequest{} }
 func (m *ExternalAccountHaravanRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerLiability struct {
@@ -1201,7 +1100,6 @@ type CustomerLiability struct {
 	Liability      int `json:"liability"`
 }
 
-func (m *CustomerLiability) Reset()         { *m = CustomerLiability{} }
 func (m *CustomerLiability) String() string { return jsonx.MustMarshalToString(m) }
 
 type Customer struct {
@@ -1222,7 +1120,6 @@ type Customer struct {
 	Liability *CustomerLiability         `json:"liability"`
 }
 
-func (m *Customer) Reset()         { *m = Customer{} }
 func (m *Customer) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCustomerRequest struct {
@@ -1238,7 +1135,6 @@ type CreateCustomerRequest struct {
 	Email string `json:"email"`
 }
 
-func (m *CreateCustomerRequest) Reset()         { *m = CreateCustomerRequest{} }
 func (m *CreateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerRequest struct {
@@ -1253,7 +1149,6 @@ type UpdateCustomerRequest struct {
 	Email dot.NullString                 `json:"email"`
 }
 
-func (m *UpdateCustomerRequest) Reset()         { *m = UpdateCustomerRequest{} }
 func (m *UpdateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCustomersRequest struct {
@@ -1261,7 +1156,6 @@ type GetCustomersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetCustomersRequest) Reset()         { *m = GetCustomersRequest{} }
 func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomersResponse struct {
@@ -1269,7 +1163,6 @@ type CustomersResponse struct {
 	Paging    *common.PageInfo `json:"paging"`
 }
 
-func (m *CustomersResponse) Reset()         { *m = CustomersResponse{} }
 func (m *CustomersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SetCustomersStatusRequest struct {
@@ -1277,7 +1170,6 @@ type SetCustomersStatusRequest struct {
 	Status status3.Status `json:"status"`
 }
 
-func (m *SetCustomersStatusRequest) Reset()         { *m = SetCustomersStatusRequest{} }
 func (m *SetCustomersStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerDetailsResponse struct {
@@ -1285,7 +1177,6 @@ type CustomerDetailsResponse struct {
 	SummaryItems []*IndependentSummaryItem `json:"summary_items"`
 }
 
-func (m *CustomerDetailsResponse) Reset()         { *m = CustomerDetailsResponse{} }
 func (m *CustomerDetailsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type IndependentSummaryItem struct {
@@ -1296,14 +1187,12 @@ type IndependentSummaryItem struct {
 	Unit  string `json:"unit"`
 }
 
-func (m *IndependentSummaryItem) Reset()         { *m = IndependentSummaryItem{} }
 func (m *IndependentSummaryItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCustomerAddressesRequest struct {
 	CustomerId dot.ID `json:"customer_id"`
 }
 
-func (m *GetCustomerAddressesRequest) Reset()         { *m = GetCustomerAddressesRequest{} }
 func (m *GetCustomerAddressesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerAddress struct {
@@ -1325,7 +1214,6 @@ type CustomerAddress struct {
 	Coordinates  *etop.Coordinates `json:"coordinates"`
 }
 
-func (m *CustomerAddress) Reset()         { *m = CustomerAddress{} }
 func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCustomerAddressRequest struct {
@@ -1344,7 +1232,6 @@ type CreateCustomerAddressRequest struct {
 	Coordinates  *etop.Coordinates `json:"coordinates"`
 }
 
-func (m *CreateCustomerAddressRequest) Reset()         { *m = CreateCustomerAddressRequest{} }
 func (m *CreateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerAddressRequest struct {
@@ -1363,14 +1250,12 @@ type UpdateCustomerAddressRequest struct {
 	Coordinates  *etop.Coordinates `json:"coordinates"`
 }
 
-func (m *UpdateCustomerAddressRequest) Reset()         { *m = UpdateCustomerAddressRequest{} }
 func (m *UpdateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerAddressesResponse struct {
 	Addresses []*CustomerAddress `json:"addresses"`
 }
 
-func (m *CustomerAddressesResponse) Reset()         { *m = CustomerAddressesResponse{} }
 func (m *CustomerAddressesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductStatusRequest struct {
@@ -1378,14 +1263,12 @@ type UpdateProductStatusRequest struct {
 	Status status3.Status `json:"status"`
 }
 
-func (m *UpdateProductStatusRequest) Reset()         { *m = UpdateProductStatusRequest{} }
 func (m *UpdateProductStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateProductStatusResponse struct {
 	Updated int `json:"updated"`
 }
 
-func (m *UpdateProductStatusResponse) Reset()         { *m = UpdateProductStatusResponse{} }
 func (m *UpdateProductStatusResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type PaymentTradingOrderRequest struct {
@@ -1396,14 +1279,12 @@ type PaymentTradingOrderRequest struct {
 	PaymentProvider payment_provider.PaymentProvider `json:"payment_provider"`
 }
 
-func (m *PaymentTradingOrderRequest) Reset()         { *m = PaymentTradingOrderRequest{} }
 func (m *PaymentTradingOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PaymentTradingOrderResponse struct {
 	Url string `json:"url"`
 }
 
-func (m *PaymentTradingOrderResponse) Reset()         { *m = PaymentTradingOrderResponse{} }
 func (m *PaymentTradingOrderResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateVariantAttributesRequest struct {
@@ -1412,7 +1293,6 @@ type UpdateVariantAttributesRequest struct {
 	Attributes []*catalogtypes.Attribute `json:"attributes"`
 }
 
-func (m *UpdateVariantAttributesRequest) Reset()         { *m = UpdateVariantAttributesRequest{} }
 func (m *UpdateVariantAttributesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PaymentCheckReturnDataRequest struct {
@@ -1424,7 +1304,6 @@ type PaymentCheckReturnDataRequest struct {
 	PaymentProvider       payment_provider.PaymentProvider `json:"payment_provider"`
 }
 
-func (m *PaymentCheckReturnDataRequest) Reset()         { *m = PaymentCheckReturnDataRequest{} }
 func (m *PaymentCheckReturnDataRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopCategory struct {
@@ -1435,7 +1314,6 @@ type ShopCategory struct {
 	Status   dot.ID `json:"status"`
 }
 
-func (m *ShopCategory) Reset()         { *m = ShopCategory{} }
 func (m *ShopCategory) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCollectionsRequest struct {
@@ -1443,7 +1321,6 @@ type GetCollectionsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetCollectionsRequest) Reset()         { *m = GetCollectionsRequest{} }
 func (m *GetCollectionsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopCollectionsResponse struct {
@@ -1451,7 +1328,6 @@ type ShopCollectionsResponse struct {
 	Collections []*ShopCollection `json:"collections"`
 }
 
-func (m *ShopCollectionsResponse) Reset()         { *m = ShopCollectionsResponse{} }
 func (m *ShopCollectionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddShopProductCollectionRequest struct {
@@ -1459,7 +1335,6 @@ type AddShopProductCollectionRequest struct {
 	CollectionIds []dot.ID `json:"collection_ids"`
 }
 
-func (m *AddShopProductCollectionRequest) Reset()         { *m = AddShopProductCollectionRequest{} }
 func (m *AddShopProductCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveShopProductCollectionRequest struct {
@@ -1467,7 +1342,6 @@ type RemoveShopProductCollectionRequest struct {
 	CollectionIds []dot.ID `json:"collection_ids"`
 }
 
-func (m *RemoveShopProductCollectionRequest) Reset()         { *m = RemoveShopProductCollectionRequest{} }
 func (m *RemoveShopProductCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddCustomerToGroupRequest struct {
@@ -1475,7 +1349,6 @@ type AddCustomerToGroupRequest struct {
 	GroupId     dot.ID   `json:"group_id"`
 }
 
-func (m *AddCustomerToGroupRequest) Reset()         { *m = AddCustomerToGroupRequest{} }
 func (m *AddCustomerToGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveCustomerOutOfGroupRequest struct {
@@ -1483,7 +1356,6 @@ type RemoveCustomerOutOfGroupRequest struct {
 	GroupId     dot.ID   `json:"group_id"`
 }
 
-func (m *RemoveCustomerOutOfGroupRequest) Reset()         { *m = RemoveCustomerOutOfGroupRequest{} }
 func (m *RemoveCustomerOutOfGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SupplierLiability struct {
@@ -1493,7 +1365,6 @@ type SupplierLiability struct {
 	Liability           int `json:"liability"`
 }
 
-func (m *SupplierLiability) Reset()         { *m = SupplierLiability{} }
 func (m *SupplierLiability) String() string { return jsonx.MustMarshalToString(m) }
 
 type Supplier struct {
@@ -1513,7 +1384,6 @@ type Supplier struct {
 	Liability         *SupplierLiability `json:"liability"`
 }
 
-func (m *Supplier) Reset()         { *m = Supplier{} }
 func (m *Supplier) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateSupplierRequest struct {
@@ -1526,7 +1396,6 @@ type CreateSupplierRequest struct {
 	HeadquaterAddress string `json:"headquater_address"`
 }
 
-func (m *CreateSupplierRequest) Reset()         { *m = CreateSupplierRequest{} }
 func (m *CreateSupplierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateSupplierRequest struct {
@@ -1540,7 +1409,6 @@ type UpdateSupplierRequest struct {
 	HeadquaterAddress dot.NullString `json:"headquater_address"`
 }
 
-func (m *UpdateSupplierRequest) Reset()         { *m = UpdateSupplierRequest{} }
 func (m *UpdateSupplierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetSuppliersRequest struct {
@@ -1548,7 +1416,6 @@ type GetSuppliersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetSuppliersRequest) Reset()         { *m = GetSuppliersRequest{} }
 func (m *GetSuppliersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SuppliersResponse struct {
@@ -1556,7 +1423,6 @@ type SuppliersResponse struct {
 	Paging    *common.PageInfo `json:"paging"`
 }
 
-func (m *SuppliersResponse) Reset()         { *m = SuppliersResponse{} }
 func (m *SuppliersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Carrier struct {
@@ -1569,7 +1435,6 @@ type Carrier struct {
 	UpdatedAt dot.Time       `json:"updated_at"`
 }
 
-func (m *Carrier) Reset()         { *m = Carrier{} }
 func (m *Carrier) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCarrierRequest struct {
@@ -1577,7 +1442,6 @@ type CreateCarrierRequest struct {
 	Note     string `json:"note"`
 }
 
-func (m *CreateCarrierRequest) Reset()         { *m = CreateCarrierRequest{} }
 func (m *CreateCarrierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCarrierRequest struct {
@@ -1586,7 +1450,6 @@ type UpdateCarrierRequest struct {
 	Note     dot.NullString `json:"note"`
 }
 
-func (m *UpdateCarrierRequest) Reset()         { *m = UpdateCarrierRequest{} }
 func (m *UpdateCarrierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCarriersRequest struct {
@@ -1594,7 +1457,6 @@ type GetCarriersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetCarriersRequest) Reset()         { *m = GetCarriersRequest{} }
 func (m *GetCarriersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CarriersResponse struct {
@@ -1602,7 +1464,6 @@ type CarriersResponse struct {
 	Paging   *common.PageInfo `json:"paging"`
 }
 
-func (m *CarriersResponse) Reset()         { *m = CarriersResponse{} }
 func (m *CarriersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ReceiptLine struct {
@@ -1611,7 +1472,6 @@ type ReceiptLine struct {
 	Amount int    `json:"amount"`
 }
 
-func (m *ReceiptLine) Reset()         { *m = ReceiptLine{} }
 func (m *ReceiptLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type Trader struct {
@@ -1622,7 +1482,6 @@ type Trader struct {
 	Deleted  bool   `json:"deleted"`
 }
 
-func (m *Trader) Reset()         { *m = Trader{} }
 func (m *Trader) String() string { return jsonx.MustMarshalToString(m) }
 
 type Receipt struct {
@@ -1654,7 +1513,6 @@ type Receipt struct {
 	CreatedType receipt_mode.ReceiptMode `json:"created_type"`
 }
 
-func (m *Receipt) Reset()         { *m = Receipt{} }
 func (m *Receipt) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateReceiptRequest struct {
@@ -1669,7 +1527,6 @@ type CreateReceiptRequest struct {
 	Lines       []*ReceiptLine           `json:"lines"`
 }
 
-func (m *CreateReceiptRequest) Reset()         { *m = CreateReceiptRequest{} }
 func (m *CreateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateReceiptRequest struct {
@@ -1684,7 +1541,6 @@ type UpdateReceiptRequest struct {
 	Lines       []*ReceiptLine             `json:"lines"`
 }
 
-func (m *UpdateReceiptRequest) Reset()         { *m = UpdateReceiptRequest{} }
 func (m *UpdateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelReceiptRequest struct {
@@ -1692,7 +1548,6 @@ type CancelReceiptRequest struct {
 	Reason string `json:"reason"`
 }
 
-func (m *CancelReceiptRequest) Reset()         { *m = CancelReceiptRequest{} }
 func (m *CancelReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetReceiptsRequest struct {
@@ -1700,7 +1555,6 @@ type GetReceiptsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetReceiptsRequest) Reset()         { *m = GetReceiptsRequest{} }
 func (m *GetReceiptsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetReceiptsByLedgerTypeRequest struct {
@@ -1709,7 +1563,6 @@ type GetReceiptsByLedgerTypeRequest struct {
 	Filters []*common.Filter       `json:"filters"`
 }
 
-func (m *GetReceiptsByLedgerTypeRequest) Reset()         { *m = GetReceiptsByLedgerTypeRequest{} }
 func (m *GetReceiptsByLedgerTypeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ReceiptsResponse struct {
@@ -1719,14 +1572,12 @@ type ReceiptsResponse struct {
 	Paging                      *common.PageInfo `json:"paging"`
 }
 
-func (m *ReceiptsResponse) Reset()         { *m = ReceiptsResponse{} }
 func (m *ReceiptsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShopCollectionsByProductIDRequest struct {
 	ProductId dot.ID `json:"product_id"`
 }
 
-func (m *GetShopCollectionsByProductIDRequest) Reset()         { *m = GetShopCollectionsByProductIDRequest{} }
 func (m *GetShopCollectionsByProductIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateInventoryVoucherRequest struct {
@@ -1736,7 +1587,6 @@ type CreateInventoryVoucherRequest struct {
 	Type string `json:"type"`
 }
 
-func (m *CreateInventoryVoucherRequest) Reset()         { *m = CreateInventoryVoucherRequest{} }
 func (m *CreateInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVoucherLine struct {
@@ -1751,28 +1601,24 @@ type InventoryVoucherLine struct {
 	Quantity    int                       `json:"quantity"`
 }
 
-func (m *InventoryVoucherLine) Reset()         { *m = InventoryVoucherLine{} }
 func (m *InventoryVoucherLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateInventoryVoucherResponse struct {
 	InventoryVouchers []*InventoryVoucher `json:"inventory_vouchers"`
 }
 
-func (m *CreateInventoryVoucherResponse) Reset()         { *m = CreateInventoryVoucherResponse{} }
 func (m *CreateInventoryVoucherResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmInventoryVoucherRequest struct {
 	Id dot.ID `json:"id"`
 }
 
-func (m *ConfirmInventoryVoucherRequest) Reset()         { *m = ConfirmInventoryVoucherRequest{} }
 func (m *ConfirmInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmInventoryVoucherResponse struct {
 	InventoryVoucher *InventoryVoucher `json:"inventory_voucher"`
 }
 
-func (m *ConfirmInventoryVoucherResponse) Reset()         { *m = ConfirmInventoryVoucherResponse{} }
 func (m *ConfirmInventoryVoucherResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelInventoryVoucherRequest struct {
@@ -1780,14 +1626,12 @@ type CancelInventoryVoucherRequest struct {
 	Reason string `json:"reason"`
 }
 
-func (m *CancelInventoryVoucherRequest) Reset()         { *m = CancelInventoryVoucherRequest{} }
 func (m *CancelInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelInventoryVoucherResponse struct {
 	Inventory *InventoryVoucher `json:"inventory"`
 }
 
-func (m *CancelInventoryVoucherResponse) Reset()         { *m = CancelInventoryVoucherResponse{} }
 func (m *CancelInventoryVoucherResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateInventoryVoucherRequest struct {
@@ -1800,14 +1644,12 @@ type UpdateInventoryVoucherRequest struct {
 	TotalAmount int                    `json:"total_amount"`
 }
 
-func (m *UpdateInventoryVoucherRequest) Reset()         { *m = UpdateInventoryVoucherRequest{} }
 func (m *UpdateInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateInventoryVoucherResponse struct {
 	InventoryVoucher *InventoryVoucher `json:"inventory_voucher"`
 }
 
-func (m *UpdateInventoryVoucherResponse) Reset()         { *m = UpdateInventoryVoucherResponse{} }
 func (m *UpdateInventoryVoucherResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type AdjustInventoryQuantityRequest struct {
@@ -1815,7 +1657,6 @@ type AdjustInventoryQuantityRequest struct {
 	Note              string              `json:"note"`
 }
 
-func (m *AdjustInventoryQuantityRequest) Reset()         { *m = AdjustInventoryQuantityRequest{} }
 func (m *AdjustInventoryQuantityRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AdjustInventoryQuantityResponse struct {
@@ -1823,21 +1664,18 @@ type AdjustInventoryQuantityResponse struct {
 	InventoryVouchers []*InventoryVoucher `json:"inventory_vouchers"`
 }
 
-func (m *AdjustInventoryQuantityResponse) Reset()         { *m = AdjustInventoryQuantityResponse{} }
 func (m *AdjustInventoryQuantityResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVariantsRequest struct {
 	Paging common.Paging `json:"paging"`
 }
 
-func (m *GetInventoryVariantsRequest) Reset()         { *m = GetInventoryVariantsRequest{} }
 func (m *GetInventoryVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVariantsResponse struct {
 	InventoryVariants []*InventoryVariant `json:"inventory_variants"`
 }
 
-func (m *GetInventoryVariantsResponse) Reset()         { *m = GetInventoryVariantsResponse{} }
 func (m *GetInventoryVariantsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVariantsByVariantIDsRequest struct {
@@ -1860,7 +1698,6 @@ type InventoryVariant struct {
 	UpdatedAt      dot.Time `json:"updated_at"`
 }
 
-func (m *InventoryVariant) Reset()         { *m = InventoryVariant{} }
 func (m *InventoryVariant) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVariantQuantity struct {
@@ -1869,7 +1706,6 @@ type InventoryVariantQuantity struct {
 	Quantity       int `json:"quantity"`
 }
 
-func (m *InventoryVariantQuantity) Reset()         { *m = InventoryVariantQuantity{} }
 func (m *InventoryVariantQuantity) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryVoucher struct {
@@ -1897,7 +1733,6 @@ type InventoryVoucher struct {
 	Status       status3.Status          `json:"status"`
 }
 
-func (m *InventoryVoucher) Reset()         { *m = InventoryVoucher{} }
 func (m *InventoryVoucher) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVouchersRequest struct {
@@ -1905,21 +1740,18 @@ type GetInventoryVouchersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetInventoryVouchersRequest) Reset()         { *m = GetInventoryVouchersRequest{} }
 func (m *GetInventoryVouchersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVouchersByIDsRequest struct {
 	Ids []dot.ID `json:"ids"`
 }
 
-func (m *GetInventoryVouchersByIDsRequest) Reset()         { *m = GetInventoryVouchersByIDsRequest{} }
 func (m *GetInventoryVouchersByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVouchersResponse struct {
 	InventoryVouchers []*InventoryVoucher `json:"inventory_vouchers"`
 }
 
-func (m *GetInventoryVouchersResponse) Reset()         { *m = GetInventoryVouchersResponse{} }
 func (m *GetInventoryVouchersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerGroup struct {
@@ -1927,14 +1759,12 @@ type CustomerGroup struct {
 	Name string `json:"name"`
 }
 
-func (m *CustomerGroup) Reset()         { *m = CustomerGroup{} }
 func (m *CustomerGroup) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCustomerGroupRequest struct {
 	Name string `json:"name"`
 }
 
-func (m *CreateCustomerGroupRequest) Reset()         { *m = CreateCustomerGroupRequest{} }
 func (m *CreateCustomerGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerGroupRequest struct {
@@ -1942,7 +1772,6 @@ type UpdateCustomerGroupRequest struct {
 	Name    string `json:"name"`
 }
 
-func (m *UpdateCustomerGroupRequest) Reset()         { *m = UpdateCustomerGroupRequest{} }
 func (m *UpdateCustomerGroupRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCustomerGroupsRequest struct {
@@ -1950,7 +1779,6 @@ type GetCustomerGroupsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetCustomerGroupsRequest) Reset()         { *m = GetCustomerGroupsRequest{} }
 func (m *GetCustomerGroupsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerGroupsResponse struct {
@@ -1958,21 +1786,18 @@ type CustomerGroupsResponse struct {
 	Paging         *common.PageInfo `json:"paging"`
 }
 
-func (m *CustomerGroupsResponse) Reset()         { *m = CustomerGroupsResponse{} }
 func (m *CustomerGroupsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetOrdersByReceiptIDRequest struct {
 	ReceiptId dot.ID `json:"receipt_id"`
 }
 
-func (m *GetOrdersByReceiptIDRequest) Reset()         { *m = GetOrdersByReceiptIDRequest{} }
 func (m *GetOrdersByReceiptIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVariantRequest struct {
 	VariantId dot.ID `json:"variant_id"`
 }
 
-func (m *GetInventoryVariantRequest) Reset()         { *m = GetInventoryVariantRequest{} }
 func (m *GetInventoryVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateBrandRequest struct {
@@ -1980,7 +1805,6 @@ type CreateBrandRequest struct {
 	Description string `json:"description"`
 }
 
-func (m *CreateBrandRequest) Reset()         { *m = CreateBrandRequest{} }
 func (m *CreateBrandRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateBrandRequest struct {
@@ -1989,14 +1813,12 @@ type UpdateBrandRequest struct {
 	Description string `json:"description"`
 }
 
-func (m *UpdateBrandRequest) Reset()         { *m = UpdateBrandRequest{} }
 func (m *UpdateBrandRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteBrandResponse struct {
 	Count int `json:"count"`
 }
 
-func (m *DeleteBrandResponse) Reset()         { *m = DeleteBrandResponse{} }
 func (m *DeleteBrandResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Brand struct {
@@ -2008,21 +1830,18 @@ type Brand struct {
 	UpdatedAt   dot.Time `json:"updated_at"`
 }
 
-func (m *Brand) Reset()         { *m = Brand{} }
 func (m *Brand) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBrandsByIDsResponse struct {
 	Brands []*Brand `json:"brands"`
 }
 
-func (m *GetBrandsByIDsResponse) Reset()         { *m = GetBrandsByIDsResponse{} }
 func (m *GetBrandsByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBrandsRequest struct {
 	Paging common.Paging `json:"paging"`
 }
 
-func (m *GetBrandsRequest) Reset()         { *m = GetBrandsRequest{} }
 func (m *GetBrandsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBrandsResponse struct {
@@ -2030,7 +1849,6 @@ type GetBrandsResponse struct {
 	Paging *common.PageInfo `json:"paging"`
 }
 
-func (m *GetBrandsResponse) Reset()         { *m = GetBrandsResponse{} }
 func (m *GetBrandsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInventoryVouchersByReferenceRequest struct {
@@ -2059,14 +1877,12 @@ type UpdateOrderShippingInfoRequest struct {
 	ShippingAddress *types.OrderAddress  `json:"shipping_address"`
 }
 
-func (m *UpdateOrderShippingInfoRequest) Reset()         { *m = UpdateOrderShippingInfoRequest{} }
 func (m *UpdateOrderShippingInfoRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetStocktakesByIDsResponse struct {
 	Stocktakes []*Stocktake `json:"stocktakes"`
 }
 
-func (m *GetStocktakesByIDsResponse) Reset()         { *m = GetStocktakesByIDsResponse{} }
 func (m *GetStocktakesByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateStocktakeRequest struct {
@@ -2077,7 +1893,6 @@ type CreateStocktakeRequest struct {
 	Type  stocktake_type.StocktakeType `json:"type"`
 }
 
-func (m *CreateStocktakeRequest) Reset()         { *m = CreateStocktakeRequest{} }
 func (m *CreateStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateStocktakeRequest struct {
@@ -2088,7 +1903,6 @@ type UpdateStocktakeRequest struct {
 	Lines []*StocktakeLine `json:"lines"`
 }
 
-func (m *UpdateStocktakeRequest) Reset()         { *m = UpdateStocktakeRequest{} }
 func (m *UpdateStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Stocktake struct {
@@ -2109,7 +1923,6 @@ type Stocktake struct {
 	Type          string           `json:"type"`
 }
 
-func (m *Stocktake) Reset()         { *m = Stocktake{} }
 func (m *Stocktake) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetStocktakesRequest struct {
@@ -2117,7 +1930,6 @@ type GetStocktakesRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetStocktakesRequest) Reset()         { *m = GetStocktakesRequest{} }
 func (m *GetStocktakesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetStocktakesResponse struct {
@@ -2125,7 +1937,6 @@ type GetStocktakesResponse struct {
 	Paging     *common.PageInfo `json:"paging"`
 }
 
-func (m *GetStocktakesResponse) Reset()         { *m = GetStocktakesResponse{} }
 func (m *GetStocktakesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type StocktakeLine struct {
@@ -2141,7 +1952,6 @@ type StocktakeLine struct {
 	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
-func (m *StocktakeLine) Reset()         { *m = StocktakeLine{} }
 func (m *StocktakeLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmStocktakeRequest struct {
@@ -2149,21 +1959,18 @@ type ConfirmStocktakeRequest struct {
 	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
 }
 
-func (m *ConfirmStocktakeRequest) Reset()         { *m = ConfirmStocktakeRequest{} }
 func (m *ConfirmStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetVariantsBySupplierIDRequest struct {
 	SupplierId dot.ID `json:"supplier_id"`
 }
 
-func (m *GetVariantsBySupplierIDRequest) Reset()         { *m = GetVariantsBySupplierIDRequest{} }
 func (m *GetVariantsBySupplierIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetSuppliersByVariantIDRequest struct {
 	VariantId dot.ID `json:"variant_id"`
 }
 
-func (m *GetSuppliersByVariantIDRequest) Reset()         { *m = GetSuppliersByVariantIDRequest{} }
 func (m *GetSuppliersByVariantIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelStocktakeRequest struct {
@@ -2171,14 +1978,12 @@ type CancelStocktakeRequest struct {
 	CancelReason string `json:"cancel_reason"`
 }
 
-func (m *CancelStocktakeRequest) Reset()         { *m = CancelStocktakeRequest{} }
 func (m *CancelStocktakeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetRefundsByIDsResponse struct {
 	Refund []*Refund `json:"refunds"`
 }
 
-func (m *GetRefundsByIDsResponse) Reset()         { *m = GetRefundsByIDsResponse{} }
 func (m *GetRefundsByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetRefundsResponse struct {
@@ -2186,7 +1991,6 @@ type GetRefundsResponse struct {
 	Paging  *common.PageInfo `json:"paging"`
 }
 
-func (m *GetRefundsResponse) Reset()         { *m = GetRefundsResponse{} }
 func (m *GetRefundsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetRefundsRequest struct {
@@ -2194,7 +1998,6 @@ type GetRefundsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetRefundsRequest) Reset()         { *m = GetRefundsRequest{} }
 func (m *GetRefundsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelRefundRequest struct {
@@ -2202,7 +2005,6 @@ type CancelRefundRequest struct {
 	CancelReason string `json:"cancel_reason"`
 }
 
-func (m *CancelRefundRequest) Reset()         { *m = CancelRefundRequest{} }
 func (m *CancelRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmRefundRequest struct {
@@ -2210,7 +2012,6 @@ type ConfirmRefundRequest struct {
 	AutoInventoryVoucher string `json:"auto_inventory_voucher"`
 }
 
-func (m *ConfirmRefundRequest) Reset()         { *m = ConfirmRefundRequest{} }
 func (m *ConfirmRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateRefundRequest struct {
@@ -2220,7 +2021,6 @@ type UpdateRefundRequest struct {
 	DisCount dot.NullInt    `json:"discount"`
 }
 
-func (m *UpdateRefundRequest) Reset()         { *m = UpdateRefundRequest{} }
 func (m *UpdateRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateRefundRequest struct {
@@ -2230,7 +2030,6 @@ type CreateRefundRequest struct {
 	Discount int           `json:"discount"`
 }
 
-func (m *CreateRefundRequest) Reset()         { *m = CreateRefundRequest{} }
 func (m *CreateRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Refund struct {
@@ -2256,7 +2055,6 @@ type Refund struct {
 	PaidAmount   int                  `json:"paid_amount"`
 }
 
-func (m *Refund) Reset()         { *m = Refund{} }
 func (m *Refund) String() string { return jsonx.MustMarshalToString(m) }
 
 type RefundLine struct {
@@ -2270,7 +2068,6 @@ type RefundLine struct {
 	Attributes  []*catalogtypes.Attribute `json:"attributes"`
 }
 
-func (m *RefundLine) Reset()         { *m = RefundLine{} }
 func (m *RefundLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateInventoryVariantCostPriceResponse struct {
@@ -2350,7 +2147,6 @@ type GetVariantRequest struct {
 	ID   dot.ID `json:"id"`
 }
 
-func (m *GetVariantRequest) Reset()         { *m = GetVariantRequest{} }
 func (m *GetVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LoginShopConnectionRequest struct {

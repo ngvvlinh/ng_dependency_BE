@@ -27,53 +27,6 @@ type wrapCustomerService struct {
 	s *CustomerService
 }
 
-type CreateAddressEndpoint struct {
-	*externaltypes.CreateCustomerAddressRequest
-	Result  *externaltypes.CustomerAddress
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerService) CreateAddress(ctx context.Context, req *externaltypes.CreateCustomerAddressRequest) (resp *externaltypes.CustomerAddress, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Customer/CreateAddress"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &CreateAddressEndpoint{CreateCustomerAddressRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateAddress(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type CreateCustomerEndpoint struct {
 	*externaltypes.CreateCustomerRequest
 	Result  *externaltypes.Customer
@@ -110,53 +63,6 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *externalty
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomer(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type DeleteAddressEndpoint struct {
-	*cm.IDRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerService) DeleteAddress(ctx context.Context, req *cm.IDRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Customer/DeleteAddress"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &DeleteAddressEndpoint{IDRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -262,53 +168,6 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *externaltypes
 	return resp, nil
 }
 
-type ListAddressesEndpoint struct {
-	*externaltypes.ListCustomerAddressesRequest
-	Result  *externaltypes.CustomerAddressesResponse
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerService) ListAddresses(ctx context.Context, req *externaltypes.ListCustomerAddressesRequest) (resp *externaltypes.CustomerAddressesResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Customer/ListAddresses"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &ListAddressesEndpoint{ListCustomerAddressesRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListAddresses(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type ListCustomersEndpoint struct {
 	*externaltypes.ListCustomersRequest
 	Result  *externaltypes.CustomersResponse
@@ -345,53 +204,6 @@ func (s wrapCustomerService) ListCustomers(ctx context.Context, req *externaltyp
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListCustomers(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type UpdateAddressEndpoint struct {
-	*externaltypes.UpdateCustomerAddressRequest
-	Result  *externaltypes.CustomerAddress
-	Context claims.ShopClaim
-}
-
-func (s wrapCustomerService) UpdateAddress(ctx context.Context, req *externaltypes.UpdateCustomerAddressRequest) (resp *externaltypes.CustomerAddress, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Customer/UpdateAddress"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateAddressEndpoint{UpdateCustomerAddressRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -450,6 +262,249 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *externalty
 	return resp, nil
 }
 
+func WrapCustomerAddressService(s *CustomerAddressService) api.CustomerAddressService {
+	return wrapCustomerAddressService{s: s}
+}
+
+type wrapCustomerAddressService struct {
+	s *CustomerAddressService
+}
+
+type CreateAddressEndpoint struct {
+	*externaltypes.CreateCustomerAddressRequest
+	Result  *externaltypes.CustomerAddress
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerAddressService) CreateAddress(ctx context.Context, req *externaltypes.CreateCustomerAddressRequest) (resp *externaltypes.CustomerAddress, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerAddress/CreateAddress"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateAddressEndpoint{CreateCustomerAddressRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateAddress(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteAddressEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerAddressService) DeleteAddress(ctx context.Context, req *cm.IDRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerAddress/DeleteAddress"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteAddressEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteAddress(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetAddressEndpoint struct {
+	*externaltypes.OrderIDRequest
+	Result  *externaltypes.CustomerAddress
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerAddressService) GetAddress(ctx context.Context, req *externaltypes.OrderIDRequest) (resp *externaltypes.CustomerAddress, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerAddress/GetAddress"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetAddressEndpoint{OrderIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetAddress(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ListAddressesEndpoint struct {
+	*externaltypes.ListCustomerAddressesRequest
+	Result  *externaltypes.CustomerAddressesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerAddressService) ListAddresses(ctx context.Context, req *externaltypes.ListCustomerAddressesRequest) (resp *externaltypes.CustomerAddressesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerAddress/ListAddresses"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ListAddressesEndpoint{ListCustomerAddressesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ListAddresses(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateAddressEndpoint struct {
+	*externaltypes.UpdateCustomerAddressRequest
+	Result  *externaltypes.CustomerAddress
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerAddressService) UpdateAddress(ctx context.Context, req *externaltypes.UpdateCustomerAddressRequest) (resp *externaltypes.CustomerAddress, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerAddress/UpdateAddress"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateAddressEndpoint{UpdateCustomerAddressRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateAddress(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapCustomerGroupService(s *CustomerGroupService) api.CustomerGroupService {
 	return wrapCustomerGroupService{s: s}
 }
@@ -458,17 +513,17 @@ type wrapCustomerGroupService struct {
 	s *CustomerGroupService
 }
 
-type AddCustomersEndpoint struct {
-	*externaltypes.AddCustomersRequest
+type AddCustomerEndpoint struct {
+	*externaltypes.AddCustomerRequest
 	Result  *cm.Empty
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) AddCustomers(ctx context.Context, req *externaltypes.AddCustomersRequest) (resp *cm.Empty, err error) {
+func (s wrapCustomerGroupService) AddCustomer(ctx context.Context, req *externaltypes.AddCustomerRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/AddCustomers"
+	const rpcName = "partner.CustomerGroup/AddCustomer"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -484,7 +539,7 @@ func (s wrapCustomerGroupService) AddCustomers(ctx context.Context, req *externa
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &AddCustomersEndpoint{AddCustomersRequest: req}
+	query := &AddCustomerEndpoint{AddCustomerRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -493,7 +548,7 @@ func (s wrapCustomerGroupService) AddCustomers(ctx context.Context, req *externa
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddCustomers(ctx, query)
+	err = s.s.AddCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -505,17 +560,17 @@ func (s wrapCustomerGroupService) AddCustomers(ctx context.Context, req *externa
 	return resp, nil
 }
 
-type CreateCustomerGroupEndpoint struct {
+type CreateGroupEndpoint struct {
 	*externaltypes.CreateCustomerGroupRequest
 	Result  *externaltypes.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *externaltypes.CreateCustomerGroupRequest) (resp *externaltypes.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) CreateGroup(ctx context.Context, req *externaltypes.CreateCustomerGroupRequest) (resp *externaltypes.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/CreateCustomerGroup"
+	const rpcName = "partner.CustomerGroup/CreateGroup"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -531,7 +586,7 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateCustomerGroupEndpoint{CreateCustomerGroupRequest: req}
+	query := &CreateGroupEndpoint{CreateCustomerGroupRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -540,7 +595,7 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomerGroup(ctx, query)
+	err = s.s.CreateGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -552,17 +607,64 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 	return resp, nil
 }
 
-type GetCustomerGroupEndpoint struct {
+type DeleteGroupEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapCustomerGroupService) DeleteGroup(ctx context.Context, req *cm.IDRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.CustomerGroup/DeleteGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteGroupEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteGroup(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetGroupEndpoint struct {
 	*cm.IDRequest
 	Result  *externaltypes.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.IDRequest) (resp *externaltypes.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) GetGroup(ctx context.Context, req *cm.IDRequest) (resp *externaltypes.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/GetCustomerGroup"
+	const rpcName = "partner.CustomerGroup/GetGroup"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -578,7 +680,7 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetCustomerGroupEndpoint{IDRequest: req}
+	query := &GetGroupEndpoint{IDRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -587,7 +689,7 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomerGroup(ctx, query)
+	err = s.s.GetGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -599,17 +701,17 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 	return resp, nil
 }
 
-type ListCustomerGroupsEndpoint struct {
+type ListGroupsEndpoint struct {
 	*externaltypes.ListCustomerGroupsRequest
 	Result  *externaltypes.CustomerGroupsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) ListCustomerGroups(ctx context.Context, req *externaltypes.ListCustomerGroupsRequest) (resp *externaltypes.CustomerGroupsResponse, err error) {
+func (s wrapCustomerGroupService) ListGroups(ctx context.Context, req *externaltypes.ListCustomerGroupsRequest) (resp *externaltypes.CustomerGroupsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/ListCustomerGroups"
+	const rpcName = "partner.CustomerGroup/ListGroups"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -625,7 +727,7 @@ func (s wrapCustomerGroupService) ListCustomerGroups(ctx context.Context, req *e
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &ListCustomerGroupsEndpoint{ListCustomerGroupsRequest: req}
+	query := &ListGroupsEndpoint{ListCustomerGroupsRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -634,7 +736,7 @@ func (s wrapCustomerGroupService) ListCustomerGroups(ctx context.Context, req *e
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListCustomerGroups(ctx, query)
+	err = s.s.ListGroups(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -646,17 +748,17 @@ func (s wrapCustomerGroupService) ListCustomerGroups(ctx context.Context, req *e
 	return resp, nil
 }
 
-type RemoveCustomersEndpoint struct {
-	*externaltypes.RemoveCustomersRequest
+type RemoveCustomerEndpoint struct {
+	*externaltypes.RemoveCustomerRequest
 	Result  *cm.Empty
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) RemoveCustomers(ctx context.Context, req *externaltypes.RemoveCustomersRequest) (resp *cm.Empty, err error) {
+func (s wrapCustomerGroupService) RemoveCustomer(ctx context.Context, req *externaltypes.RemoveCustomerRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/RemoveCustomers"
+	const rpcName = "partner.CustomerGroup/RemoveCustomer"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -672,7 +774,7 @@ func (s wrapCustomerGroupService) RemoveCustomers(ctx context.Context, req *exte
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &RemoveCustomersEndpoint{RemoveCustomersRequest: req}
+	query := &RemoveCustomerEndpoint{RemoveCustomerRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -681,7 +783,7 @@ func (s wrapCustomerGroupService) RemoveCustomers(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveCustomers(ctx, query)
+	err = s.s.RemoveCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -693,17 +795,17 @@ func (s wrapCustomerGroupService) RemoveCustomers(ctx context.Context, req *exte
 	return resp, nil
 }
 
-type UpdateCustomerGroupEndpoint struct {
+type UpdateGroupEndpoint struct {
 	*externaltypes.UpdateCustomerGroupRequest
 	Result  *externaltypes.CustomerGroup
 	Context claims.ShopClaim
 }
 
-func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *externaltypes.UpdateCustomerGroupRequest) (resp *externaltypes.CustomerGroup, err error) {
+func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *externaltypes.UpdateCustomerGroupRequest) (resp *externaltypes.CustomerGroup, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "partner.CustomerGroup/UpdateCustomerGroup"
+	const rpcName = "partner.CustomerGroup/UpdateGroup"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -719,7 +821,7 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &UpdateCustomerGroupEndpoint{UpdateCustomerGroupRequest: req}
+	query := &UpdateGroupEndpoint{UpdateCustomerGroupRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -728,7 +830,7 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomerGroup(ctx, query)
+	err = s.s.UpdateGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -851,12 +953,12 @@ type wrapHistoryService struct {
 }
 
 type GetChangesEndpoint struct {
-	*externaltypes.GetChangesRequest
+	*cm.Empty
 	Result  *externaltypes.Callback
 	Context claims.PartnerClaim
 }
 
-func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.GetChangesRequest) (resp *externaltypes.Callback, err error) {
+func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp *externaltypes.Callback, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -876,7 +978,7 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.G
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetChangesEndpoint{GetChangesRequest: req}
+	query := &GetChangesEndpoint{Empty: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -1290,106 +1392,59 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *externaltypes.Order
 	return resp, nil
 }
 
+type OrderListOrdersEndpoint struct {
+	*externaltypes.ListOrdersRequest
+	Result  *externaltypes.OrdersResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapOrderService) ListOrders(ctx context.Context, req *externaltypes.ListOrdersRequest) (resp *externaltypes.OrdersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Order/ListOrders"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &OrderListOrdersEndpoint{ListOrdersRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ListOrders(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapProductService(s *ProductService) api.ProductService {
 	return wrapProductService{s: s}
 }
 
 type wrapProductService struct {
 	s *ProductService
-}
-
-type AddProductCollectionEndpoint struct {
-	*externaltypes.AddProductCollectionRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapProductService) AddProductCollection(ctx context.Context, req *externaltypes.AddProductCollectionRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Product/AddProductCollection"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AddProductCollectionEndpoint{AddProductCollectionRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddProductCollection(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type BatchUpdateProductsEndpoint struct {
-	*externaltypes.BatchUpdateProductsRequest
-	Result  *externaltypes.ShopProductsResponse
-	Context claims.ShopClaim
-}
-
-func (s wrapProductService) BatchUpdateProducts(ctx context.Context, req *externaltypes.BatchUpdateProductsRequest) (resp *externaltypes.ShopProductsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Product/BatchUpdateProducts"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BatchUpdateProductsEndpoint{BatchUpdateProductsRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.BatchUpdateProducts(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
 }
 
 type CreateProductEndpoint struct {
@@ -1428,6 +1483,53 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *externaltype
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteProductEndpoint struct {
+	*externaltypes.GetProductRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductService) DeleteProduct(ctx context.Context, req *externaltypes.GetProductRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Product/DeleteProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteProductEndpoint{GetProductRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1533,53 +1635,6 @@ func (s wrapProductService) ListProducts(ctx context.Context, req *externaltypes
 	return resp, nil
 }
 
-type RemoveProductCollectionEndpoint struct {
-	*externaltypes.RemoveProductCollectionRequest
-	Result  *cm.Empty
-	Context claims.ShopClaim
-}
-
-func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *externaltypes.RemoveProductCollectionRequest) (resp *cm.Empty, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Product/RemoveProductCollection"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &RemoveProductCollectionEndpoint{RemoveProductCollectionRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProductCollection(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type UpdateProductEndpoint struct {
 	*externaltypes.UpdateProductRequest
 	Result  *externaltypes.ShopProduct
@@ -1616,6 +1671,343 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *externaltype
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapProductCollectionService(s *ProductCollectionService) api.ProductCollectionService {
+	return wrapProductCollectionService{s: s}
+}
+
+type wrapProductCollectionService struct {
+	s *ProductCollectionService
+}
+
+type AddProductEndpoint struct {
+	*externaltypes.AddProductCollectionRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) AddProduct(ctx context.Context, req *externaltypes.AddProductCollectionRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/AddProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AddProductEndpoint{AddProductCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.AddProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateCollectionEndpoint struct {
+	*externaltypes.CreateCollectionRequest
+	Result  *externaltypes.ProductCollection
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) CreateCollection(ctx context.Context, req *externaltypes.CreateCollectionRequest) (resp *externaltypes.ProductCollection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/CreateCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateCollectionEndpoint{CreateCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateCollection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteCollectionEndpoint struct {
+	*externaltypes.GetCollectionRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) DeleteCollection(ctx context.Context, req *externaltypes.GetCollectionRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/DeleteCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteCollectionEndpoint{GetCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteCollection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetCollectionEndpoint struct {
+	*externaltypes.GetCollectionRequest
+	Result  *externaltypes.ProductCollection
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) GetCollection(ctx context.Context, req *externaltypes.GetCollectionRequest) (resp *externaltypes.ProductCollection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/GetCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCollectionEndpoint{GetCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetCollection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ListCollectionsEndpoint struct {
+	*externaltypes.ListCollectionsRequest
+	Result  *externaltypes.ProductCollectionsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) ListCollections(ctx context.Context, req *externaltypes.ListCollectionsRequest) (resp *externaltypes.ProductCollectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/ListCollections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ListCollectionsEndpoint{ListCollectionsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ListCollections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type RemoveProductEndpoint struct {
+	*externaltypes.RemoveProductCollectionRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) RemoveProduct(ctx context.Context, req *externaltypes.RemoveProductCollectionRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/RemoveProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &RemoveProductEndpoint{RemoveProductCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.RemoveProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateCollectionEndpoint struct {
+	*externaltypes.UpdateCollectionRequest
+	Result  *externaltypes.ProductCollection
+	Context claims.ShopClaim
+}
+
+func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req *externaltypes.UpdateCollectionRequest) (resp *externaltypes.ProductCollection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ProductCollection/UpdateCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateCollectionEndpoint{UpdateCollectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1980,53 +2372,6 @@ type wrapVariantService struct {
 	s *VariantService
 }
 
-type BatchUpdateVariantsEndpoint struct {
-	*externaltypes.BatchUpdateVariantsRequest
-	Result  *externaltypes.ShopVariantsResponse
-	Context claims.ShopClaim
-}
-
-func (s wrapVariantService) BatchUpdateVariants(ctx context.Context, req *externaltypes.BatchUpdateVariantsRequest) (resp *externaltypes.ShopVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "partner.Variant/BatchUpdateVariants"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
-		RequireAuth:              true,
-		RequireAPIPartnerShopKey: true,
-		RequireShop:              true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BatchUpdateVariantsEndpoint{BatchUpdateVariantsRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.BatchUpdateVariants(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
 type CreateVariantEndpoint struct {
 	*externaltypes.CreateVariantRequest
 	Result  *externaltypes.ShopVariant
@@ -2063,6 +2408,53 @@ func (s wrapVariantService) CreateVariant(ctx context.Context, req *externaltype
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteVariantEndpoint struct {
+	*externaltypes.GetVariantRequest
+	Result  *cm.Empty
+	Context claims.ShopClaim
+}
+
+func (s wrapVariantService) DeleteVariant(ctx context.Context, req *externaltypes.GetVariantRequest) (resp *cm.Empty, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Variant/DeleteVariant"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:                  ctx,
+		RequireAuth:              true,
+		RequireAPIPartnerShopKey: true,
+		RequireShop:              true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteVariantEndpoint{GetVariantRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

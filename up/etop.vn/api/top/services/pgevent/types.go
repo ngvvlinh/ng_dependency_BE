@@ -18,5 +18,4 @@ type GenerateEventsRequest struct {
 	ItemsPerBatch int `json:"items_per_batch"`
 }
 
-func (m *GenerateEventsRequest) Reset()         { *m = GenerateEventsRequest{} }
 func (m *GenerateEventsRequest) String() string { return jsonx.MustMarshalToString(m) }

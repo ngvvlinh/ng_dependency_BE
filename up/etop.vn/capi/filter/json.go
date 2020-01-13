@@ -46,6 +46,28 @@ func (ids *IDs) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (ss *Strings) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		*ss = nil
+		return nil
+	}
+	if data[0] == '[' {
+		if err := json.Unmarshal(data, (*[]string)(ss)); err != nil {
+			return xerrors.Errorf(xerrors.InvalidArgument, nil, "json: can not read `%s` as string array", data)
+		}
+		if len(*ss) == 0 {
+			return xerrors.Errorf(xerrors.InvalidArgument, nil, "json: can not read `%s` as string array", data)
+		}
+		return nil
+	}
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	*ss = []string{s}
+	return nil
+}
+
 func (d *Date) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" || string(data) == `""` {
 		*d = Date{}

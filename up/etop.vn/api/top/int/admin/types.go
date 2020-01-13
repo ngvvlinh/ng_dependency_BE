@@ -17,7 +17,6 @@ type GetOrdersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetOrdersRequest) Reset()         { *m = GetOrdersRequest{} }
 func (m *GetOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentsRequest struct {
@@ -28,7 +27,6 @@ type GetFulfillmentsRequest struct {
 	Filters []*common.Filter   `json:"filters"`
 }
 
-func (m *GetFulfillmentsRequest) Reset()         { *m = GetFulfillmentsRequest{} }
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LoginAsAccountRequest struct {
@@ -38,7 +36,6 @@ type LoginAsAccountRequest struct {
 	Password string `json:"password"`
 }
 
-func (m *LoginAsAccountRequest) Reset()         { *m = LoginAsAccountRequest{} }
 func (m *LoginAsAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetMoneyTransactionsRequest struct {
@@ -49,7 +46,6 @@ type GetMoneyTransactionsRequest struct {
 	Filters                            []*common.Filter `json:"filters"`
 }
 
-func (m *GetMoneyTransactionsRequest) Reset()         { *m = GetMoneyTransactionsRequest{} }
 func (m *GetMoneyTransactionsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveFfmsMoneyTransactionRequest struct {
@@ -58,7 +54,6 @@ type RemoveFfmsMoneyTransactionRequest struct {
 	ShopId             dot.ID   `json:"shop_id"`
 }
 
-func (m *RemoveFfmsMoneyTransactionRequest) Reset()         { *m = RemoveFfmsMoneyTransactionRequest{} }
 func (m *RemoveFfmsMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetMoneyTransactionShippingExternalsRequest struct {
@@ -94,7 +89,6 @@ type ConfirmMoneyTransactionRequest struct {
 	TotalOrders        int    `json:"total_orders"`
 }
 
-func (m *ConfirmMoneyTransactionRequest) Reset()         { *m = ConfirmMoneyTransactionRequest{} }
 func (m *ConfirmMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteMoneyTransactionRequest struct {
@@ -102,14 +96,12 @@ type DeleteMoneyTransactionRequest struct {
 	ShopId             dot.ID `json:"shop_id"`
 }
 
-func (m *DeleteMoneyTransactionRequest) Reset()         { *m = DeleteMoneyTransactionRequest{} }
 func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShopsRequest struct {
 	Paging *common.Paging `json:"paging"`
 }
 
-func (m *GetShopsRequest) Reset()         { *m = GetShopsRequest{} }
 func (m *GetShopsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShopsResponse struct {
@@ -117,7 +109,6 @@ type GetShopsResponse struct {
 	Shops  []*etop.Shop     `json:"shops"`
 }
 
-func (m *GetShopsResponse) Reset()         { *m = GetShopsResponse{} }
 func (m *GetShopsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCreditRequest struct {
@@ -125,7 +116,6 @@ type GetCreditRequest struct {
 	ShopId dot.ID `json:"shop_id"`
 }
 
-func (m *GetCreditRequest) Reset()         { *m = GetCreditRequest{} }
 func (m *GetCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCreditsRequest struct {
@@ -133,7 +123,6 @@ type GetCreditsRequest struct {
 	Paging *common.Paging `json:"paging"`
 }
 
-func (m *GetCreditsRequest) Reset()         { *m = GetCreditsRequest{} }
 func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCreditRequest struct {
@@ -143,7 +132,6 @@ type CreateCreditRequest struct {
 	PaidAt dot.Time               `json:"paid_at"`
 }
 
-func (m *CreateCreditRequest) Reset()         { *m = CreateCreditRequest{} }
 func (m *CreateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCreditRequest struct {
@@ -154,7 +142,6 @@ type UpdateCreditRequest struct {
 	PaidAt dot.Time                `json:"paid_at"`
 }
 
-func (m *UpdateCreditRequest) Reset()         { *m = UpdateCreditRequest{} }
 func (m *UpdateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmCreditRequest struct {
@@ -162,14 +149,12 @@ type ConfirmCreditRequest struct {
 	ShopId dot.ID `json:"shop_id"`
 }
 
-func (m *ConfirmCreditRequest) Reset()         { *m = ConfirmCreditRequest{} }
 func (m *ConfirmCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreatePartnerRequest struct {
 	Partner etop.Partner `json:"partner"`
 }
 
-func (m *CreatePartnerRequest) Reset()         { *m = CreatePartnerRequest{} }
 func (m *CreatePartnerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentRequest struct {
@@ -183,14 +168,12 @@ type UpdateFulfillmentRequest struct {
 	ShippingState            shipping.NullState `json:"shipping_state"`
 }
 
-func (m *UpdateFulfillmentRequest) Reset()         { *m = UpdateFulfillmentRequest{} }
 func (m *UpdateFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GenerateAPIKeyRequest struct {
 	AccountId dot.ID `json:"account_id"`
 }
 
-func (m *GenerateAPIKeyRequest) Reset()         { *m = GenerateAPIKeyRequest{} }
 func (m *GenerateAPIKeyRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GenerateAPIKeyResponse struct {
@@ -198,7 +181,6 @@ type GenerateAPIKeyResponse struct {
 	ApiKey    string `json:"api_key"`
 }
 
-func (m *GenerateAPIKeyResponse) Reset()         { *m = GenerateAPIKeyResponse{} }
 func (m *GenerateAPIKeyResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateMoneyTransactionShippingEtopRequest struct {
@@ -251,7 +233,6 @@ type UpdateMoneyTransactionRequest struct {
 	BankAccount   *etop.BankAccount `json:"bank_account"`
 }
 
-func (m *UpdateMoneyTransactionRequest) Reset()         { *m = UpdateMoneyTransactionRequest{} }
 func (m *UpdateMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateMoneyTransactionShippingExternalRequest struct {
@@ -278,7 +259,6 @@ type CreateNotificationsRequest struct {
 	SendAll bool `json:"send_all"`
 }
 
-func (m *CreateNotificationsRequest) Reset()         { *m = CreateNotificationsRequest{} }
 func (m *CreateNotificationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateNotificationsResponse struct {
@@ -286,7 +266,6 @@ type CreateNotificationsResponse struct {
 	Errored int `json:"errored"`
 }
 
-func (m *CreateNotificationsResponse) Reset()         { *m = CreateNotificationsResponse{} }
 func (m *CreateNotificationsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentShippingStateRequest struct {
@@ -296,7 +275,6 @@ type UpdateFulfillmentShippingStateRequest struct {
 	ActualCompensationAmount dot.NullInt    `json:"actual_compensation_amount"`
 }
 
-func (m *UpdateFulfillmentShippingStateRequest) Reset()         { *m = UpdateFulfillmentShippingStateRequest{} }
 func (m *UpdateFulfillmentShippingStateRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentShippingFeeRequest struct {
@@ -305,5 +283,4 @@ type UpdateFulfillmentShippingFeeRequest struct {
 	ShippingFees []*types.ShippingFeeShortLine `json:"shipping_fees"`
 }
 
-func (m *UpdateFulfillmentShippingFeeRequest) Reset()         { *m = UpdateFulfillmentShippingFeeRequest{} }
 func (m *UpdateFulfillmentShippingFeeRequest) String() string { return jsonx.MustMarshalToString(m) }

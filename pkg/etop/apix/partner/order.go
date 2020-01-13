@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/top/types/common"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 )
 
@@ -17,6 +18,10 @@ func (s *OrderService) GetOrder(ctx context.Context, r *OrderGetOrderEndpoint) e
 	resp, err := shipping.GetOrder(ctx, r.Context.Shop.ID, r.OrderIDRequest)
 	r.Result = resp
 	return err
+}
+
+func (s *OrderService) ListOrders(ctx context.Context, r *OrderListOrdersEndpoint) error {
+	return cm.ErrTODO
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, r *OrderCreateOrderEndpoint) error {

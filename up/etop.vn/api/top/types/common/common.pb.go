@@ -8,7 +8,6 @@ import (
 type Empty struct {
 }
 
-func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return jsonx.MustMarshalToString(m) }
 
 type VersionInfoResponse struct {
@@ -17,7 +16,6 @@ type VersionInfoResponse struct {
 	UpdatedAt dot.Time `json:"updated_at"`
 }
 
-func (m *VersionInfoResponse) Reset()         { *m = VersionInfoResponse{} }
 func (m *VersionInfoResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type IDRequest struct {
@@ -25,7 +23,6 @@ type IDRequest struct {
 	Id dot.ID `json:"id"`
 }
 
-func (m *IDRequest) Reset()         { *m = IDRequest{} }
 func (m *IDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CodeRequest struct {
@@ -33,7 +30,6 @@ type CodeRequest struct {
 	Code string `json:"code"`
 }
 
-func (m *CodeRequest) Reset()         { *m = CodeRequest{} }
 func (m *CodeRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type NameRequest struct {
@@ -41,7 +37,6 @@ type NameRequest struct {
 	Name string `json:"name"`
 }
 
-func (m *NameRequest) Reset()         { *m = NameRequest{} }
 func (m *NameRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type IDsRequest struct {
@@ -49,14 +44,12 @@ type IDsRequest struct {
 	Ids []dot.ID `json:"ids"`
 }
 
-func (m *IDsRequest) Reset()         { *m = IDsRequest{} }
 func (m *IDsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type StatusResponse struct {
 	Status string `json:"status"`
 }
 
-func (m *StatusResponse) Reset()         { *m = StatusResponse{} }
 func (m *StatusResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type IDMRequest struct {
@@ -64,7 +57,6 @@ type IDMRequest struct {
 	Paging *Paging `json:"paging"`
 }
 
-func (m *IDMRequest) Reset()         { *m = IDMRequest{} }
 func (m *IDMRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Paging struct {
@@ -73,16 +65,7 @@ type Paging struct {
 	Sort   string `json:"sort"`
 }
 
-func (m *Paging) Reset()         { *m = Paging{} }
 func (m *Paging) String() string { return jsonx.MustMarshalToString(m) }
-
-type ForwardPaging struct {
-	Since string `json:"since"`
-	Limit int    `json:"limit"`
-}
-
-func (m *ForwardPaging) Reset()         { *m = ForwardPaging{} }
-func (m *ForwardPaging) String() string { return jsonx.MustMarshalToString(m) }
 
 type PageInfo struct {
 	Total int      `json:"total"`
@@ -90,23 +73,12 @@ type PageInfo struct {
 	Sort  []string `json:"sort"`
 }
 
-func (m *PageInfo) Reset()         { *m = PageInfo{} }
 func (m *PageInfo) String() string { return jsonx.MustMarshalToString(m) }
-
-type ForwardPageInfo struct {
-	Since   string `json:"since"`
-	Limit   int    `json:"limit"`
-	HasNext bool   `json:"has_next"`
-}
-
-func (m *ForwardPageInfo) Reset()         { *m = ForwardPageInfo{} }
-func (m *ForwardPageInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type RawJSONObject struct {
 	Data []byte `json:"data"`
 }
 
-func (m *RawJSONObject) Reset()         { *m = RawJSONObject{} }
 func (m *RawJSONObject) String() string { return jsonx.MustMarshalToString(m) }
 
 type Error struct {
@@ -115,35 +87,30 @@ type Error struct {
 	Meta map[string]string `json:"meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
-func (m *Error) Reset()         { *m = Error{} }
 func (m *Error) String() string { return jsonx.MustMarshalToString(m) }
 
 type ErrorsResponse struct {
 	Errors []*Error `json:"errors"`
 }
 
-func (m *ErrorsResponse) Reset()         { *m = ErrorsResponse{} }
 func (m *ErrorsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatedResponse struct {
 	Updated int `json:"updated"`
 }
 
-func (m *UpdatedResponse) Reset()         { *m = UpdatedResponse{} }
 func (m *UpdatedResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemovedResponse struct {
 	Removed int `json:"removed"`
 }
 
-func (m *RemovedResponse) Reset()         { *m = RemovedResponse{} }
 func (m *RemovedResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeletedResponse struct {
 	Deleted int `json:"deleted"`
 }
 
-func (m *DeletedResponse) Reset()         { *m = DeletedResponse{} }
 func (m *DeletedResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type MessageResponse struct {
@@ -151,7 +118,6 @@ type MessageResponse struct {
 	Msg  string `json:"msg"`
 }
 
-func (m *MessageResponse) Reset()         { *m = MessageResponse{} }
 func (m *MessageResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Filter struct {
@@ -168,7 +134,6 @@ type Filter struct {
 	Value string `json:"value"`
 }
 
-func (m *Filter) Reset()         { *m = Filter{} }
 func (m *Filter) String() string { return jsonx.MustMarshalToString(m) }
 
 type CommonListRequest struct {
@@ -176,7 +141,6 @@ type CommonListRequest struct {
 	Filters []*Filter `json:"filters"`
 }
 
-func (m *CommonListRequest) Reset()         { *m = CommonListRequest{} }
 func (m *CommonListRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type MetaField struct {
@@ -184,7 +148,6 @@ type MetaField struct {
 	Value string `json:"value"`
 }
 
-func (m *MetaField) Reset()         { *m = MetaField{} }
 func (m *MetaField) String() string { return jsonx.MustMarshalToString(m) }
 
 type CursorPaging struct {
@@ -197,7 +160,6 @@ type CursorPaging struct {
 	Sort  string `json:"sort"`
 }
 
-func (m *CursorPaging) Reset()         { *m = CursorPaging{} }
 func (m *CursorPaging) String() string { return jsonx.MustMarshalToString(m) }
 
 type CursorPageInfo struct {
@@ -213,5 +175,4 @@ type CursorPageInfo struct {
 	Next string `json:"next"`
 }
 
-func (m *CursorPageInfo) Reset()         { *m = CursorPageInfo{} }
 func (m *CursorPageInfo) String() string { return jsonx.MustMarshalToString(m) }

@@ -116,10 +116,11 @@ func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerE
 	return nil
 }
 
-func (s *CustomerService) ListAddresses(ctx context.Context, r *ListAddressesEndpoint) error {
+func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *ListAddressesEndpoint) error {
 	query := &addressing.ListAddressesByTraderIDQuery{
-		TraderID: r.CustomerId,
+		TraderID: 0, // TODO: list by trader ids
 		ShopID:   r.Context.Shop.ID,
+		// TODO: paging
 	}
 	if err := addressQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -130,7 +131,11 @@ func (s *CustomerService) ListAddresses(ctx context.Context, r *ListAddressesEnd
 	return nil
 }
 
-func (s *CustomerService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
+func (s *CustomerAddressService) GetAddress(ctx context.Context, r *GetAddressEndpoint) error {
+	return cm.ErrTODO
+}
+
+func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
 	var coordinates *types.Coordinates
 	if r.Coordinates != nil {
 		coordinates = &types.Coordinates{
@@ -160,7 +165,7 @@ func (s *CustomerService) CreateAddress(ctx context.Context, r *CreateAddressEnd
 	return nil
 }
 
-func (s *CustomerService) UpdateAddress(ctx context.Context, r *UpdateAddressEndpoint) error {
+func (s *CustomerAddressService) UpdateAddress(ctx context.Context, r *UpdateAddressEndpoint) error {
 	var coordinates *types.Coordinates
 	if r.Coordinates != nil {
 		coordinates = &types.Coordinates{
@@ -189,7 +194,7 @@ func (s *CustomerService) UpdateAddress(ctx context.Context, r *UpdateAddressEnd
 	return nil
 }
 
-func (s *CustomerService) DeleteAddress(ctx context.Context, r *DeleteAddressEndpoint) error {
+func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAddressEndpoint) error {
 	cmd := &addressing.DeleteAddressCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -201,11 +206,11 @@ func (s *CustomerService) DeleteAddress(ctx context.Context, r *DeleteAddressEnd
 	return nil
 }
 
-func (s *CustomerGroupService) AddCustomers(ctx context.Context, r *AddCustomersEndpoint) error {
+func (s *CustomerGroupService) AddCustomer(ctx context.Context, r *AddCustomerEndpoint) error {
 	cmd := &customering.AddCustomersToGroupCommand{
 		ShopID:      r.Context.Shop.ID,
-		GroupID:     r.GroupId,
-		CustomerIDs: r.CustomerIds,
+		GroupID:     r.GroupID,
+		CustomerIDs: []dot.ID{r.CustomerID},
 	}
 	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -214,11 +219,11 @@ func (s *CustomerGroupService) AddCustomers(ctx context.Context, r *AddCustomers
 	return nil
 }
 
-func (s *CustomerGroupService) RemoveCustomers(ctx context.Context, r *RemoveCustomersEndpoint) error {
+func (s *CustomerGroupService) RemoveCustomer(ctx context.Context, r *RemoveCustomerEndpoint) error {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
 		ShopID:      r.Context.Shop.ID,
-		GroupID:     r.GroupId,
-		CustomerIDs: r.CustomerIds,
+		GroupID:     r.GroupID,
+		CustomerIDs: []dot.ID{r.CustomerID},
 	}
 	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -227,7 +232,7 @@ func (s *CustomerGroupService) RemoveCustomers(ctx context.Context, r *RemoveCus
 	return nil
 }
 
-func (s *CustomerGroupService) GetCustomerGroup(ctx context.Context, r *GetCustomerGroupEndpoint) error {
+func (s *CustomerGroupService) GetGroup(ctx context.Context, r *GetGroupEndpoint) error {
 	query := &customering.GetCustomerGroupQuery{
 		ID: r.Id,
 	}
@@ -238,7 +243,7 @@ func (s *CustomerGroupService) GetCustomerGroup(ctx context.Context, r *GetCusto
 	return nil
 }
 
-func (s *CustomerGroupService) ListCustomerGroups(ctx context.Context, r *ListCustomerGroupsEndpoint) error {
+func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndpoint) error {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return err
@@ -257,7 +262,7 @@ func (s *CustomerGroupService) ListCustomerGroups(ctx context.Context, r *ListCu
 	return nil
 }
 
-func (s *CustomerGroupService) CreateCustomerGroup(ctx context.Context, r *CreateCustomerGroupEndpoint) error {
+func (s *CustomerGroupService) CreateGroup(ctx context.Context, r *CreateGroupEndpoint) error {
 	if r.Name == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tên không được rỗng.")
 	}
@@ -272,7 +277,7 @@ func (s *CustomerGroupService) CreateCustomerGroup(ctx context.Context, r *Creat
 	return nil
 }
 
-func (s *CustomerGroupService) UpdateCustomerGroup(ctx context.Context, r *UpdateCustomerGroupEndpoint) error {
+func (s *CustomerGroupService) UpdateGroup(ctx context.Context, r *UpdateGroupEndpoint) error {
 	if r.Name.String == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tên không được rỗng.")
 	}
@@ -285,4 +290,8 @@ func (s *CustomerGroupService) UpdateCustomerGroup(ctx context.Context, r *Updat
 	}
 	r.Result = convertpb.PbCustomerGroup(cmd.Result)
 	return nil
+}
+
+func (s *CustomerGroupService) DeleteGroup(ctx context.Context, r *DeleteGroupEndpoint) error {
+	return cm.ErrTODO
 }

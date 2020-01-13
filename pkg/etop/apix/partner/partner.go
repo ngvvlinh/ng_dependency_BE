@@ -66,11 +66,13 @@ type WebhookService struct{}
 type HistoryService struct{}
 type ShippingService struct{}
 type CustomerService struct{}
+type CustomerAddressService struct{}
 type CustomerGroupService struct{}
 type InventoryService struct{}
 type OrderService struct{}
 type FulfillmentService struct{}
 type ProductService struct{}
+type ProductCollectionService struct{}
 type VariantService struct{}
 
 var miscService = &MiscService{}
@@ -79,11 +81,13 @@ var webhookService = &WebhookService{}
 var historyService = &HistoryService{}
 var shippingService = &ShippingService{}
 var customerService = &CustomerService{}
+var customerAddressService = &CustomerAddressService{}
 var customerGroupService = &CustomerGroupService{}
 var inventoryService = &InventoryService{}
 var orderService = &OrderService{}
 var fulfillmentService = &FulfillmentService{}
 var productService = &ProductService{}
+var productCollectionService = &ProductCollectionService{}
 var variantService = &VariantService{}
 
 func Init(

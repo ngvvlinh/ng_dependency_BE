@@ -111,7 +111,7 @@ func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple
 		return
 	}
 	if results.Len() == 0 {
-		err = generator.Errorf(nil, "expect at least 1 param")
+		err = generator.Errorf(nil, "expect at least 1 result")
 		return
 	}
 	var requestItems, responseItems []*defs.ArgItem

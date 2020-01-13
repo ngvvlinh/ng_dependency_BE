@@ -12,7 +12,6 @@ type SAdminResetPasswordRequest struct {
 	Confirm  string `json:"confirm"`
 }
 
-func (m *SAdminResetPasswordRequest) Reset()         { *m = SAdminResetPasswordRequest{} }
 func (m *SAdminResetPasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SAdminCreateUserRequest struct {
@@ -21,7 +20,6 @@ type SAdminCreateUserRequest struct {
 	Permission  *etop.Permission        `json:"permission"`
 }
 
-func (m *SAdminCreateUserRequest) Reset()         { *m = SAdminCreateUserRequest{} }
 func (m *SAdminCreateUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LoginAsAccountRequest struct {
@@ -29,7 +27,6 @@ type LoginAsAccountRequest struct {
 	AccountId dot.ID `json:"account_id"`
 }
 
-func (m *LoginAsAccountRequest) Reset()         { *m = LoginAsAccountRequest{} }
 func (m *LoginAsAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *SAdminCreateUserRequest) Censor() {

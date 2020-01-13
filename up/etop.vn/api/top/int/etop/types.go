@@ -20,7 +20,6 @@ type Authorization struct {
 	Actions []string `json:"actions"`
 }
 
-func (m *Authorization) Reset()         { *m = Authorization{} }
 func (m *Authorization) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateAuthorizationRequest struct {
@@ -28,21 +27,18 @@ type UpdateAuthorizationRequest struct {
 	Roles  []string `json:"roles"`
 }
 
-func (m *UpdateAuthorizationRequest) Reset()         { *m = UpdateAuthorizationRequest{} }
 func (m *UpdateAuthorizationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AuthorizationsResponse struct {
 	Authorizations []*Authorization `json:"authorizations"`
 }
 
-func (m *AuthorizationsResponse) Reset()         { *m = AuthorizationsResponse{} }
 func (m *AuthorizationsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInvitationByTokenRequest struct {
 	Token string `json:"token"`
 }
 
-func (m *GetInvitationByTokenRequest) Reset()         { *m = GetInvitationByTokenRequest{} }
 func (m *GetInvitationByTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Invitation struct {
@@ -65,7 +61,6 @@ type Invitation struct {
 	UpdatedAt     dot.Time       `json:"updated_at"`
 }
 
-func (m *Invitation) Reset()         { *m = Invitation{} }
 func (m *Invitation) String() string { return jsonx.MustMarshalToString(m) }
 
 type InvitationsResponse struct {
@@ -73,7 +68,6 @@ type InvitationsResponse struct {
 	Paging      *common.PageInfo `json:"paging"`
 }
 
-func (m *InvitationsResponse) Reset()         { *m = InvitationsResponse{} }
 func (m *InvitationsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateAccountUserPermissionRequest struct {
@@ -81,7 +75,6 @@ type UpdateAccountUserPermissionRequest struct {
 	Roles  []string `json:"roles"`
 }
 
-func (m *UpdateAccountUserPermissionRequest) Reset()         { *m = UpdateAccountUserPermissionRequest{} }
 func (m *UpdateAccountUserPermissionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateRelationshipRequest struct {
@@ -91,7 +84,6 @@ type UpdateRelationshipRequest struct {
 	Position  dot.NullString `json:"position"`
 }
 
-func (m *UpdateRelationshipRequest) Reset()         { *m = UpdateRelationshipRequest{} }
 func (m *UpdateRelationshipRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInvitationsRequest struct {
@@ -99,21 +91,18 @@ type GetInvitationsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetInvitationsRequest) Reset()         { *m = GetInvitationsRequest{} }
 func (m *GetInvitationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteInvitationRequest struct {
 	Token string `json:"token""`
 }
 
-func (m *DeleteInvitationRequest) Reset()         { *m = DeleteInvitationRequest{} }
 func (m *DeleteInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UserRelationshipLeaveAccountRequest struct {
 	AccountID dot.ID `json:"account_id"`
 }
 
-func (m *UserRelationshipLeaveAccountRequest) Reset()         { *m = UserRelationshipLeaveAccountRequest{} }
 func (m *UserRelationshipLeaveAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateInvitationRequest struct {
@@ -127,21 +116,18 @@ type CreateInvitationRequest struct {
 	Roles []string `json:"roles"`
 }
 
-func (m *CreateInvitationRequest) Reset()         { *m = CreateInvitationRequest{} }
 func (m *CreateInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AcceptInvitationRequest struct {
 	Token string `json:"token"`
 }
 
-func (m *AcceptInvitationRequest) Reset()         { *m = AcceptInvitationRequest{} }
 func (m *AcceptInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RejectInvitationRequest struct {
 	Token string `json:"token"`
 }
 
-func (m *RejectInvitationRequest) Reset()         { *m = RejectInvitationRequest{} }
 func (m *RejectInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Relationship struct {
@@ -156,7 +142,6 @@ type Relationship struct {
 	Deleted     bool     `json:"deleted"`
 }
 
-func (m *Relationship) Reset()         { *m = Relationship{} }
 func (m *Relationship) String() string { return jsonx.MustMarshalToString(m) }
 
 type RelationshipsResponse struct {
@@ -164,7 +149,6 @@ type RelationshipsResponse struct {
 	Paging        *common.PageInfo `json:"paging"`
 }
 
-func (m *RelationshipsResponse) Reset()         { *m = RelationshipsResponse{} }
 func (m *RelationshipsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetRelationshipsRequest struct {
@@ -172,14 +156,12 @@ type GetRelationshipsRequest struct {
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *GetRelationshipsRequest) Reset()         { *m = GetRelationshipsRequest{} }
 func (m *GetRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveUserRequest struct {
 	UserID dot.ID `json:"user_id"`
 }
 
-func (m *RemoveUserRequest) Reset()         { *m = RemoveUserRequest{} }
 func (m *RemoveUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // Represents a user in eTop system. The user may or may not have associated accounts.
@@ -205,7 +187,6 @@ type User struct {
 	Source                  user_source.UserSource `json:"source"`
 }
 
-func (m *User) Reset()         { *m = User{} }
 func (m *User) String() string { return jsonx.MustMarshalToString(m) }
 
 type IDsRequest struct {
@@ -214,7 +195,6 @@ type IDsRequest struct {
 	Mixed *MixedAccount `json:"mixed"`
 }
 
-func (m *IDsRequest) Reset()         { *m = IDsRequest{} }
 func (m *IDsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type MixedAccount struct {
@@ -223,7 +203,6 @@ type MixedAccount struct {
 	AllShops bool     `json:"all_shops"`
 }
 
-func (m *MixedAccount) Reset()         { *m = MixedAccount{} }
 func (m *MixedAccount) String() string { return jsonx.MustMarshalToString(m) }
 
 type Partner struct {
@@ -241,7 +220,6 @@ type Partner struct {
 	User           *User            `json:"user"`
 }
 
-func (m *Partner) Reset()         { *m = Partner{} }
 func (m *Partner) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicAccountInfo struct {
@@ -252,7 +230,6 @@ type PublicAccountInfo struct {
 	Website  string                   `json:"website"`
 }
 
-func (m *PublicAccountInfo) Reset()         { *m = PublicAccountInfo{} }
 func (m *PublicAccountInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicAuthorizedPartnerInfo struct {
@@ -264,14 +241,12 @@ type PublicAuthorizedPartnerInfo struct {
 	RedirectUrl string                   `json:"redirect_url"`
 }
 
-func (m *PublicAuthorizedPartnerInfo) Reset()         { *m = PublicAuthorizedPartnerInfo{} }
 func (m *PublicAuthorizedPartnerInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicAccountsResponse struct {
 	Accounts []*PublicAccountInfo `json:"accounts"`
 }
 
-func (m *PublicAccountsResponse) Reset()         { *m = PublicAccountsResponse{} }
 func (m *PublicAccountsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Shop struct {
@@ -304,7 +279,6 @@ type Shop struct {
 	Code                          string                               `json:"code"`
 }
 
-func (m *Shop) Reset()         { *m = Shop{} }
 func (m *Shop) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopShort struct {
@@ -314,7 +288,6 @@ type ShopShort struct {
 	ImageUrl string `json:"image_url"`
 }
 
-func (m *ShopShort) Reset()         { *m = ShopShort{} }
 func (m *ShopShort) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShippingServiceSelectStrategyItem struct {
@@ -322,7 +295,6 @@ type ShippingServiceSelectStrategyItem struct {
 	Value string `json:"value"`
 }
 
-func (m *ShippingServiceSelectStrategyItem) Reset()         { *m = ShippingServiceSelectStrategyItem{} }
 func (m *ShippingServiceSelectStrategyItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type SurveyInfo struct {
@@ -331,7 +303,6 @@ type SurveyInfo struct {
 	Answer   string `json:"answer"`
 }
 
-func (m *SurveyInfo) Reset()         { *m = SurveyInfo{} }
 func (m *SurveyInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateUserRequest struct {
@@ -357,7 +328,6 @@ type CreateUserRequest struct {
 	AutoAcceptInvitation bool `json:"auto_accept_invitation"`
 }
 
-func (m *CreateUserRequest) Reset()         { *m = CreateUserRequest{} }
 func (m *CreateUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RegisterResponse struct {
@@ -365,7 +335,6 @@ type RegisterResponse struct {
 	User *User `json:"user"`
 }
 
-func (m *RegisterResponse) Reset()         { *m = RegisterResponse{} }
 func (m *RegisterResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 // Exactly one of phone or email must be provided.
@@ -376,7 +345,6 @@ type ResetPasswordRequest struct {
 	RecaptchaToken string `json:"recaptcha_token"`
 }
 
-func (m *ResetPasswordRequest) Reset()         { *m = ResetPasswordRequest{} }
 func (m *ResetPasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
 func (m *ResetPasswordRequest) RequireCaptcha() bool {
 	return m.Phone != ""
@@ -392,7 +360,6 @@ type ChangePasswordRequest struct {
 	ConfirmPassword string `json:"confirm_password"`
 }
 
-func (m *ChangePasswordRequest) Reset()         { *m = ChangePasswordRequest{} }
 func (m *ChangePasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // Exactly one of email or phone must be provided.
@@ -405,7 +372,6 @@ type ChangePasswordUsingTokenRequest struct {
 	ConfirmPassword string `json:"confirm_password"`
 }
 
-func (m *ChangePasswordUsingTokenRequest) Reset()         { *m = ChangePasswordUsingTokenRequest{} }
 func (m *ChangePasswordUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ChangePasswordForPhoneUsingTokenRequest struct {
@@ -440,7 +406,6 @@ func (p *Permission) GetPermissions() []string {
 	return nil
 }
 
-func (p *Permission) Reset()         { *p = Permission{} }
 func (p *Permission) String() string { return jsonx.MustMarshalToString(p) }
 
 type LoginRequest struct {
@@ -460,7 +425,6 @@ type LoginRequest struct {
 	AccountKey string `json:"account_key"`
 }
 
-func (m *LoginRequest) Reset()         { *m = LoginRequest{} }
 func (m *LoginRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // Represents an account associated with the current user. It has extra fields to represents relation with the user.
@@ -482,7 +446,6 @@ type LoginAccount struct {
 	UserAccount *UserAccountInfo `json:"user_account"`
 }
 
-func (m *LoginAccount) Reset()         { *m = LoginAccount{} }
 func (m *LoginAccount) String() string { return jsonx.MustMarshalToString(m) }
 
 type LoginResponse struct {
@@ -502,7 +465,6 @@ type LoginResponse struct {
 	StokenExpiresAt    dot.Time           `json:"stoken_expires_at"`
 }
 
-func (m *LoginResponse) Reset()         { *m = LoginResponse{} }
 func (m *LoginResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SwitchAccountRequest struct {
@@ -513,7 +475,6 @@ type SwitchAccountRequest struct {
 	RegenerateTokens bool `json:"regenerate_tokens"`
 }
 
-func (m *SwitchAccountRequest) Reset()         { *m = SwitchAccountRequest{} }
 func (m *SwitchAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpgradeAccessTokenRequest struct {
@@ -522,7 +483,6 @@ type UpgradeAccessTokenRequest struct {
 	Password string `json:"password"`
 }
 
-func (m *UpgradeAccessTokenRequest) Reset()         { *m = UpgradeAccessTokenRequest{} }
 func (m *UpgradeAccessTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AccessTokenResponse struct {
@@ -539,7 +499,6 @@ type AccessTokenResponse struct {
 	StokenExpiresAt dot.Time      `json:"stoken_expires_at"`
 }
 
-func (m *AccessTokenResponse) Reset()         { *m = AccessTokenResponse{} }
 func (m *AccessTokenResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SendSTokenEmailRequest struct {
@@ -549,7 +508,6 @@ type SendSTokenEmailRequest struct {
 	AccountId dot.ID `json:"account_id"`
 }
 
-func (m *SendSTokenEmailRequest) Reset()         { *m = SendSTokenEmailRequest{} }
 func (m *SendSTokenEmailRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SendEmailVerificationRequest struct {
@@ -557,7 +515,6 @@ type SendEmailVerificationRequest struct {
 	Email string `json:"email"`
 }
 
-func (m *SendEmailVerificationRequest) Reset()         { *m = SendEmailVerificationRequest{} }
 func (m *SendEmailVerificationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SendPhoneVerificationRequest struct {
@@ -565,7 +522,6 @@ type SendPhoneVerificationRequest struct {
 	Phone string `json:"phone"`
 }
 
-func (m *SendPhoneVerificationRequest) Reset()         { *m = SendPhoneVerificationRequest{} }
 func (m *SendPhoneVerificationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type VerifyEmailUsingTokenRequest struct {
@@ -573,7 +529,6 @@ type VerifyEmailUsingTokenRequest struct {
 	VerificationToken string `json:"verification_token"`
 }
 
-func (m *VerifyEmailUsingTokenRequest) Reset()         { *m = VerifyEmailUsingTokenRequest{} }
 func (m *VerifyEmailUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type VerifyPhoneUsingTokenRequest struct {
@@ -581,7 +536,6 @@ type VerifyPhoneUsingTokenRequest struct {
 	VerificationToken string `json:"verification_token"`
 }
 
-func (m *VerifyPhoneUsingTokenRequest) Reset()         { *m = VerifyPhoneUsingTokenRequest{} }
 func (m *VerifyPhoneUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type InviteUserToAccountRequest struct {
@@ -592,7 +546,6 @@ type InviteUserToAccountRequest struct {
 	Permission        *Permission `json:"permission"`
 }
 
-func (m *InviteUserToAccountRequest) Reset()         { *m = InviteUserToAccountRequest{} }
 func (m *InviteUserToAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AnswerInvitationRequest struct {
@@ -600,7 +553,6 @@ type AnswerInvitationRequest struct {
 	Response  status3.NullStatus `json:"response"`
 }
 
-func (m *AnswerInvitationRequest) Reset()         { *m = AnswerInvitationRequest{} }
 func (m *AnswerInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetUsersInCurrentAccountsRequest struct {
@@ -609,7 +561,6 @@ type GetUsersInCurrentAccountsRequest struct {
 	Mixed   *MixedAccount    `json:"mixed"`
 }
 
-func (m *GetUsersInCurrentAccountsRequest) Reset()         { *m = GetUsersInCurrentAccountsRequest{} }
 func (m *GetUsersInCurrentAccountsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PublicUserInfo struct {
@@ -621,7 +572,6 @@ type PublicUserInfo struct {
 	ShortName string `json:"short_name"`
 }
 
-func (m *PublicUserInfo) Reset()         { *m = PublicUserInfo{} }
 func (m *PublicUserInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 // Presents user information inside an account
@@ -652,7 +602,6 @@ type UserAccountInfo struct {
 	DisableReason        string         `json:"disable_reason"`
 }
 
-func (m *UserAccountInfo) Reset()         { *m = UserAccountInfo{} }
 func (m *UserAccountInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 // Prepsents users in current account
@@ -661,19 +610,16 @@ type ProtectedUsersResponse struct {
 	Users  []*UserAccountInfo `json:"users"`
 }
 
-func (m *ProtectedUsersResponse) Reset()         { *m = ProtectedUsersResponse{} }
 func (m *ProtectedUsersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type LeaveAccountRequest struct {
 }
 
-func (m *LeaveAccountRequest) Reset()         { *m = LeaveAccountRequest{} }
 func (m *LeaveAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveUserFromCurrentAccountRequest struct {
 }
 
-func (m *RemoveUserFromCurrentAccountRequest) Reset()         { *m = RemoveUserFromCurrentAccountRequest{} }
 func (m *RemoveUserFromCurrentAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Province struct {
@@ -682,14 +628,12 @@ type Province struct {
 	Region string `json:"region"`
 }
 
-func (m *Province) Reset()         { *m = Province{} }
 func (m *Province) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProvincesResponse struct {
 	Provinces []*Province `json:"provinces"`
 }
 
-func (m *GetProvincesResponse) Reset()         { *m = GetProvincesResponse{} }
 func (m *GetProvincesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type District struct {
@@ -699,14 +643,12 @@ type District struct {
 	IsFreeship   bool   `json:"is_freeship"`
 }
 
-func (m *District) Reset()         { *m = District{} }
 func (m *District) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetDistrictsResponse struct {
 	Districts []*District `json:"districts"`
 }
 
-func (m *GetDistrictsResponse) Reset()         { *m = GetDistrictsResponse{} }
 func (m *GetDistrictsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetDistrictsByProvinceRequest struct {
@@ -714,7 +656,6 @@ type GetDistrictsByProvinceRequest struct {
 	ProvinceName string `json:"province_name"`
 }
 
-func (m *GetDistrictsByProvinceRequest) Reset()         { *m = GetDistrictsByProvinceRequest{} }
 func (m *GetDistrictsByProvinceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Ward struct {
@@ -723,14 +664,12 @@ type Ward struct {
 	Name         string `json:"name"`
 }
 
-func (m *Ward) Reset()         { *m = Ward{} }
 func (m *Ward) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetWardsResponse struct {
 	Wards []*Ward `json:"wards"`
 }
 
-func (m *GetWardsResponse) Reset()         { *m = GetWardsResponse{} }
 func (m *GetWardsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetWardsByDistrictRequest struct {
@@ -738,7 +677,6 @@ type GetWardsByDistrictRequest struct {
 	DistrictName string `json:"district_name"`
 }
 
-func (m *GetWardsByDistrictRequest) Reset()         { *m = GetWardsByDistrictRequest{} }
 func (m *GetWardsByDistrictRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ParseLocationRequest struct {
@@ -747,7 +685,6 @@ type ParseLocationRequest struct {
 	WardName     string `json:"ward_name"`
 }
 
-func (m *ParseLocationRequest) Reset()         { *m = ParseLocationRequest{} }
 func (m *ParseLocationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ParseLocationResponse struct {
@@ -756,7 +693,6 @@ type ParseLocationResponse struct {
 	Ward     *Ward     `json:"ward"`
 }
 
-func (m *ParseLocationResponse) Reset()         { *m = ParseLocationResponse{} }
 func (m *ParseLocationResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ResetPasswordResponse struct {
@@ -768,7 +704,6 @@ type ResetPasswordResponse struct {
 	ExpiresIn int `json:"expires_in"`
 }
 
-func (m *ResetPasswordResponse) Reset()         { *m = ResetPasswordResponse{} }
 func (m *ResetPasswordResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Bank struct {
@@ -777,14 +712,12 @@ type Bank struct {
 	Type string `json:"type"`
 }
 
-func (m *Bank) Reset()         { *m = Bank{} }
 func (m *Bank) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBanksResponse struct {
 	Banks []*Bank `json:"banks"`
 }
 
-func (m *GetBanksResponse) Reset()         { *m = GetBanksResponse{} }
 func (m *GetBanksResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type BankProvince struct {
@@ -793,14 +726,12 @@ type BankProvince struct {
 	BankCode string `json:"bank_code"`
 }
 
-func (m *BankProvince) Reset()         { *m = BankProvince{} }
 func (m *BankProvince) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBankProvincesResponse struct {
 	Provinces []*BankProvince `json:"provinces"`
 }
 
-func (m *GetBankProvincesResponse) Reset()         { *m = GetBankProvincesResponse{} }
 func (m *GetBankProvincesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetProvincesByBankResquest struct {
@@ -808,7 +739,6 @@ type GetProvincesByBankResquest struct {
 	BankName string `json:"bank_name"`
 }
 
-func (m *GetProvincesByBankResquest) Reset()         { *m = GetProvincesByBankResquest{} }
 func (m *GetProvincesByBankResquest) String() string { return jsonx.MustMarshalToString(m) }
 
 type BankBranch struct {
@@ -818,14 +748,12 @@ type BankBranch struct {
 	ProvinceCode string `json:"province_code"`
 }
 
-func (m *BankBranch) Reset()         { *m = BankBranch{} }
 func (m *BankBranch) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBranchesByBankProvinceResponse struct {
 	Branches []*BankBranch `json:"branches"`
 }
 
-func (m *GetBranchesByBankProvinceResponse) Reset()         { *m = GetBranchesByBankProvinceResponse{} }
 func (m *GetBranchesByBankProvinceResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetBranchesByBankProvinceResquest struct {
@@ -835,7 +763,6 @@ type GetBranchesByBankProvinceResquest struct {
 	ProvinceName string `json:"province_name"`
 }
 
-func (m *GetBranchesByBankProvinceResquest) Reset()         { *m = GetBranchesByBankProvinceResquest{} }
 func (m *GetBranchesByBankProvinceResquest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Address struct {
@@ -864,7 +791,6 @@ type Address struct {
 	Coordinates *Coordinates             `json:"coordinates"`
 }
 
-func (m *Address) Reset()         { *m = Address{} }
 func (m *Address) String() string { return jsonx.MustMarshalToString(m) }
 
 type Coordinates struct {
@@ -872,7 +798,6 @@ type Coordinates struct {
 	Longitude float32 `json:"longitude"`
 }
 
-func (m *Coordinates) Reset()         { *m = Coordinates{} }
 func (m *Coordinates) String() string { return jsonx.MustMarshalToString(m) }
 
 type BankAccount struct {
@@ -883,7 +808,6 @@ type BankAccount struct {
 	AccountName   string `json:"account_name"`
 }
 
-func (m *BankAccount) Reset()         { *m = BankAccount{} }
 func (m *BankAccount) String() string { return jsonx.MustMarshalToString(m) }
 
 type ContactPerson struct {
@@ -893,7 +817,6 @@ type ContactPerson struct {
 	Email    string `json:"email"`
 }
 
-func (m *ContactPerson) Reset()         { *m = ContactPerson{} }
 func (m *ContactPerson) String() string { return jsonx.MustMarshalToString(m) }
 
 type CompanyInfo struct {
@@ -904,7 +827,6 @@ type CompanyInfo struct {
 	LegalRepresentative *ContactPerson `json:"legal_representative"`
 }
 
-func (m *CompanyInfo) Reset()         { *m = CompanyInfo{} }
 func (m *CompanyInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateAddressRequest struct {
@@ -932,7 +854,6 @@ type CreateAddressRequest struct {
 	Coordinates *Coordinates             `json:"coordinates"`
 }
 
-func (m *CreateAddressRequest) Reset()         { *m = CreateAddressRequest{} }
 func (m *CreateAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddressNote struct {
@@ -942,14 +863,12 @@ type AddressNote struct {
 	Other      string `json:"other"`
 }
 
-func (m *AddressNote) Reset()         { *m = AddressNote{} }
 func (m *AddressNote) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetAddressResponse struct {
 	Addresses []*Address `json:"addresses"`
 }
 
-func (m *GetAddressResponse) Reset()         { *m = GetAddressResponse{} }
 func (m *GetAddressResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateAddressRequest struct {
@@ -978,7 +897,6 @@ type UpdateAddressRequest struct {
 	Coordinates *Coordinates             `json:"coordinates"`
 }
 
-func (m *UpdateAddressRequest) Reset()         { *m = UpdateAddressRequest{} }
 func (m *UpdateAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SetDefaultAddressRequest struct {
@@ -986,7 +904,6 @@ type SetDefaultAddressRequest struct {
 	Type address_type.AddressType `json:"type"`
 }
 
-func (m *SetDefaultAddressRequest) Reset()         { *m = SetDefaultAddressRequest{} }
 func (m *SetDefaultAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateURLSlugRequest struct {
@@ -994,7 +911,6 @@ type UpdateURLSlugRequest struct {
 	UrlSlug   dot.NullString `json:"url_slug"`
 }
 
-func (m *UpdateURLSlugRequest) Reset()         { *m = UpdateURLSlugRequest{} }
 func (m *UpdateURLSlugRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type HistoryResponse struct {
@@ -1002,7 +918,6 @@ type HistoryResponse struct {
 	Data   *common.RawJSONObject `json:"data"`
 }
 
-func (m *HistoryResponse) Reset()         { *m = HistoryResponse{} }
 func (m *HistoryResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Credit struct {
@@ -1017,7 +932,6 @@ type Credit struct {
 	Status    status3.Status `json:"status"`
 }
 
-func (m *Credit) Reset()         { *m = Credit{} }
 func (m *Credit) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreditsResponse struct {
@@ -1025,14 +939,12 @@ type CreditsResponse struct {
 	Credits []*Credit        `json:"credits"`
 }
 
-func (m *CreditsResponse) Reset()         { *m = CreditsResponse{} }
 func (m *CreditsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatePermissionRequest struct {
 	Items []*UpdatePermissionItem `json:"items"`
 }
 
-func (m *UpdatePermissionRequest) Reset()         { *m = UpdatePermissionRequest{} }
 func (m *UpdatePermissionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatePermissionItem struct {
@@ -1044,14 +956,12 @@ type UpdatePermissionItem struct {
 	RevokeAll  bool     `json:"revoke_all"`
 }
 
-func (m *UpdatePermissionItem) Reset()         { *m = UpdatePermissionItem{} }
 func (m *UpdatePermissionItem) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdatePermissionResponse struct {
 	Msg string `json:"msg"`
 }
 
-func (m *UpdatePermissionResponse) Reset()         { *m = UpdatePermissionResponse{} }
 func (m *UpdatePermissionResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Device struct {
@@ -1065,7 +975,6 @@ type Device struct {
 	UpdatedAt         dot.Time `json:"updated_at"`
 }
 
-func (m *Device) Reset()         { *m = Device{} }
 func (m *Device) String() string { return jsonx.MustMarshalToString(m) }
 
 type Notification struct {
@@ -1083,7 +992,6 @@ type Notification struct {
 	SyncStatus       status3.Status `json:"sync_status"`
 }
 
-func (m *Notification) Reset()         { *m = Notification{} }
 func (m *Notification) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateDeviceRequest struct {
@@ -1092,7 +1000,6 @@ type CreateDeviceRequest struct {
 	ExternalDeviceId string `json:"external_device_id"`
 }
 
-func (m *CreateDeviceRequest) Reset()         { *m = CreateDeviceRequest{} }
 func (m *CreateDeviceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteDeviceRequest struct {
@@ -1100,14 +1007,12 @@ type DeleteDeviceRequest struct {
 	ExternalDeviceId string `json:"external_device_id"`
 }
 
-func (m *DeleteDeviceRequest) Reset()         { *m = DeleteDeviceRequest{} }
 func (m *DeleteDeviceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetNotificationsRequest struct {
 	Paging *common.Paging `json:"paging"`
 }
 
-func (m *GetNotificationsRequest) Reset()         { *m = GetNotificationsRequest{} }
 func (m *GetNotificationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type NotificationsResponse struct {
@@ -1115,7 +1020,6 @@ type NotificationsResponse struct {
 	Notifications []*Notification  `json:"notifications"`
 }
 
-func (m *NotificationsResponse) Reset()         { *m = NotificationsResponse{} }
 func (m *NotificationsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateNotificationsRequest struct {
@@ -1123,7 +1027,6 @@ type UpdateNotificationsRequest struct {
 	IsRead bool     `json:"is_read"`
 }
 
-func (m *UpdateNotificationsRequest) Reset()         { *m = UpdateNotificationsRequest{} }
 func (m *UpdateNotificationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateReferenceUserRequest struct {
@@ -1131,7 +1034,6 @@ type UpdateReferenceUserRequest struct {
 	Phone string `json:"phone"`
 }
 
-func (m *UpdateReferenceUserRequest) Reset()         { *m = UpdateReferenceUserRequest{} }
 func (m *UpdateReferenceUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateReferenceSaleRequest struct {
@@ -1139,7 +1041,6 @@ type UpdateReferenceSaleRequest struct {
 	Phone string `json:"phone"`
 }
 
-func (m *UpdateReferenceSaleRequest) Reset()         { *m = UpdateReferenceSaleRequest{} }
 func (m *UpdateReferenceSaleRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Affiliate struct {
@@ -1152,7 +1053,6 @@ type Affiliate struct {
 	BankAccount *BankAccount   `json:"bank_account"`
 }
 
-func (m *Affiliate) Reset()         { *m = Affiliate{} }
 func (m *Affiliate) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetUserByPhoneRequest struct {
@@ -1161,7 +1061,6 @@ type GetUserByPhoneRequest struct {
 	RecaptchaToken string `json:"recaptcha_token"`
 }
 
-func (m *GetUserByPhoneRequest) Reset()         { *m = GetUserByPhoneRequest{} }
 func (m *GetUserByPhoneRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetUserByPhoneResponse struct {
@@ -1169,7 +1068,6 @@ type GetUserByPhoneResponse struct {
 	Exists bool `json:"exists"`
 }
 
-func (m *GetUserByPhoneResponse) Reset()         { *m = GetUserByPhoneResponse{} }
 func (m *GetUserByPhoneResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type SendPhoneVerifyRequest struct {
@@ -1178,7 +1076,6 @@ type SendPhoneVerifyRequest struct {
 	RecaptchaToken string `json:"recaptcha_token"`
 }
 
-func (m *SendPhoneVerifyRequest) Reset()         { *m = SendPhoneVerifyRequest{} }
 func (m *SendPhoneVerifyRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *CreateUserRequest) Censor() {

@@ -28,12 +28,12 @@ type wrapHistoryService struct {
 }
 
 type GetChangesEndpoint struct {
-	*externaltypes.GetChangesRequest
+	*cm.Empty
 	Result  *externaltypes.Callback
 	Context claims.ShopClaim
 }
 
-func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.GetChangesRequest) (resp *externaltypes.Callback, err error) {
+func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp *externaltypes.Callback, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -53,7 +53,7 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *externaltypes.G
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetChangesEndpoint{GetChangesRequest: req}
+	query := &GetChangesEndpoint{Empty: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}

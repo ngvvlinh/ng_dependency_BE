@@ -29,7 +29,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrGetChangesRequest"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         ],
@@ -776,9 +776,6 @@
           "type": "string"
         }
       }
-    },
-    "mrGetChangesRequest": {
-      "type": "object"
     },
     "mrGetShippingServicesRequest": {
       "type": "object",

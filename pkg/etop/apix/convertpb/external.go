@@ -269,7 +269,7 @@ func PbOrderLine(m *ordermodel.OrderLine) *exttypes.OrderLine {
 		Quantity:     m.Quantity,
 		ListPrice:    m.ListPrice,
 		RetailPrice:  m.RetailPrice,
-		PaymentPrice: cmapi.PbPtrInt(m.PaymentPrice),
+		PaymentPrice: m.PaymentPrice,
 		ImageUrl:     m.ImageURL,
 		Attributes:   convert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(m.Attributes),
 	}
@@ -477,7 +477,7 @@ func OrderLineToCreateOrderLine(m *exttypes.OrderLine) (*types.CreateOrderLine, 
 	if m == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "order_line must not be null")
 	}
-	if !m.PaymentPrice.Valid {
+	if m.PaymentPrice == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp payment_price")
 	}
 
@@ -487,7 +487,7 @@ func OrderLineToCreateOrderLine(m *exttypes.OrderLine) (*types.CreateOrderLine, 
 		Quantity:     m.Quantity,
 		ListPrice:    m.ListPrice,
 		RetailPrice:  m.RetailPrice,
-		PaymentPrice: m.PaymentPrice.Apply(0),
+		PaymentPrice: m.PaymentPrice,
 		ImageUrl:     m.ImageUrl,
 		Attributes:   m.Attributes,
 	}, nil
@@ -541,7 +541,6 @@ func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
 		CreatedAt:    dot.Time(customer.CreatedAt),
 		UpdatedAt:    dot.Time(customer.UpdatedAt),
 		Status:       customer.Status,
-		GroupIds:     customer.GroupIDs,
 	}
 }
 
@@ -652,24 +651,21 @@ func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {
 		return nil
 	}
 	return &exttypes.ShopProduct{
-		ExternalId:    arg.ExternalID,
-		ExternalCode:  arg.ExternalCode,
-		Id:            arg.ProductID,
-		Name:          arg.Name,
-		Description:   arg.Description,
-		ShortDesc:     arg.ShortDesc,
-		DescHtml:      arg.DescHTML,
-		ImageUrls:     arg.ImageURLs,
-		CategoryId:    arg.CategoryID,
-		Tags:          arg.Tags,
-		Note:          arg.Note,
-		Status:        arg.Status,
-		ListPrice:     arg.ListPrice,
-		RetailPrice:   arg.RetailPrice,
-		CollectionIds: arg.CollectionIDs,
-		CreatedAt:     cmapi.PbTime(arg.CreatedAt),
-		UpdatedAt:     cmapi.PbTime(arg.UpdatedAt),
-		BrandId:       arg.BrandID,
+		ExternalId:   arg.ExternalID,
+		ExternalCode: arg.ExternalCode,
+		Id:           arg.ProductID,
+		Name:         arg.Name,
+		Description:  arg.Description,
+		ShortDesc:    arg.ShortDesc,
+		ImageUrls:    arg.ImageURLs,
+		CategoryId:   arg.CategoryID,
+		Note:         arg.Note,
+		Status:       arg.Status,
+		ListPrice:    arg.ListPrice,
+		RetailPrice:  arg.RetailPrice,
+		CreatedAt:    cmapi.PbTime(arg.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(arg.UpdatedAt),
+		BrandId:      arg.BrandID,
 	}
 }
 
@@ -686,24 +682,21 @@ func ConvertProductWithVariantsToPbProduct(arg *catalog.ShopProductWithVariants)
 		return nil
 	}
 	return &exttypes.ShopProduct{
-		ExternalId:    arg.ExternalID,
-		ExternalCode:  arg.ExternalCode,
-		Id:            arg.ProductID,
-		Name:          arg.Name,
-		Description:   arg.Description,
-		ShortDesc:     arg.ShortDesc,
-		DescHtml:      arg.DescHTML,
-		ImageUrls:     arg.ImageURLs,
-		CategoryId:    arg.CategoryID,
-		Tags:          arg.Tags,
-		Note:          arg.Note,
-		Status:        arg.Status,
-		ListPrice:     arg.ListPrice,
-		RetailPrice:   arg.RetailPrice,
-		CollectionIds: arg.CollectionIDs,
-		CreatedAt:     cmapi.PbTime(arg.CreatedAt),
-		UpdatedAt:     cmapi.PbTime(arg.UpdatedAt),
-		BrandId:       arg.BrandID,
+		ExternalId:   arg.ExternalID,
+		ExternalCode: arg.ExternalCode,
+		Id:           arg.ProductID,
+		Name:         arg.Name,
+		Description:  arg.Description,
+		ShortDesc:    arg.ShortDesc,
+		ImageUrls:    arg.ImageURLs,
+		CategoryId:   arg.CategoryID,
+		Note:         arg.Note,
+		Status:       arg.Status,
+		ListPrice:    arg.ListPrice,
+		RetailPrice:  arg.RetailPrice,
+		CreatedAt:    cmapi.PbTime(arg.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(arg.UpdatedAt),
+		BrandId:      arg.BrandID,
 	}
 }
 
@@ -719,7 +712,6 @@ func PbShopVariant(arg *catalog.ShopVariant) *exttypes.ShopVariant {
 		Name:         arg.Name,
 		Description:  arg.Description,
 		ShortDesc:    arg.ShortDesc,
-		DescHtml:     arg.DescHTML,
 		ImageUrls:    arg.ImageURLs,
 		ListPrice:    arg.ListPrice,
 		RetailPrice:  util.CoalesceInt(arg.RetailPrice, arg.ListPrice),

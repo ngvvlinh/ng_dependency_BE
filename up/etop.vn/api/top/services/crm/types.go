@@ -12,7 +12,6 @@ type RefreshFulfillmentFromCarrierRequest struct {
 	ShippingCode string `json:"shipping_code"`
 }
 
-func (m *RefreshFulfillmentFromCarrierRequest) Reset()         { *m = RefreshFulfillmentFromCarrierRequest{} }
 func (m *RefreshFulfillmentFromCarrierRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type SendNotificationRequest struct {
@@ -24,7 +23,6 @@ type SendNotificationRequest struct {
 	EntityId  dot.ID                         `json:"entity_id"`
 }
 
-func (m *SendNotificationRequest) Reset()         { *m = SendNotificationRequest{} }
 func (m *SendNotificationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCallHistoriesRequest struct {
@@ -32,14 +30,12 @@ type GetCallHistoriesRequest struct {
 	TextSearch string         `json:"text_search"`
 }
 
-func (m *GetCallHistoriesRequest) Reset()         { *m = GetCallHistoriesRequest{} }
 func (m *GetCallHistoriesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCallHistoriesResponse struct {
 	VhtCallLog []*VHTCallLog `json:"vht_call_log"`
 }
 
-func (m *GetCallHistoriesResponse) Reset()         { *m = GetCallHistoriesResponse{} }
 func (m *GetCallHistoriesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type VHTCallLog struct {
@@ -65,21 +61,18 @@ type VHTCallLog struct {
 	VtigerAccountId string   `json:"vtiger_account_id"`
 }
 
-func (m *VHTCallLog) Reset()         { *m = VHTCallLog{} }
 func (m *VHTCallLog) String() string { return jsonx.MustMarshalToString(m) }
 
 type CountTicketByStatusRequest struct {
 	Status string `json:"status"`
 }
 
-func (m *CountTicketByStatusRequest) Reset()         { *m = CountTicketByStatusRequest{} }
 func (m *CountTicketByStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetTicketStatusCountResponse struct {
 	StatusCount []*CountTicketByStatusResponse `json:"status_count"`
 }
 
-func (m *GetTicketStatusCountResponse) Reset()         { *m = GetTicketStatusCountResponse{} }
 func (m *GetTicketStatusCountResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CountTicketByStatusResponse struct {
@@ -87,14 +80,12 @@ type CountTicketByStatusResponse struct {
 	Count int    `json:"count"`
 }
 
-func (m *CountTicketByStatusResponse) Reset()         { *m = CountTicketByStatusResponse{} }
 func (m *CountTicketByStatusResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetContactsResponse struct {
 	Contacts []*ContactResponse `json:"contacts"`
 }
 
-func (m *GetContactsResponse) Reset()         { *m = GetContactsResponse{} }
 func (m *GetContactsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetContactsRequest struct {
@@ -102,7 +93,6 @@ type GetContactsRequest struct {
 	Paging     *common.Paging `json:"paging"`
 }
 
-func (m *GetContactsRequest) Reset()         { *m = GetContactsRequest{} }
 func (m *GetContactsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ContactRequest struct {
@@ -132,7 +122,6 @@ type ContactRequest struct {
 	AssignedUserId       string   `json:"assigned_user_id"`
 }
 
-func (m *ContactRequest) Reset()         { *m = ContactRequest{} }
 func (m *ContactRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ContactResponse struct {
@@ -162,7 +151,6 @@ type ContactResponse struct {
 	AssignedUserId       string   `json:"assigned_user_id"`
 }
 
-func (m *ContactResponse) Reset()         { *m = ContactResponse{} }
 func (m *ContactResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type LeadRequest struct {
@@ -190,7 +178,6 @@ type LeadRequest struct {
 	Firstname            string `json:"firstname"`
 }
 
-func (m *LeadRequest) Reset()         { *m = LeadRequest{} }
 func (m *LeadRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type LeadResponse struct {
@@ -218,7 +205,6 @@ type LeadResponse struct {
 	Firstname            string `json:"firstname"`
 }
 
-func (m *LeadResponse) Reset()         { *m = LeadResponse{} }
 func (m *LeadResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetTicketsRequest struct {
@@ -227,14 +213,12 @@ type GetTicketsRequest struct {
 	Orderby OrderBy        `json:"orderby"`
 }
 
-func (m *GetTicketsRequest) Reset()         { *m = GetTicketsRequest{} }
 func (m *GetTicketsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetTicketsResponse struct {
 	Tickets []*Ticket `json:"tickets"`
 }
 
-func (m *GetTicketsResponse) Reset()         { *m = GetTicketsResponse{} }
 func (m *GetTicketsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderBy struct {
@@ -242,7 +226,6 @@ type OrderBy struct {
 	Sort  string `json:"sort"`
 }
 
-func (m *OrderBy) Reset()         { *m = OrderBy{} }
 func (m *OrderBy) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateOrUpdateTicketRequest struct {
@@ -266,7 +249,6 @@ type CreateOrUpdateTicketRequest struct {
 	Account     Account `json:"account"`
 }
 
-func (m *CreateOrUpdateTicketRequest) Reset()         { *m = CreateOrUpdateTicketRequest{} }
 func (m *CreateOrUpdateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type TicketRequest struct {
@@ -289,7 +271,6 @@ type TicketRequest struct {
 	FromApp     string `json:"from_app"`
 }
 
-func (m *TicketRequest) Reset()         { *m = TicketRequest{} }
 func (m *TicketRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Account struct {
@@ -301,7 +282,6 @@ type Account struct {
 	Company   string `json:"company"`
 }
 
-func (m *Account) Reset()         { *m = Account{} }
 func (m *Account) String() string { return jsonx.MustMarshalToString(m) }
 
 type Ticket struct {
@@ -347,14 +327,12 @@ type Ticket struct {
 	Id               string   `json:"id"`
 }
 
-func (m *Ticket) Reset()         { *m = Ticket{} }
 func (m *Ticket) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCategoriesResponse struct {
 	Categories []*Category `json:"categories"`
 }
 
-func (m *GetCategoriesResponse) Reset()         { *m = GetCategoriesResponse{} }
 func (m *GetCategoriesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Category struct {
@@ -362,14 +340,12 @@ type Category struct {
 	Label string `json:"label"`
 }
 
-func (m *Category) Reset()         { *m = Category{} }
 func (m *Category) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetStatusResponse struct {
 	Status []*Status `json:"status"`
 }
 
-func (m *GetStatusResponse) Reset()         { *m = GetStatusResponse{} }
 func (m *GetStatusResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Status struct {
@@ -377,5 +353,4 @@ type Status struct {
 	Count string `json:"count"`
 }
 
-func (m *Status) Reset()         { *m = Status{} }
 func (m *Status) String() string { return jsonx.MustMarshalToString(m) }

@@ -20,6 +20,75 @@ type Server interface {
 	PathPrefix() string
 }
 
+type CustomerAddressServiceServer struct {
+	inner CustomerAddressService
+}
+
+func NewCustomerAddressServiceServer(svc CustomerAddressService) Server {
+	return &CustomerAddressServiceServer{
+		inner: svc,
+	}
+}
+
+const CustomerAddressServicePathPrefix = "/partner.CustomerAddress/"
+
+func (s *CustomerAddressServiceServer) PathPrefix() string {
+	return CustomerAddressServicePathPrefix
+}
+
+func (s *CustomerAddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *CustomerAddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.CustomerAddress/CreateAddress":
+		msg := &externaltypes.CreateCustomerAddressRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerAddress/DeleteAddress":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerAddress/GetAddress":
+		msg := &externaltypes.OrderIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerAddress/ListAddresses":
+		msg := &externaltypes.ListCustomerAddressesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ListAddresses(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerAddress/UpdateAddress":
+		msg := &externaltypes.UpdateCustomerAddressRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type CustomerGroupServiceServer struct {
 	inner CustomerGroupService
 }
@@ -53,40 +122,46 @@ func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 
 func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.CustomerGroup/AddCustomers":
-		msg := &externaltypes.AddCustomersRequest{}
+	case "/partner.CustomerGroup/AddCustomer":
+		msg := &externaltypes.AddCustomerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AddCustomers(ctx, msg)
+			return s.inner.AddCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.CustomerGroup/CreateCustomerGroup":
+	case "/partner.CustomerGroup/CreateGroup":
 		msg := &externaltypes.CreateCustomerGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateCustomerGroup(ctx, msg)
+			return s.inner.CreateGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.CustomerGroup/GetCustomerGroup":
+	case "/partner.CustomerGroup/DeleteGroup":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCustomerGroup(ctx, msg)
+			return s.inner.DeleteGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.CustomerGroup/ListCustomerGroups":
+	case "/partner.CustomerGroup/GetGroup":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetGroup(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.CustomerGroup/ListGroups":
 		msg := &externaltypes.ListCustomerGroupsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ListCustomerGroups(ctx, msg)
+			return s.inner.ListGroups(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.CustomerGroup/RemoveCustomers":
-		msg := &externaltypes.RemoveCustomersRequest{}
+	case "/partner.CustomerGroup/RemoveCustomer":
+		msg := &externaltypes.RemoveCustomerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveCustomers(ctx, msg)
+			return s.inner.RemoveCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.CustomerGroup/UpdateCustomerGroup":
+	case "/partner.CustomerGroup/UpdateGroup":
 		msg := &externaltypes.UpdateCustomerGroupRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateCustomerGroup(ctx, msg)
+			return s.inner.UpdateGroup(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -128,22 +203,10 @@ func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.Customer/CreateAddress":
-		msg := &externaltypes.CreateCustomerAddressRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateAddress(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.Customer/CreateCustomer":
 		msg := &externaltypes.CreateCustomerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCustomer(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.Customer/DeleteAddress":
-		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Customer/DeleteCustomer":
@@ -158,22 +221,10 @@ func (s *CustomerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 			return s.inner.GetCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.Customer/ListAddresses":
-		msg := &externaltypes.ListCustomerAddressesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ListAddresses(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.Customer/ListCustomers":
 		msg := &externaltypes.ListCustomersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ListCustomers(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.Customer/UpdateAddress":
-		msg := &externaltypes.UpdateCustomerAddressRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Customer/UpdateCustomer":
@@ -273,7 +324,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.History/GetChanges":
-		msg := &externaltypes.GetChangesRequest{}
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetChanges(ctx, msg)
 		}
@@ -443,6 +494,93 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 			return s.inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/partner.Order/ListOrders":
+		msg := &externaltypes.ListOrdersRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ListOrders(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ProductCollectionServiceServer struct {
+	inner ProductCollectionService
+}
+
+func NewProductCollectionServiceServer(svc ProductCollectionService) Server {
+	return &ProductCollectionServiceServer{
+		inner: svc,
+	}
+}
+
+const ProductCollectionServicePathPrefix = "/partner.ProductCollection/"
+
+func (s *ProductCollectionServiceServer) PathPrefix() string {
+	return ProductCollectionServicePathPrefix
+}
+
+func (s *ProductCollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ProductCollectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.ProductCollection/AddProduct":
+		msg := &externaltypes.AddProductCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.AddProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/CreateCollection":
+		msg := &externaltypes.CreateCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateCollection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/DeleteCollection":
+		msg := &externaltypes.GetCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteCollection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/GetCollection":
+		msg := &externaltypes.GetCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetCollection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/ListCollections":
+		msg := &externaltypes.ListCollectionsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ListCollections(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/RemoveProduct":
+		msg := &externaltypes.RemoveProductCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.RemoveProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ProductCollection/UpdateCollection":
+		msg := &externaltypes.UpdateCollectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateCollection(ctx, msg)
+		}
+		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
@@ -482,22 +620,16 @@ func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.Product/AddProductCollection":
-		msg := &externaltypes.AddProductCollectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AddProductCollection(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.Product/BatchUpdateProducts":
-		msg := &externaltypes.BatchUpdateProductsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.BatchUpdateProducts(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.Product/CreateProduct":
 		msg := &externaltypes.CreateProductRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.Product/DeleteProduct":
+		msg := &externaltypes.GetProductRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteProduct(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Product/GetProduct":
@@ -510,12 +642,6 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		msg := &externaltypes.ListProductsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ListProducts(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/partner.Product/RemoveProductCollection":
-		msg := &externaltypes.RemoveProductCollectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveProductCollection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Product/UpdateProduct":
@@ -683,16 +809,16 @@ func (s *VariantServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *VariantServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.Variant/BatchUpdateVariants":
-		msg := &externaltypes.BatchUpdateVariantsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.BatchUpdateVariants(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/partner.Variant/CreateVariant":
 		msg := &externaltypes.CreateVariantRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateVariant(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.Variant/DeleteVariant":
+		msg := &externaltypes.GetVariantRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteVariant(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Variant/GetVariant":

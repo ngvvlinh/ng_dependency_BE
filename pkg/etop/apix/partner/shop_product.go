@@ -5,7 +5,6 @@ import (
 
 	"etop.vn/api/main/catalog"
 	externaltypes "etop.vn/api/top/external/types"
-	"etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/capi/filter"
@@ -63,7 +62,6 @@ func (s *ProductService) CreateProduct(ctx context.Context, r *CreateProductEndp
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   r.ShortDesc,
 			Description: r.Description,
-			DescHTML:    r.DescHtml,
 		},
 		PriceInfo: catalog.PriceInfo{
 			CostPrice:   r.CostPrice,
@@ -90,7 +88,6 @@ func (s *ProductService) UpdateProduct(ctx context.Context, r *UpdateProductEndp
 
 		ShortDesc:   r.ShortDesc,
 		Description: r.Description,
-		DescHTML:    r.DescHtml,
 
 		CostPrice:   r.CostPrice,
 		ListPrice:   r.ListPrice,
@@ -103,33 +100,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, r *UpdateProductEndp
 	return nil
 }
 
-func (s *ProductService) BatchUpdateProducts(ctx context.Context, r *BatchUpdateProductsEndpoint) error {
+func (s *ProductService) DeleteProduct(ctx context.Context, r *DeleteProductEndpoint) error {
 	// TODO:
-	return nil
-}
-
-func (s *ProductService) AddProductCollection(ctx context.Context, r *AddProductCollectionEndpoint) error {
-	cmd := &catalog.AddShopProductCollectionCommand{
-		ProductID:     r.ProductId,
-		ShopID:        r.Context.Shop.ID,
-		CollectionIDs: r.CollectionIds,
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &common.Empty{}
-	return nil
-}
-
-func (s *ProductService) RemoveProductCollection(ctx context.Context, r *RemoveProductCollectionEndpoint) error {
-	cmd := &catalog.RemoveShopProductCollectionCommand{
-		ProductID:     r.ProductId,
-		ShopID:        r.Context.Shop.ID,
-		CollectionIDs: r.CollectionIds,
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &common.Empty{}
 	return nil
 }

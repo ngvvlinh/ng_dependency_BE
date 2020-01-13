@@ -3,13 +3,12 @@ package carrier
 import (
 	"testing"
 
-	cm "etop.vn/backend/pkg/common"
-
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/connection_type"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi/dot"
 )

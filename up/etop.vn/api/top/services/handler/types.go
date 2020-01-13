@@ -10,5 +10,4 @@ type ResetStateRequest struct {
 	AccountId dot.ID `json:"account_id"`
 }
 
-func (m *ResetStateRequest) Reset()         { *m = ResetStateRequest{} }
 func (m *ResetStateRequest) String() string { return jsonx.MustMarshalToString(m) }
