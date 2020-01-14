@@ -270,7 +270,7 @@ func (a *CustomerAggregate) UpdateCustomerGroup(ctx context.Context, args *custo
 		return nil, err
 	}
 	group := convert.UpdateCustomerGroup(customerGroupDB, args)
-	if err := a.customerGroupStore(ctx).UpdateCustomerGroup(group); err != nil {
+	if err := a.customerGroupStore(ctx).UpdateShopCustomerGroup(group); err != nil {
 		return nil, err
 	}
 
@@ -332,7 +332,6 @@ func (a *CustomerAggregate) AddCustomersToGroup(ctx context.Context, args *custo
 }
 
 func (a *CustomerAggregate) RemoveCustomersFromGroup(ctx context.Context, args *customering.RemoveCustomerOutOfGroupArgs) (deleted int, _ error) {
-
 	var err error
 	var removedCustomerGroup int
 	if len(args.CustomerIDs) == 0 {
@@ -355,4 +354,19 @@ func (a *CustomerAggregate) RemoveCustomersFromGroup(ctx context.Context, args *
 	}
 	removedCustomerGroup, err = a.customerGroupCustomerStore(ctx).CustomerIDs(args.CustomerIDs...).ID(args.GroupID).RemoveCustomerFromGroup()
 	return removedCustomerGroup, err
+}
+
+func (a *CustomerAggregate) DeleteGroup(ctx context.Context, args *customering.DeleteGroupArgs) (delete int, _ error) {
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if args.GroupID == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "GroupID không được để trống")
+		}
+		_, err := a.customerGroupCustomerStore(ctx).ID(args.GroupID).DeleteShopCustomerGroupCustomer()
+		if err != nil {
+			return err
+		}
+		delete, err = a.customerGroupStore(ctx).ShopID(args.ShopID).ID(args.GroupID).DeleteShopCustomerGroup()
+		return err
+	})
+	return delete, err
 }

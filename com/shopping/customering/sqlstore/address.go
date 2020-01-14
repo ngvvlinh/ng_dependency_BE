@@ -148,7 +148,7 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
-	if len(s.Paging.Sort) == 0 {
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
 	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopTraderAddress, s.ft.prefix)
@@ -157,10 +157,12 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	}
 
 	var addrs model.ShopTraderAddresses
+	s.Paging.Apply(addrs)
 	err = query.Find(&addrs)
 	if err != nil {
 		return nil, err
 	}
+
 	return addrs, err
 }
 

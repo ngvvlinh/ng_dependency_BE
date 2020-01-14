@@ -146,6 +146,19 @@ func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, 
 	return err
 }
 
+type ListAddressesByTraderIDsQuery struct {
+	ShopID    dot.ID
+	TraderIDs []dot.ID
+	Paging    meta.Paging
+
+	Result *ShopTraderAddressesResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListAddressesByTraderIDs(ctx context.Context, msg *ListAddressesByTraderIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListAddressesByTraderIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateAddressCommand) command()     {}
@@ -157,6 +170,7 @@ func (q *GetAddressActiveByTraderIDQuery) query() {}
 func (q *GetAddressByIDQuery) query()             {}
 func (q *GetAddressByTraderIDQuery) query()       {}
 func (q *ListAddressesByTraderIDQuery) query()    {}
+func (q *ListAddressesByTraderIDsQuery) query()   {}
 
 // implement conversion
 
@@ -274,6 +288,21 @@ func (q *ListAddressesByTraderIDQuery) SetListAddressesByTraderIDArgs(args *List
 	q.Paging = args.Paging
 }
 
+func (q *ListAddressesByTraderIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAddressesByTraderIDsArgs) {
+	return ctx,
+		&ListAddressesByTraderIDsArgs{
+			ShopID:    q.ShopID,
+			TraderIDs: q.TraderIDs,
+			Paging:    q.Paging,
+		}
+}
+
+func (q *ListAddressesByTraderIDsQuery) SetListAddressesByTraderIDsArgs(args *ListAddressesByTraderIDsArgs) {
+	q.ShopID = args.ShopID
+	q.TraderIDs = args.TraderIDs
+	q.Paging = args.Paging
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -309,5 +338,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAddressByID)
 	b.AddHandler(h.HandleGetAddressByTraderID)
 	b.AddHandler(h.HandleListAddressesByTraderID)
+	b.AddHandler(h.HandleListAddressesByTraderIDs)
 	return QueryBus{b}
 }

@@ -30,6 +30,8 @@ type QueryService interface {
 	GetAddressByTraderID(ctx context.Context, traderID, shopID dot.ID) (*ShopTraderAddress, error)
 
 	ListAddressesByTraderID(ctx context.Context, _ *ListAddressesByTraderIDArgs) (*ShopTraderAddressesResponse, error)
+
+	ListAddressesByTraderIDs(ctx context.Context, _ *ListAddressesByTraderIDsArgs) (*ShopTraderAddressesResponse, error)
 }
 
 type ShopTraderAddress struct {
@@ -92,6 +94,13 @@ type UpdateAddressArgs struct {
 type ListAddressesByTraderIDArgs struct {
 	ShopID   dot.ID
 	TraderID dot.ID
+
+	Paging meta.Paging
+}
+
+type ListAddressesByTraderIDsArgs struct {
+	ShopID    dot.ID
+	TraderIDs []dot.ID
 
 	Paging meta.Paging
 }

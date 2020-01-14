@@ -78,7 +78,7 @@ func (s *ShopCollectionStore) ShopID(id dot.ID) *ShopCollectionStore {
 func (s *ShopCollectionStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopCollection.NotDeleted())
-	_deleted, err := query.Table("shop_Collection").UpdateMap(map[string]interface{}{
+	_deleted, err := query.Table("shop_collection").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
 	return _deleted, err

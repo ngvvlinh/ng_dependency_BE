@@ -59,3 +59,17 @@ func (q *AddressQuery) ListAddressesByTraderID(ctx context.Context, args *addres
 		Paging:              query.GetPaging(),
 	}, err
 }
+func (q *AddressQuery) ListAddressesByTraderIDs(ctx context.Context, args *addressing.ListAddressesByTraderIDsArgs) (*addressing.ShopTraderAddressesResponse, error) {
+	query := q.store(ctx).ShopID(args.ShopID)
+	if len(args.TraderIDs) != 0 {
+		query = query.IDs(args.TraderIDs...)
+	}
+	addrs, err := query.WithPaging(args.Paging).ListAddresses()
+	if err != nil {
+		return nil, err
+	}
+	return &addressing.ShopTraderAddressesResponse{
+		ShopTraderAddresses: addrs,
+		Paging:              query.GetPaging(),
+	}, err
+}

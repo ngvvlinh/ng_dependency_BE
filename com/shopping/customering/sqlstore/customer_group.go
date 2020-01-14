@@ -58,6 +58,11 @@ func (s *CustomerGroupStore) IDs(ids ...dot.ID) *CustomerGroupStore {
 	return s
 }
 
+func (s *CustomerGroupStore) ShopID(id dot.ID) *CustomerGroupStore {
+	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
 func (s *CustomerGroupStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
@@ -126,8 +131,14 @@ func (s *CustomerGroupStore) ListShopCustomerGroups() (result []*customering.Sho
 	return
 }
 
-func (s *CustomerGroupStore) UpdateCustomerGroup(customerGroup *model.ShopCustomerGroup) error {
+func (s *CustomerGroupStore) UpdateShopCustomerGroup(customerGroup *model.ShopCustomerGroup) error {
 	sqlstore.MustNoPreds(s.preds)
 	err := s.query().Where(s.ft.ByID(customerGroup.ID)).UpdateAll().ShouldUpdate(customerGroup)
 	return err
+}
+
+func (s *CustomerGroupStore) DeleteShopCustomerGroup() (int, error) {
+	query := s.query().Where(s.preds)
+	_deleted, err := query.Table("shop_customer_group").Delete((*model.ShopCustomerGroup)(nil))
+	return _deleted, err
 }

@@ -29,6 +29,8 @@ type Aggregate interface {
 	CreateCustomerGroup(ctx context.Context, _ *CreateCustomerGroupArgs) (*ShopCustomerGroup, error)
 
 	UpdateCustomerGroup(ctx context.Context, _ *UpdateCustomerGroupArgs) (*ShopCustomerGroup, error)
+
+	DeleteGroup(ctx context.Context, _ *DeleteGroupArgs) (deleted int, _ error)
 }
 
 type QueryService interface {
@@ -52,9 +54,19 @@ type QueryService interface {
 	GetCustomerGroup(ctx context.Context, _ *GetCustomerGroupArgs) (*ShopCustomerGroup, error)
 
 	ListCustomerGroups(ctx context.Context, _ *ListCustomerGroupArgs) (*CustomerGroupsResponse, error)
+
+	ListCustomerGroupsCustomers(ctx context.Context, _ *ListCustomerGroupsCustomersArgs) (*CustomerGroupsCustomersResponse, error)
 }
 
 //-- queries --//
+
+type ListCustomerGroupsCustomersArgs struct {
+	CustomerIDs []dot.ID
+	GroupIDs    []dot.ID
+
+	Paging meta.Paging
+}
+
 type GetCustomerArgs struct {
 	ID         dot.ID
 	ShopID     dot.ID
@@ -76,6 +88,16 @@ type ListCustomerByIDsArgs struct {
 type ListCustomerGroupArgs struct {
 	Paging  meta.Paging
 	Filters meta.Filters
+}
+
+type CustomerGroupsCustomersResponse struct {
+	CustomerGroupsCustomers []*CustomerGroupCustomer
+	Paging                  meta.PageInfo
+}
+
+type CustomerGroupCustomer struct {
+	CustomerID dot.ID
+	GroupID    dot.ID
 }
 
 type CustomerGroupsResponse struct {
@@ -158,4 +180,9 @@ type UpdateCustomerGroupArgs struct {
 
 type GetCustomerIndependentByShop struct {
 	ShopID dot.ID
+}
+
+type DeleteGroupArgs struct {
+	ShopID  dot.ID
+	GroupID dot.ID
 }

@@ -101,6 +101,18 @@ func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteC
 	return err
 }
 
+type DeleteGroupCommand struct {
+	ShopID  dot.ID
+	GroupID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteGroup(ctx context.Context, msg *DeleteGroupCommand) (err error) {
+	msg.Result, err = h.inner.DeleteGroup(msg.GetArgs(ctx))
+	return err
+}
+
 type RemoveCustomersFromGroupCommand struct {
 	GroupID     dot.ID
 	CustomerIDs []dot.ID
@@ -241,6 +253,19 @@ func (h QueryServiceHandler) HandleListCustomerGroups(ctx context.Context, msg *
 	return err
 }
 
+type ListCustomerGroupsCustomersQuery struct {
+	CustomerIDs []dot.ID
+	GroupIDs    []dot.ID
+	Paging      meta.Paging
+
+	Result *CustomerGroupsCustomersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomerGroupsCustomers(ctx context.Context, msg *ListCustomerGroupsCustomersQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomerGroupsCustomers(msg.GetArgs(ctx))
+	return err
+}
+
 type ListCustomersQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -275,6 +300,7 @@ func (q *BatchSetCustomersStatusCommand) command()  {}
 func (q *CreateCustomerCommand) command()           {}
 func (q *CreateCustomerGroupCommand) command()      {}
 func (q *DeleteCustomerCommand) command()           {}
+func (q *DeleteGroupCommand) command()              {}
 func (q *RemoveCustomersFromGroupCommand) command() {}
 func (q *UpdateCustomerCommand) command()           {}
 func (q *UpdateCustomerGroupCommand) command()      {}
@@ -287,6 +313,7 @@ func (q *GetCustomerByPhoneQuery) query()           {}
 func (q *GetCustomerGroupQuery) query()             {}
 func (q *GetCustomerIndependentByShopQuery) query() {}
 func (q *ListCustomerGroupsQuery) query()           {}
+func (q *ListCustomerGroupsCustomersQuery) query()  {}
 func (q *ListCustomersQuery) query()                {}
 func (q *ListCustomersByIDsQuery) query()           {}
 
@@ -373,6 +400,19 @@ func (q *DeleteCustomerCommand) SetDeleteCustomerArgs(args *DeleteCustomerArgs) 
 	q.ShopID = args.ShopID
 	q.ExternalID = args.ExternalID
 	q.Code = args.Code
+}
+
+func (q *DeleteGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteGroupArgs) {
+	return ctx,
+		&DeleteGroupArgs{
+			ShopID:  q.ShopID,
+			GroupID: q.GroupID,
+		}
+}
+
+func (q *DeleteGroupCommand) SetDeleteGroupArgs(args *DeleteGroupArgs) {
+	q.ShopID = args.ShopID
+	q.GroupID = args.GroupID
 }
 
 func (q *RemoveCustomersFromGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveCustomerOutOfGroupArgs) {
@@ -513,6 +553,21 @@ func (q *ListCustomerGroupsQuery) SetListCustomerGroupArgs(args *ListCustomerGro
 	q.Filters = args.Filters
 }
 
+func (q *ListCustomerGroupsCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupsCustomersArgs) {
+	return ctx,
+		&ListCustomerGroupsCustomersArgs{
+			CustomerIDs: q.CustomerIDs,
+			GroupIDs:    q.GroupIDs,
+			Paging:      q.Paging,
+		}
+}
+
+func (q *ListCustomerGroupsCustomersQuery) SetListCustomerGroupsCustomersArgs(args *ListCustomerGroupsCustomersArgs) {
+	q.CustomerIDs = args.CustomerIDs
+	q.GroupIDs = args.GroupIDs
+	q.Paging = args.Paging
+}
+
 func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -562,6 +617,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateCustomer)
 	b.AddHandler(h.HandleCreateCustomerGroup)
 	b.AddHandler(h.HandleDeleteCustomer)
+	b.AddHandler(h.HandleDeleteGroup)
 	b.AddHandler(h.HandleRemoveCustomersFromGroup)
 	b.AddHandler(h.HandleUpdateCustomer)
 	b.AddHandler(h.HandleUpdateCustomerGroup)
@@ -588,6 +644,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetCustomerGroup)
 	b.AddHandler(h.HandleGetCustomerIndependentByShop)
 	b.AddHandler(h.HandleListCustomerGroups)
+	b.AddHandler(h.HandleListCustomerGroupsCustomers)
 	b.AddHandler(h.HandleListCustomers)
 	b.AddHandler(h.HandleListCustomersByIDs)
 	return QueryBus{b}

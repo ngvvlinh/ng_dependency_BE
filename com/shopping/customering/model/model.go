@@ -53,7 +53,7 @@ var _ = sqlgenShopTraderAddress(&ShopTraderAddress{})
 
 // +convert:type=addressing.ShopTraderAddress
 type ShopTraderAddress struct {
-	ID           dot.ID
+	ID           dot.ID `paging:"id"`
 	ShopID       dot.ID
 	TraderID     dot.ID
 	FullName     string
@@ -68,7 +68,7 @@ type ShopTraderAddress struct {
 	IsDefault    bool
 	Coordinates  *addressmodel.Coordinates
 	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
+	UpdatedAt    time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt    time.Time
 
 	//Default status = 1
@@ -90,10 +90,10 @@ var _ = sqlgenShopCustomerGroup(&ShopCustomerGroup{})
 
 // +convert:type=customering.ShopCustomerGroup
 type ShopCustomerGroup struct {
-	ID     dot.ID
+	ID     dot.ID `paging:"id"`
 	Name   string
 	ShopID dot.ID
 
 	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 }

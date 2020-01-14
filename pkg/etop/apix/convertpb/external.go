@@ -785,3 +785,21 @@ func PbShopProductCollections(args []*catalog.ShopCollection) []*exttypes.Produc
 	}
 	return outs
 }
+
+func PbRelationship(args *customering.CustomerGroupCustomer) *exttypes.CustomerGroupRelationship {
+	if args == nil {
+		return nil
+	}
+	return &exttypes.CustomerGroupRelationship{
+		CustomerID: args.CustomerID,
+		GroupID:    args.GroupID,
+	}
+}
+
+func PbRelationships(args []*customering.CustomerGroupCustomer) []*exttypes.CustomerGroupRelationship {
+	outs := make([]*exttypes.CustomerGroupRelationship, len(args))
+	for i, arg := range args {
+		outs[i] = PbRelationship(arg)
+	}
+	return outs
+}

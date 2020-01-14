@@ -208,3 +208,34 @@ func (q *CustomerQuery) GetCustomerByEmail(
 	}
 	return customer, nil
 }
+
+func (q *CustomerQuery) ListCustomerGroupsCustomers(ctx context.Context, args *customering.ListCustomerGroupsCustomersArgs) (*customering.CustomerGroupsCustomersResponse, error) {
+	query := q.customerGroupCustomerStore(ctx).WithPaging(args.Paging)
+	count := 0
+	if len(args.GroupIDs) != 0 {
+		query = query.IDs(args.GroupIDs...)
+		count++
+	}
+	if len(args.CustomerIDs) != 0 {
+		query = query.CustomerIDs(args.CustomerIDs...)
+		count++
+	}
+	if count != 1 {
+		return nil, cm.Error(cm.FailedPrecondition, "Request không hợp lệ", nil)
+	}
+	customerGroupsCustomers, err := query.ListShopCustomerGroupsCustomer()
+	if err != nil {
+		return nil, err
+	}
+	var relationships []*customering.CustomerGroupCustomer
+	for _, customerGroupCustomer := range customerGroupsCustomers {
+		relationships = append(relationships, &customering.CustomerGroupCustomer{
+			CustomerID: customerGroupCustomer.CustomerID,
+			GroupID:    customerGroupCustomer.GroupID,
+		})
+	}
+	return &customering.CustomerGroupsCustomersResponse{
+		CustomerGroupsCustomers: relationships,
+		Paging:                  query.GetPaging(),
+	}, nil
+}

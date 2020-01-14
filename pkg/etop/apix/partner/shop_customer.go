@@ -117,10 +117,18 @@ func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerE
 }
 
 func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *ListAddressesEndpoint) error {
-	query := &addressing.ListAddressesByTraderIDQuery{
-		TraderID: 0, // TODO: list by trader ids
-		ShopID:   r.Context.Shop.ID,
-		// TODO: paging
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return err
+	}
+	var IDs []dot.ID
+	if len(r.Filter.CustomerId) != 0 {
+		IDs = r.Filter.CustomerId
+	}
+	query := &addressing.ListAddressesByTraderIDsQuery{
+		TraderIDs: IDs,
+		ShopID:    r.Context.Shop.ID,
+		Paging:    *paging,
 	}
 	if err := addressQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -132,7 +140,15 @@ func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *ListAddre
 }
 
 func (s *CustomerAddressService) GetAddress(ctx context.Context, r *GetAddressEndpoint) error {
-	return cm.ErrTODO
+	query := &addressing.GetAddressByIDQuery{
+		ID:     r.Id,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := addressQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = convertpb.PbShopTraderAddress(ctx, query.Result, locationQuery)
+	return nil
 }
 
 func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
@@ -207,7 +223,23 @@ func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAdd
 }
 
 func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context, r *CustomerGroupListRelationshipsEndpoint) error {
-	panic("TODO")
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return err
+	}
+	query := &customering.ListCustomerGroupsCustomersQuery{
+		Paging:      *paging,
+		CustomerIDs: r.Filter.CustomerID,
+		GroupIDs:    r.Filter.GroupID,
+	}
+	if err := customerQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = &externaltypes.CustomerGroupRelationshipsResponse{
+		Relationships: convertpb.PbRelationships(query.Result.CustomerGroupsCustomers),
+		Paging:        convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+	}
+	return nil
 }
 
 func (s *CustomerGroupRelationshipService) CreateRelationship(ctx context.Context, r *CustomerGroupCreateRelationshipEndpoint) error {
@@ -252,7 +284,6 @@ func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndp
 	if err != nil {
 		return err
 	}
-
 	query := &customering.ListCustomerGroupsQuery{
 		Paging: *paging,
 	}
@@ -297,5 +328,13 @@ func (s *CustomerGroupService) UpdateGroup(ctx context.Context, r *UpdateGroupEn
 }
 
 func (s *CustomerGroupService) DeleteGroup(ctx context.Context, r *DeleteGroupEndpoint) error {
-	return cm.ErrTODO
+	cmd := &customering.DeleteGroupCommand{
+		GroupID: r.Id,
+		ShopID:  r.Context.Shop.ID,
+	}
+	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &common.Empty{}
+	return nil
 }

@@ -91,6 +91,16 @@ func (s *CustomerGroupCustomerStore) GetShopCustomerToGroupDB() (*model.ShopCust
 	return &groupCustomer, err
 }
 
+func (s *CustomerGroupCustomerStore) GetShopCustomerToGroup() (*customering.ShopCustomerGroupCustomer, error) {
+	customerGroupCustomer, err := s.GetShopCustomerToGroupDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &customering.ShopCustomerGroupCustomer{}
+	err = scheme.Convert(customerGroupCustomer, result)
+	return result, err
+}
+
 func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerIDDB() ([]*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
 	if len(s.Paging.Sort) == 0 {
@@ -120,7 +130,7 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerID(
 
 func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerDB() ([]*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
-	if len(s.Paging.Sort) == 0 {
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
 	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroupCustomer, s.ft.prefix)
@@ -134,6 +144,7 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerDB() ([]*mode
 
 	var customerGroupsCustomer model.ShopCustomerGroupCustomers
 	err = query.Find(&customerGroupsCustomer)
+	s.Paging.Apply(customerGroupsCustomer)
 	return customerGroupsCustomer, err
 }
 
@@ -143,4 +154,10 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomer() ([]*custom
 		return nil, err
 	}
 	return convert.Convert_customeringmodel_ShopCustomerGroupCustomers_customering_ShopCustomerGroupCustomers(customerGroupsCustomer), err
+}
+
+func (s *CustomerGroupCustomerStore) DeleteShopCustomerGroupCustomer() (int, error) {
+	query := s.query().Where(s.preds)
+	_deleted, err := query.Table("shop_customer_group_customer").Delete((*model.ShopCustomerGroupCustomer)(nil))
+	return _deleted, err
 }
