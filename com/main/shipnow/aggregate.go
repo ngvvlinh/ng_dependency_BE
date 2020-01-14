@@ -11,6 +11,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/shipnow_state"
@@ -78,7 +79,9 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		}
 
 		points, weightInfo, valueInfo, err := a.PrepareDeliveryPoints(ctx, cmd.OrderIds)
-
+		if err != nil {
+			return err
+		}
 		shipnowFfm := &shipnow.ShipnowFulfillment{
 			Id:                  ffmID,
 			ShopId:              cmd.ShopId,
@@ -91,6 +94,55 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 			ValueInfo:           valueInfo,
 			ShippingNote:        cmd.ShippingNote,
 			RequestPickupAt:     time.Time{},
+		}
+
+		if err := a.store(ctx).Create(shipnowFfm); err != nil {
+			return err
+		}
+		_result = shipnowFfm
+		return nil
+	})
+	return _result, err
+}
+
+func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipnow.CreateShipnowFulfillmentV2Args) (_result *shipnow.ShipnowFulfillment, _ error) {
+	orderIDs := make([]dot.ID, len(args.DeliveryPoints))
+	for i, point := range args.DeliveryPoints {
+		if cm.IDsContain(orderIDs, point.OrderID) {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Một đơn hàng không được chọn nhiều lần.")
+		}
+		orderIDs[i] = point.OrderID
+	}
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		ffmID := cm.NewID()
+		// ShipnowOrderReservationEvent
+		event := &shipnow.ShipnowOrderReservationEvent{
+			EventMeta:            meta.NewEvent(),
+			OrderIds:             orderIDs,
+			ShipnowFulfillmentId: ffmID,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		pickupAddress, err := a.PreparePickupAddress(ctx, args.ShopID, args.PickupAddress)
+		if err != nil {
+			return err
+		}
+		points, weightInfo, valueInfo, err := a.PrepareDeliveryPointsV2(ctx, args.DeliveryPoints)
+		if err != nil {
+			return err
+		}
+		shipnowFfm := &shipnow.ShipnowFulfillment{
+			Id:                  ffmID,
+			ShopId:              args.ShopID,
+			PickupAddress:       pickupAddress,
+			DeliveryPoints:      points,
+			Carrier:             args.Carrier,
+			ShippingServiceCode: args.ShippingServiceCode,
+			ShippingServiceFee:  args.ShippingServiceFee,
+			WeightInfo:          weightInfo,
+			ValueInfo:           valueInfo,
+			ShippingNote:        args.ShippingNote,
 		}
 
 		if err := a.store(ctx).Create(shipnowFfm); err != nil {
@@ -219,7 +271,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 			return err
 		}
 
-		event2 := &shipnow.ShipnowCreateExternalEvent{
+		event2 := &shipnow.ShipnowExternalCreatedEvent{
 			ShipnowFulfillmentId: ffm.Id,
 		}
 		if err := a.eventBus.Publish(ctx, event2); err != nil {
@@ -291,6 +343,61 @@ func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []dot.ID
 	}
 	weightInfo = convert.GetWeightInfo(orders)
 	valueinfo = convert.GetValueInfo(orders)
+	return
+}
+
+func (a *Aggregate) PrepareDeliveryPointsV2(ctx context.Context, points []*shipnow.OrderShippingInfo) (deliveryPoints []*shipnow.DeliveryPoint, weightInfo shippingtypes.WeightInfo, valueInfo shippingtypes.ValueInfo, _err error) {
+	orderIDs := make([]dot.ID, len(points))
+	for i, point := range points {
+		orderIDs[i] = point.OrderID
+	}
+	query := &ordering.GetOrdersQuery{
+		IDs: orderIDs,
+	}
+	if err := a.order.Dispatch(ctx, query); err != nil {
+		_err = err
+		return
+	}
+	orders := query.Result.Orders
+
+	// Note: Không thay đổi thứ tự đơn hàng vì nó ảnh hưởng tới giá
+	mapOrders := make(map[dot.ID]*ordering.Order)
+	for _, order := range orders {
+		mapOrders[order.ID] = order
+	}
+
+	for _, point := range points {
+		if point.ShippingAddress == nil {
+			_err = cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp địa chỉ giao hàng")
+		}
+		order := mapOrders[point.OrderID]
+		p := &shipnowtypes.DeliveryPoint{
+			ShippingAddress: point.ShippingAddress,
+			Lines:           order.Lines,
+			ShippingNote:    cm.Coalesce(point.ShippingNote, order.ShippingNote),
+			OrderId:         order.ID,
+			OrderCode:       order.Code,
+			WeightInfo: shippingtypes.WeightInfo{
+				GrossWeight:      point.GrossWeight,
+				ChargeableWeight: point.ChargeableWeight,
+				Length:           point.Length,
+				Width:            point.Width,
+				Height:           point.Height,
+			},
+			ValueInfo: shippingtypes.ValueInfo{
+				BasketValue:      cm.CoalesceInt(point.BasketValue, order.BasketValue),
+				CODAmount:        point.CODAmount,
+				IncludeInsurance: point.IncludeInsurance,
+			},
+			TryOn: point.TryOn,
+		}
+
+		deliveryPoints = append(deliveryPoints, p)
+		weightInfo.ChargeableWeight += point.ChargeableWeight
+		weightInfo.GrossWeight += point.GrossWeight
+		valueInfo.BasketValue += cm.CoalesceInt(point.BasketValue, order.BasketValue)
+		valueInfo.CODAmount += point.CODAmount
+	}
 	return
 }
 

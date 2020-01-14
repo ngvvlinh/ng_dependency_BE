@@ -2106,6 +2106,12 @@ func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 			return s.inner.CreateShipnowFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Shipnow/CreateShipnowFulfillmentV2":
+		msg := &inttypes.CreateShipnowFulfillmentV2Request{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateShipnowFulfillmentV2(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Shipnow/GetShipnowFulfillment":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

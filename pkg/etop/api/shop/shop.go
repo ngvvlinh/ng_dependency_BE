@@ -1215,6 +1215,48 @@ func (s *ShipnowService) CreateShipnowFulfillment(ctx context.Context, q *Create
 	return nil
 }
 
+func (s *ShipnowService) CreateShipnowFulfillmentV2(ctx context.Context, q *CreateShipnowFulfillmentV2Endpoint) error {
+	pickupAddress, err := convertpb.OrderAddressFulfilled(q.PickupAddress)
+	if err != nil {
+		return err
+	}
+
+	var deliveryPoints []*shipnow.OrderShippingInfo
+	for _, point := range q.DeliveryPoints {
+		shippingAddress, err := convertpb.OrderAddressFulfilled(point.ShippingAddress)
+		if err != nil {
+			return err
+		}
+		p := &shipnow.OrderShippingInfo{
+			OrderID:         point.OrderID,
+			ShippingAddress: convertpb.Convert_api_OrderAddress_To_core_OrderAddress(shippingAddress),
+			ShippingNote:    point.ShippingNote,
+			WeightInfo: shippingtypes.WeightInfo{
+				GrossWeight:      point.GrossWeight,
+				ChargeableWeight: point.ChargeableWeight,
+			},
+			ValueInfo: shippingtypes.ValueInfo{
+				CODAmount: point.CODAmount,
+			},
+		}
+		deliveryPoints = append(deliveryPoints, p)
+	}
+	cmd := &shipnow.CreateShipnowFulfillmentV2Command{
+		DeliveryPoints:      deliveryPoints,
+		Carrier:             q.Carrier,
+		ShopID:              q.Context.Shop.ID,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingNote:        q.ShippingNote,
+		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+	}
+	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = convertpb.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
+	return nil
+}
+
 func (s *ShipnowService) ConfirmShipnowFulfillment(ctx context.Context, q *ConfirmShipnowFulfillmentEndpoint) error {
 	cmd := &shipnow.ConfirmShipnowFulfillmentCommand{
 		Id:     q.Id,

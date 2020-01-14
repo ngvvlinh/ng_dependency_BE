@@ -9757,6 +9757,62 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *i
 	return resp, nil
 }
 
+type CreateShipnowFulfillmentV2Endpoint struct {
+	*inttypes.CreateShipnowFulfillmentV2Request
+	Result  *inttypes.ShipnowFulfillment
+	Context claims.ShopClaim
+}
+
+func (s wrapShipnowService) CreateShipnowFulfillmentV2(ctx context.Context, req *inttypes.CreateShipnowFulfillmentV2Request) (resp *inttypes.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/CreateShipnowFulfillmentV2"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateShipnowFulfillmentV2Endpoint{CreateShipnowFulfillmentV2Request: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/shipnow:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateShipnowFulfillmentV2(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type GetShipnowFulfillmentEndpoint struct {
 	*cm.IDRequest
 	Result  *inttypes.ShipnowFulfillment

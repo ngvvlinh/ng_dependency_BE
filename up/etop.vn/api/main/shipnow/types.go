@@ -91,7 +91,7 @@ type ShipnowValidateConfirmedEvent struct {
 	OrderIds             []dot.ID
 }
 
-type ShipnowCreateExternalEvent struct {
+type ShipnowExternalCreatedEvent struct {
 	meta.EventMeta
 
 	ShipnowFulfillmentId dot.ID
@@ -99,11 +99,11 @@ type ShipnowCreateExternalEvent struct {
 
 func ShipnowStatus(state shipnow_state.State, paymentStatus status4.Status) status5.Status {
 	switch state {
-	case shipnow_state.StateDefault:
-	case shipnow_state.StateCreated:
-	case shipnow_state.StateAssigning:
-	case shipnow_state.StatePicking:
-	case shipnow_state.StateDelivering:
+	case shipnow_state.StateDefault,
+		shipnow_state.StateCreated,
+		shipnow_state.StateAssigning,
+		shipnow_state.StatePicking,
+		shipnow_state.StateDelivering:
 		return status5.S
 	case shipnow_state.StateCancelled:
 		return status5.N

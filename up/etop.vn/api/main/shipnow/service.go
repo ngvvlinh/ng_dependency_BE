@@ -13,6 +13,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
+	"etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
 )
 
@@ -20,6 +21,8 @@ import (
 
 type Aggregate interface {
 	CreateShipnowFulfillment(context.Context, *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
+
+	CreateShipnowFulfillmentV2(context.Context, *CreateShipnowFulfillmentV2Args) (*ShipnowFulfillment, error)
 
 	ConfirmShipnowFulfillment(context.Context, *ConfirmShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
@@ -49,6 +52,26 @@ type CreateShipnowFulfillmentArgs struct {
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *types.Address
+}
+
+type CreateShipnowFulfillmentV2Args struct {
+	DeliveryPoints      []*OrderShippingInfo
+	Carrier             carriertypes.Carrier
+	ShopID              dot.ID
+	ShippingServiceCode string
+	ShippingServiceFee  int
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *types.Address
+}
+
+type OrderShippingInfo struct {
+	OrderID         dot.ID
+	ShippingAddress *types.Address
+	ShippingNote    string
+	shippingtypes.WeightInfo
+	shippingtypes.ValueInfo
+	TryOn try_on.TryOnCode
 }
 
 type ConfirmShipnowFulfillmentArgs struct {

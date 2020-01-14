@@ -4670,6 +4670,7 @@
     },
     "/api/shop.Shipnow/CreateShipnowFulfillment": {
       "post": {
+        "description": "@Deprcated: backward-compatible\n",
         "tags": [
           "Shipnow"
         ],
@@ -4682,6 +4683,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/qdCreateShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdShipnowFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipnow/CreateShipnowFulfillmentV2": {
+      "post": {
+        "tags": [
+          "Shipnow"
+        ],
+        "summary": "CreateShipnowFulfillmentV2",
+        "operationId": "shop.Shipnow-CreateShipnowFulfillmentV2",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateShipnowFulfillmentV2Request"
             }
           }
         ],
@@ -11101,6 +11129,32 @@
         }
       }
     },
+    "qdCreateShipnowFulfillmentV2Request": {
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "$ref": "#/definitions/soCarrier"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShipnowDeliveryPoint"
+          }
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        }
+      }
+    },
     "qdDeliveryPoint": {
       "type": "object",
       "properties": {
@@ -12388,6 +12442,30 @@
         }
       }
     },
+    "qdShipnowDeliveryPoint": {
+      "type": "object",
+      "properties": {
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        }
+      }
+    },
     "qdShipnowFulfillment": {
       "type": "object",
       "properties": {
@@ -13092,6 +13170,13 @@
         "delivered",
         "cancelled",
         "undeliverable"
+      ]
+    },
+    "soCarrier": {
+      "type": "string",
+      "enum": [
+        "default",
+        "ahamove"
       ]
     },
     "spCustomerType": {

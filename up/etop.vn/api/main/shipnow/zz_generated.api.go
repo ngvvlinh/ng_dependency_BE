@@ -77,6 +77,24 @@ func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, ms
 	return err
 }
 
+type CreateShipnowFulfillmentV2Command struct {
+	DeliveryPoints      []*OrderShippingInfo
+	Carrier             carriertypes.Carrier
+	ShopID              dot.ID
+	ShippingServiceCode string
+	ShippingServiceFee  int
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *orderingtypes.Address
+
+	Result *ShipnowFulfillment `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateShipnowFulfillmentV2(ctx context.Context, msg *CreateShipnowFulfillmentV2Command) (err error) {
+	msg.Result, err = h.inner.CreateShipnowFulfillmentV2(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShipnowServicesCommand struct {
 	ShopId         dot.ID
 	OrderIds       []dot.ID
@@ -197,6 +215,7 @@ func (h QueryServiceHandler) HandleGetShipnowFulfillments(ctx context.Context, m
 func (q *CancelShipnowFulfillmentCommand) command()            {}
 func (q *ConfirmShipnowFulfillmentCommand) command()           {}
 func (q *CreateShipnowFulfillmentCommand) command()            {}
+func (q *CreateShipnowFulfillmentV2Command) command()          {}
 func (q *GetShipnowServicesCommand) command()                  {}
 func (q *UpdateShipnowFulfillmentCommand) command()            {}
 func (q *UpdateShipnowFulfillmentCarrierInfoCommand) command() {}
@@ -254,6 +273,31 @@ func (q *CreateShipnowFulfillmentCommand) SetCreateShipnowFulfillmentArgs(args *
 	q.OrderIds = args.OrderIds
 	q.Carrier = args.Carrier
 	q.ShopId = args.ShopId
+	q.ShippingServiceCode = args.ShippingServiceCode
+	q.ShippingServiceFee = args.ShippingServiceFee
+	q.ShippingNote = args.ShippingNote
+	q.RequestPickupAt = args.RequestPickupAt
+	q.PickupAddress = args.PickupAddress
+}
+
+func (q *CreateShipnowFulfillmentV2Command) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipnowFulfillmentV2Args) {
+	return ctx,
+		&CreateShipnowFulfillmentV2Args{
+			DeliveryPoints:      q.DeliveryPoints,
+			Carrier:             q.Carrier,
+			ShopID:              q.ShopID,
+			ShippingServiceCode: q.ShippingServiceCode,
+			ShippingServiceFee:  q.ShippingServiceFee,
+			ShippingNote:        q.ShippingNote,
+			RequestPickupAt:     q.RequestPickupAt,
+			PickupAddress:       q.PickupAddress,
+		}
+}
+
+func (q *CreateShipnowFulfillmentV2Command) SetCreateShipnowFulfillmentV2Args(args *CreateShipnowFulfillmentV2Args) {
+	q.DeliveryPoints = args.DeliveryPoints
+	q.Carrier = args.Carrier
+	q.ShopID = args.ShopID
 	q.ShippingServiceCode = args.ShippingServiceCode
 	q.ShippingServiceFee = args.ShippingServiceFee
 	q.ShippingNote = args.ShippingNote
@@ -429,6 +473,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCancelShipnowFulfillment)
 	b.AddHandler(h.HandleConfirmShipnowFulfillment)
 	b.AddHandler(h.HandleCreateShipnowFulfillment)
+	b.AddHandler(h.HandleCreateShipnowFulfillmentV2)
 	b.AddHandler(h.HandleGetShipnowServices)
 	b.AddHandler(h.HandleUpdateShipnowFulfillment)
 	b.AddHandler(h.HandleUpdateShipnowFulfillmentCarrierInfo)

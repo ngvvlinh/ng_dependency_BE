@@ -215,7 +215,11 @@ type ShipnowService interface {
 	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*types.ShipnowFulfillment, error)
 	GetShipnowFulfillments(context.Context, *types.GetShipnowFulfillmentsRequest) (*types.ShipnowFulfillments, error)
 
+	// @Deprcated: backward-compatible
 	CreateShipnowFulfillment(context.Context, *types.CreateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
+
+	CreateShipnowFulfillmentV2(context.Context, *types.CreateShipnowFulfillmentV2Request) (*types.ShipnowFulfillment, error)
+
 	ConfirmShipnowFulfillment(context.Context, *cm.IDRequest) (*types.ShipnowFulfillment, error)
 	UpdateShipnowFulfillment(context.Context, *types.UpdateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
 	CancelShipnowFulfillment(context.Context, *types.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)

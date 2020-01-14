@@ -48,7 +48,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ShipnowOrderChanged)
 	eventBus.AddEventListener(m.ShipnowCancelled)
 	eventBus.AddEventListener(m.ValidateConfirmed)
-	eventBus.AddEventListener(m.ShipnowCreateExternal)
+	eventBus.AddEventListener(m.ShipnowExternalCreated)
 }
 
 func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) error {
@@ -137,7 +137,7 @@ func (m *ProcessManager) ValidateConfirmed(ctx context.Context, event *shipnow.S
 	return nil
 }
 
-func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipnow.ShipnowCreateExternalEvent) (_err error) {
+func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *shipnow.ShipnowExternalCreatedEvent) (_err error) {
 	query := &shipnow.GetShipnowFulfillmentQuery{
 		Id: event.ShipnowFulfillmentId,
 	}

@@ -2,6 +2,7 @@ package types
 
 import (
 	catalogtypes "etop.vn/api/main/catalog/types"
+	shipnowcarriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/shopping/customering/customer_type"
 	etop "etop.vn/api/top/int/etop"
 	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
@@ -757,6 +758,30 @@ type CreateShipnowFulfillmentRequest struct {
 }
 
 func (m *CreateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateShipnowFulfillmentV2Request struct {
+	DeliveryPoints      []*ShipnowDeliveryPoint     `json:"delivery_points"`
+	Carrier             shipnowcarriertypes.Carrier `json:"carrier"`
+	ShippingServiceCode string                      `json:"shipping_service_code"`
+	ShippingServiceFee  int                         `json:"shipping_service_fee"`
+	ShippingNote        string                      `json:"shipping_note"`
+	PickupAddress       *OrderAddress               `json:"pickup_address"`
+}
+
+func (m *CreateShipnowFulfillmentV2Request) Reset()         { *m = CreateShipnowFulfillmentV2Request{} }
+func (m *CreateShipnowFulfillmentV2Request) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShipnowDeliveryPoint struct {
+	OrderID          dot.ID        `json:"order_id"`
+	ShippingAddress  *OrderAddress `json:"shipping_address"`
+	ShippingNote     string        `json:"shipping_note"`
+	ChargeableWeight int           `json:"chargeable_weight"`
+	GrossWeight      int           `json:"gross_weight"`
+	CODAmount        int           `json:"cod_amount"`
+}
+
+func (m *ShipnowDeliveryPoint) Reset()         { *m = ShipnowDeliveryPoint{} }
+func (m *ShipnowDeliveryPoint) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShipnowFulfillmentRequest struct {
 	Id                  dot.ID        `json:"id"`
