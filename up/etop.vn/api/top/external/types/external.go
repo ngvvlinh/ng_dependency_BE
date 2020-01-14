@@ -1008,8 +1008,7 @@ type GetCollectionRequest struct {
 func (m *GetCollectionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCollectionsFilter struct {
-	ProductID    filter.IDs `json:"product_id"`
-	CollectionID filter.IDs `json:"collection_id"`
+	ProductID filter.IDs `json:"product_id"`
 }
 
 func (m *ListCollectionsFilter) String() string { return jsonx.MustMarshalToString(m) }
