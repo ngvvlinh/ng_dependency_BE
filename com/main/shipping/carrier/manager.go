@@ -3,6 +3,7 @@ package carrier
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -45,6 +46,7 @@ const (
 	MinShopBalance = -200000
 	DefaultTTl     = 2 * 60 * 60
 	SecretKey      = "connectionsecretkey"
+	versionCaching = "v0.1"
 )
 
 type ShipmentManager struct {
@@ -54,7 +56,7 @@ type ShipmentManager struct {
 	Env            string
 	driver         carriertypes.ShipmentCarrier
 	redisStore     redis.Store
-	_cipherx       *cipherx.Cipherx
+	cipherx        *cipherx.Cipherx
 }
 
 func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning.QueryBus, connectionAggr connectioning.CommandBus, redisS redis.Store) *ShipmentManager {
@@ -65,7 +67,7 @@ func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning
 		connectionAggr: connectionAggr,
 		Env:            cm.PartnerEnv(),
 		redisStore:     redisS,
-		_cipherx:       _cipherx,
+		cipherx:        _cipherx,
 	}
 }
 
@@ -575,15 +577,15 @@ func (m *ShipmentManager) getShopConnection(ctx context.Context, connID dot.ID, 
 }
 
 func getRedisShopConnectionKey(connID dot.ID, shopID dot.ID) string {
-	return "shopConn:" + shopID.String() + connID.String()
+	return fmt.Sprintf("shopConn:%v:%v%v", versionCaching, shopID.String(), connID.String())
 }
 
 func getRedisConnectionKeyByID(connID dot.ID) string {
-	return "conn:id:" + connID.String()
+	return fmt.Sprintf("conn:id:%v:%v", versionCaching, connID.String())
 }
 
 func getRedisConnectionKeyByCode(code string) string {
-	return "conn:code:" + code
+	return fmt.Sprintf("conn:code:%v:%v", versionCaching, code)
 }
 
 func (m *ShipmentManager) loadRedis(key string, v interface{}) error {
@@ -595,7 +597,7 @@ func (m *ShipmentManager) loadRedis(key string, v interface{}) error {
 		return err
 	}
 
-	data, err := m._cipherx.Decrypt([]byte(value))
+	data, err := m.cipherx.Decrypt([]byte(value))
 	if err != nil {
 		ll.Error("Fail to decrypt from redis", l.Error(err))
 		return err
@@ -616,7 +618,7 @@ func (m *ShipmentManager) setRedis(key string, data interface{}) {
 	if err != nil {
 		return
 	}
-	dataEncrypt, err := m._cipherx.Encrypt(xData)
+	dataEncrypt, err := m.cipherx.Encrypt(xData)
 	if err != nil {
 		return
 	}
