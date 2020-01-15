@@ -23,6 +23,7 @@ import (
 	shipping "etop.vn/api/top/types/etc/shipping"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/stocktake_type"
 	try_on "etop.vn/api/top/types/etc/try_on"
 	"etop.vn/capi/dot"
@@ -569,7 +570,7 @@ type UpdateOrdersStatusRequest struct {
 	// @required
 	Confirm      status3.NullStatus `json:"confirm"`
 	CancelReason string             `json:"cancel_reason"`
-	Status       status4.Status     `json:"status"`
+	Status       status5.Status     `json:"status"`
 }
 
 func (m *UpdateOrdersStatusRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -6,7 +6,7 @@ import (
 
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -136,7 +136,7 @@ type UpdateOrdersStatusCommand struct {
 	PartnerID dot.ID
 	OrderIDs  []dot.ID
 
-	Status        status4.NullStatus
+	Status        status5.NullStatus
 	ShopConfirm   status3.NullStatus
 	ConfirmStatus status3.NullStatus
 	CancelReason  string

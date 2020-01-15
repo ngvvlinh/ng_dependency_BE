@@ -1237,9 +1237,6 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 	if _, err := canUpdateOrder(order); err != nil {
 		return err
 	}
-	if order.ShopShipping == nil || order.ShopShipping.ShippingProvider != shipping_provider.Manual {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái thanh toán cho đơn hàng này")
-	}
 
 	if order.PaymentStatus == status4.P {
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã được thanh toán", nil)

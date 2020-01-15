@@ -1034,6 +1034,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 		ShopConfirm:   status3.N.Wrap(),
 		ConfirmStatus: status3.N.Wrap(),
 		CancelReason:  cancelReason,
+		Status:        status5.N.Wrap(),
 	}
 	if err := bus.Dispatch(ctx, updateOrderCmd); err != nil {
 		return nil, err
