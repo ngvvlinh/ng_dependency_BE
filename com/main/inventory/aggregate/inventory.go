@@ -192,7 +192,7 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 			return 0, nil, err
 		}
 
-		if args.RefType == inventory_voucher_ref.Order || args.RefType == inventory_voucher_ref.StockTake || args.RefType == inventory_voucher_ref.Refund || args.RefType == inventory_voucher_ref.PurchaseRefund {
+		if args.RefType == inventory_voucher_ref.Order || args.RefType == inventory_voucher_ref.StockTake || args.RefType == inventory_voucher_ref.Refund {
 			args.Lines[key].Price = inventoryvariant.CostPrice
 		}
 		totalAmount = totalAmount + args.Lines[key].Price*value.Quantity
@@ -415,7 +415,9 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 				currentQuantity := data.QuantityPicked + data.QuantityOnHand
 				currentValue := currentQuantity * data.CostPrice
 				outValue := value.Quantity * value.Price
-				data.CostPrice = (currentValue - outValue) / (currentQuantity - value.Quantity)
+				if currentQuantity-value.Quantity != 0 {
+					data.CostPrice = (currentValue - outValue) / (currentQuantity - value.Quantity)
+				}
 			}
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
 		} else if inventoryVoucher.Type == inventory_type.In {
@@ -726,8 +728,13 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseRefund(ctx context.
 		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho Refund chưa được xác nhận.", nil)
 	}
 	for _, value := range queryPurchaseRefund.Result.Lines {
+		price := value.PaymentPrice + value.Adjustment
+		if queryPurchaseRefund.Result.TotalAdjustment != 0 {
+			valueLine := (value.Quantity * (value.PaymentPrice + value.Adjustment))
+			price += (queryPurchaseRefund.Result.TotalAdjustment * valueLine / queryPurchaseRefund.Result.BasketValue) / value.Quantity
+		}
 		items = append(items, &inventory.InventoryVoucherItem{
-			Price:       value.PaymentPrice,
+			Price:       price,
 			ProductID:   value.ProductID,
 			ProductName: value.ProductName,
 			VariantID:   value.VariantID,
@@ -821,12 +828,17 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 	}
 	// GET info and put it to cmd
 	for _, value := range queryPurchaseOrder.Result.Lines {
+		adjustment := queryPurchaseOrder.Result.TotalFee - queryPurchaseOrder.Result.TotalDiscount
+		price := value.PaymentPrice - value.Discount
+		if adjustment != 0 {
+			price += (adjustment * (value.Quantity * (value.PaymentPrice - value.Discount)) / queryPurchaseOrder.Result.BasketValue) / value.Quantity
+		}
 		items = append(items, &inventory.InventoryVoucherItem{
 			ProductID:   value.ProductID,
 			ProductName: value.ProductName,
 			VariantID:   value.VariantID,
 			Quantity:    value.Quantity,
-			Price:       value.PaymentPrice,
+			Price:       price,
 			Code:        value.Code,
 			ImageURL:    value.ImageUrl,
 			Attributes:  value.Attributes,

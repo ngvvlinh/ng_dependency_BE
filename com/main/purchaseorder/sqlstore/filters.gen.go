@@ -119,6 +119,25 @@ func (ft *PurchaseOrderFilters) ByTotalDiscountPtr(TotalDiscount *int) *sq.Colum
 	}
 }
 
+func (ft *PurchaseOrderFilters) ByTotalFee(TotalFee int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "total_fee",
+		Value:  TotalFee,
+		IsNil:  TotalFee == 0,
+	}
+}
+
+func (ft *PurchaseOrderFilters) ByTotalFeePtr(TotalFee *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "total_fee",
+		Value:  TotalFee,
+		IsNil:  TotalFee == nil,
+		IsZero: TotalFee != nil && (*TotalFee) == 0,
+	}
+}
+
 func (ft *PurchaseOrderFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -54,18 +54,16 @@ func (a *PurchaseRefundAggregate) CreatePurchaseRefund(ctx context.Context, args
 	if err != nil {
 		return nil, err
 	}
-
+	err = checkPurchaseRefund(&purchaseRefundResult)
+	if err != nil {
+		return nil, err
+	}
 	preLine, err := a.checkLinePurchaseOrder(ctx, args.ShopID, purchaseRefundResult.PurchaseOrderID, purchaseRefundResult.ID, purchaseRefundResult.Lines)
 	if err != nil {
 		return nil, err
 	}
 	purchaseRefundResult.SupplierID = preLine.SupplierID
 	purchaseRefundResult.Lines = preLine.PurchaseRefundLine
-	if preLine.BasketValue < purchaseRefundResult.Discount {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giảm giá không được lớn hơn giá trị hàng trả")
-	}
-	purchaseRefundResult.TotalAmount = preLine.BasketValue - purchaseRefundResult.Discount
-	purchaseRefundResult.BasketValue = preLine.BasketValue
 	var maxCodeNorm = 1
 	purchaserefundCode, err := a.store(ctx).ShopID(args.ShopID).GetPurchaseRefundByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
@@ -101,14 +99,37 @@ func (a *PurchaseRefundAggregate) UpdatePurchaseRefund(ctx context.Context, args
 	}
 	purchaserefundDB.SupplierID = preLine.SupplierID
 	purchaserefundDB.Lines = preLine.PurchaseRefundLine
-	purchaserefundDB.BasketValue = preLine.BasketValue
-
-	if preLine.BasketValue < purchaserefundDB.Discount {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giảm giá không được lớn hơn giá trị hàng trả")
+	err = checkPurchaseRefund(purchaserefundDB)
+	if err != nil {
+		return nil, err
 	}
-	purchaserefundDB.TotalAmount = preLine.BasketValue - purchaserefundDB.Discount
 	err = a.store(ctx).ShopID(args.ShopID).ID(args.ID).UpdatePurchaseRefundAll(purchaserefundDB)
 	return purchaserefundDB, err
+}
+
+func checkPurchaseRefund(args *purchaserefund.PurchaseRefund) error {
+	if args.BasketValue <= 0 {
+		return cm.Errorf(cm.NotFound, nil, "basket_value không thể nhỏ hơn hoặc bằng 0")
+	}
+	basketValueLine := 0
+	for _, value := range args.Lines {
+		basketValueLine += (value.Adjustment + value.PaymentPrice) * value.Quantity
+	}
+	if basketValueLine != args.BasketValue {
+		return cm.Errorf(cm.NotFound, nil, "basket_value không không hợp lệ.")
+	}
+
+	totalAdjustmentLine := 0
+	for _, value := range args.AdjustmentLines {
+		totalAdjustmentLine += value.Amount
+	}
+	if totalAdjustmentLine != args.TotalAdjustment {
+		return cm.Errorf(cm.NotFound, nil, "total_adjustment không không hợp lệ.")
+	}
+	if args.BasketValue+args.TotalAdjustment != args.TotalAmount {
+		return cm.Errorf(cm.NotFound, nil, "total_amount không không hợp lệ. total_amount = basket_value + total_adjustment")
+	}
+	return nil
 }
 
 func (a *PurchaseRefundAggregate) checkLinePurchaseOrder(ctx context.Context, shopID dot.ID, purchaseOrderID dot.ID, purchaserefundID dot.ID, lines []*purchaserefund.PurchaseRefundLine) (*purchaserefund.CheckReceiptLinesResponse, error) {
@@ -143,13 +164,15 @@ func (a *PurchaseRefundAggregate) checkLinePurchaseOrder(ctx context.Context, sh
 		if linesVariant[value.VariantID].Quantity < value.Quantity {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lớn hơn đơn hàng")
 		}
+		if lines[key].PaymentPrice != linesVariant[value.VariantID].PaymentPrice {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá sản phẩm %v trong request %v khác giá sản phẩm trong Purchase Order %v", lines[key].Code, lines[key].PaymentPrice, linesVariant[value.VariantID].PaymentPrice)
+		}
 		lines[key].Code = linesVariant[value.VariantID].Code
 		lines[key].ImageURL = linesVariant[value.VariantID].ImageUrl
 		lines[key].ProductName = linesVariant[value.VariantID].ProductName
-		lines[key].PaymentPrice = linesVariant[value.VariantID].PaymentPrice
 		lines[key].ProductID = linesVariant[value.VariantID].ProductID
 		lines[key].Attributes = linesVariant[value.VariantID].Attributes
-		basketValue = basketValue + lines[key].PaymentPrice*lines[key].Quantity
+		basketValue = basketValue + (lines[key].PaymentPrice+lines[key].Adjustment)*lines[key].Quantity
 	}
 	return &purchaserefund.CheckReceiptLinesResponse{
 		SupplierID:         queryPurchaseOrder.Result.SupplierID,
@@ -198,20 +221,24 @@ func (a *PurchaseRefundAggregate) ConfirmPurchaseRefund(ctx context.Context, arg
 	purchaserefundDB.ConfirmedAt = time.Now()
 	purchaserefundDB.Status = status3.P
 	purchaserefundDB.UpdatedBy = args.UpdatedBy
-	err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdatePurchaseRefundAll(purchaserefundDB)
-	if err != nil {
-		return nil, err
-	}
-	event := &purchaserefund.ConfirmedPurchaseRefundEvent{
-		ShopID:               args.ShopID,
-		PurchaseRefundID:     args.ID,
-		UpdatedBy:            args.UpdatedBy,
-		AutoInventoryVoucher: args.AutoInventoryVoucher,
-		InventoryOverStock:   args.InventoryOverStock,
-	}
-	err = a.eventBus.Publish(ctx, event)
-	if err != nil {
-		return nil, err
-	}
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdatePurchaseRefundAll(purchaserefundDB)
+		if err != nil {
+			return err
+		}
+		event := &purchaserefund.ConfirmedPurchaseRefundEvent{
+			ShopID:               args.ShopID,
+			PurchaseRefundID:     args.ID,
+			UpdatedBy:            args.UpdatedBy,
+			AutoInventoryVoucher: args.AutoInventoryVoucher,
+			InventoryOverStock:   args.InventoryOverStock,
+		}
+		err = a.eventBus.Publish(ctx, event)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
 	return purchaserefundDB, nil
 }

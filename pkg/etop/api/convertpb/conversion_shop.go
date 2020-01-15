@@ -105,6 +105,7 @@ func Convert_api_PurchaseOrderLine_To_core_PurchaseOrderLine(in *shop.PurchaseOr
 		VariantID:    in.VariantId,
 		Quantity:     in.Quantity,
 		PaymentPrice: in.PaymentPrice,
+		Discount:     in.Discount,
 	}
 }
 

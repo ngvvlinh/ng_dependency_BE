@@ -9,6 +9,7 @@ import (
 
 	identity "etop.vn/api/main/identity"
 	identitytypes "etop.vn/api/main/identity/types"
+	inttypes "etop.vn/api/top/int/types"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	sharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	conversion "etop.vn/backend/pkg/common/conversion"
@@ -161,6 +162,60 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identitytypes.BankAccount)(nil), (*[]*sharemodel.BankAccount)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(arg.([]*identitytypes.BankAccount))
 		*out.(*[]*sharemodel.BankAccount) = out0
+		return nil
+	})
+	s.Register((*sharemodel.AdjustmentLine)(nil), (*inttypes.AdjustmentLine)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg.(*sharemodel.AdjustmentLine), out.(*inttypes.AdjustmentLine))
+		return nil
+	})
+	s.Register(([]*sharemodel.AdjustmentLine)(nil), (*[]*inttypes.AdjustmentLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_AdjustmentLines_inttypes_AdjustmentLines(arg.([]*sharemodel.AdjustmentLine))
+		*out.(*[]*inttypes.AdjustmentLine) = out0
+		return nil
+	})
+	s.Register((*inttypes.AdjustmentLine)(nil), (*sharemodel.AdjustmentLine)(nil), func(arg, out interface{}) error {
+		Convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(arg.(*inttypes.AdjustmentLine), out.(*sharemodel.AdjustmentLine))
+		return nil
+	})
+	s.Register(([]*inttypes.AdjustmentLine)(nil), (*[]*sharemodel.AdjustmentLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inttypes_AdjustmentLines_sharemodel_AdjustmentLines(arg.([]*inttypes.AdjustmentLine))
+		*out.(*[]*sharemodel.AdjustmentLine) = out0
+		return nil
+	})
+	s.Register((*sharemodel.DiscountLine)(nil), (*inttypes.DiscountLine)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg.(*sharemodel.DiscountLine), out.(*inttypes.DiscountLine))
+		return nil
+	})
+	s.Register(([]*sharemodel.DiscountLine)(nil), (*[]*inttypes.DiscountLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_DiscountLines_inttypes_DiscountLines(arg.([]*sharemodel.DiscountLine))
+		*out.(*[]*inttypes.DiscountLine) = out0
+		return nil
+	})
+	s.Register((*inttypes.DiscountLine)(nil), (*sharemodel.DiscountLine)(nil), func(arg, out interface{}) error {
+		Convert_inttypes_DiscountLine_sharemodel_DiscountLine(arg.(*inttypes.DiscountLine), out.(*sharemodel.DiscountLine))
+		return nil
+	})
+	s.Register(([]*inttypes.DiscountLine)(nil), (*[]*sharemodel.DiscountLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inttypes_DiscountLines_sharemodel_DiscountLines(arg.([]*inttypes.DiscountLine))
+		*out.(*[]*sharemodel.DiscountLine) = out0
+		return nil
+	})
+	s.Register((*sharemodel.FeeLine)(nil), (*inttypes.FeeLine)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_FeeLine_inttypes_FeeLine(arg.(*sharemodel.FeeLine), out.(*inttypes.FeeLine))
+		return nil
+	})
+	s.Register(([]*sharemodel.FeeLine)(nil), (*[]*inttypes.FeeLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_FeeLines_inttypes_FeeLines(arg.([]*sharemodel.FeeLine))
+		*out.(*[]*inttypes.FeeLine) = out0
+		return nil
+	})
+	s.Register((*inttypes.FeeLine)(nil), (*sharemodel.FeeLine)(nil), func(arg, out interface{}) error {
+		Convert_inttypes_FeeLine_sharemodel_FeeLine(arg.(*inttypes.FeeLine), out.(*sharemodel.FeeLine))
+		return nil
+	})
+	s.Register(([]*inttypes.FeeLine)(nil), (*[]*sharemodel.FeeLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inttypes_FeeLines_sharemodel_FeeLines(arg.([]*inttypes.FeeLine))
+		*out.(*[]*sharemodel.FeeLine) = out0
 		return nil
 	})
 }
@@ -617,6 +672,162 @@ func Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(args []*identity
 	outs = make([]*sharemodel.BankAccount, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identitytypes_BankAccount_sharemodel_BankAccount(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/top/int/types.AdjustmentLine --//
+
+func Convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg *sharemodel.AdjustmentLine, out *inttypes.AdjustmentLine) *inttypes.AdjustmentLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inttypes.AdjustmentLine{}
+	}
+	convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg, out)
+	return out
+}
+
+func convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg *sharemodel.AdjustmentLine, out *inttypes.AdjustmentLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_sharemodel_AdjustmentLines_inttypes_AdjustmentLines(args []*sharemodel.AdjustmentLine) (outs []*inttypes.AdjustmentLine) {
+	tmps := make([]inttypes.AdjustmentLine, len(args))
+	outs = make([]*inttypes.AdjustmentLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(arg *inttypes.AdjustmentLine, out *sharemodel.AdjustmentLine) *sharemodel.AdjustmentLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.AdjustmentLine{}
+	}
+	convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(arg, out)
+	return out
+}
+
+func convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(arg *inttypes.AdjustmentLine, out *sharemodel.AdjustmentLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_inttypes_AdjustmentLines_sharemodel_AdjustmentLines(args []*inttypes.AdjustmentLine) (outs []*sharemodel.AdjustmentLine) {
+	tmps := make([]sharemodel.AdjustmentLine, len(args))
+	outs = make([]*sharemodel.AdjustmentLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/top/int/types.DiscountLine --//
+
+func Convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg *sharemodel.DiscountLine, out *inttypes.DiscountLine) *inttypes.DiscountLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inttypes.DiscountLine{}
+	}
+	convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg, out)
+	return out
+}
+
+func convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg *sharemodel.DiscountLine, out *inttypes.DiscountLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_sharemodel_DiscountLines_inttypes_DiscountLines(args []*sharemodel.DiscountLine) (outs []*inttypes.DiscountLine) {
+	tmps := make([]inttypes.DiscountLine, len(args))
+	outs = make([]*inttypes.DiscountLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_DiscountLine_inttypes_DiscountLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_inttypes_DiscountLine_sharemodel_DiscountLine(arg *inttypes.DiscountLine, out *sharemodel.DiscountLine) *sharemodel.DiscountLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.DiscountLine{}
+	}
+	convert_inttypes_DiscountLine_sharemodel_DiscountLine(arg, out)
+	return out
+}
+
+func convert_inttypes_DiscountLine_sharemodel_DiscountLine(arg *inttypes.DiscountLine, out *sharemodel.DiscountLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_inttypes_DiscountLines_sharemodel_DiscountLines(args []*inttypes.DiscountLine) (outs []*sharemodel.DiscountLine) {
+	tmps := make([]sharemodel.DiscountLine, len(args))
+	outs = make([]*sharemodel.DiscountLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inttypes_DiscountLine_sharemodel_DiscountLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/top/int/types.FeeLine --//
+
+func Convert_sharemodel_FeeLine_inttypes_FeeLine(arg *sharemodel.FeeLine, out *inttypes.FeeLine) *inttypes.FeeLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inttypes.FeeLine{}
+	}
+	convert_sharemodel_FeeLine_inttypes_FeeLine(arg, out)
+	return out
+}
+
+func convert_sharemodel_FeeLine_inttypes_FeeLine(arg *sharemodel.FeeLine, out *inttypes.FeeLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_sharemodel_FeeLines_inttypes_FeeLines(args []*sharemodel.FeeLine) (outs []*inttypes.FeeLine) {
+	tmps := make([]inttypes.FeeLine, len(args))
+	outs = make([]*inttypes.FeeLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_FeeLine_inttypes_FeeLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_inttypes_FeeLine_sharemodel_FeeLine(arg *inttypes.FeeLine, out *sharemodel.FeeLine) *sharemodel.FeeLine {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.FeeLine{}
+	}
+	convert_inttypes_FeeLine_sharemodel_FeeLine(arg, out)
+	return out
+}
+
+func convert_inttypes_FeeLine_sharemodel_FeeLine(arg *inttypes.FeeLine, out *sharemodel.FeeLine) {
+	out.Note = arg.Note     // simple assign
+	out.Amount = arg.Amount // simple assign
+}
+
+func Convert_inttypes_FeeLines_sharemodel_FeeLines(args []*inttypes.FeeLine) (outs []*sharemodel.FeeLine) {
+	tmps := make([]sharemodel.FeeLine, len(args))
+	outs = make([]*sharemodel.FeeLine, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inttypes_FeeLine_sharemodel_FeeLine(args[i], &tmps[i])
 	}
 	return outs
 }

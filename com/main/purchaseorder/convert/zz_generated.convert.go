@@ -9,6 +9,7 @@ import (
 
 	purchaseorder "etop.vn/api/main/purchaseorder"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
 	purchaseordermodel "etop.vn/backend/com/main/purchaseorder/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -112,15 +113,18 @@ func convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg *p
 	out.ShopID = arg.ShopID         // simple assign
 	out.SupplierID = arg.SupplierID // simple assign
 	out.Supplier = Convert_purchaseordermodel_PurchaseOrderSupplier_purchaseorder_PurchaseOrderSupplier(arg.Supplier, nil)
-	out.InventoryVoucher = nil            // zero value
-	out.BasketValue = arg.BasketValue     // simple assign
+	out.InventoryVoucher = nil // zero value
+	out.DiscountLines = identityconvert.Convert_sharemodel_DiscountLines_inttypes_DiscountLines(arg.DiscountLines)
 	out.TotalDiscount = arg.TotalDiscount // simple assign
-	out.TotalAmount = arg.TotalAmount     // simple assign
-	out.Code = arg.Code                   // simple assign
-	out.CodeNorm = arg.CodeNorm           // simple assign
-	out.Note = arg.Note                   // simple assign
-	out.Status = arg.Status               // simple assign
-	out.VariantIDs = arg.VariantIDs       // simple assign
+	out.FeeLines = identityconvert.Convert_sharemodel_FeeLines_inttypes_FeeLines(arg.FeeLines)
+	out.TotalFee = arg.TotalFee       // simple assign
+	out.TotalAmount = arg.TotalAmount // simple assign
+	out.BasketValue = arg.BasketValue // simple assign
+	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
+	out.Note = arg.Note               // simple assign
+	out.Status = arg.Status           // simple assign
+	out.VariantIDs = arg.VariantIDs   // simple assign
 	out.Lines = Convert_purchaseordermodel_PurchaseOrderLines_purchaseorder_PurchaseOrderLines(arg.Lines)
 	out.PaidAmount = 0                // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
@@ -156,14 +160,17 @@ func convert_purchaseorder_PurchaseOrder_purchaseordermodel_PurchaseOrder(arg *p
 	out.ShopID = arg.ShopID         // simple assign
 	out.SupplierID = arg.SupplierID // simple assign
 	out.Supplier = Convert_purchaseorder_PurchaseOrderSupplier_purchaseordermodel_PurchaseOrderSupplier(arg.Supplier, nil)
-	out.BasketValue = arg.BasketValue     // simple assign
+	out.BasketValue = arg.BasketValue // simple assign
+	out.DiscountLines = identityconvert.Convert_inttypes_DiscountLines_sharemodel_DiscountLines(arg.DiscountLines)
 	out.TotalDiscount = arg.TotalDiscount // simple assign
-	out.TotalAmount = arg.TotalAmount     // simple assign
-	out.Code = arg.Code                   // simple assign
-	out.CodeNorm = arg.CodeNorm           // simple assign
-	out.Note = arg.Note                   // simple assign
-	out.Status = arg.Status               // simple assign
-	out.VariantIDs = arg.VariantIDs       // simple assign
+	out.FeeLines = identityconvert.Convert_inttypes_FeeLines_sharemodel_FeeLines(arg.FeeLines)
+	out.TotalFee = arg.TotalFee       // simple assign
+	out.TotalAmount = arg.TotalAmount // simple assign
+	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
+	out.Note = arg.Note               // simple assign
+	out.Status = arg.Status           // simple assign
+	out.VariantIDs = arg.VariantIDs   // simple assign
 	out.Lines = Convert_purchaseorder_PurchaseOrderLines_purchaseordermodel_PurchaseOrderLines(arg.Lines)
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.CancelledReason = ""          // zero value
@@ -202,9 +209,12 @@ func apply_purchaseorder_CreatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.SupplierID = arg.SupplierID       // simple assign
 	out.Supplier = nil                    // zero value
 	out.InventoryVoucher = nil            // zero value
-	out.BasketValue = arg.BasketValue     // simple assign
+	out.DiscountLines = arg.DiscountLines // simple assign
 	out.TotalDiscount = arg.TotalDiscount // simple assign
+	out.FeeLines = arg.FeeLines           // simple assign
+	out.TotalFee = arg.TotalFee           // simple assign
 	out.TotalAmount = arg.TotalAmount     // simple assign
+	out.BasketValue = arg.BasketValue     // simple assign
 	out.Code = ""                         // zero value
 	out.CodeNorm = 0                      // zero value
 	out.Note = arg.Note                   // simple assign
@@ -237,9 +247,12 @@ func apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.SupplierID = out.SupplierID                                // no change
 	out.Supplier = out.Supplier                                    // no change
 	out.InventoryVoucher = out.InventoryVoucher                    // no change
-	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)       // apply change
+	out.DiscountLines = arg.DiscountLines                          // simple assign
 	out.TotalDiscount = arg.TotalDiscount.Apply(out.TotalDiscount) // apply change
+	out.FeeLines = arg.FeeLines                                    // simple assign
+	out.TotalFee = arg.TotalFee.Apply(out.TotalFee)                // apply change
 	out.TotalAmount = arg.TotalAmount.Apply(out.TotalAmount)       // apply change
+	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)       // apply change
 	out.Code = out.Code                                            // no change
 	out.CodeNorm = out.CodeNorm                                    // no change
 	out.Note = arg.Note.Apply(out.Note)                            // apply change
@@ -277,6 +290,7 @@ func convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLin
 	out.Code = arg.Code                 // simple assign
 	out.ImageUrl = arg.ImageUrl         // simple assign
 	out.Attributes = catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
+	out.Discount = 0 // zero value
 }
 
 func Convert_purchaseordermodel_PurchaseOrderLines_purchaseorder_PurchaseOrderLines(args []*purchaseordermodel.PurchaseOrderLine) (outs []*purchaseorder.PurchaseOrderLine) {

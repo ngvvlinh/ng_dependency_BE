@@ -22,3 +22,18 @@ type ContactPerson struct {
 	Phone    string `json:"phone"`
 	Email    string `json:"email"`
 }
+
+type AdjustmentLine struct {
+	Note   string `json:"note"`
+	Amount int    `json:"amount"`
+}
+
+type FeeLine struct {
+	Note   string `json:"note"`
+	Amount int    `json:"amount"`
+}
+
+type DiscountLine struct {
+	Note   string `json:"note"`
+	Amount int    `json:"amount"`
+}

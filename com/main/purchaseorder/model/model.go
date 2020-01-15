@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/top/types/etc/status3"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	"etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/capi/dot"
 )
 
@@ -13,27 +14,29 @@ import (
 var _ = sqlgenPurchaseOrder(&PurchaseOrder{})
 
 type PurchaseOrder struct {
-	ID              dot.ID
-	ShopID          dot.ID
-	SupplierID      dot.ID
-	Supplier        *PurchaseOrderSupplier
-	BasketValue     int
-	TotalDiscount   int
-	TotalAmount     int
-	Code            string
-	CodeNorm        int
-	Note            string
-	Status          status3.Status
-	VariantIDs      []dot.ID
-	Lines           []*PurchaseOrderLine
-	CreatedBy       dot.ID
-	CancelledReason string
-	ConfirmedAt     time.Time
-	CancelledAt     time.Time
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
-	DeletedAt       time.Time
-
+	ID                   dot.ID
+	ShopID               dot.ID
+	SupplierID           dot.ID
+	Supplier             *PurchaseOrderSupplier
+	BasketValue          int
+	DiscountLines        []*sharemodel.DiscountLine
+	TotalDiscount        int
+	FeeLines             []*sharemodel.FeeLine
+	TotalFee             int
+	TotalAmount          int
+	Code                 string
+	CodeNorm             int
+	Note                 string
+	Status               status3.Status
+	VariantIDs           []dot.ID
+	Lines                []*PurchaseOrderLine
+	CreatedBy            dot.ID
+	CancelledReason      string
+	ConfirmedAt          time.Time
+	CancelledAt          time.Time
+	CreatedAt            time.Time `sq:"create"`
+	UpdatedAt            time.Time `sq:"update"`
+	DeletedAt            time.Time
 	SupplierFullNameNorm string
 	SupplierPhoneNorm    string
 }

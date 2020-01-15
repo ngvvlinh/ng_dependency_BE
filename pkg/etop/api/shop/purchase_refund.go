@@ -21,14 +21,19 @@ func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *Cre
 	var lines []*purchaserefund.PurchaseRefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &purchaserefund.PurchaseRefundLine{
-			VariantID: v.VariantID,
-			Quantity:  v.Quantity,
+			VariantID:    v.VariantID,
+			Quantity:     v.Quantity,
+			PaymentPrice: v.PaymentPrice,
+			Adjustment:   v.Adjustment,
 		})
 	}
 	cmd := purchaserefund.CreatePurchaseRefundCommand{
 		Lines:           lines,
 		PurchaseOrderID: q.PurchaseOrderID,
-		Discount:        q.Discount,
+		AdjustmentLines: q.AdjustmentLines,
+		TotalAdjustment: q.TotalAdjustment,
+		TotalAmount:     q.TotalAmount,
+		BasketValue:     q.BasketValue,
 		ShopID:          shopID,
 		CreatedBy:       userID,
 		Note:            q.Note,
@@ -57,12 +62,15 @@ func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *Upd
 		})
 	}
 	cmd := purchaserefund.UpdatePurchaseRefundCommand{
-		Lines:    lines,
-		ID:       q.ID,
-		ShopID:   shopID,
-		UpdateBy: userID,
-		Note:     q.Note,
-		Discount: q.DisCount,
+		Lines:           lines,
+		ID:              q.ID,
+		ShopID:          shopID,
+		AdjustmentLines: q.AdjustmentLines,
+		TotalAdjustment: q.TotalAdjustment,
+		TotalAmount:     q.TotalAmount,
+		UpdateBy:        userID,
+		BasketValue:     q.BasketValue,
+		Note:            q.Note,
 	}
 	if err := PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err

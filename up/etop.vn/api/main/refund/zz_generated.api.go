@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
+	inttypes "etop.vn/api/top/int/types"
 	inventory_auto "etop.vn/api/top/types/etc/inventory_auto"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
@@ -56,12 +57,15 @@ func (h AggregateHandler) HandleConfirmRefund(ctx context.Context, msg *ConfirmR
 }
 
 type CreateRefundCommand struct {
-	Lines     []*RefundLine
-	OrderID   dot.ID
-	Discount  int
-	ShopID    dot.ID
-	CreatedBy dot.ID
-	Note      string
+	Lines           []*RefundLine
+	OrderID         dot.ID
+	AdjustmentLines []*inttypes.AdjustmentLine
+	TotalAdjustment int
+	TotalAmount     int
+	BasketValue     int
+	ShopID          dot.ID
+	CreatedBy       dot.ID
+	Note            string
 
 	Result *Refund `json:"-"`
 }
@@ -72,12 +76,15 @@ func (h AggregateHandler) HandleCreateRefund(ctx context.Context, msg *CreateRef
 }
 
 type UpdateRefundCommand struct {
-	Lines    []*RefundLine
-	ID       dot.ID
-	ShopID   dot.ID
-	Discount dot.NullInt
-	UpdateBy dot.ID
-	Note     dot.NullString
+	Lines           []*RefundLine
+	ID              dot.ID
+	ShopID          dot.ID
+	AdjustmentLines []*inttypes.AdjustmentLine
+	TotalAdjustment dot.NullInt
+	TotalAmount     dot.NullInt
+	BasketValue     dot.NullInt
+	UpdateBy        dot.ID
+	Note            dot.NullString
 
 	Result *Refund `json:"-"`
 }
@@ -189,19 +196,25 @@ func (q *ConfirmRefundCommand) SetConfirmRefundArgs(args *ConfirmRefundArgs) {
 func (q *CreateRefundCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateRefundArgs) {
 	return ctx,
 		&CreateRefundArgs{
-			Lines:     q.Lines,
-			OrderID:   q.OrderID,
-			Discount:  q.Discount,
-			ShopID:    q.ShopID,
-			CreatedBy: q.CreatedBy,
-			Note:      q.Note,
+			Lines:           q.Lines,
+			OrderID:         q.OrderID,
+			AdjustmentLines: q.AdjustmentLines,
+			TotalAdjustment: q.TotalAdjustment,
+			TotalAmount:     q.TotalAmount,
+			BasketValue:     q.BasketValue,
+			ShopID:          q.ShopID,
+			CreatedBy:       q.CreatedBy,
+			Note:            q.Note,
 		}
 }
 
 func (q *CreateRefundCommand) SetCreateRefundArgs(args *CreateRefundArgs) {
 	q.Lines = args.Lines
 	q.OrderID = args.OrderID
-	q.Discount = args.Discount
+	q.AdjustmentLines = args.AdjustmentLines
+	q.TotalAdjustment = args.TotalAdjustment
+	q.TotalAmount = args.TotalAmount
+	q.BasketValue = args.BasketValue
 	q.ShopID = args.ShopID
 	q.CreatedBy = args.CreatedBy
 	q.Note = args.Note
@@ -210,12 +223,15 @@ func (q *CreateRefundCommand) SetCreateRefundArgs(args *CreateRefundArgs) {
 func (q *UpdateRefundCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateRefundArgs) {
 	return ctx,
 		&UpdateRefundArgs{
-			Lines:    q.Lines,
-			ID:       q.ID,
-			ShopID:   q.ShopID,
-			Discount: q.Discount,
-			UpdateBy: q.UpdateBy,
-			Note:     q.Note,
+			Lines:           q.Lines,
+			ID:              q.ID,
+			ShopID:          q.ShopID,
+			AdjustmentLines: q.AdjustmentLines,
+			TotalAdjustment: q.TotalAdjustment,
+			TotalAmount:     q.TotalAmount,
+			BasketValue:     q.BasketValue,
+			UpdateBy:        q.UpdateBy,
+			Note:            q.Note,
 		}
 }
 
@@ -223,7 +239,10 @@ func (q *UpdateRefundCommand) SetUpdateRefundArgs(args *UpdateRefundArgs) {
 	q.Lines = args.Lines
 	q.ID = args.ID
 	q.ShopID = args.ShopID
-	q.Discount = args.Discount
+	q.AdjustmentLines = args.AdjustmentLines
+	q.TotalAdjustment = args.TotalAdjustment
+	q.TotalAmount = args.TotalAmount
+	q.BasketValue = args.BasketValue
 	q.UpdateBy = args.UpdateBy
 	q.Note = args.Note
 }

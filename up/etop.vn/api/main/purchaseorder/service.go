@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
@@ -43,7 +44,10 @@ type CreatePurchaseOrderArgs struct {
 	ShopID        dot.ID
 	SupplierID    dot.ID
 	BasketValue   int
+	DiscountLines []*types.DiscountLine
 	TotalDiscount int
+	FeeLines      []*types.FeeLine
+	TotalFee      int
 	TotalAmount   int
 	Note          string
 	Lines         []*PurchaseOrderLine
@@ -55,7 +59,10 @@ type UpdatePurchaseOrderArgs struct {
 	ID            dot.ID
 	ShopID        dot.ID
 	BasketValue   NullInt
+	DiscountLines []*types.DiscountLine
 	TotalDiscount NullInt
+	FeeLines      []*types.FeeLine
+	TotalFee      NullInt
 	TotalAmount   NullInt
 	Note          NullString
 	Lines         []*PurchaseOrderLine

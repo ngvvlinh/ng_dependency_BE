@@ -138,22 +138,22 @@ func (ft *PurchaseRefundFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PurchaseRefundFilters) ByDiscount(Discount int) *sq.ColumnFilter {
+func (ft *PurchaseRefundFilters) ByTotalAdjustment(TotalAdjustment int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "discount",
-		Value:  Discount,
-		IsNil:  Discount == 0,
+		Column: "total_adjustment",
+		Value:  TotalAdjustment,
+		IsNil:  TotalAdjustment == 0,
 	}
 }
 
-func (ft *PurchaseRefundFilters) ByDiscountPtr(Discount *int) *sq.ColumnFilterPtr {
+func (ft *PurchaseRefundFilters) ByTotalAdjustmentPtr(TotalAdjustment *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "discount",
-		Value:  Discount,
-		IsNil:  Discount == nil,
-		IsZero: Discount != nil && (*Discount) == 0,
+		Column: "total_adjustment",
+		Value:  TotalAdjustment,
+		IsNil:  TotalAdjustment == nil,
+		IsZero: TotalAdjustment != nil && (*TotalAdjustment) == 0,
 	}
 }
 

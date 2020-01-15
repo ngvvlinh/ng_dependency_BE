@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	inttypes "etop.vn/api/top/int/types"
 	inventory_auto "etop.vn/api/top/types/etc/inventory_auto"
 	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
@@ -61,7 +62,10 @@ type CreatePurchaseOrderCommand struct {
 	ShopID        dot.ID
 	SupplierID    dot.ID
 	BasketValue   int
+	DiscountLines []*inttypes.DiscountLine
 	TotalDiscount int
+	FeeLines      []*inttypes.FeeLine
+	TotalFee      int
 	TotalAmount   int
 	Note          string
 	Lines         []*PurchaseOrderLine
@@ -91,7 +95,10 @@ type UpdatePurchaseOrderCommand struct {
 	ID            dot.ID
 	ShopID        dot.ID
 	BasketValue   dot.NullInt
+	DiscountLines []*inttypes.DiscountLine
 	TotalDiscount dot.NullInt
+	FeeLines      []*inttypes.FeeLine
+	TotalFee      dot.NullInt
 	TotalAmount   dot.NullInt
 	Note          dot.NullString
 	Lines         []*PurchaseOrderLine
@@ -224,7 +231,10 @@ func (q *CreatePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 			ShopID:        q.ShopID,
 			SupplierID:    q.SupplierID,
 			BasketValue:   q.BasketValue,
+			DiscountLines: q.DiscountLines,
 			TotalDiscount: q.TotalDiscount,
+			FeeLines:      q.FeeLines,
+			TotalFee:      q.TotalFee,
 			TotalAmount:   q.TotalAmount,
 			Note:          q.Note,
 			Lines:         q.Lines,
@@ -236,7 +246,10 @@ func (q *CreatePurchaseOrderCommand) SetCreatePurchaseOrderArgs(args *CreatePurc
 	q.ShopID = args.ShopID
 	q.SupplierID = args.SupplierID
 	q.BasketValue = args.BasketValue
+	q.DiscountLines = args.DiscountLines
 	q.TotalDiscount = args.TotalDiscount
+	q.FeeLines = args.FeeLines
+	q.TotalFee = args.TotalFee
 	q.TotalAmount = args.TotalAmount
 	q.Note = args.Note
 	q.Lines = args.Lines
@@ -255,7 +268,10 @@ func (q *UpdatePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Con
 			ID:            q.ID,
 			ShopID:        q.ShopID,
 			BasketValue:   q.BasketValue,
+			DiscountLines: q.DiscountLines,
 			TotalDiscount: q.TotalDiscount,
+			FeeLines:      q.FeeLines,
+			TotalFee:      q.TotalFee,
 			TotalAmount:   q.TotalAmount,
 			Note:          q.Note,
 			Lines:         q.Lines,
@@ -266,7 +282,10 @@ func (q *UpdatePurchaseOrderCommand) SetUpdatePurchaseOrderArgs(args *UpdatePurc
 	q.ID = args.ID
 	q.ShopID = args.ShopID
 	q.BasketValue = args.BasketValue
+	q.DiscountLines = args.DiscountLines
 	q.TotalDiscount = args.TotalDiscount
+	q.FeeLines = args.FeeLines
+	q.TotalFee = args.TotalFee
 	q.TotalAmount = args.TotalAmount
 	q.Note = args.Note
 	q.Lines = args.Lines

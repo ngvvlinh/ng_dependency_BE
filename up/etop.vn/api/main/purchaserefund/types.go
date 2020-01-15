@@ -4,6 +4,7 @@ import (
 	"time"
 
 	catalog "etop.vn/api/main/catalog/types"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
@@ -19,21 +20,19 @@ type PurchaseRefund struct {
 	Code            string
 	CodeNorm        int
 	Lines           []*PurchaseRefundLine
-
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	CancelledAt time.Time
-	ConfirmedAt time.Time
-
-	CreatedBy    dot.ID
-	UpdatedBy    dot.ID
-	CancelReason string
-	Discount     int
-	Status       status3.Status
-	SupplierID   dot.ID
-
-	TotalAmount int
-	BasketValue int
+	AdjustmentLines []*types.AdjustmentLine
+	TotalAdjustment int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	CancelledAt     time.Time
+	ConfirmedAt     time.Time
+	CreatedBy       dot.ID
+	UpdatedBy       dot.ID
+	CancelReason    string
+	Status          status3.Status
+	SupplierID      dot.ID
+	TotalAmount     int
+	BasketValue     int
 }
 
 type PurchaseRefundLine struct {
@@ -45,6 +44,7 @@ type PurchaseRefundLine struct {
 	ProductID    dot.ID
 	ProductName  string
 	Attributes   []*catalog.Attribute
+	Adjustment   int
 }
 
 type ConfirmedPurchaseRefundEvent struct {

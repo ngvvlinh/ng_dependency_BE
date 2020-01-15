@@ -9,6 +9,7 @@ import (
 
 	refund "etop.vn/api/main/refund"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
 	refundmodel "etop.vn/backend/com/main/refund/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -100,11 +101,12 @@ func convert_refundmodel_Refund_refund_Refund(arg *refundmodel.Refund, out *refu
 	out.CreatedBy = arg.CreatedBy       // simple assign
 	out.UpdatedBy = arg.UpdatedBy       // simple assign
 	out.CancelReason = arg.CancelReason // simple assign
-	out.Discount = arg.Discount         // simple assign
-	out.Status = arg.Status             // simple assign
-	out.CustomerID = arg.CustomerID     // simple assign
-	out.TotalAmount = arg.TotalAmount   // simple assign
-	out.BasketValue = arg.BasketValue   // simple assign
+	out.AdjustmentLines = identityconvert.Convert_sharemodel_AdjustmentLines_inttypes_AdjustmentLines(arg.AdjustmentLines)
+	out.TotalAdjustment = arg.TotalAdjustment // simple assign
+	out.Status = arg.Status                   // simple assign
+	out.CustomerID = arg.CustomerID           // simple assign
+	out.TotalAmount = arg.TotalAmount         // simple assign
+	out.BasketValue = arg.BasketValue         // simple assign
 }
 
 func Convert_refundmodel_Refunds_refund_Refunds(args []*refundmodel.Refund) (outs []*refund.Refund) {
@@ -135,18 +137,19 @@ func convert_refund_Refund_refundmodel_Refund(arg *refund.Refund, out *refundmod
 	out.CodeNorm = arg.CodeNorm // simple assign
 	out.Note = arg.Note         // simple assign
 	out.Lines = Convert_refund_RefundLines_refundmodel_RefundLines(arg.Lines)
-	out.Discount = arg.Discount         // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
-	out.CancelledAt = arg.CancelledAt   // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt   // simple assign
-	out.CreatedBy = arg.CreatedBy       // simple assign
-	out.UpdatedBy = arg.UpdatedBy       // simple assign
-	out.CancelReason = arg.CancelReason // simple assign
-	out.Status = arg.Status             // simple assign
-	out.CustomerID = arg.CustomerID     // simple assign
-	out.TotalAmount = arg.TotalAmount   // simple assign
-	out.BasketValue = arg.BasketValue   // simple assign
+	out.AdjustmentLines = identityconvert.Convert_inttypes_AdjustmentLines_sharemodel_AdjustmentLines(arg.AdjustmentLines)
+	out.TotalAdjustment = arg.TotalAdjustment // simple assign
+	out.CreatedAt = arg.CreatedAt             // simple assign
+	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.CancelledAt = arg.CancelledAt         // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
+	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.UpdatedBy = arg.UpdatedBy             // simple assign
+	out.CancelReason = arg.CancelReason       // simple assign
+	out.Status = arg.Status                   // simple assign
+	out.CustomerID = arg.CustomerID           // simple assign
+	out.TotalAmount = arg.TotalAmount         // simple assign
+	out.BasketValue = arg.BasketValue         // simple assign
 }
 
 func Convert_refund_Refunds_refundmodel_Refunds(args []*refund.Refund) (outs []*refundmodel.Refund) {
@@ -163,25 +166,26 @@ func Apply_refund_CreateRefundArgs_refund_Refund(arg *refund.CreateRefundArgs, o
 }
 
 func apply_refund_CreateRefundArgs_refund_Refund(arg *refund.CreateRefundArgs, out *refund.Refund) {
-	out.ID = 0                    // zero value
-	out.ShopID = arg.ShopID       // simple assign
-	out.OrderID = arg.OrderID     // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Code = ""                 // zero value
-	out.CodeNorm = 0              // zero value
-	out.Lines = arg.Lines         // simple assign
-	out.CreatedAt = time.Time{}   // zero value
-	out.UpdatedAt = time.Time{}   // zero value
-	out.CancelledAt = time.Time{} // zero value
-	out.ConfirmedAt = time.Time{} // zero value
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.UpdatedBy = 0             // zero value
-	out.CancelReason = ""         // zero value
-	out.Discount = arg.Discount   // simple assign
-	out.Status = 0                // zero value
-	out.CustomerID = 0            // zero value
-	out.TotalAmount = 0           // zero value
-	out.BasketValue = 0           // zero value
+	out.ID = 0                                // zero value
+	out.ShopID = arg.ShopID                   // simple assign
+	out.OrderID = arg.OrderID                 // simple assign
+	out.Note = arg.Note                       // simple assign
+	out.Code = ""                             // zero value
+	out.CodeNorm = 0                          // zero value
+	out.Lines = arg.Lines                     // simple assign
+	out.CreatedAt = time.Time{}               // zero value
+	out.UpdatedAt = time.Time{}               // zero value
+	out.CancelledAt = time.Time{}             // zero value
+	out.ConfirmedAt = time.Time{}             // zero value
+	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.UpdatedBy = 0                         // zero value
+	out.CancelReason = ""                     // zero value
+	out.AdjustmentLines = arg.AdjustmentLines // simple assign
+	out.TotalAdjustment = arg.TotalAdjustment // simple assign
+	out.Status = 0                            // zero value
+	out.CustomerID = 0                        // zero value
+	out.TotalAmount = arg.TotalAmount         // simple assign
+	out.BasketValue = arg.BasketValue         // simple assign
 }
 
 func Apply_refund_UpdateRefundArgs_refund_Refund(arg *refund.UpdateRefundArgs, out *refund.Refund) *refund.Refund {
@@ -196,25 +200,26 @@ func Apply_refund_UpdateRefundArgs_refund_Refund(arg *refund.UpdateRefundArgs, o
 }
 
 func apply_refund_UpdateRefundArgs_refund_Refund(arg *refund.UpdateRefundArgs, out *refund.Refund) {
-	out.ID = arg.ID                                 // simple assign
-	out.ShopID = arg.ShopID                         // simple assign
-	out.OrderID = out.OrderID                       // no change
-	out.Note = arg.Note.Apply(out.Note)             // apply change
-	out.Code = out.Code                             // no change
-	out.CodeNorm = out.CodeNorm                     // no change
-	out.Lines = arg.Lines                           // simple assign
-	out.CreatedAt = out.CreatedAt                   // no change
-	out.UpdatedAt = out.UpdatedAt                   // no change
-	out.CancelledAt = out.CancelledAt               // no change
-	out.ConfirmedAt = out.ConfirmedAt               // no change
-	out.CreatedBy = out.CreatedBy                   // no change
-	out.UpdatedBy = out.UpdatedBy                   // no change
-	out.CancelReason = out.CancelReason             // no change
-	out.Discount = arg.Discount.Apply(out.Discount) // apply change
-	out.Status = out.Status                         // no change
-	out.CustomerID = out.CustomerID                 // no change
-	out.TotalAmount = out.TotalAmount               // no change
-	out.BasketValue = out.BasketValue               // no change
+	out.ID = arg.ID                                                      // simple assign
+	out.ShopID = arg.ShopID                                              // simple assign
+	out.OrderID = out.OrderID                                            // no change
+	out.Note = arg.Note.Apply(out.Note)                                  // apply change
+	out.Code = out.Code                                                  // no change
+	out.CodeNorm = out.CodeNorm                                          // no change
+	out.Lines = arg.Lines                                                // simple assign
+	out.CreatedAt = out.CreatedAt                                        // no change
+	out.UpdatedAt = out.UpdatedAt                                        // no change
+	out.CancelledAt = out.CancelledAt                                    // no change
+	out.ConfirmedAt = out.ConfirmedAt                                    // no change
+	out.CreatedBy = out.CreatedBy                                        // no change
+	out.UpdatedBy = out.UpdatedBy                                        // no change
+	out.CancelReason = out.CancelReason                                  // no change
+	out.AdjustmentLines = arg.AdjustmentLines                            // simple assign
+	out.TotalAdjustment = arg.TotalAdjustment.Apply(out.TotalAdjustment) // apply change
+	out.Status = out.Status                                              // no change
+	out.CustomerID = out.CustomerID                                      // no change
+	out.TotalAmount = arg.TotalAmount.Apply(out.TotalAmount)             // apply change
+	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)             // apply change
 }
 
 //-- convert etop.vn/api/main/refund.RefundLine --//
@@ -239,6 +244,7 @@ func convert_refundmodel_RefundLine_refund_RefundLine(arg *refundmodel.RefundLin
 	out.ProductID = arg.ProductID     // simple assign
 	out.ProductName = arg.ProductName // simple assign
 	out.Attributes = catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
+	out.Adjustment = arg.Adjustment // simple assign
 }
 
 func Convert_refundmodel_RefundLines_refund_RefundLines(args []*refundmodel.RefundLine) (outs []*refund.RefundLine) {
@@ -270,6 +276,7 @@ func convert_refund_RefundLine_refundmodel_RefundLine(arg *refund.RefundLine, ou
 	out.RetailPrice = arg.RetailPrice // simple assign
 	out.ProductID = arg.ProductID     // simple assign
 	out.Attributes = catalogconvert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
+	out.Adjustment = arg.Adjustment // simple assign
 }
 
 func Convert_refund_RefundLines_refundmodel_RefundLines(args []*refund.RefundLine) (outs []*refundmodel.RefundLine) {

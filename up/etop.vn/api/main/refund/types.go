@@ -4,6 +4,7 @@ import (
 	"time"
 
 	catalog "etop.vn/api/main/catalog/types"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
@@ -12,28 +13,26 @@ import (
 // +gen:event:topic=event/refund
 
 type Refund struct {
-	ID       dot.ID
-	ShopID   dot.ID
-	OrderID  dot.ID
-	Note     string
-	Code     string
-	CodeNorm int
-	Lines    []*RefundLine
-
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	CancelledAt time.Time
-	ConfirmedAt time.Time
-
-	CreatedBy    dot.ID
-	UpdatedBy    dot.ID
-	CancelReason string
-	Discount     int
-	Status       status3.Status
-	CustomerID   dot.ID
-
-	TotalAmount int
-	BasketValue int
+	ID              dot.ID
+	ShopID          dot.ID
+	OrderID         dot.ID
+	Note            string
+	Code            string
+	CodeNorm        int
+	Lines           []*RefundLine
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	CancelledAt     time.Time
+	ConfirmedAt     time.Time
+	CreatedBy       dot.ID
+	UpdatedBy       dot.ID
+	CancelReason    string
+	AdjustmentLines []*types.AdjustmentLine
+	TotalAdjustment int
+	Status          status3.Status
+	CustomerID      dot.ID
+	TotalAmount     int
+	BasketValue     int
 }
 
 type RefundLine struct {
@@ -45,6 +44,7 @@ type RefundLine struct {
 	ProductID   dot.ID
 	ProductName string
 	Attributes  []*catalog.Attribute
+	Adjustment  int
 }
 
 type RefundConfirmedEvent struct {

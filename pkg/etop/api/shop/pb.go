@@ -28,7 +28,8 @@ func PbPurchaseRefund(args *purchaserefund.PurchaseRefund) *shop.PurchaseRefund 
 		PurchaseOrderID: args.PurchaseOrderID,
 		Note:            args.Note,
 		Code:            args.Code,
-		Discount:        args.Discount,
+		TotalAdjustment: args.TotalAdjustment,
+		AdjustmentLines: args.AdjustmentLines,
 		Lines:           PbPurchaseRefundLine(args.Lines),
 		CreatedAt:       cmapi.PbTime(args.CreatedAt),
 		UpdatedAt:       cmapi.PbTime(args.UpdatedAt),
@@ -56,6 +57,7 @@ func PbPurchaseRefundLine(args []*purchaserefund.PurchaseRefundLine) []*shop.Pur
 			Name:         v.ProductName,
 			PaymentPrice: v.PaymentPrice,
 			Attributes:   v.Attributes,
+			Adjustment:   v.Adjustment,
 		})
 	}
 	return result
@@ -71,23 +73,24 @@ func PbRefunds(args []*refund.Refund) []*shop.Refund {
 
 func PbRefund(args *refund.Refund) *shop.Refund {
 	var result = &shop.Refund{
-		ID:           args.ID,
-		ShopID:       args.ShopID,
-		OrderID:      args.OrderID,
-		Note:         args.Note,
-		Lines:        PbRefundLine(args.Lines),
-		CreatedAt:    cmapi.PbTime(args.CreatedAt),
-		UpdatedAt:    cmapi.PbTime(args.UpdatedAt),
-		ConfirmedAt:  cmapi.PbTime(args.ConfirmedAt),
-		CancelledAt:  cmapi.PbTime(args.CancelledAt),
-		Code:         args.Code,
-		Discount:     args.Discount,
-		CreatedBy:    args.CreatedBy,
-		UpdatedBy:    args.UpdatedBy,
-		Status:       args.Status,
-		CancelReason: args.CancelReason,
-		BasketValue:  args.BasketValue,
-		TotalAmount:  args.TotalAmount,
+		ID:              args.ID,
+		ShopID:          args.ShopID,
+		OrderID:         args.OrderID,
+		Note:            args.Note,
+		Code:            args.Code,
+		AdjustmentLines: args.AdjustmentLines,
+		TotalAdjustment: args.TotalAdjustment,
+		Lines:           PbRefundLine(args.Lines),
+		CreatedAt:       cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:       cmapi.PbTime(args.UpdatedAt),
+		CancelledAt:     cmapi.PbTime(args.CancelledAt),
+		ConfirmedAt:     cmapi.PbTime(args.ConfirmedAt),
+		CreatedBy:       args.CreatedBy,
+		UpdatedBy:       args.UpdatedBy,
+		CancelReason:    args.CancelReason,
+		Status:          args.Status,
+		TotalAmount:     args.TotalAmount,
+		BasketValue:     args.BasketValue,
 	}
 	return result
 }
@@ -104,6 +107,7 @@ func PbRefundLine(args []*refund.RefundLine) []*shop.RefundLine {
 			Name:        v.ProductName,
 			RetailPrice: v.RetailPrice,
 			Attributes:  v.Attributes,
+			Adjustment:  v.Adjustment,
 		})
 	}
 	return result

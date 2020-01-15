@@ -58,11 +58,10 @@ func (a *RefundAggregate) CreateRefund(ctx context.Context, args *refund.CreateR
 	}
 	refundResult.CustomerID = preLine.CustomerID
 	refundResult.Lines = preLine.RefundLine
-	if preLine.BasketValue < refundResult.Discount {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giảm giá không được lớn hơn giá trị hàng trả")
+	err = checkRefundBeforeCreateOrUpdate(&refundResult)
+	if err != nil {
+		return nil, err
 	}
-	refundResult.TotalAmount = preLine.BasketValue - refundResult.Discount
-	refundResult.BasketValue = preLine.BasketValue
 	var maxCodeNorm = 1
 	refundCode, err := a.store(ctx).ShopID(args.ShopID).GetRefundByMaximumCodeNorm()
 	switch cm.ErrorCode(err) {
@@ -73,7 +72,6 @@ func (a *RefundAggregate) CreateRefund(ctx context.Context, args *refund.CreateR
 	default:
 		return nil, err
 	}
-	refundResult.CustomerID = preLine.CustomerID
 	refundResult.Code = convert.GenerateCode(maxCodeNorm)
 	refundResult.CodeNorm = maxCodeNorm
 	err = a.store(ctx).Create(&refundResult)
@@ -99,17 +97,16 @@ func (a *RefundAggregate) UpdateRefund(ctx context.Context, args *refund.UpdateR
 	refundDB.CustomerID = preLine.CustomerID
 	refundDB.Lines = preLine.RefundLine
 	refundDB.BasketValue = preLine.BasketValue
-
-	if preLine.BasketValue < refundDB.Discount {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giảm giá không được lớn hơn giá trị hàng trả")
+	err = checkRefundBeforeCreateOrUpdate(refundDB)
+	if err != nil {
+		return nil, err
 	}
-	refundDB.TotalAmount = preLine.BasketValue - refundDB.Discount
 	err = a.store(ctx).ShopID(args.ShopID).ID(args.ID).UpdateRefundAll(refundDB)
 	return refundDB, err
 }
 
 func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, orderID dot.ID, refundID dot.ID, lines []*refund.RefundLine) (*refund.CheckReceiptLinesResponse, error) {
-	basketValue := 0
+
 	queryOrder := &ordermodelx.GetOrderQuery{
 		OrderID: orderID,
 		ShopID:  shopID,
@@ -149,12 +146,10 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 		if err != nil {
 			return nil, err
 		}
-		basketValue = basketValue + lines[key].RetailPrice*lines[key].Quantity
 	}
 	return &refund.CheckReceiptLinesResponse{
-		CustomerID:  queryOrder.Result.Order.CustomerID,
-		RefundLine:  lines,
-		BasketValue: basketValue,
+		CustomerID: queryOrder.Result.Order.CustomerID,
+		RefundLine: lines,
 	}, nil
 }
 
@@ -167,6 +162,7 @@ func (a *RefundAggregate) CancelRefund(ctx context.Context, args *refund.CancelR
 	refundDB.Status = status3.N
 	refundDB.CancelReason = args.CancelReason
 	refundDB.UpdatedAt = time.Now()
+	refundDB.UpdatedBy = args.UpdatedBy
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdateRefundAll(refundDB)
 		if err != nil {
@@ -198,6 +194,8 @@ func (a *RefundAggregate) ConfirmRefund(ctx context.Context, args *refund.Confir
 	}
 	refundDB.CancelledAt = time.Now()
 	refundDB.Status = status3.P
+	refundDB.UpdatedAt = time.Now()
+	refundDB.UpdatedBy = args.UpdatedBy
 	err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).UpdateRefundAll(refundDB)
 	if err != nil {
 		return nil, err
@@ -212,4 +210,31 @@ func (a *RefundAggregate) ConfirmRefund(ctx context.Context, args *refund.Confir
 		return nil, err
 	}
 	return refundDB, nil
+}
+
+func checkRefundBeforeCreateOrUpdate(args *refund.Refund) error {
+	if args.BasketValue < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "basket_value không được nhỏ hơn 0")
+	}
+	if args.TotalAmount < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "total_amount không được nhỏ hơn 0")
+	}
+	if args.BasketValue+args.TotalAdjustment != args.TotalAmount {
+		return cm.Errorf(cm.InvalidArgument, nil, "total_amount không đúng, basket_value + total_adjustment == total_amount")
+	}
+	basketValue := 0
+	for _, line := range args.Lines {
+		basketValue += line.Quantity * (line.RetailPrice + line.Adjustment)
+	}
+	if basketValue != args.BasketValue {
+		return cm.Errorf(cm.InvalidArgument, nil, "basket_value không đúng, basket value đang là %, giá trị mong đợi là %v", args.BasketValue, basketValue)
+	}
+	totalAdjustment := 0
+	for _, line := range args.AdjustmentLines {
+		totalAdjustment += line.Amount
+	}
+	if totalAdjustment != args.TotalAdjustment {
+		return cm.Errorf(cm.InvalidArgument, nil, "total_adjustment không đúng, basket value đang là %, giá trị mong đợi là %v", args.TotalAdjustment, totalAdjustment)
+	}
+	return nil
 }

@@ -11,6 +11,7 @@ import (
 // +gen:convert: etop.vn/backend/com/main/identity/sharemodel->etop.vn/api/main/identity/types
 // +gen:convert: etop.vn/backend/com/main/identity/model->etop.vn/api/main/identity
 // +gen:convert: etop.vn/api/main/identity
+// +gen:convert: etop.vn/backend/com/main/identity/sharemodel->etop.vn/api/top/int/types
 
 func ShopDB(in *identity.Shop) *identitymodel.Shop {
 	if in == nil {

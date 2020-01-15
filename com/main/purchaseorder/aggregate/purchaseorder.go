@@ -60,6 +60,9 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 		ShopID:        args.ShopID,
 		BasketValue:   args.BasketValue,
 		TotalDiscount: args.TotalDiscount,
+		DiscountLines: args.DiscountLines,
+		TotalFee:      args.TotalFee,
+		FeeLines:      args.FeeLines,
 		TotalAmount:   args.TotalAmount,
 		Lines:         args.Lines,
 	}
@@ -107,10 +110,10 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 	codeNorm := maxCodeNorm + 1
 	purchaseOrder.Code = convert.GenerateCode(codeNorm)
 	purchaseOrder.CodeNorm = codeNorm
-	if err := a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
+	if err = a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
 		return nil, err
 	}
-	if err := a.store(ctx).CreatePurchaseOrder(purchaseOrder); err != nil {
+	if err = a.store(ctx).CreatePurchaseOrder(purchaseOrder); err != nil {
 		return nil, err
 	}
 	return purchaseOrder, nil
@@ -129,17 +132,17 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể chỉnh sửa đơn nhập hàng, kiểm tra trạng thái đơn.")
 	}
 
-	if err := scheme.Convert(args, purchaseOrder); err != nil {
+	if err = scheme.Convert(args, purchaseOrder); err != nil {
 		return nil, err
 	}
-	if err := a.checkPurchaseOrder(ctx, purchaseOrder); err != nil {
+	if err = a.checkPurchaseOrder(ctx, purchaseOrder); err != nil {
 		return nil, err
 	}
-	if err := a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
+	if err = a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
 		return nil, err
 	}
 	purchaseOrderDB := new(model.PurchaseOrder)
-	if err := scheme.Convert(purchaseOrder, purchaseOrderDB); err != nil {
+	if err = scheme.Convert(purchaseOrder, purchaseOrderDB); err != nil {
 		return nil, err
 	}
 	err = a.store(ctx).UpdatePurchaseOrderDB(purchaseOrderDB)
@@ -218,12 +221,15 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 	if args.TotalAmount < 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiền thanh toán phải lớn hơn hoặc bằng 0")
 	}
-	if args.BasketValue-args.TotalDiscount != args.TotalAmount {
+	if args.TotalFee < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Tiền phí phải lớn hơn hoặc bằng 0")
+	}
+	if args.BasketValue-args.TotalDiscount+args.TotalFee != args.TotalAmount {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiền thanh toán không hợp lệ")
 	}
 
 	var variantIDs []dot.ID
-	var totalPrice int
+	var totalLinesValue int
 	mapVariant := make(map[dot.ID]*catalog.ShopVariant)
 	for _, line := range args.Lines {
 		if line.VariantID == 0 {
@@ -236,11 +242,28 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 			return cm.Errorf(cm.InvalidArgument, nil, "số lượng của phiên bản sản phẩm không hợp lệ")
 		}
 		variantIDs = append(variantIDs, line.VariantID)
-		totalPrice += line.Quantity * line.PaymentPrice
+		totalLinesValue += line.Quantity * (line.PaymentPrice - line.Discount)
 	}
-	if totalPrice != args.BasketValue {
+	if totalLinesValue != args.BasketValue {
 		return cm.Errorf(cm.NotFound, nil, "Tiền hàng không hợp lệ")
 	}
+
+	totalFee := 0
+	for _, value := range args.FeeLines {
+		totalFee += value.Amount
+	}
+	if totalFee != args.TotalFee {
+		return cm.Errorf(cm.NotFound, nil, "Tổng giá trị phí không hợp lệ")
+	}
+
+	totalDiscount := 0
+	for _, value := range args.DiscountLines {
+		totalDiscount += value.Amount
+	}
+	if totalDiscount != args.TotalDiscount {
+		return cm.Errorf(cm.NotFound, nil, "Tổng giá trị giảm giá không hợp lệ")
+	}
+
 	query := &catalog.ListShopVariantsByIDsQuery{
 		IDs:    variantIDs,
 		ShopID: args.ShopID,
@@ -324,7 +347,7 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 			AutoInventoryVoucher: args.AutoInventoryVoucher,
 			Lines:                lines,
 		}
-		if err := a.eventBus.Publish(ctx, event); err != nil {
+		if err = a.eventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 		return nil

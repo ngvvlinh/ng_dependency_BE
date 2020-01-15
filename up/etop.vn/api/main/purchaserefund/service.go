@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/capi/dot"
 )
@@ -39,7 +40,10 @@ type GetPurchaseRefundsResponse struct {
 type CreatePurchaseRefundArgs struct {
 	Lines           []*PurchaseRefundLine
 	PurchaseOrderID dot.ID
-	Discount        int
+	AdjustmentLines []*types.AdjustmentLine
+	TotalAdjustment int
+	TotalAmount     int
+	BasketValue     int
 	ShopID          dot.ID
 	CreatedBy       dot.ID
 	Note            string
@@ -47,12 +51,15 @@ type CreatePurchaseRefundArgs struct {
 
 // +convert:update=PurchaseRefund
 type UpdatePurchaseRefundArgs struct {
-	Lines    []*PurchaseRefundLine
-	ID       dot.ID
-	ShopID   dot.ID
-	Discount dot.NullInt
-	UpdateBy dot.ID
-	Note     dot.NullString
+	Lines           []*PurchaseRefundLine
+	ID              dot.ID
+	ShopID          dot.ID
+	AdjustmentLines []*types.AdjustmentLine
+	TotalAdjustment dot.NullInt
+	TotalAmount     dot.NullInt
+	UpdateBy        dot.ID
+	BasketValue     dot.NullInt
+	Note            dot.NullString
 }
 
 type CancelPurchaseRefundArgs struct {

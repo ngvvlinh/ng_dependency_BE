@@ -24,17 +24,21 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 	var lines []*refund.RefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &refund.RefundLine{
-			VariantID: v.VariantID,
-			Quantity:  v.Quantity,
+			VariantID:  v.VariantID,
+			Quantity:   v.Quantity,
+			Adjustment: v.Adjustment,
 		})
 	}
 	cmd := refund.CreateRefundCommand{
-		Lines:     lines,
-		OrderID:   q.OrderID,
-		Discount:  q.Discount,
-		ShopID:    shopID,
-		CreatedBy: userID,
-		Note:      q.Note,
+		Lines:           lines,
+		OrderID:         q.OrderID,
+		TotalAdjustment: q.TotalAjustment,
+		AdjustmentLines: q.AdjustmentLines,
+		TotalAmount:     q.TotalAmount,
+		BasketValue:     q.BasketValue,
+		ShopID:          shopID,
+		CreatedBy:       userID,
+		Note:            q.Note,
 	}
 	err := RefundAggr.Dispatch(ctx, &cmd)
 	if err != nil {
@@ -59,17 +63,21 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 	var lines []*refund.RefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &refund.RefundLine{
-			VariantID: v.VariantID,
-			Quantity:  v.Quantity,
+			VariantID:  v.VariantID,
+			Quantity:   v.Quantity,
+			Adjustment: v.Adjustment,
 		})
 	}
 	cmd := refund.UpdateRefundCommand{
-		Lines:    lines,
-		ID:       q.ID,
-		ShopID:   shopID,
-		UpdateBy: userID,
-		Note:     q.Note,
-		Discount: q.DisCount,
+		Lines:           lines,
+		ID:              q.ID,
+		ShopID:          shopID,
+		UpdateBy:        userID,
+		Note:            q.Note,
+		TotalAmount:     q.TotalAmount,
+		BasketValue:     q.BasketValue,
+		AdjustmentLines: q.AdjustmentLines,
+		TotalAdjustment: q.TotalAjustment,
 	}
 	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err

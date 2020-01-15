@@ -30,8 +30,8 @@ func sqlgenRefund(_ *Refund) bool { return true }
 type Refunds []*Refund
 
 const __sqlRefund_Table = "refund"
-const __sqlRefund_ListCols = "\"id\",\"shop_id\",\"order_id\",\"code\",\"code_norm\",\"note\",\"lines\",\"discount\",\"created_at\",\"updated_at\",\"cancelled_at\",\"confirmed_at\",\"created_by\",\"updated_by\",\"cancel_reason\",\"status\",\"customer_id\",\"total_amount\",\"basket_value\""
-const __sqlRefund_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"order_id\" = EXCLUDED.\"order_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"lines\" = EXCLUDED.\"lines\",\"discount\" = EXCLUDED.\"discount\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"customer_id\" = EXCLUDED.\"customer_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"basket_value\" = EXCLUDED.\"basket_value\""
+const __sqlRefund_ListCols = "\"id\",\"shop_id\",\"order_id\",\"code\",\"code_norm\",\"note\",\"lines\",\"adjustment_lines\",\"total_adjustment\",\"created_at\",\"updated_at\",\"cancelled_at\",\"confirmed_at\",\"created_by\",\"updated_by\",\"cancel_reason\",\"status\",\"customer_id\",\"total_amount\",\"basket_value\""
+const __sqlRefund_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"order_id\" = EXCLUDED.\"order_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"lines\" = EXCLUDED.\"lines\",\"adjustment_lines\" = EXCLUDED.\"adjustment_lines\",\"total_adjustment\" = EXCLUDED.\"total_adjustment\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"customer_id\" = EXCLUDED.\"customer_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"basket_value\" = EXCLUDED.\"basket_value\""
 const __sqlRefund_Insert = "INSERT INTO \"refund\" (" + __sqlRefund_ListCols + ") VALUES"
 const __sqlRefund_Select = "SELECT " + __sqlRefund_ListCols + " FROM \"refund\""
 const __sqlRefund_Select_history = "SELECT " + __sqlRefund_ListCols + " FROM history.\"refund\""
@@ -63,7 +63,8 @@ func (m *Refund) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.CodeNorm),
 		core.String(m.Note),
 		core.JSON{m.Lines},
-		core.Int(m.Discount),
+		core.JSON{m.AdjustmentLines},
+		core.Int(m.TotalAdjustment),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.CancelledAt),
@@ -87,7 +88,8 @@ func (m *Refund) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.CodeNorm),
 		(*core.String)(&m.Note),
 		core.JSON{&m.Lines},
-		(*core.Int)(&m.Discount),
+		core.JSON{&m.AdjustmentLines},
+		(*core.Int)(&m.TotalAdjustment),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.CancelledAt),
@@ -136,7 +138,7 @@ func (_ *Refunds) SQLSelect(w SQLWriter) error {
 func (m *Refund) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlRefund_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -146,7 +148,7 @@ func (ms Refunds) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlRefund_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -233,13 +235,21 @@ func (m *Refund) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Lines})
 	}
-	if m.Discount != 0 {
+	if m.AdjustmentLines != nil {
 		flag = true
-		w.WriteName("discount")
+		w.WriteName("adjustment_lines")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Discount)
+		w.WriteArg(core.JSON{m.AdjustmentLines})
+	}
+	if m.TotalAdjustment != 0 {
+		flag = true
+		w.WriteName("total_adjustment")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TotalAdjustment)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -339,7 +349,7 @@ func (m *Refund) SQLUpdate(w SQLWriter) error {
 func (m *Refund) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlRefund_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -361,36 +371,37 @@ func (m RefundHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m RefundHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m RefundHistory) ShopID() core.Interface       { return core.Interface{m["shop_id"]} }
-func (m RefundHistory) OrderID() core.Interface      { return core.Interface{m["order_id"]} }
-func (m RefundHistory) Code() core.Interface         { return core.Interface{m["code"]} }
-func (m RefundHistory) CodeNorm() core.Interface     { return core.Interface{m["code_norm"]} }
-func (m RefundHistory) Note() core.Interface         { return core.Interface{m["note"]} }
-func (m RefundHistory) Lines() core.Interface        { return core.Interface{m["lines"]} }
-func (m RefundHistory) Discount() core.Interface     { return core.Interface{m["discount"]} }
-func (m RefundHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m RefundHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m RefundHistory) CancelledAt() core.Interface  { return core.Interface{m["cancelled_at"]} }
-func (m RefundHistory) ConfirmedAt() core.Interface  { return core.Interface{m["confirmed_at"]} }
-func (m RefundHistory) CreatedBy() core.Interface    { return core.Interface{m["created_by"]} }
-func (m RefundHistory) UpdatedBy() core.Interface    { return core.Interface{m["updated_by"]} }
-func (m RefundHistory) CancelReason() core.Interface { return core.Interface{m["cancel_reason"]} }
-func (m RefundHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m RefundHistory) CustomerID() core.Interface   { return core.Interface{m["customer_id"]} }
-func (m RefundHistory) TotalAmount() core.Interface  { return core.Interface{m["total_amount"]} }
-func (m RefundHistory) BasketValue() core.Interface  { return core.Interface{m["basket_value"]} }
+func (m RefundHistory) ID() core.Interface              { return core.Interface{m["id"]} }
+func (m RefundHistory) ShopID() core.Interface          { return core.Interface{m["shop_id"]} }
+func (m RefundHistory) OrderID() core.Interface         { return core.Interface{m["order_id"]} }
+func (m RefundHistory) Code() core.Interface            { return core.Interface{m["code"]} }
+func (m RefundHistory) CodeNorm() core.Interface        { return core.Interface{m["code_norm"]} }
+func (m RefundHistory) Note() core.Interface            { return core.Interface{m["note"]} }
+func (m RefundHistory) Lines() core.Interface           { return core.Interface{m["lines"]} }
+func (m RefundHistory) AdjustmentLines() core.Interface { return core.Interface{m["adjustment_lines"]} }
+func (m RefundHistory) TotalAdjustment() core.Interface { return core.Interface{m["total_adjustment"]} }
+func (m RefundHistory) CreatedAt() core.Interface       { return core.Interface{m["created_at"]} }
+func (m RefundHistory) UpdatedAt() core.Interface       { return core.Interface{m["updated_at"]} }
+func (m RefundHistory) CancelledAt() core.Interface     { return core.Interface{m["cancelled_at"]} }
+func (m RefundHistory) ConfirmedAt() core.Interface     { return core.Interface{m["confirmed_at"]} }
+func (m RefundHistory) CreatedBy() core.Interface       { return core.Interface{m["created_by"]} }
+func (m RefundHistory) UpdatedBy() core.Interface       { return core.Interface{m["updated_by"]} }
+func (m RefundHistory) CancelReason() core.Interface    { return core.Interface{m["cancel_reason"]} }
+func (m RefundHistory) Status() core.Interface          { return core.Interface{m["status"]} }
+func (m RefundHistory) CustomerID() core.Interface      { return core.Interface{m["customer_id"]} }
+func (m RefundHistory) TotalAmount() core.Interface     { return core.Interface{m["total_amount"]} }
+func (m RefundHistory) BasketValue() core.Interface     { return core.Interface{m["basket_value"]} }
 
 func (m *RefundHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(RefundHistory, 19)
+	res := make(RefundHistory, 20)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["order_id"] = data[2]
@@ -398,26 +409,27 @@ func (m *RefundHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["code_norm"] = data[4]
 	res["note"] = data[5]
 	res["lines"] = data[6]
-	res["discount"] = data[7]
-	res["created_at"] = data[8]
-	res["updated_at"] = data[9]
-	res["cancelled_at"] = data[10]
-	res["confirmed_at"] = data[11]
-	res["created_by"] = data[12]
-	res["updated_by"] = data[13]
-	res["cancel_reason"] = data[14]
-	res["status"] = data[15]
-	res["customer_id"] = data[16]
-	res["total_amount"] = data[17]
-	res["basket_value"] = data[18]
+	res["adjustment_lines"] = data[7]
+	res["total_adjustment"] = data[8]
+	res["created_at"] = data[9]
+	res["updated_at"] = data[10]
+	res["cancelled_at"] = data[11]
+	res["confirmed_at"] = data[12]
+	res["created_by"] = data[13]
+	res["updated_by"] = data[14]
+	res["cancel_reason"] = data[15]
+	res["status"] = data[16]
+	res["customer_id"] = data[17]
+	res["total_amount"] = data[18]
+	res["basket_value"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *RefundHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(RefundHistories, 0, 128)
@@ -433,18 +445,19 @@ func (ms *RefundHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["code_norm"] = data[4]
 		m["note"] = data[5]
 		m["lines"] = data[6]
-		m["discount"] = data[7]
-		m["created_at"] = data[8]
-		m["updated_at"] = data[9]
-		m["cancelled_at"] = data[10]
-		m["confirmed_at"] = data[11]
-		m["created_by"] = data[12]
-		m["updated_by"] = data[13]
-		m["cancel_reason"] = data[14]
-		m["status"] = data[15]
-		m["customer_id"] = data[16]
-		m["total_amount"] = data[17]
-		m["basket_value"] = data[18]
+		m["adjustment_lines"] = data[7]
+		m["total_adjustment"] = data[8]
+		m["created_at"] = data[9]
+		m["updated_at"] = data[10]
+		m["cancelled_at"] = data[11]
+		m["confirmed_at"] = data[12]
+		m["created_by"] = data[13]
+		m["updated_by"] = data[14]
+		m["cancel_reason"] = data[15]
+		m["status"] = data[16]
+		m["customer_id"] = data[17]
+		m["total_amount"] = data[18]
+		m["basket_value"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

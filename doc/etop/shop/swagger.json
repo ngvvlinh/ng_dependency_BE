@@ -7452,6 +7452,18 @@
         "basket_value": {
           "type": "integer"
         },
+        "discount_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdDiscountLine"
+          }
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFeeLine"
+          }
+        },
         "lines": {
           "type": "array",
           "items": {
@@ -7470,12 +7482,24 @@
         },
         "total_discount": {
           "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
         }
       }
     },
     "paCreatePurchaseRefundRequest": {
       "type": "object",
       "properties": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
+        "basket_value": {
+          "type": "integer"
+        },
         "discount": {
           "type": "integer"
         },
@@ -7491,6 +7515,12 @@
         "purchase_order_id": {
           "type": "string",
           "format": "int64"
+        },
+        "total_adjustment": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
         }
       }
     },
@@ -7535,7 +7565,13 @@
     "paCreateRefundRequest": {
       "type": "object",
       "properties": {
-        "discount": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
+        "basket_value": {
           "type": "integer"
         },
         "lines": {
@@ -7550,6 +7586,12 @@
         "order_id": {
           "type": "string",
           "format": "int64"
+        },
+        "total_adjustment": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
         }
       }
     },
@@ -9202,12 +9244,12 @@
         "basket_value": {
           "type": "integer"
         },
-        "cancel_reason": {
-          "type": "string"
-        },
         "cancelled_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "cancelled_reason": {
+          "type": "string"
         },
         "code": {
           "type": "string"
@@ -9228,6 +9270,18 @@
           "type": "string",
           "format": "date-time"
         },
+        "discount_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdDiscountLine"
+          }
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFeeLine"
+          }
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -9246,6 +9300,12 @@
         },
         "paid_amount": {
           "type": "integer"
+        },
+        "purchase_order_adjustment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
         },
         "shop_id": {
           "type": "string",
@@ -9267,6 +9327,9 @@
         "total_discount": {
           "type": "integer"
         },
+        "total_fee": {
+          "type": "integer"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"
@@ -9284,6 +9347,9 @@
         },
         "code": {
           "type": "string"
+        },
+        "discount": {
+          "type": "integer"
         },
         "image_url": {
           "type": "string"
@@ -9350,6 +9416,12 @@
     "paPurchaseRefund": {
       "type": "object",
       "properties": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
         "basket_value": {
           "type": "integer"
         },
@@ -9374,9 +9446,6 @@
         "created_by": {
           "type": "string",
           "format": "int64"
-        },
-        "discount": {
-          "type": "integer"
         },
         "id": {
           "type": "string",
@@ -9409,6 +9478,9 @@
           "type": "string",
           "format": "int64"
         },
+        "total_adjustment": {
+          "type": "integer"
+        },
         "total_amount": {
           "type": "integer"
         },
@@ -9425,6 +9497,9 @@
     "paPurchaseRefundLine": {
       "type": "object",
       "properties": {
+        "adjustment": {
+          "type": "integer"
+        },
         "attributes": {
           "type": "array",
           "items": {
@@ -9585,6 +9660,12 @@
     "paRefund": {
       "type": "object",
       "properties": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
         "basket_value": {
           "type": "integer"
         },
@@ -9617,9 +9698,6 @@
           "type": "string",
           "format": "int64"
         },
-        "discount": {
-          "type": "integer"
-        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -9647,6 +9725,9 @@
         "status": {
           "$ref": "#/definitions/blStatus"
         },
+        "total_adjustment": {
+          "type": "integer"
+        },
         "total_amount": {
           "type": "integer"
         },
@@ -9663,6 +9744,9 @@
     "paRefundLine": {
       "type": "object",
       "properties": {
+        "adjustment": {
+          "type": "integer"
+        },
         "attributes": {
           "type": "array",
           "items": {
@@ -11105,6 +11189,18 @@
         "basket_value": {
           "type": "integer"
         },
+        "discount_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdDiscountLine"
+          }
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFeeLine"
+          }
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -11123,13 +11219,22 @@
         },
         "total_discount": {
           "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
         }
       }
     },
     "paUpdatePurchaseRefundRequest": {
       "type": "object",
       "properties": {
-        "discount": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
+        "basket_value": {
           "type": "integer"
         },
         "id": {
@@ -11144,6 +11249,12 @@
         },
         "note": {
           "type": "string"
+        },
+        "total_adjustment": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
         }
       }
     },
@@ -11189,7 +11300,13 @@
     "paUpdateRefundRequest": {
       "type": "object",
       "properties": {
-        "discount": {
+        "adjustment_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdAdjustmentLine"
+          }
+        },
+        "basket_value": {
           "type": "integer"
         },
         "id": {
@@ -11204,6 +11321,12 @@
         },
         "note": {
           "type": "string"
+        },
+        "total_adjustment": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
         }
       }
     },
@@ -11496,6 +11619,17 @@
         "other"
       ]
     },
+    "qdAdjustmentLine": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "qdCancelShipnowFulfillmentRequest": {
       "type": "object",
       "properties": {
@@ -11784,6 +11918,17 @@
         }
       }
     },
+    "qdDiscountLine": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "qdExternalShippingLog": {
       "type": "object",
       "properties": {
@@ -11852,6 +11997,17 @@
         "service_fee": {
           "description": "**Deprecated:** use fee\n",
           "type": "integer"
+        }
+      }
+    },
+    "qdFeeLine": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "string"
         }
       }
     },

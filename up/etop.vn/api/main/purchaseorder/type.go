@@ -3,9 +3,10 @@ package purchaseorder
 import (
 	"time"
 
-	"etop.vn/api/main/catalog/types"
+	catalogtypes "etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/status3"
 	dot "etop.vn/capi/dot"
@@ -19,9 +20,12 @@ type PurchaseOrder struct {
 	SupplierID       dot.ID
 	Supplier         *PurchaseOrderSupplier
 	InventoryVoucher *inventory.InventoryVoucher
-	BasketValue      int
+	DiscountLines    []*types.DiscountLine
 	TotalDiscount    int
+	FeeLines         []*types.FeeLine
+	TotalFee         int
 	TotalAmount      int
+	BasketValue      int
 	Code             string
 	CodeNorm         int
 	Note             string
@@ -45,7 +49,8 @@ type PurchaseOrderLine struct {
 	ProductName  string
 	Code         string
 	ImageUrl     string
-	Attributes   []*types.Attribute
+	Attributes   []*catalogtypes.Attribute
+	Discount     int
 }
 
 type PurchaseOrderSupplier struct {

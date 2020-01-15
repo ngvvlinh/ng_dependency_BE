@@ -30,8 +30,8 @@ func sqlgenPurchaseOrder(_ *PurchaseOrder) bool { return true }
 type PurchaseOrders []*PurchaseOrder
 
 const __sqlPurchaseOrder_Table = "purchase_order"
-const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"total_discount\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\""
-const __sqlPurchaseOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"supplier\" = EXCLUDED.\"supplier\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_discount\" = EXCLUDED.\"total_discount\",\"total_amount\" = EXCLUDED.\"total_amount\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"created_by\" = EXCLUDED.\"created_by\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"supplier_full_name_norm\" = EXCLUDED.\"supplier_full_name_norm\",\"supplier_phone_norm\" = EXCLUDED.\"supplier_phone_norm\""
+const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"discount_lines\",\"total_discount\",\"fee_lines\",\"total_fee\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\""
+const __sqlPurchaseOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"supplier\" = EXCLUDED.\"supplier\",\"basket_value\" = EXCLUDED.\"basket_value\",\"discount_lines\" = EXCLUDED.\"discount_lines\",\"total_discount\" = EXCLUDED.\"total_discount\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_amount\" = EXCLUDED.\"total_amount\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"created_by\" = EXCLUDED.\"created_by\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"supplier_full_name_norm\" = EXCLUDED.\"supplier_full_name_norm\",\"supplier_phone_norm\" = EXCLUDED.\"supplier_phone_norm\""
 const __sqlPurchaseOrder_Insert = "INSERT INTO \"purchase_order\" (" + __sqlPurchaseOrder_ListCols + ") VALUES"
 const __sqlPurchaseOrder_Select = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM \"purchase_order\""
 const __sqlPurchaseOrder_Select_history = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM history.\"purchase_order\""
@@ -61,7 +61,10 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.SupplierID,
 		core.JSON{m.Supplier},
 		core.Int(m.BasketValue),
+		core.JSON{m.DiscountLines},
 		core.Int(m.TotalDiscount),
+		core.JSON{m.FeeLines},
+		core.Int(m.TotalFee),
 		core.Int(m.TotalAmount),
 		core.String(m.Code),
 		core.Int(m.CodeNorm),
@@ -88,7 +91,10 @@ func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.SupplierID,
 		core.JSON{&m.Supplier},
 		(*core.Int)(&m.BasketValue),
+		core.JSON{&m.DiscountLines},
 		(*core.Int)(&m.TotalDiscount),
+		core.JSON{&m.FeeLines},
+		(*core.Int)(&m.TotalFee),
 		(*core.Int)(&m.TotalAmount),
 		(*core.String)(&m.Code),
 		(*core.Int)(&m.CodeNorm),
@@ -142,7 +148,7 @@ func (_ *PurchaseOrders) SQLSelect(w SQLWriter) error {
 func (m *PurchaseOrder) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -152,7 +158,7 @@ func (ms PurchaseOrders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(22)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -223,6 +229,14 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.BasketValue)
 	}
+	if m.DiscountLines != nil {
+		flag = true
+		w.WriteName("discount_lines")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.DiscountLines})
+	}
 	if m.TotalDiscount != 0 {
 		flag = true
 		w.WriteName("total_discount")
@@ -230,6 +244,22 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.TotalDiscount)
+	}
+	if m.FeeLines != nil {
+		flag = true
+		w.WriteName("fee_lines")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.FeeLines})
+	}
+	if m.TotalFee != 0 {
+		flag = true
+		w.WriteName("total_fee")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TotalFee)
 	}
 	if m.TotalAmount != 0 {
 		flag = true
@@ -369,7 +399,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 func (m *PurchaseOrder) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -396,9 +426,14 @@ func (m PurchaseOrderHistory) ShopID() core.Interface      { return core.Interfa
 func (m PurchaseOrderHistory) SupplierID() core.Interface  { return core.Interface{m["supplier_id"]} }
 func (m PurchaseOrderHistory) Supplier() core.Interface    { return core.Interface{m["supplier"]} }
 func (m PurchaseOrderHistory) BasketValue() core.Interface { return core.Interface{m["basket_value"]} }
+func (m PurchaseOrderHistory) DiscountLines() core.Interface {
+	return core.Interface{m["discount_lines"]}
+}
 func (m PurchaseOrderHistory) TotalDiscount() core.Interface {
 	return core.Interface{m["total_discount"]}
 }
+func (m PurchaseOrderHistory) FeeLines() core.Interface    { return core.Interface{m["fee_lines"]} }
+func (m PurchaseOrderHistory) TotalFee() core.Interface    { return core.Interface{m["total_fee"]} }
 func (m PurchaseOrderHistory) TotalAmount() core.Interface { return core.Interface{m["total_amount"]} }
 func (m PurchaseOrderHistory) Code() core.Interface        { return core.Interface{m["code"]} }
 func (m PurchaseOrderHistory) CodeNorm() core.Interface    { return core.Interface{m["code_norm"]} }
@@ -423,45 +458,48 @@ func (m PurchaseOrderHistory) SupplierPhoneNorm() core.Interface {
 }
 
 func (m *PurchaseOrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PurchaseOrderHistory, 22)
+	res := make(PurchaseOrderHistory, 25)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["supplier_id"] = data[2]
 	res["supplier"] = data[3]
 	res["basket_value"] = data[4]
-	res["total_discount"] = data[5]
-	res["total_amount"] = data[6]
-	res["code"] = data[7]
-	res["code_norm"] = data[8]
-	res["note"] = data[9]
-	res["status"] = data[10]
-	res["variant_ids"] = data[11]
-	res["lines"] = data[12]
-	res["created_by"] = data[13]
-	res["cancelled_reason"] = data[14]
-	res["confirmed_at"] = data[15]
-	res["cancelled_at"] = data[16]
-	res["created_at"] = data[17]
-	res["updated_at"] = data[18]
-	res["deleted_at"] = data[19]
-	res["supplier_full_name_norm"] = data[20]
-	res["supplier_phone_norm"] = data[21]
+	res["discount_lines"] = data[5]
+	res["total_discount"] = data[6]
+	res["fee_lines"] = data[7]
+	res["total_fee"] = data[8]
+	res["total_amount"] = data[9]
+	res["code"] = data[10]
+	res["code_norm"] = data[11]
+	res["note"] = data[12]
+	res["status"] = data[13]
+	res["variant_ids"] = data[14]
+	res["lines"] = data[15]
+	res["created_by"] = data[16]
+	res["cancelled_reason"] = data[17]
+	res["confirmed_at"] = data[18]
+	res["cancelled_at"] = data[19]
+	res["created_at"] = data[20]
+	res["updated_at"] = data[21]
+	res["deleted_at"] = data[22]
+	res["supplier_full_name_norm"] = data[23]
+	res["supplier_phone_norm"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PurchaseOrderHistories, 0, 128)
@@ -475,23 +513,26 @@ func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["supplier_id"] = data[2]
 		m["supplier"] = data[3]
 		m["basket_value"] = data[4]
-		m["total_discount"] = data[5]
-		m["total_amount"] = data[6]
-		m["code"] = data[7]
-		m["code_norm"] = data[8]
-		m["note"] = data[9]
-		m["status"] = data[10]
-		m["variant_ids"] = data[11]
-		m["lines"] = data[12]
-		m["created_by"] = data[13]
-		m["cancelled_reason"] = data[14]
-		m["confirmed_at"] = data[15]
-		m["cancelled_at"] = data[16]
-		m["created_at"] = data[17]
-		m["updated_at"] = data[18]
-		m["deleted_at"] = data[19]
-		m["supplier_full_name_norm"] = data[20]
-		m["supplier_phone_norm"] = data[21]
+		m["discount_lines"] = data[5]
+		m["total_discount"] = data[6]
+		m["fee_lines"] = data[7]
+		m["total_fee"] = data[8]
+		m["total_amount"] = data[9]
+		m["code"] = data[10]
+		m["code_norm"] = data[11]
+		m["note"] = data[12]
+		m["status"] = data[13]
+		m["variant_ids"] = data[14]
+		m["lines"] = data[15]
+		m["created_by"] = data[16]
+		m["cancelled_reason"] = data[17]
+		m["confirmed_at"] = data[18]
+		m["cancelled_at"] = data[19]
+		m["created_at"] = data[20]
+		m["updated_at"] = data[21]
+		m["deleted_at"] = data[22]
+		m["supplier_full_name_norm"] = data[23]
+		m["supplier_phone_norm"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
