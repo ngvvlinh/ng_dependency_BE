@@ -33,4 +33,10 @@ const (
 
 	// +enum=partner
 	Partner UserSource = 7
+
+	// +enum=etop_app_ios
+	EtopAppIos UserSource = 8
+
+	// +enum=etop_app_android
+	EtopAppAndroid UserSource = 9
 )

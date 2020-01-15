@@ -23,17 +23,21 @@ var enumUserSourceName = map[int]string{
 	5: "ts_app_ios",
 	6: "ts_app_web",
 	7: "partner",
+	8: "etop_app_ios",
+	9: "etop_app_android",
 }
 
 var enumUserSourceValue = map[string]int{
-	"unknown":        0,
-	"psx":            1,
-	"etop":           2,
-	"topship":        3,
-	"ts_app_android": 4,
-	"ts_app_ios":     5,
-	"ts_app_web":     6,
-	"partner":        7,
+	"unknown":          0,
+	"psx":              1,
+	"etop":             2,
+	"topship":          3,
+	"ts_app_android":   4,
+	"ts_app_ios":       5,
+	"ts_app_web":       6,
+	"partner":          7,
+	"etop_app_ios":     8,
+	"etop_app_android": 9,
 }
 
 func ParseUserSource(s string) (UserSource, bool) {

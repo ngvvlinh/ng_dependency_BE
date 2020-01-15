@@ -6421,7 +6421,9 @@
         "ts_app_android",
         "ts_app_ios",
         "ts_app_web",
-        "partner"
+        "partner",
+        "etop_app_ios",
+        "etop_app_android"
       ]
     },
     "dkAttribute": {
