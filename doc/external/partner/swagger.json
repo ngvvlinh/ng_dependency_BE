@@ -2534,45 +2534,6 @@
         }
       }
     },
-    "mrEtopVariant": {
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dkAttribute"
-          }
-        },
-        "code": {
-          "type": "string"
-        },
-        "cost_price": {
-          "type": "integer"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "list_price": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        }
-      }
-    },
     "mrFulfillment": {
       "type": "object",
       "properties": {
@@ -2874,7 +2835,7 @@
     "mrListCollectionsFilter": {
       "type": "object",
       "properties": {
-        "product_id": {
+        "id": {
           "$ref": "#/definitions/kfIDs"
         }
       }
@@ -3653,9 +3614,6 @@
             "type": "string"
           }
         },
-        "info": {
-          "$ref": "#/definitions/mrEtopVariant"
-        },
         "list_price": {
           "type": "integer"
         },
@@ -3673,12 +3631,6 @@
         },
         "status": {
           "$ref": "#/definitions/blStatus"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -3848,33 +3800,11 @@
         "id"
       ],
       "properties": {
-        "adds": {
-          "description": "images\n",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dkAttribute"
-          }
-        },
         "code": {
           "type": "string"
         },
         "cost_price": {
           "type": "integer"
-        },
-        "delete_all": {
-          "type": "boolean"
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "description": {
           "type": "string"
@@ -3891,12 +3821,6 @@
         },
         "note": {
           "type": "string"
-        },
-        "replace_all": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "retail_price": {
           "type": "integer"
