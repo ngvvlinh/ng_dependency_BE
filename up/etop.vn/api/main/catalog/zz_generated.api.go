@@ -181,6 +181,18 @@ func (h AggregateHandler) HandleDeleteShopCategory(ctx context.Context, msg *Del
 	return err
 }
 
+type DeleteShopCollectionCommand struct {
+	Id     dot.ID
+	ShopId dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteShopCollection(ctx context.Context, msg *DeleteShopCollectionCommand) (err error) {
+	msg.Result, err = h.inner.DeleteShopCollection(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteShopProductsCommand struct {
 	IDs    []dot.ID
 	ShopID dot.ID
@@ -600,6 +612,19 @@ func (h QueryServiceHandler) HandleListShopCollections(ctx context.Context, msg 
 	return err
 }
 
+type ListShopCollectionsByIDsQuery struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+	Paging meta.Paging
+
+	Result *ShopCollectionsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCollectionsByIDs(ctx context.Context, msg *ListShopCollectionsByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCollectionsByIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListShopCollectionsByProductIDQuery struct {
 	ProductID dot.ID
 	ShopID    dot.ID
@@ -727,6 +752,7 @@ func (q *CreateVariantSupplierCommand) command()       {}
 func (q *CreateVariantsSupplierCommand) command()      {}
 func (q *DeleteShopBrandCommand) command()             {}
 func (q *DeleteShopCategoryCommand) command()          {}
+func (q *DeleteShopCollectionCommand) command()        {}
 func (q *DeleteShopProductsCommand) command()          {}
 func (q *DeleteShopVariantsCommand) command()          {}
 func (q *DeleteVariantSupplierCommand) command()       {}
@@ -759,6 +785,7 @@ func (q *GetVariantsBySupplierIDQuery) query()           {}
 func (q *ListBrandsQuery) query()                        {}
 func (q *ListShopCategoriesQuery) query()                {}
 func (q *ListShopCollectionsQuery) query()               {}
+func (q *ListShopCollectionsByIDsQuery) query()          {}
 func (q *ListShopCollectionsByProductIDQuery) query()    {}
 func (q *ListShopProductsQuery) query()                  {}
 func (q *ListShopProductsByIDsQuery) query()             {}
@@ -958,6 +985,12 @@ func (q *DeleteShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Cont
 func (q *DeleteShopCategoryCommand) SetDeleteShopCategoryArgs(args *DeleteShopCategoryArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+}
+
+func (q *DeleteShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID, shopId dot.ID) {
+	return ctx,
+		q.Id,
+		q.ShopId
 }
 
 func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
@@ -1414,6 +1447,21 @@ func (q *ListShopCollectionsQuery) SetListQueryShopArgs(args *shopping.ListQuery
 	q.Filters = args.Filters
 }
 
+func (q *ListShopCollectionsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByIDsArg) {
+	return ctx,
+		&ListShopCollectionsByIDsArg{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+			Paging: q.Paging,
+		}
+}
+
+func (q *ListShopCollectionsByIDsQuery) SetListShopCollectionsByIDsArg(args *ListShopCollectionsByIDsArg) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+}
+
 func (q *ListShopCollectionsByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByProductIDArgs) {
 	return ctx,
 		&ListShopCollectionsByProductIDArgs{
@@ -1560,6 +1608,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateVariantsSupplier)
 	b.AddHandler(h.HandleDeleteShopBrand)
 	b.AddHandler(h.HandleDeleteShopCategory)
+	b.AddHandler(h.HandleDeleteShopCollection)
 	b.AddHandler(h.HandleDeleteShopProducts)
 	b.AddHandler(h.HandleDeleteShopVariants)
 	b.AddHandler(h.HandleDeleteVariantSupplier)
@@ -1606,6 +1655,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListBrands)
 	b.AddHandler(h.HandleListShopCategories)
 	b.AddHandler(h.HandleListShopCollections)
+	b.AddHandler(h.HandleListShopCollectionsByIDs)
 	b.AddHandler(h.HandleListShopCollectionsByProductID)
 	b.AddHandler(h.HandleListShopProducts)
 	b.AddHandler(h.HandleListShopProductsByIDs)

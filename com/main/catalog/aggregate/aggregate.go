@@ -677,3 +677,16 @@ func (a *Aggregate) deleteVariantsSupplier(ctx context.Context, variantIDs []dot
 	}
 	return a.shopVariantSupplier(ctx).ShopID(shopID).VariantIDs(variantIDs...).DeleteVariantSupplier()
 }
+
+func (a *Aggregate) DeleteShopCollection(ctx context.Context, id dot.ID, shopId dot.ID) (deleted int, _ error) {
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		_, err := a.shopProductCollection(ctx).ShopID(shopId).CollectionID(id).DeleteProductCollections()
+		if err != nil {
+			return err
+		}
+		deleted, err = a.shopCollection(ctx).ID(id).ShopID(shopId).SoftDelete()
+		return err
+
+	})
+	return deleted, err
+}

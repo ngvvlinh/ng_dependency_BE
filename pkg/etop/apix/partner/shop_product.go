@@ -5,8 +5,10 @@ import (
 
 	"etop.vn/api/main/catalog"
 	externaltypes "etop.vn/api/top/external/types"
+	"etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
+	"etop.vn/capi/dot"
 	"etop.vn/capi/filter"
 )
 
@@ -101,6 +103,15 @@ func (s *ProductService) UpdateProduct(ctx context.Context, r *UpdateProductEndp
 }
 
 func (s *ProductService) DeleteProduct(ctx context.Context, r *DeleteProductEndpoint) error {
-	// TODO:
+	var IDs []dot.ID
+	IDs = append(IDs, r.Id)
+	cmd := &catalog.DeleteShopProductsCommand{
+		IDs:    IDs,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &common.Empty{}
 	return nil
 }

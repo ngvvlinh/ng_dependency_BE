@@ -240,7 +240,7 @@ var _ = sqlgenShopCollection(&ShopCollection{})
 
 // +convert:type=catalog.ShopCollection
 type ShopCollection struct {
-	ID     dot.ID
+	ID     dot.ID `paging:"id"`
 	ShopID dot.ID
 
 	Name        string
@@ -249,7 +249,7 @@ type ShopCollection struct {
 	ShortDesc   string
 
 	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	UpdatedAt time.Time `sq:"update"  paging:"updated_at"`
 }
 
 var _ = sqlgenShopProductCollection(&ShopProductCollection{})

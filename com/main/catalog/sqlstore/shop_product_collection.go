@@ -69,8 +69,8 @@ func (s *ShopProductCollectionStore) ProductIDs(ids []dot.ID) *ShopProductCollec
 	return s
 }
 
-func (s *ShopProductCollectionStore) CollectionID(ids ...int64) *ShopProductCollectionStore {
-	s.preds = append(s.preds, sq.In("collection_id", ids))
+func (s *ShopProductCollectionStore) CollectionID(id dot.ID) *ShopProductCollectionStore {
+	s.preds = append(s.preds, sq.In("collection_id", id))
 	return s
 }
 
@@ -148,4 +148,10 @@ func (s *ShopProductCollectionStore) ListShopProductCollections() ([]*catalog.Sh
 		return nil, err
 	}
 	return convert.Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(productCollections), err
+}
+
+func (s *ShopProductCollectionStore) DeleteProductCollections() (int, error) {
+	query := s.query().Where(s.preds)
+	_deleted, err := query.Table("shop_product_collection").Delete((*model.ShopProductCollection)(nil))
+	return _deleted, err
 }

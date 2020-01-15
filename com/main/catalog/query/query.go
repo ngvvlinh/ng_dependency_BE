@@ -396,3 +396,15 @@ func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID d
 		Variants: variants,
 	}, err
 }
+
+func (s *QueryService) ListShopCollectionsByIDs(ctx context.Context, args *catalog.ListShopCollectionsByIDsArg) (*catalog.ShopCollectionsResponse, error) {
+	query := s.shopCollection(ctx).IDs(args.IDs).ShopID(args.ShopID)
+	collections, err := query.WithPaging(args.Paging).ListShopCollections()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopCollectionsResponse{
+		Collections: collections,
+		Paging:      query.GetPaging(),
+	}, nil
+}

@@ -66,6 +66,8 @@ type Aggregate interface {
 
 	UpdateShopCollection(context.Context, *UpdateShopCollectionArgs) (*ShopCollection, error)
 
+	DeleteShopCollection(ctx context.Context, id dot.ID, shopId dot.ID) (deleted int, _ error)
+
 	//-- brand --//
 
 	CreateBrand(context.Context, *CreateBrandArgs) (*ShopBrand, error)
@@ -108,6 +110,7 @@ type QueryService interface {
 	GetShopCollection(context.Context, *GetShopCollectionArgs) (*ShopCollection, error)
 	ListShopCollections(context.Context, *shopping.ListQueryShopArgs) (*ShopCollectionsResponse, error)
 	ListShopCollectionsByProductID(context.Context, *ListShopCollectionsByProductIDArgs) ([]*ShopCollection, error)
+	ListShopCollectionsByIDs(context.Context, *ListShopCollectionsByIDsArg) (*ShopCollectionsResponse, error)
 
 	//-- Brand --//
 	GetBrandByID(ctx context.Context, id dot.ID, shopID dot.ID) (*ShopBrand, error)
@@ -119,8 +122,15 @@ type QueryService interface {
 	GetSupplierIDsByVariantID(ctx context.Context, variantID dot.ID, shopID dot.ID) ([]dot.ID, error)
 
 	GetVariantsBySupplierID(ctx context.Context, supplierID dot.ID, shopID dot.ID) (*ShopVariantsResponse, error)
+}
 
-	//-- query --//
+//-- query --//
+
+type ListShopCollectionsByIDsArg struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+
+	Paging meta.Paging
 }
 
 type IDsArgs struct {

@@ -112,7 +112,7 @@ func (s *ShopCollectionStore) GetShopCollection() (*catalog.ShopCollection, erro
 func (s *ShopCollectionStore) ListShopCollectionsDB() ([]*model.ShopCollection, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopCollection.NotDeleted())
-	if len(s.Paging.Sort) == 0 {
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
 	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCollection, s.ftShopCollection.prefix)
@@ -126,6 +126,7 @@ func (s *ShopCollectionStore) ListShopCollectionsDB() ([]*model.ShopCollection, 
 
 	var collections model.ShopCollections
 	err = query.Find(&collections)
+	s.Paging.Apply(collections)
 	return collections, err
 }
 

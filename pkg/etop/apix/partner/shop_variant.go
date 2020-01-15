@@ -5,9 +5,10 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/top/external/types"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/api/top/types/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
+	"etop.vn/capi/dot"
 	"etop.vn/capi/filter"
 )
 
@@ -103,5 +104,15 @@ func (s *VariantService) UpdateVariant(ctx context.Context, r *UpdateVariantEndp
 }
 
 func (s *VariantService) DeleteVariant(ctx context.Context, r *DeleteVariantEndpoint) error {
-	return cm.ErrTODO
+	var IDs []dot.ID
+	IDs = append(IDs, r.Id)
+	cmd := &catalog.DeleteShopVariantsCommand{
+		IDs:    IDs,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &common.Empty{}
+	return nil
 }

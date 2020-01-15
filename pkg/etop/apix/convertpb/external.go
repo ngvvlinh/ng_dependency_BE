@@ -729,3 +729,26 @@ func PbShopVariants(args []*catalog.ShopVariant) []*exttypes.ShopVariant {
 	}
 	return outs
 }
+
+func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductCollection {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.ProductCollection{
+		ID:          arg.ID,
+		ShopID:      arg.ShopID,
+		Name:        arg.Name,
+		Description: arg.Description,
+		ShortDesc:   arg.ShortDesc,
+		CreatedAt:   cmapi.PbTime(arg.CreatedAt),
+		UpdatedAt:   cmapi.PbTime(arg.UpdatedAt),
+	}
+}
+
+func PbShopProductCollections(args []*catalog.ShopCollection) []*exttypes.ProductCollection {
+	outs := make([]*exttypes.ProductCollection, len(args))
+	for i, arg := range args {
+		outs[i] = PbShopProductCollection(arg)
+	}
+	return outs
+}
