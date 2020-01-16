@@ -89,6 +89,11 @@ func (ctrl *ProviderManager) GetShippingProviderDriver(provider shipping_provide
 func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment) (_err error) {
 	// TODO: handle case when ffm.shipping_provider is different with order.shipping_provider
 	provider := order.ShopShipping.ShippingProvider
+
+	if err := checkBlockCarrier(provider); err != nil {
+		return err
+	}
+
 	shippingProvider := ctrl.GetShippingProviderDriver(provider)
 	if shippingProvider == nil {
 		return cm.Errorf(cm.Internal, nil, "invalid carrier")

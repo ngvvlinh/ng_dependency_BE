@@ -3,10 +3,13 @@ package shipping_provider
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/int/types"
 	pbsp "etop.vn/api/top/types/etc/shipping_provider"
+	shippingprovider "etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -14,6 +17,16 @@ import (
 )
 
 var ll = l.New()
+
+var blockCarriers = map[shippingprovider.ShippingProvider]*struct {
+	DateFrom time.Time
+	DateTo   time.Time
+}{
+	shippingprovider.VTPost: {
+		DateFrom: time.Date(2020, 1, 17, 0, 0, 0, 0, time.Local),
+		DateTo:   time.Date(2020, 2, 9, 0, 0, 0, 0, time.Local),
+	},
+}
 
 func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
@@ -128,6 +141,12 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 		}()
 		go func() {
 			var services []*model.AvailableShippingService
+
+			if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
+				sendServices(ch, nil, nil)
+				return
+			}
+
 			var err error
 			defer func() { sendServices(ch, services, err) }()
 			services, err = ctrl.VTPost.GetAllShippingServices(ctx, args)
@@ -195,4 +214,17 @@ func catchAndRecover() {
 	if e != nil {
 		ll.Error("panic (recovered)", l.Object("error", e), l.Stack())
 	}
+}
+
+func checkBlockCarrier(carrier shippingprovider.ShippingProvider) error {
+	now := time.Now()
+	blockInfo := blockCarriers[carrier]
+	if blockInfo == nil {
+		return nil
+	}
+	carrierName := strings.ToUpper(carrier.String())
+	if now.After(blockInfo.DateFrom) && now.Before(blockInfo.DateTo) {
+		return cm.Errorf(cm.FailedPrecondition, nil, "%v ngừng lấy hàng từ ngày %v đến ngày %v. Bạn không thể tạo đơn %v trong thời gian này!", carrierName, blockInfo.DateFrom.Format("02-01-2006"), blockInfo.DateTo.Add(-24*time.Hour).Format("02-01-2006"), carrierName)
+	}
+	return nil
 }
