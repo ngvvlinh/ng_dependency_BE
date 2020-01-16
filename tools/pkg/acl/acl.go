@@ -338,6 +338,62 @@ var ACL = map[string]*permission.PermissionDecl{
 	"ext/shop.Shipping/GetOrder":              {Type: Shop, Auth: APIKey},
 	"ext/shop.Shipping/GetFulfillment":        {Type: Shop, Auth: APIKey},
 
+	"ext/shop.Order/CreateOrder":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Order/ConfirmOrder": {Type: Shop, Auth: APIKey},
+	"ext/shop.Order/CancelOrder":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Order/GetOrder":     {Type: Shop, Auth: APIKey},
+	"ext/shop.Order/ListOrders":   {Type: Shop, Auth: APIKey},
+
+	"ext/shop.Customer/GetCustomer":    {Type: Shop, Auth: APIKey},
+	"ext/shop.Customer/ListCustomers":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Customer/CreateCustomer": {Type: Shop, Auth: APIKey},
+	"ext/shop.Customer/UpdateCustomer": {Type: Shop, Auth: APIKey},
+	"ext/shop.Customer/DeleteCustomer": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.CustomerAddress/GetAddress":    {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerAddress/ListAddresses": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerAddress/CreateAddress": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerAddress/UpdateAddress": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerAddress/DeleteAddress": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.CustomerGroup/CreateGroup": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroup/GetGroup":    {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroup/ListGroups":  {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroup/UpdateGroup": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroup/DeleteGroup": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.CustomerGroupRelationship/ListRelationships":  {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroupRelationship/CreateRelationship": {Type: Shop, Auth: APIKey},
+	"ext/shop.CustomerGroupRelationship/DeleteRelationship": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.Fulfillment/GetFulfillment":   {Type: Shop, Auth: APIKey},
+	"ext/shop.Fulfillment/ListFulfillments": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.Inventory/ListInventoryLevels": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.Product/GetProduct":    {Type: Shop, Auth: APIKey},
+	"ext/shop.Product/ListProducts":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Product/CreateProduct": {Type: Shop, Auth: APIKey},
+	// (status, tag, images, metaFields, category)
+	"ext/shop.Product/UpdateProduct": {Type: Shop, Auth: APIKey},
+	"ext/shop.Product/DeleteProduct": {Type: Shop, Auth: APIKey},
+	// (tags, status)
+	"ext/shop.ProductCollection/CreateCollection": {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollection/UpdateCollection": {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollection/DeleteCollection": {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollection/GetCollection":    {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollection/ListCollections":  {Type: Shop, Auth: APIKey},
+
+	"ext/shop.ProductCollectionRelationship/ListRelationships":  {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollectionRelationship/CreateRelationship": {Type: Shop, Auth: APIKey},
+	"ext/shop.ProductCollectionRelationship/DeleteRelationship": {Type: Shop, Auth: APIKey},
+
+	"ext/shop.Variant/GetVariant":    {Type: Shop, Auth: APIKey},
+	"ext/shop.Variant/DeleteVariant": {Type: Shop, Auth: APIKey},
+	"ext/shop.Variant/ListVariants":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Variant/CreateVariant": {Type: Shop, Auth: APIKey},
+	"ext/shop.Variant/UpdateVariant": {Type: Shop, Auth: APIKey},
+
 	//-- integration --//
 
 	"integration.Integration/Init":            {Type: Public},

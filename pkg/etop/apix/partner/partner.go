@@ -105,8 +105,8 @@ func Init(
 	addressQ *addressing.QueryBus,
 	addressA *addressing.CommandBus,
 	inventoryQ *inventory.QueryBus,
-	catalogA *catalog.CommandBus,
 	catalogQ *catalog.QueryBus,
+	catalogA *catalog.CommandBus,
 ) {
 	if _authURL == "" {
 		ll.Panic("no auth_url")

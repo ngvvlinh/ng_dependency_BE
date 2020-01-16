@@ -22,11 +22,33 @@ type MiscService struct{}
 type WebhookService struct{}
 type HistoryService struct{}
 type ShippingService struct{}
+type CustomerService struct{}
+type CustomerAddressService struct{}
+type CustomerGroupService struct{}
+type CustomerGroupRelationshipService struct{}
+type InventoryService struct{}
+type OrderService struct{}
+type FulfillmentService struct{}
+type ProductService struct{}
+type ProductCollectionService struct{}
+type ProductCollectionRelationshipService struct{}
+type VariantService struct{}
 
 var miscService = &MiscService{}
 var webhookService = &WebhookService{}
 var historyService = &HistoryService{}
 var shippingService = &ShippingService{}
+var customerService = &CustomerService{}
+var customerAddressService = &CustomerAddressService{}
+var customerGroupService = &CustomerGroupService{}
+var customerGroupRelationshipService = &CustomerGroupRelationshipService{}
+var inventoryService = &InventoryService{}
+var orderService = &OrderService{}
+var fulfillmentService = &FulfillmentService{}
+var productService = &ProductService{}
+var productCollectionService = &ProductCollectionService{}
+var productCollectionRelationshipService = &ProductCollectionRelationshipService{}
+var variantService = &VariantService{}
 
 func (s *MiscService) GetLocationList(ctx context.Context, r *GetLocationListEndpoint) error {
 	resp, err := shipping.GetLocationList(ctx)

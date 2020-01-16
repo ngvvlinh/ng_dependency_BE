@@ -548,10 +548,20 @@ func main() {
 		&traderAddressQuery,
 		&traderAddressAggr,
 		&inventoryQuery,
-		&catalogAggr,
 		&catalogQuery,
+		&catalogAggr,
 	)
-	xshop.Init(shutdowner, redisStore)
+	xshop.Init(
+		shutdowner,
+		redisStore,
+		locationBus,
+		&customerQuery,
+		&customerAggr,
+		&traderAddressQuery,
+		&traderAddressAggr,
+		&inventoryQuery,
+		&catalogQuery,
+		&catalogAggr)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, shippingQuery, connectionQuery)
