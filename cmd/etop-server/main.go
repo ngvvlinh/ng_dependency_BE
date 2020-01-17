@@ -108,6 +108,7 @@ import (
 	"etop.vn/backend/pkg/etop/apix/partner"
 	xshipping "etop.vn/backend/pkg/etop/apix/shipping"
 	xshop "etop.vn/backend/pkg/etop/apix/shop"
+	xshopping "etop.vn/backend/pkg/etop/apix/shopping"
 	"etop.vn/backend/pkg/etop/apix/webhook"
 	authorizeauth "etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -551,6 +552,15 @@ func main() {
 	xshop.Init(
 		shutdowner,
 		redisStore,
+		locationBus,
+		&customerQuery,
+		&customerAggr,
+		&traderAddressQuery,
+		&traderAddressAggr,
+		&inventoryQuery,
+		&catalogQuery,
+		&catalogAggr)
+	xshopping.Init(
 		locationBus,
 		&customerQuery,
 		&customerAggr,

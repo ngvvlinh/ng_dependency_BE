@@ -205,6 +205,42 @@ func PbOrderWithoutShipping(m *ordermodel.Order) *exttypes.OrderWithoutShipping 
 	return res
 }
 
+func PbOrderToOrderWithoutShipping(m *exttypes.OrderWithoutShipping) *exttypes.Order {
+	if m == nil {
+		return nil
+	}
+	res := &exttypes.Order{
+		Id:              m.Id,
+		ShopId:          m.ShopId,
+		Code:            m.Code,
+		ExternalId:      m.ExternalId,
+		ExternalCode:    m.ExternalCode,
+		ExternalUrl:     m.ExternalUrl,
+		SelfUrl:         m.SelfUrl,
+		CustomerAddress: m.CustomerAddress,
+		ShippingAddress: m.ShippingAddress,
+		CreatedAt:       m.CreatedAt,
+		ProcessedAt:     m.ProcessedAt,
+		UpdatedAt:       m.UpdatedAt,
+		ClosedAt:        m.ClosedAt,
+		ConfirmedAt:     m.ConfirmedAt,
+		CancelledAt:     m.CancelledAt,
+		CancelReason:    m.CancelReason,
+		ConfirmStatus:   m.ConfirmStatus,
+		Status:          m.Status,
+		Lines:           m.Lines,
+		TotalItems:      m.TotalItems,
+		BasketValue:     m.BasketValue,
+		OrderDiscount:   m.OrderDiscount,
+		TotalDiscount:   m.TotalDiscount,
+		TotalFee:        m.TotalFee,
+		FeeLines:        m.FeeLines,
+		TotalAmount:     m.TotalAmount,
+		OrderNote:       m.OrderNote,
+	}
+	return res
+}
+
 func PbOrderHistories(items []ordermodel.OrderHistory) []*exttypes.Order {
 	res := make([]*exttypes.Order, len(items))
 	for i, item := range items {
@@ -693,6 +729,24 @@ func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductColle
 		CreatedAt:   cmapi.PbTime(arg.CreatedAt),
 		UpdatedAt:   cmapi.PbTime(arg.UpdatedAt),
 	}
+}
+
+func PbShopProductCollectionRelationship(arg *catalog.ShopProductCollection) *exttypes.ProductCollectionRelationship {
+	if arg == nil {
+		return nil
+	}
+	return &exttypes.ProductCollectionRelationship{
+		ProductId:    arg.ProductID,
+		CollectionId: arg.CollectionID,
+	}
+}
+
+func PbShopProductCollectionRelationships(args []*catalog.ShopProductCollection) []*exttypes.ProductCollectionRelationship {
+	outs := make([]*exttypes.ProductCollectionRelationship, len(args))
+	for i, arg := range args {
+		outs[i] = PbShopProductCollectionRelationship(arg)
+	}
+	return outs
 }
 
 func PbShopProductCollections(args []*catalog.ShopCollection) []*exttypes.ProductCollection {

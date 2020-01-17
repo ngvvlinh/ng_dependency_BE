@@ -2,46 +2,68 @@ package xshop
 
 import (
 	"context"
+
+	"etop.vn/backend/pkg/etop/apix/shopping"
 )
 
 func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.GetCustomer(ctx, r.Context.Shop.ID, r.GetCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerService) ListCustomers(ctx context.Context, r *ListCustomersEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.ListCustomers(ctx, r.Context.Shop.ID, r.ListCustomersRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.CreateCustomer(ctx, r.Context.Shop.ID, r.Context.AuthPartnerID, r.CreateCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.UpdateCustomer(ctx, r.Context.Shop.ID, r.UpdateCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.DeleteCustomer(ctx, r.Context.Shop.ID, r.DeleteCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *ListAddressesEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.ListAddresses(ctx, r.Context.Shop.ID, r.ListCustomerAddressesRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerAddressService) GetAddress(ctx context.Context, r *GetAddressEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.GetAddress(ctx, r.Context.Shop.ID, r.OrderIDRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.CreateAddress(ctx, r.Context.Shop.ID, r.CreateCustomerAddressRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerAddressService) UpdateAddress(ctx context.Context, r *UpdateAddressEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.UpdateAddress(ctx, r.Context.Shop.ID, r.UpdateCustomerAddressRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAddressEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.DeleteAddress(ctx, r.Context.Shop.ID, r.IDRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context, r *CustomerGroupListRelationshipsEndpoint) error {
@@ -49,29 +71,43 @@ func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context
 }
 
 func (s *CustomerGroupRelationshipService) CreateRelationship(ctx context.Context, r *CustomerGroupCreateRelationshipEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.CreateRelationshipGroupCustomer(ctx, r.Context.Shop.ID, r.AddCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupRelationshipService) DeleteRelationship(ctx context.Context, r *CustomerGroupDeleteRelationshipEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.DeleteRelationshipGroupCustomer(ctx, r.Context.Shop.ID, r.RemoveCustomerRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupService) GetGroup(ctx context.Context, r *GetGroupEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.GetGroup(ctx, r.Context.Shop.ID, r.IDRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.ListGroups(ctx, r.Context.Shop.ID, r.ListCustomerGroupsRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupService) CreateGroup(ctx context.Context, r *CreateGroupEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.CreateGroup(ctx, r.Context.Shop.ID, r.CreateCustomerGroupRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupService) UpdateGroup(ctx context.Context, r *UpdateGroupEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.UpdateGroup(ctx, r.Context.Shop.ID, r.UpdateCustomerGroupRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupService) DeleteGroup(ctx context.Context, r *DeleteGroupEndpoint) error {
-	panic("implement me")
+	resp, err := shopping.DeleteGroup(ctx, r.Context.Shop.ID, r.IDRequest)
+	r.Result = resp
+	return err
 }

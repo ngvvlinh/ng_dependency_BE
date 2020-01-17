@@ -1,13 +1,25 @@
 package xshop
 
-import "context"
+import (
+	"context"
+
+	"etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/inventory_auto"
+	"etop.vn/api/top/types/etc/inventory_policy"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
+	"etop.vn/backend/pkg/etop/apix/shipping"
+)
 
 func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
-	panic("implement me")
+	resp, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *OrderService) GetOrder(ctx context.Context, r *OrderGetOrderEndpoint) error {
-	panic("implement me")
+	resp, err := shipping.GetOrder(ctx, r.Context.Shop.ID, r.OrderIDRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *OrderService) ListOrders(ctx context.Context, r *OrderListOrdersEndpoint) error {
@@ -15,9 +27,17 @@ func (s *OrderService) ListOrders(ctx context.Context, r *OrderListOrdersEndpoin
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, r *OrderCreateOrderEndpoint) error {
-	panic("implement me")
+	resp, err := shipping.CreateOrder(ctx, &r.Context, r.CreateOrderRequest)
+	r.Result = convertpb.PbOrderToOrderWithoutShipping(resp)
+	return err
 }
 
 func (s *OrderService) ConfirmOrder(ctx context.Context, r *OrderConfirmOrderEndpoint) error {
-	panic("implement me")
+	autoInventoryVoucher := inventory_auto.Unknown
+	if r.InventoryPolicy == inventory_policy.Obey {
+		autoInventoryVoucher = r.AutoInventoryVoucher
+	}
+	err := shipping.ConfirmOrder(ctx, &r.Context, r.OrderId, autoInventoryVoucher)
+	r.Result = &common.Empty{}
+	return err
 }

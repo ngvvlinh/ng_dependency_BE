@@ -663,6 +663,20 @@ func (h QueryServiceHandler) HandleListShopProductsByIDs(ctx context.Context, ms
 	return err
 }
 
+type ListShopProductsCollectionsQuery struct {
+	ProductIds    []dot.ID
+	CollectionIDs []dot.ID
+	ShopID        dot.ID
+	Paging        meta.Paging
+
+	Result *ShopProductsCollectionResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopProductsCollections(ctx context.Context, msg *ListShopProductsCollectionsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopProductsCollections(msg.GetArgs(ctx))
+	return err
+}
+
 type ListShopProductsWithVariantsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -789,6 +803,7 @@ func (q *ListShopCollectionsByIDsQuery) query()          {}
 func (q *ListShopCollectionsByProductIDQuery) query()    {}
 func (q *ListShopProductsQuery) query()                  {}
 func (q *ListShopProductsByIDsQuery) query()             {}
+func (q *ListShopProductsCollectionsQuery) query()       {}
 func (q *ListShopProductsWithVariantsQuery) query()      {}
 func (q *ListShopProductsWithVariantsByIDsQuery) query() {}
 func (q *ListShopVariantsQuery) query()                  {}
@@ -1505,6 +1520,23 @@ func (q *ListShopProductsByIDsQuery) SetListShopProductsByIDsArgs(args *ListShop
 	q.Paging = args.Paging
 }
 
+func (q *ListShopProductsCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListProductsCollections) {
+	return ctx,
+		&ListProductsCollections{
+			ProductIds:    q.ProductIds,
+			CollectionIDs: q.CollectionIDs,
+			ShopID:        q.ShopID,
+			Paging:        q.Paging,
+		}
+}
+
+func (q *ListShopProductsCollectionsQuery) SetListProductsCollections(args *ListProductsCollections) {
+	q.ProductIds = args.ProductIds
+	q.CollectionIDs = args.CollectionIDs
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+}
+
 func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -1659,6 +1691,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListShopCollectionsByProductID)
 	b.AddHandler(h.HandleListShopProducts)
 	b.AddHandler(h.HandleListShopProductsByIDs)
+	b.AddHandler(h.HandleListShopProductsCollections)
 	b.AddHandler(h.HandleListShopProductsWithVariants)
 	b.AddHandler(h.HandleListShopProductsWithVariantsByIDs)
 	b.AddHandler(h.HandleListShopVariants)

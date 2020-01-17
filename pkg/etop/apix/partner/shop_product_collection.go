@@ -3,102 +3,53 @@ package partner
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	externaltypes "etop.vn/api/top/external/types"
-	"etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
+	"etop.vn/backend/pkg/etop/apix/shopping"
 )
 
 func (s *ProductCollectionService) GetCollection(ctx context.Context, r *GetCollectionEndpoint) error {
-	query := &catalog.GetShopCollectionQuery{
-		ID:     r.ID,
-		ShopID: r.Context.Shop.ID,
-	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	r.Result = convertpb.PbShopProductCollection(query.Result)
-	return nil
+	resp, err := shopping.GetCollection(ctx, r.Context.Shop.ID, r.GetCollectionRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionService) ListCollections(ctx context.Context, r *ListCollectionsEndpoint) error {
-	paging, err := cmapi.CMCursorPaging(r.Paging)
-	if err != nil {
-		return err
-	}
-	query := &catalog.ListShopCollectionsByIDsQuery{
-		IDs:    r.Filter.ID,
-		ShopID: r.Context.Shop.ID,
-		Paging: *paging,
-	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	r.Result = &externaltypes.ProductCollectionsResponse{
-		Collections: convertpb.PbShopProductCollections(query.Result.Collections),
-		Paging:      convertpb.PbPageInfo(paging, &query.Result.Paging),
-	}
-	return nil
+	resp, err := shopping.ListCollections(ctx, r.Context.Shop.ID, r.ListCollectionsRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionService) CreateCollection(ctx context.Context, r *CreateCollectionEndpoint) error {
-	cmd := &catalog.CreateShopCollectionCommand{
-		ShopID:      r.Context.Shop.ID,
-		Name:        r.Name,
-		Description: r.Description,
-		ShortDesc:   r.ShortDesc,
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = convertpb.PbShopProductCollection(cmd.Result)
-	return nil
+	resp, err := shopping.CreateCollection(ctx, r.Context.Shop.ID, r.CreateCollectionRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionService) UpdateCollection(ctx context.Context, r *UpdateCollectionEndpoint) error {
-	panic("TODO")
+	resp, err := shopping.UpdateCollection(ctx, r.Context.Shop.ID, r.UpdateCollectionRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionService) DeleteCollection(ctx context.Context, r *DeleteCollectionEndpoint) error {
-	cmd := &catalog.DeleteShopCollectionCommand{
-		Id:     r.ID,
-		ShopId: r.Context.Shop.ID,
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &common.Empty{}
-	return nil
+	resp, err := shopping.DeleteCollection(ctx, r.Context.Shop.ID, r.GetCollectionRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionRelationshipService) ListRelationships(ctx context.Context, r *ProductCollectionListRelationshipsEndpoint) error {
-	panic("TODO")
+	resp, err := shopping.ListRelationshipsProductCollection(ctx, r.Context.Shop.ID, r.ListProductCollectionRelationshipsRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionRelationshipService) CreateRelationship(ctx context.Context, r *ProductCollectionCreateRelationshipEndpoint) error {
-	cmd := &catalog.AddShopProductCollectionCommand{
-		ProductID:     r.ProductId,
-		ShopID:        r.Context.Shop.ID,
-		CollectionIDs: []dot.ID{r.CollectionId},
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &common.Empty{}
-	return nil
+	resp, err := shopping.CreateRelationshipProductCollection(ctx, r.Context.Shop.ID, r.CreateProductCollectionRelationshipRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *ProductCollectionRelationshipService) DeleteRelationship(ctx context.Context, r *ProductCollectionDeleteRelationshipEndpoint) error {
-	cmd := &catalog.RemoveShopProductCollectionCommand{
-		ProductID:     r.ProductId,
-		ShopID:        r.Context.Shop.ID,
-		CollectionIDs: []dot.ID{r.CollectionId},
-	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &common.Empty{}
-	return nil
+	resp, err := shopping.DeleteRelationshipProductCollection(ctx, r.Context.Shop.ID, r.RemoveProductCollectionRequest)
+	r.Result = resp
+	return err
 }

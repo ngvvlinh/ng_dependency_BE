@@ -122,9 +122,24 @@ type QueryService interface {
 	GetSupplierIDsByVariantID(ctx context.Context, variantID dot.ID, shopID dot.ID) ([]dot.ID, error)
 
 	GetVariantsBySupplierID(ctx context.Context, supplierID dot.ID, shopID dot.ID) (*ShopVariantsResponse, error)
+
+	ListShopProductsCollections(ctx context.Context, _ *ListProductsCollections) (*ShopProductsCollectionResponse, error)
 }
 
 //-- query --//
+
+type ShopProductsCollectionResponse struct {
+	ProductsCollections []*ShopProductCollection
+	Paging              meta.PageInfo
+}
+
+type ListProductsCollections struct {
+	ProductIds    []dot.ID
+	CollectionIDs []dot.ID
+	ShopID        dot.ID
+
+	Paging meta.Paging
+}
 
 type ListShopCollectionsByIDsArg struct {
 	IDs    []dot.ID

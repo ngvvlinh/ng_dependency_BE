@@ -408,3 +408,35 @@ func (s *QueryService) ListShopCollectionsByIDs(ctx context.Context, args *catal
 		Paging:      query.GetPaging(),
 	}, nil
 }
+
+func (q *QueryService) ListShopProductsCollections(ctx context.Context, args *catalog.ListProductsCollections) (*catalog.ShopProductsCollectionResponse, error) {
+	query := q.shopProductCollection(ctx).WithPaging(args.Paging)
+	count := 0
+	if len(args.CollectionIDs) != 0 {
+		query = query.IDs(args.CollectionIDs)
+		count++
+	}
+	if len(args.ProductIds) != 0 {
+		query = query.ProductIDs(args.ProductIds)
+		count++
+	}
+	if count != 1 {
+		return nil, cm.Error(cm.FailedPrecondition, "Request không hợp lệ", nil)
+	}
+	productCollections, err := query.ListShopProductCollections()
+	if err != nil {
+		return nil, err
+	}
+	var relationships []*catalog.ShopProductCollection
+	for _, productCollection := range productCollections {
+		relationships = append(relationships, &catalog.ShopProductCollection{
+			ProductID:    productCollection.ProductID,
+			ShopID:       args.ShopID,
+			CollectionID: productCollection.CollectionID,
+		})
+	}
+	return &catalog.ShopProductsCollectionResponse{
+		ProductsCollections: relationships,
+		Paging:              query.GetPaging(),
+	}, nil
+}
