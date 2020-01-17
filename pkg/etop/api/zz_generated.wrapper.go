@@ -937,7 +937,10 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &GetDistrictsEndpoint{Empty: req}
@@ -977,7 +980,10 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &GetDistrictsByProvinceEndpoint{GetDistrictsByProvinceRequest: req}
@@ -1017,7 +1023,10 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &GetProvincesEndpoint{Empty: req}
@@ -1057,7 +1066,10 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &GetWardsEndpoint{Empty: req}
@@ -1097,7 +1109,10 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &GetWardsByDistrictEndpoint{GetWardsByDistrictRequest: req}
@@ -1186,7 +1201,10 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}
@@ -1282,7 +1300,10 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &ChangePasswordUsingTokenEndpoint{ChangePasswordUsingTokenRequest: req}
@@ -1322,7 +1343,10 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &CheckUserRegistrationEndpoint{GetUserByPhoneRequest: req}
@@ -1366,7 +1390,10 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &InitSessionEndpoint{Empty: req}
@@ -1406,7 +1433,10 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &LoginEndpoint{LoginRequest: req}
@@ -1446,7 +1476,10 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &RegisterEndpoint{CreateUserRequest: req}
@@ -1486,7 +1519,10 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &RegisterUsingTokenEndpoint{CreateUserRequest: req}
@@ -1526,7 +1562,10 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &ResetPasswordEndpoint{ResetPasswordRequest: req}
@@ -1613,15 +1652,17 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	const rpcName = "etop.User/SendPhoneVerification"
 	defer func() {
 		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
+		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &SendPhoneVerificationEndpoint{SendPhoneVerificationRequest: req}
@@ -2038,15 +2079,17 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	const rpcName = "etop.User/VerifyPhoneUsingToken"
 	defer func() {
 		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
+		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &VerifyPhoneUsingTokenEndpoint{VerifyPhoneUsingTokenRequest: req}
@@ -2142,7 +2185,10 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &UserRelationshipGetInvitationByTokenEndpoint{GetInvitationByTokenRequest: req}

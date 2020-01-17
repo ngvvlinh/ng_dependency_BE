@@ -32,7 +32,6 @@ const (
 	Affiliate  = permission.Affiliate
 	EtopAdmin  = permission.EtopAdmin
 	SuperAdmin = permission.SuperAdmin
-	Custom     = permission.Custom
 	Secret     = permission.Secret
 
 	User              = permission.User
@@ -214,9 +213,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.User/UpdatePermission": {Type: CurUsr},
 
 	"etop.User/SendEmailVerification": {Type: CurUsr},
-	"etop.User/SendPhoneVerification": {Type: Custom},
+	"etop.User/SendPhoneVerification": {Type: Public},
 	"etop.User/VerifyEmailUsingToken": {Type: CurUsr},
-	"etop.User/VerifyPhoneUsingToken": {Type: Custom},
+	"etop.User/VerifyPhoneUsingToken": {Type: Public},
 	"etop.User/UpdateReferenceUser":   {Type: CurUsr},
 	"etop.User/UpdateReferenceSale":   {Type: CurUsr},
 

@@ -18,6 +18,7 @@ var funcs = map[string]interface{}{
 	"type":                     renderType,
 	"baseName":                 baseName,
 	"hasSecret":                hasSecret,
+	"isPublic":                 isPublic,
 	"methodName":               methodName,
 	"requireAuth":              requireAuth,
 	"requireLogin":             requireLogin,
@@ -81,9 +82,14 @@ func methodName(m *Method) string {
 	return m.Name
 }
 
+func isPublic(m *Method) bool {
+	p := getPermission(m)
+	return p.Type == permission.Public
+}
+
 func requireAuth(m *Method) bool {
 	p := getPermission(m)
-	return p.Type >= permission.Protected || p.Type == permission.Custom
+	return p.Type >= permission.Protected
 }
 
 func requireLogin(m *Method) bool {
@@ -154,7 +160,7 @@ func getClaim(m *Method) string {
 		return "claims.ShopClaim"
 	case permission.Affiliate:
 		return "claims.AffiliateClaim"
-	case permission.Public, permission.Protected, permission.Custom, permission.Secret, permission.SuperAdmin:
+	case permission.Public, permission.Protected, permission.Secret, permission.SuperAdmin:
 		return "claims.EmptyClaim"
 	}
 
@@ -229,7 +235,14 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 {{end}}
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		{{if isPublic $m -}}
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
+		{{else -}}
 		return nil, err
+		{{end -}}
 	}
 	session = sessionQuery.Result
 	query := &{{$s.EndpointPrefix}}{{$m|methodName}}Endpoint{ {{$m.Req|baseName}}: req }

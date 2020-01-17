@@ -93,7 +93,10 @@ func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) 
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &InitEndpoint{InitRequest: req}
@@ -321,7 +324,10 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		Context: ctx,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
 	}
 	session = sessionQuery.Result
 	query := &VersionInfoEndpoint{Empty: req}

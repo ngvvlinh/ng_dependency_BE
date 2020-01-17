@@ -18,7 +18,6 @@ const (
 	EtopAdmin
 
 	SuperAdmin PermType = 100
-	Custom     PermType = -1
 	Secret     PermType = -2
 )
 
