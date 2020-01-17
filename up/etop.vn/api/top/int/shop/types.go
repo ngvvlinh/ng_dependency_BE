@@ -2069,27 +2069,28 @@ type CreateRefundRequest struct {
 func (m *CreateRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Refund struct {
-	ID              dot.ID                  `json:"id"`
-	ShopID          dot.ID                  `json:"shop_id"`
-	OrderID         dot.ID                  `json:"order_id"`
-	Note            string                  `json:"note"`
-	Code            string                  `json:"code"`
-	AdjustmentLines []*types.AdjustmentLine `json:"adjustment_lines"`
-	TotalAdjustment int                     `json:"total_adjustment"`
-	Lines           []*RefundLine           `json:"lines"`
-	CreatedAt       dot.Time                `json:"created_at"`
-	UpdatedAt       dot.Time                `json:"updated_at"`
-	CancelledAt     dot.Time                `json:"cancelled_at"`
-	ConfirmedAt     dot.Time                `json:"confirmed_at"`
-	CreatedBy       dot.ID                  `json:"created_by"`
-	UpdatedBy       dot.ID                  `json:"updated_by"`
-	CancelReason    string                  `json:"cancel_reason"`
-	Customer        *types.OrderCustomer    `json:"customer"`
-	CustomerID      dot.ID                  `json:"customer_id"`
-	Status          status3.Status          `json:"status"`
-	TotalAmount     int                     `json:"total_amount"`
-	BasketValue     int                     `json:"basket_value"`
-	PaidAmount      int                     `json:"paid_amount"`
+	ID               dot.ID                  `json:"id"`
+	ShopID           dot.ID                  `json:"shop_id"`
+	OrderID          dot.ID                  `json:"order_id"`
+	Note             string                  `json:"note"`
+	Code             string                  `json:"code"`
+	AdjustmentLines  []*types.AdjustmentLine `json:"adjustment_lines"`
+	TotalAdjustment  int                     `json:"total_adjustment"`
+	Lines            []*RefundLine           `json:"lines"`
+	CreatedAt        dot.Time                `json:"created_at"`
+	UpdatedAt        dot.Time                `json:"updated_at"`
+	CancelledAt      dot.Time                `json:"cancelled_at"`
+	ConfirmedAt      dot.Time                `json:"confirmed_at"`
+	CreatedBy        dot.ID                  `json:"created_by"`
+	UpdatedBy        dot.ID                  `json:"updated_by"`
+	CancelReason     string                  `json:"cancel_reason"`
+	Customer         *types.OrderCustomer    `json:"customer"`
+	CustomerID       dot.ID                  `json:"customer_id"`
+	Status           status3.Status          `json:"status"`
+	TotalAmount      int                     `json:"total_amount"`
+	BasketValue      int                     `json:"basket_value"`
+	PaidAmount       int                     `json:"paid_amount"`
+	InventoryVoucher *InventoryVoucher       `json:"inventory_voucher"`
 }
 
 func (m *Refund) String() string { return jsonx.MustMarshalToString(m) }
@@ -2176,26 +2177,27 @@ func (m *CreatePurchaseRefundRequest) Reset()         { *m = CreatePurchaseRefun
 func (m *CreatePurchaseRefundRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseRefund struct {
-	ID              dot.ID                  `json:"id"`
-	ShopID          dot.ID                  `json:"shop_id"`
-	PurchaseOrderID dot.ID                  `json:"purchase_order_id"`
-	Note            string                  `json:"note"`
-	Code            string                  `json:"code"`
-	TotalAdjustment int                     `json:"total_adjustment"`
-	AdjustmentLines []*types.AdjustmentLine `json:"adjustment_lines"`
-	Lines           []*PurchaseRefundLine   `json:"lines"`
-	CreatedAt       dot.Time                `json:"created_at"`
-	UpdatedAt       dot.Time                `json:"updated_at"`
-	CancelledAt     dot.Time                `json:"cancelled_at"`
-	ConfirmedAt     dot.Time                `json:"confirmed_at"`
-	CreatedBy       dot.ID                  `json:"created_by"`
-	UpdatedBy       dot.ID                  `json:"updated_by"`
-	CancelReason    string                  `json:"cancel_reason"`
-	Supplier        *PurchaseOrderSupplier  `json:"supplier"`
-	SupplierID      dot.ID                  `json:"supplier_id"`
-	Status          status3.Status          `json:"status"`
-	TotalAmount     int                     `json:"total_amount"`
-	BasketValue     int                     `json:"basket_value"`
+	ID               dot.ID                  `json:"id"`
+	ShopID           dot.ID                  `json:"shop_id"`
+	PurchaseOrderID  dot.ID                  `json:"purchase_order_id"`
+	Note             string                  `json:"note"`
+	Code             string                  `json:"code"`
+	TotalAdjustment  int                     `json:"total_adjustment"`
+	AdjustmentLines  []*types.AdjustmentLine `json:"adjustment_lines"`
+	Lines            []*PurchaseRefundLine   `json:"lines"`
+	CreatedAt        dot.Time                `json:"created_at"`
+	UpdatedAt        dot.Time                `json:"updated_at"`
+	CancelledAt      dot.Time                `json:"cancelled_at"`
+	ConfirmedAt      dot.Time                `json:"confirmed_at"`
+	CreatedBy        dot.ID                  `json:"created_by"`
+	UpdatedBy        dot.ID                  `json:"updated_by"`
+	CancelReason     string                  `json:"cancel_reason"`
+	Supplier         *PurchaseOrderSupplier  `json:"supplier"`
+	SupplierID       dot.ID                  `json:"supplier_id"`
+	Status           status3.Status          `json:"status"`
+	TotalAmount      int                     `json:"total_amount"`
+	BasketValue      int                     `json:"basket_value"`
+	InventoryVoucher *InventoryVoucher       `json:"inventory"`
 }
 
 func (m *PurchaseRefund) Reset()         { *m = PurchaseRefund{} }

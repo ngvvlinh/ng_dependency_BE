@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/shopping/customering"
@@ -11,6 +12,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -45,11 +47,7 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err = populateRefundWithCustomer(ctx, result)
-	if err != nil {
-		return err
-	}
-	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	result, err = populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -83,11 +81,7 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefundWithCustomer(ctx, result)
-	if err != nil {
-		return err
-	}
-	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	result, err := populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -109,11 +103,7 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefundWithCustomer(ctx, result)
-	if err != nil {
-		return err
-	}
-	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	result, err := populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -136,11 +126,7 @@ func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoin
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefundWithCustomer(ctx, result)
-	if err != nil {
-		return err
-	}
-	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	result, err := populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -165,11 +151,7 @@ func (s *RefundService) GetRefund(ctx context.Context, q *GetRefundEndpoint) err
 		return err
 	}
 	result := PbRefund(query.Result)
-	result, err := populateRefundWithCustomer(ctx, result)
-	if err != nil {
-		return err
-	}
-	result, err = populateRefundWithReceiptPaidAmount(ctx, result)
+	result, err := populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -189,15 +171,9 @@ func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *GetRefundsByIDsE
 	}
 	result := PbRefunds(query.Result)
 	var err error
-	if len(result) > 0 {
-		result, err = populateRefundsWithCustomer(ctx, result)
-		if err != nil {
-			return err
-		}
-		result, err = populateRefundsWithReceiptPaidAmount(ctx, result)
-		if err != nil {
-			return err
-		}
+	result, err = populateRefunds(ctx, result)
+	if err != nil {
+		return err
 	}
 	q.Result = &shop.GetRefundsByIDsResponse{
 		Refund: result,
@@ -218,15 +194,9 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 	}
 	result := PbRefunds(query.Result.Refunds)
 	var err error
-	if len(result) > 0 {
-		result, err = populateRefundsWithCustomer(ctx, result)
-		if err != nil {
-			return err
-		}
-		result, err = populateRefundsWithReceiptPaidAmount(ctx, result)
-		if err != nil {
-			return err
-		}
+	result, err = populateRefunds(ctx, result)
+	if err != nil {
+		return err
 	}
 	q.Result = &shop.GetRefundsResponse{
 		Refunds: result,
@@ -368,4 +338,84 @@ func populateRefundWithCustomer(ctx context.Context, refundArg *shop.Refund) (*s
 		}
 	}
 	return refundArg, nil
+}
+
+func populateRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.Refund) (*shop.Refund, error) {
+	// Get inventory voucher
+	queryInventoryVoucher := &inventory.GetInventoryVoucherQuery{
+		ShopID: refundArg.ShopID,
+		ID:     refundArg.ID,
+	}
+	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return refundArg, nil
+		}
+		return nil, err
+	}
+	// Add inventoryvoucher to refund
+	refundArg.InventoryVoucher = PbShopInventoryVoucher(queryInventoryVoucher.Result)
+	return refundArg, nil
+}
+
+func populateRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
+	if len(refundsArgs) == 0 {
+		return nil, nil
+	}
+	var refundIDs []dot.ID
+	for _, value := range refundsArgs {
+		refundIDs = append(refundIDs, value.ID)
+	}
+	// Get inventoryVoucher
+	queryInventoryVoucher := &inventory.GetInventoryVouchersByRefIDsQuery{
+		RefIDs: refundIDs,
+		ShopID: refundsArgs[0].ShopID,
+	}
+	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+		return nil, err
+	}
+	// make map[ref_id]inventoryVoucher
+	var mapInventoryVoucher = make(map[dot.ID]*inventory.InventoryVoucher)
+	for _, value := range queryInventoryVoucher.Result.InventoryVoucher {
+		mapInventoryVoucher[value.RefID] = value
+	}
+	for key, value := range refundsArgs {
+		refundsArgs[key].InventoryVoucher = PbShopInventoryVoucher(mapInventoryVoucher[value.ID])
+	}
+	return refundsArgs, nil
+}
+
+func populateRefund(ctx context.Context, refundsArgs *shop.Refund) (*shop.Refund, error) {
+	var err error
+	refundsArgs, err = populateRefundWithCustomer(ctx, refundsArgs)
+	if err != nil {
+		return nil, err
+	}
+	refundsArgs, err = populateRefundWithReceiptPaidAmount(ctx, refundsArgs)
+	if err != nil {
+		return nil, err
+	}
+	refundsArgs, err = populateRefundWithInventoryVoucher(ctx, refundsArgs)
+	if err != nil {
+		return nil, err
+	}
+	return refundsArgs, nil
+}
+
+func populateRefunds(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
+	if len(refundsArgs) > 0 {
+		var err error
+		refundsArgs, err = populateRefundsWithCustomer(ctx, refundsArgs)
+		if err != nil {
+			return nil, err
+		}
+		refundsArgs, err = populateRefundsWithReceiptPaidAmount(ctx, refundsArgs)
+		if err != nil {
+			return nil, err
+		}
+		refundsArgs, err = populateRefundsWithInventoryVouchers(ctx, refundsArgs)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return refundsArgs, nil
 }

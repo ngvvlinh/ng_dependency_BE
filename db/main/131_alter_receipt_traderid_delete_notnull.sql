@@ -1,2 +1,2 @@
 ALTER TABLE receipt
-  ALTER COLUMN trader_id DROP NOT NULL
+  ALTER COLUMN trader_id DROP NOT NULL;

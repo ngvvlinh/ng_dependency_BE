@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/purchaserefund"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/top/int/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/capi/dot"
@@ -47,6 +47,10 @@ func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *Cre
 	if err != nil {
 		return err
 	}
+	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -80,6 +84,10 @@ func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *Upd
 	if err != nil {
 		return err
 	}
+	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -104,6 +112,10 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *Co
 	if err != nil {
 		return err
 	}
+	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = result
 	return nil
 }
@@ -125,6 +137,10 @@ func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *Can
 	}
 	result := PbPurchaseRefund(cmd.Result)
 	result, err := populatePurchaseRefundWithSupplier(ctx, result)
+	if err != nil {
+		return err
+	}
+	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -153,6 +169,10 @@ func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *GetPur
 	if err != nil {
 		return err
 	}
+	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	if err != nil {
+		return err
+	}
 	result.Supplier = convertpb.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
 	q.Result = result
 	return nil
@@ -171,6 +191,10 @@ func (s *PurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, q *
 	var err error
 	if len(result) > 0 {
 		result, err = populatePurchaseRefundsWithSupplier(ctx, result)
+		if err != nil {
+			return err
+		}
+		result, err = populatePurchaseRefundsWithInventoryVouchers(ctx, result)
 		if err != nil {
 			return err
 		}
@@ -199,6 +223,10 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPu
 		if err != nil {
 			return err
 		}
+		result, err = populatePurchaseRefundsWithInventoryVouchers(ctx, result)
+		if err != nil {
+			return err
+		}
 	}
 	q.Result = &shop.GetPurchaseRefundsResponse{
 		PurchaseRefunds: result,
@@ -208,17 +236,20 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPu
 }
 
 func populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
+	if len(purchaseRefunds) == 0 {
+		return purchaseRefunds, nil
+	}
 	var purchaseOrderIDs []dot.ID
 	for _, value := range purchaseRefunds {
-		purchaseOrderIDs = append(purchaseOrderIDs, value.SupplierID)
+		purchaseOrderIDs = append(purchaseOrderIDs, value.PurchaseOrderID)
 	}
-	// Get informations about suppliers from purchase_order
+	// Get informations about purchase_order
 	queryPurchaseOrder := &purchaseorder.GetPurchaseOrdersByIDsQuery{
 		IDs:    purchaseOrderIDs,
 		ShopID: purchaseRefunds[0].ShopID,
 		Result: nil,
 	}
-	if err := bus.Dispatch(ctx, queryPurchaseOrder); err != nil {
+	if err := purchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return nil, err
 	}
 	// make a map [ PurchaseOrderID ] PurchaseOrderID
@@ -291,4 +322,48 @@ func populatePurchaseRefundWithSupplier(ctx context.Context, purchaseRefundArg *
 		}
 	}
 	return purchaseRefundArg, nil
+}
+
+func populatePurchaseRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.PurchaseRefund) (*shop.PurchaseRefund, error) {
+	// Get inventory voucher
+	queryInventoryVoucher := &inventory.GetInventoryVoucherQuery{
+		ShopID: refundArg.ShopID,
+		ID:     refundArg.ID,
+	}
+	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return refundArg, nil
+		}
+		return nil, err
+	}
+	// Add inventoryvoucher to refund
+	refundArg.InventoryVoucher = PbShopInventoryVoucher(queryInventoryVoucher.Result)
+	return refundArg, nil
+}
+
+func populatePurchaseRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
+	if len(refundsArgs) == 0 {
+		return refundsArgs, nil
+	}
+	var refundIDs []dot.ID
+	for _, value := range refundsArgs {
+		refundIDs = append(refundIDs, value.ID)
+	}
+	// Get inventoryVoucher
+	queryInventoryVoucher := &inventory.GetInventoryVouchersByRefIDsQuery{
+		RefIDs: refundIDs,
+		ShopID: refundsArgs[0].ShopID,
+	}
+	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+		return nil, err
+	}
+	// make map[ref_id]inventoryVoucher
+	var mapInventoryVoucher = make(map[dot.ID]*inventory.InventoryVoucher)
+	for _, value := range queryInventoryVoucher.Result.InventoryVoucher {
+		mapInventoryVoucher[value.RefID] = value
+	}
+	for key, value := range refundsArgs {
+		refundsArgs[key].InventoryVoucher = PbShopInventoryVoucher(mapInventoryVoucher[value.ID])
+	}
+	return refundsArgs, nil
 }

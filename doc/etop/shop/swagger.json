@@ -9451,6 +9451,9 @@
           "type": "string",
           "format": "int64"
         },
+        "inventory": {
+          "$ref": "#/definitions/paInventoryVoucher"
+        },
         "lines": {
           "type": "array",
           "items": {
@@ -9701,6 +9704,9 @@
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "inventory_voucher": {
+          "$ref": "#/definitions/paInventoryVoucher"
         },
         "lines": {
           "type": "array",
