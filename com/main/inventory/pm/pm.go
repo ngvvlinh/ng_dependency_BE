@@ -133,7 +133,7 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 			RefType:   inventory_voucher_ref.PurchaseOrder,
 			RefID:     event.PurchaseOrderID,
 			ShopID:    event.ShopID,
-			UserID:    0,
+			UserID:    event.UserID,
 			OverStock: false,
 		}
 		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
