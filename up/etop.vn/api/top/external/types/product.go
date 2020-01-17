@@ -16,26 +16,26 @@ type Tag struct {
 func (m *Tag) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopProduct struct {
-	ExternalId   string `json:"external_id"`
-	ExternalCode string `json:"external_code"`
+	ExternalId   dot.NullString `json:"external_id"`
+	ExternalCode dot.NullString `json:"external_code"`
 
 	// @required
 	Id dot.ID `json:"id"`
 
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	ShortDesc   string         `json:"short_desc"`
-	ImageUrls   []string       `json:"image_urls"`
-	CategoryId  dot.ID         `json:"category_id"`
-	Note        string         `json:"note"`
-	Status      status3.Status `json:"status"`
-	ListPrice   int            `json:"list_price"`
-	RetailPrice int            `json:"retail_price"`
-	Variants    []*ShopVariant `json:"variants"`
+	Name        dot.NullString     `json:"name"`
+	Description dot.NullString     `json:"description"`
+	ShortDesc   dot.NullString     `json:"short_desc"`
+	ImageUrls   []string           `json:"image_urls"`
+	CategoryId  dot.NullID         `json:"category_id"`
+	Note        dot.NullString     `json:"note"`
+	Status      status3.NullStatus `json:"status"`
+	ListPrice   dot.NullInt        `json:"list_price"`
+	RetailPrice dot.NullInt        `json:"retail_price"`
+	Variants    []*ShopVariant     `json:"variants"`
 
-	CreatedAt dot.Time `json:"created_at"`
-	UpdatedAt dot.Time `json:"updated_at"`
-	BrandId   dot.ID   `json:"brand_id"`
+	CreatedAt dot.Time   `json:"created_at"`
+	UpdatedAt dot.Time   `json:"updated_at"`
+	BrandId   dot.NullID `json:"brand_id"`
 }
 
 func (m *ShopProduct) String() string { return jsonx.MustMarshalToString(m) }
@@ -113,3 +113,15 @@ type UpdateProductRequest struct {
 }
 
 func (m *UpdateProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *ShopProduct) HasChanged() bool {
+	return m.Name.Valid ||
+		m.Description.Valid ||
+		m.ShortDesc.Valid ||
+		m.Note.Valid ||
+		m.Status.Valid ||
+		m.ListPrice.Valid ||
+		m.RetailPrice.Valid ||
+		m.BrandId.Valid ||
+		m.CategoryId.Valid
+}

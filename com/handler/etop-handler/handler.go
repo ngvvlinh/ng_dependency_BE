@@ -8,6 +8,7 @@ import (
 
 	"github.com/Shopify/sarama"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/top/external/types"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
@@ -41,9 +42,11 @@ type Handler struct {
 	wg       sync.WaitGroup
 
 	sender *sender.WebhookSender
+
+	catalogQuery catalog.QueryBus
 }
 
-func New(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *Handler {
+func New(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string, catalogQ catalog.QueryBus) *Handler {
 	h := &Handler{
 		db:           db,
 		historyStore: historysqlstore.NewHistoryStore(db),
@@ -51,6 +54,7 @@ func New(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel,
 		consumer:     consumer,
 		prefix:       prefix + "_pgrid_",
 		sender:       sender,
+		catalogQuery: catalogQ,
 	}
 	handlers := h.TopicsAndHandlers()
 	h.handlers = handlers
@@ -88,6 +92,7 @@ func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 		"order":                      h.HandleOrderEvent,
 		"notification":               nil,
 		"money_transaction_shipping": nil,
+		"shop_product":               h.HandleShopProductEvent,
 	}
 }
 

@@ -24,6 +24,10 @@ var Topics = []TopicDef{{
 	Name:       "notification",
 	Partitions: 64,
 	DBName:     model.DBNotifier,
+}, {
+	Name:       "shop_product",
+	Partitions: 64,
+	DBName:     model.DBMain,
 }}
 
 var TopicMap map[string]TopicDef

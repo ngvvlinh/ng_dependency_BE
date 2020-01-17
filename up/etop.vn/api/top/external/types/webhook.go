@@ -88,6 +88,7 @@ func (m *Change) String() string { return jsonx.MustMarshalToString(m) }
 type LatestOneOf struct {
 	Order       *Order       `json:"order"`
 	Fulfillment *Fulfillment `json:"fulfillment"`
+	Product     *ShopProduct `json:"product"`
 }
 
 func (m *LatestOneOf) String() string { return jsonx.MustMarshalToString(m) }
@@ -95,6 +96,7 @@ func (m *LatestOneOf) String() string { return jsonx.MustMarshalToString(m) }
 type ChangeOneOf struct {
 	Order       *Order       `json:"order"`
 	Fulfillment *Fulfillment `json:"fulfillment"`
+	Product     *ShopProduct `json:"product"`
 }
 
 func (m *ChangeOneOf) String() string { return jsonx.MustMarshalToString(m) }

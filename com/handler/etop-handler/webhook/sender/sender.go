@@ -153,6 +153,7 @@ func (s *WebhookSender) Wait() {
 	s.wg.Wait()
 }
 
+// TODO: entityID: handle composition primary key (e.g. product collection relationship)
 func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
 	var b bytes.Buffer
 	if err := jsonx.MarshalTo(&b, pb); err != nil {

@@ -132,7 +132,7 @@ func (s Service) HandleNotificationWithError(noti *pq.Notification) error {
 		return fmt.Errorf("The topic is in a different database, table: %v, database: %v, expected database: %v", d.Name, d.DBName, s.dbName)
 	}
 
-	partition := int(event.ID % int64(d.Partitions))
+	partition := int(event.ID % int64(d.Partitions)) // TODO: composition primary key
 	ll.Info("HandleNotificationWithError :: ", l.String("topic", topic), l.Object("topic", d), l.Int("partition", partition))
 	s.producer.Send(topic, partition, event.EventKey, data)
 	return nil

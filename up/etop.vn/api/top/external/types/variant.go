@@ -10,24 +10,24 @@ import (
 )
 
 type ShopVariant struct {
-	ExternalId   string `json:"external_id"`
-	ExternalCode string `json:"external_code"`
+	ExternalId   dot.NullString `json:"external_id"`
+	ExternalCode dot.NullString `json:"external_code"`
 
 	// @required
 	Id dot.ID `json:"id"`
 
-	Code string `json:"code"`
+	Code dot.NullString `json:"code"`
 
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	ShortDesc   string         `json:"short_desc"`
-	ImageUrls   []string       `json:"image_urls"`
-	ListPrice   int            `json:"list_price"`
-	RetailPrice int            `json:"retail_price"`
-	Note        string         `json:"note"`
-	Status      status3.Status `json:"status"`
+	Name        dot.NullString     `json:"name"`
+	Description dot.NullString     `json:"description"`
+	ShortDesc   dot.NullString     `json:"short_desc"`
+	ImageUrls   []string           `json:"image_urls"`
+	ListPrice   dot.NullInt        `json:"list_price"`
+	RetailPrice dot.NullInt        `json:"retail_price"`
+	Note        dot.NullString     `json:"note"`
+	Status      status3.NullStatus `json:"status"`
 
-	CostPrice int `json:"cost_price"`
+	CostPrice dot.NullInt `json:"cost_price"`
 
 	Attributes []*catalogtypes.Attribute `json:"attributes"`
 }

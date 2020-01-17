@@ -26,7 +26,6 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
-	"etop.vn/capi/util"
 )
 
 func PNonZeroString(s string) dot.NullString {
@@ -679,90 +678,6 @@ func PbInventoryLevels(args []*inventory.InventoryVariant) []*exttypes.Inventory
 		out[i] = PbInventoryLevel(arg)
 	}
 	return out
-}
-
-func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {
-	if arg == nil {
-		return nil
-	}
-	return &exttypes.ShopProduct{
-		ExternalId:   arg.ExternalID,
-		ExternalCode: arg.ExternalCode,
-		Id:           arg.ProductID,
-		Name:         arg.Name,
-		Description:  arg.Description,
-		ShortDesc:    arg.ShortDesc,
-		ImageUrls:    arg.ImageURLs,
-		CategoryId:   arg.CategoryID,
-		Note:         arg.Note,
-		Status:       arg.Status,
-		ListPrice:    arg.ListPrice,
-		RetailPrice:  arg.RetailPrice,
-		CreatedAt:    cmapi.PbTime(arg.CreatedAt),
-		UpdatedAt:    cmapi.PbTime(arg.UpdatedAt),
-		BrandId:      arg.BrandID,
-	}
-}
-
-func PbShopProducts(args []*catalog.ShopProduct) []*exttypes.ShopProduct {
-	outs := make([]*exttypes.ShopProduct, len(args))
-	for i, arg := range args {
-		outs[i] = PbShopProduct(arg)
-	}
-	return outs
-}
-
-func ConvertProductWithVariantsToPbProduct(arg *catalog.ShopProductWithVariants) *exttypes.ShopProduct {
-	if arg == nil {
-		return nil
-	}
-	return &exttypes.ShopProduct{
-		ExternalId:   arg.ExternalID,
-		ExternalCode: arg.ExternalCode,
-		Id:           arg.ProductID,
-		Name:         arg.Name,
-		Description:  arg.Description,
-		ShortDesc:    arg.ShortDesc,
-		ImageUrls:    arg.ImageURLs,
-		CategoryId:   arg.CategoryID,
-		Note:         arg.Note,
-		Status:       arg.Status,
-		ListPrice:    arg.ListPrice,
-		RetailPrice:  arg.RetailPrice,
-		CreatedAt:    cmapi.PbTime(arg.CreatedAt),
-		UpdatedAt:    cmapi.PbTime(arg.UpdatedAt),
-		BrandId:      arg.BrandID,
-	}
-}
-
-func PbShopVariant(arg *catalog.ShopVariant) *exttypes.ShopVariant {
-	if arg == nil {
-		return nil
-	}
-	return &exttypes.ShopVariant{
-		ExternalId:   arg.ExternalID,
-		ExternalCode: arg.ExternalCode,
-		Id:           arg.VariantID,
-		Code:         arg.Code,
-		Name:         arg.Name,
-		Description:  arg.Description,
-		ShortDesc:    arg.ShortDesc,
-		ImageUrls:    arg.ImageURLs,
-		ListPrice:    arg.ListPrice,
-		RetailPrice:  util.CoalesceInt(arg.RetailPrice, arg.ListPrice),
-		Note:         arg.Note,
-		Status:       arg.Status,
-		CostPrice:    arg.CostPrice,
-		Attributes:   arg.Attributes,
-	}
-}
-
-func PbShopVariants(args []*catalog.ShopVariant) []*exttypes.ShopVariant {
-	outs := make([]*exttypes.ShopVariant, len(args))
-	for i, arg := range args {
-		outs[i] = PbShopVariant(arg)
-	}
-	return outs
 }
 
 func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductCollection {

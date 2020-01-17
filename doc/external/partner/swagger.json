@@ -1989,6 +1989,9 @@
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
+        },
+        "product": {
+          "$ref": "#/definitions/mrShopProduct"
         }
       }
     },
@@ -3009,6 +3012,9 @@
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
+        },
+        "product": {
+          "$ref": "#/definitions/mrShopProduct"
         }
       }
     },

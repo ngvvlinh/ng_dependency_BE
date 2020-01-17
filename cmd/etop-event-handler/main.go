@@ -17,6 +17,7 @@ import (
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	webhooksender "etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	"etop.vn/backend/com/handler/etop-handler/webhook/storage"
+	catalogquery "etop.vn/backend/com/main/catalog/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
 	cc "etop.vn/backend/pkg/common/config"
@@ -94,6 +95,8 @@ func main() {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 
+	catalogQuery := catalogquery.New(db).MessageBus()
+
 	var intctlHandler *intctl.Handler
 	var webhookSender *webhooksender.WebhookSender
 	var waiters []interface{ Wait() }
@@ -120,7 +123,7 @@ func main() {
 			ll.Fatal("Error loading webhooks", l.Error(err))
 		}
 
-		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix)
+		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix, catalogQuery)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)
