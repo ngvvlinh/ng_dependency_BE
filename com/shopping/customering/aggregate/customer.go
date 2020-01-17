@@ -57,7 +57,7 @@ func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (_ *customering.ShopCustomer, err error) {
 	if args.Type == customer_type.Unknown {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Argument is invalid (type unknown)")
+		args.Type = customer_type.Individual
 	}
 
 	if args.Type == customer_type.Independent {
