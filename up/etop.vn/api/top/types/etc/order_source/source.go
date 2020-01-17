@@ -36,4 +36,7 @@ const (
 
 	// +enum=etop_app
 	EtopApp Source = 9
+
+	// +enum=haravan
+	Haravan Source = 10
 )
