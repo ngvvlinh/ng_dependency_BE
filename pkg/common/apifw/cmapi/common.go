@@ -297,39 +297,37 @@ func CMCursorPaging(p *common.CursorPaging) (*cm.Paging, error) {
 	if p.Sort != "" {
 		sort = strings.Split(p.Sort, ",")
 		if len(sort) > 1 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Sort support only one field at the same time")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (sort support only one field at the same time")
 		}
 		if sort[0] == "id" || sort[0] == "-id" {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Sort doesn't support \"id\"")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (sort doesn't support \"id\"")
 		}
 	}
 
 	counter := 0
 	if p.First != 0 {
-		if p.First < 0 || p.First > 1000 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (First must have a value between 1 and 1000")
+		if p.First < 0 || p.First > 100 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (first must have a value between 1 and 100")
 		}
 		counter++
 	}
 	if p.Last != 0 {
-		if p.Last < 0 || p.Last > 1000 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Last must have a value between 1 and 1000")
+		if p.Last < 0 || p.Last > 100 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (last must have a value between 1 and 100")
 		}
 		counter++
 	}
 	if p.Before != "" {
 		if p.Limit != 0 {
-			counter++
-		} else {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Before doesn't allow Limit null)")
+			p.Limit = 100
 		}
+		counter++
 	}
 	if p.After != "" {
-		if p.Limit != 0 {
-			counter++
-		} else {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (After doesn't allow Limit null)")
+		if p.Limit == 0 {
+			p.Limit = 100
 		}
+		counter++
 	}
 	if counter != 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid")
