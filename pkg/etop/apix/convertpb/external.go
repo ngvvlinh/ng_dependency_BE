@@ -533,12 +533,16 @@ func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.F
 	}
 }
 
-func PbPageInfo(arg *common.CursorPaging, metaPageInfo *meta.PageInfo) *common.CursorPageInfo {
+func PbPageInfo(arg *cm.Paging, metaPageInfo *meta.PageInfo) *common.CursorPageInfo {
 	if metaPageInfo == nil {
 		return nil
 	}
 	if arg == nil {
 		return nil
+	}
+	sort := ""
+	if len(arg.Sort) > 0 {
+		sort = arg.Sort[0]
 	}
 	return &common.CursorPageInfo{
 		First:  arg.First,
@@ -547,7 +551,7 @@ func PbPageInfo(arg *common.CursorPaging, metaPageInfo *meta.PageInfo) *common.C
 		After:  arg.After,
 
 		Limit: metaPageInfo.Limit,
-		Sort:  arg.Sort,
+		Sort:  sort,
 
 		Prev: metaPageInfo.Prev,
 		Next: metaPageInfo.Next,

@@ -38,7 +38,7 @@ func (s *ProductCollectionService) ListCollections(ctx context.Context, r *ListC
 	}
 	r.Result = &externaltypes.ProductCollectionsResponse{
 		Collections: convertpb.PbShopProductCollections(query.Result.Collections),
-		Paging:      convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+		Paging:      convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}
 	return nil
 }

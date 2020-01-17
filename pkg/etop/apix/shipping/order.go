@@ -359,7 +359,7 @@ func ListFulfillments(ctx context.Context, shopID dot.ID, r *exttypes.ListFulfil
 	pagingResult := s.GetPaging()
 	return &exttypes.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillments(ffms),
-		Paging:       convertpb.PbPageInfo(r.Paging, &pagingResult),
+		Paging:       convertpb.PbPageInfo(paging, &pagingResult),
 	}, nil
 }
 

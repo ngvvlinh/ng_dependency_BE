@@ -50,7 +50,7 @@ func (s *CustomerService) ListCustomers(ctx context.Context, r *ListCustomersEnd
 
 	r.Result = &externaltypes.CustomersResponse{
 		Customers: convertpb.PbShopCustomers(query.Result.Customers),
-		Paging:    convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+		Paging:    convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}
 	return nil
 }
@@ -237,7 +237,7 @@ func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context
 	}
 	r.Result = &externaltypes.CustomerGroupRelationshipsResponse{
 		Relationships: convertpb.PbRelationships(query.Result.CustomerGroupsCustomers),
-		Paging:        convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+		Paging:        convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}
 	return nil
 }
@@ -292,7 +292,7 @@ func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndp
 	}
 	r.Result = &externaltypes.CustomerGroupsResponse{
 		CustomerGroups: convertpb.PbCustomerGroups(query.Result.CustomerGroups),
-		Paging:         convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+		Paging:         convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}
 	return nil
 }

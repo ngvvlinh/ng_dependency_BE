@@ -46,7 +46,7 @@ func (s *VariantService) ListVariants(ctx context.Context, r *ListVariantsEndpoi
 	}
 	r.Result = &types.ShopVariantsResponse{
 		ShopVariants: convertpb.PbShopVariants(query.Result.Variants),
-		Paging:       convertpb.PbPageInfo(r.Paging, &query.Result.Paging),
+		Paging:       convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}
 	return nil
 }
