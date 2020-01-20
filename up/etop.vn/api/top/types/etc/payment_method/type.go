@@ -24,4 +24,14 @@ const (
 
 	// +enum=vtpay
 	VTPay PaymentMethod = 4
+
+	// -- Backward-compatible --//
+
+	// +enum=momo
+	Momo PaymentMethod = 5
+
+	// +enum=bankdeposit
+	BankDeposit PaymentMethod = 6
+
+	// -- End backward-compatible --//
 )

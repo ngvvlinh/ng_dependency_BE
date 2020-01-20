@@ -69,7 +69,7 @@ func main() {
 		orderID = orders[len(orders)-1].ID
 		for _, order := range orders {
 			update := M{}
-			if mapShopCustomer[order.ShopID] == order.CustomerID {
+			if order.CustomerID != 0 && mapShopCustomer[order.ShopID] == order.CustomerID {
 				update["customer_id"] = 1000570234798935240
 			}
 			if len(update) > 0 {
