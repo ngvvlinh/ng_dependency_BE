@@ -589,21 +589,6 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}
 	}
 
-	// update shop confirm
-	if len(ffmToCancel) > 0 {
-		ids := make([]dot.ID, len(ffmToCancel))
-		for i, ffm := range ffmToCancel {
-			ids[i] = ffm.ID
-		}
-		updateCmd := &shipmodelx.UpdateFulfillmentsStatusCommand{
-			FulfillmentIDs: ids,
-			ShopConfirm:    status3.N.Wrap(),
-		}
-		if err := bus.Dispatch(ctx, updateCmd); err != nil {
-			return nil, err
-		}
-	}
-
 	var wg sync.WaitGroup
 	var errs []error
 
@@ -625,7 +610,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				// remove later
 				switch ffm.ShippingProvider {
 				case typeshippingprovider.GHN:
-					shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, 0)
+					shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, model.FfmActionCancel)
 				case typeshippingprovider.GHTK:
 					shippingProviderErr = ctrl.GHTK.CancelFulfillment(ctx, ffm, 0)
 				case typeshippingprovider.VTPost:
@@ -665,9 +650,8 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 					SyncAt: time.Now(),
 				},
-			}
-			if update2.ShippingState == shipping.Cancelled {
-				update2.Status = status5.N
+				ShopConfirm: status3.N,
+				Status:      status5.N,
 			}
 			update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
 			if err := bus.Dispatch(ctx, update2Cmd); err != nil {

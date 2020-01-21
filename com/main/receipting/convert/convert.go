@@ -60,4 +60,5 @@ func updateReceipt(args *receipting.UpdateReceiptArgs, out *receipting.Receipt) 
 func receiptDB(args *receipting.Receipt, out *model.Receipt) {
 	convert_receipting_Receipt_receiptingmodel_Receipt(args, out)
 	out.RefIDs = args.GetRefIDs()
+	out.CreatedType = args.Mode.String()
 }
