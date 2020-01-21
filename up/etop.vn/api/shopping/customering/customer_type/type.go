@@ -19,6 +19,6 @@ const (
 	// +enum=organization
 	Organization CustomerType = 2
 
-	// +enum=anonymous,independent
+	// +enum=independent
 	Independent CustomerType = 3
 )

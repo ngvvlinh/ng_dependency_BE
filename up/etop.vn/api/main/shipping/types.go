@@ -167,9 +167,10 @@ type ShippingFeeLine struct {
 	ExternalServiceType string
 }
 
-type FulfillmentCreatingEvent struct {
+type FulfillmentsCreatingEvent struct {
 	meta.EventMeta
 	ShopID      dot.ID
+	OrderID     dot.ID
 	ShippingFee int
 }
 

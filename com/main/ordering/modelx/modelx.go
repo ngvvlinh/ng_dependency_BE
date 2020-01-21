@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -168,9 +169,9 @@ func SumOrderLineDiscount(lines []*ordermodel.OrderLine) int {
 }
 
 type UpdateOrderPaymentStatusCommand struct {
-	ShopID  dot.ID
-	OrderID dot.ID
-	Status  status3.NullStatus
+	ShopID        dot.ID
+	OrderID       dot.ID
+	PaymentStatus status4.NullStatus
 
 	Result struct {
 		Updated int

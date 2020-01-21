@@ -15,6 +15,7 @@ import (
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -59,6 +60,7 @@ func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptConfirmed)
 	eventBus.AddEventListener(p.ReceiptCancelled)
 	eventBus.AddEventListener(p.ReceiptCreating)
+	eventBus.AddEventListener(p.FulfillmentsCreatingEvent)
 	eventBus.AddEventListener(p.FulfillmentsCreatedEvent)
 }
 
@@ -144,20 +146,20 @@ func (p *ProcessManager) updatePaymentStatus(
 	orders []*ordering.Order, mapOrderIDAndReceivedAmount map[dot.ID]int,
 ) error {
 	for _, order := range orders {
-		if int(order.PaymentStatus) == int(status4.N) || int(order.PaymentStatus) == int(status4.S) {
-			continue
-		}
-		var status status3.NullStatus
-		if order.TotalAmount == mapOrderIDAndReceivedAmount[order.ID] {
-			status = status3.P.Wrap()
+		var status status4.NullStatus
+		receivedAmount := mapOrderIDAndReceivedAmount[order.ID]
+		if order.TotalAmount == receivedAmount {
+			status = status4.P.Wrap()
+		} else if receivedAmount > 0 {
+			status = status4.S.Wrap()
 		} else {
-			status = status3.Z.Wrap()
+			status = status4.Z.Wrap()
 		}
 
 		updateOrderPaymentStatus := &modelx.UpdateOrderPaymentStatusCommand{
-			ShopID:  shopID,
-			OrderID: order.ID,
-			Status:  status,
+			ShopID:        shopID,
+			OrderID:       order.ID,
+			PaymentStatus: status,
 		}
 		if err := bus.Dispatch(ctx, updateOrderPaymentStatus); err != nil {
 			return err
@@ -309,6 +311,16 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 		}
 	}
 	return nil
+}
+
+func (p *ProcessManager) FulfillmentsCreatingEvent(ctx context.Context, event *shipping.FulfillmentsCreatingEvent) error {
+	// update order status to processing
+	cmd := &ordering.UpdateOrderStatusCommand{
+		OrderID: event.OrderID,
+		ShopID:  event.ShopID,
+		Status:  status5.S,
+	}
+	return p.order.Dispatch(ctx, cmd)
 }
 
 func (p *ProcessManager) FulfillmentsCreatedEvent(ctx context.Context, event *shipping.FulfillmentsCreatedEvent) error {

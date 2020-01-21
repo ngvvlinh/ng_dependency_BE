@@ -18,14 +18,13 @@ var enumCustomerTypeName = map[int]string{
 	0: "unknown",
 	1: "individual",
 	2: "organization",
-	3: "anonymous",
+	3: "independent",
 }
 
 var enumCustomerTypeValue = map[string]int{
 	"unknown":      0,
 	"individual":   1,
 	"organization": 2,
-	"anonymous":    3,
 	"independent":  3,
 }
 

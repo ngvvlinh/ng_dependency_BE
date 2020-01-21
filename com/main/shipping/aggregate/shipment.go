@@ -71,8 +71,6 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 	switch order.Status {
 	case status5.N:
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
-	case status5.P:
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hoàn thành")
 	case status5.NS:
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng")
 	}
@@ -81,62 +79,79 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng xác nhận đơn hàng trước khi tạo đơn giao hàng")
 	}
 
-	_, _, err := a.getAndVerifyAddress(ctx, args.ShippingAddress)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
-	}
-	_, _, err = a.getAndVerifyAddress(ctx, args.PickupAddress)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
-	}
-
-	oldFulfillments, err := a.ffmStore(ctx).OrderID(args.OrderID).ListFfmsDB()
-	if err != nil {
-		return nil, err
-	}
-
-	ffm, err := a.prepareFulfillmentFromOrder(ctx, order, args)
-	if err != nil {
-		return nil, err
-	}
-
-	creates, updates, err := CompareFulfillments(oldFulfillments, ffm)
-	if err != nil {
-		return nil, err
-	}
-	if creates != nil {
-		if err := a.ffmStore(ctx).CreateFulfillmentsDB(ctx, creates); err != nil {
-			return nil, err
+	var ffms []*shipmodel.Fulfillment
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		event := &shipping.FulfillmentsCreatingEvent{
+			EventMeta: meta.NewEvent(),
+			ShopID:    args.ShopID,
+			OrderID:   args.OrderID,
 		}
-	}
-	if updates != nil {
-		if err := a.ffmStore(ctx).UpdateFulfillmentsDB(ctx, updates); err != nil {
-			return nil, err
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
 		}
-	}
-	ll.S.Infof("Compare fulfillments: create %v update %v", len(creates), len(updates))
-	totalChanges := len(creates) + len(updates)
-	if totalChanges == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không tạo được fulfillment")
-	}
+		_, _, err := a.getAndVerifyAddress(ctx, args.ShippingAddress)
+		if err != nil {
+			return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+		}
+		_, _, err = a.getAndVerifyAddress(ctx, args.PickupAddress)
+		if err != nil {
+			return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
+		}
 
-	ffms := append(creates, updates...)
+		oldFulfillments, err := a.ffmStore(ctx).OrderID(args.OrderID).ListFfmsDB()
+		if err != nil {
+			return err
+		}
+
+		ffm, err := a.prepareFulfillmentFromOrder(ctx, order, args)
+		if err != nil {
+			return err
+		}
+
+		creates, updates, err := CompareFulfillments(oldFulfillments, ffm)
+		if err != nil {
+			return err
+		}
+		if creates != nil {
+			if err := a.ffmStore(ctx).CreateFulfillmentsDB(ctx, creates); err != nil {
+				return err
+			}
+		}
+		if updates != nil {
+			if err := a.ffmStore(ctx).UpdateFulfillmentsDB(ctx, updates); err != nil {
+				return err
+			}
+		}
+		ll.S.Infof("Compare fulfillments: create %v update %v", len(creates), len(updates))
+		totalChanges := len(creates) + len(updates)
+		if totalChanges == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "Không tạo được fulfillment")
+		}
+
+		ffms = append(creates, updates...)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 	if err := a.shimentManager.CreateFulfillments(ctx, order, ffms); err != nil {
 		return nil, err
 	}
+
 	var res []dot.ID
 	for _, ffm := range ffms {
 		res = append(res, ffm.ID)
 	}
+
 	// TODO: kiểm tra trường hợp tự giao hoặc giao qua NVC
 	// rollback khi gặp lỗi. VD: hủy ffm bên NVC
-	event := &shipping.FulfillmentsCreatedEvent{
+	event2 := &shipping.FulfillmentsCreatedEvent{
 		EventMeta:      meta.NewEvent(),
 		FulfillmentIDs: res,
 		ShippingType:   args.ShippingType,
 		OrderID:        order.ID,
 	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
+	if err := a.eventBus.Publish(ctx, event2); err != nil {
 		return nil, err
 	}
 	return res, nil

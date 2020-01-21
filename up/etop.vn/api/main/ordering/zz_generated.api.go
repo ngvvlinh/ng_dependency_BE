@@ -94,6 +94,19 @@ func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, m
 	return err
 }
 
+type UpdateOrderStatusCommand struct {
+	OrderID dot.ID
+	ShopID  dot.ID
+	Status  status5.Status
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateOrderStatus(ctx context.Context, msg *UpdateOrderStatusCommand) (err error) {
+	return h.inner.UpdateOrderStatus(msg.GetArgs(ctx))
+}
+
 type UpdateOrdersConfirmStatusCommand struct {
 	IDs           []dot.ID
 	ShopConfirm   status3.Status
@@ -196,6 +209,7 @@ func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
 func (q *UpdateOrderPaymentInfoCommand) command()    {}
 func (q *UpdateOrderShippingStatusCommand) command() {}
+func (q *UpdateOrderStatusCommand) command()         {}
 func (q *UpdateOrdersConfirmStatusCommand) command() {}
 func (q *ValidateOrdersForShippingCommand) command() {}
 
@@ -274,6 +288,21 @@ func (q *UpdateOrderShippingStatusCommand) SetUpdateOrderShippingStatusArgs(args
 	q.FulfillmentPaymentStatuses = args.FulfillmentPaymentStatuses
 	q.EtopPaymentStatus = args.EtopPaymentStatus
 	q.CODEtopPaidAt = args.CODEtopPaidAt
+}
+
+func (q *UpdateOrderStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderStatusArgs) {
+	return ctx,
+		&UpdateOrderStatusArgs{
+			OrderID: q.OrderID,
+			ShopID:  q.ShopID,
+			Status:  q.Status,
+		}
+}
+
+func (q *UpdateOrderStatusCommand) SetUpdateOrderStatusArgs(args *UpdateOrderStatusArgs) {
+	q.OrderID = args.OrderID
+	q.ShopID = args.ShopID
+	q.Status = args.Status
 }
 
 func (q *UpdateOrdersConfirmStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrdersConfirmStatusArgs) {
@@ -373,6 +402,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleReserveOrdersForFfm)
 	b.AddHandler(h.HandleUpdateOrderPaymentInfo)
 	b.AddHandler(h.HandleUpdateOrderShippingStatus)
+	b.AddHandler(h.HandleUpdateOrderStatus)
 	b.AddHandler(h.HandleUpdateOrdersConfirmStatus)
 	b.AddHandler(h.HandleValidateOrdersForShipping)
 	return CommandBus{b}

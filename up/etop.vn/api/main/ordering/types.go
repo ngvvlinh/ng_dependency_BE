@@ -32,6 +32,7 @@ type Aggregate interface {
 
 	UpdateOrderPaymentInfo(context.Context, *UpdateOrderPaymentInfoArgs) error
 	CompleteOrder(_ context.Context, OrderID dot.ID, ShopID dot.ID) error
+	UpdateOrderStatus(context.Context, *UpdateOrderStatusArgs) error
 }
 
 type QueryService interface {
@@ -245,4 +246,10 @@ type OrderCancelledEvent struct {
 	ShopID               dot.ID
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	UpdatedBy            dot.ID
+}
+
+type UpdateOrderStatusArgs struct {
+	OrderID dot.ID
+	ShopID  dot.ID
+	Status  status5.Status
 }

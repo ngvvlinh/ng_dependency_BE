@@ -272,7 +272,7 @@ BEGIN
 	END IF;
 
     -- Trường hợp không có đơn giao hàng
-    IF NEW.fulfillment_type IS NULL OR NEW.fulfillment_type = 0 THEN
+    IF (NEW.fulfillment_type IS NULL OR NEW.fulfillment_type = 0) AND NEW.fulfillment_statuses IS NULL THEN
         NEW.status = coalesce_order_status_v2(
             NEW.confirm_status, NEW.payment_status
         );

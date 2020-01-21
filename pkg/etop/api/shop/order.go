@@ -472,9 +472,9 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 
 func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOrderPaymentStatusEndpoint) error {
 	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
-		ShopID:  q.Context.Shop.ID,
-		OrderID: q.OrderId,
-		Status:  q.Status,
+		ShopID:        q.Context.Shop.ID,
+		OrderID:       q.OrderId,
+		PaymentStatus: q.Status,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

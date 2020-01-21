@@ -55,8 +55,6 @@ func ValidateOrderStatus(order *ordering.Order) error {
 	switch order.Status {
 	case status5.N:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil).WithMetaID("orderID", order.ID)
-	case status5.P:
-		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil).WithMetaID("orderID", order.ID)
 	case status5.NS:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil).WithMetaID("orderID", order.ID)
 	}
@@ -172,6 +170,15 @@ func (a *Aggregate) CompleteOrder(ctx context.Context, orderID dot.ID, shopID do
 		ID:     orderID,
 		ShopID: shopID,
 		Status: status5.P,
+	}
+	return a.store(ctx).UpdateOrderStatus(update)
+}
+
+func (a *Aggregate) UpdateOrderStatus(ctx context.Context, args *ordering.UpdateOrderStatusArgs) error {
+	update := &sqlstore.UpdateOrderStatus{
+		ID:     args.OrderID,
+		ShopID: args.ShopID,
+		Status: args.Status,
 	}
 	return a.store(ctx).UpdateOrderStatus(update)
 }

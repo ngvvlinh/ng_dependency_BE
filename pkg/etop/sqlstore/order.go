@@ -1230,6 +1230,9 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 	if cmd.OrderID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
 	}
+	if !cmd.PaymentStatus.Valid {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing payment status")
+	}
 	var order = new(ordermodel.Order)
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldGet(order); err != nil {
 		return err
@@ -1238,12 +1241,15 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 		return err
 	}
 
-	if order.PaymentStatus == status4.P {
-		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã được thanh toán", nil)
+	update := M{
+		"payment_status": cmd.PaymentStatus.Apply(status4.Z),
 	}
-	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(M{
-		"payment_status": cmd.Status,
-	}); err != nil {
+	if update["payment_status"] == status4.Z || update["payment_status"] == status4.S {
+		// always update status to SuperPosition (processing)
+		update["status"] = status5.S
+	}
+
+	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(update); err != nil {
 		return err
 	}
 	cmd.Result.Updated = 1
@@ -1282,8 +1288,6 @@ func canUpdateOrder(order *ordermodel.Order) (bool, error) {
 	switch order.Status {
 	case status5.N:
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("id", order.ID)
-	case status5.P:
-		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hoàn thành").WithMetap("id", order.ID)
 	case status5.NS:
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("id", order.ID)
 	}

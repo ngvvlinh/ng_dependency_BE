@@ -808,7 +808,7 @@ func (m *UpdateFulfillmentsShippingStateRequest) String() string { return jsonx.
 
 type UpdateOrderPaymentStatusRequest struct {
 	OrderId dot.ID             `json:"order_id"`
-	Status  status3.NullStatus `json:"status"`
+	Status  status4.NullStatus `json:"status"`
 }
 
 func (m *UpdateOrderPaymentStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
