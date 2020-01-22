@@ -260,7 +260,8 @@ func validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType
 	case
 		tuple{receipt_type.Payment, receipt_ref.PurchaseOrder},
 		tuple{receipt_type.Payment, receipt_ref.Refund},
-		tuple{receipt_type.Receipt, receipt_ref.Order}:
+		tuple{receipt_type.Receipt, receipt_ref.Order},
+		tuple{receipt_type.Payment, receipt_ref.Fulfillment}:
 		return nil
 	default:
 		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
