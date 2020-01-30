@@ -52,6 +52,11 @@ func (d *VTPostDriver) Ping(context.Context) error {
 	return nil
 }
 
+func (d *VTPostDriver) GetAffiliateID() string {
+	// vtpost does not support affiliate
+	return ""
+}
+
 func (d VTPostDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,

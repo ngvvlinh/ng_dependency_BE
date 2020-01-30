@@ -165,7 +165,8 @@ type Fulfillment struct {
 	Width            int
 	Height           int
 
-	DeliveryRoute string
+	DeliveryRoute       string
+	ExternalAffiliateID string
 }
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {

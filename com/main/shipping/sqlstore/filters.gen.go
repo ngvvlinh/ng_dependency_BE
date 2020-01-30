@@ -1779,3 +1779,22 @@ func (ft *FulfillmentFilters) ByDeliveryRoutePtr(DeliveryRoute *string) *sq.Colu
 		IsZero: DeliveryRoute != nil && (*DeliveryRoute) == "",
 	}
 }
+
+func (ft *FulfillmentFilters) ByExternalAffiliateID(ExternalAffiliateID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_affiliate_id",
+		Value:  ExternalAffiliateID,
+		IsNil:  ExternalAffiliateID == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByExternalAffiliateIDPtr(ExternalAffiliateID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_affiliate_id",
+		Value:  ExternalAffiliateID,
+		IsNil:  ExternalAffiliateID == nil,
+		IsZero: ExternalAffiliateID != nil && (*ExternalAffiliateID) == "",
+	}
+}

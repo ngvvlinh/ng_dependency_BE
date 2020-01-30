@@ -288,6 +288,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.Width = 0                  // zero value
 	out.Height = 0                 // zero value
 	out.DeliveryRoute = ""         // zero value
+	out.ExternalAffiliateID = ""   // zero value
 }
 
 func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.Fulfillment) (outs []*shippingmodel.Fulfillment) {

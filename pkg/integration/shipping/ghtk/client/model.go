@@ -29,9 +29,10 @@ func (t TransportType) Name() string {
 }
 
 type GhtkAccount struct {
-	AccountID string `yaml:"account_id"`
-	Token     string `yaml:"token"`
-	B2CToken  string `yaml:"-"`
+	AccountID   string `yaml:"account_id"`
+	Token       string `yaml:"token"`
+	AffiliateID string `yaml:"-"`
+	B2CToken    string `yaml:"-"`
 }
 
 type StateID int

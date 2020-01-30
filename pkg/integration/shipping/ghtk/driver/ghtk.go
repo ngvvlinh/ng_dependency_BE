@@ -55,6 +55,10 @@ func (d *GHTKDriver) Ping(context.Context) error {
 	return nil
 }
 
+func (d *GHTKDriver) GetAffiliateID() string {
+	return d.client.GetAffiliateID()
+}
+
 func (d *GHTKDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,

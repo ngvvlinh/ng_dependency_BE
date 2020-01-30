@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -52,6 +53,13 @@ func New(env string, cfg GHNAccountCfg) *Client {
 
 func (c *Client) ClientID() int {
 	return c.clientID
+}
+
+func (c *Client) GetAffiliateID() string {
+	if c.affiliateID > 0 {
+		return strconv.Itoa(c.affiliateID)
+	}
+	return ""
 }
 
 func (c *Client) GetToken() string {

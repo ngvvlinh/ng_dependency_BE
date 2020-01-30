@@ -11,6 +11,8 @@ import (
 type ShipmentCarrier interface {
 	Ping(context.Context) error
 
+	GetAffiliateID() string
+
 	CreateFulfillment(context.Context, *shipmodel.Fulfillment, *GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 
 	UpdateFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error)

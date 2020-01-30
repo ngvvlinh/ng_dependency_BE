@@ -59,6 +59,10 @@ func (d *GHNDriver) Ping(ctx context.Context) error {
 	return nil
 }
 
+func (d *GHNDriver) GetAffiliateID() string {
+	return d.client.GetAffiliateID()
+}
+
 func (d *GHNDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,

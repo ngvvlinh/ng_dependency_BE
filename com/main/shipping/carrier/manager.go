@@ -155,6 +155,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 			Token: shopConnection.Token,
 		}
 		if etopAffiliateAccount != nil {
+			cfg.AffiliateID = etopAffiliateAccount.UserID
 			cfg.B2CToken = etopAffiliateAccount.Token
 		}
 		driver := ghtkdriver.New(m.Env, cfg, m.LocationQS)
@@ -301,7 +302,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		}
 		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
-
+	ffmToUpdate.ExternalAffiliateID = driver.GetAffiliateID()
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmToUpdate,
 	}

@@ -26,10 +26,12 @@ func init() {
 }
 
 type Client struct {
-	baseUrl  string
-	token    string
-	b2ctoken string
-	rclient  *httpreq.Resty
+	baseUrl string
+	token   string
+
+	affiliateID string
+	b2ctoken    string
+	rclient     *httpreq.Resty
 }
 
 const (
@@ -50,9 +52,10 @@ func New(env string, cfg GhtkAccount) *Client {
 	}
 	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
-		token:    cfg.Token,
-		b2ctoken: cfg.B2CToken,
-		rclient:  httpreq.NewResty(rcfg),
+		token:       cfg.Token,
+		affiliateID: cfg.AffiliateID,
+		b2ctoken:    cfg.B2CToken,
+		rclient:     httpreq.NewResty(rcfg),
 	}
 	switch env {
 	case cm.PartnerEnvTest, cm.PartnerEnvDev:
@@ -78,6 +81,10 @@ func (c *Client) Ping() error {
 	}
 	_, err := c.CalcShippingFee(context.Background(), req)
 	return err
+}
+
+func (c *Client) GetAffiliateID() string {
+	return c.affiliateID
 }
 
 func (c *Client) TestCreateOrder() error {
