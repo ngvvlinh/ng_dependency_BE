@@ -106,7 +106,7 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerIDD
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroupCustomer, s.ft.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopCustomerGroupCustomer, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerDB() ([]*mode
 	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroupCustomer, s.ft.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopCustomerGroupCustomer, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

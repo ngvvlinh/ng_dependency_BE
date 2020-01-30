@@ -101,7 +101,7 @@ func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() (
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (s *ShopProductCollectionStore) ListShopProductCollectionsDB() ([]*model.Sh
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}

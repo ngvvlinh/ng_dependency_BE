@@ -1,6 +1,7 @@
 package cm
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -67,6 +68,7 @@ func Micros(t time.Time) int64 {
 	if IsZeroTime(t) {
 		return 0
 	}
+	fmt.Println("--nano", t.UnixNano(), t.UnixNano()/e3)
 	return t.UnixNano() / e3
 }
 
@@ -96,7 +98,7 @@ func MillisP(t *time.Time) int64 {
 
 // FromMicros converts nanosecond to Go time
 func FromMicros(t int64) time.Time {
-	return Timestamp(t / e3).ToTime()
+	return time.Unix(t/e6, (t%e6)*e3)
 }
 
 // FromMicrosP converts nanosecond to Go time with pointer

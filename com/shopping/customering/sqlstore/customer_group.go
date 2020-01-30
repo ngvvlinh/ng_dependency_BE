@@ -104,7 +104,7 @@ func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGr
 	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCustomerGroup, s.ft.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopCustomerGroup, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

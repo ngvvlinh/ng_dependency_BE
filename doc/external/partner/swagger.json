@@ -501,6 +501,60 @@
         }
       }
     },
+    "/v1/partner.Fulfillment/CancelFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "CancelFulfillment",
+        "operationId": "partner.Fulfillment-CancelFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCancelFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/partner.Fulfillment/CreateFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "CreateFulfillment",
+        "operationId": "partner.Fulfillment-CreateFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrFulfillment"
+            }
+          }
+        }
+      }
+    },
     "/v1/partner.Fulfillment/GetFulfillment": {
       "post": {
         "tags": [
@@ -712,7 +766,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mrOrderAndFulfillments"
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -720,7 +774,6 @@
     },
     "/v1/partner.Order/ConfirmOrder": {
       "post": {
-        "description": "**TODO:**\n",
         "tags": [
           "Order"
         ],
@@ -767,7 +820,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mrOrder"
+              "$ref": "#/definitions/mrOrderWithoutShipping"
             }
           }
         }
@@ -1218,7 +1271,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrCreateOrderRequest"
+              "$ref": "#/definitions/mrCreateAndConfirmOrderRequest"
             }
           }
         ],
@@ -1760,12 +1813,6 @@
         "before": {
           "type": "string"
         },
-        "first": {
-          "type": "integer"
-        },
-        "last": {
-          "type": "integer"
-        },
         "limit": {
           "type": "integer"
         },
@@ -1788,12 +1835,6 @@
         },
         "before": {
           "type": "string"
-        },
-        "first": {
-          "type": "integer"
-        },
-        "last": {
-          "type": "integer"
         },
         "limit": {
           "type": "integer"
@@ -1878,6 +1919,18 @@
         }
       }
     },
+    "mrCancelFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "mrCancelOrderRequest": {
       "type": "object",
       "properties": {
@@ -1944,11 +1997,11 @@
       "properties": {
         "auto_inventory_voucher": {
           "description": "enum ('create', 'confirm')\n",
-          "type": "string"
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
         },
         "inventory_policy": {
           "description": "enum ('obey', 'ignore')\n",
-          "type": "boolean"
+          "$ref": "#/definitions/rdInventoryPolicy"
         },
         "order_id": {
           "type": "string",
@@ -1966,6 +2019,69 @@
         "longitude": {
           "type": "integer",
           "format": "float32"
+        }
+      }
+    },
+    "mrCreateAndConfirmOrderRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "description": "basket_value = SUM(lines.retail_price)\n",
+          "type": "integer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping": {
+          "$ref": "#/definitions/mrOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
         }
       }
     },
@@ -2073,6 +2189,67 @@
         }
       }
     },
+    "mrCreateFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_type": {
+          "$ref": "#/definitions/pkShippingType"
+        },
+        "shop_carrier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
     "mrCreateOrderRequest": {
       "type": "object",
       "properties": {
@@ -2115,6 +2292,9 @@
         },
         "order_note": {
           "type": "string"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
         },
         "shipping": {
           "$ref": "#/definitions/mrOrderShipping"
@@ -3287,6 +3467,106 @@
         }
       }
     },
+    "mrOrderWithoutShipping": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "processed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "mrOrdersResponse": {
       "type": "object",
       "properties": {
@@ -3935,6 +4215,15 @@
         "tax"
       ]
     },
+    "pkShippingType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "manual",
+        "shipment",
+        "shipnow"
+      ]
+    },
     "pwGender": {
       "type": "string",
       "enum": [
@@ -3943,6 +4232,71 @@
         "female",
         "other"
       ]
+    },
+    "qdOrderAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
     },
     "qdOrderFeeLine": {
       "type": "object",
@@ -3967,6 +4321,22 @@
           "$ref": "#/definitions/ojFeeType"
         }
       }
+    },
+    "rdInventoryPolicy": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "obey",
+        "ignore"
+      ]
+    },
+    "rtAutoInventoryVoucher": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "create",
+        "confirm"
+      ]
     },
     "sfState": {
       "type": "string",
@@ -3993,6 +4363,18 @@
         "individual",
         "organization",
         "independent"
+      ]
+    },
+    "yiPaymentMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod",
+        "bank",
+        "other",
+        "vtpay",
+        "momo",
+        "bankdeposit"
       ]
     }
   },

@@ -289,7 +289,8 @@ func PagingToModel(paging *common.Paging, defaultOffset int, defaultLimit int, m
 func CMCursorPaging(p *common.CursorPaging) (*cm.Paging, error) {
 	if p == nil {
 		return &cm.Paging{
-			First: 100,
+			After: ".",
+			Limit: 100,
 		}, nil
 	}
 
@@ -297,51 +298,24 @@ func CMCursorPaging(p *common.CursorPaging) (*cm.Paging, error) {
 	if p.Sort != "" {
 		sort = strings.Split(p.Sort, ",")
 		if len(sort) > 1 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (sort support only one field at the same time")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (can not sort by more than 1 field)")
 		}
 		if sort[0] == "id" || sort[0] == "-id" {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (sort doesn't support \"id\"")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (can not sort by id)")
 		}
 	}
 
-	counter := 0
-	if p.First != 0 {
-		if p.First < 0 || p.First > 100 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (first must have a value between 1 and 100")
-		}
-		counter++
+	if p.Before == "" && p.After == "" {
+		p.After = "."
 	}
-	if p.Last != 0 {
-		if p.Last < 0 || p.Last > 100 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (last must have a value between 1 and 100")
-		}
-		counter++
+	if p.Limit == 0 || p.Limit > 100 {
+		p.Limit = 100
 	}
-	if p.Before != "" {
-		if p.Limit != 0 {
-			p.Limit = 100
-		}
-		counter++
-	}
-	if p.After != "" {
-		if p.Limit == 0 {
-			p.Limit = 100
-		}
-		counter++
-	}
-	if counter != 1 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid")
-	}
-
-	res := &cm.Paging{
-		First:  p.First,
-		Last:   p.Last,
+	paging := &cm.Paging{
 		Before: p.Before,
 		After:  p.After,
-
-		Limit: p.Limit,
-		Sort:  sort,
+		Limit:  p.Limit,
+		Sort:   sort,
 	}
-
-	return res, nil
+	return paging, nil
 }

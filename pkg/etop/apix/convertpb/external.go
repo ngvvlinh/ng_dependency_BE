@@ -545,8 +545,6 @@ func PbPageInfo(arg *cm.Paging, metaPageInfo *meta.PageInfo) *common.CursorPageI
 		sort = arg.Sort[0]
 	}
 	return &common.CursorPageInfo{
-		First:  arg.First,
-		Last:   arg.Last,
 		Before: arg.Before,
 		After:  arg.After,
 

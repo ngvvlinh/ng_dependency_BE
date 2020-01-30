@@ -15,6 +15,546 @@
     "version": "v1"
   },
   "paths": {
+    "/v1/shop.Customer/CreateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "CreateCustomer",
+        "operationId": "shop.Customer-CreateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Customer/DeleteCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "DeleteCustomer",
+        "operationId": "shop.Customer-DeleteCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrDeleteCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Customer/GetCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomer",
+        "operationId": "shop.Customer-GetCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Customer/ListCustomers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "ListCustomers",
+        "operationId": "shop.Customer-ListCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Customer/UpdateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "UpdateCustomer",
+        "operationId": "shop.Customer-UpdateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerAddress/CreateAddress": {
+      "post": {
+        "tags": [
+          "CustomerAddress"
+        ],
+        "summary": "CreateAddress",
+        "operationId": "shop.CustomerAddress-CreateAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerAddress/DeleteAddress": {
+      "post": {
+        "tags": [
+          "CustomerAddress"
+        ],
+        "summary": "DeleteAddress",
+        "operationId": "shop.CustomerAddress-DeleteAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerAddress/GetAddress": {
+      "post": {
+        "tags": [
+          "CustomerAddress"
+        ],
+        "summary": "GetAddress",
+        "operationId": "shop.CustomerAddress-GetAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerAddress/ListAddresses": {
+      "post": {
+        "tags": [
+          "CustomerAddress"
+        ],
+        "summary": "ListAddresses",
+        "operationId": "shop.CustomerAddress-ListAddresses",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerAddressesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddressesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerAddress/UpdateAddress": {
+      "post": {
+        "tags": [
+          "CustomerAddress"
+        ],
+        "summary": "UpdateAddress",
+        "operationId": "shop.CustomerAddress-UpdateAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroup/CreateGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "CreateGroup",
+        "operationId": "shop.CustomerGroup-CreateGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCustomerGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroup/DeleteGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "DeleteGroup",
+        "operationId": "shop.CustomerGroup-DeleteGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroup/GetGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "GetGroup",
+        "operationId": "shop.CustomerGroup-GetGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroup/ListGroups": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "ListGroups",
+        "operationId": "shop.CustomerGroup-ListGroups",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerGroupsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroupsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroup/UpdateGroup": {
+      "post": {
+        "tags": [
+          "CustomerGroup"
+        ],
+        "summary": "UpdateGroup",
+        "operationId": "shop.CustomerGroup-UpdateGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCustomerGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroupRelationship/CreateRelationship": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "CreateRelationship",
+        "operationId": "shop.CustomerGroupRelationship-CreateRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrAddCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroupRelationship/DeleteRelationship": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "DeleteRelationship",
+        "operationId": "shop.CustomerGroupRelationship-DeleteRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.CustomerGroupRelationship/ListRelationships": {
+      "post": {
+        "tags": [
+          "CustomerGroupRelationship"
+        ],
+        "summary": "ListRelationships",
+        "operationId": "shop.CustomerGroupRelationship-ListRelationships",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCustomerGroupRelationshipsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCustomerGroupRelationshipsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Fulfillment/GetFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillment",
+        "operationId": "shop.Fulfillment-GetFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Fulfillment/ListFulfillments": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "ListFulfillments",
+        "operationId": "shop.Fulfillment-ListFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListFulfillmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.History/GetChanges": {
       "post": {
         "description": "This API provides an example for webhook request content. It's not a real API.\n",
@@ -38,6 +578,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrCallback"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Inventory/ListInventoryLevels": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "ListInventoryLevels",
+        "operationId": "shop.Inventory-ListInventoryLevels",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListInventoryLevelsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrInventoryLevelsResponse"
             }
           }
         }
@@ -124,6 +691,493 @@
         }
       }
     },
+    "/v1/shop.Order/CancelOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CancelOrder",
+        "operationId": "shop.Order-CancelOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCancelOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrderAndFulfillments"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Order/ConfirmOrder": {
+      "post": {
+        "description": "**TODO:**\n",
+        "tags": [
+          "Order"
+        ],
+        "summary": "ConfirmOrder",
+        "operationId": "shop.Order-ConfirmOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrConfirmOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Order/CreateOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CreateOrder",
+        "operationId": "shop.Order-CreateOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrder"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Order/GetOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrder",
+        "operationId": "shop.Order-GetOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrderAndFulfillments"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Order/ListOrders": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "ListOrders",
+        "operationId": "shop.Order-ListOrders",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListOrdersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Product/CreateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "CreateProduct",
+        "operationId": "shop.Product-CreateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Product/DeleteProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "DeleteProduct",
+        "operationId": "shop.Product-DeleteProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Product/GetProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetProduct",
+        "operationId": "shop.Product-GetProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Product/ListProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "ListProducts",
+        "operationId": "shop.Product-ListProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListProductsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Product/UpdateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProduct",
+        "operationId": "shop.Product-UpdateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollection/CreateCollection": {
+      "post": {
+        "tags": [
+          "ProductCollection"
+        ],
+        "summary": "CreateCollection",
+        "operationId": "shop.ProductCollection-CreateCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollection/DeleteCollection": {
+      "post": {
+        "tags": [
+          "ProductCollection"
+        ],
+        "summary": "DeleteCollection",
+        "operationId": "shop.ProductCollection-DeleteCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollection/GetCollection": {
+      "post": {
+        "tags": [
+          "ProductCollection"
+        ],
+        "summary": "GetCollection",
+        "operationId": "shop.ProductCollection-GetCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollection/ListCollections": {
+      "post": {
+        "tags": [
+          "ProductCollection"
+        ],
+        "summary": "ListCollections",
+        "operationId": "shop.ProductCollection-ListCollections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCollectionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollection/UpdateCollection": {
+      "post": {
+        "tags": [
+          "ProductCollection"
+        ],
+        "summary": "UpdateCollection",
+        "operationId": "shop.ProductCollection-UpdateCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollectionRelationship/CreateRelationship": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "CreateRelationship",
+        "operationId": "shop.ProductCollectionRelationship-CreateRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateProductCollectionRelationshipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollectionRelationship/DeleteRelationship": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "DeleteRelationship",
+        "operationId": "shop.ProductCollectionRelationship-DeleteRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrRemoveProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.ProductCollectionRelationship/ListRelationships": {
+      "post": {
+        "tags": [
+          "ProductCollectionRelationship"
+        ],
+        "summary": "ListRelationships",
+        "operationId": "shop.ProductCollectionRelationship-ListRelationships",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListProductCollectionRelationshipsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrProductCollectionRelationshipsResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Shipping/CancelOrder": {
       "post": {
         "tags": [
@@ -164,7 +1218,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mrCreateOrderRequest"
+              "$ref": "#/definitions/mrCreateAndConfirmOrderRequest"
             }
           }
         ],
@@ -259,6 +1313,141 @@
         }
       }
     },
+    "/v1/shop.Variant/CreateVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "CreateVariant",
+        "operationId": "shop.Variant-CreateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Variant/DeleteVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "DeleteVariant",
+        "operationId": "shop.Variant-DeleteVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Variant/GetVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "GetVariant",
+        "operationId": "shop.Variant-GetVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Variant/ListVariants": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "ListVariants",
+        "operationId": "shop.Variant-ListVariants",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListVariantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariantsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Variant/UpdateVariant": {
+      "post": {
+        "tags": [
+          "Variant"
+        ],
+        "summary": "UpdateVariant",
+        "operationId": "shop.Variant-UpdateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrUpdateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShopVariant"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Webhook/CreateWebhook": {
       "post": {
         "tags": [
@@ -342,6 +1531,19 @@
     }
   },
   "definitions": {
+    "baCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
     "baPublicAccountInfo": {
       "type": "object",
       "properties": {
@@ -432,6 +1634,50 @@
         "etop"
       ]
     },
+    "kfIDs": {
+      "description": "Filter by id value\n",
+      "type": "string"
+    },
+    "ktCursorPageInfo": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "next": {
+          "type": "string"
+        },
+        "prev": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktCursorPaging": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
     "ktEmpty": {
       "type": "object"
     },
@@ -452,6 +1698,18 @@
         }
       }
     },
+    "ktIDRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ktVersionInfoResponse": {
       "type": "object",
       "properties": {
@@ -464,6 +1722,19 @@
         },
         "version": {
           "type": "string"
+        }
+      }
+    },
+    "mrAddCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -543,7 +1814,37 @@
         }
       }
     },
-    "mrCreateOrderRequest": {
+    "mrConfirmOrderRequest": {
+      "type": "object",
+      "properties": {
+        "auto_inventory_voucher": {
+          "description": "enum ('create', 'confirm')\n",
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
+        "inventory_policy": {
+          "description": "enum ('obey', 'ignore')\n",
+          "$ref": "#/definitions/rdInventoryPolicy"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "mrCreateAndConfirmOrderRequest": {
       "type": "object",
       "properties": {
         "basket_value": {
@@ -606,6 +1907,288 @@
         }
       }
     },
+    "mrCreateCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/mrCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateCustomerRequest": {
+      "type": "object",
+      "required": [
+        "full_name",
+        "phone"
+      ],
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "description": "enum ('independent', 'individual', 'organization')\n",
+          "$ref": "#/definitions/spCustomerType"
+        }
+      }
+    },
+    "mrCreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "description": "basket_value = SUM(lines.retail_price)\n",
+          "type": "integer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "shipping": {
+          "$ref": "#/definitions/mrOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrOrderAddress"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        }
+      }
+    },
+    "mrCreateProductCollectionRelationshipRequest": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
     "mrCreateWebhookRequest": {
       "type": "object",
       "properties": {
@@ -626,6 +2209,246 @@
         },
         "url": {
           "type": "string"
+        }
+      }
+    },
+    "mrCustomer": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrCustomerAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCustomerAddressFilter": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerAddressesResponse": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerAddress"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrCustomerFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCustomerGroupFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroupRelationship": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCustomerGroupRelationshipFilter": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "$ref": "#/definitions/kfIDs"
+        },
+        "group_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrCustomerGroupRelationshipsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerGroupRelationship"
+          }
+        }
+      }
+    },
+    "mrCustomerGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "customer_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomerGroup"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrCustomersResponse": {
+      "type": "object",
+      "properties": {
+        "customers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrCustomer"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrDeleteCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -777,6 +2600,59 @@
         }
       }
     },
+    "mrFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrFulfillment"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrGetCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrGetCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrGetProductRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "mrGetShippingServicesRequest": {
       "type": "object",
       "properties": {
@@ -835,6 +2711,57 @@
         }
       }
     },
+    "mrGetVariantRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrInventoryLevel": {
+      "type": "object",
+      "properties": {
+        "available_quantity": {
+          "type": "integer"
+        },
+        "picked_quantity": {
+          "type": "integer"
+        },
+        "reserved_quantity": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrInventoryLevelsResponse": {
+      "type": "object",
+      "properties": {
+        "inventory_levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrInventoryLevel"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "mrLatestOneOf": {
       "type": "object",
       "properties": {
@@ -843,6 +2770,170 @@
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
+        }
+      }
+    },
+    "mrListCollectionsFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListCollectionsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListCollectionsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListCustomerAddressesRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerAddressFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListCustomerGroupRelationshipsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerGroupRelationshipFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListCustomerGroupsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerGroupFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCustomerFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListFulfillmentsFilter": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListFulfillmentsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListInventoryLevelsFilter": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListInventoryLevelsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListInventoryLevelsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListOrdersFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListOrdersFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListProductCollectionRelationshipsFilter": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "$ref": "#/definitions/kfIDs"
+        },
+        "product_id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
+    "mrListProductCollectionRelationshipsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrListProductCollectionRelationshipsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListProductsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrProductFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrVariantFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -1137,6 +3228,99 @@
         }
       }
     },
+    "mrOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrder"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrProductCollection": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrProductCollectionRelationship": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrProductCollectionRelationshipsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrProductCollectionRelationship"
+          }
+        }
+      }
+    },
+    "mrProductCollectionsResponse": {
+      "type": "object",
+      "properties": {
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrProductCollection"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
+    "mrProductFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
+        }
+      }
+    },
     "mrProvince": {
       "type": "object",
       "properties": {
@@ -1148,6 +3332,32 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "mrRemoveCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrRemoveProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1178,6 +3388,348 @@
         "name": {
           "description": "**Deprecated:** use carrier info instead\n",
           "type": "string"
+        }
+      }
+    },
+    "mrShopProduct": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShopVariant"
+          }
+        }
+      }
+    },
+    "mrShopProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShopProduct"
+          }
+        }
+      }
+    },
+    "mrShopVariant": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "mrShopVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "shop_variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShopVariant"
+          }
+        }
+      }
+    },
+    "mrUpdateCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "description": "enum ('individual', 'organization','independent')\n",
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateProductRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "mrUpdateVariantRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "mrVariantFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/kfIDs"
         }
       }
     },
@@ -1278,6 +3830,15 @@
         "tax"
       ]
     },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ]
+    },
     "qdOrderFeeLine": {
       "type": "object",
       "required": [
@@ -1302,6 +3863,22 @@
         }
       }
     },
+    "rdInventoryPolicy": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "obey",
+        "ignore"
+      ]
+    },
+    "rtAutoInventoryVoucher": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "create",
+        "confirm"
+      ]
+    },
     "sfState": {
       "type": "string",
       "enum": [
@@ -1319,17 +3896,71 @@
         "cancelled",
         "undeliverable"
       ]
+    },
+    "spCustomerType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "independent"
+      ]
+    },
+    "yiPaymentMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod",
+        "bank",
+        "other",
+        "vtpay",
+        "momo",
+        "bankdeposit"
+      ]
     }
   },
   "tags": [
     {
+      "name": "Customer"
+    },
+    {
+      "name": "CustomerAddress"
+    },
+    {
+      "name": "CustomerGroup"
+    },
+    {
+      "name": "CustomerGroupRelationship"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
       "name": "History"
+    },
+    {
+      "name": "Inventory"
     },
     {
       "name": "Misc"
     },
     {
+      "name": "Order"
+    },
+    {
+      "name": "Product"
+    },
+    {
+      "name": "ProductCollection"
+    },
+    {
+      "name": "ProductCollectionRelationship"
+    },
+    {
       "name": "Shipping"
+    },
+    {
+      "name": "Variant"
     },
     {
       "name": "Webhook"

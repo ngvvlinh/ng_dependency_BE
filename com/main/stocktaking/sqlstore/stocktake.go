@@ -151,7 +151,7 @@ func (s *ShopStocktakeStore) ListShopStocktakeDB() ([]*model.ShopStocktake, erro
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopStocktake, s.ft.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopStocktake, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

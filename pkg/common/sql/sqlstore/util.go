@@ -63,8 +63,6 @@ type Paging struct {
 	Limit  int
 	Sort   []string
 
-	First  int
-	Last   int
 	Before string
 	After  string
 
@@ -80,8 +78,6 @@ func (p *Paging) GetPaging() meta.PageInfo {
 		Offset: p.Offset,
 		Limit:  p.Limit,
 		Sort:   p.Sort,
-		First:  p.First,
-		Last:   p.Last,
 		Before: p.Before,
 		After:  p.After,
 		Next:   p.Next,
@@ -94,8 +90,6 @@ func (p *Paging) WithPaging(pg meta.Paging) {
 		Offset: pg.Offset,
 		Limit:  pg.Limit,
 		Sort:   pg.Sort,
-		First:  pg.First,
-		Last:   pg.Last,
 		Before: pg.Before,
 		After:  pg.After,
 	}
@@ -109,8 +103,6 @@ func ConvertPaging(pg *meta.Paging) *Paging {
 		Offset: pg.Offset,
 		Limit:  pg.Limit,
 		Sort:   pg.Sort,
-		First:  pg.First,
-		Last:   pg.Last,
 		Before: pg.Before,
 		After:  pg.After,
 	}
@@ -152,7 +144,7 @@ func parseTagForColumn(stag reflect.StructTag) string {
 	return ""
 }
 
-func getPrevAndNext(ss interface{}, fields []PagingCursorItem, descOrderBy bool) (prev, next string) {
+func getPrevAndNext(ss interface{}, fields []PagingCursorItem, negativeSort bool) (prev, next string) {
 	s := reflect.ValueOf(ss)
 	if s.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("unsupported type %T (must be slice type)", s))
@@ -171,26 +163,26 @@ func getPrevAndNext(ss interface{}, fields []PagingCursorItem, descOrderBy bool)
 		prevCode[i] = PagingCursorItem{field, mapping.GetFieldValue(firstPtr, field)}
 		nextCode[i] = PagingCursorItem{field, mapping.GetFieldValue(lastPtr, field)}
 	}
-	return encodeCursor(prevCode, descOrderBy), encodeCursor(nextCode, descOrderBy)
+	return encodeCursor(prevCode, negativeSort), encodeCursor(nextCode, negativeSort)
 }
 
-func (p *Paging) Apply(s interface{}) error {
+func (p *Paging) Apply(s interface{}) {
 	if !p.IsCursorPaging() {
-		return nil
+		return
 	}
 	cursor, err := p.decodeCursor()
 	if err != nil {
-		return err
+		panic(err)
 	}
 	if cursor.Reverse {
-		reverseAny(s)
+		reverseSlice(s)
 	}
-	p.Prev, p.Next = getPrevAndNext(s, cursor.Items, cursor.DescOrderBy)
-	return nil
+	p.Prev, p.Next = getPrevAndNext(s, cursor.Items, cursor.NegativeSort)
+	return
 }
 
 func (p *Paging) IsCursorPaging() bool {
-	return p.First != 0 || p.Last != 0 || p.Before != "" || p.After != ""
+	return p.Before != "" || p.After != ""
 }
 
 func reverseBytes(b []byte) {
@@ -199,7 +191,7 @@ func reverseBytes(b []byte) {
 	}
 }
 
-func encodeCursor(cursorItems []PagingCursorItem, descOrderBy bool) string {
+func encodeCursor(cursorItems []PagingCursorItem, negativeSort bool) string {
 	var b bytes.Buffer
 	for _, item := range cursorItems {
 		desc, ok := pagingFieldDescs[item.Field]
@@ -212,14 +204,14 @@ func encodeCursor(cursorItems []PagingCursorItem, descOrderBy bool) string {
 		}
 	}
 	data := b.Bytes()
-	if descOrderBy { // flip field sign for encoding desc order by
+	if negativeSort { // flip field sign for encoding negative sort
 		data[0] = -data[0]
 	}
 	reverseBytes(data)
 	return base64.URLEncoding.EncodeToString(data)
 }
 
-func decodeCursor(code string) (cursorItems []PagingCursorItem, descOrderBy bool, _ error) {
+func decodeCursor(code string) (cursorItems []PagingCursorItem, negativeSort bool, _ error) {
 	data, err := base64.URLEncoding.DecodeString(code)
 	if err != nil {
 		return nil, false, err
@@ -228,21 +220,17 @@ func decodeCursor(code string) (cursorItems []PagingCursorItem, descOrderBy bool
 		return nil, false, cm.Errorf(cm.InvalidArgument, nil, "empty cursor")
 	}
 	reverseBytes(data)
-	if int8(data[0]) < 0 { // unflip sign for decoding desc order by
-		descOrderBy = true
+	if int8(data[0]) < 0 { // unflip sign for decoding desc sort
+		negativeSort = true
 		data[0] = -data[0]
 	}
 	r := bytes.NewBuffer(data)
-	var hasID bool
 	for r.Len() > 0 {
 		b, err := r.ReadByte()
 		if err != nil {
 			return nil, false, cm.Errorf(cm.InvalidArgument, nil, "invalid cursor")
 		}
 		pagingField := PagingField(b)
-		if pagingField == PagingID {
-			hasID = true
-		}
 		desc, ok := pagingFieldDescs[pagingField]
 		if !ok {
 			return nil, false, cm.Errorf(cm.InvalidArgument, nil, "invalid cursor")
@@ -253,140 +241,90 @@ func decodeCursor(code string) (cursorItems []PagingCursorItem, descOrderBy bool
 		}
 		cursorItems = append(cursorItems, PagingCursorItem{pagingField, value})
 	}
-	if !hasID {
-		return nil, false, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid")
-	}
-
-	return cursorItems, descOrderBy, nil
+	return cursorItems, negativeSort, nil
 }
 
 func (p *Paging) decodeCursor() (PagingCursor, error) {
-	var result []PagingCursorItem
-	var hasPagingFieldID bool
-	if p.First != 0 || p.Last != 0 {
-		var hasSort, isFirst bool
-		hasSort = len(p.Sort) == 0 || !strings.HasPrefix(p.Sort[0], "-")
-		isFirst = p.First != 0
-
+	reverse := p.Before != ""
+	if p.After == "." || p.Before == "." {
+		var result []PagingCursorItem
 		if len(p.Sort) > 0 {
 			s := strings.TrimPrefix(p.Sort[0], "-")
-			pagingField := ParsePagingFieldWithDefault(s, 0)
-			if pagingField == PagingID {
-				hasPagingFieldID = true
-			}
-			if pagingField == PagingUnknown {
+			pagingField, ok := ParsePagingField(s)
+			if !ok {
 				return PagingCursor{}, cm.Errorf(cm.InvalidArgument, nil, "sorting by %v is not supported", s)
 			}
-			result = append(result, PagingCursorItem{pagingField, 0})
+			result = append(result, PagingCursorItem{pagingField, nil})
 		}
-		if !hasPagingFieldID {
-			result = append(result, PagingCursorItem{PagingID, 0})
-		}
+		result = append(result, PagingCursorItem{PagingID, nil})
+
+		negativeSort := len(p.Sort) != 0 && strings.HasPrefix(p.Sort[0], "-")
 		return PagingCursor{
-			Items:       result,
-			Reverse:     !isFirst,
-			DescOrderBy: hasSort != isFirst,
+			Items:        result,
+			Reverse:      reverse,
+			NegativeSort: negativeSort,
 		}, nil
 	}
-	cursorItems, descOrderBy, err := decodeCursor(cm.Coalesce(p.Before, p.After))
+
+	cursorItems, negativeSort, err := decodeCursor(cm.Coalesce(p.Before, p.After))
+	if err != nil {
+		return PagingCursor{}, err
+	}
 	return PagingCursor{
-		Items:       cursorItems,
-		Reverse:     p.Before != "",
-		DescOrderBy: descOrderBy,
+		Items:        cursorItems,
+		Reverse:      reverse,
+		NegativeSort: negativeSort,
 	}, err
 }
 
-func (p *Paging) buildSort() error {
-	if !p.IsCursorPaging() {
-		return nil
+// validateCursorPaging decodes cursor and validate. It also validate and set
+// Sort to decoded cursor.
+func (p *Paging) validateCursorPaging() (PagingCursor, error) {
+	if (p.Before == "") == (p.After == "") {
+		return PagingCursor{}, xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid")
 	}
-
-	result, err := p.decodeCursor()
-	if err != nil {
-		return err
-	}
-	sort := make([]string, 0, len(result.Items))
-	for _, item := range result.Items {
-		temp := item.Field.Name()
-		if result.DescOrderBy {
-			temp = "-" + temp
-		}
-		sort = append(sort, temp)
-	}
-	p.Sort = sort
-	return nil
-}
-
-func (p *Paging) Validate() error {
-	if p == nil {
-		return nil
+	if p.Limit == 0 {
+		return PagingCursor{}, xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (limit is required)")
 	}
 	if p.Limit < 0 || p.Limit > 1000 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (0 < Limit < 1000)")
+		return PagingCursor{}, xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (limit outside of range)")
 	}
 	if len(p.Sort) > 1 {
-		return cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Sort support only one field at the same time)")
+		return PagingCursor{}, cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (sort supports only one field)")
 	}
-	counter := 0
-	if p.First != 0 {
-		if p.First < 0 || p.First > 1000 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (First must have a value between 0 and 1000)")
-		}
-		counter++
+	cursor, err := p.decodeCursor()
+	if err != nil {
+		return PagingCursor{}, xerrors.Errorf(xerrors.InvalidArgument, err, "paging is invalid (%v)", err)
 	}
-	if p.Last != 0 {
-		if p.Last < 0 || p.Last > 1000 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (Last must have a value between 0 and 1000)")
-		}
-		counter++
+	if err := cursor.Validate(); err != nil {
+		return PagingCursor{}, err
 	}
-	if p.Before != "" {
-		if p.Limit == 0 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (Before must be used together with Limit)")
-		}
-		if len(p.Sort) > 0 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (Before must not be used together with Sort)")
-		}
-		counter++
+	decodedSort := cursor.GetSort()
+	if len(p.Sort) != 0 && p.Sort[0] != decodedSort {
+		return PagingCursor{}, xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (sort does not match)")
 	}
-	if p.After != "" {
-		if p.Limit == 0 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (After must be used together with Limit)")
-		}
-		if len(p.Sort) > 0 {
-			return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid (After must not be used together with Sort)")
-		}
-		counter++
+	if decodedSort != "" {
+		p.Sort = []string{decodedSort}
 	}
-	if counter == 1 {
-		return nil
-	} else {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "paging is invalid")
-	}
+	return cursor, nil
 }
 
-func validateSort(p *Paging, sortWhitelist map[string]string) error {
-	if p == nil {
+func validateCursorPagingSort(sorts []string, sortWhitelist map[string]string) error {
+	if len(sorts) == 0 {
 		return nil
 	}
-	if p.IsCursorPaging() {
-		if len(p.Sort) > 1 {
-			return cm.Errorf(cm.InvalidArgument, nil, "paging is invalid (Sort support only one field at the same time)")
-		}
-		for _, key := range p.Sort {
-			field := strings.TrimPrefix(key, "-")
-			if _, ok := sortWhitelist[field]; !ok {
-				return cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
-			}
-			if _, ok := enumPagingFieldValue[field]; !ok {
-				return cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
-			}
-		}
+	key := sorts[0]
+	field := strings.TrimPrefix(key, "-")
+	if _, ok := sortWhitelist[field]; !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "sort by %v is not allowed", field)
+	}
+	if _, ok := enumPagingFieldValue[field]; !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "sort by %v is not allowed", field)
 	}
 	return nil
 }
 
-func reverseAny(s interface{}) {
+func reverseSlice(s interface{}) {
 	n := reflect.ValueOf(s).Len()
 	swap := reflect.Swapper(s)
 	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
@@ -394,60 +332,38 @@ func reverseAny(s interface{}) {
 	}
 }
 
-func applyCursorPaging(
-	s cmsql.Query, p *Paging,
-	sortWhitelist map[string]string, prefix string,
-) (cmsql.Query, error) {
-	if err := validateSort(p, sortWhitelist); err != nil {
-		return cmsql.Query{}, err
-	}
-	if err := p.Validate(); err != nil {
-		return cmsql.Query{}, err
-	}
-	if p.First != 0 {
-		p.Limit = p.First
-	}
-	if p.Last != 0 {
-		p.Limit = p.Last
-	}
-	// check before, after
-	if p.Before != "" || p.After != "" {
-		writerTo, err := build(p, sortWhitelist, prefix)
-		if err != nil {
-			return cmsql.Query{}, err
-		}
-		s = s.Where(writerTo)
-	}
-	return cmsql.Query{}, nil
-}
-
-func LimitSort(s cmsql.Query, p *Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
+func LimitSort(s cmsql.Query, p *Paging, sortWhitelist map[string]string, prefixed ...string) (cmsql.Query, error) {
 	if p == nil {
 		s = s.Limit(1000)
 		return s, nil
 	}
-	if p.IsCursorPaging() {
-		query, err := applyCursorPaging(s, p, sortWhitelist, "")
-		if err != nil {
-			return query, err
-		}
-	} else {
-		if p.Offset < 0 {
-			return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
-		}
-		s = s.Offset(uint64(p.Offset))
-	}
-
 	if p.Limit < 0 || p.Limit > 10000 {
 		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid limit")
 	}
 	if p.Limit == 0 {
 		p.Limit = 1000
 	}
-	s = s.Limit(uint64(p.Limit))
-	if err := p.buildSort(); err != nil {
-		return cmsql.Query{}, err
+
+	if p.IsCursorPaging() {
+		cursor, err := p.validateCursorPaging()
+		if err != nil {
+			return s, err
+		}
+		if err := validateCursorPagingSort(p.Sort, sortWhitelist); err != nil {
+			return s, err
+		}
+		writerTo, err := buildCursorPagingQuery(cursor, sortWhitelist, "")
+		if err != nil {
+			return s, err
+		}
+		s = s.Where(writerTo).Limit(uint64(p.Limit))
+		return Sort(s, cursor.BuildSort(), sortWhitelist)
 	}
+
+	if p.Offset < 0 {
+		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
+	}
+	s = s.Offset(uint64(p.Offset)).Limit(uint64(p.Limit))
 	return Sort(s, p.Sort, sortWhitelist)
 }
 
@@ -458,56 +374,46 @@ type CursorPagingCondition struct {
 	args      []interface{}
 }
 
-func (p CursorPagingCondition) WriteSQLTo(w core.SQLWriter) error {
-	w.WriteByte('(')
+func (p *CursorPagingCondition) WriteSQLTo(w core.SQLWriter) error {
+	p.writeParen(w, '(')
 	for _, col := range p.cols {
-		if p.prefix != "" {
-			w.WriteQueryString(p.prefix)
-			w.WriteByte('.')
-		}
-		w.WriteQueryString(col)
+		w.WritePrefixedName(p.prefix, col)
 		w.WriteByte(',')
 	}
 	w.TrimLast(1)
-	w.WriteByte(')')
+	p.writeParen(w, ')')
 
 	w.WriteByte(' ')
 	w.WriteQueryString(p.operation)
 	w.WriteByte(' ')
 
-	w.WriteByte('(')
+	p.writeParen(w, '(')
 	w.WriteMarkers(len(p.args))
-	w.WriteByte(')')
-
 	w.WriteArgs(p.args)
+	p.writeParen(w, ')')
 	return nil
 }
 
-func build(p *Paging, sortWhitelist map[string]string, prefix string) (sq.WriterTo, error) {
-	if p == nil {
-		return nil, nil
+func (p *CursorPagingCondition) writeParen(w core.SQLWriter, b byte) {
+	if len(p.cols) > 1 {
+		w.WriteByte(b)
 	}
+}
 
-	cursor, err := p.decodeCursor()
-	if err != nil {
-		return nil, err
-	}
+func buildCursorPagingQuery(cursor PagingCursor, sortWhitelist map[string]string, prefix string) (sq.WriterTo, error) {
 	condition := CursorPagingCondition{
 		prefix:    prefix,
 		operation: ">",
 	}
-	if p.Before != "" {
+	if cursor.DescOrderBy() {
 		condition.operation = "<"
 	}
 
-	pagingIDIndex := -1
-	for i, item := range cursor.Items {
-		key := item.Field.Name()
-		if key == PagingID.Name() {
-			pagingIDIndex = i
+	for _, item := range cursor.Items {
+		if item.Value == nil {
 			continue
 		}
-
+		key := item.Field.Name()
 		columnName, ok := sortWhitelist[key]
 		if !ok {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "sort by %v is not allowed", key)
@@ -515,45 +421,26 @@ func build(p *Paging, sortWhitelist map[string]string, prefix string) (sq.Writer
 		condition.cols = append(condition.cols, columnName)
 		condition.args = append(condition.args, item.Value)
 	}
-	if pagingIDIndex != -1 {
-		condition.cols = append(condition.cols, sortWhitelist[PagingID.Name()])
-		condition.args = append(condition.args, cursor.Items[pagingIDIndex].Value)
+	if len(condition.cols) == 0 {
+		return nil, nil
 	}
-
-	return condition, nil
+	return &condition, nil
 }
 
-func PrefixedLimitSort(s cmsql.Query, p *Paging, sortWhitelist map[string]string, prefix string) (cmsql.Query, error) {
-	if p == nil {
-		s = s.Limit(1000)
-		return s, nil
-	}
-	if p.IsCursorPaging() {
-		query, err := applyCursorPaging(s, p, sortWhitelist, prefix)
-		if err != nil {
-			return query, err
+func Sort(s cmsql.Query, sorts []string, whitelist map[string]string, prefixed ...string) (cmsql.Query, error) {
+	prefix := ""
+	switch len(prefixed) {
+	case 0:
+		// no-op
+	case 1:
+		prefix = prefixed[0]
+		if prefix != "" && !strings.Contains(prefix, ".") {
+			prefix = prefix + "."
 		}
-	} else {
-		if p.Offset < 0 {
-			return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
-		}
-		s = s.Offset(uint64(p.Offset))
+	default:
+		panic("unexpected (too many prefix)")
 	}
 
-	if p.Limit < 0 || p.Limit > 10000 {
-		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid limit")
-	}
-	if p.Limit == 0 {
-		p.Limit = 1000
-	}
-	s = s.Limit(uint64(p.Limit))
-	if err := p.buildSort(); err != nil {
-		return cmsql.Query{}, err
-	}
-	return PrefixSort(s, p.Sort, sortWhitelist, prefix)
-}
-
-func Sort(s cmsql.Query, sorts []string, whitelist map[string]string) (cmsql.Query, error) {
 	for _, sort := range sorts {
 		sort = strings.TrimSpace(sort)
 		if sort == "" {
@@ -571,38 +458,9 @@ func Sort(s cmsql.Query, sorts []string, whitelist map[string]string) (cmsql.Que
 			if sortField == "" {
 				sortField = field
 			}
-			s = s.OrderBy(sortField + desc)
+			s = s.OrderBy(prefix + `"` + sortField + `"` + desc)
 		} else {
-			return s, cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
-		}
-	}
-	return s, nil
-}
-
-func PrefixSort(s cmsql.Query, sorts []string, whitelist map[string]string, prefix string) (cmsql.Query, error) {
-	if prefix != "" && !strings.Contains(prefix, ".") {
-		prefix = prefix + "."
-	}
-	for _, sort := range sorts {
-		sort = strings.TrimSpace(sort)
-		if sort == "" {
-			continue
-		}
-
-		field := sort
-		desc := ""
-		if sort[0] == '-' {
-			field = sort[1:]
-			desc = " DESC"
-		}
-
-		if sortField, ok := whitelist[field]; ok {
-			if sortField == "" {
-				sortField = field
-			}
-			s = s.OrderBy(prefix + sortField + desc)
-		} else {
-			return s, cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
+			return s, cm.Errorf(cm.InvalidArgument, nil, "sort by %v is not allowed", field)
 		}
 	}
 	return s, nil

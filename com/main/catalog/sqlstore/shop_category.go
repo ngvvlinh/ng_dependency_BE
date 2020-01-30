@@ -109,7 +109,7 @@ func (s *ShopCategoryStore) ListShopCategoriesDB() ([]*model.ShopCategory, error
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopCategory, s.ftShopCategory.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopCategory, s.ftShopCategory.prefix)
 	if err != nil {
 		return nil, err
 	}

@@ -3296,13 +3296,12 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
       "type": "string",
       "enum": [
         "unknown",
         "individual",
         "organization",
-        "anonymous"
+        "independent"
       ]
     },
     "xjSource": {
@@ -3316,7 +3315,8 @@
         "etop_pxs",
         "etop_cmx",
         "ts_app",
-        "etop_app"
+        "etop_app",
+        "haravan"
       ]
     },
     "yiPaymentMethod": {
@@ -3326,7 +3326,9 @@
         "cod",
         "bank",
         "other",
-        "vtpay"
+        "vtpay",
+        "momo",
+        "bankdeposit"
       ]
     },
     "yjProductType": {

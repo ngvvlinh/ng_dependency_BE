@@ -9430,7 +9430,7 @@
         },
         "created_type": {
           "description": "**Deprecated:** use mode\n",
-          "$ref": "#/definitions/rdReceiptMode"
+          "$ref": "#/definitions/peReceiptMode"
         },
         "description": {
           "type": "string"
@@ -9453,7 +9453,7 @@
           }
         },
         "mode": {
-          "$ref": "#/definitions/rdReceiptMode"
+          "$ref": "#/definitions/peReceiptMode"
         },
         "paid_at": {
           "type": "string",
@@ -10824,7 +10824,7 @@
           "format": "int64"
         },
         "status": {
-          "$ref": "#/definitions/blStatus"
+          "$ref": "#/definitions/bmStatus"
         }
       }
     },
@@ -10864,7 +10864,7 @@
           }
         },
         "status": {
-          "$ref": "#/definitions/bmStatus"
+          "$ref": "#/definitions/bnStatus"
         }
       }
     },
@@ -11403,6 +11403,14 @@
           "type": "string"
         }
       }
+    },
+    "peReceiptMode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "manual",
+        "auto"
+      ]
     },
     "pjGHNNoteCode": {
       "type": "string",
@@ -13654,14 +13662,6 @@
         "discard"
       ]
     },
-    "rdReceiptMode": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "manual",
-        "auto"
-      ]
-    },
     "rjInventoryVoucherType": {
       "type": "string",
       "enum": [
@@ -13731,13 +13731,12 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
       "type": "string",
       "enum": [
         "unknown",
         "individual",
         "organization",
-        "anonymous"
+        "independent"
       ]
     },
     "ujLedgerType": {
@@ -13759,7 +13758,8 @@
         "etop_pxs",
         "etop_cmx",
         "ts_app",
-        "etop_app"
+        "etop_app",
+        "haravan"
       ]
     },
     "yiPaymentMethod": {
@@ -13769,7 +13769,9 @@
         "cod",
         "bank",
         "other",
-        "vtpay"
+        "vtpay",
+        "momo",
+        "bankdeposit"
       ]
     },
     "yjProductType": {

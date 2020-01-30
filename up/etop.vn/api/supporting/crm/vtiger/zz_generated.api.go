@@ -199,8 +199,6 @@ type GetRecordLastTimeModifyQuery struct {
 	Offset int
 	Limit  int
 	Sort   []string
-	First  int
-	Last   int
 	Before string
 	After  string
 
@@ -508,8 +506,6 @@ func (q *GetRecordLastTimeModifyQuery) GetArgs(ctx context.Context) (_ context.C
 			Offset: q.Offset,
 			Limit:  q.Limit,
 			Sort:   q.Sort,
-			First:  q.First,
-			Last:   q.Last,
 			Before: q.Before,
 			After:  q.After,
 		}
@@ -519,8 +515,6 @@ func (q *GetRecordLastTimeModifyQuery) SetPaging(args meta.Paging) {
 	q.Offset = args.Offset
 	q.Limit = args.Limit
 	q.Sort = args.Sort
-	q.First = args.First
-	q.Last = args.Last
 	q.Before = args.Before
 	q.After = args.After
 }

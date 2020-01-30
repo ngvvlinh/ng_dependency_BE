@@ -165,7 +165,9 @@ func (q *queryImpl) build(typ string, def interface{}, fn builderFunc) (_ string
 		}
 		if def, ok := def.(core.IJoin); ok {
 			w.WriteByte(' ')
-			def.SQLJoin(w, nil)
+			if err := def.SQLJoin(w, nil); err != nil {
+				return "", nil, err
+			}
 		} else if q.table != "" {
 			w.WriteRawString(` FROM `)
 			w.WriteQueryName(q.table)

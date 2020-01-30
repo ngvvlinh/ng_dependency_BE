@@ -3588,13 +3588,12 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
       "type": "string",
       "enum": [
         "unknown",
         "individual",
         "organization",
-        "anonymous"
+        "independent"
       ]
     },
     "wdNotifierEntity": {
@@ -3616,7 +3615,8 @@
         "etop_pxs",
         "etop_cmx",
         "ts_app",
-        "etop_app"
+        "etop_app",
+        "haravan"
       ]
     },
     "xuConfirmCreditRequest": {
@@ -4124,7 +4124,9 @@
         "cod",
         "bank",
         "other",
-        "vtpay"
+        "vtpay",
+        "momo",
+        "bankdeposit"
       ]
     }
   },

@@ -35,8 +35,11 @@ var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
 	},
 	PagingUpdatedAt: {
 		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
-		Decode:    func(r io.Reader) (interface{}, error) { v, err := readInt64(r); return cm.FromMicros(v), err },
-		Encode:    func(w io.Writer, v interface{}) error { return writeInt64(w, cm.Micros(v.(time.Time))) },
+		Decode: func(r io.Reader) (interface{}, error) {
+			v, err := readInt64(r)
+			return cm.FromMicros(v).In(time.UTC), err
+		},
+		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, cm.Micros(v.(time.Time))) },
 	},
 }
 
@@ -66,13 +69,54 @@ func writeInt64(w io.Writer, v int64) error {
 }
 
 type PagingCursor struct {
-	Items       []PagingCursorItem
-	Reverse     bool // before/after, first/last
-	DescOrderBy bool
+	Items        []PagingCursorItem
+	Reverse      bool // before/after, first/last
+	NegativeSort bool
+}
+
+func (p PagingCursor) Validate() error {
+	if len(p.Items) == 0 || len(p.Items) > 2 {
+		return cm.Errorf(cm.InvalidArgument, nil, "paging is invalid")
+	}
+	if p.Items[len(p.Items)-1].Field != PagingID {
+		return cm.Errorf(cm.InvalidArgument, nil, "paging is invalid")
+	}
+	return nil
+}
+
+func (p PagingCursor) DescOrderBy() bool {
+	return p.Reverse != p.NegativeSort
+}
+
+// GetSort returns sort without ID
+func (p PagingCursor) GetSort() string {
+	field := p.Items[0].Field
+	if field == PagingID {
+		return ""
+	}
+	if p.NegativeSort {
+		return "-" + field.Name()
+	}
+	return field.Name()
+}
+
+// BuildSort returns sort for using in sql query
+func (p PagingCursor) BuildSort() []string {
+	sorts := make([]string, 0, len(p.Items))
+	for _, item := range p.Items {
+		sort := item.Field.Name()
+		if p.DescOrderBy() {
+			sort = "-" + sort
+		}
+		sorts = append(sorts, sort)
+	}
+	return sorts
 }
 
 type PagingCursorItem struct {
 	Field PagingField
+
+	// int64 for id, time.Time for updated_at and nil for empty
 	Value interface{}
 }
 

@@ -160,7 +160,7 @@ func (s *ShopVariantStore) ListShopVariantsDB() ([]*model.ShopVariant, error) {
 	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*model.ShopVariant
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
-	query, err := sqlstore.PrefixedLimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}

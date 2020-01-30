@@ -11,6 +11,7 @@ import (
 
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 
@@ -55,57 +56,66 @@ func cursorItems(args ...interface{}) (result []PagingCursorItem) {
 }
 
 func TestEncodeDecodeCursor(t *testing.T) {
+	sampleTime := time.Date(2020, time.January, 2, 20, 10, 5, 123456789, time.UTC)
+	encodedTime := sampleTime.Truncate(1000 * time.Nanosecond)
+
 	tests := []struct {
-		name      string
-		items     []PagingCursorItem
-		descOrder bool
-		expected  string
-		err       string
+		name         string
+		items        []PagingCursorItem
+		decodedItems []PagingCursorItem
+		negativeSort bool
+		expected     string
+		err          string
 	}{
 		{
-			name:      "ID",
-			items:     cursorItems(PagingID, int64(9876)),
-			descOrder: false,
-			expected:  "AAAAAAAAJpQB",
+			name:         "ID",
+			items:        cursorItems(PagingID, int64(9876)),
+			decodedItems: cursorItems(PagingID, int64(9876)),
+			negativeSort: false,
+			expected:     "AAAAAAAAJpQB",
 		},
 		{
-			name:      "ID and DescOrderBy",
-			items:     cursorItems(PagingID, int64(9876)),
-			descOrder: true,
-			expected:  "AAAAAAAAJpT_",
+			name:         "ID and DescOrderBy",
+			items:        cursorItems(PagingID, int64(9876)),
+			decodedItems: cursorItems(PagingID, int64(9876)),
+			negativeSort: true,
+			expected:     "AAAAAAAAJpT_",
 		},
 		{
-			name:      "ID, UpdatedAt",
-			items:     cursorItems(PagingID, int64(1234), PagingUpdatedAt, time.Time{}),
-			descOrder: false,
-			expected:  "AAAAAAAAAAACAAAAAAAABNIB",
+			name:         "ID, UpdatedAt",
+			items:        cursorItems(PagingID, int64(1234), PagingUpdatedAt, sampleTime),
+			decodedItems: cursorItems(PagingID, int64(1234), PagingUpdatedAt, encodedTime),
+			negativeSort: false,
+			expected:     "AAWbLcdr44ACAAAAAAAABNIB",
 		},
 		{
-			name:      "ID, UpdatedAt and DescOrderBy",
-			items:     cursorItems(PagingID, int64(1234), PagingUpdatedAt, time.Time{}),
-			descOrder: true,
-			expected:  "AAAAAAAAAAACAAAAAAAABNL_",
+			name:         "ID, UpdatedAt with negative sort",
+			items:        cursorItems(PagingID, int64(1234), PagingUpdatedAt, sampleTime),
+			decodedItems: cursorItems(PagingID, int64(1234), PagingUpdatedAt, encodedTime),
+			negativeSort: true,
+			expected:     "AAWbLcdr44ACAAAAAAAABNL_",
 		},
 		{
-			name:      "UpdatedAt and DescOrderBy",
-			items:     cursorItems(PagingUpdatedAt, time.Time{}),
-			descOrder: true,
-			expected:  "AAAAAAAAAAD-",
-			err:       "paging is invalid",
+			// still ok because decodeCursor does not validate PagingID
+			name:         "UpdatedAt with negative sort",
+			items:        cursorItems(PagingUpdatedAt, sampleTime),
+			decodedItems: cursorItems(PagingUpdatedAt, encodedTime),
+			negativeSort: true,
+			expected:     "AAWbLcdr44D-",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			output := encodeCursor(tt.items, tt.descOrder)
+			output := encodeCursor(tt.items, tt.negativeSort)
 			require.Equal(t, tt.expected, output)
 
-			decodedItems, decodedDescOrderBy, err := decodeCursor(output)
+			decodedItems, negativeSort, err := decodeCursor(output)
 			if tt.err != "" {
 				assert.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				assert.Equal(t, tt.items, decodedItems)
-				assert.Equal(t, tt.descOrder, decodedDescOrderBy)
+				assert.Equal(t, tt.decodedItems, decodedItems)
+				assert.Equal(t, tt.negativeSort, negativeSort)
 			}
 		})
 	}
@@ -120,166 +130,136 @@ func TestEncodeDecodeCursor(t *testing.T) {
 }
 
 func TestDecodeCursorPaging(t *testing.T) {
+	sampleTime := time.Date(2020, time.January, 2, 20, 10, 5, 123456789, time.UTC)
+	encodedTime := sampleTime.Truncate(1000 * time.Nanosecond)
+
 	tests := []struct {
 		name         string
 		paging       *Paging
 		pagingCursor PagingCursor
+		descOrderBy  bool
 		err          string
 	}{
 		{
-			name: "After With Limit",
+			name: "First",
 			paging: &Paging{
-				After: "AAAAAAAAAAACAAAAAAAABNL_",
-				Limit: 3,
+				After: ".",
+				Limit: 100,
 			},
 			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingID,
-						Value: int64(1234),
-					},
-					{
-						Field: PagingUpdatedAt,
-						Value: time.Time{},
-					},
-				},
-				DescOrderBy: true,
-				Reverse:     false,
+				Items:        cursorItems(PagingID, nil),
+				Reverse:      false,
+				NegativeSort: false,
 			},
+			descOrderBy: false,
 		},
 		{
 			name: "Last",
 			paging: &Paging{
-				Last: 100,
+				Before: ".",
+				Limit:  100,
 			},
 			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				DescOrderBy: true,
-				Reverse:     true,
+				Items:        cursorItems(PagingID, nil),
+				Reverse:      true,
+				NegativeSort: false,
 			},
+			descOrderBy: true,
 		},
 		{
-			name: "Last with Sort(updated_At)",
+			name: "First with sort (updated_at)",
 			paging: &Paging{
-				Last: 100,
-				Sort: []string{"updated_at"},
-			},
-			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingUpdatedAt,
-						Value: 0,
-					},
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				DescOrderBy: true,
-				Reverse:     true,
-			},
-		},
-		{
-			name: "Last with Sort(-updated_at)",
-			paging: &Paging{
-				Last: 100,
-				Sort: []string{"-updated_at"},
-			},
-			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingUpdatedAt,
-						Value: 0,
-					},
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				Reverse: true,
-			},
-		},
-		{
-			name: "Before with Limit",
-			paging: &Paging{
-				Before: "AAAAAAAAAAACAAAAAAAABNL_",
-				Limit:  3,
-			},
-			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingID,
-						Value: int64(1234),
-					},
-					{
-						Field: PagingUpdatedAt,
-						Value: time.Time{},
-					},
-				},
-				DescOrderBy: true,
-				Reverse:     true,
-			},
-		},
-		{
-			name: "First",
-			paging: &Paging{
-				First: 100,
-			},
-			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				Reverse: false,
-			},
-		},
-		{
-			name: "First with Sort(-updated_at)",
-			paging: &Paging{
-				First: 100,
-				Sort:  []string{"-updated_at"},
-			},
-			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingUpdatedAt,
-						Value: 0,
-					},
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				DescOrderBy: true,
-				Reverse:     false,
-			},
-		},
-		{
-			name: "First with Sort(updated_at)",
-			paging: &Paging{
-				First: 100,
+				After: ".",
+				Limit: 100,
 				Sort:  []string{"updated_at"},
 			},
 			pagingCursor: PagingCursor{
-				Items: []PagingCursorItem{
-					{
-						Field: PagingUpdatedAt,
-						Value: 0,
-					},
-					{
-						Field: PagingID,
-						Value: 0,
-					},
-				},
-				Reverse: false,
+				Items:        cursorItems(PagingUpdatedAt, nil, PagingID, nil),
+				Reverse:      false,
+				NegativeSort: false,
 			},
+			descOrderBy: false,
+		},
+		{
+			name: "First with negative sort (-updated_at)",
+			paging: &Paging{
+				After: ".",
+				Limit: 100,
+				Sort:  []string{"-updated_at"},
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, nil, PagingID, nil),
+				Reverse:      false,
+				NegativeSort: true,
+			},
+			descOrderBy: true,
+		},
+		{
+			name: "Last with sort (updated_at)",
+			paging: &Paging{
+				Before: ".",
+				Limit:  100,
+				Sort:   []string{"updated_at"},
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, nil, PagingID, nil),
+				Reverse:      true,
+				NegativeSort: false,
+			},
+			descOrderBy: true,
+		},
+		{
+			name: "Last with negative sort (-updated_at)",
+			paging: &Paging{
+				Before: ".",
+				Limit:  100,
+				Sort:   []string{"-updated_at"},
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, nil, PagingID, nil),
+				Reverse:      true,
+				NegativeSort: true,
+			},
+			descOrderBy: false,
+		},
+		{
+			name: "After with sort (updated_at_",
+			paging: &Paging{
+				After: encodeCursor(cursorItems(PagingUpdatedAt, sampleTime, PagingID, int64(1234)), false),
+				Limit: 3,
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, encodedTime, PagingID, int64(1234)),
+				Reverse:      false,
+				NegativeSort: false,
+			},
+			descOrderBy: false,
+		},
+		{
+			name: "After with negative sort",
+			paging: &Paging{
+				After: encodeCursor(cursorItems(PagingUpdatedAt, sampleTime, PagingID, int64(1234)), true),
+				Limit: 3,
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, encodedTime, PagingID, int64(1234)),
+				Reverse:      false,
+				NegativeSort: true,
+			},
+			descOrderBy: true,
+		},
+		{
+			name: "Before with negative sort",
+			paging: &Paging{
+				Before: encodeCursor(cursorItems(PagingUpdatedAt, sampleTime, PagingID, int64(1234)), true),
+				Limit:  3,
+			},
+			pagingCursor: PagingCursor{
+				Items:        cursorItems(PagingUpdatedAt, encodedTime, PagingID, int64(1234)),
+				Reverse:      true,
+				NegativeSort: true,
+			},
+			descOrderBy: false,
 		},
 	}
 
@@ -287,116 +267,143 @@ func TestDecodeCursorPaging(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := tt.paging.decodeCursor()
 			if tt.err != "" {
-				assert.NoError(t, err)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tt.pagingCursor, result)
+				assert.EqualError(t, err, tt.err)
+				return
 			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.pagingCursor, result)
+			assert.Equal(t, tt.descOrderBy, tt.pagingCursor.DescOrderBy())
 		})
 	}
 }
 
 func TestValidate(t *testing.T) {
+	sampleCursor := encodeCursor(cursorItems(PagingID, int64(1000)), false)
 	tests := []struct {
 		name   string
 		paging Paging
 		err    string
 	}{
 		{
-			name: "Limit(1)",
+			name: "First(101)",
+			paging: Paging{
+				After: ".",
+				Limit: 101,
+			},
+		},
+		{
+			name: "Before with Limit",
+			paging: Paging{
+				Before: sampleCursor,
+				Limit:  1,
+			},
+		},
+		{
+			name: "Before with sort",
+			paging: Paging{
+				Before: encodeCursor(cursorItems(PagingUpdatedAt, time.Now(), PagingID, int64(1000)), false),
+				Sort:   []string{"updated_at"},
+				Limit:  1,
+			},
+		},
+		{
+			name: "Before with negative sort",
+			paging: Paging{
+				Before: encodeCursor(cursorItems(PagingUpdatedAt, time.Now(), PagingID, int64(1000)), true),
+				Sort:   []string{"-updated_at"},
+				Limit:  1,
+			},
+		},
+		{
+			name: "Before with sort (invalid)",
+			paging: Paging{
+				Before: sampleCursor,
+				Sort:   []string{"updated_at"},
+				Limit:  1,
+			},
+			err: "paging is invalid (sort does not match)",
+		},
+		{
+			name: "Missing after and before",
 			paging: Paging{
 				Limit: 1,
 			},
-			err: "paging is invalid (0 < Limit < 1000)",
+			err: "paging is invalid",
 		},
 		{
-			name: "Limit(1001)",
+			name: "Both after and before",
 			paging: Paging{
-				Limit: 1001,
+				Before: ".",
+				After:  ".",
 			},
-			err: "paging is invalid (0 < Limit < 1000)",
+			err: "paging is invalid",
 		},
 		{
 			name: "Limit(0)",
 			paging: Paging{
+				After: sampleCursor,
 				Limit: 0,
 			},
-			err: "paging is invalid",
+			err: "paging is invalid (limit is required)",
 		},
 		{
-			name: "First(-1)",
+			name: "Limit(1001)",
 			paging: Paging{
+				After: sampleCursor,
+				Limit: 1001,
+			},
+			err: "paging is invalid (limit outside of range)",
+		},
+		{
+			name: "Limit(-1)",
+			paging: Paging{
+				After: sampleCursor,
 				Limit: -1,
 			},
-			err: "paging is invalid (First must have a value between 0 and 1000)",
-		},
-		{
-			name: "First(1001)",
-			paging: Paging{
-				First: 1001,
-			},
-			err: "paging is invalid (First must have a value between 0 and 1000)",
-		},
-		{
-			name: "First(101)",
-			paging: Paging{
-				First: 101,
-			},
+			err: "paging is invalid (limit outside of range)",
 		},
 		{
 			name: "Last(-1)",
 			paging: Paging{
-				Last: -1,
+				Before: ".",
+				Limit:  1001,
 			},
-			err: "paging is invalid (Last must have a value between 0 and 1000)",
+			err: "paging is invalid (limit outside of range)",
 		},
 		{
 			name: "Last(1001)",
 			paging: Paging{
-				Last: 1001,
+				Before: ".",
+				Limit:  1001,
 			},
-			err: "paging is invalid (Last must have a value between 0 and 1000)",
+			err: "paging is invalid (limit outside of range)",
 		},
 		{
-			name: "First(100), Last(2)",
-			paging: Paging{
-				First: 100,
-				Last:  2,
-			},
-			err: "paging is invalid",
-		},
-		{
-			name:   "Empty paging",
+			name:   "empty",
 			paging: Paging{},
 			err:    "paging is invalid",
 		},
 		{
 			name: "Before",
 			paging: Paging{
-				Before: "id~1",
+				Before: sampleCursor,
 			},
-			err: "paging is invalid (Before must be used together with Limit)",
-		},
-		{
-			name: "Before with Limit",
-			paging: Paging{
-				Before: "id~1",
-				Limit:  1,
-			},
+			err: "paging is invalid (limit is required)",
 		},
 		{
 			name: "Before with Sort(-updated_at)",
 			paging: Paging{
-				Before: "id~1",
+				Before: sampleCursor,
 				Sort:   []string{"-updated_at"},
 			},
-			err: "paging is invalid (Before must not be used together with Sort)",
+			err: "paging is invalid (limit is required)",
 		},
 		{
 			name: "Before, After and Limit(100)",
 			paging: Paging{
-				Before: "id~1",
-				After:  "id~2",
+				Before: sampleCursor,
+				After:  sampleCursor,
 				Limit:  100,
 			},
 			err: "paging is invalid",
@@ -405,12 +412,12 @@ func TestValidate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
+			_, err := tt.paging.validateCursorPaging()
 			if tt.err != "" {
-				assert.Error(t, tt.paging.Validate())
-			} else {
-				assert.NoError(t, tt.paging.Validate())
+				assert.EqualError(t, err, tt.err)
+				return
 			}
+			assert.NoError(t, err)
 		})
 	}
 }
@@ -422,6 +429,7 @@ func TestValidateSort(t *testing.T) {
 		"created_at": "",
 	}
 
+	sampleCursor := encodeCursor(cursorItems(PagingID, int64(1000)), false)
 	tests := []struct {
 		name   string
 		paging *Paging
@@ -430,7 +438,7 @@ func TestValidateSort(t *testing.T) {
 		{
 			name: "Before with Limit",
 			paging: &Paging{
-				Before: "id~1",
+				Before: sampleCursor,
 				Limit:  1,
 				Sort:   []string{"id"},
 			},
@@ -438,38 +446,29 @@ func TestValidateSort(t *testing.T) {
 		{
 			name: "Before with Limit, Sort(created_at)",
 			paging: &Paging{
-				Before: "id~1",
+				Before: sampleCursor,
 				Limit:  1,
 				Sort:   []string{"created_at"},
 			},
 			err: "Sort by created_at is not allowed",
 		},
 		{
-			name: "Before with Limit, Sort(id, updated_at)",
-			paging: &Paging{
-				Before: "id~1",
-				Limit:  1,
-				Sort:   []string{"id", "updated_at"},
-			},
-			err: "paging is invalid (Sort support only one field at the same time)",
-		},
-		{
 			name: "Before with Limit, Sort(name)",
 			paging: &Paging{
-				Before: "id~1",
+				Before: sampleCursor,
 				Limit:  1,
 				Sort:   []string{"name"},
 			},
-			err: "Sort by created_at is not allowed",
+			err: "Sort by name is not allowed",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.err != "" {
-				assert.Error(t, validateSort(tt.paging, sortWhitelist))
+				assert.Error(t, validateCursorPagingSort(tt.paging.Sort, sortWhitelist))
 			} else {
-				assert.NoError(t, validateSort(tt.paging, sortWhitelist))
+				assert.NoError(t, validateCursorPagingSort(tt.paging.Sort, sortWhitelist))
 			}
 		})
 	}
@@ -478,7 +477,7 @@ func TestValidateSort(t *testing.T) {
 func TestReverseAny(t *testing.T) {
 	t.Run("Reverse Any", func(t *testing.T) {
 		a := []string{"a", "b", "c"}
-		reverseAny(a)
+		reverseSlice(a)
 		assert.Equal(t, []string{"c", "b", "a"}, a)
 	})
 }
@@ -489,136 +488,152 @@ func TestLimitSort(t *testing.T) {
 		"updated_at": "updated_at",
 		"name":       "",
 	}
+	sampleTime := time.Date(2020, time.January, 2, 20, 10, 5, 123456789, time.UTC)
+	encodedTime := sampleTime.Truncate(1000 * time.Nanosecond)
 
 	tests := []struct {
 		name   string
 		paging *Paging
-		limit  int
+		cond   sq.WriterTo
+		sql    string
+		args   []interface{}
 		err    string
 	}{
 		{
 			name: "First",
 			paging: &Paging{
-				First: 2,
+				After: ".",
+				Limit: 2,
 			},
-			limit: 2,
+			sql:  `SELECT * FROM foo ORDER BY "id" LIMIT 2`,
+			args: []interface{}{},
+			cond: nil,
 		},
 		{
-			name: "Before with Limit",
+			name: "Last",
+			paging: &Paging{
+				Before: ".",
+				Limit:  2,
+			},
+			sql:  `SELECT * FROM foo ORDER BY "id" DESC LIMIT 2`,
+			args: []interface{}{},
+			cond: nil,
+		},
+		{
+			name: "First with negative sort (updated_at)",
+			paging: &Paging{
+				After: ".",
+				Limit: 2,
+				Sort:  []string{"-updated_at"},
+			},
+			sql:  `SELECT * FROM foo ORDER BY "updated_at" DESC,"id" DESC LIMIT 2`,
+			args: []interface{}{},
+			cond: nil,
+		},
+		{
+			name: "Last with negative sort (updated_at)",
+			paging: &Paging{
+				Before: ".",
+				Limit:  2,
+				Sort:   []string{"-updated_at"},
+			},
+			sql:  `SELECT * FROM foo ORDER BY "updated_at","id" LIMIT 2`,
+			args: []interface{}{},
+			cond: nil,
+		},
+		{
+			name: "After (id)",
+			paging: &Paging{
+				After: encodeCursor(cursorItems(PagingID, int64(9876)), false),
+				Limit: 1,
+			},
+			cond: &CursorPagingCondition{
+				prefix:    "",
+				operation: ">",
+				cols:      []string{"id"},
+				args:      []interface{}{int64(9876)},
+			},
+			sql:  `SELECT * FROM foo WHERE ("id" > $1) ORDER BY "id" LIMIT 1`,
+			args: []interface{}{int64(9876)},
+		},
+		{
+			name: "Before (id)",
+			paging: &Paging{
+				Before: encodeCursor(cursorItems(PagingID, int64(9876)), false),
+				Limit:  1,
+			},
+			cond: &CursorPagingCondition{
+				prefix:    "",
+				operation: "<",
+				cols:      []string{"id"},
+				args:      []interface{}{int64(9876)},
+			},
+			sql:  `SELECT * FROM foo WHERE ("id" < $1) ORDER BY "id" DESC LIMIT 1`,
+			args: []interface{}{int64(9876)},
+		},
+		{
+			name: "After with negative sort (-updated_at)",
+			paging: &Paging{
+				After: encodeCursor(cursorItems(PagingUpdatedAt, sampleTime, PagingID, int64(1234)), true),
+				Limit: 10,
+			},
+			cond: &CursorPagingCondition{
+				operation: ">",
+				prefix:    "",
+				cols:      []string{"updated_at", "id"},
+				args:      []interface{}{encodedTime, int64(1234)},
+			},
+			sql:  `SELECT * FROM foo WHERE (("updated_at","id") < ($1,$2)) ORDER BY "updated_at" DESC,"id" DESC LIMIT 10`,
+			args: []interface{}{encodedTime, int64(1234)},
+		},
+		{
+			name: "Before with negative sort (-updated_at)",
+			paging: &Paging{
+				Before: encodeCursor(cursorItems(PagingUpdatedAt, sampleTime, PagingID, int64(1234)), true),
+				Limit:  10,
+			},
+			cond: &CursorPagingCondition{
+				args:      []interface{}{encodedTime, int64(1234)},
+				cols:      []string{"updated_at", "id"},
+				operation: "<",
+				prefix:    "",
+			},
+			sql:  `SELECT * FROM foo WHERE (("updated_at","id") > ($1,$2)) ORDER BY "updated_at","id" LIMIT 10`,
+			args: []interface{}{encodedTime, int64(1234)},
+		},
+		{
+			name: "Before (invalid)",
 			paging: &Paging{
 				Before: base64.StdEncoding.EncodeToString([]byte("011")),
 				Limit:  10,
 			},
-			err: "paging is invalid",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := applyCursorPaging(db.NewQuery(), tt.paging, sortWhitelist, "")
-			if tt.err != "" {
-				assert.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, 2, tt.limit)
-			}
-		})
-	}
-}
-
-func TestBuild(t *testing.T) {
-	sortWhitelist := map[string]string{
-		"id":         "id",
-		"updated_at": "updated_at",
-		"name":       "",
-	}
-
-	tests := []struct {
-		name                  string
-		paging                *Paging
-		cursorPagingCondition CursorPagingCondition
-		err                   string
-	}{
-		{
-			name: "Before with Limit",
-			paging: &Paging{
-				Before: "AAAAAAAAAAACAAAAAAAABNIB",
-				Limit:  10,
-			},
-			cursorPagingCondition: CursorPagingCondition{
-				args: []interface{}{
-					time.Time{},
-					int64(1234),
-				},
-				cols: []string{
-					"updated_at",
-					"id",
-				},
-				operation: "<",
-				prefix:    "",
-			},
+			cond: nil,
+			err:  "paging is invalid (invalid cursor) original=invalid cursor",
 		},
 		{
-			name: "After(sort=id) with Limit",
-			paging: &Paging{
-				After: "AAAAAAAAJpQB",
-				Limit: 1,
-			},
-			cursorPagingCondition: CursorPagingCondition{
-				prefix:    "",
-				operation: ">",
-				cols: []string{
-					"id",
-				},
-				args: []interface{}{
-					int64(9876),
-				},
-			},
-		},
-		{
-			name: "After(contain updated_at, id) with Limit",
-			paging: &Paging{
-				After: "AAAAAAAAAAACAAAAAAAABNIB",
-				Limit: 10,
-			},
-			cursorPagingCondition: CursorPagingCondition{
-				operation: ">",
-				prefix:    "",
-				cols: []string{
-					"updated_at",
-					"id",
-				},
-				args: []interface{}{
-					time.Time{},
-					int64(1234),
-				},
-			},
-		},
-		{
-			name: "After(invalid) with Limit",
+			name: "After (invalid)",
 			paging: &Paging{
 				After: "AAAAAAAAJpQZ",
 				Limit: 1,
 			},
-			err: "paging is invalid",
+			err: "paging is invalid (invalid cursor) original=invalid cursor",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := build(tt.paging, sortWhitelist, "")
+			query := db.NewQuery().SQL(`SELECT * FROM foo`)
+			query, err := LimitSort(query, tt.paging, sortWhitelist)
 			if tt.err != "" {
-				assert.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tt.cursorPagingCondition, result)
+				assert.EqualError(t, err, tt.err)
+				return
 			}
+
+			require.NoError(t, err)
+			sql, args, err := query.Build()
+			require.NoError(t, err)
+			assert.Equal(t, tt.sql, sql)
+			assert.Equal(t, tt.args, args)
 		})
 	}
-
-	t.Run("Paging nil", func(t *testing.T) {
-		result, err := build(nil, sortWhitelist, "")
-		assert.NoError(t, err)
-		assert.Nil(t, result)
-	})
 }

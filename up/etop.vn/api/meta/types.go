@@ -35,8 +35,6 @@ type PageInfo struct {
 	Limit  int
 	Sort   []string
 
-	First  int
-	Last   int
 	Before string
 	After  string
 
@@ -49,8 +47,6 @@ type Paging struct {
 	Limit  int
 	Sort   []string
 
-	First  int
-	Last   int
 	Before string
 	After  string
 }
