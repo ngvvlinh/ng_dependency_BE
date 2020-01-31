@@ -62,12 +62,6 @@ func (r *Receipt) GetRefIDs() []dot.ID {
 	return ids
 }
 
-type MoneyTransactionConfirmedEvent struct {
-	meta.EventMeta
-	ShopID             dot.ID
-	MoneyTransactionID dot.ID
-}
-
 type ReceiptConfirmedEvent struct {
 	meta.EventMeta
 	ShopID    dot.ID

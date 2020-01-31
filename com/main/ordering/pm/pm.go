@@ -16,7 +16,6 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi/dot"
@@ -148,7 +147,7 @@ func (p *ProcessManager) updatePaymentStatus(
 	for _, order := range orders {
 		var status status4.NullStatus
 		receivedAmount := mapOrderIDAndReceivedAmount[order.ID]
-		if order.TotalAmount == receivedAmount {
+		if receivedAmount >= order.TotalAmount {
 			status = status4.P.Wrap()
 		} else if receivedAmount > 0 {
 			status = status4.S.Wrap()
@@ -156,12 +155,12 @@ func (p *ProcessManager) updatePaymentStatus(
 			status = status4.Z.Wrap()
 		}
 
-		updateOrderPaymentStatus := &modelx.UpdateOrderPaymentStatusCommand{
-			ShopID:        shopID,
+		cmd := &ordering.UpdateOrderPaymentStatusCommand{
 			OrderID:       order.ID,
+			ShopID:        shopID,
 			PaymentStatus: status,
 		}
-		if err := bus.Dispatch(ctx, updateOrderPaymentStatus); err != nil {
+		if err := p.order.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
 	}

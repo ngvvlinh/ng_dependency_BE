@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
@@ -330,22 +331,22 @@ func (ft *ReceiptFilters) ByCancelledReasonPtr(CancelledReason *string) *sq.Colu
 	}
 }
 
-func (ft *ReceiptFilters) ByCreatedType(CreatedType string) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByCreatedType(CreatedType receipt_mode.ReceiptMode) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_type",
 		Value:  CreatedType,
-		IsNil:  CreatedType == "",
+		IsNil:  CreatedType == 0,
 	}
 }
 
-func (ft *ReceiptFilters) ByCreatedTypePtr(CreatedType *string) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByCreatedTypePtr(CreatedType *receipt_mode.ReceiptMode) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_type",
 		Value:  CreatedType,
 		IsNil:  CreatedType == nil,
-		IsZero: CreatedType != nil && (*CreatedType) == "",
+		IsZero: CreatedType != nil && (*CreatedType) == 0,
 	}
 }
 

@@ -137,11 +137,11 @@ func (a *LedgerAggregate) DeleteLedger(
 	shopLedger, err := a.store(ctx).ID(ID).ShopID(shopID).GetLedger()
 	if err != nil {
 		return 0, cm.MapError(err).
-			Wrap(cm.NotFound, "không tìm thấy số quỹ").
+			Wrap(cm.NotFound, "không tìm thấy tài khoản thanh toán").
 			Throw()
 	}
 	if shopLedger.Type == ledger_type.LedgerTypeCash {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "không thể xóa số quỹ mặc định")
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "không thể xóa tài khoản thanh toán mặc định")
 	}
 
 	// Check ledger_id exists into any receipts

@@ -48,55 +48,61 @@ func (q *TraderQuery) GetTraderByID(
 }
 
 func (q *TraderQuery) GetTraderInfoByID(
-	ctx context.Context, ID, ShopID dot.ID,
+	ctx context.Context, id, shopID dot.ID,
 ) (*tradering.ShopTrader, error) {
 	var fullName, phone string
-	trader, err := q.store(ctx).ID(ID).ShopID(ShopID).GetTrader()
+	trader, err := q.store(ctx).ID(id).GetTrader()
 	if err != nil {
 		return nil, err
 	}
+	var _shopID dot.ID
 	switch trader.Type {
 	case tradering.CustomerType:
 		query := &customering.GetCustomerByIDQuery{
-			ID:     ID,
-			ShopID: ShopID,
+			ID: id,
 		}
 		if err := q.customerQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).
 				Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
 				Throw()
 		}
+		_shopID = query.Result.ShopID
 		fullName = query.Result.FullName
 		phone = query.Result.Phone
 
 	case tradering.CarrierType:
 		query := &carrying.GetCarrierByIDQuery{
-			ID:     ID,
-			ShopID: ShopID,
+			ID: id,
 		}
 		if err := q.carrierQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).
 				Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
 				Throw()
 		}
+		_shopID = query.Result.ShopID
 		fullName = query.Result.FullName
 	case tradering.SupplierType:
 		query := &suppliering.GetSupplierByIDQuery{
-			ID:     ID,
-			ShopID: ShopID,
+			ID: id,
 		}
 		if err := q.supplierQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).
 				Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
 				Throw()
 		}
+		_shopID = query.Result.ShopID
 		fullName = query.Result.FullName
 		phone = query.Result.Phone
 	}
+	if _shopID != 0 {
+		if _shopID != shopID {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Đối tác không thuộc cửa hàng").WithMetap("traderID", id).WithMetap("shopID", shopID)
+		}
+	}
 
 	traderResult := &tradering.ShopTrader{
-		ID:       ID,
-		ShopID:   ShopID,
+		ID:       id,
+		ShopID:   shopID,
 		Type:     trader.Type,
 		FullName: fullName,
 		Phone:    phone,

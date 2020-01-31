@@ -173,7 +173,7 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.LedgerID = arg.LedgerID // simple assign
 	out.Trader = Convert_receipting_Trader_receiptingmodel_Trader(arg.Trader, nil)
 	out.CancelledReason = ""          // zero value
-	out.CreatedType = ""              // zero value
+	out.CreatedType = 0               // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.PaidAt = arg.PaidAt           // simple assign
 	out.ConfirmedAt = arg.ConfirmedAt // simple assign

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
@@ -34,7 +35,7 @@ type Receipt struct {
 	LedgerID        dot.ID
 	Trader          *Trader
 	CancelledReason string
-	CreatedType     string
+	CreatedType     receipt_mode.ReceiptMode
 	CreatedBy       dot.ID
 	PaidAt          time.Time
 	ConfirmedAt     time.Time

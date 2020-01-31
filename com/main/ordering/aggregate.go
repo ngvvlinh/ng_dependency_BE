@@ -147,6 +147,8 @@ func (a *Aggregate) UpdateOrdersConfirmStatus(ctx context.Context, args *orderin
 }
 
 func (a *Aggregate) UpdateOrderPaymentInfo(ctx context.Context, args *ordering.UpdateOrderPaymentInfoArgs) error {
+	// Kiểm tra lại hàm này
+	// Chỉ bắn event khi đây là đơn trading
 	update := sqlstore.UpdateOrderPaymentInfoArgs{
 		ID:            args.ID,
 		PaymentStatus: args.PaymentStatus,
@@ -181,4 +183,21 @@ func (a *Aggregate) UpdateOrderStatus(ctx context.Context, args *ordering.Update
 		Status: args.Status,
 	}
 	return a.store(ctx).UpdateOrderStatus(update)
+}
+
+func (a *Aggregate) UpdateOrderPaymentStatus(ctx context.Context, args *ordering.UpdateOrderPaymentStatusArgs) error {
+	if args.ShopID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing ShopID", nil)
+	}
+	if args.OrderID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
+	}
+	if !args.PaymentStatus.Valid {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing payment status")
+	}
+	if _, err := a.store(ctx).ID(args.OrderID).ShopID(args.ShopID).GetOrder(); err != nil {
+		return err
+	}
+
+	return a.store(ctx).UpdateOrderPaymentStatus(args)
 }

@@ -53,6 +53,14 @@ type GetMoneyTransactions struct {
 	}
 }
 
+type GetMoneyTxsByMoneyTxShippingEtopID struct {
+	MoneyTxShippingEtopID dot.ID
+
+	Result struct {
+		MoneyTransactions []*txmodel.MoneyTransactionShipping
+	}
+}
+
 type UpdateMoneyTransaction struct {
 	ID            dot.ID
 	ShopID        dot.ID

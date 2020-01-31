@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
+	"etop.vn/api/main/moneytx"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/api/top/types/etc/receipt_mode"
@@ -13,10 +15,10 @@ import (
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status5"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	"etop.vn/backend/com/main/moneytx/modelx"
+	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	"etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
@@ -30,10 +32,11 @@ import (
 type ProcessManager struct {
 	eventBus capi.EventBus
 
-	receiptQuery receipting.QueryBus
-	receiptAggr  receipting.CommandBus
-	ledgerQuery  ledgering.QueryBus
-	ledgerAggr   ledgering.CommandBus
+	receiptQuery  receipting.QueryBus
+	receiptAggr   receipting.CommandBus
+	ledgerQuery   ledgering.QueryBus
+	ledgerAggr    ledgering.CommandBus
+	identityQuery identity.QueryBus
 }
 
 func New(
@@ -42,28 +45,30 @@ func New(
 	receiptAggregate receipting.CommandBus,
 	ledgerQuery ledgering.QueryBus,
 	ledgerAggregate ledgering.CommandBus,
+	identityQuery identity.QueryBus,
 ) *ProcessManager {
 	return &ProcessManager{
-		eventBus:     eventBus,
-		receiptQuery: receiptQuery,
-		receiptAggr:  receiptAggregate,
-		ledgerQuery:  ledgerQuery,
-		ledgerAggr:   ledgerAggregate,
+		eventBus:      eventBus,
+		receiptQuery:  receiptQuery,
+		receiptAggr:   receiptAggregate,
+		ledgerQuery:   ledgerQuery,
+		ledgerAggr:    ledgerAggregate,
+		identityQuery: identityQuery,
 	}
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTransactionConfirmed)
+	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
 }
 
-func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *receipting.MoneyTransactionConfirmedEvent) error {
+func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *moneytx.MoneyTransactionConfirmedEvent) error {
 	var (
 		ledgerID         dot.ID
 		totalShippingFee int
 		fulfillments     []*modely.FulfillmentExtended
 		orderIDs         []dot.ID
 	)
-	mapOrderAndTotalAmount := make(map[dot.ID]int)
 	mapOrderAndReceivedAmount := make(map[dot.ID]int)
 	mapOrder := make(map[dot.ID]ordermodelx.OrderWithFulfillments)
 	mapOrderFulfillment := make(map[dot.ID]*modely.FulfillmentExtended)
@@ -93,7 +98,6 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		return err
 	}
 	for _, order := range getOrdersQuery.Result.Orders {
-		mapOrderAndTotalAmount[order.ID] = order.TotalAmount
 		mapOrderAndReceivedAmount[order.ID] = 0
 		mapOrder[order.ID] = order
 	}
@@ -127,19 +131,29 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	}
 
 	// Get bank_account
-	var bankAccount *identitysharemodel.BankAccount
-	var haveBankAccount bool
-	ledgerID, err := m.getOrCreateBankAccount(getMoneyTransaction, bankAccount, haveBankAccount, event.ShopID, ctx, ledgerID)
+	bankAccount := getMoneyTransaction.Result.BankAccount
+	if bankAccount == nil {
+		// get shop bankAccount
+		query := &identity.GetShopByIDQuery{
+			ID: event.ShopID,
+		}
+		if err := m.identityQuery.Dispatch(ctx, query); err != nil {
+			return err
+		}
+		shopBankAccount := query.Result.BankAccount
+		bankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(shopBankAccount, bankAccount)
+	}
+	ledgerID, err := m.getOrCreateLedgerID(ctx, bankAccount, event.ShopID)
 	if err != nil {
 		return err
 	}
 
-	if err := createReceipts(mapOrderFulfillment, mapOrderAndTotalAmount, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID, m, ctx); err != nil {
+	if err := m.createReceipts(ctx, mapOrderFulfillment, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID); err != nil {
 		return err
 	}
 
 	// Create receipt type payment
-	if err := m.createPayment(totalShippingFee, fulfillments, event.ShopID, ledgerID, ctx); err != nil {
+	if err := m.createPayment(ctx, totalShippingFee, fulfillments, event.ShopID, ledgerID); err != nil {
 		return err
 	}
 
@@ -147,7 +161,10 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 }
 
 func (m *ProcessManager) createPayment(
-	totalShippingFee int, fulfillments []*modely.FulfillmentExtended, shopID, ledgerID dot.ID, ctx context.Context,
+	ctx context.Context,
+	totalShippingFee int,
+	fulfillments []*modely.FulfillmentExtended,
+	shopID, ledgerID dot.ID,
 ) error {
 	{
 		receiptLines := []*receipting.ReceiptLine{}
@@ -170,6 +187,7 @@ func (m *ProcessManager) createPayment(
 			PaidAt:      time.Now(),
 			Mode:        receipt_mode.Auto,
 			ConfirmedAt: time.Now(),
+			RefType:     receipt_ref.Fulfillment,
 		}
 		if err := m.receiptAggr.Dispatch(ctx, cmd); err != nil {
 			return err
@@ -178,54 +196,54 @@ func (m *ProcessManager) createPayment(
 	return nil
 }
 
-func createReceipts(
+func (m *ProcessManager) createReceipts(
+	ctx context.Context,
 	mapOrderFulfillment map[dot.ID]*modely.FulfillmentExtended,
-	mapOrderAndTotalAmount map[dot.ID]int, mapOrderAndReceivedAmount map[dot.ID]int,
-	mapOrder map[dot.ID]ordermodelx.OrderWithFulfillments, shopID, ledgerID dot.ID,
-	m *ProcessManager, ctx context.Context) error {
-	for key, value := range mapOrderAndTotalAmount {
+	mapOrderAndReceivedAmount map[dot.ID]int,
+	mapOrder map[dot.ID]ordermodelx.OrderWithFulfillments,
+	shopID, ledgerID dot.ID) error {
+	for key, order := range mapOrder {
+		totalAmount := order.TotalAmount
 		// số tiền thu thực tế
 		receiptCOD := 0
 		title := ""
-		amountReceiptLines := value - mapOrderAndReceivedAmount[key]
-		if amountReceiptLines == 0 {
+		// remainAmount: Số tiền còn lại (cần thu)
+		remainAmount := totalAmount - mapOrderAndReceivedAmount[key]
+		if remainAmount == 0 {
 			continue
 		}
-		if mapOrderFulfillment[key].TotalCODAmount == 0 {
-			continue
-		}
-		switch mapOrderFulfillment[key].Status {
-		case status5.P:
-			receiptCOD = mapOrderFulfillment[key].TotalCODAmount
+		ffm := mapOrderFulfillment[key]
+		switch ffm.ShippingState {
+		case shipping.Delivered:
+			receiptCOD = ffm.TotalCODAmount
 			title = "Nhận thu hộ đơn hàng giao thành công"
-		case status5.N:
-			continue
-		case status5.NS:
-			if mapOrderFulfillment[key].ShippingState == shipping.Undeliverable {
-				receiptCOD = mapOrderFulfillment[key].ActualCompensationAmount
-				title = "Nhận bồi hoàn đơn giao hàng không giao được"
-			} else {
-				continue
-			}
+		case shipping.Undeliverable:
+			receiptCOD = ffm.ActualCompensationAmount
+			title = "Nhận hoàn tiền đơn mất hàng"
 		default:
 			continue
 		}
 		receiptLines := []*receipting.ReceiptLine{}
 		// TH: Tiền thu thực tế > số tiền cần thu -> cộng lại vào tài khoản của khách số tiền = Tiền thu thực tế - số tiền cần thu
-		if mapOrderFulfillment[key].TotalAmount > amountReceiptLines {
-			receiptLines = append(receiptLines, &receipting.ReceiptLine{
-				Amount: mapOrderFulfillment[key].TotalAmount - amountReceiptLines,
+		if receiptCOD <= remainAmount {
+			line := &receipting.ReceiptLine{
+				RefID:  key,
+				Amount: receiptCOD,
+			}
+			receiptLines = append(receiptLines, line)
+		} else {
+			line1 := &receipting.ReceiptLine{
+				RefID:  key,
+				Amount: remainAmount,
+			}
+			line2 := &receipting.ReceiptLine{
 				Title:  "Cộng vào tài khoản khách hàng",
-			})
-			receiptCOD = mapOrderFulfillment[key].TotalAmount
+				Amount: receiptCOD - remainAmount,
+			}
+			receiptLines = append(receiptLines, line1, line2)
 		}
-		// Số tiền cần thu
-		receiptLines = append(receiptLines, &receipting.ReceiptLine{
-			RefID:  key,
-			Amount: amountReceiptLines,
-		})
 
-		traderID := mapOrder[key].CustomerID
+		traderID := order.CustomerID
 		if traderID == 0 {
 			traderID = model.IndependentCustomerID
 		}
@@ -253,50 +271,53 @@ func createReceipts(
 	return nil
 }
 
-func (m *ProcessManager) getOrCreateBankAccount(
-	getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *identitysharemodel.BankAccount,
-	haveBankAccount bool, shopID dot.ID, ctx context.Context, ledgerID dot.ID) (dot.ID, error) {
-	if getMoneyTransaction.Result.BankAccount != nil {
-		bankAccount = getMoneyTransaction.Result.BankAccount
-		haveBankAccount = true
+func (m *ProcessManager) getOrCreateLedgerID(ctx context.Context, bankAccount *identitysharemodel.BankAccount, shopID dot.ID) (dot.ID, error) {
+	if bankAccount == nil {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin tài khoản ngân hàng. Vui lòng kiểm tra lại")
 	}
-	// Get default ledger (cash) when haven't bankAccount
-	if !haveBankAccount {
-		query := &ledgering.ListLedgersByTypeQuery{
-			LedgerType: ledger_type.LedgerTypeCash,
-			ShopID:     shopID,
+	// Check accountNumber exists into ledgers, if it isn't then create
+	query := &ledgering.GetLedgerByAccountNumberQuery{
+		AccountNumber: bankAccount.AccountNumber,
+		ShopID:        shopID,
+	}
+	err := m.ledgerQuery.Dispatch(ctx, query)
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+		// Create ledger
+		cmd := &ledgering.CreateLedgerCommand{
+			ShopID:      shopID,
+			Name:        fmt.Sprintf("[%v] %v", bankAccount.Branch, bankAccount.AccountName),
+			BankAccount: identityconvert.BankAccount(bankAccount),
+			Note:        "Tài khoản thanh toán tự tạo",
+			Type:        ledger_type.LedgerTypeBank,
 		}
-		if err := m.ledgerQuery.Dispatch(ctx, query); err != nil {
-			return 0, cm.MapError(err).
-				Wrap(cm.NotFound, "tài khoản thanh toán tiền mặt không tìm thấy").
-				Throw()
-		}
-		ledgerID = query.Result.Ledgers[0].ID
-	} else { // Check accountNumber exists into ledgers, if it isn't then create
-		query := &ledgering.GetLedgerByAccountNumberQuery{
-			AccountNumber: bankAccount.AccountNumber,
-			ShopID:        shopID,
-		}
-		err := m.ledgerQuery.Dispatch(ctx, query)
-		switch cm.ErrorCode(err) {
-		case cm.NotFound:
-			// Create ledger
-			cmd := &ledgering.CreateLedgerCommand{
-				ShopID:      shopID,
-				Name:        fmt.Sprintf("[%v] %v", bankAccount.Branch, bankAccount.AccountName),
-				BankAccount: identityconvert.BankAccount(bankAccount),
-				Note:        "Sổ quỹ tự tạo",
-				Type:        ledger_type.LedgerTypeBank,
-			}
-			if err := m.ledgerAggr.Dispatch(ctx, cmd); err != nil {
-				return 0, err
-			}
-			ledgerID = cmd.Result.ID
-		case cm.NoError:
-			ledgerID = query.Result.ID
-		default:
+		if err := m.ledgerAggr.Dispatch(ctx, cmd); err != nil {
 			return 0, err
 		}
+		return cmd.Result.ID, nil
+	case cm.NoError:
+		return query.Result.ID, nil
+	default:
+		return 0, err
 	}
-	return ledgerID, nil
+}
+
+func (m *ProcessManager) MoneyTxShippingEtopConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingEtopConfirmedEvent) error {
+	query := &txmodelx.GetMoneyTxsByMoneyTxShippingEtopID{
+		MoneyTxShippingEtopID: event.MoneyTxShippingEtopID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	moneyTxs := query.Result.MoneyTransactions
+	for _, moneyTx := range moneyTxs {
+		cmd := &moneytx.MoneyTransactionConfirmedEvent{
+			ShopID:             moneyTx.ShopID,
+			MoneyTransactionID: moneyTx.ID,
+		}
+		if err := m.MoneyTransactionConfirmed(ctx, cmd); err != nil {
+			return err
+		}
+	}
+	return nil
 }

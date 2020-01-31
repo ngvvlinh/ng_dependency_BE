@@ -75,7 +75,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.LedgerID,
 		core.JSON{m.Trader},
 		core.String(m.CancelledReason),
-		core.String(m.CreatedType),
+		m.CreatedType,
 		m.CreatedBy,
 		core.Time(m.PaidAt),
 		core.Time(m.ConfirmedAt),
@@ -107,7 +107,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.LedgerID,
 		core.JSON{&m.Trader},
 		(*core.String)(&m.CancelledReason),
-		(*core.String)(&m.CreatedType),
+		&m.CreatedType,
 		&m.CreatedBy,
 		(*core.Time)(&m.PaidAt),
 		(*core.Time)(&m.ConfirmedAt),
@@ -345,7 +345,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CancelledReason)
 	}
-	if m.CreatedType != "" {
+	if m.CreatedType != 0 {
 		flag = true
 		w.WriteName("created_type")
 		w.WriteByte('=')

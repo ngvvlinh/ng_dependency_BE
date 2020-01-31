@@ -35,7 +35,7 @@ func (m *ProcessManager) AccountCreated(ctx context.Context, event *identity.Acc
 		ShopID:      event.ShopID,
 		Name:        "Tiền mặt",
 		BankAccount: nil,
-		Note:        "Số quỹ mặc định",
+		Note:        "Tài khoản thanh toán mặc định",
 		Type:        ledger_type.LedgerTypeCash,
 		CreatedBy:   event.UserID,
 	}

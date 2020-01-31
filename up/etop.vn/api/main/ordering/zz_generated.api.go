@@ -78,6 +78,19 @@ func (h AggregateHandler) HandleUpdateOrderPaymentInfo(ctx context.Context, msg 
 	return h.inner.UpdateOrderPaymentInfo(msg.GetArgs(ctx))
 }
 
+type UpdateOrderPaymentStatusCommand struct {
+	OrderID       dot.ID
+	ShopID        dot.ID
+	PaymentStatus status4.NullStatus
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateOrderPaymentStatus(ctx context.Context, msg *UpdateOrderPaymentStatusCommand) (err error) {
+	return h.inner.UpdateOrderPaymentStatus(msg.GetArgs(ctx))
+}
+
 type UpdateOrderShippingStatusCommand struct {
 	ID                         dot.ID
 	FulfillmentShippingStates  []string
@@ -208,6 +221,7 @@ func (q *CompleteOrderCommand) command()             {}
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
 func (q *UpdateOrderPaymentInfoCommand) command()    {}
+func (q *UpdateOrderPaymentStatusCommand) command()  {}
 func (q *UpdateOrderShippingStatusCommand) command() {}
 func (q *UpdateOrderStatusCommand) command()         {}
 func (q *UpdateOrdersConfirmStatusCommand) command() {}
@@ -267,6 +281,21 @@ func (q *UpdateOrderPaymentInfoCommand) SetUpdateOrderPaymentInfoArgs(args *Upda
 	q.ID = args.ID
 	q.PaymentStatus = args.PaymentStatus
 	q.PaymentID = args.PaymentID
+}
+
+func (q *UpdateOrderPaymentStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderPaymentStatusArgs) {
+	return ctx,
+		&UpdateOrderPaymentStatusArgs{
+			OrderID:       q.OrderID,
+			ShopID:        q.ShopID,
+			PaymentStatus: q.PaymentStatus,
+		}
+}
+
+func (q *UpdateOrderPaymentStatusCommand) SetUpdateOrderPaymentStatusArgs(args *UpdateOrderPaymentStatusArgs) {
+	q.OrderID = args.OrderID
+	q.ShopID = args.ShopID
+	q.PaymentStatus = args.PaymentStatus
 }
 
 func (q *UpdateOrderShippingStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderShippingStatusArgs) {
@@ -401,6 +430,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
 	b.AddHandler(h.HandleUpdateOrderPaymentInfo)
+	b.AddHandler(h.HandleUpdateOrderPaymentStatus)
 	b.AddHandler(h.HandleUpdateOrderShippingStatus)
 	b.AddHandler(h.HandleUpdateOrderStatus)
 	b.AddHandler(h.HandleUpdateOrdersConfirmStatus)

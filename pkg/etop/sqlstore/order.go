@@ -1242,13 +1242,8 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 	}
 
 	update := M{
-		"payment_status": cmd.PaymentStatus.Apply(status4.Z),
+		"payment_status": cmd.PaymentStatus.Apply(status4.S),
 	}
-	if update["payment_status"] == status4.Z || update["payment_status"] == status4.S {
-		// always update status to SuperPosition (processing)
-		update["status"] = status5.S
-	}
-
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(update); err != nil {
 		return err
 	}

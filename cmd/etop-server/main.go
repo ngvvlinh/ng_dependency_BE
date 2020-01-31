@@ -429,7 +429,7 @@ func main() {
 
 	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery, purchaseOrderQuery).MessageBus()
 	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
-	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr)
+	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr, identityQuery)
 	receiptPM.RegisterEventHandlers(eventBus)
 
 	// payment

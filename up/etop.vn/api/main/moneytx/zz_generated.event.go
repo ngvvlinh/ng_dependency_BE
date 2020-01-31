@@ -4,4 +4,6 @@
 
 package moneytx
 
+func (e *MoneyTransactionConfirmedEvent) GetTopic() string               { return "event/moneytx" }
 func (e *MoneyTransactionShippingExternalCreatedEvent) GetTopic() string { return "event/moneytx" }
+func (e *MoneyTxShippingEtopConfirmedEvent) GetTopic() string            { return "event/moneytx" }

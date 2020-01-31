@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/main/receipting"
+	"etop.vn/api/main/moneytx"
+	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/credit_type"
 	"etop.vn/api/top/types/etc/shipping"
@@ -37,6 +38,7 @@ func init() {
 		CreateMoneyTransaction,
 		GetMoneyTransaction,
 		GetMoneyTransactions,
+		GetMoneyTxsByMoneyTxShippingEtopID,
 		RemoveFfmsMoneyTransaction,
 		ConfirmMoneyTransaction,
 		DeleteMoneyTransaction,
@@ -329,6 +331,17 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 	return nil
 }
 
+func GetMoneyTxsByMoneyTxShippingEtopID(ctx context.Context, query *modelx.GetMoneyTxsByMoneyTxShippingEtopID) error {
+	s := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", query.MoneyTxShippingEtopID)
+
+	var moneyTransactions []*txmodel.MoneyTransactionShipping
+	if err := s.Find((*txmodel.MoneyTransactionShippings)(&moneyTransactions)); err != nil {
+		return err
+	}
+	query.Result.MoneyTransactions = moneyTransactions
+	return nil
+}
+
 func UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransaction) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
@@ -488,7 +501,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		return cm.Error(cm.FailedPrecondition, "Total Order does not match", nil)
 	}
 
-	return inTransaction(func(s Qx) error {
+	return x.InTransaction(ctx, func(s Qx) error {
 		now := time.Now()
 		if err := s.Table("money_transaction_shipping").Where("id = ?", cmd.MoneyTransactionID).
 			ShouldUpdateMap(M{
@@ -510,7 +523,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		}
 		cmd.Result.Updated = 1
 
-		event := &receipting.MoneyTransactionConfirmedEvent{
+		event := &moneytx.MoneyTransactionConfirmedEvent{
 			ShopID:             cmd.ShopID,
 			MoneyTransactionID: cmd.MoneyTransactionID,
 		}
@@ -1820,7 +1833,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 		return cm.Errorf(cm.FailedPrecondition, nil, "Total Orders does not match. (expected_total_order = %v)", totalOrders)
 	}
 
-	return inTransaction(func(s Qx) error {
+	return x.InTransaction(ctx, func(s Qx) error {
 		now := time.Now()
 		for _, mt := range _moneyTransactions {
 			if err := s.Table("money_transaction_shipping").Where("id = ?", mt.ID).
@@ -1858,6 +1871,13 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 		}
 		cmd.Result.Updated = 1
 
+		event := &moneytx.MoneyTxShippingEtopConfirmedEvent{
+			EventMeta:             meta.NewEvent(),
+			MoneyTxShippingEtopID: cmd.ID,
+		}
+		if err := eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
 		return nil
 	})
 }

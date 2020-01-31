@@ -114,3 +114,14 @@ type MoneyTransactionShippingExternalCreatedEvent struct {
 	MoneyTxShippingExternalID dot.ID
 	FulfillementIDs           []dot.ID
 }
+
+type MoneyTransactionConfirmedEvent struct {
+	meta.EventMeta
+	ShopID             dot.ID
+	MoneyTransactionID dot.ID
+}
+
+type MoneyTxShippingEtopConfirmedEvent struct {
+	meta.EventMeta
+	MoneyTxShippingEtopID dot.ID
+}

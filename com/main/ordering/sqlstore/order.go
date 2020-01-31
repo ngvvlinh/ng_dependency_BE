@@ -268,3 +268,9 @@ func (s *OrderStore) UpdateOrderStatus(args *UpdateOrderStatus) error {
 		"status": args.Status,
 	})
 }
+
+func (s *OrderStore) UpdateOrderPaymentStatus(args *ordering.UpdateOrderPaymentStatusArgs) error {
+	return s.query().Table("order").Where(s.ft.ByID(args.OrderID)).Where(s.ft.ByShopID(args.ShopID).Optional()).ShouldUpdateMap(map[string]interface{}{
+		"payment_status": args.PaymentStatus.Apply(status4.Z),
+	})
+}

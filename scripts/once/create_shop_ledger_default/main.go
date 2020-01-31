@@ -97,7 +97,7 @@ func main() {
 						ShopID:      shopID,
 						Name:        "Tiền mặt",
 						BankAccount: nil,
-						Note:        "Số quỹ mặc định",
+						Note:        "Tài khoản thanh toán mặc định",
 						Type:        ledger_type.LedgerTypeCash,
 						Status:      0,
 						CreatedBy:   ownerID,

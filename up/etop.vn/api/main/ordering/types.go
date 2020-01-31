@@ -33,6 +33,7 @@ type Aggregate interface {
 	UpdateOrderPaymentInfo(context.Context, *UpdateOrderPaymentInfoArgs) error
 	CompleteOrder(_ context.Context, OrderID dot.ID, ShopID dot.ID) error
 	UpdateOrderStatus(context.Context, *UpdateOrderStatusArgs) error
+	UpdateOrderPaymentStatus(context.Context, *UpdateOrderPaymentStatusArgs) error
 }
 
 type QueryService interface {
@@ -252,4 +253,10 @@ type UpdateOrderStatusArgs struct {
 	OrderID dot.ID
 	ShopID  dot.ID
 	Status  status5.Status
+}
+
+type UpdateOrderPaymentStatusArgs struct {
+	OrderID       dot.ID
+	ShopID        dot.ID
+	PaymentStatus status4.NullStatus
 }
