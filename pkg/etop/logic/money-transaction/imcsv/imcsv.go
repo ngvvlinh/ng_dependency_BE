@@ -1,10 +1,15 @@
 package imcsv
 
 import (
+	"bytes"
 	"context"
+	"io/ioutil"
+	"mime/multipart"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/valyala/tsvreader"
 
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
@@ -15,36 +20,12 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/common/xerrors"
 )
 
-type Error struct {
-	Code string `json:"code"`
-	Msg  string `json:"msg"`
-
-	Meta map[string]interface{} `json:"meta,omitempty"`
-}
-
-func (e *Error) Error() string {
-	return e.Msg
-}
-
-func NewError(code xerrors.Code, msg string) error {
-	err := &Error{
-		Code: code.String(),
-		Msg:  msg,
-	}
-	return err
-}
-
-type MoneyTransactionShippingExternalLine struct {
-	ExCode      string
-	CreatedAt   time.Time
-	DeliveredAt time.Time
-	Customer    string
-	Address     string
-	TotalCOD    int
-}
+const (
+	xlsxFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	csvFileType  = "text/csv"
+)
 
 func HandleImportMoneyTransactions(c *httpx.Context) error {
 	form, err := c.MultipartForm()
@@ -61,12 +42,12 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		return cm.Errorf(cm.InvalidArgument, nil, "Too many files")
 	}
 
+	fileTypes := files[0].Header["Content-Type"]
 	file, err := files[0].Open()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Can not read file")
 	}
 	defer func() { _ = file.Close() }()
-	r := tsvreader.New(file)
 
 	provider := form.Value["provider"]
 	externalPaidAtStr := form.Value["external_paid_at"]
@@ -79,7 +60,6 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if provider == nil || provider[0] == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Provider", nil)
 	}
-
 	var externalPaidAt time.Time
 	if externalPaidAtStr != nil {
 		externalPaidAt, err = time.Parse(time.RFC3339, externalPaidAtStr[0])
@@ -88,55 +68,38 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		}
 	}
 
-	transactionLines := make(map[string]*txmodel.MoneyTransactionShippingExternalLine)
-	row := 0
-	for r.Next() {
-		row++
-		if row == 1 {
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			r.SkipCol()
-			continue
-		}
-		code := r.String()
-		etopOrderCode := r.String()
-		createdAtStr := r.String()
-		closedAtStr := r.String()
-		customer := r.String()
-		address := r.String()
-		totalCOD := r.Int()
-		r.SkipCol()
-
-		layout := "01/02/06 15:04"
-		createdAt, err := time.ParseInLocation(layout, strings.TrimSpace(createdAtStr), time.Local)
-		if err != nil {
-			return cm.Errorf(cm.InvalidArgument, err, "CreatedAt is invalid!")
-		}
-		closedAt, err := time.ParseInLocation(layout, strings.TrimSpace(closedAtStr), time.Local)
-		if err != nil {
-			return cm.Errorf(cm.InvalidArgument, err, "UpdatedAt is invalid!")
-		}
-
-		transactionLines[code] = &txmodel.MoneyTransactionShippingExternalLine{
-			ExternalCode:         code,
-			EtopFulfillmentIDRaw: etopOrderCode,
-			ExternalCreatedAt:    createdAt,
-			ExternalClosedAt:     closedAt,
-			ExternalCustomer:     customer,
-			ExternalAddress:      address,
-			ExternalTotalCOD:     totalCOD,
-		}
+	var lines []*txmodel.MoneyTransactionShippingExternalLine
+	var rows [][]string
+	fileType := fileTypes[0]
+	switch fileType {
+	case xlsxFileType:
+		rows, err = ReadXLSXFile(file)
+	case csvFileType:
+		rows, err = ReadCSVFile(file)
+	default:
+		return cm.Errorf(cm.InvalidArgument, nil, "File không đúng định dạng")
 	}
-	if err := r.Error(); err != nil {
-		return cm.Errorf(cm.InvalidArgument, err, "unexpected error")
+
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "File không đúng định dạng")
 	}
-	lines := make([]*txmodel.MoneyTransactionShippingExternalLine, 0, len(transactionLines))
-	for _, line := range transactionLines {
+
+	schema, idx, _errs, err := validateSchema(&rows[0])
+	if err != nil {
+		return err
+	}
+	if len(_errs) > 0 {
+		return _errs[0]
+	}
+	rowMoneyTxes, err := parseRows(schema, idx, rows)
+	if err != nil {
+		return err
+	}
+	for _, r := range rowMoneyTxes {
+		line, err := r.ToModel()
+		if err != nil {
+			return err
+		}
 		lines = append(lines, line)
 	}
 
@@ -159,4 +122,84 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	}
 	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
 	return nil
+}
+
+func ReadCSVFile(file multipart.File) (rows [][]string, _ error) {
+	r := tsvreader.New(file)
+	for r.Next() {
+		var row []string
+		for i := 0; i < nColumn; i++ {
+			row = append(row, r.String())
+		}
+		r.SkipCol()
+		rows = append(rows, row)
+	}
+	if err := r.Error(); err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "unexpected error")
+	}
+	return
+}
+
+func ReadXLSXFile(file multipart.File) (rows [][]string, _ error) {
+	rawData, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+	}
+
+	excelFile, err := excelize.OpenReader(bytes.NewReader(rawData))
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid file format")
+	}
+	sheetName := excelFile.GetSheetName(1)
+	rows = excelFile.GetRows(sheetName)
+	if len(rows) <= 1 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
+	}
+	return
+}
+
+func parseRows(schema imcsv.Schema, idx indexes, rows [][]string) (res []*RowMoneyTransaction, _ error) {
+	for i := 1; i < len(rows); i++ {
+		row := rows[i]
+		if len(row) < len(schemas) {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số cột không đúng cấu trúc yêu cầu.").WithMetap("row", row).WithMetap("index", i)
+		}
+		rowMoneyTx := &RowMoneyTransaction{
+			ExCode:    row[idx.exCode],
+			EtopCode:  row[idx.etopCode],
+			CreatedAt: row[idx.createdAt],
+			ClosedAt:  row[idx.closedAt],
+			Customer:  row[idx.customer],
+			Address:   row[idx.address],
+			TotalCOD:  row[idx.totalCOD],
+		}
+		res = append(res, rowMoneyTx)
+	}
+	return
+}
+
+func (m *RowMoneyTransaction) ToModel() (*txmodel.MoneyTransactionShippingExternalLine, error) {
+	layout := "01/02/06 15:04"
+	createdAt, err := time.ParseInLocation(layout, strings.TrimSpace(m.CreatedAt), time.Local)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "CreatedAt is invalid!").WithMetap("row", m)
+	}
+	closedAt, err := time.ParseInLocation(layout, strings.TrimSpace(m.ClosedAt), time.Local)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "UpdatedAt is invalid!").WithMetap("row", m)
+	}
+
+	totalCOD, err := strconv.ParseFloat(m.TotalCOD, 64)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "TotalCOD is invalid!").WithMetap("total COD", m.TotalCOD).WithMetap("row", m)
+	}
+	return &txmodel.MoneyTransactionShippingExternalLine{
+		ExternalCode:         m.ExCode,
+		EtopFulfillmentIDRaw: m.EtopCode,
+		ExternalCreatedAt:    createdAt,
+		ExternalClosedAt:     closedAt,
+		ExternalCustomer:     m.Customer,
+		ExternalAddress:      m.Address,
+		ExternalTotalCOD:     int(totalCOD),
+	}, nil
 }
