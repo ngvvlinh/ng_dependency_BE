@@ -38,6 +38,7 @@
   - "./pkg/common/apifw/service"
   - "./pkg/common/apifw/wrapper"
   - "./pkg/common/apifw/cmapi"
+  - "./pkg/common/apifw/whitelabel"
   allowedImports:
   - etop.vn/backend/pkg/common
 

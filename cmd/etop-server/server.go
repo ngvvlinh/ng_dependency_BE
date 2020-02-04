@@ -76,7 +76,8 @@ func startEtopServer() *http.Server {
 		// /api/
 		apiMux := http.NewServeMux()
 		apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
-		mux.Handle("/api/", http.StripPrefix("/api", middleware.ForwardHeaders(apiMux)))
+		mux.Handle("/api/", http.StripPrefix("/api",
+			middleware.ForwardHeaders(apiMux)))
 
 		api.NewEtopServer(apiMux)
 		sadmin.NewSadminServer(apiMux)

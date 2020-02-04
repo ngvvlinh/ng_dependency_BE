@@ -17,6 +17,7 @@ import (
 	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/sqlstore"
@@ -70,6 +71,11 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) e
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop",
 		Version: "0.1",
+		Meta: map[string]string{
+			"name": wl.X(ctx).Name,
+			"key":  wl.X(ctx).Key,
+			"host": wl.X(ctx).Host,
+		},
 	}
 	return nil
 }

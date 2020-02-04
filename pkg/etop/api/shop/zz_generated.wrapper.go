@@ -15,6 +15,7 @@ import (
 	cm "etop.vn/api/top/types/common"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/authorize/auth"
@@ -73,6 +74,7 @@ func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateExternalAccountAhamove(ctx, query)
 	resp = query.Result
@@ -129,6 +131,7 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/account:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteShop(ctx, query)
 	resp = query.Result
@@ -185,6 +188,7 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/balance:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBalanceShop(ctx, query)
 	resp = query.Result
@@ -231,6 +235,7 @@ func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetExternalAccountAhamove(ctx, query)
 	resp = query.Result
@@ -278,6 +283,7 @@ func (s wrapAccountService) RegisterShop(ctx context.Context, req *api.RegisterS
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterShop(ctx, query)
 	resp = query.Result
@@ -334,6 +340,7 @@ func (s wrapAccountService) RequestVerifyExternalAccountAhamove(ctx context.Cont
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RequestVerifyExternalAccountAhamove(ctx, query)
 	resp = query.Result
@@ -390,6 +397,7 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SetDefaultAddress(ctx, query)
 	resp = query.Result
@@ -446,6 +454,7 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountAhamoveVerification(ctx, query)
 	resp = query.Result
@@ -502,6 +511,7 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountAhamoveVerificationImages(ctx, query)
 	resp = query.Result
@@ -558,6 +568,7 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateShop(ctx, query)
 	resp = query.Result
@@ -622,6 +633,7 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *api.Aut
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AuthorizePartner(ctx, query)
 	resp = query.Result
@@ -668,6 +680,7 @@ func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAuthorizedPartners(ctx, query)
 	resp = query.Result
@@ -714,6 +727,7 @@ func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAvailablePartners(ctx, query)
 	resp = query.Result
@@ -778,6 +792,7 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *api.CreateBrandR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateBrand(ctx, query)
 	resp = query.Result
@@ -834,6 +849,7 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteBrand(ctx, query)
 	resp = query.Result
@@ -890,6 +906,7 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrandByID(ctx, query)
 	resp = query.Result
@@ -949,6 +966,7 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrands(ctx, query)
 	resp = query.Result
@@ -1005,6 +1023,7 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrandsByIDs(ctx, query)
 	resp = query.Result
@@ -1061,6 +1080,7 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateBrandInfo(ctx, query)
 	resp = query.Result
@@ -1125,6 +1145,7 @@ func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *api.CreateCa
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCarrier(ctx, query)
 	resp = query.Result
@@ -1181,6 +1202,7 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCarrier(ctx, query)
 	resp = query.Result
@@ -1237,6 +1259,7 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarrier(ctx, query)
 	resp = query.Result
@@ -1293,6 +1316,7 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *api.GetCarrier
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarriers(ctx, query)
 	resp = query.Result
@@ -1349,6 +1373,7 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarriersByIDs(ctx, query)
 	resp = query.Result
@@ -1405,6 +1430,7 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/carrier:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCarrier(ctx, query)
 	resp = query.Result
@@ -1469,6 +1495,7 @@ func (s wrapCategoryService) CreateCategory(ctx context.Context, req *api.Create
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCategory(ctx, query)
 	resp = query.Result
@@ -1525,6 +1552,7 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCategory(ctx, query)
 	resp = query.Result
@@ -1581,6 +1609,7 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *api.GetCate
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCategories(ctx, query)
 	resp = query.Result
@@ -1637,6 +1666,7 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCategory(ctx, query)
 	resp = query.Result
@@ -1693,6 +1723,7 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/category:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCategory(ctx, query)
 	resp = query.Result
@@ -1757,6 +1788,7 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *api.Cr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCollection(ctx, query)
 	resp = query.Result
@@ -1813,6 +1845,7 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollection(ctx, query)
 	resp = query.Result
@@ -1869,6 +1902,7 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *api.GetC
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollections(ctx, query)
 	resp = query.Result
@@ -1925,6 +1959,7 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollectionsByProductID(ctx, query)
 	resp = query.Result
@@ -1981,6 +2016,7 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/collection:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCollection(ctx, query)
 	resp = query.Result
@@ -2035,6 +2071,7 @@ func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *ap
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteShopConnection(ctx, query)
 	resp = query.Result
@@ -2081,6 +2118,7 @@ func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAvailableConnections(ctx, query)
 	resp = query.Result
@@ -2127,6 +2165,7 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetConnections(ctx, query)
 	resp = query.Result
@@ -2173,6 +2212,7 @@ func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.E
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShopConnections(ctx, query)
 	resp = query.Result
@@ -2219,6 +2259,7 @@ func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *api
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginShopConnection(ctx, query)
 	resp = query.Result
@@ -2265,6 +2306,7 @@ func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterShopConnection(ctx, query)
 	resp = query.Result
@@ -2329,6 +2371,7 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *api.A
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AddCustomersToGroup(ctx, query)
 	resp = query.Result
@@ -2385,6 +2428,7 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.BatchSetCustomersStatus(ctx, query)
 	resp = query.Result
@@ -2441,6 +2485,7 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *api.Create
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomer(ctx, query)
 	resp = query.Result
@@ -2497,6 +2542,7 @@ func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:create|shop/customer:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomerAddress(ctx, query)
 	resp = query.Result
@@ -2553,6 +2599,7 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *cm.IDReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCustomer(ctx, query)
 	resp = query.Result
@@ -2609,6 +2656,7 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update|shop/customer:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCustomerAddress(ctx, query)
 	resp = query.Result
@@ -2665,6 +2713,7 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomer(ctx, query)
 	resp = query.Result
@@ -2721,6 +2770,7 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *api.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerAddresses(ctx, query)
 	resp = query.Result
@@ -2777,6 +2827,7 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerDetails(ctx, query)
 	resp = query.Result
@@ -2833,6 +2884,7 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *api.GetCusto
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomers(ctx, query)
 	resp = query.Result
@@ -2889,6 +2941,7 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomersByIDs(ctx, query)
 	resp = query.Result
@@ -2945,6 +2998,7 @@ func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveCustomersFromGroup(ctx, query)
 	resp = query.Result
@@ -3001,6 +3055,7 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SetDefaultCustomerAddress(ctx, query)
 	resp = query.Result
@@ -3057,6 +3112,7 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *api.Update
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomer(ctx, query)
 	resp = query.Result
@@ -3113,6 +3169,7 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomerAddress(ctx, query)
 	resp = query.Result
@@ -3177,6 +3234,7 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomerGroup(ctx, query)
 	resp = query.Result
@@ -3233,6 +3291,7 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerGroup(ctx, query)
 	resp = query.Result
@@ -3289,6 +3348,7 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerGroups(ctx, query)
 	resp = query.Result
@@ -3345,6 +3405,7 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomerGroup(ctx, query)
 	resp = query.Result
@@ -3399,6 +3460,7 @@ func (s wrapExportService) GetExports(ctx context.Context, req *api.GetExportsRe
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetExports(ctx, query)
 	resp = query.Result
@@ -3445,6 +3507,7 @@ func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestEx
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RequestExport(ctx, query)
 	resp = query.Result
@@ -3509,6 +3572,7 @@ func (s wrapExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConnectCarrierServiceExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -3565,6 +3629,7 @@ func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Con
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -3621,6 +3686,7 @@ func (s wrapExternalAccountService) DeleteConnectedCarrierServiceExternalAccount
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -3667,6 +3733,7 @@ func (s wrapExternalAccountService) GetExternalAccountHaravan(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -3723,6 +3790,7 @@ func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountHaravanToken(ctx, query)
 	resp = query.Result
@@ -3790,6 +3858,7 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetExternalShippingServices(ctx, query)
 	resp = query.Result
@@ -3849,6 +3918,7 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillment(ctx, query)
 	resp = query.Result
@@ -3908,6 +3978,7 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillments(ctx, query)
 	resp = query.Result
@@ -3967,6 +4038,7 @@ func (s wrapFulfillmentService) GetFulfillmentsByIDs(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillmentsByIDs(ctx, query)
 	resp = query.Result
@@ -4010,6 +4082,7 @@ func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Co
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicExternalShippingServices(ctx, query)
 	resp = query.Result
@@ -4053,6 +4126,7 @@ func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *a
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicFulfillment(ctx, query)
 	resp = query.Result
@@ -4099,6 +4173,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateFulfillmentsShippingState(ctx, query)
 	resp = query.Result
@@ -4156,6 +4231,7 @@ func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillmentHistory(ctx, query)
 	resp = query.Result
@@ -4220,6 +4296,7 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AdjustInventoryQuantity(ctx, query)
 	resp = query.Result
@@ -4276,6 +4353,7 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -4332,6 +4410,7 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -4388,6 +4467,7 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -4444,6 +4524,7 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariant(ctx, query)
 	resp = query.Result
@@ -4500,6 +4581,7 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariants(ctx, query)
 	resp = query.Result
@@ -4556,6 +4638,7 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariantsByVariantIDs(ctx, query)
 	resp = query.Result
@@ -4612,6 +4695,7 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -4668,6 +4752,7 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchers(ctx, query)
 	resp = query.Result
@@ -4724,6 +4809,7 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchersByIDs(ctx, query)
 	resp = query.Result
@@ -4780,6 +4866,7 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchersByReference(ctx, query)
 	resp = query.Result
@@ -4836,6 +4923,7 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/cost_price:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateInventoryVariantCostPrice(ctx, query)
 	resp = query.Result
@@ -4892,6 +4980,7 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/inventory:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -4956,6 +5045,7 @@ func (s wrapLedgerService) CreateLedger(ctx context.Context, req *api.CreateLedg
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateLedger(ctx, query)
 	resp = query.Result
@@ -5012,6 +5102,7 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteLedger(ctx, query)
 	resp = query.Result
@@ -5068,6 +5159,7 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetLedger(ctx, query)
 	resp = query.Result
@@ -5124,6 +5216,7 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *api.GetLedgersRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetLedgers(ctx, query)
 	resp = query.Result
@@ -5180,6 +5273,7 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/ledger:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateLedger(ctx, query)
 	resp = query.Result
@@ -5231,6 +5325,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -5295,6 +5390,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransaction(ctx, query)
 	resp = query.Result
@@ -5351,6 +5447,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactions(ctx, query)
 	resp = query.Result
@@ -5405,6 +5502,7 @@ func (s wrapNotificationService) CreateDevice(ctx context.Context, req *etop.Cre
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateDevice(ctx, query)
 	resp = query.Result
@@ -5451,6 +5549,7 @@ func (s wrapNotificationService) DeleteDevice(ctx context.Context, req *etop.Del
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteDevice(ctx, query)
 	resp = query.Result
@@ -5497,6 +5596,7 @@ func (s wrapNotificationService) GetNotification(ctx context.Context, req *cm.ID
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetNotification(ctx, query)
 	resp = query.Result
@@ -5543,6 +5643,7 @@ func (s wrapNotificationService) GetNotifications(ctx context.Context, req *etop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetNotifications(ctx, query)
 	resp = query.Result
@@ -5589,6 +5690,7 @@ func (s wrapNotificationService) UpdateNotifications(ctx context.Context, req *e
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateNotifications(ctx, query)
 	resp = query.Result
@@ -5656,6 +5758,7 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelOrder(ctx, query)
 	resp = query.Result
@@ -5715,6 +5818,7 @@ func (s wrapOrderService) CompleteOrder(ctx context.Context, req *api.OrderIDReq
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:complete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CompleteOrder(ctx, query)
 	resp = query.Result
@@ -5774,6 +5878,7 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrde
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmOrder(ctx, query)
 	resp = query.Result
@@ -5833,6 +5938,7 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmOrderAndCreateFulfillments(ctx, query)
 	resp = query.Result
@@ -5892,6 +5998,7 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateO
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrder(ctx, query)
 	resp = query.Result
@@ -5951,6 +6058,7 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrder(ctx, query)
 	resp = query.Result
@@ -6010,6 +6118,7 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrders(ctx, query)
 	resp = query.Result
@@ -6069,6 +6178,7 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrdersByIDs(ctx, query)
 	resp = query.Result
@@ -6128,6 +6238,7 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.Get
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrdersByReceiptID(ctx, query)
 	resp = query.Result
@@ -6187,6 +6298,7 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateO
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrder(ctx, query)
 	resp = query.Result
@@ -6246,6 +6358,7 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrderPaymentStatus(ctx, query)
 	resp = query.Result
@@ -6305,6 +6418,7 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrderShippingInfo(ctx, query)
 	resp = query.Result
@@ -6364,6 +6478,7 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrdersStatus(ctx, query)
 	resp = query.Result
@@ -6428,6 +6543,7 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentCheckReturnData(ctx, query)
 	resp = query.Result
@@ -6484,6 +6600,7 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentTradingOrder(ctx, query)
 	resp = query.Result
@@ -6548,6 +6665,7 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *api.A
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AddProductCollection(ctx, query)
 	resp = query.Result
@@ -6604,6 +6722,7 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *api.CreatePr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProduct(ctx, query)
 	resp = query.Result
@@ -6660,6 +6779,7 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *api.CreateVa
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
 	resp = query.Result
@@ -6719,6 +6839,7 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProduct(ctx, query)
 	resp = query.Result
@@ -6778,6 +6899,7 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariant
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProducts(ctx, query)
 	resp = query.Result
@@ -6837,6 +6959,7 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductsByIDs(ctx, query)
 	resp = query.Result
@@ -6896,6 +7019,7 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *api.GetVariantR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariant(ctx, query)
 	resp = query.Result
@@ -6955,6 +7079,7 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariantsByIDs(ctx, query)
 	resp = query.Result
@@ -7011,6 +7136,7 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariantsBySupplierID(ctx, query)
 	resp = query.Result
@@ -7067,6 +7193,7 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductCategory(ctx, query)
 	resp = query.Result
@@ -7123,6 +7250,7 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductCollection(ctx, query)
 	resp = query.Result
@@ -7179,6 +7307,7 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *api.RemoveV
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProducts(ctx, query)
 	resp = query.Result
@@ -7235,6 +7364,7 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *api.RemoveV
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveVariants(ctx, query)
 	resp = query.Result
@@ -7291,6 +7421,7 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *api.UpdatePr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProduct(ctx, query)
 	resp = query.Result
@@ -7347,6 +7478,7 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *api.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductCategory(ctx, query)
 	resp = query.Result
@@ -7403,6 +7535,7 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *api.Up
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductImages(ctx, query)
 	resp = query.Result
@@ -7459,6 +7592,7 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductMetaFields(ctx, query)
 	resp = query.Result
@@ -7515,6 +7649,7 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *api.U
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsStatus(ctx, query)
 	resp = query.Result
@@ -7571,6 +7706,7 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *api.Upd
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsTags(ctx, query)
 	resp = query.Result
@@ -7627,6 +7763,7 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *api.UpdateVa
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariant(ctx, query)
 	resp = query.Result
@@ -7683,6 +7820,7 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantAttributes(ctx, query)
 	resp = query.Result
@@ -7739,6 +7877,7 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *api.Up
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantImages(ctx, query)
 	resp = query.Result
@@ -7795,6 +7934,7 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantsStatus(ctx, query)
 	resp = query.Result
@@ -7859,6 +7999,7 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProductSource(ctx, query)
 	resp = query.Result
@@ -7915,6 +8056,7 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -7974,6 +8116,7 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.De
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
 	resp = query.Result
@@ -8033,6 +8176,7 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductSourceCategories(ctx, query)
 	resp = query.Result
@@ -8092,6 +8236,7 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -8151,6 +8296,7 @@ func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShopProductSources(ctx, query)
 	resp = query.Result
@@ -8207,6 +8353,7 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -8263,6 +8410,7 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -8319,6 +8467,7 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsPSCategory(ctx, query)
 	resp = query.Result
@@ -8383,6 +8532,7 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8439,6 +8589,7 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8495,6 +8646,7 @@ func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreatePurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8541,6 +8693,7 @@ func (s wrapPurchaseOrderService) DeletePurchaseOrder(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeletePurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8597,6 +8750,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8653,6 +8807,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrders(ctx, query)
 	resp = query.Result
@@ -8709,6 +8864,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrdersByIDs(ctx, query)
 	resp = query.Result
@@ -8765,6 +8921,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrdersByReceiptID(ctx, query)
 	resp = query.Result
@@ -8821,6 +8978,7 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePurchaseOrder(ctx, query)
 	resp = query.Result
@@ -8885,6 +9043,7 @@ func (s wrapPurchaseRefundService) CancelPurchaseRefund(ctx context.Context, req
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelPurchaseRefund(ctx, query)
 	resp = query.Result
@@ -8941,6 +9100,7 @@ func (s wrapPurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmPurchaseRefund(ctx, query)
 	resp = query.Result
@@ -8997,6 +9157,7 @@ func (s wrapPurchaseRefundService) CreatePurchaseRefund(ctx context.Context, req
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreatePurchaseRefund(ctx, query)
 	resp = query.Result
@@ -9053,6 +9214,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefund(ctx context.Context, req *c
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseRefund(ctx, query)
 	resp = query.Result
@@ -9109,6 +9271,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefunds(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseRefunds(ctx, query)
 	resp = query.Result
@@ -9165,6 +9328,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseRefundsByIDs(ctx, query)
 	resp = query.Result
@@ -9221,6 +9385,7 @@ func (s wrapPurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, req
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePurchaseRefund(ctx, query)
 	resp = query.Result
@@ -9285,6 +9450,7 @@ func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *api.CancelRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelReceipt(ctx, query)
 	resp = query.Result
@@ -9341,6 +9507,7 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmReceipt(ctx, query)
 	resp = query.Result
@@ -9397,6 +9564,7 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *api.CreateRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateReceipt(ctx, query)
 	resp = query.Result
@@ -9453,6 +9621,7 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceipt(ctx, query)
 	resp = query.Result
@@ -9509,6 +9678,7 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *api.GetReceipt
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceipts(ctx, query)
 	resp = query.Result
@@ -9565,6 +9735,7 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *ap
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceiptsByLedgerType(ctx, query)
 	resp = query.Result
@@ -9621,6 +9792,7 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/receipt:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReceipt(ctx, query)
 	resp = query.Result
@@ -9685,6 +9857,7 @@ func (s wrapRefundService) CancelRefund(ctx context.Context, req *api.CancelRefu
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelRefund(ctx, query)
 	resp = query.Result
@@ -9741,6 +9914,7 @@ func (s wrapRefundService) ConfirmRefund(ctx context.Context, req *api.ConfirmRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmRefund(ctx, query)
 	resp = query.Result
@@ -9797,6 +9971,7 @@ func (s wrapRefundService) CreateRefund(ctx context.Context, req *api.CreateRefu
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateRefund(ctx, query)
 	resp = query.Result
@@ -9853,6 +10028,7 @@ func (s wrapRefundService) GetRefund(ctx context.Context, req *cm.IDRequest) (re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetRefund(ctx, query)
 	resp = query.Result
@@ -9909,6 +10085,7 @@ func (s wrapRefundService) GetRefunds(ctx context.Context, req *api.GetRefundsRe
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetRefunds(ctx, query)
 	resp = query.Result
@@ -9965,6 +10142,7 @@ func (s wrapRefundService) GetRefundsByIDs(ctx context.Context, req *cm.IDsReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetRefundsByIDs(ctx, query)
 	resp = query.Result
@@ -10021,6 +10199,7 @@ func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefu
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/refund:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateRefund(ctx, query)
 	resp = query.Result
@@ -10085,6 +10264,7 @@ func (s wrapShipmentService) CancelFulfillment(ctx context.Context, req *api.Can
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelFulfillment(ctx, query)
 	resp = query.Result
@@ -10141,6 +10321,7 @@ func (s wrapShipmentService) CreateFulfillments(ctx context.Context, req *api.Cr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateFulfillments(ctx, query)
 	resp = query.Result
@@ -10197,6 +10378,7 @@ func (s wrapShipmentService) GetShippingServices(ctx context.Context, req *intty
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShippingServices(ctx, query)
 	resp = query.Result
@@ -10261,6 +10443,7 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *i
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -10317,6 +10500,7 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -10373,6 +10557,7 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *i
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -10429,6 +10614,7 @@ func (s wrapShipnowService) CreateShipnowFulfillmentV2(ctx context.Context, req 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateShipnowFulfillmentV2(ctx, query)
 	resp = query.Result
@@ -10485,6 +10671,7 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -10541,6 +10728,7 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *int
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowFulfillments(ctx, query)
 	resp = query.Result
@@ -10597,6 +10785,7 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *inttype
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowServices(ctx, query)
 	resp = query.Result
@@ -10653,6 +10842,7 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *i
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -10717,6 +10907,7 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.Canc
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:cancel", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelStocktake(ctx, query)
 	resp = query.Result
@@ -10773,6 +10964,7 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.Con
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:confirm", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmStocktake(ctx, query)
 	resp = query.Result
@@ -10836,6 +11028,7 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.Crea
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateStocktake(ctx, query)
 	resp = query.Result
@@ -10892,6 +11085,7 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktake(ctx, query)
 	resp = query.Result
@@ -10948,6 +11142,7 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetSto
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktakes(ctx, query)
 	resp = query.Result
@@ -11004,6 +11199,7 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktakesByIDs(ctx, query)
 	resp = query.Result
@@ -11060,6 +11256,7 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateStocktake(ctx, query)
 	resp = query.Result
@@ -11127,6 +11324,7 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CalcBalanceShop(ctx, query)
 	resp = query.Result
@@ -11183,6 +11381,7 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *api.
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SummarizeFulfillments(ctx, query)
 	resp = query.Result
@@ -11239,6 +11438,7 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.Summarize
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SummarizePOS(ctx, query)
 	resp = query.Result
@@ -11285,6 +11485,7 @@ func (s wrapSummaryService) SummarizeTopShip(ctx context.Context, req *api.Summa
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SummarizeTopShip(ctx, query)
 	resp = query.Result
@@ -11349,6 +11550,7 @@ func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *api.Create
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateSupplier(ctx, query)
 	resp = query.Result
@@ -11405,6 +11607,7 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:delete", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteSupplier(ctx, query)
 	resp = query.Result
@@ -11461,6 +11664,7 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSupplier(ctx, query)
 	resp = query.Result
@@ -11517,6 +11721,7 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *api.GetSuppl
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliers(ctx, query)
 	resp = query.Result
@@ -11573,6 +11778,7 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliersByIDs(ctx, query)
 	resp = query.Result
@@ -11629,6 +11835,7 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *a
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliersByVariantID(ctx, query)
 	resp = query.Result
@@ -11685,6 +11892,7 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:update", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateSupplier(ctx, query)
 	resp = query.Result
@@ -11749,6 +11957,7 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *inttype
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingCreateOrder(ctx, query)
 	resp = query.Result
@@ -11805,6 +12014,7 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrder(ctx, query)
 	resp = query.Result
@@ -11861,6 +12071,7 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *api.GetOr
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrders(ctx, query)
 	resp = query.Result
@@ -11917,6 +12128,7 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProduct(ctx, query)
 	resp = query.Result
@@ -11973,6 +12185,7 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProducts(ctx, query)
 	resp = query.Result

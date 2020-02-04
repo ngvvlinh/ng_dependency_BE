@@ -11,6 +11,7 @@ import (
 	api "etop.vn/api/top/services/affiliate"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -59,6 +60,7 @@ func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AffiliateGetProducts(ctx, query)
 	resp = query.Result
@@ -105,6 +107,7 @@ func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx conte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateAffiliateCommissionSetting(ctx, query)
 	resp = query.Result
@@ -151,6 +154,7 @@ func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *api.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateReferralCode(ctx, query)
 	resp = query.Result
@@ -197,6 +201,7 @@ func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.Common
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCommissions(ctx, query)
 	resp = query.Result
@@ -243,6 +248,7 @@ func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductPromotionByProductID(ctx, query)
 	resp = query.Result
@@ -289,6 +295,7 @@ func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.Comm
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReferralCodes(ctx, query)
 	resp = query.Result
@@ -335,6 +342,7 @@ func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonLi
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReferrals(ctx, query)
 	resp = query.Result
@@ -381,6 +389,7 @@ func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.Commo
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTransactions(ctx, query)
 	resp = query.Result
@@ -426,6 +435,7 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.NotifyNewShopPurchase(ctx, query)
 	resp = query.Result
@@ -480,6 +490,7 @@ func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *api.Ch
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CheckReferralCodeValid(ctx, query)
 	resp = query.Result
@@ -526,6 +537,7 @@ func (s wrapShopService) GetProductPromotion(ctx context.Context, req *api.GetPr
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductPromotion(ctx, query)
 	resp = query.Result
@@ -572,6 +584,7 @@ func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonList
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ShopGetProducts(ctx, query)
 	resp = query.Result
@@ -626,6 +639,7 @@ func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateTradingCommissionSetting(ctx, query)
 	resp = query.Result
@@ -672,6 +686,7 @@ func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, r
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateTradingProductPromotion(ctx, query)
 	resp = query.Result
@@ -718,6 +733,7 @@ func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTradingProductPromotionByProductIDs(ctx, query)
 	resp = query.Result
@@ -764,6 +780,7 @@ func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTradingProductPromotions(ctx, query)
 	resp = query.Result
@@ -810,6 +827,7 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProducts(ctx, query)
 	resp = query.Result
@@ -856,6 +874,7 @@ func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, r
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateTradingProductPromotion(ctx, query)
 	resp = query.Result
@@ -912,6 +931,7 @@ func (s wrapUserService) UpdateReferral(ctx context.Context, req *api.UpdateRefe
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferral(ctx, query)
 	resp = query.Result

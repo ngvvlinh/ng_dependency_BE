@@ -12,6 +12,7 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -59,6 +60,7 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteAffiliate(ctx, query)
 	resp = query.Result
@@ -107,6 +109,7 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterAffiliate(ctx, query)
 	resp = query.Result
@@ -153,6 +156,7 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.Update
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliate(ctx, query)
 	resp = query.Result
@@ -199,6 +203,7 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliateBankAccount(ctx, query)
 	resp = query.Result
@@ -250,6 +255,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result

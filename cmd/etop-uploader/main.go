@@ -12,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
 	"etop.vn/backend/pkg/common/apifw/httpx"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
@@ -68,6 +69,7 @@ func main() {
 	}
 
 	cm.SetEnvironment(cfg.Env)
+	wl.Init(cm.Env())
 
 	_, err = os.Stat(cfg.UploadDirImg)
 	if err != nil {

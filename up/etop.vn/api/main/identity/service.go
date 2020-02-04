@@ -4,6 +4,7 @@ import (
 	"context"
 
 	identitytypes "etop.vn/api/main/identity/types"
+	"etop.vn/api/meta"
 	"etop.vn/capi/dot"
 )
 
@@ -59,6 +60,8 @@ type QueryService interface {
 	GetAffiliatesByIDs(context.Context, *GetAffiliatesByIDsArgs) ([]*Affiliate, error)
 
 	GetAffiliatesByOwnerID(context.Context, *GetAffiliatesByOwnerIDArgs) ([]*Affiliate, error)
+
+	ListPartnersForWhiteLabel(context.Context, *meta.Empty) ([]*Partner, error)
 }
 
 //-- queries --//

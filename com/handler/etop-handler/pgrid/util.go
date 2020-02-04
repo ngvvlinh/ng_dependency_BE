@@ -31,6 +31,6 @@ func ToMeta(e *pgevent.PgEvent) Meta {
 	return Meta{
 		RID: strconv.FormatInt(e.RID, 10),
 		Op:  e.Op.String(),
-		Env: cm.Env(),
+		Env: cm.Env().String(),
 	}
 }

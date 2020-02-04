@@ -11,12 +11,14 @@ import (
 	"etop.vn/common/l"
 )
 
+type EnvType int
+
 // Environment constants
 const (
-	EnvDev     = "dev"
-	EnvStag    = "stag"
-	EnvSandbox = "sandbox"
-	EnvProd    = "prod"
+	EnvDev EnvType = iota + 1
+	EnvStag
+	EnvSandbox
+	EnvProd
 
 	// Environment Partner constants
 	PartnerEnvTest = "test"
@@ -24,11 +26,29 @@ const (
 	PartnerEnvProd = "prod"
 )
 
+var envValues = map[string]EnvType{
+	"dev":     EnvDev,
+	"stag":    EnvStag,
+	"sandbox": EnvSandbox,
+	"prod":    EnvProd,
+}
+
+var envNames = map[EnvType]string{
+	EnvDev:     "dev",
+	EnvStag:    "stag",
+	EnvSandbox: "sandbox",
+	EnvProd:    "prod",
+}
+
+func (e EnvType) String() string {
+	return envNames[e]
+}
+
 var (
 	ll      = l.New()
 	isDev   = false
 	notProd = true
-	env     string
+	env     EnvType
 
 	// https://etop.vn
 	mainSiteBaseUrl string
@@ -47,12 +67,12 @@ func CommitMessage() string {
 }
 
 func SetEnvironment(e string) {
-	if env != "" {
+	if env != 0 {
 		ll.Panic("Already initialize environment")
 	}
 
-	env = e
-	switch e {
+	env = envValues[e]
+	switch env {
 	case EnvDev:
 		isDev = true
 		jsonx.EnableValidation(jsonx.Panicking)
@@ -64,12 +84,13 @@ func SetEnvironment(e string) {
 
 	case EnvProd:
 		notProd = false
+
 	default:
-		ll.S.Panicf("Invalid environment: %v", e)
+		ll.S.Panicf("invalid environment: %v", e)
 	}
 }
 
-func Env() string {
+func Env() EnvType {
 	return env
 }
 
@@ -96,7 +117,7 @@ func PartnerEnv() string {
 	case EnvProd:
 		return PartnerEnvProd
 	default:
-		return env
+		return env.String()
 	}
 }
 

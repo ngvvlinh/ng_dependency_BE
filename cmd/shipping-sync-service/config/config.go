@@ -31,7 +31,7 @@ func Default() Config {
 		},
 		GHN:  ghn.DefaultConfig(),
 		GHTK: ghtk.DefaultConfig(),
-		Env:  cm.EnvDev,
+		Env:  cm.EnvDev.String(),
 	}
 	return cfg
 }

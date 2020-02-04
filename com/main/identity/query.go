@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/com/main/identity/sqlstore"
@@ -18,6 +19,7 @@ var _ identity.QueryService = &QueryService{}
 type QueryService struct {
 	userStore        sqlstore.UserStoreFactory
 	accountStore     sqlstore.AccountStoreFactory
+	partnerStore     sqlstore.PartnerStoreFactory
 	accountUserStore sqlstore.AccountUserStoreFactory
 	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
 }
@@ -26,6 +28,7 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		userStore:        sqlstore.NewUserStore(db),
 		accountStore:     sqlstore.NewAccountStore(db),
+		partnerStore:     sqlstore.NewPartnerStore(db),
 		accountUserStore: sqlstore.NewAccoutnUserStore(db),
 		xAccountAhamove:  sqlstore.NewXAccountAhamoveStore(db),
 	}
@@ -91,4 +94,8 @@ func (a *QueryService) GetAffiliatesByIDs(ctx context.Context, args *identity.Ge
 
 func (a *QueryService) GetAffiliatesByOwnerID(ctx context.Context, args *identity.GetAffiliatesByOwnerIDArgs) ([]*identity.Affiliate, error) {
 	return a.accountStore(ctx).AffiliatesByOwnerID(args.ID).GetAffiliates()
+}
+
+func (a *QueryService) ListPartnersForWhiteLabel(ctx context.Context, _ *meta.Empty) ([]*identity.Partner, error) {
+	return a.partnerStore(ctx).WhiteLabel().ListPartners()
 }

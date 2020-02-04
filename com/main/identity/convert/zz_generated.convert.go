@@ -73,6 +73,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.ExternalAccountAhamove) = out0
 		return nil
 	})
+	s.Register((*identitymodel.Partner)(nil), (*identity.Partner)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_Partner_identity_Partner(arg.(*identitymodel.Partner), out.(*identity.Partner))
+		return nil
+	})
+	s.Register(([]*identitymodel.Partner)(nil), (*[]*identity.Partner)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_Partners_identity_Partners(arg.([]*identitymodel.Partner))
+		*out.(*[]*identity.Partner) = out0
+		return nil
+	})
+	s.Register((*identity.Partner)(nil), (*identitymodel.Partner)(nil), func(arg, out interface{}) error {
+		Convert_identity_Partner_identitymodel_Partner(arg.(*identity.Partner), out.(*identitymodel.Partner))
+		return nil
+	})
+	s.Register(([]*identity.Partner)(nil), (*[]*identitymodel.Partner)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_Partners_identitymodel_Partners(arg.([]*identity.Partner))
+		*out.(*[]*identitymodel.Partner) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Permission)(nil), (*identity.Permission)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Permission_identity_Permission(arg.(*identitymodel.Permission), out.(*identity.Permission))
 		return nil
@@ -280,6 +298,79 @@ func Convert_identity_ExternalAccountAhamoves_identitymodel_ExternalAccountAhamo
 	outs = make([]*identitymodel.ExternalAccountAhamove, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/identity.Partner --//
+
+func Convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, out *identity.Partner) *identity.Partner {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.Partner{}
+	}
+	convert_identitymodel_Partner_identity_Partner(arg, out)
+	return out
+}
+
+func convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, out *identity.Partner) {
+	out.ID = arg.ID                       // simple assign
+	out.Name = arg.Name                   // simple assign
+	out.PublicName = arg.PublicName       // simple assign
+	out.ImageURL = arg.ImageURL           // simple assign
+	out.WebsiteURL = arg.WebsiteURL       // simple assign
+	out.WhiteLabelKey = arg.WhiteLabelKey // simple assign
+}
+
+func Convert_identitymodel_Partners_identity_Partners(args []*identitymodel.Partner) (outs []*identity.Partner) {
+	tmps := make([]identity.Partner, len(args))
+	outs = make([]*identity.Partner, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_Partner_identity_Partner(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *identitymodel.Partner) *identitymodel.Partner {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.Partner{}
+	}
+	convert_identity_Partner_identitymodel_Partner(arg, out)
+	return out
+}
+
+func convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *identitymodel.Partner) {
+	out.ID = arg.ID                       // simple assign
+	out.OwnerID = 0                       // zero value
+	out.Status = 0                        // zero value
+	out.IsTest = 0                        // zero value
+	out.Name = arg.Name                   // simple assign
+	out.PublicName = arg.PublicName       // simple assign
+	out.Phone = ""                        // zero value
+	out.Email = ""                        // zero value
+	out.ImageURL = arg.ImageURL           // simple assign
+	out.WebsiteURL = arg.WebsiteURL       // simple assign
+	out.ContactPersons = nil              // zero value
+	out.RecognizedHosts = nil             // zero value
+	out.RedirectURLs = nil                // zero value
+	out.AvailableFromEtop = false         // zero value
+	out.AvailableFromEtopConfig = nil     // zero value
+	out.WhiteLabelKey = arg.WhiteLabelKey // simple assign
+	out.CreatedAt = time.Time{}           // zero value
+	out.UpdatedAt = time.Time{}           // zero value
+	out.DeletedAt = time.Time{}           // zero value
+}
+
+func Convert_identity_Partners_identitymodel_Partners(args []*identity.Partner) (outs []*identitymodel.Partner) {
+	tmps := make([]identitymodel.Partner, len(args))
+	outs = make([]*identitymodel.Partner, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_Partner_identitymodel_Partner(args[i], &tmps[i])
 	}
 	return outs
 }

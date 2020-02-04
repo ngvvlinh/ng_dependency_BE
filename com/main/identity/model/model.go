@@ -249,13 +249,20 @@ type Partner struct {
 	ImageURL   string
 	WebsiteURL string
 
-	ContactPersons  []*identitysharemodel.ContactPerson
+	ContactPersons []*identitysharemodel.ContactPerson
+
+	// Dùng để xác thực external_url được gửi khi tạo đơn hàng, sản phẩm, ...
 	RecognizedHosts []string
-	RedirectURLs    []string
+
+	// Dùng để xác thực redirect_url được gửi khi gọi AuthorizeShop
+	RedirectURLs []string
+
 	// AvailableFromEtop: dùng để xác định `partner` này có thể xác thực shop trực tiếp từ client của Etop hay không
 	// Sau khi xác thực xong sẽ trỏ trực tiếp về `redirect_url` trong field AvailableFromEtopConfig để về trang xác thực của `partner`
 	AvailableFromEtop       bool
 	AvailableFromEtopConfig *AvailableFromEtopConfig
+
+	WhiteLabelKey string
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

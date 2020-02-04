@@ -117,3 +117,17 @@ type GetCustomersByShop struct {
 	meta.EventMeta
 	ShopID dot.ID
 }
+
+type Partner struct {
+	ID dot.ID
+
+	Name string
+
+	PublicName string
+
+	ImageURL string
+
+	WebsiteURL string
+
+	WhiteLabelKey string
+}

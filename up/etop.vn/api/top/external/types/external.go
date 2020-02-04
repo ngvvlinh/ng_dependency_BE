@@ -19,6 +19,8 @@ type Partner struct {
 	Email           string   `json:"email"`
 	RecognizedHosts []string `json:"recognized_hosts"`
 	RedirectUrls    []string `json:"redirect_urls"`
+
+	Meta map[string]string `json:"meta,omitempty"`
 }
 
 func (m *Partner) String() string { return jsonx.MustMarshalToString(m) }

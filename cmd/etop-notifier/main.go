@@ -15,6 +15,7 @@ import (
 	notihandler "etop.vn/backend/com/handler/notifier/handler"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/metrics"
@@ -51,6 +52,7 @@ func main() {
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
+	wl.Init(cm.Env())
 
 	ctx, ctxCancel = context.WithCancel(context.Background())
 	go func() {

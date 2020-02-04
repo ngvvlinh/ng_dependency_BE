@@ -141,7 +141,7 @@ func Default() Config {
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Env:            cm.EnvDev,
+		Env:            cm.EnvDev.String(),
 		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
 		Vtiger:         crmsyncconfig.DefaultVtiger(),

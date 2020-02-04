@@ -90,6 +90,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/captcha"
 	"etop.vn/backend/pkg/common/apifw/health"
 	cmService "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
@@ -470,6 +471,11 @@ func main() {
 
 	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, shippingQuery)
 	moneyTxPM.RegisterEvenHandlers(eventBus)
+
+	whiteLabel := wl.Init(cm.Env())
+	if err := whiteLabel.VerifyPartners(context.Background(), identityQuery); err != nil {
+		ll.Fatal("error loading white label partners", l.Error(err))
+	}
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)

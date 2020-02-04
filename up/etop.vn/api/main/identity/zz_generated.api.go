@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	identitytypes "etop.vn/api/main/identity/types"
+	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -274,6 +275,15 @@ func (h QueryServiceHandler) HandleGetUserByPhone(ctx context.Context, msg *GetU
 	return err
 }
 
+type ListPartnersForWhiteLabelQuery struct {
+	Result []*Partner `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListPartnersForWhiteLabel(ctx context.Context, msg *ListPartnersForWhiteLabelQuery) (err error) {
+	msg.Result, err = h.inner.ListPartnersForWhiteLabel(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateAffiliateCommand) command()                          {}
@@ -297,6 +307,7 @@ func (q *GetShopByIDQuery) query()                           {}
 func (q *GetUserByEmailQuery) query()                        {}
 func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
+func (q *ListPartnersForWhiteLabelQuery) query()             {}
 
 // implement conversion
 
@@ -547,6 +558,14 @@ func (q *GetUserByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, p
 		q.Phone
 }
 
+func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
+	return ctx,
+		&meta.Empty{}
+}
+
+func (q *ListPartnersForWhiteLabelQuery) SetEmpty(args *meta.Empty) {
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -594,5 +613,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByEmail)
 	b.AddHandler(h.HandleGetUserByID)
 	b.AddHandler(h.HandleGetUserByPhone)
+	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	return QueryBus{b}
 }

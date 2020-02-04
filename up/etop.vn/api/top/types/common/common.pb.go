@@ -11,9 +11,10 @@ type Empty struct {
 func (m *Empty) String() string { return jsonx.MustMarshalToString(m) }
 
 type VersionInfoResponse struct {
-	Service   string   `json:"service"`
-	Version   string   `json:"version"`
-	UpdatedAt dot.Time `json:"updated_at"`
+	Service   string            `json:"service"`
+	Version   string            `json:"version"`
+	UpdatedAt dot.Time          `json:"updated_at"`
+	Meta      map[string]string `json:"meta"`
 }
 
 func (m *VersionInfoResponse) String() string { return jsonx.MustMarshalToString(m) }

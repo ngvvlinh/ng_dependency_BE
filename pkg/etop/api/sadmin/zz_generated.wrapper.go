@@ -12,6 +12,7 @@ import (
 	api "etop.vn/api/top/int/sadmin"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -56,6 +57,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -107,6 +109,7 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUs
 		query.Context.Claim = session.Claim
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateUser(ctx, query)
 	resp = query.Result
@@ -150,6 +153,7 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAcc
 		query.Context.Claim = session.Claim
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginAsAccount(ctx, query)
 	resp = query.Result
@@ -193,6 +197,7 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.SAdminReset
 		query.Context.Claim = session.Claim
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ResetPassword(ctx, query)
 	resp = query.Result

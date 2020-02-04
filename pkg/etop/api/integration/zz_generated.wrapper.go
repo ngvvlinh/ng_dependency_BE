@@ -12,6 +12,7 @@ import (
 	cm "etop.vn/api/top/types/common"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -60,6 +61,7 @@ func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantA
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GrantAccess(ctx, query)
 	resp = query.Result
@@ -103,6 +105,7 @@ func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) 
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Init(ctx, query)
 	resp = query.Result
@@ -147,6 +150,7 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.Lo
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginUsingToken(ctx, query)
 	resp = query.Result
@@ -191,6 +195,7 @@ func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterR
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
 	resp = query.Result
@@ -239,6 +244,7 @@ func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.Reque
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
 		return nil, err
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RequestLogin(ctx, query)
 	resp = query.Result
@@ -283,6 +289,7 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SessionInfo(ctx, query)
 	resp = query.Result
@@ -334,6 +341,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result

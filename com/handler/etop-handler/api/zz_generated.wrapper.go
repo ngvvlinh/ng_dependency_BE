@@ -11,6 +11,7 @@ import (
 	api "etop.vn/api/top/services/handler"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -58,6 +59,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -112,6 +114,7 @@ func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateR
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ResetState(ctx, query)
 	resp = query.Result

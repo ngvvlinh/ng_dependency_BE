@@ -1879,6 +1879,12 @@
     "ktVersionInfoResponse": {
       "type": "object",
       "properties": {
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "service": {
           "type": "string"
         },
@@ -3599,6 +3605,12 @@
         },
         "image_url": {
           "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "name": {
           "type": "string"

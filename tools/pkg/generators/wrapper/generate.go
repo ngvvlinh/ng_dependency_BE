@@ -315,6 +315,13 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	}
 	{{end -}}
 	{{end -}}
+	{{if $m|requirePartner -}}
+	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
+	{{else if $m|requireAPIPartnerShopKey -}}
+	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
+	{{else -}}
+	ctx = wl.WrapContext(ctx, 0)
+	{{end -}}
 	ctx = bus.NewRootContext(ctx)
 	{{if $m.Kind|eq 1 -}}
 	err = s.s.{{$m.Name}}(ctx, query)

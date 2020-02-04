@@ -19,6 +19,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmService "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/redis"
@@ -144,6 +145,13 @@ func (s *MiscService) CurrentAccount(ctx context.Context, q *CurrentAccountEndpo
 		return cm.Errorf(cm.Internal, nil, "")
 	}
 	q.Result = convertpb.PbPartner(q.Context.Partner)
+	if wl.X(ctx).IsWhiteLabel() {
+		q.Result.Meta = map[string]string{
+			"wl_name": wl.X(ctx).Name,
+			"wl_key":  wl.X(ctx).Key,
+			"wl_host": wl.X(ctx).Host,
+		}
+	}
 	return nil
 }
 

@@ -13,6 +13,7 @@ import (
 	inttypes "etop.vn/api/top/int/types"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -60,6 +61,7 @@ func (s wrapAccountService) CreatePartner(ctx context.Context, req *api.CreatePa
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreatePartner(ctx, query)
 	resp = query.Result
@@ -106,6 +108,7 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GenerateAPIKey(ctx, query)
 	resp = query.Result
@@ -160,6 +163,7 @@ func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *api.ConfirmCr
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmCredit(ctx, query)
 	resp = query.Result
@@ -206,6 +210,7 @@ func (s wrapCreditService) CreateCredit(ctx context.Context, req *api.CreateCred
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCredit(ctx, query)
 	resp = query.Result
@@ -252,6 +257,7 @@ func (s wrapCreditService) DeleteCredit(ctx context.Context, req *cm.IDRequest) 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCredit(ctx, query)
 	resp = query.Result
@@ -298,6 +304,7 @@ func (s wrapCreditService) GetCredit(ctx context.Context, req *api.GetCreditRequ
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCredit(ctx, query)
 	resp = query.Result
@@ -344,6 +351,7 @@ func (s wrapCreditService) GetCredits(ctx context.Context, req *api.GetCreditsRe
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCredits(ctx, query)
 	resp = query.Result
@@ -390,6 +398,7 @@ func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCred
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCredit(ctx, query)
 	resp = query.Result
@@ -444,6 +453,7 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillment(ctx, query)
 	resp = query.Result
@@ -490,6 +500,7 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillments(ctx, query)
 	resp = query.Result
@@ -536,6 +547,7 @@ func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateFulfillment(ctx, query)
 	resp = query.Result
@@ -582,6 +594,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateFulfillmentShippingFee(ctx, query)
 	resp = query.Result
@@ -628,6 +641,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingState(ctx context.Conte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateFulfillmentShippingState(ctx, query)
 	resp = query.Result
@@ -682,6 +696,7 @@ func (s wrapMiscService) AdminLoginAsAccount(ctx context.Context, req *api.Login
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AdminLoginAsAccount(ctx, query)
 	resp = query.Result
@@ -725,6 +740,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -779,6 +795,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmMoneyTransaction(ctx, query)
 	resp = query.Result
@@ -825,6 +842,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx con
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
@@ -871,6 +889,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternal(ctx
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
@@ -917,6 +936,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ct
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmMoneyTransactionShippingExternals(ctx, query)
 	resp = query.Result
@@ -963,6 +983,7 @@ func (s wrapMoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
@@ -1009,6 +1030,7 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
@@ -1055,6 +1077,7 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
@@ -1101,6 +1124,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransaction(ctx, query)
 	resp = query.Result
@@ -1147,6 +1171,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
@@ -1193,6 +1218,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactionShippingEtops(ctx, query)
 	resp = query.Result
@@ -1239,6 +1265,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx con
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
@@ -1285,6 +1312,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx co
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactionShippingExternals(ctx, query)
 	resp = query.Result
@@ -1331,6 +1359,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactions(ctx, query)
 	resp = query.Result
@@ -1377,6 +1406,7 @@ func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveMoneyTransactionShippingExternalLines(ctx, query)
 	resp = query.Result
@@ -1423,6 +1453,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context,
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateMoneyTransaction(ctx, query)
 	resp = query.Result
@@ -1469,6 +1500,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
@@ -1515,6 +1547,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
@@ -1569,6 +1602,7 @@ func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *a
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateNotifications(ctx, query)
 	resp = query.Result
@@ -1623,6 +1657,7 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrder(ctx, query)
 	resp = query.Result
@@ -1669,6 +1704,7 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrders(ctx, query)
 	resp = query.Result
@@ -1715,6 +1751,7 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrdersByIDs(ctx, query)
 	resp = query.Result
@@ -1769,6 +1806,7 @@ func (s wrapShopService) GetShop(ctx context.Context, req *cm.IDRequest) (resp *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShop(ctx, query)
 	resp = query.Result
@@ -1815,6 +1853,7 @@ func (s wrapShopService) GetShops(ctx context.Context, req *api.GetShopsRequest)
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShops(ctx, query)
 	resp = query.Result

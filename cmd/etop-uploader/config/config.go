@@ -32,7 +32,7 @@ func Default() Config {
 		URLPrefix:                    "http://localhost:8180/img",
 		UploadDirAhamoveVerification: "/tmp/upload",
 		URLPrefixAhamoveVerification: "http://localhost:8180",
-		Env:                          cm.EnvDev,
+		Env:                          cm.EnvDev.String(),
 	}
 	return cfg
 }

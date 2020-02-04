@@ -1372,6 +1372,25 @@ func (ft *PartnerFilters) ByAvailableFromEtopPtr(AvailableFromEtop *bool) *sq.Co
 	}
 }
 
+func (ft *PartnerFilters) ByWhiteLabelKey(WhiteLabelKey string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "white_label_key",
+		Value:  WhiteLabelKey,
+		IsNil:  WhiteLabelKey == "",
+	}
+}
+
+func (ft *PartnerFilters) ByWhiteLabelKeyPtr(WhiteLabelKey *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "white_label_key",
+		Value:  WhiteLabelKey,
+		IsNil:  WhiteLabelKey == nil,
+		IsZero: WhiteLabelKey != nil && (*WhiteLabelKey) == "",
+	}
+}
+
 func (ft *PartnerFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -1713,6 +1713,12 @@
     "ktVersionInfoResponse": {
       "type": "object",
       "properties": {
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "service": {
           "type": "string"
         },
