@@ -267,7 +267,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 					result := parseErr.Meta["result"]
 					if result == "ignore" {
 						twError := xerrors.TwirpError(_err)
-						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, twError, nil, d, xerrors.LevelPartialError, nil)
+						go cmWrapper.SendErrorToBot(ctx, bot, req.RequestURI, c.Session, reqData, twError, nil, d, xerrors.LevelPartialError, nil)
 						c.result = map[string]string{
 							"code": "ok",
 						}
@@ -280,7 +280,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 							l.Duration("d", d),
 							l.String("req", string(reqData)),
 							l.String("resp", jsonx.MustMarshalToString(c.result)))
-						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, nil, errs, d, xerrors.LevelPartialError, nil)
+						go cmWrapper.SendErrorToBot(ctx, bot, req.RequestURI, c.Session, reqData, nil, errs, d, xerrors.LevelPartialError, nil)
 						return
 					}
 
@@ -311,7 +311,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 				if lvl >= xerrors.LevelTrace {
 					cmWrapper.PrintErrorWithStack(ctx, _err, nil)
 				}
-				go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, twError, nil, d, lvl, nil)
+				go cmWrapper.SendErrorToBot(ctx, bot, req.RequestURI, c.Session, reqData, twError, nil, d, lvl, nil)
 			}()
 
 			if logRequest {

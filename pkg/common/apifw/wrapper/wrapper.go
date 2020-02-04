@@ -11,6 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/twitchtv/twirp"
+	"go.uber.org/zap/zapcore"
+
 	cmP "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -22,8 +25,6 @@ import (
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 	"etop.vn/common/xerrors/logline"
-	"github.com/twitchtv/twirp"
-	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -84,7 +85,7 @@ func EncodeTwirpError(w io.Writer, err twirp.Error) {
 	_ = json.NewEncoder(w).Encode(twerr)
 }
 
-func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*cmP.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
+func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*cmP.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
 	if bot == nil {
 		return
 	}
@@ -120,8 +121,29 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			buf.WriteString(strconv.Itoa(int(affiliate.ID)))
 			buf.WriteString(")")
 		}
+		if session.Partner != nil || session.CtxPartner != nil {
+			partner := session.Partner
+			if partner == nil {
+				partner = session.CtxPartner
+			}
+			buf.WriteString("\n–– Partner: ")
+			buf.WriteString(partner.Name)
+			buf.WriteString(" (")
+			buf.WriteString(strconv.Itoa(int(partner.ID)))
+			buf.WriteString(")")
+		}
 	}
-	buf.WriteString("\n→")
+	buf.WriteString("\n")
+	sortedHeaders := middleware.GetSortedHeaders(ctx)
+	for _, item := range sortedHeaders {
+		for _, v := range item.Values {
+			buf.WriteString(item.Key)
+			buf.WriteString(": ")
+			buf.WriteString(v)
+			buf.WriteString("\n")
+		}
+	}
+	buf.WriteString("→")
 
 	switch req := req.(type) {
 	case []byte:
@@ -214,7 +236,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 				l.Duration("d", d),
 				l.Stringer("req", req),
 				l.Stringer("resp", resp))
-			go SendErrorToBot(bot, rpcName, session, req, nil, errs, d, xerrors.LevelPartialError, stacktrace)
+			go SendErrorToBot(ctx, bot, rpcName, session, req, nil, errs, d, xerrors.LevelPartialError, stacktrace)
 			return nil
 		}
 		ll.Debug("->"+rpcName,
@@ -241,7 +263,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 	if cm.NotProd() || cm.ErrorCode(err) == cm.RuntimePanic || middleware.CtxDebug(ctx) != "" {
 		PrintErrorWithStack(ctx, err, stacktrace)
 	}
-	go SendErrorToBot(bot, rpcName, session, req, twError, nil, d, lvl, stacktrace)
+	go SendErrorToBot(ctx, bot, rpcName, session, req, twError, nil, d, lvl, stacktrace)
 	return twError
 }
 
