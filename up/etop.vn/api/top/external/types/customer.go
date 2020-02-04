@@ -12,25 +12,38 @@ import (
 )
 
 type Customer struct {
-	Id           dot.ID         `json:"id"`
-	ShopId       dot.ID         `json:"shop_id"`
-	ExternalId   string         `json:"external_id"`
-	ExternalCode string         `json:"external_code"`
-	FullName     string         `json:"full_name"`
-	Code         string         `json:"code"`
-	Note         string         `json:"note"`
-	Phone        string         `json:"phone"`
-	Email        string         `json:"email"`
-	Gender       string         `json:"gender"`
-	Type         string         `json:"type"`
-	Birthday     string         `json:"birthday"`
-	CreatedAt    dot.Time       `json:"created_at"`
-	UpdatedAt    dot.Time       `json:"updated_at"`
-	Status       status3.Status `json:"status"`
-	Deleted      bool           `json:"deleted"`
+	ExternalId   dot.NullString `json:"external_id"`
+	ExternalCode dot.NullString `json:"external_code"`
+
+	Id        dot.ID                         `json:"id"`
+	ShopId    dot.ID                         `json:"shop_id"`
+	FullName  dot.NullString                 `json:"full_name"`
+	Code      dot.NullString                 `json:"code"`
+	Note      dot.NullString                 `json:"note"`
+	Phone     dot.NullString                 `json:"phone"`
+	Email     dot.NullString                 `json:"email"`
+	Gender    gender.NullGender              `json:"gender"`
+	Type      customer_type.NullCustomerType `json:"type"`
+	Birthday  dot.NullString                 `json:"birthday"`
+	CreatedAt dot.Time                       `json:"created_at"`
+	UpdatedAt dot.Time                       `json:"updated_at"`
+	Status    status3.NullStatus             `json:"status"`
+	Deleted   bool                           `json:"deleted"`
 }
 
 func (m *Customer) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *Customer) HasChanged() bool {
+	return m.FullName.Valid ||
+		m.Code.Valid ||
+		m.Note.Valid ||
+		m.Phone.Valid ||
+		m.Email.Valid ||
+		m.Gender.Valid ||
+		m.Type.Valid ||
+		m.Birthday.Valid ||
+		m.Status.Valid
+}
 
 type CustomersResponse struct {
 	Customers []*Customer            `json:"customers"`
@@ -104,24 +117,40 @@ func (m *ListCustomersRequest) String() string { return jsonx.MustMarshalToStrin
 type CustomerAddress struct {
 	Id           dot.ID            `json:"id"`
 	CustomerID   dot.ID            `json:"customer_id"`
-	Province     string            `json:"province"`
-	ProvinceCode string            `json:"province_code"`
-	District     string            `json:"district"`
-	DistrictCode string            `json:"district_code"`
-	Ward         string            `json:"ward"`
-	WardCode     string            `json:"ward_code"`
-	Address1     string            `json:"address1"`
-	Address2     string            `json:"address2"`
-	FullName     string            `json:"full_name"`
-	Company      string            `json:"company"`
-	Phone        string            `json:"phone"`
-	Email        string            `json:"email"`
-	Position     string            `json:"position"`
+	Province     dot.NullString    `json:"province"`
+	ProvinceCode dot.NullString    `json:"province_code"`
+	District     dot.NullString    `json:"district"`
+	DistrictCode dot.NullString    `json:"district_code"`
+	Ward         dot.NullString    `json:"ward"`
+	WardCode     dot.NullString    `json:"ward_code"`
+	Address1     dot.NullString    `json:"address1"`
+	Address2     dot.NullString    `json:"address2"`
+	FullName     dot.NullString    `json:"full_name"`
+	Company      dot.NullString    `json:"company"`
+	Phone        dot.NullString    `json:"phone"`
+	Email        dot.NullString    `json:"email"`
+	Position     dot.NullString    `json:"position"`
 	Coordinates  *etop.Coordinates `json:"coordinates"`
 	Deleted      bool              `json:"deleted"`
 }
 
 func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CustomerAddress) HasChanged() bool {
+	return m.WardCode.Valid ||
+		m.Ward.Valid ||
+		m.DistrictCode.Valid ||
+		m.District.Valid ||
+		m.Position.Valid ||
+		m.Email.Valid ||
+		m.Phone.Valid ||
+		m.Company.Valid ||
+		m.FullName.Valid ||
+		m.Address1.Valid ||
+		m.Address2.Valid ||
+		m.Province.Valid ||
+		m.ProvinceCode.Valid
+}
 
 type CustomerAddressesResponse struct {
 	CustomerAddresses []*CustomerAddress     `json:"addresses"`

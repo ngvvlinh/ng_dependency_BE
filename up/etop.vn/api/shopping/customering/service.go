@@ -128,8 +128,9 @@ type DeleteCustomerArgs struct {
 }
 
 type CreateCustomerGroupArgs struct {
-	Name   string
-	ShopID dot.ID
+	Name      string
+	PartnerID dot.ID
+	ShopID    dot.ID
 }
 
 // +convert:create=ShopCustomer

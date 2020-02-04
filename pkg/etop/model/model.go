@@ -381,7 +381,7 @@ func (m *Webhook) BeforeInsert() error {
 			return cm.Errorf(cm.InvalidArgument, nil, `invalid entity: "%v"`, item)
 		}
 		switch item {
-		case "order", "fulfillment", "product":
+		case "order", "fulfillment", "product", "variant", "customer", "inventory_level", "customer_address", "customer_group", "customer_group_relationship", "product_collection", "product_collection_relationship":
 			if mp[item] {
 				return cm.Errorf(cm.InvalidArgument, nil, `duplicated entity: "%v"`, item)
 			}

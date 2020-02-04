@@ -2288,14 +2288,38 @@
     "mrChangeOneOf": {
       "type": "object",
       "properties": {
+        "customer": {
+          "$ref": "#/definitions/mrCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/mrCustomerAddress"
+        },
+        "customer_group": {
+          "$ref": "#/definitions/mrCustomerGroup"
+        },
+        "customer_group_relationship": {
+          "$ref": "#/definitions/mrCustomerGroupRelationship"
+        },
         "fulfillment": {
           "$ref": "#/definitions/mrFulfillment"
+        },
+        "inventory_level": {
+          "$ref": "#/definitions/mrInventoryLevel"
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
         },
         "product": {
           "$ref": "#/definitions/mrShopProduct"
+        },
+        "product_collection": {
+          "$ref": "#/definitions/mrProductCollection"
+        },
+        "product_collection_relationship": {
+          "$ref": "#/definitions/mrProductCollectionRelationship"
+        },
+        "variant": {
+          "$ref": "#/definitions/mrShopVariant"
         }
       }
     },
@@ -2787,7 +2811,7 @@
           "type": "string"
         },
         "gender": {
-          "type": "string"
+          "$ref": "#/definitions/pwGender"
         },
         "id": {
           "type": "string",
@@ -2807,7 +2831,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/spCustomerType"
         },
         "updated_at": {
           "type": "string",
@@ -2915,6 +2939,10 @@
         },
         "name": {
           "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3323,14 +3351,38 @@
     "mrLatestOneOf": {
       "type": "object",
       "properties": {
+        "customer": {
+          "$ref": "#/definitions/mrCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/mrCustomerAddress"
+        },
+        "customer_group": {
+          "$ref": "#/definitions/mrCustomerGroup"
+        },
+        "customer_group_relationship": {
+          "$ref": "#/definitions/mrCustomerGroupRelationship"
+        },
         "fulfillment": {
           "$ref": "#/definitions/mrFulfillment"
+        },
+        "inventory_level": {
+          "$ref": "#/definitions/mrInventoryLevel"
         },
         "order": {
           "$ref": "#/definitions/mrOrder"
         },
         "product": {
           "$ref": "#/definitions/mrShopProduct"
+        },
+        "product_collection": {
+          "$ref": "#/definitions/mrProductCollection"
+        },
+        "product_collection_relationship": {
+          "$ref": "#/definitions/mrProductCollectionRelationship"
+        },
+        "variant": {
+          "$ref": "#/definitions/mrShopVariant"
         }
       }
     },

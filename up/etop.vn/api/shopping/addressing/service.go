@@ -37,6 +37,7 @@ type QueryService interface {
 type ShopTraderAddress struct {
 	ID           dot.ID
 	ShopID       dot.ID
+	PartnerID    dot.ID
 	TraderID     dot.ID
 	FullName     string
 	Phone        string
@@ -63,6 +64,7 @@ type ShopTraderAddressesResponse struct {
 // +convert:create=ShopTraderAddress
 type CreateAddressArgs struct {
 	ShopID       dot.ID
+	PartnerID    dot.ID
 	TraderID     dot.ID
 	FullName     string
 	Phone        string

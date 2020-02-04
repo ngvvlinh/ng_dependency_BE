@@ -43,9 +43,10 @@ func ListCollections(ctx context.Context, shopID dot.ID, request *externaltypes.
 	}, nil
 }
 
-func CreateCollection(ctx context.Context, shopID dot.ID, request *externaltypes.CreateCollectionRequest) (*externaltypes.ProductCollection, error) {
+func CreateCollection(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCollectionRequest) (*externaltypes.ProductCollection, error) {
 	cmd := &catalog.CreateShopCollectionCommand{
 		ShopID:      shopID,
+		PartnerID:   partnerID,
 		Name:        request.Name,
 		Description: request.Description,
 		ShortDesc:   request.ShortDesc,

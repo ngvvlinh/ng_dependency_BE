@@ -433,6 +433,7 @@ func (a *Aggregate) CreateShopCollection(ctx context.Context, args *catalog.Crea
 	collection := &catalog.ShopCollection{
 		ID:          cm.NewID(),
 		ShopID:      args.ShopID,
+		PartnerID:   args.PartnerID,
 		Name:        args.Name,
 		DescHTML:    args.DescHTML,
 		Description: args.Description,

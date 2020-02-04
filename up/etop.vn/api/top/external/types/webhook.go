@@ -86,17 +86,33 @@ type Change struct {
 func (m *Change) String() string { return jsonx.MustMarshalToString(m) }
 
 type LatestOneOf struct {
-	Order       *Order       `json:"order"`
-	Fulfillment *Fulfillment `json:"fulfillment"`
-	Product     *ShopProduct `json:"product"`
+	Order                         *Order                         `json:"order"`
+	Fulfillment                   *Fulfillment                   `json:"fulfillment"`
+	Variant                       *ShopVariant                   `json:"variant"`
+	InventoryLevel                *InventoryLevel                `json:"inventory_level"`
+	CustomerAddress               *CustomerAddress               `json:"customer_address"`
+	Customer                      *Customer                      `json:"customer"`
+	CustomerGroup                 *CustomerGroup                 `json:"customer_group"`
+	CustomerGroupRelationship     *CustomerGroupRelationship     `json:"customer_group_relationship"`
+	Product                       *ShopProduct                   `json:"product"`
+	ProductCollection             *ProductCollection             `json:"product_collection"`
+	ProductCollectionRelationship *ProductCollectionRelationship `json:"product_collection_relationship"`
 }
 
 func (m *LatestOneOf) String() string { return jsonx.MustMarshalToString(m) }
 
 type ChangeOneOf struct {
-	Order       *Order       `json:"order"`
-	Fulfillment *Fulfillment `json:"fulfillment"`
-	Product     *ShopProduct `json:"product"`
+	Order                         *Order                         `json:"order"`
+	Fulfillment                   *Fulfillment                   `json:"fulfillment"`
+	Product                       *ShopProduct                   `json:"product"`
+	Variant                       *ShopVariant                   `json:"variant"`
+	Customer                      *Customer                      `json:"customer"`
+	InventoryLevel                *InventoryLevel                `json:"inventory_level"`
+	CustomerAddress               *CustomerAddress               `json:"customer_address"`
+	CustomerGroup                 *CustomerGroup                 `json:"customer_group"`
+	CustomerGroupRelationship     *CustomerGroupRelationship     `json:"customer_group_relationship"`
+	ProductCollection             *ProductCollection             `json:"product_collection"`
+	ProductCollectionRelationship *ProductCollectionRelationship `json:"product_collection_relationship"`
 }
 
 func (m *ChangeOneOf) String() string { return jsonx.MustMarshalToString(m) }

@@ -425,6 +425,18 @@ func (s *QueryService) ListShopCollectionsByIDs(ctx context.Context, args *catal
 	}, nil
 }
 
+func (s *QueryService) GetShopProductCollection(ctx context.Context, args *catalog.GetShopProductCollectionArgs) (*catalog.ShopProductCollection, error) {
+	shopProductCollection, err := s.shopProductCollection(ctx).ProductID(args.ProductID).CollectionID(args.CollectionID).GetShopProductCollection()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopProductCollection{
+		ProductID:    shopProductCollection.ProductID,
+		CollectionID: shopProductCollection.CollectionID,
+		ShopID:       shopProductCollection.ShopID,
+	}, nil
+}
+
 func (q *QueryService) ListShopProductsCollections(ctx context.Context, args *catalog.ListProductsCollections) (*catalog.ShopProductsCollectionResponse, error) {
 	query := q.shopProductCollection(ctx).WithPaging(args.Paging)
 	count := 0

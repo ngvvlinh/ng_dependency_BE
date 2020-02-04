@@ -28,6 +28,38 @@ var Topics = []TopicDef{{
 	Name:       "shop_product",
 	Partitions: 64,
 	DBName:     model.DBMain,
+}, {
+	Name:       "shop_collection",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_product_collection",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_variant",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_customer",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_customer_group",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_customer_group_customer",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "inventory_variant",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "shop_trader_address",
+	Partitions: 64,
+	DBName:     model.DBMain,
 }}
 
 var TopicMap map[string]TopicDef

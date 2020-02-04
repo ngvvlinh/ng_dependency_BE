@@ -54,6 +54,7 @@ var _ = sqlgenShopTraderAddress(&ShopTraderAddress{})
 // +convert:type=addressing.ShopTraderAddress
 type ShopTraderAddress struct {
 	ID           dot.ID `paging:"id"`
+	PartnerID    dot.ID
 	ShopID       dot.ID
 	TraderID     dot.ID
 	FullName     string
@@ -90,9 +91,10 @@ var _ = sqlgenShopCustomerGroup(&ShopCustomerGroup{})
 
 // +convert:type=customering.ShopCustomerGroup
 type ShopCustomerGroup struct {
-	ID     dot.ID `paging:"id"`
-	Name   string
-	ShopID dot.ID
+	ID        dot.ID `paging:"id"`
+	PartnerID dot.ID
+	Name      string
+	ShopID    dot.ID
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update" paging:"updated_at"`

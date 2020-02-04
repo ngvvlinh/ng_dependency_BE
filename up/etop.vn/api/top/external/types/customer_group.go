@@ -28,12 +28,17 @@ type RemoveCustomerRequest struct {
 func (m *RemoveCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerGroup struct {
-	Id      dot.ID `json:"id"`
-	Name    string `json:"name"`
-	Deleted bool   `json:"deleted"`
+	Id      dot.ID         `json:"id"`
+	ShopID  dot.ID         `json:"shop_id"`
+	Name    dot.NullString `json:"name"`
+	Deleted bool           `json:"deleted"`
 }
 
 func (m *CustomerGroup) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CustomerGroup) HasChanged() bool {
+	return m.Name.Valid
+}
 
 type CustomerGroupsResponse struct {
 	CustomerGroups []*CustomerGroup       `json:"customer_groups"`

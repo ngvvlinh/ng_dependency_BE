@@ -133,6 +133,7 @@ func (s Service) HandleNotificationWithError(noti *pq.Notification) error {
 	}
 
 	partition := int(event.ID % int64(d.Partitions)) // TODO: composition primary key
+
 	ll.Info("HandleNotificationWithError :: ", l.String("topic", topic), l.Object("topic", d), l.Int("partition", partition))
 	s.producer.Send(topic, partition, event.EventKey, data)
 	return nil

@@ -123,6 +123,8 @@ type QueryService interface {
 
 	GetVariantsBySupplierID(ctx context.Context, supplierID dot.ID, shopID dot.ID) (*ShopVariantsResponse, error)
 
+	GetShopProductCollection(ctx context.Context, _ *GetShopProductCollectionArgs) (*ShopProductCollection, error)
+
 	ListShopProductsCollections(ctx context.Context, _ *ListProductsCollections) (*ShopProductsCollectionResponse, error)
 }
 
@@ -210,6 +212,11 @@ type ListShopVariantsByIDsArgs struct {
 	Paging meta.Paging
 
 	IncludeDeleted bool
+}
+
+type GetShopProductCollectionArgs struct {
+	ProductID    dot.ID
+	CollectionID dot.ID
 }
 
 type ShopProductsResponse struct {
@@ -331,8 +338,9 @@ type UpdateShopCollectionArgs struct {
 
 // +convert:create=ShopCollection
 type CreateShopCollectionArgs struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID        dot.ID
+	ShopID    dot.ID
+	PartnerID dot.ID
 
 	Name        string
 	Description string

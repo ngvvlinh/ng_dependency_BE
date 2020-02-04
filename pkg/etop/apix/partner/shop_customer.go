@@ -49,7 +49,7 @@ func (s *CustomerAddressService) GetAddress(ctx context.Context, r *GetAddressEn
 }
 
 func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
-	resp, err := shopping.CreateAddress(ctx, r.Context.Shop.ID, r.CreateCustomerAddressRequest)
+	resp, err := shopping.CreateAddress(ctx, r.Context.Shop.ID, r.Context.AuthPartnerID, r.CreateCustomerAddressRequest)
 	r.Result = resp
 	return err
 }
@@ -97,7 +97,7 @@ func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndp
 }
 
 func (s *CustomerGroupService) CreateGroup(ctx context.Context, r *CreateGroupEndpoint) error {
-	resp, err := shopping.CreateGroup(ctx, r.Context.Shop.ID, r.CreateCustomerGroupRequest)
+	resp, err := shopping.CreateGroup(ctx, r.Context.Shop.ID, r.Context.AuthPartnerID, r.CreateCustomerGroupRequest)
 	r.Result = resp
 	return err
 }

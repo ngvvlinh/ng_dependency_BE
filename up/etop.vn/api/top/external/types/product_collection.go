@@ -8,17 +8,23 @@ import (
 )
 
 type ProductCollection struct {
-	ID          dot.ID   `json:"id"`
-	ShopID      dot.ID   `json:"shop_id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	ShortDesc   string   `json:"short_desc"`
-	CreatedAt   dot.Time `json:"created_at"`
-	UpdatedAt   dot.Time `json:"updated_at"`
-	Deleted     bool     `json:"deleted"`
+	ID          dot.ID         `json:"id"`
+	ShopID      dot.ID         `json:"shop_id"`
+	Name        dot.NullString `json:"name"`
+	Description dot.NullString `json:"description"`
+	ShortDesc   dot.NullString `json:"short_desc"`
+	CreatedAt   dot.Time       `json:"created_at"`
+	UpdatedAt   dot.Time       `json:"updated_at"`
+	Deleted     bool           `json:"deleted"`
 }
 
 func (m *ProductCollection) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *ProductCollection) HasChanged() bool {
+	return m.Name.Valid ||
+		m.ShortDesc.Valid ||
+		m.Description.Valid
+}
 
 type ListProductCollectionRelationshipsFilter struct {
 	ProductID    filter.IDs `json:"product_id"`

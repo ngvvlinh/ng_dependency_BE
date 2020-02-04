@@ -162,6 +162,7 @@ func Convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg *customeringmodel.ShopTraderAddress, out *addressing.ShopTraderAddress) {
 	out.ID = arg.ID                     // simple assign
 	out.ShopID = arg.ShopID             // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.TraderID = arg.TraderID         // simple assign
 	out.FullName = arg.FullName         // simple assign
 	out.Phone = arg.Phone               // simple assign
@@ -201,6 +202,7 @@ func Convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg
 
 func convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg *addressing.ShopTraderAddress, out *customeringmodel.ShopTraderAddress) {
 	out.ID = arg.ID                     // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.TraderID = arg.TraderID         // simple assign
 	out.FullName = arg.FullName         // simple assign
@@ -243,6 +245,7 @@ func Apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addres
 func apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addressing.CreateAddressArgs, out *addressing.ShopTraderAddress) {
 	out.ID = 0                          // zero value
 	out.ShopID = arg.ShopID             // simple assign
+	out.PartnerID = arg.PartnerID       // simple assign
 	out.TraderID = arg.TraderID         // simple assign
 	out.FullName = arg.FullName         // simple assign
 	out.Phone = arg.Phone               // simple assign
@@ -274,6 +277,7 @@ func Apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addressing.UpdateAddressArgs, out *addressing.ShopTraderAddress) {
 	out.ID = out.ID                                             // identifier
 	out.ShopID = out.ShopID                                     // no change
+	out.PartnerID = out.PartnerID                               // no change
 	out.TraderID = out.TraderID                                 // no change
 	out.FullName = arg.FullName.Apply(out.FullName)             // apply change
 	out.Phone = arg.Phone.Apply(out.Phone)                      // apply change
@@ -452,10 +456,11 @@ func Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(ar
 }
 
 func convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg *customeringmodel.ShopCustomerGroup, out *customering.ShopCustomerGroup) {
-	out.ID = arg.ID         // simple assign
-	out.ShopID = arg.ShopID // simple assign
-	out.Name = arg.Name     // simple assign
-	out.Deleted = false     // zero value
+	out.ID = arg.ID               // simple assign
+	out.PartnerID = arg.PartnerID // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Deleted = false           // zero value
 }
 
 func Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
@@ -479,12 +484,13 @@ func Convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(ar
 }
 
 func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(arg *customering.ShopCustomerGroup, out *customeringmodel.ShopCustomerGroup) {
-	out.ID = arg.ID             // simple assign
-	out.Name = arg.Name         // simple assign
-	out.ShopID = arg.ShopID     // simple assign
-	out.CreatedAt = time.Time{} // zero value
-	out.UpdatedAt = time.Time{} // zero value
-	out.DeletedAt = time.Time{} // zero value
+	out.ID = arg.ID               // simple assign
+	out.PartnerID = arg.PartnerID // simple assign
+	out.Name = arg.Name           // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.CreatedAt = time.Time{}   // zero value
+	out.UpdatedAt = time.Time{}   // zero value
+	out.DeletedAt = time.Time{}   // zero value
 }
 
 func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*customering.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {

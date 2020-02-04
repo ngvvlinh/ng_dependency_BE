@@ -120,3 +120,15 @@ type UpdateVariantRequest struct {
 }
 
 func (m *UpdateVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *ShopVariant) HasChanged() bool {
+	return m.Code.Valid ||
+		m.Name.Valid ||
+		m.Description.Valid ||
+		m.ShortDesc.Valid ||
+		m.ListPrice.Valid ||
+		m.RetailPrice.Valid ||
+		m.Note.Valid ||
+		m.Status.Valid ||
+		m.CostPrice.Valid
+}

@@ -19,14 +19,19 @@ type ListInventoryLevelsRequest struct {
 func (m *ListInventoryLevelsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type InventoryLevel struct {
-	VariantId         dot.ID   `json:"variant_id"`
-	AvailableQuantity int      `json:"available_quantity"`
-	ReservedQuantity  int      `json:"reserved_quantity"`
-	PickedQuantity    int      `json:"picked_quantity"`
-	UpdatedAt         dot.Time `json:"updated_at"`
+	VariantId         dot.ID      `json:"variant_id"`
+	AvailableQuantity dot.NullInt `json:"available_quantity"`
+	ReservedQuantity  dot.NullInt `json:"reserved_quantity"`
+	PickedQuantity    dot.NullInt `json:"picked_quantity"`
+	UpdatedAt         dot.Time    `json:"updated_at"`
 }
 
 func (m *InventoryLevel) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *InventoryLevel) HasChanged() bool {
+	return m.AvailableQuantity.Valid ||
+		m.PickedQuantity.Valid
+}
 
 type InventoryLevelsResponse struct {
 	InventoryLevels []*InventoryLevel      `json:"inventory_levels"`

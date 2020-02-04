@@ -146,7 +146,7 @@ func GetAddress(ctx context.Context, shopID dot.ID, request *externaltypes.Order
 	return convertpb.PbShopTraderAddress(ctx, query.Result, locationQuery), nil
 }
 
-func CreateAddress(ctx context.Context, shopID dot.ID, request *externaltypes.CreateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
+func CreateAddress(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
 	var coordinates *types.Coordinates
 	if request.Coordinates != nil {
 		coordinates = &types.Coordinates{
@@ -156,6 +156,7 @@ func CreateAddress(ctx context.Context, shopID dot.ID, request *externaltypes.Cr
 	}
 	cmd := &addressing.CreateAddressCommand{
 		ShopID:       shopID,
+		PartnerID:    partnerID,
 		TraderID:     request.CustomerId,
 		FullName:     request.FullName,
 		Phone:        request.Phone,
@@ -225,7 +226,7 @@ func ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request 
 		return nil, err
 	}
 	return &externaltypes.CustomerGroupRelationshipsResponse{
-		Relationships: convertpb.PbRelationships(query.Result.CustomerGroupsCustomers),
+		Relationships: convertpb.PbCustomerGroupRelationships(query.Result.CustomerGroupsCustomers),
 	}, nil
 }
 
@@ -282,13 +283,14 @@ func ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListC
 	}, nil
 }
 
-func CreateGroup(ctx context.Context, shopID dot.ID, request *externaltypes.CreateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
+func CreateGroup(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
 	if request.Name == "" {
 		return nil, common.Errorf(common.InvalidArgument, nil, "Tên không được rỗng.")
 	}
 	cmd := &customering.CreateCustomerGroupCommand{
-		ShopID: shopID,
-		Name:   request.Name,
+		ShopID:    shopID,
+		PartnerID: partnerID,
+		Name:      request.Name,
 	}
 	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err

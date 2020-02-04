@@ -36,11 +36,11 @@ type ShopCustomer struct {
 }
 
 type ShopCustomerGroup struct {
-	ID     dot.ID
-	ShopID dot.ID
-	Name   string
-
-	Deleted bool
+	ID        dot.ID
+	PartnerID dot.ID
+	ShopID    dot.ID
+	Name      string
+	Deleted   bool
 }
 
 type ShopCustomerGroupCustomer struct {

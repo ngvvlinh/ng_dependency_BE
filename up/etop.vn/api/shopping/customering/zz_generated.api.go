@@ -76,8 +76,9 @@ func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, msg *CreateC
 }
 
 type CreateCustomerGroupCommand struct {
-	Name   string
-	ShopID dot.ID
+	Name      string
+	PartnerID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopCustomerGroup `json:"-"`
 }
@@ -377,13 +378,15 @@ func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) 
 func (q *CreateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerGroupArgs) {
 	return ctx,
 		&CreateCustomerGroupArgs{
-			Name:   q.Name,
-			ShopID: q.ShopID,
+			Name:      q.Name,
+			PartnerID: q.PartnerID,
+			ShopID:    q.ShopID,
 		}
 }
 
 func (q *CreateCustomerGroupCommand) SetCreateCustomerGroupArgs(args *CreateCustomerGroupArgs) {
 	q.Name = args.Name
+	q.PartnerID = args.PartnerID
 	q.ShopID = args.ShopID
 }
 

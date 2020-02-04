@@ -235,6 +235,7 @@ func (a *CustomerAggregate) BatchSetCustomersStatus(
 func (a *CustomerAggregate) CreateCustomerGroup(ctx context.Context, args *customering.CreateCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {
 	customerGroup := &customering.ShopCustomerGroup{
 		ID:     cm.NewID(),
+		PartnerID:args.PartnerID,
 		ShopID: args.ShopID,
 		Name:   args.Name,
 	}

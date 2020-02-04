@@ -327,6 +327,7 @@ func DefaultKafka() Kafka {
 		Brokers: []string{
 			"kafka:9092",
 		},
+		Enabled: true,
 	}
 }
 

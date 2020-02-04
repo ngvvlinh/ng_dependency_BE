@@ -19,7 +19,7 @@ func (s *ProductCollectionService) ListCollections(ctx context.Context, r *ListC
 }
 
 func (s *ProductCollectionService) CreateCollection(ctx context.Context, r *CreateCollectionEndpoint) error {
-	resp, err := shopping.CreateCollection(ctx, r.Context.Shop.ID, r.CreateCollectionRequest)
+	resp, err := shopping.CreateCollection(ctx, r.Context.Shop.ID, 0, r.CreateCollectionRequest)
 	r.Result = resp
 	return err
 }

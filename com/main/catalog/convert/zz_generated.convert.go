@@ -547,7 +547,7 @@ func Apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 func apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.CreateShopCollectionArgs, out *catalog.ShopCollection) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
-	out.PartnerID = 0                 // zero value
+	out.PartnerID = arg.PartnerID     // simple assign
 	out.ExternalID = ""               // zero value
 	out.Name = arg.Name               // simple assign
 	out.Description = arg.Description // simple assign

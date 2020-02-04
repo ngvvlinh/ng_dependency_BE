@@ -113,6 +113,25 @@ func PbShopVariants(args []*catalog.ShopVariant) []*exttypes.ShopVariant {
 	return outs
 }
 
+func PbShopVariantHistory(m catalogmodel.ShopVariantHistory) *exttypes.ShopVariant {
+	return &exttypes.ShopVariant{
+		ExternalId:   m.ExternalID().String(),
+		ExternalCode: m.ExternalCode().String(),
+		Id:           m.VariantID().ID().Apply(0),
+		Code:         m.Code().String(),
+		Name:         m.Name().String(),
+		Description:  m.Description().String(),
+		ShortDesc:    m.ShortDesc().String(),
+		ImageUrls:    nil, // TOOO: fill it
+		ListPrice:    m.ListPrice().Int(),
+		RetailPrice:  m.RetailPrice().Int(),
+		Note:         m.Note().String(),
+		Status:       convertpb.Pb3Ptr(m.Status().Int()),
+		CostPrice:    m.CostPrice().Int(),
+		Attributes:   nil, // TODO: fill it`
+	}
+}
+
 func PbShopProductHistory(m catalogmodel.ShopProductHistory) *exttypes.ShopProduct {
 	return &exttypes.ShopProduct{
 		ExternalId:   m.ExternalID().String(),

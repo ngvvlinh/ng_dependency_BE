@@ -6,11 +6,14 @@ import (
 	"crypto/tls"
 	"math/rand"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"etop.vn/backend/com/handler/etop-handler/webhook/storage"
+	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -30,6 +33,11 @@ var client = &http.Client{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	},
 }
+
+const (
+	PrefixGetPartnerIDs = "partnerIDs"
+	TTL                 = 5 * 60
+)
 
 var redisStore redis.Store
 var changesStore *storage.ChangesStore
@@ -154,19 +162,76 @@ func (s *WebhookSender) Wait() {
 }
 
 // TODO: entityID: handle composition primary key (e.g. product collection relationship)
-func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
+func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
 	var b bytes.Buffer
 	if err := jsonx.MarshalTo(&b, pb); err != nil {
 		ll.Error("error marshalling json", l.Error(err))
 		return mq.CodeStop, err
 	}
 
-	s.Collect(ctx, entity, entityID, accountIDs, b.Bytes())
+	if err := s.Collect(ctx, entity, entityID, shopID, accountIDs, b.Bytes()); err != nil {
+		return mq.CodeStop, err
+	}
 	return mq.CodeOK, nil
 }
 
-func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot.ID, accountIDs []dot.ID, msg []byte) {
+func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, msg []byte) error {
+	mapAccountIDs := make(map[dot.ID]bool)
+	for _, accountID := range accountIDs {
+		mapAccountIDs[accountID] = true
+	}
+	var partnerIDs []dot.ID
+	var loadPartnerIDs bool
+	value, err := redisStore.GetString(PrefixGetPartnerIDs + "-" + shopID.String())
+	switch err {
+	case nil:
+		stringIDs := strings.Split(value, ",")
+		if len(stringIDs) == 0 {
+			loadPartnerIDs = true
+		} else {
+			for _, stringID := range stringIDs {
+				id, _err := dot.ParseID(stringID)
+				if _err != nil {
+					panic("parse ID unexpected")
+				}
+				partnerIDs = append(partnerIDs, id)
+			}
+		}
+	case redis.ErrNil:
+		loadPartnerIDs = true
+	default:
+		return err
+	}
+
+	if loadPartnerIDs {
+		query := &identitymodelx.GetPartnersFromRelationQuery{
+			AccountIDs: []dot.ID{shopID},
+		}
+		if err := bus.Dispatch(ctx, query); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+
+		value := ""
+		for _, partner := range query.Result.Partners {
+			partnerIDs = append(partnerIDs, partner.ID)
+			value += partner.ID.String() + ","
+		}
+		value = value[:len(value)-1]
+
+		if err := redisStore.SetStringWithTTL(PrefixGetPartnerIDs+"-"+shopID.String(), value, TTL); err != nil {
+			return err
+		}
+	}
+
+	for _, partnerID := range partnerIDs {
+		if ok := mapAccountIDs[partnerID]; !ok {
+			accountIDs = append(accountIDs, partnerID)
+			mapAccountIDs[partnerID] = true
+		}
+	}
+
 	ll.Debug("Collect items for accounts", l.Any("ids", accountIDs))
+
 	for _, accountID := range accountIDs {
 		if accountID == 0 {
 			continue
@@ -181,6 +246,7 @@ func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot
 			}
 		}
 	}
+	return nil
 }
 
 func (s *WebhookSender) ResetState(accountID dot.ID) error {

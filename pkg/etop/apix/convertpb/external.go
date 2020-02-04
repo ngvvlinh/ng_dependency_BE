@@ -10,17 +10,22 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/customering/customer_type"
 	exttypes "etop.vn/api/top/external/types"
 	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/gender"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	addressmodel "etop.vn/backend/com/main/address/model"
 	"etop.vn/backend/com/main/catalog/convert"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	identitymodel "etop.vn/backend/com/main/identity/model"
+	inventorymodel "etop.vn/backend/com/main/inventory/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	customermodel "etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -607,20 +612,40 @@ func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
 	return &exttypes.Customer{
 		Id:           customer.ID,
 		ShopId:       customer.ShopID,
-		ExternalId:   customer.ExternalID,
-		ExternalCode: customer.ExternalCode,
-		FullName:     customer.FullName,
-		Code:         customer.Code,
-		Note:         customer.Note,
-		Phone:        customer.Phone,
-		Email:        customer.Email,
-		Gender:       customer.Gender.String(),
-		Type:         customer.Type.String(),
-		Birthday:     customer.Birthday,
+		ExternalId:   dot.String(customer.ExternalID),
+		ExternalCode: dot.String(customer.ExternalCode),
+		FullName:     dot.String(customer.FullName),
+		Code:         dot.String(customer.Code),
+		Note:         dot.String(customer.Note),
+		Phone:        dot.String(customer.Phone),
+		Email:        dot.String(customer.Email),
+		Gender:       customer.Gender.Wrap(),
+		Type:         customer.Type.Wrap(),
+		Birthday:     dot.String(customer.Birthday),
 		CreatedAt:    dot.Time(customer.CreatedAt),
 		UpdatedAt:    dot.Time(customer.UpdatedAt),
-		Status:       customer.Status,
+		Status:       customer.Status.Wrap(),
 		Deleted:      customer.Deleted,
+	}
+}
+
+func PbShopCustomerHistory(m customermodel.ShopCustomerHistory) *exttypes.Customer {
+	return &exttypes.Customer{
+		ExternalId:   m.ExternalID().String(),
+		ExternalCode: m.ExternalCode().String(),
+		Id:           m.ID().ID().Apply(0),
+		ShopId:       m.ShopID().ID().Apply(0),
+		FullName:     m.FullName().String(),
+		Code:         m.Code().String(),
+		Note:         m.Note().String(),
+		Phone:        m.Phone().String(),
+		Email:        m.Email().String(),
+		Gender:       gender.ParseGenderWithNull(m.Gender().String(), gender.Unknown),
+		Type:         customer_type.ParseCustomerTypeWithNull(m.Type().String(), customer_type.Unknown),
+		Birthday:     dot.String(cmapi.PbTime(m.Birthday().Time()).String()),
+		CreatedAt:    cmapi.PbTime(m.CreatedAt().Time()),
+		UpdatedAt:    cmapi.PbTime(m.UpdatedAt().Time()),
+		Status:       convertpb.Pb3Ptr(m.Status().Int()),
 	}
 }
 
@@ -642,6 +667,41 @@ func PbCoordinates(in *ordertypes.Coordinates) *etop.Coordinates {
 	}
 }
 
+func PbShopTraderAddressHistory(ctx context.Context, m customermodel.ShopTraderAddressHistory, locationBus location.QueryBus) *exttypes.CustomerAddress {
+	query := &location.GetLocationQuery{
+		DistrictCode: m.DistrictCode().String().Apply(""),
+		WardCode:     m.WardCode().String().Apply(""),
+	}
+	if err := locationBus.Dispatch(ctx, query); err != nil {
+		panic("Internal: " + err.Error())
+	}
+	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
+	out := &exttypes.CustomerAddress{
+		Id:          m.ID().ID().Apply(0),
+		CustomerID:  m.TraderID().ID().Apply(0),
+		Address1:    m.Address1().String(),
+		Address2:    m.Address2().String(),
+		FullName:    m.FullName().String(),
+		Company:     m.Company().String(),
+		Phone:       m.Phone().String(),
+		Email:       m.Email().String(),
+		Position:    m.Position().String(),
+		Coordinates: nil, // TODO
+	}
+	if ward != nil {
+		out.Ward = dot.String(ward.Name)
+		out.WardCode = dot.String(ward.Code)
+	}
+	if district != nil {
+		out.District = dot.String(district.Name)
+	}
+	if province != nil {
+		out.Province = dot.String(province.Name)
+		out.ProvinceCode = dot.String(province.Code)
+	}
+	return out
+}
+
 func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) *exttypes.CustomerAddress {
 	if in.Deleted {
 		return &exttypes.CustomerAddress{
@@ -658,29 +718,28 @@ func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, 
 	}
 	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
 	out := &exttypes.CustomerAddress{
-		Id:           in.ID,
-		District:     "",
-		DistrictCode: in.DistrictCode,
-		Ward:         "",
-		Company:      in.Company,
-		WardCode:     in.WardCode,
-		Address1:     in.Address1,
-		Address2:     in.Address2,
-		FullName:     in.FullName,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		Position:     in.Position,
-		Coordinates:  PbCoordinates(in.Coordinates),
+		Id:          in.ID,
+		CustomerID:  in.TraderID,
+		Company:     dot.String(in.Company),
+		Address1:    dot.String(in.Address1),
+		Address2:    dot.String(in.Address2),
+		FullName:    dot.String(in.FullName),
+		Phone:       dot.String(in.Phone),
+		Email:       dot.String(in.Email),
+		Position:    dot.String(in.Position),
+		Coordinates: PbCoordinates(in.Coordinates),
 	}
 	if ward != nil {
-		out.Ward = ward.Name
+		out.Ward = dot.String(ward.Name)
+		out.WardCode = dot.String(ward.Code)
 	}
 	if district != nil {
-		out.District = district.Name
+		out.District = dot.String(district.Name)
+		out.DistrictCode = dot.String(district.Code)
 	}
 	if province != nil {
-		out.Province = province.Name
-		out.ProvinceCode = province.Code
+		out.Province = dot.String(province.Name)
+		out.ProvinceCode = dot.String(province.Code)
 	}
 	return out
 }
@@ -691,6 +750,14 @@ func PbShopTraderAddresses(ctx context.Context, ins []*addressing.ShopTraderAddr
 		out[i] = PbShopTraderAddress(ctx, trader, locationBus)
 	}
 	return out
+}
+
+func PbCustomerGroupHistory(m customermodel.ShopCustomerGroupHistory) *exttypes.CustomerGroup {
+	return &exttypes.CustomerGroup{
+		Id:     m.ID().ID().Apply(0),
+		ShopID: m.ShopID().ID().Apply(0),
+		Name:   m.Name().String(),
+	}
 }
 
 func PbCustomerGroup(arg *customering.ShopCustomerGroup) *exttypes.CustomerGroup {
@@ -704,8 +771,9 @@ func PbCustomerGroup(arg *customering.ShopCustomerGroup) *exttypes.CustomerGroup
 		}
 	}
 	return &exttypes.CustomerGroup{
-		Id:   arg.ID,
-		Name: arg.Name,
+		Id:     arg.ID,
+		ShopID: arg.ShopID,
+		Name:   dot.String(arg.Name),
 	}
 }
 
@@ -717,16 +785,24 @@ func PbCustomerGroups(args []*customering.ShopCustomerGroup) []*exttypes.Custome
 	return out
 }
 
+func PbInventoryVariantHistory(m inventorymodel.InventoryVariantHistory) *exttypes.InventoryLevel {
+	return &exttypes.InventoryLevel{
+		VariantId:         m.VariantID().ID().Apply(0),
+		AvailableQuantity: m.QuantityOnHand().Int(),
+		PickedQuantity:    m.QuantityPicked().Int(),
+		UpdatedAt:         cmapi.PbTime(m.UpdatedAt().Time()),
+	}
+}
+
 func PbInventoryLevel(arg *inventory.InventoryVariant) *exttypes.InventoryLevel {
 	if arg == nil {
 		return nil
 	}
 	return &exttypes.InventoryLevel{
 		VariantId:         arg.VariantID,
-		AvailableQuantity: arg.QuantityOnHand,
-		ReservedQuantity:  0,
-		PickedQuantity:    arg.QuantityPicked,
-		UpdatedAt:         dot.Time{},
+		AvailableQuantity: dot.Int(arg.QuantityOnHand),
+		PickedQuantity:    dot.Int(arg.QuantityPicked),
+		UpdatedAt:         dot.Time(arg.UpdatedAt),
 	}
 }
 
@@ -736,6 +812,18 @@ func PbInventoryLevels(args []*inventory.InventoryVariant) []*exttypes.Inventory
 		out[i] = PbInventoryLevel(arg)
 	}
 	return out
+}
+
+func PbShopProductCollectionHistory(m catalogmodel.ShopCollectionHistory) *exttypes.ProductCollection {
+	return &exttypes.ProductCollection{
+		ID:          m.ID().ID().Apply(0),
+		ShopID:      m.ShopID().ID().Apply(0),
+		Name:        m.Name().String(),
+		Description: m.Description().String(),
+		ShortDesc:   m.ShortDesc().String(),
+		CreatedAt:   cmapi.PbTime(m.CreatedAt().Time()),
+		UpdatedAt:   cmapi.PbTime(m.UpdatedAt().Time()),
+	}
 }
 
 func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductCollection {
@@ -751,9 +839,9 @@ func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductColle
 	return &exttypes.ProductCollection{
 		ID:          arg.ID,
 		ShopID:      arg.ShopID,
-		Name:        arg.Name,
-		Description: arg.Description,
-		ShortDesc:   arg.ShortDesc,
+		Name:        dot.String(arg.Name),
+		Description: dot.String(arg.Description),
+		ShortDesc:   dot.String(arg.ShortDesc),
 		CreatedAt:   cmapi.PbTime(arg.CreatedAt),
 		UpdatedAt:   cmapi.PbTime(arg.UpdatedAt),
 	}
@@ -786,7 +874,7 @@ func PbShopProductCollections(args []*catalog.ShopCollection) []*exttypes.Produc
 	return outs
 }
 
-func PbRelationship(args *customering.CustomerGroupCustomer) *exttypes.CustomerGroupRelationship {
+func PbCustomerGroupRelationship(args *customering.CustomerGroupCustomer) *exttypes.CustomerGroupRelationship {
 	if args == nil {
 		return nil
 	}
@@ -797,10 +885,24 @@ func PbRelationship(args *customering.CustomerGroupCustomer) *exttypes.CustomerG
 	}
 }
 
-func PbRelationships(args []*customering.CustomerGroupCustomer) []*exttypes.CustomerGroupRelationship {
+func PbCustomerGroupRelationships(args []*customering.CustomerGroupCustomer) []*exttypes.CustomerGroupRelationship {
 	outs := make([]*exttypes.CustomerGroupRelationship, len(args))
 	for i, arg := range args {
-		outs[i] = PbRelationship(arg)
+		outs[i] = PbCustomerGroupRelationship(arg)
 	}
 	return outs
+}
+
+func PbShopCustomerGroupCustomerHistory(m customermodel.ShopCustomerGroupCustomerHistory) *exttypes.CustomerGroupRelationship {
+	return &exttypes.CustomerGroupRelationship{
+		CustomerID: m.CustomerID().ID().Apply(0),
+		GroupID:    m.GroupID().ID().Apply(0),
+	}
+}
+
+func PbShopProductionCollectionRelationshipHistory(m catalogmodel.ProductShopCollectionHistory) *exttypes.ProductCollectionRelationship {
+	return &exttypes.ProductCollectionRelationship{
+		ProductId:    m.ProductID().ID().Apply(0),
+		CollectionId: m.CollectionID().ID().Apply(0),
+	}
 }

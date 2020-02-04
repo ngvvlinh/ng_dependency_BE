@@ -96,6 +96,24 @@ func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *c
 	return created, err
 }
 
+func (s *ShopProductCollectionStore) GetShopProductCollectionDB() (*model.ShopProductCollection, error) {
+	query := s.query().Where(s.preds)
+
+	var shopProductCollection model.ShopProductCollection
+	err := query.ShouldGet(&shopProductCollection)
+	return &shopProductCollection, err
+}
+
+func (s *ShopProductCollectionStore) GetShopProductCollection() (*catalog.ShopProductCollection, error) {
+	shopProductCollectionDB, err := s.GetShopProductCollectionDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &catalog.ShopProductCollection{}
+	err = scheme.Convert(shopProductCollectionDB, result)
+	return result, err
+}
+
 func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
 	if len(s.Paging.Sort) == 0 {

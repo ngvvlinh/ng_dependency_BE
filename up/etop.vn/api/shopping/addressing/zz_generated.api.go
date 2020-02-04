@@ -28,6 +28,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 
 type CreateAddressCommand struct {
 	ShopID       dot.ID
+	PartnerID    dot.ID
 	TraderID     dot.ID
 	FullName     string
 	Phone        string
@@ -179,6 +180,7 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 	return ctx,
 		&CreateAddressArgs{
 			ShopID:       q.ShopID,
+			PartnerID:    q.PartnerID,
 			TraderID:     q.TraderID,
 			FullName:     q.FullName,
 			Phone:        q.Phone,
@@ -196,6 +198,7 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 
 func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
 	q.ShopID = args.ShopID
+	q.PartnerID = args.PartnerID
 	q.TraderID = args.TraderID
 	q.FullName = args.FullName
 	q.Phone = args.Phone

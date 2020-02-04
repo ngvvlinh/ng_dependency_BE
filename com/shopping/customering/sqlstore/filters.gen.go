@@ -510,6 +510,25 @@ func (ft *ShopTraderAddressFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopTraderAddressFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
+	}
+}
+
 func (ft *ShopTraderAddressFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -934,6 +953,25 @@ func (ft *ShopCustomerGroupFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  ID,
 		IsNil:  ID == nil,
 		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
 	}
 }
 

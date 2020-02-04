@@ -10,6 +10,10 @@ import (
 	"github.com/Shopify/sarama"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/location"
+	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/customering"
 	"etop.vn/api/top/external/types"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
@@ -44,18 +48,32 @@ type Handler struct {
 
 	sender *sender.WebhookSender
 
-	catalogQuery catalog.QueryBus
+	catalogQuery   catalog.QueryBus
+	customerQuery  customering.QueryBus
+	inventoryQuery inventory.QueryBus
+	addressQuery   addressing.QueryBus
+	locationQuery  location.QueryBus
 }
 
-func New(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string, catalogQ catalog.QueryBus) *Handler {
+func New(
+	db *cmsql.Database, sender *sender.WebhookSender,
+	bot *telebot.Channel, consumer mq.KafkaConsumer,
+	prefix string, catalogQ catalog.QueryBus,
+	customerQ customering.QueryBus, inventoryQ inventory.QueryBus,
+	addressQ addressing.QueryBus, locationQ location.QueryBus,
+) *Handler {
 	h := &Handler{
-		db:           db,
-		historyStore: historysqlstore.NewHistoryStore(db),
-		bot:          bot,
-		consumer:     consumer,
-		prefix:       prefix + "_pgrid_",
-		sender:       sender,
-		catalogQuery: catalogQ,
+		db:             db,
+		historyStore:   historysqlstore.NewHistoryStore(db),
+		bot:            bot,
+		consumer:       consumer,
+		prefix:         prefix + "_pgrid_",
+		sender:         sender,
+		catalogQuery:   catalogQ,
+		customerQuery:  customerQ,
+		inventoryQuery: inventoryQ,
+		addressQuery:   addressQ,
+		locationQuery:  locationQ,
 	}
 	handlers := h.TopicsAndHandlers()
 	h.handlers = handlers
@@ -89,11 +107,19 @@ func NewWithHandlers(db *cmsql.Database, sender *sender.WebhookSender, bot *tele
 
 func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 	return map[string]pgrid.HandlerFunc{
-		"fulfillment":                h.HandleFulfillmentEvent,
-		"order":                      h.HandleOrderEvent,
-		"notification":               nil,
-		"money_transaction_shipping": nil,
-		"shop_product":               h.HandleShopProductEvent,
+		"fulfillment":                  h.HandleFulfillmentEvent,
+		"order":                        h.HandleOrderEvent,
+		"notification":                 nil,
+		"money_transaction_shipping":   nil,
+		"shop_product":                 h.HandleShopProductEvent,
+		"shop_variant":                 h.HandleShopVariantEvent,
+		"shop_customer":                h.HandleShopCustomerEvent,
+		"shop_customer_group":          h.HandleShopCustomerGroupEvent,
+		"shop_customer_group_customer": h.HandleShopCustomerGroupCustomerEvent,
+		"inventory_variant":            h.HandleInventoryVariantEvent,
+		"shop_trader_address":          h.HandleShopTraderAddressEvent,
+		"shop_collection":              h.HandleShopProductCollectionEvent,
+		"shop_product_collection":      h.HandleShopProductionCollectionRelationshipEvent,
 	}
 }
 
@@ -218,7 +244,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 		Order: changed,
 	}
 	accountIDs := []dot.ID{order.ShopID, order.PartnerID}
-	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
+	return h.sender.CollectPb(ctx, event.Table, id, order.ShopID, accountIDs, change)
 }
 
 func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
@@ -255,7 +281,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 		Fulfillment: changed,
 	}
 	accountIDs := []dot.ID{ffm.ShopID, ffm.PartnerID}
-	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
+	return h.sender.CollectPb(ctx, event.Table, id, ffm.ShopID, accountIDs, change)
 }
 
 func pbChange(event *pgevent.PgEvent) *types.Change {

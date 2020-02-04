@@ -72,6 +72,7 @@ func (h AggregateHandler) HandleCreateShopCategory(ctx context.Context, msg *Cre
 type CreateShopCollectionCommand struct {
 	ID          dot.ID
 	ShopID      dot.ID
+	PartnerID   dot.ID
 	Name        string
 	Description string
 	DescHTML    string
@@ -512,6 +513,18 @@ func (h QueryServiceHandler) HandleGetShopProductByID(ctx context.Context, msg *
 	return err
 }
 
+type GetShopProductCollectionQuery struct {
+	ProductID    dot.ID
+	CollectionID dot.ID
+
+	Result *ShopProductCollection `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopProductCollection(ctx context.Context, msg *GetShopProductCollectionQuery) (err error) {
+	msg.Result, err = h.inner.GetShopProductCollection(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopProductWithVariantsByIDQuery struct {
 	ProductID dot.ID
 	ShopID    dot.ID
@@ -795,6 +808,7 @@ func (q *GetShopCategoryQuery) query()                   {}
 func (q *GetShopCollectionQuery) query()                 {}
 func (q *GetShopProductQuery) query()                    {}
 func (q *GetShopProductByIDQuery) query()                {}
+func (q *GetShopProductCollectionQuery) query()          {}
 func (q *GetShopProductWithVariantsByIDQuery) query()    {}
 func (q *GetShopVariantQuery) query()                    {}
 func (q *GetShopVariantWithProductByIDQuery) query()     {}
@@ -871,6 +885,7 @@ func (q *CreateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Co
 		&CreateShopCollectionArgs{
 			ID:          q.ID,
 			ShopID:      q.ShopID,
+			PartnerID:   q.PartnerID,
 			Name:        q.Name,
 			Description: q.Description,
 			DescHTML:    q.DescHTML,
@@ -881,6 +896,7 @@ func (q *CreateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Co
 func (q *CreateShopCollectionCommand) SetCreateShopCollectionArgs(args *CreateShopCollectionArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.PartnerID = args.PartnerID
 	q.Name = args.Name
 	q.Description = args.Description
 	q.DescHTML = args.DescHTML
@@ -1375,6 +1391,19 @@ func (q *GetShopProductByIDQuery) SetGetShopProductByIDQueryArgs(args *GetShopPr
 	q.ShopID = args.ShopID
 }
 
+func (q *GetShopProductCollectionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductCollectionArgs) {
+	return ctx,
+		&GetShopProductCollectionArgs{
+			ProductID:    q.ProductID,
+			CollectionID: q.CollectionID,
+		}
+}
+
+func (q *GetShopProductCollectionQuery) SetGetShopProductCollectionArgs(args *GetShopProductCollectionArgs) {
+	q.ProductID = args.ProductID
+	q.CollectionID = args.CollectionID
+}
+
 func (q *GetShopProductWithVariantsByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
 	return ctx,
 		&GetShopProductByIDQueryArgs{
@@ -1691,6 +1720,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetShopCollection)
 	b.AddHandler(h.HandleGetShopProduct)
 	b.AddHandler(h.HandleGetShopProductByID)
+	b.AddHandler(h.HandleGetShopProductCollection)
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopVariant)
 	b.AddHandler(h.HandleGetShopVariantWithProductByID)
