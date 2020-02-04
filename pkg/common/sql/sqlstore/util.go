@@ -458,7 +458,10 @@ func Sort(s cmsql.Query, sorts []string, whitelist map[string]string, prefixed .
 			if sortField == "" {
 				sortField = field
 			}
-			s = s.OrderBy(prefix + `"` + sortField + `"` + desc)
+			if sq.ShouldQuote(sortField) {
+				sortField = `"` + sortField + `"`
+			}
+			s = s.OrderBy(prefix + sortField + desc)
 		} else {
 			return s, cm.Errorf(cm.InvalidArgument, nil, "sort by %v is not allowed", field)
 		}

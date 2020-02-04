@@ -107,7 +107,7 @@ func (w *Writer) WriteName(name string) {
 }
 
 func (w *Writer) WriteQueryName(name string) {
-	if shouldQuote(name) {
+	if ShouldQuote(name) {
 		w.buf = append(w.buf, w.quote)
 		w.buf = append(w.buf, name...)
 		w.buf = append(w.buf, w.quote)
@@ -204,7 +204,7 @@ func appendAndReplace(b []byte, c *int64, quote, marker byte, query string, sche
 	return b
 }
 
-func shouldQuote(s string) bool {
+func ShouldQuote(s string) bool {
 	if s == "" {
 		panic("common/sql: empty name")
 	}
