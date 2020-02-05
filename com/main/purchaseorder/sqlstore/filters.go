@@ -2,7 +2,7 @@ package sqlstore
 
 import (
 	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 )
 
 func (ft *PurchaseOrderFilters) NotDeleted() sq.WriterTo {

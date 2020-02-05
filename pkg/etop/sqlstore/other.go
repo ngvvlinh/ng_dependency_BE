@@ -44,7 +44,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 	s := x.
 		Select(`row_to_json("` + query.Table + `")`).
 		From(`history."` + query.Table + `"`)
-	s, err := LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"rid": ""})
+	s, err := sqlstore.LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"rid": ""})
 	if err != nil {
 		return err
 	}

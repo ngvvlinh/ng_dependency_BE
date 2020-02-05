@@ -1,6 +1,6 @@
 package sqlstore
 
-import "etop.vn/backend/pkg/etop/sqlstore"
+import "etop.vn/backend/pkg/common/sql/sqlstore"
 
 var SortShopStocktake = map[string]string{
 	"id":         "",

@@ -30,7 +30,7 @@ func init() {
 	)
 }
 
-var filterAccountUserWhitelist = FilterWhitelist{
+var filterAccountUserWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    nil,
 	Contains: nil,
@@ -163,14 +163,14 @@ func GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccou
 		s = s.Where("au.deleted_at IS NULL")
 	}
 
-	s, _, err := Filters(s, query.Filters, filterAccountUserWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterAccountUserWhitelist)
 	if err != nil {
 		return err
 	}
 
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "u.id", "updated_at": "au.updated_at"})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "u.id", "updated_at": "au.updated_at"})
 		if err != nil {
 			return err
 		}

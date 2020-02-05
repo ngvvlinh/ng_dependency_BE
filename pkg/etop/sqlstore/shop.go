@@ -38,7 +38,7 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *identitymodelx.GetAllS
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"created_at": "s.created_at", "updated_at": "s.updated_at"})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"created_at": "s.created_at", "updated_at": "s.updated_at"})
 		if err != nil {
 			return err
 		}

@@ -75,7 +75,7 @@ var acceptStates = []string{
 	shipping.Returned.String(), shipping.Returning.String(), shipping.Delivered.String(), shipping.Undeliverable.String(),
 }
 
-var filterMoneyTransactionShippingWhitelist = FilterWhitelist{
+var filterMoneyTransactionShippingWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Contains: []string{"shop.name"},
 	Dates:    []string{"created_at", "updated_at", "confirmed_at", "etop_transfered_at"},
@@ -98,7 +98,7 @@ var filterMoneyTransactionShippingWhitelist = FilterWhitelist{
 	},
 }
 
-var filterMoneyTransactionWhitelist = FilterWhitelist{
+var filterMoneyTransactionWhitelist = sqlstore.FilterWhitelist{
 	Arrays:         nil,
 	Contains:       []string{},
 	Dates:          []string{"created_at", "updated_at", "confirmed_at", "etop_transfered_at"},
@@ -279,7 +279,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 	if query.MoneyTransactionShippingExternalID != 0 {
 		s = s.Where("m.money_transaction_shipping_external_id = ?", query.MoneyTransactionShippingExternalID)
 	}
-	s, _, err := Filters(s, query.Filters, filterMoneyTransactionShippingWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterMoneyTransactionShippingWhitelist)
 	if err != nil {
 		return err
 	}
@@ -291,7 +291,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 		if query.IDs != nil {
 			s2 = s2.In("m.id", query.IDs)
 		} else {
-			s2, err = LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"m.created_at": ""})
+			s2, err = sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"m.created_at": ""})
 			if err != nil {
 				return err
 			}
@@ -1173,7 +1173,7 @@ func getMoneyTransactionShippingExternal(ctx context.Context, x Qx, query *model
 func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternals) error {
 	s := x.Table("money_transaction_shipping_external")
 
-	s, _, err := Filters(s, query.Filters, filterMoneyTransactionWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterMoneyTransactionWhitelist)
 	if err != nil {
 		return err
 	}
@@ -1182,7 +1182,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": ""})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": ""})
 		if err != nil {
 			return err
 		}
@@ -1306,7 +1306,7 @@ func GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error 
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "c.updated_at", "created_at": "c.created_at"})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "c.updated_at", "created_at": "c.created_at"})
 		if err != nil {
 			return err
 		}
@@ -1538,13 +1538,13 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 	if len(query.IDs) > 0 {
 		s = s.In("id", query.IDs)
 	}
-	s, _, err := Filters(s, query.Filters, filterMoneyTransactionWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterMoneyTransactionWhitelist)
 	if err != nil {
 		return err
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "creted_at": ""})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "creted_at": ""})
 		if err != nil {
 			return err
 		}

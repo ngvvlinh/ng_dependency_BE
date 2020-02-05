@@ -357,14 +357,14 @@ func LimitSort(s cmsql.Query, p *Paging, sortWhitelist map[string]string, prefix
 			return s, err
 		}
 		s = s.Where(writerTo).Limit(uint64(p.Limit))
-		return Sort(s, cursor.BuildSort(), sortWhitelist)
+		return Sort(s, cursor.BuildSort(), sortWhitelist, prefixed...)
 	}
 
 	if p.Offset < 0 {
 		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
 	}
 	s = s.Offset(uint64(p.Offset)).Limit(uint64(p.Limit))
-	return Sort(s, p.Sort, sortWhitelist)
+	return Sort(s, p.Sort, sortWhitelist, prefixed...)
 }
 
 type CursorPagingCondition struct {

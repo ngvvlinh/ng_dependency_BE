@@ -65,7 +65,7 @@ func init() {
 	)
 }
 
-var filterOrderWhitelist = FilterWhitelist{
+var filterOrderWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   []string{"fulfillment.shipping_code", "fulfillment.shipping_state", "fulfillment.ids"},
 	Contains: []string{"customer.name", "product.name"},
 	Dates:    []string{"created_at", "updated_at"},
@@ -91,7 +91,7 @@ var filterOrderWhitelist = FilterWhitelist{
 	},
 }
 
-var filterFulfillmentWhitelist = FilterWhitelist{
+var filterFulfillmentWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    []string{"include_insurance"},
 	Contains: []string{"customer.name"},
@@ -207,7 +207,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		s = s.Where("trading_shop_id = ?", query.TradingShopID)
 	}
 
-	s, _, err := Filters(s, query.Filters, filterOrderWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterOrderWhitelist)
 	if err != nil {
 		return err
 	}
@@ -219,7 +219,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	{
 
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "", "created_at": "", "updated_at": ""})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "", "created_at": "", "updated_at": ""})
 		if err != nil {
 			return err
 		}
@@ -319,7 +319,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 	if query.IDs != nil && len(query.IDs) > 0 {
 		s = s.In(`"order".id`, query.IDs)
 	} else {
-		query, _, err := Filters(s, query.Filters, filterOrderWhitelist)
+		query, _, err := sqlstore.Filters(s, query.Filters, filterOrderWhitelist)
 		if err != nil {
 			return err
 		}
@@ -359,7 +359,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": `"order".updated_at`, "created_at": `"order".created_at`, "id": `"order".id`})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": `"order".updated_at`, "created_at": `"order".created_at`, "id": `"order".id`})
 		if err != nil {
 			return err
 		}
@@ -784,14 +784,14 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 		isLimitSort = false
 	}
 
-	s, _, err := Filters(s, query.Filters, filterFulfillmentWhitelist)
+	s, _, err := sqlstore.Filters(s, query.Filters, filterFulfillmentWhitelist)
 	if err != nil {
 		return err
 	}
 	{
 		s2 := s.Clone()
 		if isLimitSort {
-			s2, err = LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
+			s2, err = sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
 			if err != nil {
 				return err
 			}
@@ -831,7 +831,7 @@ func GetFulfillmentsCallbackLogs(ctx context.Context, query *shipmodelx.GetFulfi
 	if len(query.ExcludeShippingStates) > 0 {
 		s = s.NotIn("shipping_state", query.ExcludeShippingStates)
 	}
-	s, err := LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
+	s, err := sqlstore.LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "", "created_at": "", "id": ""})
 	if err != nil {
 		return err
 	}
@@ -871,7 +871,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	if query.IDs != nil && len(query.IDs) > 0 {
 		s = s.In("f.id", query.IDs)
 	} else {
-		query, _, err := Filters(s, query.Filters, filterFulfillmentWhitelist)
+		query, _, err := sqlstore.Filters(s, query.Filters, filterFulfillmentWhitelist)
 		if err != nil {
 			return err
 		}
@@ -910,7 +910,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
 		if err != nil {
 			return err
 		}

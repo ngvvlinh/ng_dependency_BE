@@ -10,8 +10,12 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/capi/dot"
+	"etop.vn/common/l"
 )
+
+var ll = l.New()
 
 type NotificationStore struct {
 	db *cmsql.Database
@@ -170,7 +174,7 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 	}
 	{
 		x1 := x.Clone()
-		x1, err = LimitSort(x1, args.Paging, Ms{"created_at": "", "updated_at": ""})
+		x1, err = sqlstore.LimitSort(x1, sqlstore.ConvertPaging(args.Paging), map[string]string{"created_at": "", "updated_at": ""})
 		if err != nil {
 			return nil, err
 		}
