@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"strconv"
+	"strings"
+	"unicode"
 
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/int/types"
@@ -192,4 +195,65 @@ func isRandomFail(percent int) bool {
 	rand.Read(b[:])
 	u16 := binary.LittleEndian.Uint16(b[:])
 	return u16%100 < uint16(percent)
+}
+
+// cleanRows removes unicode characters which are not printable
+func cleanRows(rows [][]string) {
+	for i := range rows {
+		for j := range rows[i] {
+			rows[i][j] = cleanString(rows[i][j])
+		}
+	}
+}
+
+func acceptCharacter(c rune) bool {
+	return unicode.IsPrint(c) || c == ' ' || c == '\n'
+}
+
+func cleanString(s string) string {
+	for _, c := range s {
+		if !acceptCharacter(c) {
+			return cleanString0(s)
+		}
+	}
+	return s
+}
+
+func cleanString0(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, c := range s {
+		switch {
+		case unicode.IsPrint(c):
+			b.WriteRune(c)
+		case c == ' ' || c == '\n':
+			b.WriteRune(c)
+		case unicode.IsSpace(c):
+			b.WriteRune(' ')
+		default:
+			// do not include in the result string
+		}
+	}
+	return b.String()
+}
+
+// For phone number, user may store it as Number instead of Text. For example:
+// "976123456" instead of "0976358769", and Excel may stores it as
+// "9.76123456E8". We have to parse it to number and convert again.
+func convertExcelNumberToText(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" || s[0] == '0' { // fast path: starts with 0
+		return s
+	}
+	for i := range s {
+		c := s[i] // fast path: contains a character which can not be a number
+		if !(c >= '0' && c <= '9' || c == '.' || c == 'e' || c == 'E') {
+			return s
+		}
+	}
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return s
+	}
+	return strconv.FormatFloat(f, 'f', 0, 64)
 }

@@ -177,6 +177,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	if len(rows) <= 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
 	}
+	cleanRows(rows)
 	imp.Rows = rows
 
 	idx, _errs, err := schema.ValidateSchema(&rows[0])

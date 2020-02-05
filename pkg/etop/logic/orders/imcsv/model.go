@@ -263,6 +263,7 @@ func (m *RowOrder) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {
 	if m.CustomerPhone == "" {
 		errs = append(errs, imcsv.CellError(idx, r, col, "%v không được để trống.", schema[col].Display))
 	} else {
+		m.CustomerPhone = convertExcelNumberToText(m.CustomerPhone)
 		_, ok := validate.NormalizePhone(m.CustomerPhone)
 		if !ok {
 			errs = append(errs, imcsv.CellError(idx, r, col, "%v không hợp lệ.", schema[col].Display))
