@@ -46,6 +46,7 @@ func init() {
 		fulfillmentService.GetFulfillments,
 		fulfillmentService.GetPublicFulfillment,
 		fulfillmentService.UpdateFulfillmentsShippingState,
+		fulfillmentService.GetFulfillmentsByIDs,
 		orderService.UpdateOrderPaymentStatus,
 		orderService.GetOrdersByReceiptID,
 	)
@@ -423,6 +424,21 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	q.Result = &types.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
 		Paging:       cmapi.PbPageInfo(paging),
+	}
+	return nil
+}
+
+func (s *FulfillmentService) GetFulfillmentsByIDs(ctx context.Context, q *GetFulfillmentsByIDsEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &shipping.ListFulfillmentByIDsQuery{
+		IDs:    q.IDs,
+		ShopID: shopID,
+	}
+	if err := shippingQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &types.FulfillmentsResponse{
+		Fulfillments: convertpb.Convert_core_Fulfillments_To_api_Fulfillments(query.Result, model.TagShop),
 	}
 	return nil
 }

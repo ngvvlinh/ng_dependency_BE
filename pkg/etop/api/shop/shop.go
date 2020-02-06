@@ -225,6 +225,7 @@ var (
 	PurchaseRefundQuery  purchaserefund.QueryBus
 	connectionQuery      connectioning.QueryBus
 	connectionAggr       connectioning.CommandBus
+	shippingQuery        shipping.QueryBus
 )
 
 func Init(
@@ -273,6 +274,7 @@ func Init(
 	purchaseRefundQ purchaserefund.QueryBus,
 	connectionQ connectioning.QueryBus,
 	connectionA connectioning.CommandBus,
+	shippingQ shipping.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -320,6 +322,7 @@ func Init(
 
 	connectionQuery = connectionQ
 	connectionAggr = connectionA
+	shippingQuery = shippingQ
 }
 
 type MiscService struct{}

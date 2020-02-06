@@ -41,3 +41,14 @@ func (q *QueryService) GetFulfillmentByIDOrShippingCode(ctx context.Context, id 
 	}
 	return query.GetFulfillment()
 }
+
+func (q *QueryService) ListFulfillmentByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*shipping.Fulfillment, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shopID")
+	}
+	fulfillments, err := q.store(ctx).IDs(IDs...).ShopID(shopID).ListFfms()
+	if err != nil {
+		return nil, err
+	}
+	return fulfillments, nil
+}

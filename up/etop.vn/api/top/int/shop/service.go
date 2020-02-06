@@ -197,6 +197,7 @@ type OrderService interface {
 type FulfillmentService interface {
 	GetFulfillment(context.Context, *cm.IDRequest) (*types.Fulfillment, error)
 	GetFulfillments(context.Context, *GetFulfillmentsRequest) (*types.FulfillmentsResponse, error)
+	GetFulfillmentsByIDs(context.Context, *GetFulfillmentsByIDsRequest) (*types.FulfillmentsResponse, error)
 
 	GetPublicExternalShippingServices(context.Context, *types.GetExternalShippingServicesRequest) (*types.GetExternalShippingServicesResponse, error)
 	GetExternalShippingServices(context.Context, *types.GetExternalShippingServicesRequest) (*types.GetExternalShippingServicesResponse, error)

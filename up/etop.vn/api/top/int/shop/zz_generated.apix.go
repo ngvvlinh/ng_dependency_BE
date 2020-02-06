@@ -903,6 +903,12 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 			return s.inner.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Fulfillment/GetFulfillmentsByIDs":
+		msg := &GetFulfillmentsByIDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetFulfillmentsByIDs(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Fulfillment/GetPublicExternalShippingServices":
 		msg := &inttypes.GetExternalShippingServicesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

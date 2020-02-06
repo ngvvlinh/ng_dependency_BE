@@ -121,6 +121,16 @@ func (s *FulfillmentStore) ListFfmsDB() ([]*model.Fulfillment, error) {
 	return ffms, nil
 }
 
+func (s *FulfillmentStore) ListFfms() ([]*shipping.Fulfillment, error) {
+	ffmDBs, err := s.ListFfmsDB()
+	if err != nil {
+		return nil, err
+	}
+	ffms := []*shipping.Fulfillment{}
+	err = scheme.Convert(ffmDBs, &ffms)
+	return ffms, err
+}
+
 func (s *FulfillmentStore) CreateFulfillmentDB(ctx context.Context, ffm *model.Fulfillment) (*model.Fulfillment, error) {
 	if ffm.ID == 0 {
 		ffm.ID = cm.NewID()

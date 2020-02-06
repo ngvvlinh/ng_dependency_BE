@@ -3921,6 +3921,65 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	return resp, nil
 }
 
+type GetFulfillmentsByIDsEndpoint struct {
+	*api.GetFulfillmentsByIDsRequest
+	Result     *inttypes.FulfillmentsResponse
+	Context    claims.ShopClaim
+	CtxPartner *identitymodel.Partner
+}
+
+func (s wrapFulfillmentService) GetFulfillmentsByIDs(ctx context.Context, req *api.GetFulfillmentsByIDsRequest) (resp *inttypes.FulfillmentsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Fulfillment/GetFulfillmentsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetFulfillmentsByIDsEndpoint{GetFulfillmentsByIDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetFulfillmentsByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type GetPublicExternalShippingServicesEndpoint struct {
 	*inttypes.GetExternalShippingServicesRequest
 	Result  *inttypes.GetExternalShippingServicesResponse

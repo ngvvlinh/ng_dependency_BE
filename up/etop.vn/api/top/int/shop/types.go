@@ -767,6 +767,12 @@ type GetFulfillmentsRequest struct {
 
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type GetFulfillmentsByIDsRequest struct {
+	IDs []dot.ID `json:"ids"`
+}
+
+func (m *GetFulfillmentsByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetFulfillmentHistoryRequest struct {
 	Paging  *common.Paging `json:"paging"`
 	All     bool           `json:"all"`

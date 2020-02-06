@@ -1908,6 +1908,33 @@
         }
       }
     },
+    "/api/shop.Fulfillment/GetFulfillmentsByIDs": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillmentsByIDs",
+        "operationId": "shop.Fulfillment-GetFulfillmentsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetFulfillmentsByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Fulfillment/GetPublicExternalShippingServices": {
       "post": {
         "tags": [
@@ -8347,6 +8374,18 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetFulfillmentsByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },

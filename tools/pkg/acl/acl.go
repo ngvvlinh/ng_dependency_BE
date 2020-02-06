@@ -595,6 +595,7 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"shop.Fulfillment/GetPublicExternalShippingServices": {Type: Public},
 	"shop.Fulfillment/GetPublicFulfillment":              {Type: Public},
+	"shop.Fulfillment/GetFulfillmentsByIDs":              {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
 	"shop.Fulfillment/GetExternalShippingServices":       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentCreate)},
 	"shop.Fulfillment/CancelFulfillment":                 {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentCancel)},
 	"shop.Fulfillment/CreateFulfillmentsForOrder":        {Type: Shop, Actions: actions(ShopFulfillmentCreate)},

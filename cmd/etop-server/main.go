@@ -534,6 +534,7 @@ func main() {
 		purchaseRefundQuery,
 		connectionQuery,
 		connectionAggregate,
+		shippingQuery,
 	)
 	partner.Init(
 		shutdowner,

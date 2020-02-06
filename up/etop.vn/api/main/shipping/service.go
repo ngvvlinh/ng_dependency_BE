@@ -30,6 +30,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetFulfillmentByIDOrShippingCode(ctx context.Context, ID dot.ID, ShippingCode string) (*Fulfillment, error)
+	ListFulfillmentByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*Fulfillment, error)
 }
 
 //-- Commands --//

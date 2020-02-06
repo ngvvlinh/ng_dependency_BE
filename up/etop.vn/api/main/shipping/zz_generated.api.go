@@ -132,6 +132,18 @@ func (h QueryServiceHandler) HandleGetFulfillmentByIDOrShippingCode(ctx context.
 	return err
 }
 
+type ListFulfillmentByIDsQuery struct {
+	IDs    []dot.ID
+	ShopID dot.ID
+
+	Result []*Fulfillment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFulfillmentByIDs(ctx context.Context, msg *ListFulfillmentByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFulfillmentByIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CancelFulfillmentCommand) command()                           {}
@@ -142,6 +154,7 @@ func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) command() {}
 func (q *UpdateFulfillmentsStatusCommand) command()                    {}
 
 func (q *GetFulfillmentByIDOrShippingCodeQuery) query() {}
+func (q *ListFulfillmentByIDsQuery) query()             {}
 
 // implement conversion
 
@@ -265,6 +278,12 @@ func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ 
 		q.ShippingCode
 }
 
+func (q *ListFulfillmentByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID) {
+	return ctx,
+		q.IDs,
+		q.ShopID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -299,5 +318,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetFulfillmentByIDOrShippingCode)
+	b.AddHandler(h.HandleListFulfillmentByIDs)
 	return QueryBus{b}
 }
