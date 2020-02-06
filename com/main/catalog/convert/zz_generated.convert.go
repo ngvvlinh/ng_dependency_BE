@@ -699,7 +699,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 	out.DeletedAt = out.DeletedAt                            // no change
-	out.ProductType = arg.ProductType                        // simple assign
+	out.ProductType = arg.ProductType.Apply(out.ProductType) // apply change
 	out.MetaFields = out.MetaFields                          // no change
 	out.BrandID = arg.BrandID.Apply(out.BrandID)             // apply change
 }

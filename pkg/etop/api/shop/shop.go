@@ -669,6 +669,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndp
 		CostPrice:   q.CostPrice,
 		ListPrice:   q.ListPrice,
 		RetailPrice: q.RetailPrice,
+		ProductType: q.ProductType,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err

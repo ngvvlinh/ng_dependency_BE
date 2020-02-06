@@ -486,21 +486,21 @@ func (m *UpdateVariantRequest) String() string { return jsonx.MustMarshalToStrin
 
 type UpdateProductRequest struct {
 	// @required
-	Id          dot.ID                    `json:"id"`
-	Name        dot.NullString            `json:"name"`
-	Code        dot.NullString            `json:"code"`
-	Note        dot.NullString            `json:"note"`
-	Unit        dot.NullString            `json:"unit"`
-	Description dot.NullString            `json:"description"`
-	ShortDesc   dot.NullString            `json:"short_desc"`
-	DescHtml    dot.NullString            `json:"desc_html"`
-	CostPrice   dot.NullInt               `json:"cost_price"`
-	ListPrice   dot.NullInt               `json:"list_price"`
-	RetailPrice dot.NullInt               `json:"retail_price"`
-	CategoryID  dot.NullID                `json:"category_id"`
-	ProductType *product_type.ProductType `json:"product_type"`
-	MetaFields  *common.MetaField         `json:"meta_fields"`
-	BrandId     dot.NullID                `json:"brand_id"`
+	Id          dot.ID                       `json:"id"`
+	Name        dot.NullString               `json:"name"`
+	Code        dot.NullString               `json:"code"`
+	Note        dot.NullString               `json:"note"`
+	Unit        dot.NullString               `json:"unit"`
+	Description dot.NullString               `json:"description"`
+	ShortDesc   dot.NullString               `json:"short_desc"`
+	DescHtml    dot.NullString               `json:"desc_html"`
+	CostPrice   dot.NullInt                  `json:"cost_price"`
+	ListPrice   dot.NullInt                  `json:"list_price"`
+	RetailPrice dot.NullInt                  `json:"retail_price"`
+	CategoryID  dot.NullID                   `json:"category_id"`
+	ProductType product_type.NullProductType `json:"product_type"`
+	MetaFields  *common.MetaField            `json:"meta_fields"`
+	BrandId     dot.NullID                   `json:"brand_id"`
 }
 
 func (m *UpdateProductRequest) String() string { return jsonx.MustMarshalToString(m) }

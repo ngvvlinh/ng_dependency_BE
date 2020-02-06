@@ -290,7 +290,7 @@ type UpdateShopProductInfoArgs struct {
 	ListPrice   NullInt
 	RetailPrice NullInt
 	BrandID     NullID
-	ProductType product_type.ProductType
+	ProductType product_type.NullProductType
 	CategoryID  dot.NullID
 }
 
