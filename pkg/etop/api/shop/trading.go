@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/meta"
@@ -42,7 +43,12 @@ func (s *TradingService) TradingGetProduct(ctx context.Context, q *TradingGetPro
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = PbShopProductWithVariants(query.Result)
+	result := PbShopProductWithVariants(query.Result)
+	result, err := PopulateTradingProductWithInventoryCount(ctx, result)
+	if err != nil {
+		return err
+	}
+	q.Result = result
 	return nil
 
 }
@@ -57,10 +63,14 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-
+	result := PbShopProductsWithVariants(query.Result.Products)
+	result, err := PopulateTradingProductsWithInventoryCount(ctx, result)
+	if err != nil {
+		return err
+	}
 	q.Result = &shop.ShopProductsResponse{
 		Paging:   cmapi.PbPageInfo(paging),
-		Products: PbShopProductsWithVariants(query.Result.Products),
+		Products: result,
 	}
 	return nil
 }
@@ -181,4 +191,65 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrde
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil
+}
+
+func PopulateTradingProductsWithInventoryCount(ctx context.Context, args []*shop.ShopProduct) ([]*shop.ShopProduct, error) {
+	var variantIDs []dot.ID
+	for _, p := range args {
+		for _, v := range p.Variants {
+			variantIDs = append(variantIDs, v.Id)
+		}
+	}
+	query := &inventory.GetInventoryVariantsByVariantIDsQuery{
+		ShopID:     model.EtopTradingAccountID,
+		VariantIDs: variantIDs,
+	}
+	err := inventoryQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	var mapInventoryVariants = make(map[dot.ID]*inventory.InventoryVariant)
+	for _, v := range query.Result.InventoryVariants {
+		mapInventoryVariants[v.VariantID] = v
+	}
+	for k1, p := range args {
+		for k2, v := range p.Variants {
+			if mapInventoryVariants[v.Id] != nil {
+				args[k1].Variants[k2].QuantityOnHand = mapInventoryVariants[v.Id].QuantityOnHand
+				args[k1].Variants[k2].QuantityPicked = mapInventoryVariants[v.Id].QuantityPicked
+				args[k1].Variants[k2].Quantity = mapInventoryVariants[v.Id].QuantitySummary
+			}
+		}
+	}
+	return args, nil
+}
+
+func PopulateTradingProductWithInventoryCount(ctx context.Context, args *shop.ShopProduct) (*shop.ShopProduct, error) {
+	if args == nil {
+		return nil, nil
+	}
+	var variantIDs []dot.ID
+	for _, v := range args.Variants {
+		variantIDs = append(variantIDs, v.Id)
+	}
+	query := &inventory.GetInventoryVariantsByVariantIDsQuery{
+		ShopID:     model.EtopTradingAccountID,
+		VariantIDs: variantIDs,
+	}
+	err := inventoryQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	var mapInventoryVariants = make(map[dot.ID]*inventory.InventoryVariant)
+	for _, v := range query.Result.InventoryVariants {
+		mapInventoryVariants[v.VariantID] = v
+	}
+	for k2, v := range args.Variants {
+		if mapInventoryVariants[v.Id] != nil {
+			args.Variants[k2].QuantityOnHand = mapInventoryVariants[v.Id].QuantityOnHand
+			args.Variants[k2].QuantityPicked = mapInventoryVariants[v.Id].QuantityPicked
+			args.Variants[k2].Quantity = mapInventoryVariants[v.Id].QuantitySummary
+		}
+	}
+	return args, nil
 }

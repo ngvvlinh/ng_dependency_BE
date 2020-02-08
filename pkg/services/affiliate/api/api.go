@@ -129,8 +129,13 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		if productPromotion != nil {
 			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
+		productResult := pbshop.PbShopProductWithVariants(product)
+		productResult, err := pbshop.PopulateTradingProductWithInventoryCount(ctx, productResult)
+		if err != nil {
+			return err
+		}
 		products = append(products, &apiaffiliate.SupplyProductResponse{
-			Product:                 pbshop.PbShopProductWithVariants(product),
+			Product:                 productResult,
 			SupplyCommissionSetting: pbSupplyCommissionSetting,
 			Promotion:               pbProductPromotion,
 		})
@@ -309,12 +314,16 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		if productPromotion != nil {
 			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
+		productResult := pbshop.PbShopProductWithVariants(product)
+		productResult, err := pbshop.PopulateTradingProductWithInventoryCount(ctx, productResult)
+		if err != nil {
+			return err
+		}
 		products = append(products, &apiaffiliate.ShopProductResponse{
-			Product:   pbshop.PbShopProductWithVariants(product),
+			Product:   productResult,
 			Promotion: pbProductPromotion,
 		})
 	}
-
 	q.Result = &apiaffiliate.ShopGetProductsResponse{
 		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
