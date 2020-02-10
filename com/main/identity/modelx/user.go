@@ -16,7 +16,8 @@ type SignedInUser struct {
 
 // GetSignedInUserQuery ...
 type GetSignedInUserQuery struct {
-	UserID dot.ID
+	UserID      dot.ID
+	WLPartnerID dot.ID
 
 	Result *SignedInUser
 }

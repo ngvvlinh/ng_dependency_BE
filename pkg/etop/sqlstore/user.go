@@ -66,7 +66,10 @@ func (s *UserStore) List() ([]*identitymodel.User, error) {
 }
 
 func GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error {
-	userQuery := &identitymodelx.GetUserByIDQuery{UserID: query.UserID}
+	userQuery := &identitymodelx.GetUserByIDQuery{
+		UserID:      query.UserID,
+		WLPartnerID: query.WLPartnerID,
+	}
 	if err := GetUserByID(ctx, userQuery); err != nil {
 		return err
 	}

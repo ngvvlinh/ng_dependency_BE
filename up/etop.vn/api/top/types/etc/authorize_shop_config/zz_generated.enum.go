@@ -16,10 +16,12 @@ var __jsonNull = []byte("null")
 
 var enumAuthorizeShopConfigName = map[int]string{
 	1: "shipment",
+	2: "whitelabel",
 }
 
 var enumAuthorizeShopConfigValue = map[string]int{
-	"shipment": 1,
+	"shipment":   1,
+	"whitelabel": 2,
 }
 
 func ParseAuthorizeShopConfig(s string) (AuthorizeShopConfig, bool) {

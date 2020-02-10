@@ -128,12 +128,15 @@ func GetPartner(ctx context.Context, query *identitymodelx.GetPartner) error {
 }
 
 func GetPartnerRelationQuery(ctx context.Context, query *identitymodelx.GetPartnerRelationQuery) error {
-	s := x.NewQuery()
 	count := 0
-	if query.PartnerID != 0 && query.AccountID != 0 {
+	if query.PartnerID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing Partner ID")
+	}
+	s := x.NewQuery().Where("pr.partner_id = ?", query.PartnerID)
+
+	if query.AccountID != 0 {
 		count++
-		s = s.Where("pr.partner_id = ?", query.PartnerID).
-			Where("pr.subject_id = ? AND pr.subject_type = 'account'", query.AccountID)
+		s = s.Where("pr.subject_id = ? AND pr.subject_type = 'account'", query.AccountID)
 	}
 	if query.AuthKey != "" {
 		count++

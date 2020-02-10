@@ -319,3 +319,17 @@ func CMCursorPaging(p *common.CursorPaging) (*cm.Paging, error) {
 	}
 	return paging, nil
 }
+
+type Field struct {
+	Name  string
+	Value string
+}
+
+func ValidateEmptyField(ss ...Field) error {
+	for _, s := range ss {
+		if s.Value == "" {
+			return cm.Errorf(cm.InvalidArgument, nil, "%v không được để trống", s.Name)
+		}
+	}
+	return nil
+}

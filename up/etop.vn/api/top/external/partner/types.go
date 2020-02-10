@@ -13,6 +13,7 @@ type AuthorizeShopRequest struct {
 	Phone          string `json:"phone"`
 	Email          string `json:"email"`
 	RedirectUrl    string `json:"redirect_url"`
+	ShopName       string `json:"shop_name"`
 
 	Config []authorize_shop_config.AuthorizeShopConfig `json:"config"`
 }

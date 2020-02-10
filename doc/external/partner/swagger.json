@@ -1758,6 +1758,9 @@
         "shop_id": {
           "type": "string",
           "format": "int64"
+        },
+        "shop_name": {
+          "type": "string"
         }
       }
     },
@@ -1797,7 +1800,8 @@
     "jlAuthorizeShopConfig": {
       "type": "string",
       "enum": [
-        "shipment"
+        "shipment",
+        "whitelabel"
       ]
     },
     "kfIDs": {

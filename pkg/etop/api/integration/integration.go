@@ -10,6 +10,7 @@ import (
 	"etop.vn/api/top/int/integration"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/authorize_shop_config"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/user_source"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -17,6 +18,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
@@ -120,8 +122,9 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 		}
 		partnerID = requestInfo.PartnerID
 		relationQuery = &identitymodelx.GetPartnerRelationQuery{
-			PartnerID: requestInfo.PartnerID,
-			AccountID: requestInfo.ShopID,
+			PartnerID:         requestInfo.PartnerID,
+			AccountID:         requestInfo.ShopID,
+			ExternalAccountID: requestInfo.ExternalShopID,
 		}
 		relationError = bus.Dispatch(ctx, relationQuery)
 		// the error will be handled later
@@ -249,7 +252,7 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 	actions := getActionsFromConfig(info.Config)
 	if len(actions) == 0 {
 		actions = append(actions, &integration.Action{
-			Name: "create_order",
+			Name: "using",
 		})
 	}
 	resp := generateShopLoginResponse(
@@ -296,6 +299,11 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
 	}
+	wlPartner, _ := s.validateWhiteLabel(ctx)
+	if wlPartner != nil {
+		userQuery.WLPartnerID = wlPartner.ID
+	}
+
 	err := bus.Dispatch(ctx, userQuery)
 	var exists bool
 	switch cm.ErrorCode(err) {
@@ -552,19 +560,6 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	}
 
 	user := userQuery.Result.User
-	relationQuery := &identitymodelx.GetPartnerRelationsQuery{
-		PartnerID: partner.ID,
-		OwnerID:   user.ID,
-	}
-	err = bus.Dispatch(ctx, relationQuery)
-	if err != nil {
-		return err
-	}
-
-	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: user.ID}
-	if err := bus.Dispatch(ctx, accQuery); err != nil {
-		return err
-	}
 
 	userTokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
@@ -584,46 +579,9 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	}
 
 	// we map from all accounts to partner relations and generate tokens for each one
-	availableAccounts := make([]*integration.PartnerShopLoginAccount, 0, len(accQuery.Result))
-	for _, acc := range accQuery.Result {
-		if acc.Account.Type != account_type.Shop {
-			continue
-		}
-
-		// if there is shop_id, only list the account with that id
-		if requestInfo.ShopID != 0 && acc.Account.ID != requestInfo.ShopID {
-			continue
-		}
-
-		availAcc := &integration.PartnerShopLoginAccount{
-			Id:       acc.Account.ID,
-			Name:     acc.Account.Name,
-			Type:     convertpb.PbAccountType(acc.Account.Type),
-			ImageUrl: acc.Account.ImageURL,
-		}
-		for _, rel := range relationQuery.Result.Relations {
-			if rel.SubjectType == identitymodel.SubjectTypeAccount &&
-				rel.SubjectID == acc.Account.ID {
-
-				// the partner has permission to access this account
-				tokenCmd := &tokens.GenerateTokenCommand{
-					ClaimInfo: claims.ClaimInfo{
-						UserID:        user.ID,
-						AccountID:     acc.Account.ID,
-						AuthPartnerID: partner.ID,
-					},
-				}
-				if err := bus.Dispatch(ctx, tokenCmd); err != nil {
-					return err
-				}
-
-				availAcc.ExternalId = rel.ExternalSubjectID
-				availAcc.AccessToken = tokenCmd.Result.TokenStr
-				availAcc.ExpiresIn = tokenCmd.Result.ExpiresIn
-				break
-			}
-		}
-		availableAccounts = append(availableAccounts, availAcc)
+	availableAccounts, err := getAvailableAccounts(ctx, user.ID, requestInfo)
+	if err != nil {
+		return err
 	}
 	if requestInfo.ShopID != 0 && len(availableAccounts) == 0 {
 		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản %v). Liên hệ với hotro@etop.vn để được hướng dẫn.", requestInfo.ShopID).
@@ -687,9 +645,18 @@ func getActionsFromConfig(config string) (actions []*integration.Action) {
 	}
 	_actions := strings.Split(config, ",")
 	for _, a := range _actions {
-		actions = append(actions, &integration.Action{
-			Name: a,
-		})
+		c, ok := authorize_shop_config.ParseAuthorizeShopConfig(a)
+		if !ok {
+			continue
+		}
+		switch c {
+		case authorize_shop_config.Shipment:
+			actions = append(actions, &integration.Action{
+				Name: authorize_shop_config.Shipment.String(),
+			})
+		default:
+			continue
+		}
 	}
 	return
 }
@@ -725,27 +692,10 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		return cm.Errorf(cm.InvalidArgument, nil, "Cần sử dụng địa chỉ email đã được xác nhận khi đăng ký")
 	}
 
-	generatedPassword := gencode.GenerateCode(gencode.Alphabet32, 8)
-	// set default source: "partner"
-	source := user_source.Partner
-
-	cmd := &usering.CreateUserCommand{
-		UserInner: identitymodel.UserInner{
-			FullName:  r.FullName,
-			ShortName: "",
-			Phone:     string(phoneNorm),
-			Email:     string(emailNorm),
-		},
-		Password:       generatedPassword,
-		Status:         status3.P,
-		AgreeTOS:       r.AgreeTos,
-		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
-		Source:         source,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	user, err := s.registerUser(ctx, partner.ID, r.FullName, string(emailNorm), string(phoneNorm), r.AgreeTos, r.AgreeEmailInfo.Bool, verifiedEmail != "", verifiedPhone != "")
+	if err != nil {
 		return err
 	}
-	user := cmd.Result.User
 
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
@@ -760,10 +710,52 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		return err
 	}
 
+	r.Result = &integration.RegisterResponse{
+		User:        convertpb.PbUser(user),
+		AccessToken: tokenCmd.Result.TokenStr,
+		ExpiresIn:   tokenCmd.Result.ExpiresIn,
+	}
+	return nil
+}
+
+func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID, fullName, userEmail, userPhone string, agreeTos, agreeEmailInfo bool, verifiedEmail, verifiedPhone bool) (*identitymodel.User, error) {
+	partner, err := s.validatePartner(ctx, partnerID)
+	if err != nil {
+		return nil, err
+	}
+	generatedPassword := gencode.GenerateCode(gencode.Alphabet32, 8)
+	// set default source: "partner"
+	source := user_source.Partner
+	wlPartnerID := dot.ID(0)
+	wlPartner := wl.X(ctx)
+	if wlPartner.IsWhiteLabel() {
+		wlPartnerID = wlPartner.ID
+	}
+
+	cmd := &usering.CreateUserCommand{
+		UserInner: identitymodel.UserInner{
+			FullName:  fullName,
+			ShortName: "",
+			Phone:     userPhone,
+			Email:     userEmail,
+		},
+		Password:       generatedPassword,
+		Status:         status3.P,
+		AgreeTOS:       agreeTos,
+		AgreeEmailInfo: agreeEmailInfo,
+		Source:         source,
+		WLPartnerID:    wlPartnerID,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	user := cmd.Result.User
+
 	switch {
-	case verifiedEmail != "":
+	case verifiedEmail:
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
+			WLPartnerID:     wlPartnerID,
 			EmailVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, verifyCmd); err != nil {
@@ -776,7 +768,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 			"PartnerPublicName": partner.PublicName,
 			"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),
 			"LoginLabel":        "Email",
-			"Login":             verifiedEmail,
+			"Login":             userEmail,
 			"Password":          generatedPassword,
 		}); err != nil {
 			ll.Error("Can not send email", l.Error(err))
@@ -784,7 +776,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		}
 		emailCmd := &email.SendEmailCommand{
 			FromName:    "eTop.vn (no-reply)",
-			ToAddresses: []string{string(emailNorm)},
+			ToAddresses: []string{userEmail},
 			Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
 			Content:     b.String(),
 		}
@@ -792,9 +784,10 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 			ll.Error("Can not send email", l.Error(err))
 		}
 
-	case verifiedPhone != "":
+	case verifiedPhone:
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
+			WLPartnerID:     wlPartnerID,
 			PhoneVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, verifyCmd); err != nil {
@@ -809,20 +802,14 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 			break
 		}
 		smsCmd := &sms.SendSMSCommand{
-			Phone:   verifiedPhone,
+			Phone:   userPhone,
 			Content: b.String(),
 		}
 		if err := bus.Dispatch(ctx, smsCmd); err != nil {
 			ll.Error("Can not send sms", l.Error(err))
 		}
 	}
-
-	r.Result = &integration.RegisterResponse{
-		User:        convertpb.PbUser(user),
-		AccessToken: tokenCmd.Result.TokenStr,
-		ExpiresIn:   tokenCmd.Result.ExpiresIn,
-	}
-	return nil
+	return user, nil
 }
 
 func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndpoint) error {
@@ -968,4 +955,58 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *identity
 		resp.Shop = convertpb.PbPartnerShopInfo(shop)
 	}
 	return resp
+}
+
+func getAvailableAccounts(ctx context.Context, userID dot.ID, requestInfo apipartner.PartnerShopToken) ([]*integration.PartnerShopLoginAccount, error) {
+	relationQuery := &identitymodelx.GetPartnerRelationsQuery{
+		PartnerID: requestInfo.PartnerID,
+		OwnerID:   userID,
+	}
+	if err := bus.Dispatch(ctx, relationQuery); err != nil {
+		return nil, err
+	}
+
+	accQuery := &identitymodelx.GetAllAccountRolesQuery{
+		UserID: userID,
+		Type:   account_type.Shop.Wrap(),
+	}
+	if err := bus.Dispatch(ctx, accQuery); err != nil {
+		return nil, err
+	}
+	// we map from all accounts to partner relations and generate tokens for each one
+	availableAccounts := make([]*integration.PartnerShopLoginAccount, 0, len(accQuery.Result))
+	for _, acc := range accQuery.Result {
+		// if there is shop_id, only list the account with that id
+		if requestInfo.ShopID != 0 && acc.Account.ID != requestInfo.ShopID {
+			continue
+		}
+
+		availAcc := &integration.PartnerShopLoginAccount{
+			Id:       acc.Account.ID,
+			Name:     acc.Account.Name,
+			Type:     convertpb.PbAccountType(acc.Account.Type),
+			ImageUrl: acc.Account.ImageURL,
+		}
+		for _, rel := range relationQuery.Result.Relations {
+			if rel.SubjectType == identitymodel.SubjectTypeAccount && rel.SubjectID == acc.Account.ID {
+				// the partner has permission to access this account
+				tokenCmd := &tokens.GenerateTokenCommand{
+					ClaimInfo: claims.ClaimInfo{
+						UserID:        userID,
+						AccountID:     acc.Account.ID,
+						AuthPartnerID: requestInfo.PartnerID,
+					},
+				}
+				if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+					return nil, err
+				}
+				availAcc.ExternalId = rel.ExternalSubjectID
+				availAcc.AccessToken = tokenCmd.Result.TokenStr
+				availAcc.ExpiresIn = tokenCmd.Result.ExpiresIn
+				break
+			}
+			availableAccounts = append(availableAccounts, availAcc)
+		}
+	}
+	return availableAccounts, nil
 }

@@ -70,6 +70,12 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message,
 			return s.inner.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/integration.Integration/LoginUsingTokenWL":
+		msg := &LoginUsingTokenRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.LoginUsingTokenWL(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/integration.Integration/Register":
 		msg := &RegisterRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

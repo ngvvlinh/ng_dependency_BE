@@ -61,7 +61,9 @@ func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantA
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GrantAccess(ctx, query)
 	resp = query.Result
@@ -150,9 +152,58 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.Lo
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LoginUsingToken(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type LoginUsingTokenWLEndpoint struct {
+	*api.LoginUsingTokenRequest
+	Result     *api.LoginResponse
+	Context    claims.EmptyClaim
+	CtxPartner *identitymodel.Partner
+}
+
+func (s wrapIntegrationService) LoginUsingTokenWL(ctx context.Context, req *api.LoginUsingTokenRequest) (resp *api.LoginResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "integration.Integration/LoginUsingTokenWL"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		AuthPartner: 2,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &LoginUsingTokenWLEndpoint{LoginUsingTokenRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.CtxPartner = session.CtxPartner
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.LoginUsingTokenWL(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -195,7 +246,9 @@ func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterR
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
 	resp = query.Result
@@ -244,7 +297,9 @@ func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.Reque
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
 		return nil, err
 	}
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RequestLogin(ctx, query)
 	resp = query.Result
@@ -289,7 +344,9 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 		query.Context.Claim = session.Claim
 	}
 	query.CtxPartner = session.CtxPartner
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SessionInfo(ctx, query)
 	resp = query.Result

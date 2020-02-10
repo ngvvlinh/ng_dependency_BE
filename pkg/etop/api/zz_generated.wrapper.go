@@ -660,7 +660,9 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
-	ctx = wl.WrapContext(ctx, 0)
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAddresses(ctx, query)
 	resp = query.Result

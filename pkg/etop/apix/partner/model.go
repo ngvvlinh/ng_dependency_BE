@@ -16,6 +16,7 @@ type PartnerShopToken struct {
 	ShopName       string `json:"shop_name"`
 	ShopOwnerEmail string `json:"shop_owner_email"`
 	ShopOwnerPhone string `json:"shop_owner_phone"`
+	ShopOwnerName  string `json:"shop_owner_name"`
 
 	// if there is a shop with this external_shop_id in the partner_relation,
 	// use the shop, otherwise automatically attach this external_shop_id to the

@@ -96,6 +96,34 @@
         }
       }
     },
+    "/api/integration.Integration/LoginUsingTokenWL": {
+      "post": {
+        "description": "LoginUsingTokenWL\n\nDo all stuff to grant access shop of whitelabel partner\n",
+        "tags": [
+          "Integration"
+        ],
+        "summary": "LoginUsingTokenWL",
+        "operationId": "integration.Integration-LoginUsingTokenWL",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/fuLoginUsingTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/fuLoginResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/integration.Integration/Register": {
       "post": {
         "tags": [

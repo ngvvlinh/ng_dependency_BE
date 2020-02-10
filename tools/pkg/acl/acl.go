@@ -395,12 +395,13 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	//-- integration --//
 
-	"integration.Integration/Init":            {Type: Public},
-	"integration.Integration/RequestLogin":    {Type: Protected, AuthPartner: Req, Captcha: "1"},
-	"integration.Integration/LoginUsingToken": {Type: Protected, AuthPartner: Req},
-	"integration.Integration/Register":        {Type: Protected, AuthPartner: Req},
-	"integration.Integration/GrantAccess":     {Type: CurUsr, AuthPartner: Req},
-	"integration.Integration/SessionInfo":     {Type: Protected, AuthPartner: Req},
+	"integration.Integration/Init":              {Type: Public},
+	"integration.Integration/RequestLogin":      {Type: Protected, AuthPartner: Req, Captcha: "1"},
+	"integration.Integration/LoginUsingToken":   {Type: Protected, AuthPartner: Req},
+	"integration.Integration/LoginUsingTokenWL": {Type: Protected, AuthPartner: Req},
+	"integration.Integration/Register":          {Type: Protected, AuthPartner: Req},
+	"integration.Integration/GrantAccess":       {Type: CurUsr, AuthPartner: Req},
+	"integration.Integration/SessionInfo":       {Type: Protected, AuthPartner: Req},
 
 	//-- admin --//
 

@@ -315,7 +315,11 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	}
 	{{end -}}
 	{{end -}}
-	{{if $m|requirePartner -}}
+	{{if $m|authPartner -}}
+	if query.CtxPartner != nil {
+		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
+	}
+	{{else if $m|requirePartner -}}
 	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	{{else if $m|requireAPIPartnerShopKey -}}
 	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)

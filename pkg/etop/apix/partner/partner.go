@@ -17,8 +17,10 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmService "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -179,6 +181,11 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 		}
 	}
 
+	whiteLabelData, err := validateWhiteLabel(ctx, q)
+	if err != nil {
+		return err
+	}
+
 	// always verify email and phone
 	var emailNorm, phoneNorm string
 	if q.Email != "" {
@@ -220,18 +227,42 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			rel := relationQuery.Result.PartnerRelation
 			shop := relationQuery.Result.Shop
 			user := relationQuery.Result.User
+			info := PartnerShopToken{
+				PartnerID:      partner.ID,
+				ShopID:         shop.ID,
+				ShopName:       shop.Name,
+				ShopOwnerEmail: user.Email,
+				ShopOwnerPhone: user.Phone,
+				ShopOwnerName:  user.FullName,
+				ExternalShopID: q.ExternalShopId,
+
+				// client must keep the current email/phone when calling
+				// request_login
+				RetainCurrentInfo: true,
+				Config:            getAuthorizeShopConfig(q.Config),
+				RedirectURL:       q.RedirectUrl,
+			}
+			if whiteLabelData != nil {
+				// Trường hợp whiteLabel
+				// Đã có sẵn tài khoản sẽ redirect về trang whiteLabel
+				info.RedirectURL = whiteLabelData.Config.RootURL
+			}
+			token, err := generateAuthToken(info)
+			if err != nil {
+				return err
+			}
+
 			if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
 				shop.Status == status3.P && shop.DeletedAt.IsZero() &&
 				user.Status == status3.P {
-				if q.Config != nil && len(q.Config) > 0 {
-					return generateAuthTokenWithRequestLogin(ctx, q, q.ShopId)
-				}
+				// TODO: handle config: "shipment"
 				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopKey,
 					Type:      "shop_key",
 					AuthToken: rel.AuthKey,
 					ExpiresIn: -1,
+					AuthUrl:   generateAuthURL(whiteLabelData, authURL, token.TokenStr),
 				}
 				return nil
 			}
@@ -240,24 +271,6 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				return cm.Errorf(cm.AccountClosed, nil, "")
 			}
 			if rel.Status != status3.P || !rel.DeletedAt.IsZero() {
-				info := PartnerShopToken{
-					PartnerID:      partner.ID,
-					ShopID:         shop.ID,
-					ShopName:       shop.Name,
-					ShopOwnerEmail: user.Email,
-					ShopOwnerPhone: user.Phone,
-
-					ExternalShopID: q.ExternalShopId,
-
-					// client must keep the current email/phone when calling
-					// request_login
-					RetainCurrentInfo: true,
-					Config:            getAuthorizeShopConfig(q.Config),
-				}
-				token, err := generateAuthToken(info)
-				if err != nil {
-					return err
-				}
 				q.Result = &extpartner.AuthorizeShopResponse{
 					Code:      "ok",
 					Msg:       msgShopRequest,
@@ -266,7 +279,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 					ExpiresIn: token.ExpiresIn,
 				}
 				if q.RedirectUrl != "" {
-					q.Result.AuthUrl = generateAuthURL(authURL, q.Result.AuthToken)
+					q.Result.AuthUrl = generateAuthURL(whiteLabelData, authURL, q.Result.AuthToken)
 				}
 				return nil
 			}
@@ -292,15 +305,21 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 }
 
 func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndpoint, shopID dot.ID) error {
+	whiteLabelData, err := validateWhiteLabel(ctx, q)
+	if err != nil {
+		return err
+	}
+
 	info := PartnerShopToken{
 		PartnerID: q.Context.Partner.ID,
 
 		// leave this field empty because we don't want to expose our account
 		// information to partner
 		ShopID:         0,
-		ShopName:       q.Name,
+		ShopName:       q.ShopName,
 		ShopOwnerEmail: q.Email,
 		ShopOwnerPhone: q.Phone,
+		ShopOwnerName:  q.Name,
 		ExternalShopID: q.ExternalShopId,
 
 		RetainCurrentInfo: false,
@@ -324,7 +343,7 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		ExpiresIn: token.ExpiresIn,
 	}
 	if q.RedirectUrl != "" {
-		q.Result.AuthUrl = generateAuthURL(authURL, q.Result.AuthToken)
+		q.Result.AuthUrl = generateAuthURL(whiteLabelData, authURL, q.Result.AuthToken)
 	}
 	return nil
 }
@@ -348,8 +367,12 @@ func generateAuthToken(info PartnerShopToken) (*auth.Token, error) {
 	return tok, nil
 }
 
-func generateAuthURL(authURL string, token string) string {
-	u, err := url.Parse(authURL)
+func generateAuthURL(whitelabelData *whitelabel.WL, authURL string, token string) string {
+	redirectUrl := authURL
+	if whitelabelData != nil {
+		redirectUrl = whitelabelData.Config.AuthURL
+	}
+	u, err := url.Parse(redirectUrl)
 	if err != nil {
 		ll.Panic("invalid auth_url", l.Error(err))
 	}
@@ -381,4 +404,49 @@ func validateRedirectURL(redirectURLs []string, redirectURL string, skipCheckIfN
 		}
 	}
 	return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url cần được đăng ký trước")
+}
+
+func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (*whitelabel.WL, error) {
+	configs := q.Config
+	isWhitelable := false
+	for _, c := range configs {
+		if c == authorize_shop_config.WhiteLabel {
+			isWhitelable = true
+		}
+	}
+	if !isWhitelable {
+		return nil, nil
+	}
+
+	wlPartner := wl.X(ctx)
+	if !wlPartner.IsWhiteLabel() {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không có thông tin whitelabel từ đối tác")
+	}
+
+	// validate data
+	fields := []cmapi.Field{
+		{
+			Name:  "Số điện thoại (phone)",
+			Value: q.Phone,
+		}, {
+			Name:  "Email",
+			Value: q.Email,
+		}, {
+			Name:  "Tên (name)",
+			Value: q.Name,
+		}, {
+			Name:  "redirect_url",
+			Value: q.RedirectUrl,
+		}, {
+			Name:  "Tên cửa hàng (shop_name)",
+			Value: q.ShopName,
+		}, {
+			Name:  "Mã shop (external_shop_id)",
+			Value: q.ExternalShopId,
+		},
+	}
+	if err := cmapi.ValidateEmptyField(fields...); err != nil {
+		return nil, err
+	}
+	return wlPartner, nil
 }
