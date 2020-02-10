@@ -11,6 +11,7 @@ import (
 	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/login"
@@ -81,8 +82,9 @@ func GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) er
 	}
 
 	query.Result = new(identitymodel.User)
-	return x.Where("id = ?", query.UserID).
-		ShouldGet(query.Result)
+	s := x.Where("id = ?", query.UserID)
+	s = FilterByWhiteLabelPartner(s, query.WLPartnerID)
+	return s.ShouldGet(query.Result)
 }
 
 func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
@@ -96,6 +98,7 @@ func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrP
 		q = q.Where("phone = ?", query.Phone)
 		count++
 	}
+	q = FilterByWhiteLabelPartner(q, query.WLPartnerID)
 	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
@@ -128,6 +131,7 @@ func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQue
 			s = s.Where("phone = ?", phone)
 		}
 	}
+	s = FilterByWhiteLabelPartner(s, query.WLPartnerID)
 
 	user := new(identitymodel.User)
 	if err := s.ShouldGet(user); err != nil {
@@ -215,12 +219,21 @@ func NormalizeFullName(fullName, shortName string) (string, string, error) {
 }
 
 const (
-	UserEmailKey = "user_email_key"
-	UserPhoneKey = "user_phone_key"
+	UserEmailKey            = "user_email_key"
+	UserPhoneKey            = "user_phone_key"
+	UserEmailWLPartnerIDKey = "user_phone_wl_partner_id_idx"
+	UserPhoneWLPartnerIDKey = "user_email_wl_partner_id_idx"
 
 	MsgCreateUserDuplicatedPhone = `Số điện thoại đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
 	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
 )
+
+var mapUserError = map[string]string{
+	UserEmailKey:            MsgCreateUserDuplicatedEmail,
+	UserEmailWLPartnerIDKey: MsgCreateUserDuplicatedEmail,
+	UserPhoneKey:            MsgCreateUserDuplicatedPhone,
+	UserPhoneWLPartnerIDKey: MsgCreateUserDuplicatedPhone,
+}
 
 func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand) error {
 	switch cmd.Status {
@@ -237,6 +250,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		Status:      cmd.Status,
 		Source:      cmd.Source,
 		AgreedTOSAt: now,
+		WLPartnerID: cmd.WLPartnerID,
 	}
 	if cmd.AgreeEmailInfo {
 		user.AgreedEmailInfoAt = now
@@ -255,11 +269,10 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 	_, err := s.Insert(user, userInternal)
 	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 		msg := xerr.Err.Error()
-		switch {
-		case strings.Contains(msg, UserEmailKey):
-			err = cm.Error(cm.FailedPrecondition, MsgCreateUserDuplicatedEmail, nil)
-		case strings.Contains(msg, UserPhoneKey):
-			err = cm.Error(cm.FailedPrecondition, MsgCreateUserDuplicatedPhone, nil)
+		for errKey, errMsg := range mapUserError {
+			if strings.Contains(msg, errKey) {
+				err = cm.Errorf(cm.FailedPrecondition, nil, errMsg)
+			}
 		}
 	}
 	cmd.Result.User = user
@@ -310,6 +323,7 @@ func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserV
 	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "Invalid params", nil)
 	}
+	s = FilterByWhiteLabelPartner(s, cmd.WLPartnerID)
 
 	return s.ShouldUpdate(&user)
 }
@@ -351,10 +365,21 @@ func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIde
 	var userInternal identitymodel.UserInternal
 
 	user.PhoneVerifiedAt = cmd.PhoneVerifiedAt
+	s := x.Where("id = ?", cmd.UserID)
+	s = FilterByWhiteLabelPartner(s, cmd.WLPartnerID)
 	if err := x.Where("id = ?", cmd.UserID).ShouldUpdate(&user, &userInternal); err != nil {
 		return err
 	}
 
 	cmd.Result.User = &user
 	return x.Where("id = ?", cmd.UserID).ShouldGet(&user)
+}
+
+var userFt = identitysqlstore.UserFilters{}
+
+func FilterByWhiteLabelPartner(query cmsql.Query, wlPartnerID dot.ID) cmsql.Query {
+	if wlPartnerID != 0 {
+		return query.Where(userFt.ByWLPartnerID(wlPartnerID))
+	}
+	return query.Where(userFt.NotBelongWLPartner())
 }

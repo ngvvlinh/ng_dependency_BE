@@ -67,10 +67,11 @@ type User struct {
 
 	EmailVerifiedAt time.Time
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	RefUserID dot.ID
-	RefSaleID dot.ID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	RefUserID   dot.ID
+	RefSaleID   dot.ID
+	WLPartnerID dot.ID
 }
 
 type ExternalAccountAhamove struct {

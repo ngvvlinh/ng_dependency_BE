@@ -2136,6 +2136,25 @@ func (ft *UserFilters) ByRefSaleIDPtr(RefSaleID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *UserFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *UserFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
 type AccountUserFilters struct{ prefix string }
 
 func NewAccountUserFilters(prefix string) AccountUserFilters {

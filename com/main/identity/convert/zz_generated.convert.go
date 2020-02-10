@@ -526,6 +526,7 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 	out.RefUserID = arg.RefUserID             // simple assign
 	out.RefSaleID = arg.RefSaleID             // simple assign
+	out.WLPartnerID = arg.WLPartnerID         // simple assign
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
@@ -564,6 +565,7 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	out.Source = 0                            // zero value
 	out.RefUserID = arg.RefUserID             // simple assign
 	out.RefSaleID = arg.RefSaleID             // simple assign
+	out.WLPartnerID = arg.WLPartnerID         // simple assign
 }
 
 func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*identitymodel.User) {

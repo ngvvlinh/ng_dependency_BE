@@ -3372,8 +3372,8 @@ func sqlgenUser(_ *User) bool { return true }
 type Users []*User
 
 const __sqlUser_Table = "user"
-const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\""
-const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\""
+const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\",\"wl_partner_id\""
+const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
@@ -3416,6 +3416,7 @@ func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Source,
 		m.RefUserID,
 		m.RefSaleID,
+		m.WLPartnerID,
 	}
 }
 
@@ -3439,6 +3440,7 @@ func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Source,
 		&m.RefUserID,
 		&m.RefSaleID,
+		&m.WLPartnerID,
 	}
 }
 
@@ -3476,7 +3478,7 @@ func (_ *Users) SQLSelect(w SQLWriter) error {
 func (m *User) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(19)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3486,7 +3488,7 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(18)
+		w.WriteMarkers(19)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3661,6 +3663,14 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.RefSaleID)
 	}
+	if m.WLPartnerID != 0 {
+		flag = true
+		w.WriteName("wl_partner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WLPartnerID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -3671,7 +3681,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 func (m *User) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(19)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3713,21 +3723,22 @@ func (m UserHistory) EmailVerificationSentAt() core.Interface {
 func (m UserHistory) PhoneVerificationSentAt() core.Interface {
 	return core.Interface{m["phone_verification_sent_at"]}
 }
-func (m UserHistory) IsTest() core.Interface    { return core.Interface{m["is_test"]} }
-func (m UserHistory) Source() core.Interface    { return core.Interface{m["source"]} }
-func (m UserHistory) RefUserID() core.Interface { return core.Interface{m["ref_user_id"]} }
-func (m UserHistory) RefSaleID() core.Interface { return core.Interface{m["ref_sale_id"]} }
+func (m UserHistory) IsTest() core.Interface      { return core.Interface{m["is_test"]} }
+func (m UserHistory) Source() core.Interface      { return core.Interface{m["source"]} }
+func (m UserHistory) RefUserID() core.Interface   { return core.Interface{m["ref_user_id"]} }
+func (m UserHistory) RefSaleID() core.Interface   { return core.Interface{m["ref_sale_id"]} }
+func (m UserHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
 
 func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(UserHistory, 18)
+	res := make(UserHistory, 19)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["short_name"] = data[2]
@@ -3746,14 +3757,15 @@ func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["source"] = data[15]
 	res["ref_user_id"] = data[16]
 	res["ref_sale_id"] = data[17]
+	res["wl_partner_id"] = data[18]
 	*m = res
 	return nil
 }
 
 func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
 		args[i] = &data[i]
 	}
 	res := make(UserHistories, 0, 128)
@@ -3780,6 +3792,7 @@ func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["source"] = data[15]
 		m["ref_user_id"] = data[16]
 		m["ref_sale_id"] = data[17]
+		m["wl_partner_id"] = data[18]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

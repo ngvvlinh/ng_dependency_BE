@@ -405,10 +405,11 @@ type User struct {
 	EmailVerificationSentAt time.Time
 	PhoneVerificationSentAt time.Time
 
-	IsTest    int
-	Source    user_source.UserSource
-	RefUserID dot.ID
-	RefSaleID dot.ID
+	IsTest      int
+	Source      user_source.UserSource
+	RefUserID   dot.ID
+	RefSaleID   dot.ID
+	WLPartnerID dot.ID
 }
 
 type UserExtended struct {
