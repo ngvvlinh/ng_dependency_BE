@@ -721,7 +721,7 @@ func prepareOrderLine(
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Giá phải trả của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`, m.ProductName)
 	}
-	if m.Quantity <= 0 || m.Quantity >= 1000 {
+	if m.Quantity <= 0 || m.Quantity >= 1000000 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Số lượng của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`, m.ProductName)
 	}
