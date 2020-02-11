@@ -197,10 +197,10 @@ func fillPOLineInfo(line *purchaseorder.PurchaseOrderLine, variant *catalog.Shop
 }
 
 func getImage(variant *catalog.ShopVariant, product *catalog.ShopProduct) string {
-	if variant.ImageURLs != nil {
+	if len(variant.ImageURLs) > 0 {
 		return variant.ImageURLs[0]
 	}
-	if product.ImageURLs != nil {
+	if len(product.ImageURLs) > 0 {
 		return product.ImageURLs[0]
 	}
 	return ""
