@@ -15,6 +15,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
@@ -51,7 +52,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env:          cm.PartnerEnvTest,
+		Env:          cmenv.PartnerEnvTest,
 		AccessCode:   "d41d8cd98f00b204e9800998ecf8427eb36ee15cfa9bbaf984868d25cc21215a",
 		SecretKey:    "d41d8cd98f00b204e9800998ecf8427e1c371a7425bf2b1a5fdf5a83c5371a40",
 		MerchantCode: "ETOP",
@@ -82,9 +83,9 @@ func New(cfg Config) *Client {
 		rclient:      httpreq.NewResty(rcfg),
 	}
 	switch cfg.Env {
-	case cm.PartnerEnvTest, cm.PartnerEnvDev:
+	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
 		c.baseUrl = "https://sandbox.viettel.vn/"
-	case cm.PartnerEnvProd:
+	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://pay.bankplus.vn:8450/"
 	default:
 		ll.Fatal("vtpay: invalid env")

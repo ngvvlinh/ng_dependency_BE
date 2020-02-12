@@ -7,8 +7,8 @@ import (
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/com/main/shipping/modelx"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/sqlstore"
@@ -28,7 +28,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 
 	if db, err := cmsql.Connect(cfg.Postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))

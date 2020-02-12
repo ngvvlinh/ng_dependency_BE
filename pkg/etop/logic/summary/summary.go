@@ -10,6 +10,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq/core"
 	"etop.vn/backend/pkg/etop/model"
@@ -37,7 +38,7 @@ func Init(db *cmsql.Database) {
 
 func SummarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmentsRequest) error {
 	var timeout time.Duration
-	if cm.IsProd() {
+	if cmenv.IsProd() {
 		timeout = 5 * time.Second
 	}
 

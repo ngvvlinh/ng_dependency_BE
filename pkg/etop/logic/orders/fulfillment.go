@@ -30,6 +30,7 @@ import (
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -228,7 +229,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.
 		return resp, err
 	}
 	// automatically cancel orders on sandbox for ghn and vtpost
-	if cm.Env() == cm.EnvSandbox {
+	if cmenv.Env() == cmenv.EnvSandbox {
 		if order.ShopShipping != nil &&
 			order.ShopShipping.ShippingProvider != typeshippingprovider.GHTK {
 			go func() {

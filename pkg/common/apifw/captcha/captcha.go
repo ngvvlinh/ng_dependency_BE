@@ -1,10 +1,12 @@
 package captcha
 
 import (
+	recaptcha "github.com/dpapathanasiou/go-recaptcha"
+
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/common/l"
-	recaptcha "github.com/dpapathanasiou/go-recaptcha"
 )
 
 var ll = l.New()
@@ -26,10 +28,10 @@ var gcfg Config
 
 func Init(cfg Config) {
 	gcfg = cfg
-	if !cm.IsDev() && cfg.Secret == "" {
+	if !cmenv.IsDev() && cfg.Secret == "" {
 		ll.Fatal("Missing Captcha Secret Code")
 	}
-	if cm.IsProd() && cfg.LocalPasscode != "" {
+	if cmenv.IsProd() && cfg.LocalPasscode != "" {
 		ll.Fatal("Do not use local passcode on production")
 	}
 	if cfg.Secret != "" {
@@ -41,7 +43,7 @@ func Verify(token string) error {
 	if token == "" {
 		return cm.Error(cm.CaptchaRequired, "", nil)
 	}
-	if !cm.IsProd() && gcfg.LocalPasscode != "" && gcfg.LocalPasscode == token {
+	if !cmenv.IsProd() && gcfg.LocalPasscode != "" && gcfg.LocalPasscode == token {
 		return nil
 	}
 	if ok, err := recaptcha.Confirm("", token); err != nil {

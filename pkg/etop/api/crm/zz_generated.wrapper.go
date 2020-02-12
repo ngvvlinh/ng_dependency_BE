@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/headers"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
@@ -55,7 +56,7 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 		query.Context.Claim = session.Claim
 	}
 	// Verify secret token
-	token := middleware.GetBearerTokenFromCtx(ctx)
+	token := headers.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
@@ -101,7 +102,7 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 		query.Context.Claim = session.Claim
 	}
 	// Verify secret token
-	token := middleware.GetBearerTokenFromCtx(ctx)
+	token := headers.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
@@ -156,7 +157,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	// Verify secret token
-	token := middleware.GetBearerTokenFromCtx(ctx)
+	token := headers.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}

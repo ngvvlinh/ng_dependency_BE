@@ -5,7 +5,7 @@ import (
 
 	mdlocation "etop.vn/api/main/location"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
@@ -32,7 +32,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env: cm.PartnerEnvTest,
+		Env: cmenv.PartnerEnvTest,
 		AccountDefault: vtpostclient.ConfigAccount{
 			Username: "tuan@eye-solution.vn",
 			Password: "1234@5678",

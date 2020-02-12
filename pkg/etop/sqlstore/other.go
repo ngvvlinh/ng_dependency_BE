@@ -7,6 +7,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
 	"etop.vn/backend/pkg/common/µjson"
 	"etop.vn/backend/pkg/etop/model"
@@ -102,7 +103,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 		query.Result.Data = data
 		query.Result.Len = c
 
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			var v interface{}
 			if err := jsonx.Unmarshal(data, &v); err != nil {
 				ll.Error("Invalid json output")

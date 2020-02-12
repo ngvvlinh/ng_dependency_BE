@@ -10,6 +10,7 @@ import (
 	shipping "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	etopmodel "etop.vn/backend/pkg/etop/model"
@@ -33,7 +34,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 
 	postgres := cfg.Postgres
 	if db, err = cmsql.Connect(postgres); err != nil {

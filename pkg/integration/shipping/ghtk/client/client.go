@@ -12,6 +12,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/jsonx"
@@ -58,9 +59,9 @@ func New(env string, cfg GhtkAccount) *Client {
 		rclient:     httpreq.NewResty(rcfg),
 	}
 	switch env {
-	case cm.PartnerEnvTest, cm.PartnerEnvDev:
+	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
 		c.baseUrl = "https://dev.ghtk.vn"
-	case cm.PartnerEnvProd:
+	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://services.giaohangtietkiem.vn"
 	default:
 		ll.Fatal("ghtk: Invalid ENV")

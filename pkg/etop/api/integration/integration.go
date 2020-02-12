@@ -19,6 +19,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/validate"
@@ -335,7 +336,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 			hello = "Gửi " + user.FullName
 		}
 		var extraMessage template.HTML
-		if cm.NotProd() {
+		if cmenv.NotProd() {
 			extraMessage = "<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn nhằm mục đích thử nghiệm. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>"
 		} else {
 			extraMessage = "<br><br><i>Đây là email được gửi từ hệ thống của đối tác thông qua eTop.vn. Nếu bạn cho rằng đây là sự nhầm lẫn, xin vui lòng thông báo cho chúng tôi.<i>"

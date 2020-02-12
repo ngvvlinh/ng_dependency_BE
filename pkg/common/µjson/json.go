@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -46,7 +46,7 @@ func Reconstruct(s []byte) ([]byte, error) {
 
 func FilterAndRename(b []byte, input []byte) (output []byte, _ error) {
 	// Validate json input and output
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		lenb := len(b)
 		defer func() {
 			var v interface{}

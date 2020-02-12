@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"etop.vn/api/main/identity"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
+
+const TagEtop = 101
 
 var ll = l.New()
 
@@ -32,7 +33,7 @@ func New(drivers []*WL) *WhiteLabel {
 		w.partnersByKey[driver.Key] = driver
 		w.partnersByID[driver.ID] = driver
 	}
-	w.etop = w.partnersByID[model.TagEtop]
+	w.etop = w.partnersByID[TagEtop]
 	return w
 }
 
@@ -46,10 +47,10 @@ func (w *WhiteLabel) VerifyPartners(ctx context.Context, identityQuery identity.
 	for _, partner := range query.Result {
 		p := w.partnersByID[partner.ID]
 		if p == nil {
-			return cm.Errorf(cm.Internal, nil, "white label partner %v not found", partner.ID)
+			return xerrors.Errorf(xerrors.Internal, nil, "white label partner %v not found", partner.ID)
 		}
 		if p.Key != partner.WhiteLabelKey {
-			return cm.Errorf(cm.Internal, nil, "white label key of partner %v not match (partner.white_label_key=%v driver.key=%v)", partner.ID, partner.WhiteLabelKey, p.Key)
+			return xerrors.Errorf(xerrors.Internal, nil, "white label key of partner %v not match (partner.white_label_key=%v driver.key=%v)", partner.ID, partner.WhiteLabelKey, p.Key)
 		}
 		dbKeys[partner.WhiteLabelKey] = true
 	}
@@ -91,11 +92,11 @@ func (w *WhiteLabel) fromContext(ctx context.Context, partnerID dot.ID) *WL {
 	if partnerID != 0 {
 		return w.byPartnerID(partnerID)
 	}
-	headers := middleware.GetHeaders(ctx)
-	if headers == nil {
+	header := headers.GetHeader(ctx)
+	if header == nil {
 		panic("no http header")
 	}
-	host := headers.Get("X-Forwarded-Host")
+	host := header.Get("X-Forwarded-Host")
 	return w.fromHost(host)
 }
 

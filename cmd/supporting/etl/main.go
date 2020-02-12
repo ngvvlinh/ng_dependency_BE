@@ -11,8 +11,8 @@ import (
 
 	"etop.vn/backend/cmd/supporting/etl/config"
 	identitymodel "etop.vn/backend/com/main/identity/model"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -41,8 +41,8 @@ func main() {
 		ll.Fatal("error while loading config", l.Error(err))
 	}
 
-	cm.SetEnvironment(cfg.Env)
-	if cm.IsDev() {
+	cmenv.SetEnvironment(cfg.Env)
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 

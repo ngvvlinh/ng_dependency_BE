@@ -9,6 +9,7 @@ import (
 
 	"etop.vn/api/top/types/etc/shipping_provider"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
@@ -57,7 +58,7 @@ func (c *Carrier) getClient(code ClientType) (*ghnclient.Client, error) {
 	if client != nil {
 		return client, nil
 	}
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for GHN", nil)
 	}
 	return nil, cm.Error(cm.InvalidArgument, "GHN: invalid client code", nil).

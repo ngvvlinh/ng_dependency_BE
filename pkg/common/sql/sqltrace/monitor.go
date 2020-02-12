@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/common/l"
@@ -176,7 +176,7 @@ const timeLayout = "2006-01-02 15:04:05"
 
 func (m *Monitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var timeout time.Duration
-	if cm.IsProd() {
+	if cmenv.IsProd() {
 		timeout = time.Minute
 	}
 	resp, _, _ := idempgroup.Do("key", timeout, func() (interface{}, error) {

@@ -14,6 +14,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
@@ -49,7 +50,7 @@ func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient.Client
 		return client, nil
 	}
 
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for Vtpost", nil)
 	}
 	return nil, cm.Error(cm.InvalidArgument, "vtpost: invalid client code", nil)

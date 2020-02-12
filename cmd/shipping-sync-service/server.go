@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	servicelocation "etop.vn/backend/com/main/location"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -42,7 +42,7 @@ func startServiceServer() *http.Server {
 		}
 		ll.S.Info("GHN: connect success")
 	} else {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
 		} else {
 			ll.Fatal("GHN: No token")

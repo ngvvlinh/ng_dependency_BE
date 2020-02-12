@@ -11,6 +11,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -41,9 +42,9 @@ func New(env string, cfg GHNAccountCfg) *Client {
 		rclient:     httpreq.NewResty(rcfg),
 	}
 	switch env {
-	case cm.PartnerEnvTest, cm.PartnerEnvDev:
+	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
 		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
-	case cm.PartnerEnvProd:
+	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
 	default:
 		ll.Fatal("ghn: Invalid env")

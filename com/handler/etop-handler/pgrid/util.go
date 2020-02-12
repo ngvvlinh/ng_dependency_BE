@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"etop.vn/backend/com/handler/pgevent"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/capi/dot"
 )
 
@@ -31,6 +31,6 @@ func ToMeta(e *pgevent.PgEvent) Meta {
 	return Meta{
 		RID: strconv.FormatInt(e.RID, 10),
 		Op:  e.Op.String(),
-		Env: cm.Env().String(),
+		Env: cmenv.Env().String(),
 	}
 }

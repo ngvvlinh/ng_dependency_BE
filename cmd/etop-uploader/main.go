@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/metrics"
@@ -68,8 +69,8 @@ func main() {
 		},
 	}
 
-	cm.SetEnvironment(cfg.Env)
-	wl.Init(cm.Env())
+	cmenv.SetEnvironment(cfg.Env)
+	wl.Init(cmenv.Env())
 
 	_, err = os.Stat(cfg.UploadDirImg)
 	if err != nil {
@@ -82,11 +83,11 @@ func main() {
 	}
 
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 

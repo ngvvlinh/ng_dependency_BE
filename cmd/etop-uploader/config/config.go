@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/common/l"
 )
@@ -32,7 +32,7 @@ func Default() Config {
 		URLPrefix:                    "http://localhost:8180/img",
 		UploadDirAhamoveVerification: "/tmp/upload",
 		URLPrefixAhamoveVerification: "http://localhost:8180",
-		Env:                          cm.EnvDev.String(),
+		Env:                          cmenv.EnvDev.String(),
 	}
 	return cfg
 }

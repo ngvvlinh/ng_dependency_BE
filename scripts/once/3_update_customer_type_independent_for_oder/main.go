@@ -6,7 +6,7 @@ import (
 	"etop.vn/backend/cmd/etop-server/config"
 	ordering "etop.vn/backend/com/main/ordering/model"
 	customering "etop.vn/backend/com/shopping/customering/model"
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
@@ -29,7 +29,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 
 	postgres := cfg.Postgres
 

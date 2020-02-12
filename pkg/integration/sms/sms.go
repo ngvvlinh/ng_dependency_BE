@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/validate"
@@ -77,7 +78,7 @@ func (c Client) Register(bus bus.Bus) Client {
 
 func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 	phone, _, ok := validate.TrimTest(cmd.Phone)
-	if cm.IsDevOrStag() && !ok {
+	if cmenv.IsDevOrStag() && !ok {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ có thể gửi tin nhắn đến địa chỉ test trên dev!")
 	}
 

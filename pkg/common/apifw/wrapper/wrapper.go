@@ -17,7 +17,9 @@ import (
 	cmP "etop.vn/api/top/types/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/extservice/telebot"
+	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/capi"
@@ -95,9 +97,9 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 		buf.WriteString("🔥 ")
 	}
 	buf.WriteString("[")
-	buf.WriteString(cm.Env().String())
+	buf.WriteString(cmenv.Env().String())
 	buf.WriteString(",")
-	buf.WriteString(middleware.GetHeaders(ctx).Get("X-Forwarded-Host"))
+	buf.WriteString(headers.GetHeader(ctx).Get("X-Forwarded-Host"))
 	buf.WriteString("] ERROR: ")
 	buf.WriteString(rpcName)
 	buf.WriteString(" (")
@@ -138,7 +140,7 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 		}
 	}
 	buf.WriteString("\n")
-	sortedHeaders := middleware.GetSortedHeaders(ctx)
+	sortedHeaders := headers.GetSortedHeaders(ctx)
 	for _, item := range sortedHeaders {
 		for _, v := range item.Values {
 			buf.WriteString(item.Key)
@@ -251,7 +253,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 
 	lvl := xerrors.GetTraceLevel(err)
 	if lvl <= xerrors.LevelTrival {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("->"+rpcName,
 				l.Duration("d", d),
 				l.Stringer("req", req),
@@ -264,7 +266,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 		l.Duration("d", d),
 		l.Stringer("req", req),
 		l.Error(err))
-	if cm.NotProd() || cm.ErrorCode(err) == cm.RuntimePanic || middleware.CtxDebug(ctx) != "" {
+	if cmenv.NotProd() || cm.ErrorCode(err) == cm.RuntimePanic || headers.CtxDebug(ctx) != "" {
 		PrintErrorWithStack(ctx, err, stacktrace)
 	}
 	go SendErrorToBot(ctx, bot, rpcName, session, req, twError, nil, d, lvl, stacktrace)

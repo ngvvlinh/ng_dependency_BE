@@ -1,12 +1,12 @@
 package drivers
 
 import (
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/l"
 )
 
-func Drivers(env cm.EnvType) []*whitelabel.WL {
+func Drivers(env cmenv.EnvType) []*whitelabel.WL {
 	return []*whitelabel.WL{
 		ETop(env),
 		ITopX(env),
@@ -27,15 +27,15 @@ func ternary(cond bool, whenTrue string, whenFalse string) string {
 	return whenFalse
 }
 
-func baseHost(env cm.EnvType) string {
+func baseHost(env cmenv.EnvType) string {
 	switch env {
-	case cm.EnvDev:
+	case cmenv.EnvDev:
 		return "d.etop.vn"
 
-	case cm.EnvSandbox:
+	case cmenv.EnvSandbox:
 		return "s.etop.vn"
 
-	case cm.EnvStag:
+	case cmenv.EnvStag:
 		return "g.etop.vn"
 
 	default:
@@ -44,13 +44,13 @@ func baseHost(env cm.EnvType) string {
 	}
 }
 
-func (c config) host(env cm.EnvType) string {
-	if env == cm.EnvProd {
+func (c config) host(env cmenv.EnvType) string {
+	if env == cmenv.EnvProd {
 		return c.prodHost
 	}
 	return c.key + "." + baseHost(env)
 }
 
-func (c config) siteUrl(env cm.EnvType, path string) string {
+func (c config) siteUrl(env cmenv.EnvType, path string) string {
 	return "https://" + c.host(env) + path
 }

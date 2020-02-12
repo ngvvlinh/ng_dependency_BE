@@ -18,6 +18,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	cmWrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -294,7 +295,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 
 				lvl := xerrors.GetTraceLevel(_err)
 				if lvl <= xerrors.LevelTrival {
-					if cm.IsDev() {
+					if cmenv.IsDev() {
 						ll.Warn("->"+req.RequestURI,
 							l.Duration("d", d),
 							l.String("req", string(reqData)),

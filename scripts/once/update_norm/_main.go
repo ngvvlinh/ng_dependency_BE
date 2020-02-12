@@ -1,11 +1,11 @@
 package main
 
 import (
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/jsonx"
 	"flag"
 
 	"etop.vn/backend/cmd/etop-server/config"
-	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/validate"
@@ -30,7 +30,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 
 	if db, err = cmsql.Connect(cfg.Postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))

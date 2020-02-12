@@ -15,8 +15,8 @@ import (
 	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -45,8 +45,8 @@ func main() {
 		ll.Fatal("error while loading config", l.Error(err))
 	}
 
-	cm.SetEnvironment(cfg.Env)
-	if cm.IsDev() {
+	cmenv.SetEnvironment(cfg.Env)
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 

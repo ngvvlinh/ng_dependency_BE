@@ -27,6 +27,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -61,7 +62,7 @@ func HandleImportOrders(c *httpx.Context) error {
 
 func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
-	if cm.NotProd() {
+	if cmenv.NotProd() {
 		var err error
 		debugOpts, err = parseDebugHeader(c.Req.Header)
 		if err != nil {

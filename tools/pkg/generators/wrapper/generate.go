@@ -298,7 +298,7 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 
 	{{if requireSecret $m -}}
 	// Verify secret token
-	token := middleware.GetBearerTokenFromCtx(ctx)
+	token := headers.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}

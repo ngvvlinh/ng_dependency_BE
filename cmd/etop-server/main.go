@@ -93,6 +93,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/mq"
@@ -185,12 +186,12 @@ func main() {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
 	sqltrace.Init()
 
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 	if *flTest {
@@ -286,7 +287,7 @@ func main() {
 			ll.Fatal("Unable to connect to GHN", l.Error(err))
 		}
 	} else {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
 		} else {
 			ll.Fatal("GHN: No token")
@@ -298,7 +299,7 @@ func main() {
 			ll.Fatal("Unable to connect to GHTK", l.Error(err))
 		}
 	} else {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("DEVELOPMENT. Skip connecting to GHTK.")
 		} else {
 			ll.Fatal("GHTK: No token")
@@ -311,7 +312,7 @@ func main() {
 			ll.Fatal("Unable to connect to VTPost", l.Error(err))
 		}
 	} else {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("DEVELOPMENT. Skip connecting to VTPost.")
 		} else {
 			ll.Fatal("VTPost: No token")
@@ -328,7 +329,7 @@ func main() {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}
 	} else {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.Warn("DEVELOPMENT. Skip connecting to ahamove.")
 		} else {
 			ll.Fatal("ahamove: No token")
@@ -472,7 +473,7 @@ func main() {
 	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, shippingQuery)
 	moneyTxPM.RegisterEvenHandlers(eventBus)
 
-	whiteLabel := wl.Init(cm.Env())
+	whiteLabel := wl.Init(cmenv.Env())
 	if err := whiteLabel.VerifyPartners(context.Background(), identityQuery); err != nil {
 		ll.Fatal("error loading white label partners", l.Error(err))
 	}
@@ -587,7 +588,7 @@ func main() {
 	admin.Init(eventBus, moneyTxQuery)
 
 	err = db.GetSchemaErrors()
-	if err != nil && cm.IsDev() {
+	if err != nil && cmenv.IsDev() {
 		ll.Error("Fail to verify Database", l.Error(err))
 	} else if err != nil {
 		// should move struct `callback` out of etop/model before change to ll.Fatal
@@ -600,7 +601,7 @@ func main() {
 		defer bot.SendMessage("👻 Server stopped 👻\n–––")
 	}
 
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 

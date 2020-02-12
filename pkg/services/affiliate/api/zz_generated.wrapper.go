@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/headers"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
@@ -431,7 +432,7 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 		query.Context.Claim = session.Claim
 	}
 	// Verify secret token
-	token := middleware.GetBearerTokenFromCtx(ctx)
+	token := headers.GetBearerTokenFromCtx(ctx)
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}

@@ -12,6 +12,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -56,10 +57,10 @@ func New(cfg Config) *Client {
 		env:     cfg.Env,
 	}
 	switch cfg.Env {
-	case cm.PartnerEnvTest:
+	case cmenv.PartnerEnvTest:
 		c.baseUrl = "http://apistg.ahamove.com/v1"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket_stg"
-	case cm.PartnerEnvProd:
+	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://api.ahamove.com/v1"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket"
 	default:

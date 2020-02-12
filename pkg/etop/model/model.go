@@ -16,6 +16,7 @@ import (
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/try_on"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )
@@ -365,7 +366,7 @@ func (m *Webhook) BeforeInsert() error {
 	if !validate.URL(m.URL) {
 		return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url không hợp lệ")
 	}
-	if cm.IsProd() && !strings.HasPrefix(m.URL, "https://") {
+	if cmenv.IsProd() && !strings.HasPrefix(m.URL, "https://") {
 		return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url phải là https://")
 	}
 	if len(m.Entities) == 0 {

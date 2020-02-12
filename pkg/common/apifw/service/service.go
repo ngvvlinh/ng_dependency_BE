@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"etop.vn/backend/doc"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/res/dl/imports"
 	"etop.vn/common/l"
 )
@@ -49,7 +49,7 @@ func SwaggerHandler(docFile string) http.Handler {
 		panic(err)
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if cm.IsDev() { // always reload file on dev
+		if cmenv.IsDev() { // always reload file on dev
 			data, err = doc.Asset(docFile)
 			if err != nil {
 				panic(err)

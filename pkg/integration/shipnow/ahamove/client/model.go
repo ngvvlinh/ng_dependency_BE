@@ -3,8 +3,8 @@ package client
 import (
 	"etop.vn/api/top/types/etc/shipnow_state"
 	"etop.vn/api/top/types/etc/status5"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/common/jsonx"
 )
@@ -36,7 +36,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env:    cm.PartnerEnvTest,
+		Env:    cmenv.PartnerEnvTest,
 		Name:   "ahamove_test",
 		ApiKey: "860160f707a7a8afc7bffa3e54630f40",
 	}

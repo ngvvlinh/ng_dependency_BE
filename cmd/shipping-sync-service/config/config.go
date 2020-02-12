@@ -1,7 +1,7 @@
 package config
 
 import (
-	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
@@ -31,7 +31,7 @@ func Default() Config {
 		},
 		GHN:  ghn.DefaultConfig(),
 		GHTK: ghtk.DefaultConfig(),
-		Env:  cm.EnvDev.String(),
+		Env:  cmenv.EnvDev.String(),
 	}
 	return cfg
 }

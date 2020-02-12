@@ -13,6 +13,7 @@ import (
 	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
@@ -40,9 +41,9 @@ func main() {
 		ll.Fatal("Unable to load config", l.Error(err))
 	}
 
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 

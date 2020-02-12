@@ -8,8 +8,8 @@ import (
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
 	"etop.vn/api/top/types/etc/connection_type"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/capi/dot"
 )
 
@@ -26,8 +26,8 @@ func init() {
 
 func TestShipmentManager(t *testing.T) {
 	ctx := bus.Ctx()
-	if cm.Env() == 0 {
-		cm.SetEnvironment(cm.EnvDev.String())
+	if cmenv.Env() == 0 {
+		cmenv.SetEnvironment(cmenv.EnvDev.String())
 	}
 	mockBus := bus.New()
 	mockBus.MockHandler(func(query *connectioning.GetConnectionByIDQuery) error {

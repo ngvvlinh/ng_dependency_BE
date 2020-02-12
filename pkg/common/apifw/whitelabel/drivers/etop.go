@@ -2,15 +2,16 @@ package drivers
 
 import (
 	"etop.vn/api/main/identity"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel"
-	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/common/cmenv"
 )
 
-func ETop(env cm.EnvType) *whitelabel.WL {
+const EtopID = whitelabel.TagEtop
+
+func ETop(env cmenv.EnvType) *whitelabel.WL {
 	return &whitelabel.WL{
 		Partner: identity.Partner{
-			ID:         etopmodel.TagEtop,
+			ID:         EtopID,
 			Name:       "eTop",
 			PublicName: "eTop",
 			ImageURL:   "",
@@ -18,15 +19,15 @@ func ETop(env cm.EnvType) *whitelabel.WL {
 		},
 		Config: whitelabel.Config{
 			Key: "etop",
-			Host: ternary(env == cm.EnvProd,
+			Host: ternary(env == cmenv.EnvProd,
 				"etop.vn",
 				"shop."+baseHost(env),
 			),
-			RootURL: ternary(env == cm.EnvProd,
+			RootURL: ternary(env == cmenv.EnvProd,
 				"https://etop.vn/register",
 				"https://shop."+baseHost(env),
 			),
-			AuthURL: ternary(env == cm.EnvProd,
+			AuthURL: ternary(env == cmenv.EnvProd,
 				"https://auth.etop.vn",
 				"https://auth."+baseHost(env),
 			),

@@ -2,18 +2,20 @@ package drivers
 
 import (
 	"etop.vn/api/main/identity"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel"
+	"etop.vn/backend/pkg/common/cmenv"
 )
 
-func ITopX(env cm.EnvType) *whitelabel.WL {
+const ITopXID = 1057192413421863086
+
+func ITopX(env cmenv.EnvType) *whitelabel.WL {
 	cfg := config{
 		prodHost: "itopx.vn",
 		key:      "itopx",
 	}
 	return &whitelabel.WL{
 		Partner: identity.Partner{
-			ID:         1057192413421863086,
+			ID:         ITopXID,
 			Name:       "IM Group",
 			PublicName: "IM Group",
 			ImageURL:   "",

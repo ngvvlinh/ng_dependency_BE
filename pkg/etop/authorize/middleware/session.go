@@ -13,6 +13,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/permission"
@@ -82,16 +83,6 @@ func (s *Session) GetUserID() dot.ID {
 	return 0
 }
 
-// GetBearerTokenFromCtx ...
-func GetBearerTokenFromCtx(ctx context.Context) string {
-	authHeader, ok := ctx.Value(authKey{}).(string)
-	if !ok {
-		return ""
-	}
-	token, _ := auth.FromHeaderString(authHeader)
-	return token
-}
-
 func getToken(ctx context.Context, q *StartSessionQuery) string {
 	if q.Token != "" {
 		return q.Token
@@ -102,7 +93,7 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 		return token
 	}
 	if q.Context != nil {
-		return GetBearerTokenFromCtx(q.Context)
+		return headers.GetBearerTokenFromCtx(q.Context)
 	}
 	return ""
 }

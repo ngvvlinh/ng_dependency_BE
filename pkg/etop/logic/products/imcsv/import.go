@@ -22,6 +22,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
@@ -113,7 +114,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *ident
 func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
-	if cm.NotProd() {
+	if cmenv.NotProd() {
 		var err error
 		debugOpts, err = parseDebugHeader(c.Req.Header)
 		if err != nil {

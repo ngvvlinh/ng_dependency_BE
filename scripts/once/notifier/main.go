@@ -7,8 +7,8 @@ import (
 	"etop.vn/backend/cmd/etop-server/config"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/sqlstore"
@@ -32,7 +32,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 
 	if db, err = cmsql.Connect(cfg.Postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))

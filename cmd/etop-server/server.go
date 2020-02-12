@@ -16,10 +16,11 @@ import (
 	"etop.vn/backend/com/external/payment/vtpay"
 	vtpaygatewayaggregate "etop.vn/backend/com/external/payment/vtpay/gateway/aggregate"
 	vtpaygatewayserver "etop.vn/backend/com/external/payment/vtpay/gateway/server"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
+	"etop.vn/backend/pkg/common/cmenv"
+	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/sql/sqltrace"
 	api "etop.vn/backend/pkg/etop/api"
@@ -77,7 +78,7 @@ func startEtopServer() *http.Server {
 		apiMux := http.NewServeMux()
 		apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
 		mux.Handle("/api/", http.StripPrefix("/api",
-			middleware.ForwardHeaders(apiMux)))
+			headers.ForwardHeaders(apiMux)))
 
 		api.NewEtopServer(apiMux)
 		sadmin.NewSadminServer(apiMux)
@@ -90,7 +91,7 @@ func startEtopServer() *http.Server {
 		// /v1/
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
-		mux.Handle("/v1/", http.StripPrefix("/v1", middleware.ForwardHeaders(v1Mux)))
+		mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
 
 		partner.NewPartnerServer(v1Mux)
 		xshop.NewShopServer(v1Mux)
@@ -101,7 +102,7 @@ func startEtopServer() *http.Server {
 		// Register import handlers
 		{
 			rt := httpx.New()
-			mux.Handle("/api/admin.Import/", middleware.ForwardHeaders(rt))
+			mux.Handle("/api/admin.Import/", headers.ForwardHeaders(rt))
 			rt.Use(httpx.RecoverAndLog(botImport, false))
 			rt.Use(httpx.Auth(permission.EtopAdmin))
 
@@ -119,7 +120,7 @@ func startEtopServer() *http.Server {
 		// Register shop import handlers
 		{
 			rt := httpx.New()
-			mux.Handle("/api/shop.Import/", middleware.ForwardHeaders(rt))
+			mux.Handle("/api/shop.Import/", headers.ForwardHeaders(rt))
 			rt.Use(httpx.RecoverAndLog(botImport, false))
 			rt.Use(httpx.Auth(permission.Shop))
 			rt.POST("/api/shop.Import/Orders", orderimcsv.HandleImportOrders)
@@ -130,7 +131,7 @@ func startEtopServer() *http.Server {
 		{
 			rt := httpx.New()
 			mux.Handle("/api/event-stream",
-				middleware.ForwardHeaders(rt, middleware.Config{
+				headers.ForwardHeaders(rt, headers.Config{
 					AllowQueryAuthorization: true,
 				}))
 			rt.Use(httpx.RecoverAndLog(botDefault, false))
@@ -349,7 +350,7 @@ func startAhamoveWebhookServer() *http.Server {
 
 func tryOnDev(err error) {
 	if err != nil {
-		if cm.IsDev() {
+		if cmenv.IsDev() {
 			ll.S.Warn("DEVELOPMENT. IGNORED: ", l.Error(err))
 		} else {
 			ll.S.Fatal(err)

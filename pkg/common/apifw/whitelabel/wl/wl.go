@@ -3,15 +3,15 @@ package wl
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/capi/dot"
 )
 
 var whiteLabel *whitelabel.WhiteLabel
 
-func Init(env cm.EnvType) *whitelabel.WhiteLabel {
+func Init(env cmenv.EnvType) *whitelabel.WhiteLabel {
 	if whiteLabel != nil {
 		panic("already init")
 	}

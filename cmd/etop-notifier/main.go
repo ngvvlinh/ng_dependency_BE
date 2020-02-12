@@ -16,12 +16,13 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
+	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/common/l"
 )
@@ -46,13 +47,13 @@ func main() {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cm.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
-	wl.Init(cm.Env())
+	wl.Init(cmenv.Env())
 
 	ctx, ctxCancel = context.WithCancel(context.Background())
 	go func() {
@@ -67,7 +68,7 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
@@ -102,7 +103,7 @@ func main() {
 				ll.Fatal("Unable to connect to Onesignal", l.Error(err))
 			}
 		} else {
-			if cm.IsDev() {
+			if cmenv.IsDev() {
 				ll.Warn("DEVELOPMENT. Skip connect to Onesignal")
 			} else {
 				ll.Fatal("Onesignal: No apikey")
@@ -115,7 +116,7 @@ func main() {
 	// wraphandler.NewHandlerServer(apiMux, nil, cfg.Secret)
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/", middleware.ForwardHeaders(apiMux))
+	mux.Handle("/api/", headers.ForwardHeaders(apiMux))
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
 		Handler: mux,

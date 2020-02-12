@@ -8,8 +8,8 @@ import (
 	"etop.vn/api/main/invitation"
 	crmsyncconfig "etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/captcha"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/email"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
@@ -141,7 +141,7 @@ func Default() Config {
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Env:            cm.EnvDev.String(),
+		Env:            cmenv.EnvDev.String(),
 		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
 		Vtiger:         crmsyncconfig.DefaultVtiger(),
@@ -205,7 +205,7 @@ func Load(isTest bool) (Config, error) {
 	if cfg.Haravan.Secret == "" {
 		return cfg, errors.New("Empty Haravan secret")
 	}
-	if cfg.ThirdPartyHost == "" && !cm.IsDev() {
+	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
 		return cfg, errors.New("Empty third_party_host")
 	}
 	if cfg.GHNWebhook.Endpoint == "" {

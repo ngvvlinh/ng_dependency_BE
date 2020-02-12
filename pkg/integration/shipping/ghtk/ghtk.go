@@ -17,6 +17,7 @@ import (
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
@@ -34,7 +35,7 @@ func (c *Carrier) getClient(code byte) (*ghtkclient.Client, error) {
 		return client, nil
 	}
 
-	if cm.IsDev() {
+	if cmenv.IsDev() {
 		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for GHTK", nil)
 	}
 	return nil, cm.Error(cm.InvalidArgument, "ghtk: invalid client code", nil)

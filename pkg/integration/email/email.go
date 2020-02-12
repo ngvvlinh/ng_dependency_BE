@@ -10,6 +10,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
@@ -130,7 +131,7 @@ func (c *Client) SendMail(ctx context.Context, cmd *SendEmailCommand) error {
 	addrs := make([]string, len(cmd.ToAddresses))
 	for i, address := range cmd.ToAddresses {
 		addr, _, ok := validate.TrimTest(address)
-		if cm.IsDevOrStag() && !ok {
+		if cmenv.IsDevOrStag() && !ok {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ có thể gửi email đến địa chỉ test trên dev!")
 		}
 		addrs[i] = addr

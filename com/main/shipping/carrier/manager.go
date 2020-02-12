@@ -24,6 +24,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/syncgroup"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cipherx"
+	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -65,7 +66,7 @@ func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning
 		LocationQS:     locationQS,
 		ConnectionQS:   connectionQS,
 		connectionAggr: connectionAggr,
-		Env:            cm.PartnerEnv(),
+		Env:            cmenv.PartnerEnv(),
 		redisStore:     redisS,
 		cipherx:        _cipherx,
 	}
