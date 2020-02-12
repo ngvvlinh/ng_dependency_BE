@@ -279,6 +279,11 @@ func loadAndCreateProducts(
 		}
 
 		if rowProduct.QuantityAvail != 0 {
+			var imageURL string
+			if len(createVariantCmd.CreateVariantRequest.ImageUrls) > 0 {
+				imageURL = createVariantCmd.CreateVariantRequest.ImageUrls[0]
+			}
+
 			createStocktakeCmd.TotalQuantity += rowProduct.QuantityAvail
 			// Prepare create stocktake
 			var stocktakeLine = &topintshop.StocktakeLine{
@@ -289,7 +294,7 @@ func loadAndCreateProducts(
 				OldQuantity: 0,
 				NewQuantity: rowProduct.QuantityAvail,
 				Code:        createVariantCmd.CreateVariantRequest.Code,
-				ImageUrl:    createVariantCmd.CreateVariantRequest.ImageUrls[0],
+				ImageUrl:    imageURL,
 				CostPrice:   rowProduct.CostPrice,
 				Attributes:  createVariantCmd.CreateVariantRequest.Attributes,
 			}
