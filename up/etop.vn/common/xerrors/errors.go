@@ -155,22 +155,22 @@ func DefaultErrorMessage(code Code) string {
 	case NoError:
 		return ""
 	case NotFound:
-		return "Không tìm thấy. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn."
+		return "Không tìm thấy."
 	case InvalidArgument:
-		return "Có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ hotro@etop.vn."
+		return "Có lỗi xảy ra.."
 	case Internal:
-		return "Lỗi không xác định. Vui lòng thử lại hoặc liên hệ hotro@etop.vn."
+		return "Lỗi không xác định."
 	case Unauthenticated:
-		return "Vui lòng đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn."
+		return "Vui lòng đăng nhập (hoặc đăng ký nếu chưa có tài khoản)."
 	case PermissionDenied:
-		return "Không tìm thấy hoặc cần quyền truy cập. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn."
+		return "Không tìm thấy hoặc cần quyền truy cập.."
 	case Unimplemented:
 		return "TODO"
 	}
 	if s := mapCustomCodes[code]; s != nil && s.DefaultMessage != "" {
 		return s.DefaultMessage
 	}
-	return "Lỗi không xác định. Vui lòng thử lại hoặc liên hệ hotro@etop.vn."
+	return "Lỗi không xác định."
 }
 
 func IsValidStandardErrorCode(c Code) bool {

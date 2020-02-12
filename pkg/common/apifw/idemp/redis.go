@@ -1,11 +1,13 @@
 package idemp
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/redis"
 )
 
@@ -51,15 +53,15 @@ func (rg *RedisGroup) Shutdown() {
 
 // DoAndWrap is short-hand for calling AcquireLock() and then exec. It also automatically
 // removes the key if an error occurs.
-func (rg *RedisGroup) DoAndWrap(key string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
+func (rg *RedisGroup) DoAndWrap(ctx context.Context, key string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
 	execFn, err := rg.AcquireLock(key, "")
 	if err != nil {
-		return nil, WrapError(err, msg)
+		return nil, WrapError(ctx, err, msg)
 	}
 
 	v, err, idempErr := execFn(key, timeout, fn)
 	if idempErr != nil {
-		return nil, WrapError(idempErr, msg)
+		return nil, WrapError(ctx, idempErr, msg)
 	}
 	if err != nil {
 		rg.forget(key)
@@ -68,15 +70,15 @@ func (rg *RedisGroup) DoAndWrap(key string, timeout time.Duration, fn TaskFunc, 
 }
 
 // DoAndWrapWithSubkey is short-hand for calling AcquireLock() and then exec
-func (rg *RedisGroup) DoAndWrapWithSubkey(key string, subkey string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
+func (rg *RedisGroup) DoAndWrapWithSubkey(ctx context.Context, key string, subkey string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
 	execFn, err := rg.AcquireLock(key, subkey)
 	if err != nil {
-		return nil, WrapError(err, msg)
+		return nil, WrapError(ctx, err, msg)
 	}
 
 	v, err, idempErr := execFn(key, timeout, fn)
 	if idempErr != nil {
-		return nil, WrapError(idempErr, msg)
+		return nil, WrapError(ctx, idempErr, msg)
 	}
 	if err != nil {
 		rg.forget(key)
@@ -182,12 +184,12 @@ func (rg *RedisGroup) forget(key string) {
 	rg.g.Forget(key)
 }
 
-func WrapError(err error, msg string) error {
+func WrapError(ctx context.Context, err error, msg string) error {
 	switch err {
 	case ErrAnotherLock:
-		err = cm.Errorf(cm.FailedPrecondition, err, "Một người khác đang %v. Vui lòng chờ một lúc trước khi thử lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn", msg)
+		err = cm.Errorf(cm.FailedPrecondition, err, "Một người khác đang %v. Vui lòng chờ một lúc trước khi thử lại. Nếu cần thêm thông tin vui lòng liên hệ %v", msg, wl.X(ctx).CSEmail)
 	case ErrAnotherInstance:
-		err = cm.Errorf(cm.FailedPrecondition, err, "Thao tác %v đang được thực hiện. Vui lòng chờ một lúc trước khi thử lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", msg)
+		err = cm.Errorf(cm.FailedPrecondition, err, "Thao tác %v đang được thực hiện. Vui lòng chờ một lúc trước khi thử lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", msg, wl.X(ctx).CSEmail)
 	}
 	return err
 }

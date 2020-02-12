@@ -67,6 +67,7 @@ func init() {
 }
 
 func TestConnectionAggregate(t *testing.T) {
+
 	Convey("Connection Aggregate", t, func() {
 		_conn := &model.Connection{
 			ID:     connID,

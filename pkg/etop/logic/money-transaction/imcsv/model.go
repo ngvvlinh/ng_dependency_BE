@@ -1,6 +1,8 @@
 package imcsv
 
 import (
+	"context"
+
 	"etop.vn/backend/pkg/common/imcsv"
 )
 
@@ -79,8 +81,8 @@ type RowMoneyTransaction struct {
 	TotalCOD  string
 }
 
-func validateSchema(headerRow *[]string) (schema imcsv.Schema, idx indexes, errs []error, err error) {
-	i, indexer, errs, err := imcsv.ValidateAgainstSchemas(headerRow, schemas)
+func validateSchema(ctx context.Context, headerRow *[]string) (schema imcsv.Schema, idx indexes, errs []error, err error) {
+	i, indexer, errs, err := imcsv.ValidateAgainstSchemas(ctx, headerRow, schemas)
 	if err != nil || errs != nil {
 		return
 	}

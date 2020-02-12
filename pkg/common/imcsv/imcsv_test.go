@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"etop.vn/backend/pkg/common/bus"
 )
 
 var schema1 = Schema{
@@ -36,14 +38,14 @@ func TestValidateSchema(t *testing.T) {
 	Convey("Optional", t, func() {
 		Convey("All columns", func() {
 			header := strings.Split("Column 0,Column 1,Column 2,Column 3", ",")
-			idx, errs, err := schema1.ValidateSchema(&header)
+			idx, errs, err := schema1.ValidateSchema(bus.Ctx(), &header)
 			So(err, ShouldBeNil)
 			So(errs, ShouldBeEmpty)
 			So(idx.mapIndex, ShouldResemble, []int{0, 1, 2, 3})
 		})
 		Convey("Missing optional columns", func() {
 			header := strings.Split("Column 0,Column 1,Column 3", ",")
-			idx, errs, err := schema1.ValidateSchema(&header)
+			idx, errs, err := schema1.ValidateSchema(bus.Ctx(), &header)
 			So(err, ShouldBeNil)
 			So(errs, ShouldBeEmpty)
 			So(idx.mapIndex, ShouldResemble, []int{0, 1, -1, 2})

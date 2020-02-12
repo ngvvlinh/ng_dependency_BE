@@ -12,6 +12,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
@@ -33,8 +34,8 @@ type LoginUserQuery struct {
 	}
 }
 
-const MsgLoginNotFound = `Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
-const MsgLoginUnauthenticated = `Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
+const MsgLoginNotFound = `Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.`
+const MsgLoginUnauthenticated = `Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.`
 
 // Login flow
 // 1. Get user
@@ -51,7 +52,7 @@ func LoginUser(ctx context.Context, query *LoginUserQuery) error {
 	}
 	if err := bus.Dispatch(ctx, userQuery); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
-			return cm.Error(cm.NotFound, MsgLoginNotFound, nil).
+			return cm.Errorf(cm.NotFound, nil, MsgLoginNotFound, wl.X(ctx).CSEmail).
 				Log("NotFound: user does not exist")
 		}
 		return err
@@ -68,8 +69,8 @@ func LoginUser(ctx context.Context, query *LoginUserQuery) error {
 
 		// The user must be activated
 		if user.Status != status3.P {
-			return cm.Error(cm.Unauthenticated,
-				"Tài khoản của bạn đã bị khóa. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
+			return cm.Errorf(cm.Unauthenticated, nil,
+				"Tài khoản của bạn đã bị khóa. Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 		}
 		query.Result.User = user
 		return nil

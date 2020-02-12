@@ -93,7 +93,7 @@ func ServeAssetsByContentGenerator(
 		})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(`Lỗi không xác định. Vui lòng liên hệ hotro@etop.vn.`))
+			w.Write([]byte(`Lỗi không xác định.`))
 			return
 		}
 

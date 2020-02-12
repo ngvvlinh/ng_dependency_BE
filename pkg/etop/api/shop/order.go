@@ -231,7 +231,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, customerKey,
 		q.TotalAmount, q.BasketValue, q.ShopCod, variantIDs)
-	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
 		func() (interface{}, error) {
 			return s.createOrder(ctx, q)
 		}, "tạo đơn hàng")
@@ -258,7 +258,7 @@ func (s *OrderService) UpdateOrder(ctx context.Context, q *UpdateOrderEndpoint) 
 
 func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) error {
 	key := fmt.Sprintf("cancelOrder %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(key, 5*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 5*time.Second,
 		func() (interface{}, error) {
 			return s.cancelOrder(ctx, q)
 		}, "hủy đơn hàng")
@@ -291,7 +291,7 @@ func (s *OrderService) CompleteOrder(ctx context.Context, q *CompleteOrderEndpoi
 
 func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) error {
 	key := fmt.Sprintf("ConfirmOrder %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
 		func() (interface{}, error) {
 			return s.confirmOrder(ctx, q)
 		}, "Xác nhận đơn hàng")
@@ -326,7 +326,7 @@ func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint
 
 func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {
 	key := fmt.Sprintf("ConfirmOrderAndCreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
 		func() (interface{}, error) {
 			return s.confirmOrderAndCreateFulfillments(ctx, q)
 		}, "xác nhận đơn hàng")
@@ -544,7 +544,7 @@ func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippin
 
 func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) error {
 	key := fmt.Sprintf("CreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderID)
-	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
 		func() (interface{}, error) {
 			return s.createFulfillments(ctx, q)
 		}, "tạo đơn giao hàng")
@@ -605,7 +605,7 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfi
 
 func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) error {
 	key := fmt.Sprintf("CancelFulfillment %v-%v", q.Context.Shop.ID, q.FulfillmentID)
-	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
 		func() (interface{}, error) {
 			return s.cancelFulfillment(ctx, q)
 		}, "huỷ đơn giao hàng")

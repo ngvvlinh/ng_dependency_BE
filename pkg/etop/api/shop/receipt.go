@@ -41,7 +41,7 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndp
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.LedgerId, q.Title, q.Description, q.Amount, q.Type)
 	result, err := idempgroup.DoAndWrap(
-		key, 15*time.Second,
+		ctx, key, 15*time.Second,
 		func() (interface{}, error) { return s.createReceipt(ctx, q) },
 		"Create receipt")
 	if err != nil {

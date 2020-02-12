@@ -1,10 +1,14 @@
 package validate
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 )
 
 func TestNormalize(t *testing.T) {
@@ -175,10 +179,12 @@ func TestNormalize(t *testing.T) {
 				"mothaibabon1234@yahoo.com", true,
 			},
 		}
-
+		wlx := wl.Init(1)
+		var ctx = context.Background()
+		ctx = wlx.WrapContext(ctx, drivers.ITopXID)
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				err := PopularEmailAddressMistake(tt.email)
+				err := PopularEmailAddressMistake(ctx, tt.email)
 				if err != nil {
 					require.Equal(t, tt.ok, false)
 				} else {

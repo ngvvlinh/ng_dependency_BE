@@ -16,6 +16,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/randgenerator"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	etopmodel "etop.vn/backend/pkg/etop/model"
@@ -130,7 +131,7 @@ func (d *GHTKDriver) CreateFulfillment(
 		cmd.Order.ReturnTel = ffm.AddressReturn.Phone
 		returnEmail := ffm.AddressReturn.Email
 		if returnEmail == "" {
-			returnEmail = "hotro@etop.vn"
+			returnEmail = wl.X(ctx).CSEmail
 		}
 		// ReturnEmail can not empty
 		cmd.Order.ReturnEmail = returnEmail

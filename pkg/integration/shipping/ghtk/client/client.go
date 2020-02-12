@@ -12,6 +12,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
@@ -214,7 +215,7 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với GHTK", err)
 	}
-	err = handleResponse(res, resp, msg)
+	err = handleResponse(ctx, res, resp, msg)
 	return err
 }
 
@@ -230,11 +231,11 @@ func (c *Client) sendPostRequest(ctx context.Context, path string, req interface
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với GHTK", err)
 	}
-	err = handleResponse(res, resp, msg)
+	err = handleResponse(ctx, res, resp, msg)
 	return err
 }
 
-func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg string) error {
+func handleResponse(ctx context.Context, res *httpreq.RestyResponse, result ResponseInterface, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()
@@ -242,10 +243,10 @@ func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg st
 	case status >= 200 && status < 300:
 		if result != nil {
 			if httpreq.IsNullJsonRaw(body) {
-				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ Giaohangtietkiem: null response. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+				return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giaohangtietkiem: null response. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 			}
 			if err = jsonx.Unmarshal(body, result); err != nil {
-				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giaohangtietkiem: %v. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giaohangtietkiem: %v. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 			}
 			cr := result.GetCommonResponse()
 			if !cr.Success {
@@ -271,6 +272,6 @@ func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg st
 
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ Giaohangtietkiem. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
 	default:
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giaohangtietkiem: Invalid status (%v). Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giaohangtietkiem: Invalid status (%v). Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", status, wl.X(ctx).CSEmail)
 	}
 }

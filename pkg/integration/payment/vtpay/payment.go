@@ -6,6 +6,7 @@ import (
 	paymentmanager "etop.vn/api/external/payment/manager"
 	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 )
 
@@ -80,7 +81,7 @@ func (p *Provider) CheckReturnData(ctx context.Context, args *servicepaymentmana
 	}
 
 	if errMsg == "" {
-		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Mã lỗi '%v' của VTPay không hợp lệ. Vui lòng liên hệ hi@etop.vn để biết thêm chi tiết.", args.Code)
+		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Mã lỗi '%v' của VTPay không hợp lệ. Vui lòng liên hệ %v để biết thêm chi tiết.", args.Code, wl.X(ctx).CSEmail)
 	}
 	return nil, cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ VTPay: %v", errMsg)
 }

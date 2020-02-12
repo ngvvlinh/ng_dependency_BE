@@ -13,6 +13,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
@@ -131,7 +132,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ghtkCmd.Request.Order.ReturnTel = ffm.AddressReturn.Phone
 		returnEmail := ffm.AddressReturn.Email
 		if returnEmail == "" {
-			returnEmail = "hotro@etop.vn"
+			returnEmail = wl.X(ctx).CSEmail
 		}
 		// ReturnEmail can not empty
 		ghtkCmd.Request.Order.ReturnEmail = returnEmail

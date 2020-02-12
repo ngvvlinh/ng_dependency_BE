@@ -84,7 +84,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 		return cm.Errorf(cm.InvalidArgument, err, "File không đúng định dạng")
 	}
 
-	schema, idx, _errs, err := validateSchema(&rows[0])
+	schema, idx, _errs, err := validateSchema(c.Context(), &rows[0])
 	if err != nil {
 		return err
 	}

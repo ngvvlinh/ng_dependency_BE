@@ -22,6 +22,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/code/gencode"
@@ -138,7 +139,7 @@ func Init(
 //   - If both email and phone exist (but not activated) -> Merge them.
 //   - Otherwise, update existing user with the other identifier.
 func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
-	if err := validateRegister(r.CreateUserRequest); err != nil {
+	if err := validateRegister(ctx, r.CreateUserRequest); err != nil {
 		return err
 	}
 	if r.Context.Claim != nil {
@@ -163,7 +164,7 @@ func (s *UserService) RegisterUsingToken(ctx context.Context, r *RegisterUsingTo
 	if r.Context.Extra[keyRequestVerifyPhone] == "" || r.Context.Extra[keyRequestPhoneVerificationVerified] == "" {
 		return cm.Error(cm.InvalidArgument, "Bạn vui lòng xác nhận só điện thoại trước khi đăng kí", nil)
 	}
-	if err := validateRegister(r.CreateUserRequest); err != nil {
+	if err := validateRegister(ctx, r.CreateUserRequest); err != nil {
 		return err
 	}
 
@@ -281,9 +282,9 @@ func createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.
 	return query.Result, nil
 }
 
-func validateRegister(r *etop.CreateUserRequest) error {
+func validateRegister(ctx context.Context, r *etop.CreateUserRequest) error {
 	if !r.AgreeTos {
-		return cm.Error(cm.InvalidArgument, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
+		return cm.Errorf(cm.InvalidArgument, nil, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !r.AgreeEmailInfo.Valid {
 		return cm.Error(cm.InvalidArgument, "Missing agree_email_info", nil)
@@ -303,7 +304,7 @@ func validateRegister(r *etop.CreateUserRequest) error {
 		if !ok {
 			return cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
 		}
-		if err := validate.PopularEmailAddressMistake(emailNorm.String()); err != nil {
+		if err := validate.PopularEmailAddressMistake(ctx, emailNorm.String()); err != nil {
 			return err
 		}
 	}
@@ -394,7 +395,7 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 
 func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoint) error {
 	key := fmt.Sprintf("ResetPassword %v-%v", r.Email, r.Phone)
-	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
 		func() (interface{}, error) {
 			return s.resetPassword(ctx, r)
 		}, "gửi email khôi phục mật khẩu")
@@ -409,10 +410,10 @@ func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoin
 func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
 	// không thể gửi cùng 1 lúc cả phone và email
 	if r.Email == "" && r.Phone == "" {
-		return r, cm.Error(cm.FailedPrecondition, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email != "" && r.Phone != "" {
-		return r, cm.Error(cm.FailedPrecondition, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Phone != "" {
 		return s.resetPasswordUsingPhone(ctx, r)
@@ -451,17 +452,17 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 		ExpiresIn:   exprisesIn,
 		Code:        "ok",
 		Msg: fmt.Sprintf(
-			"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", r.Phone),
+			"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail),
 	}
 	return r, nil
 }
 
 func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
 	if !enabledEmail {
-		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	query := &identitymodelx.GetUserByLoginQuery{
@@ -469,7 +470,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return r, cm.MapError(err).
-			Wrap(cm.NotFound, "Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.").
+			Wrap(cm.NotFound, fmt.Sprintf("Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
 	}
 	user := query.Result.User
@@ -516,7 +517,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 	r.Result = &etop.ResetPasswordResponse{
 		Code: "ok",
 		Msg: fmt.Sprintf(
-			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address),
+			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail),
 	}
 	return r, nil
 }
@@ -531,7 +532,7 @@ func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpo
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return cm.MapError(err).
-			Wrap(cm.Unauthenticated, "Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.").
+			Wrap(cm.Unauthenticated, fmt.Sprintf("Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập. Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
 	}
 
@@ -556,7 +557,7 @@ func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpo
 
 func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) error {
 	key := fmt.Sprintf("ChangePasswordUsingToken %v-%v-%v", r.ResetPasswordToken, r.NewPassword, r.ConfirmPassword)
-	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.changePasswordUsingToken(ctx, r)
 		}, "khôi phục mật khẩu")
@@ -590,7 +591,7 @@ func changePasswordUsingTokenForEmail(ctx context.Context, r *ChangePasswordUsin
 	var v map[string]string
 	tok, err := authStore.Validate(auth.UsageResetPassword, r.ResetPasswordToken, &v)
 	if err != nil {
-		return r, cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", err)
+		return r, cm.Errorf(cm.InvalidArgument, err, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if err := changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
@@ -631,7 +632,7 @@ func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Co
 	}
 	user := query.Result
 	if tokUserID != user.ID {
-		return cm.Error(cm.InvalidArgument, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil).WithMeta("reason", "user is not correct")
+		return cm.Errorf(cm.InvalidArgument, nil, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "user is not correct")
 	}
 	if len(newPassword) < 8 {
 		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
@@ -860,7 +861,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 
 func (s *UserService) SendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) error {
 	key := fmt.Sprintf("SendEmailVerification %v-%v", r.Context.User.ID, r.Email)
-	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.sendEmailVerification(ctx, r)
 		}, "gửi email xác nhận tài khoản")
@@ -874,19 +875,19 @@ func (s *UserService) SendEmailVerification(ctx context.Context, r *SendEmailVer
 
 func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) (*SendEmailVerificationEndpoint, error) {
 	if !enabledEmail {
-		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email == "" {
-		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	user := r.Context.User.User
 	emailNorm, ok := validate.NormalizeEmail(r.Email)
 	if !ok || user.Email != emailNorm.String() {
-		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !user.EmailVerifiedAt.IsZero() {
 		r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
@@ -933,7 +934,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
+		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
 
 	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
 		UserID:                  user.ID,
@@ -947,7 +948,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 
 func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
 	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
-	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
 		func() (interface{}, error) {
 			return s.sendPhoneVerification(ctx, r)
 		}, "gửi tin nhắn xác nhận số điện thoại")
@@ -961,10 +962,10 @@ func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVer
 
 func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) (*SendPhoneVerificationEndpoint, error) {
 	if !enabledSMS {
-		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Phone == "" {
-		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	// update token when user not exists
 	if r.Context.UserID == 0 {
@@ -979,18 +980,18 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	user := getUserByID.Result
 	_, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
-		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if err := verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, smsVerificationTpl, r.Context, true); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", r.Phone))
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail))
 	return r, nil
 }
 func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.verifyEmailUsingToken(ctx, r)
 		}, "xác nhận địa chỉ email")
@@ -1010,12 +1011,12 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 	var v map[string]string
 	tok, err := authStore.Validate(auth.UsageEmailVerification, r.VerificationToken, &v)
 	if err != nil {
-		return r, cm.Error(cm.InvalidArgument, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	user := r.Context.User.User
 	if user.ID != tok.UserID || user.Email != v["email"] {
-		return r, cm.Error(cm.InvalidArgument, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ %b=v.", wl.X(ctx).CSEmail)
 	}
 
 	if user.EmailVerifiedAt.IsZero() {
@@ -1035,7 +1036,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 
 func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.Token, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.verifyPhoneUsingToken(ctx, r)
 		}, "xác nhận số điện thoại")
@@ -1116,7 +1117,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 
 func (s *UserService) UpgradeAccessToken(ctx context.Context, r *UpgradeAccessTokenEndpoint) error {
 	key := fmt.Sprintf("UpgradeAccessToken %v-%v", r.Context.User.ID, r.Stoken)
-	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
 		func() (interface{}, error) {
 			return s.upgradeAccessToken(ctx, r)
 		}, "cập nhật thông tin")
@@ -1182,7 +1183,7 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 
 func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) error {
 	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", r.Context.User.ID, r.Email, r.AccountId)
-	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
 		func() (interface{}, error) {
 			return s.sendSTokenEmail(ctx, r)
 		}, "gửi email xác nhận")
@@ -1196,13 +1197,13 @@ func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 
 func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) (*SendSTokenEmailEndpoint, error) {
 	if !enabledEmail {
-		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email == "" {
-		return r, cm.Error(cm.FailedPrecondition, "Thiếu thông tin email. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 	if r.AccountId == 0 {
 		return r, cm.Error(cm.InvalidArgument, "Missing account_id", nil)
@@ -1220,10 +1221,10 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	emailNorm, ok := validate.NormalizeEmail(r.Email)
 	userEmail, _ := validate.NormalizeEmail(user.Email)
 	if !ok {
-		return r, cm.Error(cm.InvalidArgument, "Email không hợp lệ. Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 	if emailNorm != userEmail {
-		return r, cm.Error(cm.InvalidArgument, "Email không đúng. Vui lòng thử lại hoặc liên hệ hotro@etop.vn.", nil)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Email không đúng. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 
 	_, code, _, err := generateToken(auth.UsageSToken, user.ID, true, 2*60*60, user.Email)
@@ -1262,7 +1263,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
+		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
 	return r, nil
 }
 
@@ -1373,7 +1374,7 @@ func sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificat
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phone, wl.X(ctx).CSEmail))
 	return r, nil
 }
 

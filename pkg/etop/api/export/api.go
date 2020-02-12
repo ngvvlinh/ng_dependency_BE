@@ -35,7 +35,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 	// idempotency
 	key := shop.ID.String()
 	if err := idempgroup.Acquire(key, claim.Token); err != nil {
-		return nil, idemp.WrapError(err, "xuất dữ liệu")
+		return nil, idemp.WrapError(ctx, err, "xuất dữ liệu")
 	}
 	defer func() {
 		e := recover()

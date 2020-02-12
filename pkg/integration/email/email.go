@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
@@ -139,7 +140,7 @@ func (c *Client) SendMail(ctx context.Context, cmd *SendEmailCommand) error {
 
 	err := c.sendMail(ctx, addrs, cmd)
 	if err != nil {
-		return cm.Errorf(cm.Internal, err, "Không thể gửi email đến địa chỉ %v (%v). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", strings.Join(addrs, ", "), err)
+		return cm.Errorf(cm.Internal, err, "Không thể gửi email đến địa chỉ %v (%v). Nếu cần thêm thông tin, vui lòng liên hệ %v.", strings.Join(addrs, ", "), err, wl.X(ctx).CSEmail)
 	}
 	return nil
 }

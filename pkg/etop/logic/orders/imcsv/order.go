@@ -8,6 +8,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 )
@@ -71,7 +72,7 @@ func VerifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Index
 			line = ln
 			break
 		}
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Cửa hàng chưa tạo sản phẩm nhưng vẫn điền mã sản phẩm. Vui lòng thêm sản phẩm vào cửa hàng hoặc xóa mã sản phẩm khỏi file import (ô %v). Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", imcsv.CellName(line.RowIndex, idxVariantEdCode))
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Cửa hàng chưa tạo sản phẩm nhưng vẫn điền mã sản phẩm. Vui lòng thêm sản phẩm vào cửa hàng hoặc xóa mã sản phẩm khỏi file import (ô %v). Nếu cần thêm thông tin vui lòng liên hệ %v.", imcsv.CellName(line.RowIndex, idxVariantEdCode), wl.X(ctx).CSEmail)
 	}
 
 	var variantMap map[string]*catalog.ShopVariantWithProduct
@@ -131,8 +132,9 @@ func VerifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Index
 			if v == nil {
 				err := imcsv.CellError(idx,
 					line.RowIndex, idxVariantEdCode,
-					`Mã phiên bản sản phẩm "%v" không tồn tại. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.`,
+					`Mã phiên bản sản phẩm "%v" không tồn tại. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.`,
 					line.VariantEdCode,
+					wl.X(ctx).CSEmail,
 				)
 				errs = append(errs, err)
 				if len(errs) >= MaxCellErrors {

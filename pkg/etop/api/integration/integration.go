@@ -18,6 +18,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
@@ -266,7 +267,7 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 
 func (s *IntegrationService) RequestLogin(ctx context.Context, r *RequestLoginEndpoint) error {
 	key := fmt.Sprintf("RequestLogin %v", r.Login)
-	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
+	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
 		func() (interface{}, error) {
 			return s.requestLogin(ctx, r)
 		}, "gửi mã đăng nhập")
@@ -370,7 +371,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return r, err
 		}
-		msg = fmt.Sprintf("Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", emailNorm)
+		msg = fmt.Sprintf("Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", emailNorm, wl.X(ctx).CSEmail)
 
 	case phoneNorm != "":
 		var b strings.Builder
@@ -389,7 +390,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return r, err
 		}
-		msg = fmt.Sprintf("Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", phoneNorm)
+		msg = fmt.Sprintf("Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin vui lòng liên hệ %v.", phoneNorm, wl.X(ctx).CSEmail)
 
 	default:
 		panic("unexpected")
@@ -582,7 +583,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		return err
 	}
 	if requestInfo.ShopID != 0 && len(availableAccounts) == 0 {
-		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản %v). Liên hệ với hotro@etop.vn để được hướng dẫn.", requestInfo.ShopID).
+		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản %v). Liên hệ với %v để được hướng dẫn.", requestInfo.ShopID, wl.X(ctx).CSEmail).
 			WithMeta("reason", "shop_id not found")
 	}
 	if requestInfo.ExternalShopID != "" && len(availableAccounts) != 0 {
@@ -667,7 +668,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	}
 
 	if !r.AgreeTos {
-		return cm.Error(cm.InvalidArgument, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
+		return cm.Errorf(cm.InvalidArgument, nil, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ %.", wl.X(ctx).CSEmail)
 	}
 	if !r.AgreeEmailInfo.Valid {
 		return cm.Error(cm.InvalidArgument, "Missing agree_email_info", nil)
@@ -910,7 +911,7 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *SessionInfoEndp
 	redirectURL := ""
 	if claim.Extra != nil && claim.Extra["request_login"] != "" {
 		var requestInfo apipartner.PartnerShopToken
-		jsonx.Unmarshal([]byte(claim.Extra["request_login"]), &requestInfo)
+		_ = jsonx.Unmarshal([]byte(claim.Extra["request_login"]), &requestInfo)
 		actions = getActionsFromConfig(requestInfo.Config)
 		redirectURL = requestInfo.RedirectURL
 	}

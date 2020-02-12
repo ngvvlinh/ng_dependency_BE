@@ -44,7 +44,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	shop := claim.Shop
 	key := shop.ID.String()
 
-	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
+	resp, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleImportOrder(c.Req.Context(), c, shop, userID)
 	}, "import đơn hàng")
 	if err != nil {
@@ -181,7 +181,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	cleanRows(rows)
 	imp.Rows = rows
 
-	idx, _errs, err := schema.ValidateSchema(&rows[0])
+	idx, _errs, err := schema.ValidateSchema(ctx, &rows[0])
 	if err != nil {
 		return nil, err
 	}

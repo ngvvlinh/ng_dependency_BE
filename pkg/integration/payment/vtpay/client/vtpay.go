@@ -11,14 +11,13 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/gorilla/schema"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
+	"github.com/gorilla/schema"
 )
 
 var (
@@ -175,5 +174,5 @@ func (c *Client) sendPostFormRequest(ctx context.Context, fullURL string, req in
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối VTPay")
 	}
-	return httpreq.HandleResponse(res, resp, msg)
+	return httpreq.HandleResponse(ctx, res, resp, msg)
 }

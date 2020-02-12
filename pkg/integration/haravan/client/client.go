@@ -11,6 +11,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -104,7 +105,7 @@ func (c *Client) GetAccessToken(ctx context.Context, req *GetAccessTokenRequest)
 		return nil, cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
 	}
 
-	if err = handleResponse(res, &resp, ""); err != nil {
+	if err = handleResponse(ctx, res, &resp, ""); err != nil {
 		return nil, err
 	}
 	return &resp, nil
@@ -145,7 +146,7 @@ func (c *Client) sendGetRequest(ctx context.Context, connection Connection, path
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Haravan", err)
 	}
-	return handleResponse(res, resp, msg)
+	return handleResponse(ctx, res, resp, msg)
 }
 
 func (c *Client) sendPostRequest(ctx context.Context, connection Connection, path string, req interface{}, resp interface{}, msg string) error {
@@ -160,7 +161,7 @@ func (c *Client) sendPostRequest(ctx context.Context, connection Connection, pat
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
 	}
-	return handleResponse(res, resp, msg)
+	return handleResponse(ctx, res, resp, msg)
 }
 
 func (c *Client) SendDeleteRequest(ctx context.Context, connection Connection, path string, req interface{}, resp interface{}, msg string) error {
@@ -175,7 +176,7 @@ func (c *Client) SendDeleteRequest(ctx context.Context, connection Connection, p
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
 	}
-	return handleResponse(res, resp, msg)
+	return handleResponse(ctx, res, resp, msg)
 }
 
 func (c *Client) SendPutRequest(ctx context.Context, connection Connection, url string, req interface{}, resp interface{}, msg string) error {
@@ -188,14 +189,14 @@ func (c *Client) SendPutRequest(ctx context.Context, connection Connection, url 
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
 	}
-	return handleResponse(res, resp, msg)
+	return handleResponse(ctx, res, resp, msg)
 }
 
 func buildUrl(subdomain string, path string) string {
 	return fmt.Sprintf("https://%v.myharavan.com/admin/%v.json", subdomain, path)
 }
 
-func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) error {
+func handleResponse(ctx context.Context, res *httpreq.RestyResponse, result interface{}, msg string) error {
 	status := res.StatusCode()
 	body := res.Body()
 	switch {
@@ -226,7 +227,7 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 			errJSON.Meta = meta
 		}
 
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ Haravan: %v. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn", errJSON.Error()).WithMetaM(meta)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ Haravan: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errJSON.Error(), wl.X(ctx).CSEmail).WithMetaM(meta)
 	default:
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Haravan: %v. Invalid status (%v).", msg, status)
 	}

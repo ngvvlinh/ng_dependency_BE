@@ -12,6 +12,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
@@ -212,7 +213,7 @@ func (c *ClientImpl) CalcShippingFee(ctx context.Context, req *CalcShippingFeeRe
 	var data ShippingFeeData
 	if err := jsonx.Unmarshal(_resp.Data, &data); err != nil {
 
-		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 
 	}
 
@@ -317,7 +318,7 @@ func (c *ClientImpl) sendGetRequest(ctx context.Context, path string, params int
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với VTPost", err)
 	}
-	err = handleResponse(res, resp, msg)
+	err = handleResponse(ctx, res, resp, msg)
 	return err
 }
 
@@ -329,11 +330,11 @@ func (c *ClientImpl) sendPostRequest(ctx context.Context, path string, body inte
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với VTPost: %v (%v)", msg, err)
 	}
-	err = handleResponse(res, resp, msg)
+	err = handleResponse(ctx, res, resp, msg)
 	return err
 }
 
-func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) error {
+func handleResponse(ctx context.Context, res *httpreq.RestyResponse, result interface{}, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()
@@ -345,10 +346,10 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 	case status >= 200 && status < 300:
 		if result != nil {
 			if httpreq.IsNullJsonRaw(body) {
-				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ viettelpost: null response. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+				return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: null response. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 			}
 			if err = jsonx.Unmarshal(body, result); err != nil {
-				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 			}
 			var responseFormat ResponseInterface
 			if err := jsonx.Unmarshal(body, &responseFormat); err == nil {
@@ -358,7 +359,7 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 			}
 
 			if err = jsonx.Unmarshal(body, result); err != nil {
-				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ viettelpost: %v. Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 			}
 		}
 		return nil
@@ -379,6 +380,6 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ viettelpost. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
 	default:
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: Invalid status (%v). Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: Invalid status (%v). Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v", status, wl.X(ctx).CSEmail)
 	}
 }

@@ -227,8 +227,8 @@ const (
 	UserEmailWLPartnerIDKey = "user_phone_wl_partner_id_idx"
 	UserPhoneWLPartnerIDKey = "user_email_wl_partner_id_idx"
 
-	MsgCreateUserDuplicatedPhone = `Số điện thoại đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
-	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.`
+	MsgCreateUserDuplicatedPhone = `Số điện thoại đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`
+	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`
 )
 
 var mapUserError = map[string]string{
@@ -274,7 +274,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		msg := xerr.Err.Error()
 		for errKey, errMsg := range mapUserError {
 			if strings.Contains(msg, errKey) {
-				err = cm.Errorf(cm.FailedPrecondition, nil, errMsg)
+				err = cm.Errorf(cm.FailedPrecondition, nil, errMsg, wl.X(ctx).CSEmail)
 			}
 		}
 	}

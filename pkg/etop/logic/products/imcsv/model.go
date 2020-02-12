@@ -1,6 +1,8 @@
 package imcsv
 
 import (
+	"context"
+
 	"etop.vn/backend/com/main/catalog/convert"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -192,8 +194,8 @@ func initIndexes(schema imcsv.Schema) indexes {
 	}
 }
 
-func validateSchema(headerRow *[]string) (schema imcsv.Schema, idx indexes, errs []error, err error) {
-	i, indexer, errs, err := imcsv.ValidateAgainstSchemas(headerRow, schemas)
+func validateSchema(ctx context.Context, headerRow *[]string) (schema imcsv.Schema, idx indexes, errs []error, err error) {
+	i, indexer, errs, err := imcsv.ValidateAgainstSchemas(ctx, headerRow, schemas)
 	if err != nil || errs != nil {
 		return
 	}

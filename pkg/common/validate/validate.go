@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"context"
 	"reflect"
 	"regexp"
 	"sort"
@@ -8,11 +9,11 @@ import (
 	"strings"
 	"unsafe"
 
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"etop.vn/capi/dot"
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/text/unicode/norm"
-
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
 )
 
 const (
@@ -358,7 +359,7 @@ func NormalizeEmail(s string) (res NormalizedEmail, ok bool) {
 	return NormalizedEmail(localPart + "@" + domain), govalidator.IsEmail(s)
 }
 
-func popularEmailAddressMistake(popularDomain string, s string) error {
+func popularEmailAddressMistake(ctx context.Context, popularDomain string, s string) error {
 	ss := strings.Split(s, "@")
 	if len(ss) != 2 {
 		return cm.Errorf(cm.InvalidArgument, nil, "not an email address")
@@ -375,7 +376,7 @@ func popularEmailAddressMistake(popularDomain string, s string) error {
 			if domain[i] != popularDomain[i] && domain[i] == popularDomain[i+1] && popularDomain[i] == domain[i+1] {
 				// and the remaining is the same
 				if domain[i+2:] == popularDomain[i+2:] {
-					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ %v", popularDomain, wl.X(ctx).CSEmail)
 				}
 				return nil // check for swap only once
 			}
@@ -384,14 +385,14 @@ func popularEmailAddressMistake(popularDomain string, s string) error {
 	case len(domain) == len(popularDomain)-1: // miss one character
 		// miss the last character
 		if domain == popularDomain[:len(popularDomain)-1] {
-			return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+			return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ %v", popularDomain, wl.X(ctx).CSEmail)
 		}
 		for i := 0; i < len(domain)-1; i++ {
 			// one character is missed
 			if domain[i] != popularDomain[i] && domain[i] == popularDomain[i+1] {
 				// and the remaining is the same
 				if domain[i+1:] == popularDomain[i+2:] {
-					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn", popularDomain)
+					return cm.Errorf(cm.InvalidArgument, nil, "Có thể là bạn đang nhầm lẫn với %v. Vui lòng kiểm tra lại hoặc liên hệ %v", popularDomain, wl.X(ctx).CSEmail)
 				}
 				return nil // check for mistake only once
 			}
@@ -400,10 +401,10 @@ func popularEmailAddressMistake(popularDomain string, s string) error {
 	return nil
 }
 
-func PopularEmailAddressMistake(s string) error {
+func PopularEmailAddressMistake(ctx context.Context, s string) error {
 	s = strings.ToLower(s)
 	s, _, _ = TrimTest(s)
-	return popularEmailAddressMistake("gmail.com", s)
+	return popularEmailAddressMistake(ctx, "gmail.com", s)
 }
 
 func validateDomain(s string) bool {

@@ -11,6 +11,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
@@ -212,10 +213,10 @@ func (c *Client) sendRequest(ctx context.Context, path string, req, resp interfa
 	case status >= 200 && status < 300:
 		if resp != nil {
 			if httpreq.IsNullJsonRaw(errResp.Data) {
-				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ Giao Hang Nhanh: null response. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+				return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giao Hang Nhanh: null response. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 			}
 			if err = jsonx.Unmarshal(errResp.Data, resp); err != nil {
-				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giao Hang Nhanh: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giao Hang Nhanh: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 			}
 		}
 		return nil
@@ -237,12 +238,12 @@ func (c *Client) sendRequest(ctx context.Context, path string, req, resp interfa
 
 		// Handle "An error occur"
 		if strings.Contains(errResp.Msg.String(), "error") {
-			return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ Giao Hang Nhanh: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", errResp.Error()).WithMetaM(meta)
+			return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ Giao Hang Nhanh: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %.", errResp.Error(), wl.X(ctx).CSEmail).WithMetaM(meta)
 		}
 
-		return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ Giao Hang Nhanh: %v. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", errResp.Error()).WithMetaM(meta)
+		return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ Giao Hang Nhanh: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errResp.Error(), wl.X(ctx).CSEmail).WithMetaM(meta)
 
 	default:
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giao Hang Nhanh: Invalid status (%v). Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Giao Hang Nhanh: Invalid status (%v). Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", status, wl.X(ctx).CSEmail)
 	}
 }

@@ -1,6 +1,7 @@
 package imcsv
 
 import (
+	"context"
 	"errors"
 	"math"
 	"strconv"
@@ -94,7 +95,7 @@ func (schema Schema) MinColumns() int {
 	return minCol
 }
 
-func (schema Schema) ValidateSchema(headerRow *[]string) (idx Indexer, errs []error, _ error) {
+func (schema Schema) ValidateSchema(ctx context.Context, headerRow *[]string) (idx Indexer, errs []error, _ error) {
 	minCol := schema.MinColumns()
 	if len(*headerRow) < minCol {
 		return Indexer{}, nil, CellError(Indexer{}, 0, -1, "Số cột không đúng cấu trúc yêu cầu. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").
@@ -144,9 +145,9 @@ func (schema Schema) ValidateSchema(headerRow *[]string) (idx Indexer, errs []er
 	return Indexer{}, errs, nil
 }
 
-func ValidateAgainstSchemas(headerRow *[]string, schemas []Schema) (_ int, idx Indexer, errs []error, err error) {
+func ValidateAgainstSchemas(ctx context.Context, headerRow *[]string, schemas []Schema) (_ int, idx Indexer, errs []error, err error) {
 	for i, schema := range schemas {
-		idx, errs, err = schema.ValidateSchema(headerRow)
+		idx, errs, err = schema.ValidateSchema(ctx, headerRow)
 		if err == nil && len(errs) == 0 {
 			return i, idx, nil, nil
 		}
