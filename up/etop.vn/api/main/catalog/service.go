@@ -431,8 +431,10 @@ type UpdateBrandArgs struct {
 }
 
 type ShopBrand struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID         dot.ID
+	ShopID     dot.ID
+	ExternalID string
+	PartnerID  dot.ID
 
 	BrandName   string
 	Description string

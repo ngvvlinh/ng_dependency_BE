@@ -32,6 +32,7 @@ import (
 	shop "etop.vn/backend/pkg/etop/api/shop"
 	partner "etop.vn/backend/pkg/etop/apix/partner"
 	xshop "etop.vn/backend/pkg/etop/apix/shop"
+	whitelabelapix "etop.vn/backend/pkg/etop/apix/whitelabel"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
 	"etop.vn/backend/pkg/etop/logic/hotfix"
@@ -95,6 +96,7 @@ func startEtopServer() *http.Server {
 
 		partner.NewPartnerServer(v1Mux)
 		xshop.NewShopServer(v1Mux)
+		whitelabelapix.NewWhiteLabelServer(v1Mux)
 
 		botDefault := cfg.TelegramBot.MustConnectChannel("")
 		botImport := cfg.TelegramBot.MustConnectChannel(config.ChannelImport)

@@ -63,6 +63,25 @@ func (ft *ShopVariantFilters) ByExternalCodePtr(ExternalCode *string) *sq.Column
 	}
 }
 
+func (ft *ShopVariantFilters) ByExternalProductID(ExternalProductID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_product_id",
+		Value:  ExternalProductID,
+		IsNil:  ExternalProductID == "",
+	}
+}
+
+func (ft *ShopVariantFilters) ByExternalProductIDPtr(ExternalProductID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_product_id",
+		Value:  ExternalProductID,
+		IsNil:  ExternalProductID == nil,
+		IsZero: ExternalProductID != nil && (*ExternalProductID) == "",
+	}
+}
+
 func (ft *ShopVariantFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -511,6 +530,44 @@ func (ft *ShopProductFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilter
 		Value:  PartnerID,
 		IsNil:  PartnerID == nil,
 		IsZero: PartnerID != nil && (*PartnerID) == 0,
+	}
+}
+
+func (ft *ShopProductFilters) ByExternalBrandID(ExternalBrandID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_brand_id",
+		Value:  ExternalBrandID,
+		IsNil:  ExternalBrandID == "",
+	}
+}
+
+func (ft *ShopProductFilters) ByExternalBrandIDPtr(ExternalBrandID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_brand_id",
+		Value:  ExternalBrandID,
+		IsNil:  ExternalBrandID == nil,
+		IsZero: ExternalBrandID != nil && (*ExternalBrandID) == "",
+	}
+}
+
+func (ft *ShopProductFilters) ByExternalCategoryID(ExternalCategoryID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_category_id",
+		Value:  ExternalCategoryID,
+		IsNil:  ExternalCategoryID == "",
+	}
+}
+
+func (ft *ShopProductFilters) ByExternalCategoryIDPtr(ExternalCategoryID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_category_id",
+		Value:  ExternalCategoryID,
+		IsNil:  ExternalCategoryID == nil,
+		IsZero: ExternalCategoryID != nil && (*ExternalCategoryID) == "",
 	}
 }
 
@@ -1093,22 +1150,22 @@ func (ft *ShopCategoryFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCategoryFilters) ByParentID(ParentID dot.ID) *sq.ColumnFilter {
+func (ft *ShopCategoryFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "parent_id",
-		Value:  ParentID,
-		IsNil:  ParentID == 0,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
 	}
 }
 
-func (ft *ShopCategoryFilters) ByParentIDPtr(ParentID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *ShopCategoryFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "parent_id",
-		Value:  ParentID,
-		IsNil:  ParentID == nil,
-		IsZero: ParentID != nil && (*ParentID) == 0,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
 	}
 }
 
@@ -1128,6 +1185,63 @@ func (ft *ShopCategoryFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  ShopID,
 		IsNil:  ShopID == nil,
 		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopCategoryFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *ShopCategoryFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *ShopCategoryFilters) ByExternalParentID(ExternalParentID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_parent_id",
+		Value:  ExternalParentID,
+		IsNil:  ExternalParentID == "",
+	}
+}
+
+func (ft *ShopCategoryFilters) ByExternalParentIDPtr(ExternalParentID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_parent_id",
+		Value:  ExternalParentID,
+		IsNil:  ExternalParentID == nil,
+		IsZero: ExternalParentID != nil && (*ExternalParentID) == "",
+	}
+}
+
+func (ft *ShopCategoryFilters) ByParentID(ParentID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "parent_id",
+		Value:  ParentID,
+		IsNil:  ParentID == 0,
+	}
+}
+
+func (ft *ShopCategoryFilters) ByParentIDPtr(ParentID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "parent_id",
+		Value:  ParentID,
+		IsNil:  ParentID == nil,
+		IsZero: ParentID != nil && (*ParentID) == 0,
 	}
 }
 
@@ -1278,6 +1392,44 @@ func (ft *ShopCollectionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr
 	}
 }
 
+func (ft *ShopCollectionFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
 func (ft *ShopCollectionFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1406,6 +1558,82 @@ func (ft ShopProductCollectionFilters) Prefix() string {
 	return ft.prefix
 }
 
+func (ft *ShopProductCollectionFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByExternalCollectionID(ExternalCollectionID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_collection_id",
+		Value:  ExternalCollectionID,
+		IsNil:  ExternalCollectionID == "",
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByExternalCollectionIDPtr(ExternalCollectionID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_collection_id",
+		Value:  ExternalCollectionID,
+		IsNil:  ExternalCollectionID == nil,
+		IsZero: ExternalCollectionID != nil && (*ExternalCollectionID) == "",
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByExternalProductID(ExternalProductID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_product_id",
+		Value:  ExternalProductID,
+		IsNil:  ExternalProductID == "",
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByExternalProductIDPtr(ExternalProductID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_product_id",
+		Value:  ExternalProductID,
+		IsNil:  ExternalProductID == nil,
+		IsZero: ExternalProductID != nil && (*ExternalProductID) == "",
+	}
+}
+
 func (ft *ShopProductCollectionFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1441,25 +1669,6 @@ func (ft *ShopProductCollectionFilters) ByCollectionIDPtr(CollectionID *dot.ID) 
 		Value:  CollectionID,
 		IsNil:  CollectionID == nil,
 		IsZero: CollectionID != nil && (*CollectionID) == 0,
-	}
-}
-
-func (ft *ShopProductCollectionFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "shop_id",
-		Value:  ShopID,
-		IsNil:  ShopID == 0,
-	}
-}
-
-func (ft *ShopProductCollectionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "shop_id",
-		Value:  ShopID,
-		IsNil:  ShopID == nil,
-		IsZero: ShopID != nil && (*ShopID) == 0,
 	}
 }
 
@@ -1550,6 +1759,44 @@ func (ft *ShopBrandFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  ShopID,
 		IsNil:  ShopID == nil,
 		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopBrandFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *ShopBrandFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *ShopBrandFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == 0,
+	}
+}
+
+func (ft *ShopBrandFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "partner_id",
+		Value:  PartnerID,
+		IsNil:  PartnerID == nil,
+		IsZero: PartnerID != nil && (*PartnerID) == 0,
 	}
 }
 

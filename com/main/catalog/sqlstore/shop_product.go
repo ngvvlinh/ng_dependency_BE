@@ -142,6 +142,12 @@ func (s *ShopProductStore) CreateShopProduct(product *catalog.ShopProduct) error
 	return checkProductOrVariantError(err, productDB.Code)
 }
 
+func (s *ShopProductStore) CreateShopProductImport(product *model.ShopProduct) error {
+	sqlstore.MustNoPreds(s.preds)
+	_, err := s.query().Insert(product)
+	return err
+}
+
 func (s *ShopProductStore) GetShopProductDB() (*model.ShopProduct, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())

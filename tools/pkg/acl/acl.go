@@ -256,6 +256,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"ext/partner.Webhook/DeleteWebhook": {Type: Partner, Auth: APIKey},
 
 	//-- external: partner using partnerShopKey --//
+	"ext/partner.Import/Products":           {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/Brands":             {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/Categories":         {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/Customers":          {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/Variants":           {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/Collections":        {Type: Shop, Auth: APIPartnerShopKey},
+	"ext/partner.Import/ProductCollections": {Type: Shop, Auth: APIPartnerShopKey},
+
 	"ext/partner.Shop/CurrentShop":               {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Shipping/GetShippingServices":   {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Shipping/CreateAndConfirmOrder": {Type: Shop, Auth: APIPartnerShopKey},

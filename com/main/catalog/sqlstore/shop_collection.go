@@ -65,6 +65,11 @@ func (s *ShopCollectionStore) IDs(ids []dot.ID) *ShopCollectionStore {
 	return s
 }
 
+func (s *ShopCollectionStore) ExternalID(externalID string) *ShopCollectionStore {
+	s.preds = append(s.preds, s.ftShopCollection.ByExternalID(externalID))
+	return s
+}
+
 func (s *ShopCollectionStore) OptionalShopID(id dot.ID) *ShopCollectionStore {
 	s.preds = append(s.preds, s.ftShopCollection.ByShopID(id).Optional())
 	return s
@@ -148,9 +153,13 @@ func (s *ShopCollectionStore) CreateShopCollection(Collection *catalog.ShopColle
 	return err
 }
 
-func (s *ShopCollectionStore) UpdateShopCollection(Collection *model.ShopCollection) error {
+func (s *ShopCollectionStore) UpdateShopCollection(collection *catalog.ShopCollection) error {
 	sqlstore.MustNoPreds(s.preds)
-	err := s.query().Where(s.ftShopCollection.ByID(Collection.ID)).UpdateAll().ShouldUpdate(Collection)
+	collectionModel := &model.ShopCollection{}
+	if err := scheme.Convert(collection, collectionModel); err != nil {
+		return err
+	}
+	err := s.query().Where(s.ftShopCollection.ByID(collectionModel.ID)).UpdateAll().ShouldUpdate(collectionModel)
 	return err
 }
 

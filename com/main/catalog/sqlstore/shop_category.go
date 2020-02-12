@@ -59,8 +59,19 @@ func (s *ShopCategoryStore) ID(id dot.ID) *ShopCategoryStore {
 	s.preds = append(s.preds, s.ftShopCategory.ByID(id))
 	return s
 }
+
+func (s *ShopCategoryStore) IDs(ids ...dot.ID) *ShopCategoryStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *ShopCategoryStore) OptionalShopID(id dot.ID) *ShopCategoryStore {
 	s.preds = append(s.preds, s.ftShopCategory.ByShopID(id).Optional())
+	return s
+}
+
+func (s *ShopCategoryStore) ExternalID(externalID string) *ShopCategoryStore {
+	s.preds = append(s.preds, s.ftShopCategory.ByExternalID(externalID))
 	return s
 }
 
@@ -141,9 +152,13 @@ func (s *ShopCategoryStore) CreateShopCategory(category *catalog.ShopCategory) e
 	return err
 }
 
-func (s *ShopCategoryStore) UpdateShopCategory(category *model.ShopCategory) error {
+func (s *ShopCategoryStore) UpdateShopCategory(category *catalog.ShopCategory) error {
 	sqlstore.MustNoPreds(s.preds)
-	err := s.query().Where(s.ftShopCategory.ByID(category.ID)).UpdateAll().ShouldUpdate(category)
+	var categoryModel model.ShopCategory
+	if err := scheme.Convert(category, &categoryModel); err != nil {
+		return err
+	}
+	err := s.query().Where(s.ftShopCategory.ByID(category.ID)).ShouldUpdate(&categoryModel)
 	return err
 }
 

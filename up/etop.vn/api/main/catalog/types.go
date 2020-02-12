@@ -17,6 +17,10 @@ type ShopProduct struct {
 
 	ExternalCode string
 
+	ExternalBrandID string
+
+	ExternalCategoryID string
+
 	PartnerID dot.ID
 
 	ShopID dot.ID
@@ -73,6 +77,8 @@ type ShopVariant struct {
 
 	ExternalCode string
 
+	ExternalProductID string
+
 	PartnerID dot.ID
 
 	ShopID dot.ID
@@ -116,10 +122,14 @@ type ShopVariant struct {
 }
 
 type ShopCategory struct {
-	ID dot.ID
+	ID        dot.ID
+	PartnerID dot.ID
 
 	ParentID dot.ID
 	ShopID   dot.ID
+
+	ExternalID       string
+	ExternalParentID string
 
 	Name string
 
@@ -131,8 +141,11 @@ type ShopCategory struct {
 }
 
 type ShopCollection struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID        dot.ID
+	ShopID    dot.ID
+	PartnerID dot.ID
+
+	ExternalID string
 
 	Name        string
 	Description string
@@ -214,6 +227,10 @@ type ShopCategories struct {
 }
 
 type ShopProductCollection struct {
+	PartnerID            dot.ID
+	ExternalCollectionID string
+	ExternalProductID    string
+
 	ProductID    dot.ID
 	CollectionID dot.ID
 	ShopID       dot.ID

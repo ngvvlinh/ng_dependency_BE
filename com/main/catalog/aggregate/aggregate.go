@@ -419,11 +419,7 @@ func (a *Aggregate) UpdateShopCategory(ctx context.Context, args *catalog.Update
 		}
 	}
 	category = convert.Apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(args, category)
-	categoryModel := &model.ShopCategory{}
-	if err := scheme.Convert(category, categoryModel); err != nil {
-		return nil, err
-	}
-	if err = a.shopCategory(ctx).UpdateShopCategory(categoryModel); err != nil {
+	if err = a.shopCategory(ctx).UpdateShopCategory(category); err != nil {
 		return nil, err
 	}
 	result, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategory()
@@ -477,12 +473,7 @@ func (a *Aggregate) UpdateShopCollection(ctx context.Context, args *catalog.Upda
 		return nil, err
 	}
 	collection = convert.Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(args, collection)
-	collectionModel := &model.ShopCollection{}
-	if err := scheme.Convert(collection, collectionModel); err != nil {
-		return nil, err
-	}
-
-	if err = a.shopCollection(ctx).UpdateShopCollection(collectionModel); err != nil {
+	if err = a.shopCollection(ctx).UpdateShopCollection(collection); err != nil {
 		return nil, err
 	}
 	result, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollection()

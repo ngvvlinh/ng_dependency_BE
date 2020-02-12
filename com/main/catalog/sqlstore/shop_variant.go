@@ -118,6 +118,16 @@ func (s *ShopVariantStore) CreateShopVariant(variant *catalog.ShopVariant) error
 	return checkProductOrVariantError(err, variantDB.Code)
 }
 
+func (s *ShopVariantStore) CreateShopVariantImport(variant *catalog.ShopVariant) error {
+	sqlstore.MustNoPreds(s.preds)
+	variantDB := &model.ShopVariant{}
+	if err := scheme.Convert(variant, variantDB); err != nil {
+		return err
+	}
+	_, err := s.query().Insert(variantDB)
+	return err
+}
+
 func (s *ShopVariantStore) GetShopVariantDB() (*model.ShopVariant, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
@@ -211,6 +221,16 @@ func (s *ShopVariantStore) UpdateShopVariant(variant *model.ShopVariant) error {
 	sqlstore.MustNoPreds(s.preds)
 	err := s.query().In("variant_id", variant.VariantID).UpdateAll().ShouldUpdate(variant)
 	return checkProductOrVariantError(err, variant.Code)
+}
+
+func (s *ShopVariantStore) UpdateShopVariantImport(variant *catalog.ShopVariant) error {
+	sqlstore.MustNoPreds(s.preds)
+	variantDB := &model.ShopVariant{}
+	if err := scheme.Convert(variant, variantDB); err != nil {
+		return err
+	}
+	err := s.query().In("variant_id", variantDB.VariantID).UpdateAll().ShouldUpdate(variantDB)
+	return err
 }
 
 func (s *ShopVariantStore) SoftDelete() (int, error) {

@@ -242,6 +242,8 @@ func Convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg *catalogmodel.ShopBran
 func convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg *catalogmodel.ShopBrand, out *catalog.ShopBrand) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.ExternalID = arg.ExternalID   // simple assign
+	out.PartnerID = arg.PartnerID     // simple assign
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
@@ -272,6 +274,8 @@ func Convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg *catalog.ShopBrand, ou
 func convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg *catalog.ShopBrand, out *catalogmodel.ShopBrand) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.ExternalID = arg.ExternalID   // simple assign
+	out.PartnerID = arg.PartnerID     // simple assign
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
@@ -302,6 +306,8 @@ func Apply_catalog_CreateBrandArgs_catalog_ShopBrand(arg *catalog.CreateBrandArg
 func apply_catalog_CreateBrandArgs_catalog_ShopBrand(arg *catalog.CreateBrandArgs, out *catalog.ShopBrand) {
 	out.ID = 0                        // zero value
 	out.ShopID = arg.ShopID           // simple assign
+	out.ExternalID = ""               // zero value
+	out.PartnerID = 0                 // zero value
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = time.Time{}       // zero value
@@ -323,6 +329,8 @@ func Apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg *catalog.UpdateBrandArg
 func apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg *catalog.UpdateBrandArgs, out *catalog.ShopBrand) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.ExternalID = out.ExternalID   // no change
+	out.PartnerID = out.PartnerID     // no change
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = out.CreatedAt     // no change
@@ -344,14 +352,17 @@ func Convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.Sh
 }
 
 func convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.ShopCategory, out *catalog.ShopCategory) {
-	out.ID = arg.ID               // simple assign
-	out.ParentID = arg.ParentID   // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
+	out.ID = arg.ID                             // simple assign
+	out.PartnerID = arg.PartnerID               // simple assign
+	out.ParentID = arg.ParentID                 // simple assign
+	out.ShopID = arg.ShopID                     // simple assign
+	out.ExternalID = arg.ExternalID             // simple assign
+	out.ExternalParentID = arg.ExternalParentID // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = arg.DeletedAt               // simple assign
 }
 
 func Convert_catalogmodel_ShopCategories_catalog_ShopCategories(args []*catalogmodel.ShopCategory) (outs []*catalog.ShopCategory) {
@@ -375,14 +386,17 @@ func Convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCat
 }
 
 func convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCategory, out *catalogmodel.ShopCategory) {
-	out.ID = arg.ID               // simple assign
-	out.ParentID = arg.ParentID   // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
+	out.ID = arg.ID                             // simple assign
+	out.PartnerID = arg.PartnerID               // simple assign
+	out.ShopID = arg.ShopID                     // simple assign
+	out.ExternalID = arg.ExternalID             // simple assign
+	out.ExternalParentID = arg.ExternalParentID // simple assign
+	out.ParentID = arg.ParentID                 // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = arg.DeletedAt               // simple assign
 }
 
 func Convert_catalog_ShopCategories_catalogmodel_ShopCategories(args []*catalog.ShopCategory) (outs []*catalogmodel.ShopCategory) {
@@ -407,8 +421,11 @@ func Apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg *catalog.Crea
 
 func apply_catalog_CreateShopCategoryArgs_catalog_ShopCategory(arg *catalog.CreateShopCategoryArgs, out *catalog.ShopCategory) {
 	out.ID = arg.ID             // simple assign
+	out.PartnerID = 0           // zero value
 	out.ParentID = arg.ParentID // simple assign
 	out.ShopID = arg.ShopID     // simple assign
+	out.ExternalID = ""         // zero value
+	out.ExternalParentID = ""   // zero value
 	out.Name = arg.Name         // simple assign
 	out.Status = arg.Status     // simple assign
 	out.CreatedAt = time.Time{} // zero value
@@ -421,14 +438,17 @@ func Apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg *catalog.Upda
 }
 
 func apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg *catalog.UpdateShopCategoryArgs, out *catalog.ShopCategory) {
-	out.ID = arg.ID                     // simple assign
-	out.ParentID = arg.ParentID         // simple assign
-	out.ShopID = arg.ShopID             // simple assign
-	out.Name = arg.Name.Apply(out.Name) // apply change
-	out.Status = out.Status             // no change
-	out.CreatedAt = out.CreatedAt       // no change
-	out.UpdatedAt = out.UpdatedAt       // no change
-	out.DeletedAt = out.DeletedAt       // no change
+	out.ID = arg.ID                             // simple assign
+	out.PartnerID = out.PartnerID               // no change
+	out.ParentID = arg.ParentID                 // simple assign
+	out.ShopID = arg.ShopID                     // simple assign
+	out.ExternalID = out.ExternalID             // no change
+	out.ExternalParentID = out.ExternalParentID // no change
+	out.Name = arg.Name.Apply(out.Name)         // apply change
+	out.Status = out.Status                     // no change
+	out.CreatedAt = out.CreatedAt               // no change
+	out.UpdatedAt = out.UpdatedAt               // no change
+	out.DeletedAt = out.DeletedAt               // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopCollection --//
@@ -447,6 +467,8 @@ func Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmode
 func convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmodel.ShopCollection, out *catalog.ShopCollection) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.PartnerID = arg.PartnerID     // simple assign
+	out.ExternalID = arg.ExternalID   // simple assign
 	out.Name = arg.Name               // simple assign
 	out.Description = arg.Description // simple assign
 	out.DescHTML = arg.DescHTML       // simple assign
@@ -478,6 +500,8 @@ func Convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.Sho
 func convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.ShopCollection, out *catalogmodel.ShopCollection) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.PartnerID = arg.PartnerID     // simple assign
+	out.ExternalID = arg.ExternalID   // simple assign
 	out.Name = arg.Name               // simple assign
 	out.Description = arg.Description // simple assign
 	out.DescHTML = arg.DescHTML       // simple assign
@@ -509,6 +533,8 @@ func Apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 func apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.CreateShopCollectionArgs, out *catalog.ShopCollection) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
+	out.PartnerID = 0                 // zero value
+	out.ExternalID = ""               // zero value
 	out.Name = arg.Name               // simple assign
 	out.Description = arg.Description // simple assign
 	out.DescHTML = arg.DescHTML       // simple assign
@@ -524,6 +550,8 @@ func Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 func apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.UpdateShopCollectionArgs, out *catalog.ShopCollection) {
 	out.ID = arg.ID                                          // simple assign
 	out.ShopID = arg.ShopID                                  // simple assign
+	out.PartnerID = out.PartnerID                            // no change
+	out.ExternalID = out.ExternalID                          // no change
 	out.Name = arg.Name.Apply(out.Name)                      // apply change
 	out.Description = arg.Description.Apply(out.Description) // apply change
 	out.DescHTML = arg.DescHTML.Apply(out.DescHTML)          // apply change
@@ -546,33 +574,35 @@ func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 }
 
 func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
-	out.ExternalID = arg.ExternalID       // simple assign
-	out.ExternalCode = arg.ExternalCode   // simple assign
-	out.PartnerID = arg.PartnerID         // simple assign
-	out.ShopID = arg.ShopID               // simple assign
-	out.ProductID = arg.ProductID         // simple assign
-	out.Code = arg.Code                   // simple assign
-	out.CodeNorm = arg.CodeNorm           // simple assign
-	out.Name = arg.Name                   // simple assign
-	out.Unit = arg.Unit                   // simple assign
-	out.ImageURLs = arg.ImageURLs         // simple assign
-	out.Note = arg.Note                   // simple assign
-	out.ShortDesc = arg.ShortDesc         // simple assign
-	out.Description = arg.Description     // simple assign
-	out.DescHTML = arg.DescHTML           // simple assign
-	out.CostPrice = arg.CostPrice         // simple assign
-	out.ListPrice = arg.ListPrice         // simple assign
-	out.RetailPrice = arg.RetailPrice     // simple assign
-	out.CategoryID = arg.CategoryID       // simple assign
-	out.CollectionIDs = arg.CollectionIDs // simple assign
-	out.Tags = arg.Tags                   // simple assign
-	out.Status = arg.Status               // simple assign
-	out.CreatedAt = arg.CreatedAt         // simple assign
-	out.UpdatedAt = arg.UpdatedAt         // simple assign
-	out.DeletedAt = arg.DeletedAt         // simple assign
-	out.ProductType = arg.ProductType     // simple assign
-	out.MetaFields = nil                  // types do not match
-	out.BrandID = arg.BrandID             // simple assign
+	out.ExternalID = arg.ExternalID                 // simple assign
+	out.ExternalCode = arg.ExternalCode             // simple assign
+	out.ExternalBrandID = arg.ExternalBrandID       // simple assign
+	out.ExternalCategoryID = arg.ExternalCategoryID // simple assign
+	out.PartnerID = arg.PartnerID                   // simple assign
+	out.ShopID = arg.ShopID                         // simple assign
+	out.ProductID = arg.ProductID                   // simple assign
+	out.Code = arg.Code                             // simple assign
+	out.CodeNorm = arg.CodeNorm                     // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.Unit = arg.Unit                             // simple assign
+	out.ImageURLs = arg.ImageURLs                   // simple assign
+	out.Note = arg.Note                             // simple assign
+	out.ShortDesc = arg.ShortDesc                   // simple assign
+	out.Description = arg.Description               // simple assign
+	out.DescHTML = arg.DescHTML                     // simple assign
+	out.CostPrice = arg.CostPrice                   // simple assign
+	out.ListPrice = arg.ListPrice                   // simple assign
+	out.RetailPrice = arg.RetailPrice               // simple assign
+	out.CategoryID = arg.CategoryID                 // simple assign
+	out.CollectionIDs = arg.CollectionIDs           // simple assign
+	out.Tags = arg.Tags                             // simple assign
+	out.Status = arg.Status                         // simple assign
+	out.CreatedAt = arg.CreatedAt                   // simple assign
+	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+	out.DeletedAt = arg.DeletedAt                   // simple assign
+	out.ProductType = arg.ProductType               // simple assign
+	out.MetaFields = nil                            // types do not match
+	out.BrandID = arg.BrandID                       // simple assign
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -596,35 +626,37 @@ func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 }
 
 func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
-	out.ExternalID = arg.ExternalID       // simple assign
-	out.ExternalCode = arg.ExternalCode   // simple assign
-	out.PartnerID = arg.PartnerID         // simple assign
-	out.ShopID = arg.ShopID               // simple assign
-	out.ProductID = arg.ProductID         // simple assign
-	out.CollectionIDs = arg.CollectionIDs // simple assign
-	out.Code = arg.Code                   // simple assign
-	out.CodeNorm = arg.CodeNorm           // simple assign
-	out.Name = arg.Name                   // simple assign
-	out.Description = arg.Description     // simple assign
-	out.DescHTML = arg.DescHTML           // simple assign
-	out.ShortDesc = arg.ShortDesc         // simple assign
-	out.ImageURLs = arg.ImageURLs         // simple assign
-	out.Note = arg.Note                   // simple assign
-	out.Tags = arg.Tags                   // simple assign
-	out.Unit = arg.Unit                   // simple assign
-	out.CategoryID = arg.CategoryID       // simple assign
-	out.CostPrice = arg.CostPrice         // simple assign
-	out.ListPrice = arg.ListPrice         // simple assign
-	out.RetailPrice = arg.RetailPrice     // simple assign
-	out.BrandID = arg.BrandID             // simple assign
-	out.Status = arg.Status               // simple assign
-	out.CreatedAt = arg.CreatedAt         // simple assign
-	out.UpdatedAt = arg.UpdatedAt         // simple assign
-	out.DeletedAt = arg.DeletedAt         // simple assign
-	out.NameNorm = ""                     // zero value
-	out.NameNormUa = ""                   // zero value
-	out.ProductType = arg.ProductType     // simple assign
-	out.MetaFields = nil                  // types do not match
+	out.ExternalID = arg.ExternalID                 // simple assign
+	out.ExternalCode = arg.ExternalCode             // simple assign
+	out.PartnerID = arg.PartnerID                   // simple assign
+	out.ExternalBrandID = arg.ExternalBrandID       // simple assign
+	out.ExternalCategoryID = arg.ExternalCategoryID // simple assign
+	out.ShopID = arg.ShopID                         // simple assign
+	out.ProductID = arg.ProductID                   // simple assign
+	out.CollectionIDs = arg.CollectionIDs           // simple assign
+	out.Code = arg.Code                             // simple assign
+	out.CodeNorm = arg.CodeNorm                     // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.Description = arg.Description               // simple assign
+	out.DescHTML = arg.DescHTML                     // simple assign
+	out.ShortDesc = arg.ShortDesc                   // simple assign
+	out.ImageURLs = arg.ImageURLs                   // simple assign
+	out.Note = arg.Note                             // simple assign
+	out.Tags = arg.Tags                             // simple assign
+	out.Unit = arg.Unit                             // simple assign
+	out.CategoryID = arg.CategoryID                 // simple assign
+	out.CostPrice = arg.CostPrice                   // simple assign
+	out.ListPrice = arg.ListPrice                   // simple assign
+	out.RetailPrice = arg.RetailPrice               // simple assign
+	out.BrandID = arg.BrandID                       // simple assign
+	out.Status = arg.Status                         // simple assign
+	out.CreatedAt = arg.CreatedAt                   // simple assign
+	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+	out.DeletedAt = arg.DeletedAt                   // simple assign
+	out.NameNorm = ""                               // zero value
+	out.NameNormUa = ""                             // zero value
+	out.ProductType = arg.ProductType               // simple assign
+	out.MetaFields = nil                            // types do not match
 }
 
 func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
@@ -641,33 +673,35 @@ func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 }
 
 func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) {
-	out.ExternalID = out.ExternalID       // no change
-	out.ExternalCode = out.ExternalCode   // no change
-	out.PartnerID = out.PartnerID         // no change
-	out.ShopID = arg.ShopID               // simple assign
-	out.ProductID = arg.ProductID         // simple assign
-	out.Code = out.Code                   // no change
-	out.CodeNorm = out.CodeNorm           // no change
-	out.Name = out.Name                   // no change
-	out.Unit = out.Unit                   // no change
-	out.ImageURLs = out.ImageURLs         // no change
-	out.Note = out.Note                   // no change
-	out.ShortDesc = out.ShortDesc         // no change
-	out.Description = out.Description     // no change
-	out.DescHTML = out.DescHTML           // no change
-	out.CostPrice = out.CostPrice         // no change
-	out.ListPrice = out.ListPrice         // no change
-	out.RetailPrice = out.RetailPrice     // no change
-	out.CategoryID = arg.CategoryID       // simple assign
-	out.CollectionIDs = out.CollectionIDs // no change
-	out.Tags = out.Tags                   // no change
-	out.Status = out.Status               // no change
-	out.CreatedAt = out.CreatedAt         // no change
-	out.UpdatedAt = out.UpdatedAt         // no change
-	out.DeletedAt = out.DeletedAt         // no change
-	out.ProductType = out.ProductType     // no change
-	out.MetaFields = out.MetaFields       // no change
-	out.BrandID = out.BrandID             // no change
+	out.ExternalID = out.ExternalID                 // no change
+	out.ExternalCode = out.ExternalCode             // no change
+	out.ExternalBrandID = out.ExternalBrandID       // no change
+	out.ExternalCategoryID = out.ExternalCategoryID // no change
+	out.PartnerID = out.PartnerID                   // no change
+	out.ShopID = arg.ShopID                         // simple assign
+	out.ProductID = arg.ProductID                   // simple assign
+	out.Code = out.Code                             // no change
+	out.CodeNorm = out.CodeNorm                     // no change
+	out.Name = out.Name                             // no change
+	out.Unit = out.Unit                             // no change
+	out.ImageURLs = out.ImageURLs                   // no change
+	out.Note = out.Note                             // no change
+	out.ShortDesc = out.ShortDesc                   // no change
+	out.Description = out.Description               // no change
+	out.DescHTML = out.DescHTML                     // no change
+	out.CostPrice = out.CostPrice                   // no change
+	out.ListPrice = out.ListPrice                   // no change
+	out.RetailPrice = out.RetailPrice               // no change
+	out.CategoryID = arg.CategoryID                 // simple assign
+	out.CollectionIDs = out.CollectionIDs           // no change
+	out.Tags = out.Tags                             // no change
+	out.Status = out.Status                         // no change
+	out.CreatedAt = out.CreatedAt                   // no change
+	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.DeletedAt = out.DeletedAt                   // no change
+	out.ProductType = out.ProductType               // no change
+	out.MetaFields = out.MetaFields                 // no change
+	out.BrandID = out.BrandID                       // no change
 }
 
 func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -677,6 +711,8 @@ func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) {
 	out.ExternalID = out.ExternalID                          // no change
 	out.ExternalCode = out.ExternalCode                      // no change
+	out.ExternalBrandID = out.ExternalBrandID                // no change
+	out.ExternalCategoryID = out.ExternalCategoryID          // no change
 	out.PartnerID = out.PartnerID                            // no change
 	out.ShopID = arg.ShopID                                  // simple assign
 	out.ProductID = arg.ProductID                            // simple assign
@@ -718,11 +754,14 @@ func Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(ar
 }
 
 func convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) {
-	out.ProductID = arg.ProductID       // simple assign
-	out.CollectionID = arg.CollectionID // simple assign
-	out.ShopID = arg.ShopID             // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.PartnerID = arg.PartnerID                       // simple assign
+	out.ExternalCollectionID = arg.ExternalCollectionID // simple assign
+	out.ExternalProductID = arg.ExternalProductID       // simple assign
+	out.ProductID = arg.ProductID                       // simple assign
+	out.CollectionID = arg.CollectionID                 // simple assign
+	out.ShopID = arg.ShopID                             // simple assign
+	out.CreatedAt = arg.CreatedAt                       // simple assign
+	out.UpdatedAt = arg.UpdatedAt                       // simple assign
 }
 
 func Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(args []*catalogmodel.ShopProductCollection) (outs []*catalog.ShopProductCollection) {
@@ -746,11 +785,14 @@ func Convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(ar
 }
 
 func convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(arg *catalog.ShopProductCollection, out *catalogmodel.ShopProductCollection) {
-	out.ProductID = arg.ProductID       // simple assign
-	out.CollectionID = arg.CollectionID // simple assign
-	out.ShopID = arg.ShopID             // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.PartnerID = arg.PartnerID                       // simple assign
+	out.ShopID = arg.ShopID                             // simple assign
+	out.ExternalCollectionID = arg.ExternalCollectionID // simple assign
+	out.ExternalProductID = arg.ExternalProductID       // simple assign
+	out.ProductID = arg.ProductID                       // simple assign
+	out.CollectionID = arg.CollectionID                 // simple assign
+	out.CreatedAt = arg.CreatedAt                       // simple assign
+	out.UpdatedAt = arg.UpdatedAt                       // simple assign
 }
 
 func Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(args []*catalog.ShopProductCollection) (outs []*catalogmodel.ShopProductCollection) {
@@ -776,20 +818,21 @@ func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.Shop
 }
 
 func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
-	out.ExternalID = arg.ExternalID     // simple assign
-	out.ExternalCode = arg.ExternalCode // simple assign
-	out.PartnerID = arg.PartnerID       // simple assign
-	out.ShopID = arg.ShopID             // simple assign
-	out.ProductID = arg.ProductID       // simple assign
-	out.VariantID = arg.VariantID       // simple assign
-	out.Code = arg.Code                 // simple assign
-	out.CodeNorm = arg.CodeNorm         // simple assign
-	out.Name = arg.Name                 // simple assign
-	out.ShortDesc = arg.ShortDesc       // simple assign
-	out.Description = arg.Description   // simple assign
-	out.DescHTML = arg.DescHTML         // simple assign
-	out.ImageURLs = arg.ImageURLs       // simple assign
-	out.Status = arg.Status             // simple assign
+	out.ExternalID = arg.ExternalID               // simple assign
+	out.ExternalCode = arg.ExternalCode           // simple assign
+	out.ExternalProductID = arg.ExternalProductID // simple assign
+	out.PartnerID = arg.PartnerID                 // simple assign
+	out.ShopID = arg.ShopID                       // simple assign
+	out.ProductID = arg.ProductID                 // simple assign
+	out.VariantID = arg.VariantID                 // simple assign
+	out.Code = arg.Code                           // simple assign
+	out.CodeNorm = arg.CodeNorm                   // simple assign
+	out.Name = arg.Name                           // simple assign
+	out.ShortDesc = arg.ShortDesc                 // simple assign
+	out.Description = arg.Description             // simple assign
+	out.DescHTML = arg.DescHTML                   // simple assign
+	out.ImageURLs = arg.ImageURLs                 // simple assign
+	out.Status = arg.Status                       // simple assign
 	out.Attributes = Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
 	out.CostPrice = arg.CostPrice     // simple assign
 	out.ListPrice = arg.ListPrice     // simple assign
@@ -821,25 +864,26 @@ func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVaria
 }
 
 func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
-	out.ExternalID = arg.ExternalID     // simple assign
-	out.ExternalCode = arg.ExternalCode // simple assign
-	out.PartnerID = arg.PartnerID       // simple assign
-	out.ShopID = arg.ShopID             // simple assign
-	out.VariantID = arg.VariantID       // simple assign
-	out.ProductID = arg.ProductID       // simple assign
-	out.Code = arg.Code                 // simple assign
-	out.CodeNorm = arg.CodeNorm         // simple assign
-	out.Name = arg.Name                 // simple assign
-	out.Description = arg.Description   // simple assign
-	out.DescHTML = arg.DescHTML         // simple assign
-	out.ShortDesc = arg.ShortDesc       // simple assign
-	out.ImageURLs = arg.ImageURLs       // simple assign
-	out.Note = arg.Note                 // simple assign
-	out.Tags = nil                      // zero value
-	out.CostPrice = arg.CostPrice       // simple assign
-	out.ListPrice = arg.ListPrice       // simple assign
-	out.RetailPrice = arg.RetailPrice   // simple assign
-	out.Status = arg.Status             // simple assign
+	out.ExternalID = arg.ExternalID               // simple assign
+	out.ExternalCode = arg.ExternalCode           // simple assign
+	out.ExternalProductID = arg.ExternalProductID // simple assign
+	out.PartnerID = arg.PartnerID                 // simple assign
+	out.ShopID = arg.ShopID                       // simple assign
+	out.VariantID = arg.VariantID                 // simple assign
+	out.ProductID = arg.ProductID                 // simple assign
+	out.Code = arg.Code                           // simple assign
+	out.CodeNorm = arg.CodeNorm                   // simple assign
+	out.Name = arg.Name                           // simple assign
+	out.Description = arg.Description             // simple assign
+	out.DescHTML = arg.DescHTML                   // simple assign
+	out.ShortDesc = arg.ShortDesc                 // simple assign
+	out.ImageURLs = arg.ImageURLs                 // simple assign
+	out.Note = arg.Note                           // simple assign
+	out.Tags = nil                                // zero value
+	out.CostPrice = arg.CostPrice                 // simple assign
+	out.ListPrice = arg.ListPrice                 // simple assign
+	out.RetailPrice = arg.RetailPrice             // simple assign
+	out.Status = arg.Status                       // simple assign
 	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
@@ -864,6 +908,7 @@ func Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) {
 	out.ExternalID = out.ExternalID                          // no change
 	out.ExternalCode = out.ExternalCode                      // no change
+	out.ExternalProductID = out.ExternalProductID            // no change
 	out.PartnerID = out.PartnerID                            // no change
 	out.ShopID = arg.ShopID                                  // simple assign
 	out.ProductID = out.ProductID                            // no change

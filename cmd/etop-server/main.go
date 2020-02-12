@@ -112,6 +112,7 @@ import (
 	xshop "etop.vn/backend/pkg/etop/apix/shop"
 	xshopping "etop.vn/backend/pkg/etop/apix/shopping"
 	"etop.vn/backend/pkg/etop/apix/webhook"
+	whitelabelapix "etop.vn/backend/pkg/etop/apix/whitelabel"
 	authorizeauth "etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
@@ -557,6 +558,7 @@ func main() {
 		&catalogQuery,
 		&catalogAggr,
 	)
+	whitelabelapix.Init(db, &catalogAggr)
 	xshop.Init(
 		shutdowner,
 		redisStore,

@@ -51,6 +51,11 @@ func (s *ShopBrandStore) IDs(ids ...dot.ID) *ShopBrandStore {
 	return s
 }
 
+func (s *ShopBrandStore) ExternalID(externalID string) *ShopBrandStore {
+	s.preds = append(s.preds, s.ftShopBrand.ByExternalID(externalID))
+	return s
+}
+
 func (s *ShopBrandStore) ShopID(id dot.ID) *ShopBrandStore {
 	s.preds = append(s.preds, s.ftShopBrand.ByShopID(id))
 	return s

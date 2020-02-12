@@ -69,9 +69,10 @@ var _ = sqlgenShopVariant(&ShopVariant{})
 
 // +convert:type=catalog.ShopVariant
 type ShopVariant struct {
-	ExternalID   string
-	ExternalCode string
-	PartnerID    dot.ID
+	ExternalID        string
+	ExternalCode      string
+	ExternalProductID string
+	PartnerID         dot.ID
 
 	ShopID    dot.ID
 	VariantID dot.ID `paging:"id"`
@@ -113,9 +114,11 @@ var _ = sqlgenShopProduct(&ShopProduct{})
 
 // +convert:type=catalog.ShopProduct
 type ShopProduct struct {
-	ExternalID   string
-	ExternalCode string
-	PartnerID    dot.ID
+	ExternalID         string
+	ExternalCode       string
+	PartnerID          dot.ID
+	ExternalBrandID    string
+	ExternalCategoryID string
 
 	ShopID        dot.ID
 	ProductID     dot.ID   `paging:"id"`
@@ -223,10 +226,14 @@ var _ = sqlgenShopCategory(&ShopCategory{})
 
 // +convert:type=catalog.ShopCategory
 type ShopCategory struct {
-	ID dot.ID
+	ID        dot.ID
+	PartnerID dot.ID
+	ShopID    dot.ID
+
+	ExternalID       string
+	ExternalParentID string
 
 	ParentID dot.ID
-	ShopID   dot.ID
 
 	Name string
 
@@ -240,8 +247,11 @@ var _ = sqlgenShopCollection(&ShopCollection{})
 
 // +convert:type=catalog.ShopCollection
 type ShopCollection struct {
-	ID     dot.ID `paging:"id"`
-	ShopID dot.ID
+	ID        dot.ID `paging:"id"`
+	ShopID    dot.ID
+	PartnerID dot.ID
+
+	ExternalID string
 
 	Name        string
 	Description string
@@ -256,9 +266,13 @@ var _ = sqlgenShopProductCollection(&ShopProductCollection{})
 
 // +convert:type=catalog.ShopProductCollection
 type ShopProductCollection struct {
+	PartnerID            dot.ID
+	ShopID               dot.ID
+	ExternalCollectionID string
+	ExternalProductID    string
+
 	ProductID    dot.ID
 	CollectionID dot.ID
-	ShopID       dot.ID
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -268,8 +282,10 @@ var _ = sqlgenShopBrand(&ShopBrand{})
 
 // +convert:type=catalog.ShopBrand
 type ShopBrand struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID         dot.ID
+	ShopID     dot.ID
+	ExternalID string
+	PartnerID  dot.ID
 
 	BrandName   string
 	Description string
