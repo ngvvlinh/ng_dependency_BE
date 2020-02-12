@@ -1,6 +1,9 @@
 package whitelabel
 
-import "etop.vn/api/main/identity"
+import (
+	"etop.vn/api/main/identity"
+	"etop.vn/api/top/types/etc/connection_type"
+)
 
 type WL struct {
 	identity.Partner
@@ -33,7 +36,14 @@ type Config struct {
 	CompanyFullName string
 
 	CSEmail string
+
+	Shipment *ShipmentConfig
 }
 
 type Driver interface {
+}
+
+type ShipmentConfig struct {
+	// Các NVC topship hỗ trợ cho Partner WL này
+	Topship []connection_type.ConnectionProvider
 }

@@ -22,6 +22,7 @@ import (
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/syncgroup"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cipherx"
 	"etop.vn/backend/pkg/common/cmenv"
@@ -361,6 +362,9 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 			if err != nil {
 				return err
 			}
+			if !m.validateConnection(ctx, conn) {
+				return nil
+			}
 
 			var services []*model.AvailableShippingService
 			driver, err := m.getShipmentDriver(ctx, connID, accountID)
@@ -629,4 +633,24 @@ func (m *ShipmentManager) setRedis(key string, data interface{}) {
 		ll.Error("Can not store to redis", l.Error(err))
 	}
 	return
+}
+
+// validateConnection
+//
+// Check if this connection is allowed in whitelabel partner
+func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connectioning.Connection) bool {
+	wlPartner := wl.X(ctx)
+	if !wlPartner.IsWhiteLabel() {
+		return true
+	}
+	if conn.ConnectionMethod != connection_type.ConnectionMethodTopship {
+		return true
+	}
+	topshipProvidersAllowed := wlPartner.Shipment.Topship
+	for _, provider := range topshipProvidersAllowed {
+		if provider == conn.ConnectionProvider {
+			return true
+		}
+	}
+	return false
 }
