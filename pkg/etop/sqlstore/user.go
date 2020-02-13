@@ -10,6 +10,7 @@ import (
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
@@ -67,8 +68,7 @@ func (s *UserStore) List() ([]*identitymodel.User, error) {
 
 func GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error {
 	userQuery := &identitymodelx.GetUserByIDQuery{
-		UserID:      query.UserID,
-		WLPartnerID: query.WLPartnerID,
+		UserID: query.UserID,
 	}
 	if err := GetUserByID(ctx, userQuery); err != nil {
 		return err
@@ -86,7 +86,7 @@ func GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) er
 
 	query.Result = new(identitymodel.User)
 	s := x.Where("id = ?", query.UserID)
-	s = FilterByWhiteLabelPartner(s, query.WLPartnerID)
+	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
 	return s.ShouldGet(query.Result)
 }
 
@@ -101,7 +101,7 @@ func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrP
 		q = q.Where("phone = ?", query.Phone)
 		count++
 	}
-	q = FilterByWhiteLabelPartner(q, query.WLPartnerID)
+	q = FilterByWhiteLabelPartner(q, wl.GetWLPartnerID(ctx))
 	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
@@ -134,7 +134,7 @@ func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQue
 			s = s.Where("phone = ?", phone)
 		}
 	}
-	s = FilterByWhiteLabelPartner(s, query.WLPartnerID)
+	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
 
 	user := new(identitymodel.User)
 	if err := s.ShouldGet(user); err != nil {
@@ -253,7 +253,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		Status:      cmd.Status,
 		Source:      cmd.Source,
 		AgreedTOSAt: now,
-		WLPartnerID: cmd.WLPartnerID,
+		WLPartnerID: wl.GetWLPartnerID(ctx),
 	}
 	if cmd.AgreeEmailInfo {
 		user.AgreedEmailInfoAt = now
@@ -326,7 +326,7 @@ func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserV
 	if count != 1 {
 		return cm.Error(cm.InvalidArgument, "Invalid params", nil)
 	}
-	s = FilterByWhiteLabelPartner(s, cmd.WLPartnerID)
+	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
 
 	return s.ShouldUpdate(&user)
 }
@@ -369,7 +369,7 @@ func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIde
 
 	user.PhoneVerifiedAt = cmd.PhoneVerifiedAt
 	s := x.Where("id = ?", cmd.UserID)
-	s = FilterByWhiteLabelPartner(s, cmd.WLPartnerID)
+	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
 	if err := x.Where("id = ?", cmd.UserID).ShouldUpdate(&user, &userInternal); err != nil {
 		return err
 	}

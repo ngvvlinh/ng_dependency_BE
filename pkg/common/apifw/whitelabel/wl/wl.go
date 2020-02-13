@@ -29,3 +29,11 @@ func X(ctx context.Context) *whitelabel.WL {
 func WrapContext(ctx context.Context, partnerID dot.ID) context.Context {
 	return whiteLabel.WrapContext(ctx, partnerID)
 }
+
+func GetWLPartnerID(ctx context.Context) dot.ID {
+	wlPartner := X(ctx)
+	if wlPartner.IsWhiteLabel() {
+		return wlPartner.ID
+	}
+	return 0
+}

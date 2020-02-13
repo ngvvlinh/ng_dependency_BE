@@ -718,7 +718,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		return nil, nil, cm.Error(cm.Internal, "Invalid user", nil)
 	}
 	if user == nil {
-		userQuery := &identitymodelx.GetUserByIDQuery{UserID: userID}
+		userQuery := &identitymodelx.GetUserByIDQuery{
+			UserID: userID,
+		}
 		if err := bus.Dispatch(ctx, userQuery); err != nil {
 			return nil, nil, err
 		}
@@ -1018,8 +1020,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 
 	if user.EmailVerifiedAt.IsZero() {
 		cmd := &identitymodelx.UpdateUserVerificationCommand{
-			UserID: user.ID,
-
+			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -1100,8 +1101,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 
 	if user.PhoneVerifiedAt.IsZero() {
 		cmd := &identitymodelx.UpdateUserVerificationCommand{
-			UserID: user.ID,
-
+			UserID:          user.ID,
 			PhoneVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {

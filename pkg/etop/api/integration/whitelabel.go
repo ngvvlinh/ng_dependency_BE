@@ -24,11 +24,9 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
 	}
 	r.VerificationCode = strings.Replace(r.VerificationCode, " ", "", -1)
-	whiteLabelPartner, err := s.validateWhiteLabel(ctx)
-	if err != nil {
+	if _, err := s.validateWhiteLabel(ctx); err != nil {
 		return err
 	}
-	_ = whiteLabelPartner
 	var requestInfo apipartner.PartnerShopToken
 	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
@@ -57,7 +55,6 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 	}()
 	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
-		WLPartnerID:  whiteLabelPartner.ID,
 	}
 	err = bus.Dispatch(ctx, userQuery)
 	switch cm.ErrorCode(err) {

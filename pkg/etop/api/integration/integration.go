@@ -18,7 +18,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/idemp"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
@@ -298,10 +297,6 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 
 	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
-	}
-	wlPartner, _ := s.validateWhiteLabel(ctx)
-	if wlPartner != nil {
-		userQuery.WLPartnerID = wlPartner.ID
 	}
 
 	err := bus.Dispatch(ctx, userQuery)
@@ -726,11 +721,6 @@ func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID,
 	generatedPassword := gencode.GenerateCode(gencode.Alphabet32, 8)
 	// set default source: "partner"
 	source := user_source.Partner
-	wlPartnerID := dot.ID(0)
-	wlPartner := wl.X(ctx)
-	if wlPartner.IsWhiteLabel() {
-		wlPartnerID = wlPartner.ID
-	}
 
 	cmd := &usering.CreateUserCommand{
 		UserInner: identitymodel.UserInner{
@@ -744,7 +734,6 @@ func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID,
 		AgreeTOS:       agreeTos,
 		AgreeEmailInfo: agreeEmailInfo,
 		Source:         source,
-		WLPartnerID:    wlPartnerID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -755,7 +744,6 @@ func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID,
 	case verifiedEmail:
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
-			WLPartnerID:     wlPartnerID,
 			EmailVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, verifyCmd); err != nil {
@@ -787,7 +775,6 @@ func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID,
 	case verifiedPhone:
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
-			WLPartnerID:     wlPartnerID,
 			PhoneVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, verifyCmd); err != nil {

@@ -172,7 +172,9 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 	}
 
 	if claim.AdminID != 0 {
-		query := &identitymodelx.GetSignedInUserQuery{UserID: claim.AdminID}
+		query := &identitymodelx.GetSignedInUserQuery{
+			UserID: claim.AdminID,
+		}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid AdminID", l.Error(err))
 			return ctx, nil
@@ -199,7 +201,9 @@ func startSessionUser(ctx context.Context, require bool, s *Session) bool {
 		if s.Claim.UserID == 0 {
 			return false
 		}
-		query := &identitymodelx.GetSignedInUserQuery{UserID: s.Claim.UserID}
+		query := &identitymodelx.GetSignedInUserQuery{
+			UserID: s.Claim.UserID,
+		}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid UserID", l.Error(err))
 			return false

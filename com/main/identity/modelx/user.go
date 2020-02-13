@@ -16,23 +16,20 @@ type SignedInUser struct {
 
 // GetSignedInUserQuery ...
 type GetSignedInUserQuery struct {
-	UserID      dot.ID
-	WLPartnerID dot.ID
+	UserID dot.ID
 
 	Result *SignedInUser
 }
 
 type GetUserByIDQuery struct {
-	UserID      dot.ID
-	WLPartnerID dot.ID
+	UserID dot.ID
 
 	Result *identitymodel.User
 }
 
 type GetUserByEmailOrPhoneQuery struct {
-	Email       string
-	Phone       string
-	WLPartnerID dot.ID
+	Email string
+	Phone string
 
 	Result *identitymodel.User
 }
@@ -46,7 +43,6 @@ type GetUsersByIDsQuery struct {
 type GetUserByLoginQuery struct {
 	UserID       dot.ID
 	PhoneOrEmail string
-	WLPartnerID  dot.ID
 
 	Result identitymodel.UserExtended
 }
@@ -59,7 +55,6 @@ type CreateUserCommand struct {
 	AgreeEmailInfo bool
 	IsTest         bool
 	Source         user_source.UserSource
-	WLPartnerID    dot.ID
 	Result         struct {
 		User         *identitymodel.User
 		UserInternal *identitymodel.UserInternal
@@ -72,8 +67,7 @@ type SetPasswordCommand struct {
 }
 
 type UpdateUserVerificationCommand struct {
-	UserID      dot.ID
-	WLPartnerID dot.ID
+	UserID dot.ID
 
 	EmailVerifiedAt time.Time
 	PhoneVerifiedAt time.Time
@@ -84,7 +78,6 @@ type UpdateUserVerificationCommand struct {
 
 type UpdateUserIdentifierCommand struct {
 	UserID                  dot.ID
-	WLPartnerID             dot.ID
 	Status                  status3.Status // We don't allow update status to 0
 	identitymodel.UserInner                // Must be normalized identifier
 
