@@ -12,7 +12,6 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -44,11 +43,11 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireAffiliate: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -60,7 +59,6 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteAffiliate(ctx, query)
 	resp = query.Result
@@ -91,11 +89,11 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -109,7 +107,6 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterAffiliate(ctx, query)
 	resp = query.Result
@@ -140,11 +137,11 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.Update
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireAffiliate: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -156,7 +153,6 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.Update
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliate(ctx, query)
 	resp = query.Result
@@ -187,11 +183,11 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireAffiliate: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -203,7 +199,6 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAffiliateBankAccount(ctx, query)
 	resp = query.Result
@@ -241,10 +236,9 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -255,7 +249,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result

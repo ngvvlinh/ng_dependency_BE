@@ -990,6 +990,9 @@ func TwirpError(err error) TwError {
 	if err == nil {
 		return nil
 	}
+	if xerr, ok := err.(TwError); ok {
+		return xerr
+	}
 	xerr, ok := err.(*APIError)
 	if !ok {
 		xerr = newError(true, true, Internal, "", err)

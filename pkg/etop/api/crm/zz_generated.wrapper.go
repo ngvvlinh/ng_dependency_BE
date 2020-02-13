@@ -11,7 +11,6 @@ import (
 	api "etop.vn/api/top/services/crm"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/headers"
@@ -44,10 +43,9 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -60,7 +58,6 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RefreshFulfillmentFromCarrier(ctx, query)
 	resp = query.Result
@@ -90,10 +87,9 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -106,7 +102,6 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendNotification(ctx, query)
 	resp = query.Result
@@ -145,10 +140,9 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -161,7 +155,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -200,11 +193,11 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireEtopAdmin: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -216,7 +209,6 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateCallHistoryByCallID(ctx, query)
 	resp = query.Result
@@ -247,11 +239,11 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireEtopAdmin: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -263,7 +255,6 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateCallHistoryBySDKCallID(ctx, query)
 	resp = query.Result
@@ -294,11 +285,11 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireEtopAdmin: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -310,7 +301,6 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCallHistories(ctx, query)
 	resp = query.Result
@@ -349,11 +339,11 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.C
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -365,7 +355,6 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateContact(ctx, query)
 	resp = query.Result
@@ -396,11 +385,11 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.Lead
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -412,7 +401,6 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.Lead
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrUpdateLead(ctx, query)
 	resp = query.Result
@@ -443,11 +431,11 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUp
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -459,7 +447,6 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateTicket(ctx, query)
 	resp = query.Result
@@ -490,11 +477,11 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -506,7 +493,6 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCategories(ctx, query)
 	resp = query.Result
@@ -537,11 +523,11 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContacts
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireEtopAdmin: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -553,7 +539,6 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContacts
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetContacts(ctx, query)
 	resp = query.Result
@@ -584,11 +569,11 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
 		RequireAuth:      true,
 		RequireEtopAdmin: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -600,7 +585,6 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTicketStatusCount(ctx, query)
 	resp = query.Result
@@ -631,11 +615,11 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRe
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -647,7 +631,6 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRe
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetTickets(ctx, query)
 	resp = query.Result
@@ -678,11 +661,11 @@ func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUp
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -694,7 +677,6 @@ func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateTicket(ctx, query)
 	resp = query.Result

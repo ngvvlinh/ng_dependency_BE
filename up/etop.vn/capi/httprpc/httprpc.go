@@ -53,7 +53,7 @@ func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 	}
 
 	tj := twerrJSON{
-		Code: string(twerr.Code()),
+		Code: twerr.Code().String(),
 		Msg:  msg,
 		Meta: twerr.MetaMap(),
 	}
@@ -66,7 +66,7 @@ func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 }
 
 func WriteError(ctx context.Context, resp http.ResponseWriter, err error) {
-	twerr := xerrors.TwirpError(xerrors.ToError(err))
+	twerr := xerrors.TwirpError(err)
 	statusCode := ServerHTTPStatusFromErrorCode(twerr.Code())
 
 	respBody := marshalErrorToJSON(twerr)

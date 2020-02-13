@@ -6,12 +6,10 @@ import (
 	"etop.vn/backend/pkg/common/cmenv"
 )
 
-const EtopID = whitelabel.TagEtop
-
 func ETop(env cmenv.EnvType) *whitelabel.WL {
 	return &whitelabel.WL{
 		Partner: identity.Partner{
-			ID:         EtopID,
+			ID:         0,
 			Name:       "eTop",
 			PublicName: "eTop",
 			ImageURL:   "",

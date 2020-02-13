@@ -17,7 +17,7 @@ func (w *WL) Clone() *WL {
 }
 
 func (w *WL) IsWhiteLabel() bool {
-	return w.Key != "etop"
+	return w.ID != 0
 }
 
 type Config struct {

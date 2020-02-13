@@ -11,8 +11,6 @@ import (
 	"etop.vn/common/xerrors"
 )
 
-const TagEtop = 101
-
 var ll = l.New()
 
 type whitelabelKey struct{}
@@ -33,7 +31,7 @@ func New(drivers []*WL) *WhiteLabel {
 		w.partnersByKey[driver.Key] = driver
 		w.partnersByID[driver.ID] = driver
 	}
-	w.etop = w.partnersByID[TagEtop]
+	w.etop = w.partnersByID[0]
 	return w
 }
 

@@ -13,7 +13,6 @@ import (
 	cm "etop.vn/api/top/types/common"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/authorize/auth"
@@ -46,10 +45,10 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -57,7 +56,6 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicPartnerInfo(ctx, query)
 	resp = query.Result
@@ -88,10 +86,10 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -99,7 +97,6 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPublicPartners(ctx, query)
 	resp = query.Result
@@ -130,11 +127,11 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -148,7 +145,6 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateURLSlug(ctx, query)
 	resp = query.Result
@@ -187,11 +183,11 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -213,7 +209,6 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:create", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateInvitation(ctx, query)
 	resp = query.Result
@@ -244,11 +239,11 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -270,7 +265,6 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:delete", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteInvitation(ctx, query)
 	resp = query.Result
@@ -301,11 +295,11 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -327,7 +321,6 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:view", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInvitations(ctx, query)
 	resp = query.Result
@@ -358,11 +351,11 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -384,7 +377,6 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:view", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetRelationships(ctx, query)
 	resp = query.Result
@@ -415,11 +407,11 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -441,7 +433,6 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/user:remove", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveUser(ctx, query)
 	resp = query.Result
@@ -472,11 +463,11 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -498,7 +489,6 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/permission:update", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePermission(ctx, query)
 	resp = query.Result
@@ -529,11 +519,11 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -555,7 +545,6 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:update", "|")
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateRelationship(ctx, query)
 	resp = query.Result
@@ -594,11 +583,11 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -612,7 +601,6 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateAddress(ctx, query)
 	resp = query.Result
@@ -644,12 +632,12 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 		AuthPartner: 1,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -660,9 +648,6 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
-	if query.CtxPartner != nil {
-		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAddresses(ctx, query)
 	resp = query.Result
@@ -693,11 +678,11 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -711,7 +696,6 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveAddress(ctx, query)
 	resp = query.Result
@@ -742,11 +726,11 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -760,7 +744,6 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAddress(ctx, query)
 	resp = query.Result
@@ -799,11 +782,11 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -817,7 +800,6 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBanks(ctx, query)
 	resp = query.Result
@@ -848,11 +830,11 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -866,7 +848,6 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBranchesByBankProvince(ctx, query)
 	resp = query.Result
@@ -897,11 +878,11 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -915,7 +896,6 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProvincesByBank(ctx, query)
 	resp = query.Result
@@ -953,10 +933,9 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -967,7 +946,6 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetDistricts(ctx, query)
 	resp = query.Result
@@ -997,10 +975,9 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1011,7 +988,6 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetDistrictsByProvince(ctx, query)
 	resp = query.Result
@@ -1041,10 +1017,9 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1055,7 +1030,6 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProvinces(ctx, query)
 	resp = query.Result
@@ -1085,10 +1059,9 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1099,7 +1072,6 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetWards(ctx, query)
 	resp = query.Result
@@ -1129,10 +1101,9 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1143,7 +1114,6 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetWardsByDistrict(ctx, query)
 	resp = query.Result
@@ -1174,10 +1144,10 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1185,7 +1155,6 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ParseLocation(ctx, query)
 	resp = query.Result
@@ -1223,10 +1192,9 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1237,7 +1205,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -1276,11 +1243,11 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1294,7 +1261,6 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ChangePassword(ctx, query)
 	resp = query.Result
@@ -1324,10 +1290,9 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1338,7 +1303,6 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ChangePasswordUsingToken(ctx, query)
 	resp = query.Result
@@ -1368,10 +1332,9 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1386,7 +1349,6 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 	if err := middleware.VerifyCaptcha(ctx, req.RecaptchaToken); err != nil {
 		return nil, err
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CheckUserRegistration(ctx, query)
 	resp = query.Result
@@ -1416,10 +1378,9 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1430,7 +1391,6 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.InitSession(ctx, query)
 	resp = query.Result
@@ -1460,10 +1420,9 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1474,7 +1433,6 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Login(ctx, query)
 	resp = query.Result
@@ -1504,10 +1462,9 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1518,7 +1475,6 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.Register(ctx, query)
 	resp = query.Result
@@ -1548,10 +1504,9 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1562,7 +1517,6 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterUsingToken(ctx, query)
 	resp = query.Result
@@ -1592,10 +1546,9 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1612,7 +1565,6 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 			return nil, err
 		}
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ResetPassword(ctx, query)
 	resp = query.Result
@@ -1643,11 +1595,11 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1661,7 +1613,6 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendEmailVerification(ctx, query)
 	resp = query.Result
@@ -1691,10 +1642,9 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1705,7 +1655,6 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendPhoneVerification(ctx, query)
 	resp = query.Result
@@ -1736,11 +1685,11 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1754,7 +1703,6 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendSTokenEmail(ctx, query)
 	resp = query.Result
@@ -1785,11 +1733,11 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1803,7 +1751,6 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SessionInfo(ctx, query)
 	resp = query.Result
@@ -1834,11 +1781,11 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1852,7 +1799,6 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SwitchAccount(ctx, query)
 	resp = query.Result
@@ -1883,11 +1829,11 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1901,7 +1847,6 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePermission(ctx, query)
 	resp = query.Result
@@ -1932,11 +1877,11 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1950,7 +1895,6 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferenceSale(ctx, query)
 	resp = query.Result
@@ -1981,11 +1925,11 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1999,7 +1943,6 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferenceUser(ctx, query)
 	resp = query.Result
@@ -2030,11 +1973,11 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2048,7 +1991,6 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpgradeAccessToken(ctx, query)
 	resp = query.Result
@@ -2079,11 +2021,11 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2097,7 +2039,6 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyEmailUsingToken(ctx, query)
 	resp = query.Result
@@ -2127,10 +2068,9 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -2141,7 +2081,6 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyPhoneUsingToken(ctx, query)
 	resp = query.Result
@@ -2180,11 +2119,11 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2198,7 +2137,6 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AcceptInvitation(ctx, query)
 	resp = query.Result
@@ -2228,10 +2166,9 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -2242,7 +2179,6 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInvitationByToken(ctx, query)
 	resp = query.Result
@@ -2273,11 +2209,11 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2291,7 +2227,6 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInvitations(ctx, query)
 	resp = query.Result
@@ -2322,11 +2257,11 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2340,7 +2275,6 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LeaveAccount(ctx, query)
 	resp = query.Result
@@ -2371,11 +2305,11 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
 		RequireAuth: true,
 		RequireUser: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2389,7 +2323,6 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	if session.Claim.AuthPartnerID != 0 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RejectInvitation(ctx, query)
 	resp = query.Result

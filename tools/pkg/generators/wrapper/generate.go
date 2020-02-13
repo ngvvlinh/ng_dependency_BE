@@ -221,7 +221,6 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
 		{{if requireAuth       $m}}RequireAuth: 	  true,
 {{end}}	{{if requireUser       $m}}RequireUser: 	  true,
 {{end}} {{if requireAPIKey     $m}}RequireAPIKey:     true,
@@ -234,7 +233,8 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 {{end}} {{if authPartner       $m}}AuthPartner: {{authPartner $m}},
 {{end}}
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		{{if isPublic $m -}}
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
@@ -314,17 +314,6 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	{{if requireCaptcha $m | eq "custom" -}}
 	}
 	{{end -}}
-	{{end -}}
-	{{if $m|authPartner -}}
-	if query.CtxPartner != nil {
-		ctx = wl.WrapContext(ctx, query.CtxPartner.ID)
-	}
-	{{else if $m|requirePartner -}}
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
-	{{else if $m|requireAPIPartnerShopKey -}}
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
-	{{else -}}
-	ctx = wl.WrapContext(ctx, 0)
 	{{end -}}
 	ctx = bus.NewRootContext(ctx)
 	{{if $m.Kind|eq 1 -}}

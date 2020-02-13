@@ -342,7 +342,6 @@ func Auth(perm permission.PermType) func(Handler) Handler {
 		return func(c *Context) (_err error) {
 			ctx := c.Req.Context()
 			sessionQuery := &middleware.StartSessionQuery{
-				Context:     ctx,
 				RequireAuth: true,
 				RequireUser: true,
 			}
@@ -352,9 +351,11 @@ func Auth(perm permission.PermType) func(Handler) Handler {
 			case permission.Shop:
 				sessionQuery.RequireShop = true
 			}
-			if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+			ctx, err := middleware.StartSession(ctx, sessionQuery)
+			if err != nil {
 				return err
 			}
+			c.Req = c.Req.WithContext(ctx)
 
 			session := sessionQuery.Result
 			//var actions []string

@@ -13,7 +13,6 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	cm "etop.vn/api/top/types/common"
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -45,12 +44,12 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *externalty
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -62,7 +61,6 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *externalty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomer(ctx, query)
 	resp = query.Result
@@ -93,12 +91,12 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *externalty
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -110,7 +108,6 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *externalty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCustomer(ctx, query)
 	resp = query.Result
@@ -141,12 +138,12 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *externaltypes
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -158,7 +155,6 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *externaltypes
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomer(ctx, query)
 	resp = query.Result
@@ -189,12 +185,12 @@ func (s wrapCustomerService) ListCustomers(ctx context.Context, req *externaltyp
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -206,7 +202,6 @@ func (s wrapCustomerService) ListCustomers(ctx context.Context, req *externaltyp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListCustomers(ctx, query)
 	resp = query.Result
@@ -237,12 +232,12 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *externalty
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -254,7 +249,6 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *externalty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomer(ctx, query)
 	resp = query.Result
@@ -293,12 +287,12 @@ func (s wrapCustomerAddressService) CreateAddress(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -310,7 +304,6 @@ func (s wrapCustomerAddressService) CreateAddress(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateAddress(ctx, query)
 	resp = query.Result
@@ -341,12 +334,12 @@ func (s wrapCustomerAddressService) DeleteAddress(ctx context.Context, req *cm.I
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -358,7 +351,6 @@ func (s wrapCustomerAddressService) DeleteAddress(ctx context.Context, req *cm.I
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteAddress(ctx, query)
 	resp = query.Result
@@ -389,12 +381,12 @@ func (s wrapCustomerAddressService) GetAddress(ctx context.Context, req *externa
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -406,7 +398,6 @@ func (s wrapCustomerAddressService) GetAddress(ctx context.Context, req *externa
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetAddress(ctx, query)
 	resp = query.Result
@@ -437,12 +428,12 @@ func (s wrapCustomerAddressService) ListAddresses(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -454,7 +445,6 @@ func (s wrapCustomerAddressService) ListAddresses(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListAddresses(ctx, query)
 	resp = query.Result
@@ -485,12 +475,12 @@ func (s wrapCustomerAddressService) UpdateAddress(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -502,7 +492,6 @@ func (s wrapCustomerAddressService) UpdateAddress(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAddress(ctx, query)
 	resp = query.Result
@@ -541,12 +530,12 @@ func (s wrapCustomerGroupService) CreateGroup(ctx context.Context, req *external
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -558,7 +547,6 @@ func (s wrapCustomerGroupService) CreateGroup(ctx context.Context, req *external
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateGroup(ctx, query)
 	resp = query.Result
@@ -589,12 +577,12 @@ func (s wrapCustomerGroupService) DeleteGroup(ctx context.Context, req *cm.IDReq
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -606,7 +594,6 @@ func (s wrapCustomerGroupService) DeleteGroup(ctx context.Context, req *cm.IDReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteGroup(ctx, query)
 	resp = query.Result
@@ -637,12 +624,12 @@ func (s wrapCustomerGroupService) GetGroup(ctx context.Context, req *cm.IDReques
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -654,7 +641,6 @@ func (s wrapCustomerGroupService) GetGroup(ctx context.Context, req *cm.IDReques
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetGroup(ctx, query)
 	resp = query.Result
@@ -685,12 +671,12 @@ func (s wrapCustomerGroupService) ListGroups(ctx context.Context, req *externalt
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -702,7 +688,6 @@ func (s wrapCustomerGroupService) ListGroups(ctx context.Context, req *externalt
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListGroups(ctx, query)
 	resp = query.Result
@@ -733,12 +718,12 @@ func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *external
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -750,7 +735,6 @@ func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *external
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateGroup(ctx, query)
 	resp = query.Result
@@ -789,12 +773,12 @@ func (s wrapCustomerGroupRelationshipService) CreateRelationship(ctx context.Con
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -806,7 +790,6 @@ func (s wrapCustomerGroupRelationshipService) CreateRelationship(ctx context.Con
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateRelationship(ctx, query)
 	resp = query.Result
@@ -837,12 +820,12 @@ func (s wrapCustomerGroupRelationshipService) DeleteRelationship(ctx context.Con
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -854,7 +837,6 @@ func (s wrapCustomerGroupRelationshipService) DeleteRelationship(ctx context.Con
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteRelationship(ctx, query)
 	resp = query.Result
@@ -885,12 +867,12 @@ func (s wrapCustomerGroupRelationshipService) ListRelationships(ctx context.Cont
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -902,7 +884,6 @@ func (s wrapCustomerGroupRelationshipService) ListRelationships(ctx context.Cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListRelationships(ctx, query)
 	resp = query.Result
@@ -941,12 +922,12 @@ func (s wrapFulfillmentService) CancelFulfillment(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -958,7 +939,6 @@ func (s wrapFulfillmentService) CancelFulfillment(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelFulfillment(ctx, query)
 	resp = query.Result
@@ -989,12 +969,12 @@ func (s wrapFulfillmentService) CreateFulfillment(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1006,7 +986,6 @@ func (s wrapFulfillmentService) CreateFulfillment(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateFulfillment(ctx, query)
 	resp = query.Result
@@ -1037,12 +1016,12 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *externa
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1054,7 +1033,6 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *externa
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillment(ctx, query)
 	resp = query.Result
@@ -1085,12 +1063,12 @@ func (s wrapFulfillmentService) ListFulfillments(ctx context.Context, req *exter
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1102,7 +1080,6 @@ func (s wrapFulfillmentService) ListFulfillments(ctx context.Context, req *exter
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListFulfillments(ctx, query)
 	resp = query.Result
@@ -1141,12 +1118,12 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1158,7 +1135,6 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetChanges(ctx, query)
 	resp = query.Result
@@ -1197,12 +1173,12 @@ func (s wrapInventoryService) ListInventoryLevels(ctx context.Context, req *exte
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1214,7 +1190,6 @@ func (s wrapInventoryService) ListInventoryLevels(ctx context.Context, req *exte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListInventoryLevels(ctx, query)
 	resp = query.Result
@@ -1253,12 +1228,12 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1270,7 +1245,6 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CurrentAccount(ctx, query)
 	resp = query.Result
@@ -1301,12 +1275,12 @@ func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (re
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1318,7 +1292,6 @@ func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetLocationList(ctx, query)
 	resp = query.Result
@@ -1348,10 +1321,9 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 	}()
 	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context: ctx,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		// ignore invalid authentication token
 		if common.ErrorCode(err) != common.Unauthenticated {
 			return nil, err
@@ -1362,7 +1334,6 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
-	ctx = wl.WrapContext(ctx, 0)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VersionInfo(ctx, query)
 	resp = query.Result
@@ -1401,12 +1372,12 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *externaltypes.Ca
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1418,7 +1389,6 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *externaltypes.Ca
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelOrder(ctx, query)
 	resp = query.Result
@@ -1449,12 +1419,12 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *externaltypes.C
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1466,7 +1436,6 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *externaltypes.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmOrder(ctx, query)
 	resp = query.Result
@@ -1497,12 +1466,12 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *externaltypes.Cr
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1514,7 +1483,6 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *externaltypes.Cr
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrder(ctx, query)
 	resp = query.Result
@@ -1545,12 +1513,12 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *externaltypes.Order
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1562,7 +1530,6 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *externaltypes.Order
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrder(ctx, query)
 	resp = query.Result
@@ -1593,12 +1560,12 @@ func (s wrapOrderService) ListOrders(ctx context.Context, req *externaltypes.Lis
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1610,7 +1577,6 @@ func (s wrapOrderService) ListOrders(ctx context.Context, req *externaltypes.Lis
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListOrders(ctx, query)
 	resp = query.Result
@@ -1649,12 +1615,12 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1666,7 +1632,6 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProduct(ctx, query)
 	resp = query.Result
@@ -1697,12 +1662,12 @@ func (s wrapProductService) DeleteProduct(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1714,7 +1679,6 @@ func (s wrapProductService) DeleteProduct(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteProduct(ctx, query)
 	resp = query.Result
@@ -1745,12 +1709,12 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *externaltypes.G
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1762,7 +1726,6 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *externaltypes.G
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProduct(ctx, query)
 	resp = query.Result
@@ -1793,12 +1756,12 @@ func (s wrapProductService) ListProducts(ctx context.Context, req *externaltypes
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1810,7 +1773,6 @@ func (s wrapProductService) ListProducts(ctx context.Context, req *externaltypes
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListProducts(ctx, query)
 	resp = query.Result
@@ -1841,12 +1803,12 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1858,7 +1820,6 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProduct(ctx, query)
 	resp = query.Result
@@ -1897,12 +1858,12 @@ func (s wrapProductCollectionService) CreateCollection(ctx context.Context, req 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1914,7 +1875,6 @@ func (s wrapProductCollectionService) CreateCollection(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCollection(ctx, query)
 	resp = query.Result
@@ -1945,12 +1905,12 @@ func (s wrapProductCollectionService) DeleteCollection(ctx context.Context, req 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -1962,7 +1922,6 @@ func (s wrapProductCollectionService) DeleteCollection(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCollection(ctx, query)
 	resp = query.Result
@@ -1993,12 +1952,12 @@ func (s wrapProductCollectionService) GetCollection(ctx context.Context, req *ex
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2010,7 +1969,6 @@ func (s wrapProductCollectionService) GetCollection(ctx context.Context, req *ex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollection(ctx, query)
 	resp = query.Result
@@ -2041,12 +1999,12 @@ func (s wrapProductCollectionService) ListCollections(ctx context.Context, req *
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2058,7 +2016,6 @@ func (s wrapProductCollectionService) ListCollections(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListCollections(ctx, query)
 	resp = query.Result
@@ -2089,12 +2046,12 @@ func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req 
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2106,7 +2063,6 @@ func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCollection(ctx, query)
 	resp = query.Result
@@ -2145,12 +2101,12 @@ func (s wrapProductCollectionRelationshipService) CreateRelationship(ctx context
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2162,7 +2118,6 @@ func (s wrapProductCollectionRelationshipService) CreateRelationship(ctx context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateRelationship(ctx, query)
 	resp = query.Result
@@ -2193,12 +2148,12 @@ func (s wrapProductCollectionRelationshipService) DeleteRelationship(ctx context
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2210,7 +2165,6 @@ func (s wrapProductCollectionRelationshipService) DeleteRelationship(ctx context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteRelationship(ctx, query)
 	resp = query.Result
@@ -2241,12 +2195,12 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2258,7 +2212,6 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListRelationships(ctx, query)
 	resp = query.Result
@@ -2297,12 +2250,12 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2314,7 +2267,6 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelOrder(ctx, query)
 	resp = query.Result
@@ -2345,12 +2297,12 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2362,7 +2314,6 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateAndConfirmOrder(ctx, query)
 	resp = query.Result
@@ -2393,12 +2344,12 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externalty
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2410,7 +2361,6 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externalty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillment(ctx, query)
 	resp = query.Result
@@ -2441,12 +2391,12 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.Or
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2458,7 +2408,6 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.Or
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrder(ctx, query)
 	resp = query.Result
@@ -2489,12 +2438,12 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2506,7 +2455,6 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShippingServices(ctx, query)
 	resp = query.Result
@@ -2545,12 +2493,12 @@ func (s wrapShopService) AuthorizeShop(ctx context.Context, req *api.AuthorizeSh
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2562,7 +2510,6 @@ func (s wrapShopService) AuthorizeShop(ctx context.Context, req *api.AuthorizeSh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AuthorizeShop(ctx, query)
 	resp = query.Result
@@ -2593,12 +2540,12 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2610,7 +2557,6 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CurrentShop(ctx, query)
 	resp = query.Result
@@ -2649,12 +2595,12 @@ func (s wrapVariantService) CreateVariant(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2666,7 +2612,6 @@ func (s wrapVariantService) CreateVariant(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
 	resp = query.Result
@@ -2697,12 +2642,12 @@ func (s wrapVariantService) DeleteVariant(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2714,7 +2659,6 @@ func (s wrapVariantService) DeleteVariant(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteVariant(ctx, query)
 	resp = query.Result
@@ -2745,12 +2689,12 @@ func (s wrapVariantService) GetVariant(ctx context.Context, req *externaltypes.G
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2762,7 +2706,6 @@ func (s wrapVariantService) GetVariant(ctx context.Context, req *externaltypes.G
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariant(ctx, query)
 	resp = query.Result
@@ -2793,12 +2736,12 @@ func (s wrapVariantService) ListVariants(ctx context.Context, req *externaltypes
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2810,7 +2753,6 @@ func (s wrapVariantService) ListVariants(ctx context.Context, req *externaltypes
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ListVariants(ctx, query)
 	resp = query.Result
@@ -2841,12 +2783,12 @@ func (s wrapVariantService) UpdateVariant(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:                  ctx,
 		RequireAuth:              true,
 		RequireAPIPartnerShopKey: true,
 		RequireShop:              true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2858,7 +2800,6 @@ func (s wrapVariantService) UpdateVariant(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.AuthPartnerID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariant(ctx, query)
 	resp = query.Result
@@ -2897,12 +2838,12 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2914,7 +2855,6 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateWebhook(ctx, query)
 	resp = query.Result
@@ -2945,12 +2885,12 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltype
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -2962,7 +2902,6 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltype
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteWebhook(ctx, query)
 	resp = query.Result
@@ -2993,12 +2932,12 @@ func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (res
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:        ctx,
 		RequireAuth:    true,
 		RequireAPIKey:  true,
 		RequirePartner: true,
 	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
@@ -3010,7 +2949,6 @@ func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (res
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = wl.WrapContext(ctx, query.Context.Partner.ID)
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetWebhooks(ctx, query)
 	resp = query.Result

@@ -11,6 +11,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/headers"
@@ -27,10 +28,6 @@ var ll = l.New()
 var sadminToken string
 var identityQS identity.QueryBus
 
-func init() {
-	bus.AddHandler("session", StartSession)
-}
-
 func Init(token string, identityQuery identity.QueryBus) {
 	sadminToken = token
 	identityQS = identityQuery
@@ -39,7 +36,6 @@ func Init(token string, identityQuery identity.QueryBus) {
 // StartSessionQuery ...
 type StartSessionQuery struct {
 	Token   string
-	Context context.Context
 	Request *http.Request
 
 	RequireAuth              bool
@@ -87,19 +83,21 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 	if q.Token != "" {
 		return q.Token
 	}
-
 	if q.Request != nil {
 		token, _ := auth.FromHTTPHeader(q.Request.Header)
 		return token
 	}
-	if q.Context != nil {
-		return headers.GetBearerTokenFromCtx(q.Context)
-	}
-	return ""
+	return headers.GetBearerTokenFromCtx(ctx)
 }
 
 // StartSession ...
-func StartSession(ctx context.Context, q *StartSessionQuery) error {
+func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Context, _err error) {
+	var wlPartnerID dot.ID
+	defer func() {
+		if _err == nil && wlPartnerID == 0 {
+			newCtx = wl.WrapContext(ctx, 0)
+		}
+	}()
 
 	// TODO: check UserID, ShopID, etc. correctly. Because InitSession now
 	// responses token without any credential.
@@ -108,18 +106,18 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 		if token != "" {
 			claim, err := tokens.Store.Validate(token)
 			if err != nil {
-				return cm.ErrUnauthenticated
+				return ctx, cm.ErrUnauthenticated
 			}
 			q.Result = &Session{
 				Claim: claim,
 			}
 		}
-		return nil
+		return ctx, nil
 	}
 
 	token := getToken(ctx, q)
 	if token == "" {
-		return cm.ErrUnauthenticated
+		return ctx, cm.ErrUnauthenticated
 	}
 
 	session := new(Session)
@@ -127,10 +125,10 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	if q.RequireSuperAdmin {
 		if token == sadminToken {
 			session.IsSuperAdmin = true
-			return nil
+			return ctx, nil
 		}
 		ll.Error("Invalid sadmin token")
-		return cm.ErrPermissionDenied
+		return ctx, cm.ErrPermissionDenied
 	}
 
 	var claim *claims.Claim
@@ -147,15 +145,26 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 			ll.Panic("unexpected account type")
 		}
 		claim, account, err = verifyAPIKey(ctx, token, expectType)
+		if err != nil {
+			return ctx, err
+		}
+		wlPartnerID = account.GetAccount().ID
+
 	} else if q.RequireAPIPartnerShopKey {
 		claim, account, err = verifyAPIPartnerShopKey(ctx, token)
+		if err != nil {
+			return ctx, err
+		}
+		wlPartnerID = claim.AuthPartnerID
+
 	} else {
 		claim, err = tokens.Store.Validate(token)
+		if err != nil {
+			return ctx, cm.ErrUnauthenticated
+		}
 	}
+	ctx = wl.WrapContext(ctx, wlPartnerID)
 
-	if err != nil {
-		return cm.ErrUnauthenticated
-	}
 	if claim.STokenExpiresAt != nil && claim.STokenExpiresAt.Before(time.Now()) {
 		// Invalidate stoken
 		claim.SToken = false
@@ -166,7 +175,7 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 		query := &identitymodelx.GetSignedInUserQuery{UserID: claim.AdminID}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid AdminID", l.Error(err))
-			return nil
+			return ctx, nil
 		}
 		session.Admin = query.Result
 	}
@@ -179,10 +188,10 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 		startSessionEtopAdmin(ctx, q.RequireEtopAdmin, session) &&
 		startSessionAuthPartner(ctx, q.AuthPartner, session)
 	if !ok {
-		return cm.ErrPermissionDenied
+		return ctx, cm.ErrPermissionDenied
 	}
 	q.Result = session
-	return nil
+	return ctx, nil
 }
 
 func startSessionUser(ctx context.Context, require bool, s *Session) bool {
