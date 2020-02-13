@@ -8,6 +8,7 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/timex"
 )
 
 // +enum
@@ -37,9 +38,9 @@ var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
 		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
 		Decode: func(r io.Reader) (interface{}, error) {
 			v, err := readInt64(r)
-			return cm.FromMicros(v).In(time.UTC), err
+			return timex.FromMicros(v).In(time.UTC), err
 		},
-		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, cm.Micros(v.(time.Time))) },
+		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, timex.Micros(v.(time.Time))) },
 	},
 }
 

@@ -1,4 +1,4 @@
-package cm
+package timex
 
 import (
 	"encoding/json"

@@ -167,7 +167,7 @@ func (d *GHTKDriver) CreateFulfillment(
 	}
 	// Calc expected delivery at
 	// add some rules
-	if expectedDeliveryAt, err := cm.FormatDateTimeEdgeCase(r.Order.EstimatedDeliverTime.String()); err == nil {
+	if expectedDeliveryAt, err := shipping.ParseDateTimeShipping(r.Order.EstimatedDeliverTime.String()); err == nil {
 		updateFfm.ExpectedDeliveryAt = shipping.CalcDeliveryTime(shipping_provider.GHTK, toDistrict, *expectedDeliveryAt)
 	}
 

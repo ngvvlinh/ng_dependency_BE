@@ -16,7 +16,6 @@ import (
 )
 
 const (
-	phoneChars = "0123456789"
 	vneseChars = "đĐ" +
 		"àáạảãâầấậẩẫăằắặẳẵ" +
 		"ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ" +
@@ -37,8 +36,7 @@ const (
 )
 
 var (
-	phoneRegexp    = regexp.MustCompile(`^0[0-9]{4,14}$`)
-	phoneWhiteList = regexp.MustCompile(`[^0-9]+`)
+	phoneRegexp = regexp.MustCompile(`^0[0-9]{4,14}$`)
 
 	tagRegexp         = regexp.MustCompile(`^[\-\[\]/\\ .,"'_+=@#%*(){}<>!?&$:;|` + numChars + upperChars + lowerChars + vneseChars + `]{1,100}$`)
 	nameRegexp        = regexp.MustCompile(`^[\-\[\]/\\ .,"'_+=@#%*(){}<>!?&$:;|` + numChars + upperChars + lowerChars + vneseChars + `]{2,200}$`)

@@ -9,13 +9,14 @@ import (
 	"etop.vn/backend/pkg/common/code/gencode"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
+	"etop.vn/common/timex"
 )
 
 const magicNumber = int64(1012345678909e6>>24 + 1)
 
 var (
 	zeroDate  = time.Date(2018, 02, 15, 17, 0, 0, 0, time.UTC)
-	startDate = FromMillis(zeroDate.UnixNano()/1e6 - magicNumber*10)
+	startDate = timex.FromMillis(zeroDate.UnixNano()/1e6 - magicNumber*10)
 )
 
 // NewIDWithTime ...

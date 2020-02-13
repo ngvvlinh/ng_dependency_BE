@@ -168,7 +168,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
 	}
 	// ExpectedDeliveryAt
-	expectedDeliveryAt, err := cm.FormatDateTimeEdgeCase(r.Order.EstimatedDeliverTime.String())
+	expectedDeliveryAt, err := shipping.ParseDateTimeShipping(r.Order.EstimatedDeliverTime.String())
 	if err == nil {
 		updateFfm.ExpectedDeliveryAt = shipping.CalcDeliveryTime(typeshippingprovider.GHTK, toDistrict, *expectedDeliveryAt)
 	}

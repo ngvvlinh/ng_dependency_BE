@@ -4,17 +4,10 @@ import (
 	"testing"
 	"time"
 
-	. "etop.vn/backend/pkg/common"
 	"github.com/stretchr/testify/assert"
+
+	. "etop.vn/backend/pkg/common"
 )
-
-func ts(t time.Time) int64 {
-	return int64(ToTimestamp(t))
-}
-
-func dt(t int64) time.Time {
-	return FromMillis(t)
-}
 
 func TestID(t *testing.T) {
 	t.Run("Luna New Year", func(t *testing.T) {
