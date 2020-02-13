@@ -9,10 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/twitchtv/twirp"
-
 	"etop.vn/capi"
 	"etop.vn/common/jsonx"
+	"etop.vn/common/xerrors"
 )
 
 type Server interface {
@@ -24,18 +23,17 @@ type Muxer interface {
 	Handle(path string, Handler http.Handler)
 }
 
-func BadRouteError(msg string, method, url string) twirp.Error {
-	err := twirp.NewError(twirp.BadRoute, msg)
-	err = err.WithMeta("invalid_route", method+" "+url)
-	return err
+func BadRouteError(msg string, method, url string) *xerrors.APIError {
+	return xerrors.NSErrorf(xerrors.BadRoute, nil, msg).
+		WithMeta("invalid_route", method+" "+url)
 }
 
-func internalError(msg string) twirp.Error {
-	return twirp.NewError(twirp.Internal, msg)
+func internalError(msg string) *xerrors.APIError {
+	return xerrors.NSErrorf(xerrors.Internal, nil, msg)
 }
 
-func malformedRequestError(msg string) twirp.Error {
-	return twirp.NewError(twirp.Malformed, msg)
+func malformedRequestError(msg string) *xerrors.APIError {
+	return xerrors.NSErrorf(xerrors.Malformed, nil, msg)
 }
 
 // JSON serialization for errors
@@ -45,9 +43,9 @@ type twerrJSON struct {
 	Meta map[string]string "json:\"meta,omitempty\""
 }
 
-// marshalErrorToJSON returns JSON from a twirp.Error, that can be used as HTTP error response body.
+// marshalErrorToJSON returns JSON from a xerrors.ErrorInterface, that can be used as HTTP error response body.
 // If serialization fails, it will use a descriptive Internal error instead.
-func marshalErrorToJSON(twerr twirp.Error) []byte {
+func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 	// make sure that msg is not too large
 	msg := twerr.Msg()
 	if len(msg) > 1e6 {
@@ -62,19 +60,14 @@ func marshalErrorToJSON(twerr twirp.Error) []byte {
 
 	buf, err := json.Marshal(&tj)
 	if err != nil {
-		buf = []byte("{\"type\": \"" + twirp.Internal + "\", \"msg\": \"There was an error but it could not be serialized into JSON\"}") // fallback
+		buf = []byte("{\"type\": \"internal\", \"msg\": \"There was an error but it could not be serialized into JSON\"}") // fallback
 	}
 	return buf
 }
 
 func WriteError(ctx context.Context, resp http.ResponseWriter, err error) {
-	// Non-twirp errors are wrapped as Internal (default)
-	twerr, ok := err.(twirp.Error)
-	if !ok {
-		twerr = twirp.InternalErrorWith(err)
-	}
-
-	statusCode := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
+	twerr := xerrors.TwirpError(xerrors.ToError(err))
+	statusCode := ServerHTTPStatusFromErrorCode(twerr.Code())
 
 	respBody := marshalErrorToJSON(twerr)
 	resp.Header().Set("Content-Type", "application/json") // Error responses are always JSON
@@ -101,18 +94,6 @@ func WriteError(ctx context.Context, resp http.ResponseWriter, err error) {
 	}
 }
 
-func wrapInternal(err error, prefix string) twirp.Error {
-	return twirp.InternalErrorWith(&wrappedError{prefix: prefix, cause: err})
-}
-
-type wrappedError struct {
-	prefix string
-	cause  error
-}
-
-func (e *wrappedError) Cause() error  { return e.cause }
-func (e *wrappedError) Error() string { return e.prefix + ": " + e.cause.Error() }
-
 // internalWithCause is a Twirp Internal error wrapping an original error cause, accessible
 // by github.com/pkg/errors.Cause, but the original error message is not exposed on Msg().
 type internalWithCause struct {
@@ -120,13 +101,13 @@ type internalWithCause struct {
 	cause error
 }
 
-func (e *internalWithCause) Cause() error                                { return e.cause }
-func (e *internalWithCause) Error() string                               { return e.msg + ": " + e.cause.Error() }
-func (e *internalWithCause) Code() twirp.ErrorCode                       { return twirp.Internal }
-func (e *internalWithCause) Msg() string                                 { return e.msg }
-func (e *internalWithCause) Meta(key string) string                      { return "" }
-func (e *internalWithCause) MetaMap() map[string]string                  { return nil }
-func (e *internalWithCause) WithMeta(key string, val string) twirp.Error { return e }
+func (e *internalWithCause) Cause() error                                           { return e.cause }
+func (e *internalWithCause) Error() string                                          { return e.msg + ": " + e.cause.Error() }
+func (e *internalWithCause) Code() xerrors.Code                                     { return xerrors.Internal }
+func (e *internalWithCause) Msg() string                                            { return e.msg }
+func (e *internalWithCause) Meta(key string) string                                 { return "" }
+func (e *internalWithCause) MetaMap() map[string]string                             { return nil }
+func (e *internalWithCause) WithMeta(key string, val string) xerrors.ErrorInterface { return e }
 
 // ensurePanicResponses makes sure that rpc methods causing a panic still result in a Twirp Internal
 // error response (status 500), and error hooks are properly called with the panic wrapped as an error.
@@ -200,7 +181,7 @@ func ServeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request,
 	}
 	var buf bytes.Buffer
 	if err = jsonx.MarshalTo(&buf, respContent); err != nil {
-		WriteError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		WriteError(ctx, resp, xerrors.Errorf(xerrors.Internal, err, "failed to marshal json response: %v"))
 		return
 	}
 	respBytes := buf.Bytes()

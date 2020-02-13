@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
 	cmP "etop.vn/api/top/types/common"
@@ -78,7 +77,7 @@ type TwerrJSON struct {
 	Meta map[string]string `json:"meta,omitempty"`
 }
 
-func EncodeTwirpError(w io.Writer, err twirp.Error) {
+func EncodeTwirpError(w io.Writer, err xerrors.ErrorInterface) {
 	twerr := TwerrJSON{
 		Code: string(err.Code()),
 		Msg:  err.Msg(),

@@ -244,10 +244,6 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/technoweenie/multipartstreamer v1.0.1 h1:XRztA5MXiR1TIRHxH2uNxXxaIkKQDeX7m2XsSOlQEnM=
 github.com/technoweenie/multipartstreamer v1.0.1/go.mod h1:jNVxdtShOxzAsukZwTSw6MDx5eUJoiEBsSvzDU9uzog=
-github.com/twitchtv/twirp v5.7.0+incompatible h1:9NU0Pv7g90mqNkfUSSi7rP2EsKDtO9GYKzEiOfAplgA=
-github.com/twitchtv/twirp v5.7.0+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
-github.com/twitchtv/twirp v5.9.0+incompatible h1:KBCo4NYCpE9alO1HAEcgninDnw/0AhPT1rZnHkkSqi8=
-github.com/twitchtv/twirp v5.9.0+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
 github.com/valyala/tsvreader v1.0.0 h1:KNtHsLTBU4PiDYxP1xGqcxajaWmTa5qcfMtcm18gadA=
 github.com/valyala/tsvreader v1.0.0/go.mod h1:AqhC2nWrWn/LDpQwfvepjQofncq2nefgCkV/A+jB2kk=
 github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c h1:u40Z8hqBAAQyv+vATcGgV0YCnDjqSL7/q/JyPhhJSPk=

@@ -42,7 +42,6 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337
 	github.com/stretchr/testify v1.4.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
-	github.com/twitchtv/twirp v5.9.0+incompatible
 	github.com/valyala/tsvreader v1.0.0
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0

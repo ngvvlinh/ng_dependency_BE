@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
 	"etop.vn/common/jsonx"
@@ -72,7 +71,10 @@ const (
 	DataLoss           = Code(15)
 	Unauthenticated    = Code(16)
 
-	RuntimePanic         = Code(100)
+	RuntimePanic = Code(100)
+	BadRoute     = Code(101)
+	Malformed    = Code(102)
+
 	WrongPassword        = Code(1005)
 	ValidationFailed     = Code(1501)
 	STokenRequired       = Code(1607)
@@ -104,29 +106,29 @@ var (
 	mapCustomCodes map[Code]*CustomCode
 )
 
-const gray, resetColor = "\x1b[90m", "\x1b[0m"
-
 func init() {
-	mapCodes[Canceled] = string(twirp.Canceled)
-	mapCodes[Unknown] = string(twirp.Unknown)
-	mapCodes[InvalidArgument] = string(twirp.InvalidArgument)
-	mapCodes[DeadlineExceeded] = string(twirp.DeadlineExceeded)
-	mapCodes[NotFound] = string(twirp.NotFound)
-	mapCodes[AlreadyExists] = string(twirp.AlreadyExists)
-	mapCodes[PermissionDenied] = string(twirp.PermissionDenied)
-	mapCodes[Unauthenticated] = string(twirp.Unauthenticated)
-	mapCodes[ResourceExhausted] = string(twirp.ResourceExhausted)
-	mapCodes[FailedPrecondition] = string(twirp.FailedPrecondition)
-	mapCodes[Aborted] = string(twirp.Aborted)
-	mapCodes[OutOfRange] = string(twirp.OutOfRange)
-	mapCodes[Unimplemented] = string(twirp.Unimplemented)
-	mapCodes[Internal] = string(twirp.Internal)
-	mapCodes[Unavailable] = string(twirp.Unavailable)
-	mapCodes[DataLoss] = string(twirp.DataLoss)
+	mapCodes[Canceled] = "canceled"
+	mapCodes[Unknown] = "unknown"
+	mapCodes[InvalidArgument] = "invalid_argument"
+	mapCodes[DeadlineExceeded] = "deadline_exceeded"
+	mapCodes[NotFound] = "not_found"
+	mapCodes[AlreadyExists] = "already_exists"
+	mapCodes[PermissionDenied] = "permission_denied"
+	mapCodes[Unauthenticated] = "unauthenticated"
+	mapCodes[ResourceExhausted] = "resource_exhausted"
+	mapCodes[FailedPrecondition] = "failed_precondition"
+	mapCodes[Aborted] = "aborted"
+	mapCodes[OutOfRange] = "out_of_range"
+	mapCodes[Unimplemented] = "unimplemented"
+	mapCodes[Internal] = "internal"
+	mapCodes[Unavailable] = "unavailable"
+	mapCodes[DataLoss] = "data_loss"
 	mapCodes[NoError] = "ok"
 
 	mapCustomCodes = make(map[Code]*CustomCode)
 	mapCustomCodes[RuntimePanic] = &CustomCode{Internal, "runtime", ""}
+	mapCustomCodes[BadRoute] = &CustomCode{NotFound, "bad_route", ""}
+	mapCustomCodes[Malformed] = &CustomCode{InvalidArgument, "malformed", ""}
 	mapCustomCodes[ValidationFailed] = &CustomCode{InvalidArgument, "validation_failed", "Dữ liệu không hợp lệ."}
 	mapCustomCodes[ExternalServiceError] = &CustomCode{Unknown, "external_service", "Đã xảy ra lỗi khi kết nối với hệ thống bên ngoài"}
 	mapCustomCodes[WrongPassword] = &CustomCode{Unauthenticated, "wrong_password", "Mật khẩu không hợp lệ"}
@@ -216,11 +218,6 @@ func ToError(err error) *APIError {
 		return err
 	}
 	return newError(true, true, Internal, "", err)
-}
-
-// NoStackError
-func NSError(code Code, message string, err error) *APIError {
-	return newError(false, false, code, message, err)
 }
 
 func Error(code Code, message string, err error) *APIError {
@@ -903,8 +900,31 @@ func (e *ErrorCollector) Last() error {
 	return e.Errors[len(e.Errors)-1]
 }
 
+type ErrorInterface interface {
+	// Code is of the valid error codes.
+	Code() Code
+
+	// Msg returns a human-readable, unstructured messages describing the error.
+	Msg() string
+
+	// WithMeta returns a copy of the Error with the given key-value pair attached
+	// as metadata. If the key is already set, it is overwritten.
+	WithMeta(key string, val string) ErrorInterface
+
+	// Meta returns the stored value for the given key. If the key has no set
+	// value, Meta returns an empty string. There is no way to distinguish between
+	// an unset value and an explicit empty string.
+	Meta(key string) string
+
+	// MetaMap returns the complete key-value metadata map stored on the error.
+	MetaMap() map[string]string
+
+	// Error returns a string of the form "twirp error <Type>: <Msg>"
+	Error() string
+}
+
 type TwError interface {
-	twirp.Error
+	ErrorInterface
 	Logs() []*logline.LogLine
 	Cause() error
 	OrigFile() string
@@ -915,8 +935,8 @@ type twError struct {
 	err *APIError
 }
 
-func (t twError) Code() twirp.ErrorCode {
-	return twirp.ErrorCode(t.err.Code.String())
+func (t twError) Code() Code {
+	return t.err.Code
 }
 
 func (t twError) Msg() string {
@@ -931,7 +951,7 @@ func (t twError) Meta(key string) string {
 	return ""
 }
 
-func (t twError) WithMeta(key string, val string) twirp.Error {
+func (t twError) WithMeta(key string, val string) ErrorInterface {
 	_ = t.err.WithMeta(key, val)
 	return t
 }
@@ -996,7 +1016,7 @@ type ErrorJSON struct {
 	Meta map[string]string `json:"meta,omitempty"`
 }
 
-func ToErrorJSON(twerr twirp.Error) *ErrorJSON {
+func ToErrorJSON(twerr ErrorInterface) *ErrorJSON {
 	return &ErrorJSON{
 		Code: string(twerr.Code()),
 		Msg:  twerr.Msg(),

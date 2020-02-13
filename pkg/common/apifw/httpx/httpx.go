@@ -13,7 +13,6 @@ import (
 
 	"github.com/gorilla/schema"
 	"github.com/julienschmidt/httprouter"
-	"github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pkg/common"
 	cmWrapper "etop.vn/backend/pkg/common/apifw/wrapper"
@@ -23,6 +22,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
+	"etop.vn/capi/httprpc"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -206,7 +206,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 
 			if err != nil {
 				twerr := xerrors.TwirpError(err)
-				statusCode := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
+				statusCode := httprpc.ServerHTTPStatusFromErrorCode(twerr.Code())
 				jerr := xerrors.ToErrorJSON(twerr)
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(statusCode)

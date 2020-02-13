@@ -42,34 +42,13 @@ var (
 	ErrPermissionDenied = xerrors.ErrPermissionDenied
 )
 
-func Error(code xerrors.Code, message string, err error) *xerrors.APIError {
-	return xerrors.Error(code, message, err)
-}
-
-func Errorf(code xerrors.Code, err error, message string, args ...interface{}) *xerrors.APIError {
-	return xerrors.Errorf(code, err, message, args...)
-}
-
-func Trace(err error) *xerrors.APIError {
-	return xerrors.Trace(err)
-}
-
-func ErrorTracef(code xerrors.Code, err error, message string, args ...interface{}) *xerrors.APIError {
-	return xerrors.ErrorTracef(code, err, message, args...)
-}
-
-func NSErrorf(code xerrors.Code, err error, message string, args ...interface{}) *xerrors.APIError {
-	return xerrors.NSErrorf(code, err, message, args...)
-}
-
-func ErrorCode(err error) xerrors.Code {
-	return xerrors.ErrorCode(err)
-}
-
-func ToError(err error) *xerrors.APIError {
-	return xerrors.ToError(err)
-}
-
-func MapError(err error) *xerrors.MapErrors {
-	return xerrors.MapError(err)
-}
+var (
+	Error       = xerrors.Error
+	Errorf      = xerrors.Errorf
+	Trace       = xerrors.Trace
+	ErrorTracef = xerrors.ErrorTracef
+	NSErrorf    = xerrors.NSErrorf
+	ErrorCode   = xerrors.ErrorCode
+	ToError     = xerrors.ToError
+	MapError    = xerrors.MapError
+)
