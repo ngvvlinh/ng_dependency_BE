@@ -133,7 +133,7 @@ func PbError(err error) *common.Error {
 	xerr := xerrors.TwirpError(err)
 	return &common.Error{
 		Msg:  xerr.Msg(),
-		Code: string(xerr.Code()),
+		Code: xerr.Code().String(),
 		Meta: xerr.MetaMap(),
 	}
 }
@@ -155,7 +155,7 @@ func PbCustomError(err error) *common.Error {
 	xerr := xerrors.TwirpError(err)
 	return &common.Error{
 		Msg:  xerr.Msg(),
-		Code: string(xerr.Code()),
+		Code: xerr.Code().String(),
 		Meta: xerr.MetaMap(),
 	}
 }

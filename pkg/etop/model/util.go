@@ -27,7 +27,7 @@ func ToError(err error) *Error {
 	xerr := xerrors.TwirpError(err)
 	return &Error{
 		Msg:  xerr.Msg(),
-		Code: string(xerr.Code()),
+		Code: xerr.Code().String(),
 		Meta: xerr.MetaMap(),
 	}
 }

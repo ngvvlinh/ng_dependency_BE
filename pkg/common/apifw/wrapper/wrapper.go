@@ -79,7 +79,7 @@ type TwerrJSON struct {
 
 func EncodeTwirpError(w io.Writer, err xerrors.ErrorInterface) {
 	twerr := TwerrJSON{
-		Code: string(err.Code()),
+		Code: err.Code().String(),
 		Msg:  err.Msg(),
 		Meta: err.MetaMap(),
 	}

@@ -1021,7 +1021,7 @@ type ErrorJSON struct {
 
 func ToErrorJSON(twerr ErrorInterface) *ErrorJSON {
 	return &ErrorJSON{
-		Code: string(twerr.Code()),
+		Code: twerr.Code().String(),
 		Msg:  twerr.Msg(),
 		Meta: twerr.MetaMap(),
 	}
