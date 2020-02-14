@@ -103,10 +103,6 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterAffiliate(ctx, query)
 	resp = query.Result

@@ -141,10 +141,6 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateURLSlug(ctx, query)
 	resp = query.Result
@@ -597,10 +593,6 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateAddress(ctx, query)
 	resp = query.Result
@@ -692,10 +684,6 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveAddress(ctx, query)
 	resp = query.Result
@@ -740,10 +728,6 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateAddress(ctx, query)
 	resp = query.Result
@@ -796,10 +780,6 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBanks(ctx, query)
 	resp = query.Result
@@ -844,10 +824,6 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBranchesByBankProvince(ctx, query)
 	resp = query.Result
@@ -892,10 +868,6 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProvincesByBank(ctx, query)
 	resp = query.Result
@@ -1257,10 +1229,6 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ChangePassword(ctx, query)
 	resp = query.Result
@@ -1609,10 +1577,6 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendEmailVerification(ctx, query)
 	resp = query.Result
@@ -1699,10 +1663,6 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SendSTokenEmail(ctx, query)
 	resp = query.Result
@@ -1747,10 +1707,6 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SessionInfo(ctx, query)
 	resp = query.Result
@@ -1795,10 +1751,6 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SwitchAccount(ctx, query)
 	resp = query.Result
@@ -1843,10 +1795,6 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePermission(ctx, query)
 	resp = query.Result
@@ -1891,10 +1839,6 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferenceSale(ctx, query)
 	resp = query.Result
@@ -1939,10 +1883,6 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferenceUser(ctx, query)
 	resp = query.Result
@@ -1987,10 +1927,6 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpgradeAccessToken(ctx, query)
 	resp = query.Result
@@ -2035,10 +1971,6 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyEmailUsingToken(ctx, query)
 	resp = query.Result
@@ -2133,10 +2065,6 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AcceptInvitation(ctx, query)
 	resp = query.Result
@@ -2223,10 +2151,6 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInvitations(ctx, query)
 	resp = query.Result
@@ -2271,10 +2195,6 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.LeaveAccount(ctx, query)
 	resp = query.Result
@@ -2319,10 +2239,6 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RejectInvitation(ctx, query)
 	resp = query.Result

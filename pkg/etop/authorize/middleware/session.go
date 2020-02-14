@@ -162,6 +162,9 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 		if err != nil {
 			return ctx, cm.ErrUnauthenticated
 		}
+		if q.AuthPartner != 0 {
+			wlPartnerID = claim.AuthPartnerID
+		}
 	}
 	ctx = wl.WrapContext(ctx, wlPartnerID)
 

@@ -271,12 +271,6 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	{{if authPartner $m -}}
 	query.CtxPartner = session.CtxPartner
 	{{end -}}
-	{{if authPartner $m | eq 0 | and (requireUser $m) -}}
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
-	{{end -}}
 	{{if requireRole $m -}}
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles

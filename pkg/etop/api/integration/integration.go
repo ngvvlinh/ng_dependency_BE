@@ -152,7 +152,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 			shop.Status == status3.P && shop.DeletedAt.IsZero() &&
 			user.Status == status3.P {
 			// everything looks good
-			resp, err := s.generateNewSession(ctx, nil, partner, shop, requestInfo)
+			resp, err := s.generateNewSession(ctx, user, partner, shop, requestInfo)
 			q.Result = resp
 			return err
 		}
@@ -244,6 +244,9 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 				"request_login": jsonx.MustMarshalToString(info),
 			},
 		},
+	}
+	if user != nil {
+		tokenCmd.ClaimInfo.UserID = user.ID
 	}
 	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "")

@@ -908,10 +908,6 @@ func (s wrapUserService) UpdateReferral(ctx context.Context, req *api.UpdateRefe
 	}
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReferral(ctx, query)
 	resp = query.Result

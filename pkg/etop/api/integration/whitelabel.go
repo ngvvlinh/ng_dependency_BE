@@ -141,7 +141,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		}
 	}
 
-	resp, err := s.generateNewSession(ctx, nil, partner, shop, requestInfo)
+	resp, err := s.generateNewSession(ctx, user, partner, shop, requestInfo)
 	if err != nil {
 		return err
 	}
