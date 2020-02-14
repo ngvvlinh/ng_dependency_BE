@@ -76,9 +76,12 @@ func (q *CustomerQuery) GetCustomer(
 func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
-	customer, err := q.store(ctx).ID(args.ID).OptionalShopID(args.ShopID).GetCustomer()
+	customer, err := q.store(ctx).ID(args.ID).GetCustomer()
 	if err != nil {
 		return nil, err
+	}
+	if customer.ShopID != 0 && customer.ShopID != args.ShopID {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "khách hàng không thuộc cửa hàng")
 	}
 	q1 := q.customerGroupCustomerStore(ctx).CustomerID(args.ID)
 	customerGroups, err := q1.ListShopCustomerGroupsCustomerByCustomerID()

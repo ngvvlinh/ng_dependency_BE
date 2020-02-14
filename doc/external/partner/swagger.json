@@ -4379,12 +4379,13 @@
       ]
     },
     "spCustomerType": {
+      "description": "Deprecated values: \"independent\"",
       "type": "string",
       "enum": [
         "unknown",
         "individual",
         "organization",
-        "independent"
+        "anonymous"
       ]
     },
     "yiPaymentMethod": {

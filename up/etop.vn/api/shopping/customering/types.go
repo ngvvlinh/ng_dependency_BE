@@ -9,7 +9,7 @@ import (
 	dot "etop.vn/capi/dot"
 )
 
-const CustomerAnonymous dot.ID = 1000570234798935240
+const CustomerAnonymous dot.ID = 1
 
 type ShopCustomer struct {
 	ExternalID   string
