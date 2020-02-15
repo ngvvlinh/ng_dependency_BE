@@ -33,7 +33,7 @@ func baseHost(env cmenv.EnvType) string {
 		return "d.etop.vn"
 
 	case cmenv.EnvSandbox:
-		return "s.etop.vn"
+		return "sandbox.etop.vn"
 
 	case cmenv.EnvStag:
 		return "g.etop.vn"
