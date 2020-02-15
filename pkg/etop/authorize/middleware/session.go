@@ -94,7 +94,7 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Context, _err error) {
 	var wlPartnerID dot.ID
 	defer func() {
-		if _err == nil && wlPartnerID == 0 {
+		if wlPartnerID == 0 {
 			newCtx = wl.WrapContext(ctx, 0)
 		}
 	}()

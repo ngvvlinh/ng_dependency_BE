@@ -407,6 +407,9 @@ type Fulfillment struct {
 	XShippingSubState                  string                 `json:"x_shipping_sub_state"`
 	Code                               string                 `json:"code"`
 	ActualCompensationAmount           int                    `json:"actual_compensation_amount"`
+
+	ConnectionID  dot.ID `json:"connection_id"`
+	ShopCarrierID dot.ID `json:"shop_carrier_id"`
 }
 
 func (m *Fulfillment) String() string { return jsonx.MustMarshalToString(m) }

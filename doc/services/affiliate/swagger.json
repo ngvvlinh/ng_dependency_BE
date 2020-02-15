@@ -2074,6 +2074,10 @@
         "code": {
           "type": "string"
         },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -2204,6 +2208,10 @@
         },
         "shop": {
           "$ref": "#/definitions/baShop"
+        },
+        "shop_carrier_id": {
+          "type": "string",
+          "format": "int64"
         },
         "shop_id": {
           "type": "string",
