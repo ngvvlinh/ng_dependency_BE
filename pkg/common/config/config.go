@@ -1,6 +1,7 @@
 package cc
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -20,6 +21,7 @@ var ll = l.New()
 
 var (
 	flConfigFile = ""
+	flConfigYaml = ""
 	flExample    = false
 	flNoEnv      = false
 	flCommitMsgs = false
@@ -27,6 +29,7 @@ var (
 
 func InitFlags() {
 	flag.StringVar(&flConfigFile, "config-file", "", "Path to config file")
+	flag.StringVar(&flConfigYaml, "config-yaml", "", "Config as yaml string")
 	flag.BoolVar(&flNoEnv, "no-env", false, "Don't read config from environment")
 	flag.BoolVar(&flExample, "example", false, "Print example config then exit")
 	flag.BoolVar(&flCommitMsgs, "commit-messages", false, "Print commit messages then exit")
@@ -63,27 +66,34 @@ func LoadWithDefault(v, def interface{}) (err error) {
 		}
 	}()
 
+	if (flConfigFile == "") == (flConfigYaml == "") {
+		return errors.New("must provide only -config-file or -config-yaml")
+	}
 	if flConfigFile != "" {
-		return LoadToFile(flConfigFile, v)
+		err := LoadFromFile(flConfigFile, v)
+		if err != nil {
+			ll.S.Errorf("can not load config from file: %v", flConfigFile)
+		}
+		return err
+	}
+	if flConfigYaml != "" {
+		return LoadFromYaml([]byte(flConfigYaml), v)
 	}
 	reflect.ValueOf(v).Elem().Set(reflect.ValueOf(def))
 	return nil
 }
 
-// LoadToFile loads config from file
-func LoadToFile(configPath string, v interface{}) (err error) {
+// LoadFromFile loads config from file
+func LoadFromFile(configPath string, v interface{}) (err error) {
 	data, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		ll.Error("Error loading config", l.String("file", configPath), l.Error(err))
 		return err
 	}
+	return LoadFromYaml(data, v)
+}
 
-	err = yaml.Unmarshal(data, v)
-	if err != nil {
-		ll.Error("Error parsing config", l.String("file", configPath), l.Error(err))
-		return err
-	}
-	return nil
+func LoadFromYaml(input []byte, v interface{}) (err error) {
+	return yaml.Unmarshal(input, v)
 }
 
 func EnvPrefix(prefix []string, def string) string {
