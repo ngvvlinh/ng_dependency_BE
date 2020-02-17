@@ -690,7 +690,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 		return cm.Errorf(cm.InvalidArgument, nil, "Cần sử dụng địa chỉ email đã được xác nhận khi đăng ký")
 	}
 
-	user, err := s.registerUser(ctx, partner.ID, r.FullName, string(emailNorm), string(phoneNorm), r.AgreeTos, r.AgreeEmailInfo.Bool, verifiedEmail != "", verifiedPhone != "")
+	user, err := s.registerUser(ctx, true, partner.ID, r.FullName, string(emailNorm), string(phoneNorm), r.AgreeTos, r.AgreeEmailInfo.Bool, verifiedEmail != "", verifiedPhone != "")
 	if err != nil {
 		return err
 	}
@@ -716,7 +716,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	return nil
 }
 
-func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID, fullName, userEmail, userPhone string, agreeTos, agreeEmailInfo bool, verifiedEmail, verifiedPhone bool) (*identitymodel.User, error) {
+func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo bool, partnerID dot.ID, fullName, userEmail, userPhone string, agreeTos, agreeEmailInfo bool, verifiedEmail, verifiedPhone bool) (*identitymodel.User, error) {
 	partner, err := s.validatePartner(ctx, partnerID)
 	if err != nil {
 		return nil, err
@@ -742,6 +742,10 @@ func (s *IntegrationService) registerUser(ctx context.Context, partnerID dot.ID,
 		return nil, err
 	}
 	user := cmd.Result.User
+
+	if !sendConfirmInfo {
+		return user, nil
+	}
 
 	switch {
 	case verifiedEmail:

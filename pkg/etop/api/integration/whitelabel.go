@@ -62,7 +62,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		// continue
 	case cm.NotFound:
 		// --- register user ---
-		userQuery.Result.User, err = s.registerUser(ctx, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, verifiedEmail != "", verifiedPhone != "")
+		userQuery.Result.User, err = s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, verifiedEmail != "", verifiedPhone != "")
 		if err != nil {
 			return err
 		}

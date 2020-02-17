@@ -407,20 +407,9 @@ func validateRedirectURL(redirectURLs []string, redirectURL string, skipCheckIfN
 }
 
 func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (*whitelabel.WL, error) {
-	configs := q.Config
-	isWhitelable := false
-	for _, c := range configs {
-		if c == authorize_shop_config.WhiteLabel {
-			isWhitelable = true
-		}
-	}
-	if !isWhitelable {
-		return nil, nil
-	}
-
 	wlPartner := wl.X(ctx)
 	if !wlPartner.IsWhiteLabel() {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không có thông tin whitelabel từ đối tác")
+		return nil, nil
 	}
 
 	// validate data
