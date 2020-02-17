@@ -19,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
+	imgroupsms "etop.vn/backend/pkg/integration/sms/imgroup"
 	"etop.vn/common/jsonx"
 )
 
@@ -93,6 +94,12 @@ type Config struct {
 	Vht    crmsyncconfig.Vht    `yaml:"vht"`
 
 	Invitation invitation.Config
+
+	WhiteLabel struct {
+		IMGroup struct {
+			SMS imgroupsms.Config `yaml:"sms"`
+		} `yaml:"imgroup"`
+	} `yaml:"white_label"`
 
 	FlagEnablePermission string `yaml:"flag_enable_permission"`
 }

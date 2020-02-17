@@ -7,6 +7,8 @@ import (
 	smsing "etop.vn/api/etc/logging/smslog"
 	"etop.vn/api/top/types/etc/status3"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
@@ -54,13 +56,15 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 }
 
 type Client struct {
-	inner Driver
-	bot   *telebot.Channel
+	inner      Driver
+	imgroupSMS Driver
+	bot        *telebot.Channel
 }
 
-func New(cfg Config, bot *telebot.Channel) Client {
+func New(cfg Config, bot *telebot.Channel, imgroupSMSClient Driver) Client {
 	c := Client{
-		bot: bot,
+		bot:        bot,
+		imgroupSMS: imgroupSMSClient,
 	}
 	if cfg.Mock {
 		c.inner = mock.GetMock()
@@ -77,12 +81,18 @@ func (c Client) Register(bus bus.Bus) Client {
 }
 
 func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
+	client := c.inner
+	key := wl.X(ctx).Key
+	if key == drivers.ITopXKey {
+		client = c.imgroupSMS
+	}
+
 	phone, _, ok := validate.TrimTest(cmd.Phone)
 	if cmenv.IsDevOrStag() && !ok {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ có thể gửi tin nhắn đến địa chỉ test trên dev!")
 	}
 
-	resp, err := c.inner.SendSMS(ctx, phone, cmd.Content)
+	resp, err := client.SendSMS(ctx, phone, cmd.Content)
 	defer func() {
 		createSms := &smsing.CreateSmsLogCommand{
 			Content:    cmd.Content,
@@ -103,7 +113,7 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 	}()
 
 	if err != nil {
-		c.bot.SendMessage(fmt.Sprintf("Vietguys: %v", err))
+		c.bot.SendMessage(fmt.Sprintf("sms: %v", err))
 		return cm.Errorf(cm.ExternalServiceError, nil, "Không thể gửi tin nhắn")
 	}
 	cmd.Result.SMSID = resp

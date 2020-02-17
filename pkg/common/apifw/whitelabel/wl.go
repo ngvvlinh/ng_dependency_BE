@@ -1,6 +1,8 @@
 package whitelabel
 
 import (
+	"text/template"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/top/types/etc/connection_type"
 )
@@ -38,6 +40,8 @@ type Config struct {
 	CSEmail string
 
 	Shipment *ShipmentConfig
+
+	Templates *Templates
 }
 
 type Driver interface {
@@ -46,4 +50,13 @@ type Driver interface {
 type ShipmentConfig struct {
 	// Các NVC topship hỗ trợ cho Partner WL này
 	Topship []connection_type.ConnectionProvider
+}
+
+type Templates struct {
+	RequestLoginSmsTpl         *template.Template
+	NewAccountViaPartnerSmsTpl *template.Template
+}
+
+func MustParseTemplate(name, tpl string) *template.Template {
+	return template.Must(template.New(name).Parse(tpl))
 }

@@ -32,7 +32,7 @@ func TestClient_SendSMS(t *testing.T) {
 		Mock:    true,
 	}
 	cfg.MustLoadEnv()
-	client := New(cfg, nil)
+	client := New(cfg, nil, nil)
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			out, err := client.inner.SendSMS(context.Background(), tc.phoneInput, tc.contentInput)

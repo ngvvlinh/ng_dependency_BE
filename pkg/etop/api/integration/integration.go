@@ -374,11 +374,12 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		msg = fmt.Sprintf("Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", emailNorm, wl.X(ctx).CSEmail)
 
 	case phoneNorm != "":
+		tpl := wl.X(ctx).Templates.RequestLoginSmsTpl
 		var b strings.Builder
-		if err := api.RequestLoginSmsTpl.Execute(&b, map[string]interface{}{
+		if err := tpl.Execute(&b, map[string]interface{}{
 			"Code":           formatVerificationCode(generatedCode),
 			"PartnerWebsite": validate.DomainFromURL(partner.WebsiteURL),
-			"Notice":         notice,
+			"Notice":         "",
 		}); err != nil {
 			return r, cm.Errorf(cm.Internal, err, "Không thể gửi mã đăng nhập").WithMeta("reason", "can not generate sms content")
 		}
@@ -788,8 +789,9 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 		}
 
 		if sendConfirmInfo {
+			tpl := wl.X(ctx).Templates.NewAccountViaPartnerSmsTpl
 			var b strings.Builder
-			if err := api.NewAccountViaPartnerSmsTpl.Execute(&b, map[string]interface{}{
+			if err := tpl.Execute(&b, map[string]interface{}{
 				"Password": generatedPassword,
 			}); err != nil {
 				ll.Error("Can not send email", l.Error(err))

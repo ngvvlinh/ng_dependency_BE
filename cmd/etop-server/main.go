@@ -133,6 +133,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
+	imgroupsms "etop.vn/backend/pkg/integration/sms/imgroup"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 	apiaff "etop.vn/backend/pkg/services/affiliate/api"
 	"etop.vn/common/l"
@@ -620,7 +621,15 @@ func main() {
 	}
 	if cfg.SMS.Enabled {
 		smsBot := cfg.TelegramBot.MustConnectChannel(config.ChannelSMS)
-		sms.New(cfg.SMS, smsBot).Register(bus.Global())
+
+		var imgroupSMSClient *imgroupsms.Client
+		if cfg.WhiteLabel.IMGroup.SMS.APIKey != "" {
+			imgroupSMSClient = imgroupsms.New(cfg.WhiteLabel.IMGroup.SMS)
+		} else if !cmenv.IsDev() {
+			ll.Panic("no sms config for whitelabel/imgroup")
+		}
+
+		sms.New(cfg.SMS, smsBot, imgroupSMSClient).Register(bus.Global())
 		ll.Info("Enabled sending sms")
 	} else {
 		ll.Warn("Disabled sending sms")

@@ -66,7 +66,7 @@ func LoadWithDefault(v, def interface{}) (err error) {
 		}
 	}()
 
-	if (flConfigFile == "") == (flConfigYaml == "") {
+	if (flConfigFile != "") && (flConfigYaml != "") {
 		return errors.New("must provide only -config-file or -config-yaml")
 	}
 	if flConfigFile != "" {

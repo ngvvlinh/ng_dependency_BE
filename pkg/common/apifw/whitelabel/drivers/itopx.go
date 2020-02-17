@@ -8,11 +8,12 @@ import (
 )
 
 const ITopXID = 1000642056506289649
+const ITopXKey = "itopx"
 
 func ITopX(env cmenv.EnvType) *whitelabel.WL {
 	cfg := config{
 		prodHost: "itopx.vn",
-		key:      "itopx",
+		key:      ITopXKey,
 	}
 	return &whitelabel.WL{
 		Partner: identity.Partner{
@@ -35,6 +36,11 @@ func ITopX(env cmenv.EnvType) *whitelabel.WL {
 				Topship: []connection_type.ConnectionProvider{
 					connection_type.ConnectionProviderGHN,
 				},
+			},
+			Templates: &whitelabel.Templates{
+				RequestLoginSmsTpl: whitelabel.MustParseTemplate("request-login-sms",
+					`Su dung ma {{.Code}} de xac thuc tai khoan. Moi thac mac xin quy khach vui long LH: 1900636040`),
+				NewAccountViaPartnerSmsTpl: nil, // not support
 			},
 		},
 		Driver: &itopxDriver{},

@@ -33,6 +33,12 @@ func ETop(env cmenv.EnvType) *whitelabel.WL {
 			CompanyName:     "eTop",
 			CompanyFullName: "Công ty cổ phần công nghệ eTop",
 			CSEmail:         "hotro@etop.vn",
+			Templates: &whitelabel.Templates{
+				RequestLoginSmsTpl: whitelabel.MustParseTemplate("request-login-sms",
+					"Nhập mã {{.Code}} để đăng nhập vào tài khoản eTop thông qua hệ thống của đối tác. Mã có hiệu lực trong 2 giờ. Vui lòng không chia sẻ cho bất kỳ ai."),
+				NewAccountViaPartnerSmsTpl: whitelabel.MustParseTemplate("register-sms",
+					`Sử dụng mật khẩu {{.Password}} để đăng nhập vào tài khoản eTop của bạn. Vui lòng chỉ sử dụng mật khẩu này ở etop.vn và không chia sẻ cho bất kỳ ai.`),
+			},
 		},
 		Driver: &etopDriver{},
 	}

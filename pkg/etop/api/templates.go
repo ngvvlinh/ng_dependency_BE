@@ -53,9 +53,9 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản của bạn trên eTop.vn. Mã có hiệu lực trong 2 giờ.`
+var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 2 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsResetPassword = `Mã xác nhận thông tin để lấy lại mật khẩu của bạn trên eTop.vn là %v. Mã có hiệu lực trong vong 1 giờ.`
+var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
 var RequestLoginEmailTpl = template.Must(template.New("request-login-email").Parse(`
 {{.Hello}},<br><br>
@@ -70,10 +70,6 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
 Đội ngũ eTop
 {{.Extra}}
-`))
-
-var RequestLoginSmsTpl = template.Must(template.New("request-login-sms").Parse(`
-Nhập mã {{.Code}} để đăng nhập vào tài khoản của bạn trên eTop.vn thông qua hệ thống của đối tác. Mã có hiệu lực trong 2 giờ. {{.Notice}}
 `))
 
 var NewAccountViaPartnerEmailTpl = template.Must(template.New("register-email").Parse(`
@@ -97,8 +93,4 @@ Chào mừng bạn đã tạo tài khoản eTop.vn mới thông qua hệ thống
 <b>Vui lòng chỉ sử dụng mật khẩu này ở https://etop.vn và không chia sẻ cho người khác. Nhân viên và đối tác của eTop sẽ không bao giờ hỏi mật khẩu của bạn.</b><br><br>
 
 Đội ngũ eTop
-`))
-
-var NewAccountViaPartnerSmsTpl = template.Must(template.New("register-sms").Parse(`
-Sử dụng mật khẩu {{.Password}} để đăng nhập vào tài khoản của bạn trên eTop.vn. Vui lòng chỉ sử dụng mật khẩu này ở https://etop.vn và không chia sẻ cho người khác.
 `))

@@ -444,7 +444,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 		}
 		exprisesIn = tokenCmd.Result.ExpiresIn
 	}
-	if err := verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, smsResetPassword, r.Context, false); err != nil {
+	if err := verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, smsResetPasswordTpl, r.Context, false); err != nil {
 		return r, err
 	}
 	r.Result = &etop.ResetPasswordResponse{
