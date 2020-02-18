@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/authorization"
+	"etop.vn/api/main/identity"
 	"etop.vn/api/top/types/etc/account_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/try_on"
@@ -52,7 +53,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 	}
 
 	id := model.NewShopID()
-	return inTransaction(func(x Qx) error {
+	err := inTransaction(func(x Qx) error {
 		account := &identitymodel.Account{
 			ID:       id,
 			Name:     cmd.Name,
@@ -129,6 +130,17 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+	event := &identity.AccountCreatedEvent{
+		ShopID: id,
+		UserID: cmd.OwnerID,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+	return nil
 }
 
 func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error {
