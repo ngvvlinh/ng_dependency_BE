@@ -16,6 +16,7 @@ import (
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -53,7 +54,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 	}
 
 	id := model.NewShopID()
-	err := inTransaction(func(x Qx) error {
+	return x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
 		account := &identitymodel.Account{
 			ID:       id,
 			Name:     cmd.Name,
@@ -128,19 +129,15 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			Get(cmd.Result); err != nil || !has {
 			return cm.Error(cm.Internal, "", err)
 		}
+		event := &identity.AccountCreatedEvent{
+			ShopID: id,
+			UserID: cmd.OwnerID,
+		}
+		if err := eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-	event := &identity.AccountCreatedEvent{
-		ShopID: id,
-		UserID: cmd.OwnerID,
-	}
-	if err := eventBus.Publish(ctx, event); err != nil {
-		return err
-	}
-	return nil
 }
 
 func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error {
