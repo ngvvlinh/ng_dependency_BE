@@ -744,10 +744,6 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 	}
 	user := cmd.Result.User
 
-	if !sendConfirmInfo {
-		return user, nil
-	}
-
 	switch {
 	case verifiedEmail:
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -758,26 +754,28 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 			ll.Error("Can not update verification", l.Error(err))
 		}
 
-		var b strings.Builder
-		if err := api.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
-			"FullName":          user.FullName,
-			"PartnerPublicName": partner.PublicName,
-			"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),
-			"LoginLabel":        "Email",
-			"Login":             userEmail,
-			"Password":          generatedPassword,
-		}); err != nil {
-			ll.Error("Can not send email", l.Error(err))
-			break
-		}
-		emailCmd := &email.SendEmailCommand{
-			FromName:    "eTop.vn (no-reply)",
-			ToAddresses: []string{userEmail},
-			Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
-			Content:     b.String(),
-		}
-		if err := bus.Dispatch(ctx, emailCmd); err != nil {
-			ll.Error("Can not send email", l.Error(err))
+		if sendConfirmInfo {
+			var b strings.Builder
+			if err := api.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
+				"FullName":          user.FullName,
+				"PartnerPublicName": partner.PublicName,
+				"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),
+				"LoginLabel":        "Email",
+				"Login":             userEmail,
+				"Password":          generatedPassword,
+			}); err != nil {
+				ll.Error("Can not send email", l.Error(err))
+				break
+			}
+			emailCmd := &email.SendEmailCommand{
+				FromName:    "eTop.vn (no-reply)",
+				ToAddresses: []string{userEmail},
+				Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
+				Content:     b.String(),
+			}
+			if err := bus.Dispatch(ctx, emailCmd); err != nil {
+				ll.Error("Can not send email", l.Error(err))
+			}
 		}
 
 	case verifiedPhone:
@@ -789,19 +787,21 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 			ll.Error("Can not update verification", l.Error(err))
 		}
 
-		var b strings.Builder
-		if err := api.NewAccountViaPartnerSmsTpl.Execute(&b, map[string]interface{}{
-			"Password": generatedPassword,
-		}); err != nil {
-			ll.Error("Can not send email", l.Error(err))
-			break
-		}
-		smsCmd := &sms.SendSMSCommand{
-			Phone:   userPhone,
-			Content: b.String(),
-		}
-		if err := bus.Dispatch(ctx, smsCmd); err != nil {
-			ll.Error("Can not send sms", l.Error(err))
+		if sendConfirmInfo {
+			var b strings.Builder
+			if err := api.NewAccountViaPartnerSmsTpl.Execute(&b, map[string]interface{}{
+				"Password": generatedPassword,
+			}); err != nil {
+				ll.Error("Can not send email", l.Error(err))
+				break
+			}
+			smsCmd := &sms.SendSMSCommand{
+				Phone:   userPhone,
+				Content: b.String(),
+			}
+			if err := bus.Dispatch(ctx, smsCmd); err != nil {
+				ll.Error("Can not send sms", l.Error(err))
+			}
 		}
 	}
 	return user, nil
