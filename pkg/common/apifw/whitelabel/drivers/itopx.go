@@ -7,7 +7,7 @@ import (
 	"etop.vn/backend/pkg/common/cmenv"
 )
 
-const ITopXID = 1057192413421863086
+const ITopXID = 1000642057714249201
 
 func ITopX(env cmenv.EnvType) *whitelabel.WL {
 	cfg := config{

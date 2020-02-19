@@ -48,6 +48,11 @@ func NewIDWithTimeAndTag(t time.Time, tag byte) int64 {
 	return id | int64(tag|1)<<24
 }
 
+func SetIDWithTag(id int64, tag byte) int64 {
+	id = id & ^(255 << 24)
+	return id | int64(tag|1)<<24
+}
+
 // NewIDWithTag create new int64 ID with 8 bit tag
 func NewIDWithTag(tag byte) dot.ID {
 	return dot.ID(NewIDWithTimeAndTag(time.Now(), tag))
