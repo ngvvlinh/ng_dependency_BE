@@ -13,10 +13,10 @@ insert into user_internal (id, hashpwd, updated_at) values
 on conflict do nothing; -- for local development only
 
 insert into account (id, owner_id, name, type) values
-    (1000642057714249201, 1055611186794473931, 'IMGroup', 'partner');
+    (1000642056506289649, 1055611186794473931, 'IMGroup', 'partner');
 
 insert into account_user (account_id, user_id, status, roles, created_at, updated_at) values
-    (1000642057714249201, 1055611186794473931, 1, '{owner}', now(), now());
+    (1000642056506289649, 1055611186794473931, 1, '{owner}', now(), now());
 
 insert into partner (id, name, public_name, owner_id, status, is_test, created_at, updated_at, white_label_key) values
-    (1000642057714249201, 'IMGroup', 'IMGroup', 1055611186794473931, 1, 0, now(), now(), 'itopx');
+    (1000642056506289649, 'IMGroup', 'IMGroup', 1055611186794473931, 1, 0, now(), now(), 'itopx');
