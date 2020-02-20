@@ -118,7 +118,10 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 
 func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpoint) error {
 	paging := cmapi.CMPaging(r.Paging)
-	switch r.GetAll {
+	if !r.GetAll.Valid {
+		r.GetAll = dot.Bool(true)
+	}
+	switch r.GetAll.Bool {
 	case true:
 		if err := getAllCustomers(ctx, paging, r); err != nil {
 			return err

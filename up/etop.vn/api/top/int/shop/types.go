@@ -1167,7 +1167,7 @@ func (m *UpdateCustomerRequest) String() string { return jsonx.MustMarshalToStri
 type GetCustomersRequest struct {
 	Paging  *common.Paging   `json:"paging"`
 	Filters []*common.Filter `json:"filters"`
-	GetAll  bool             `json:"get_all"`
+	GetAll  dot.NullBool     `json:"get_all"`
 }
 
 func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
