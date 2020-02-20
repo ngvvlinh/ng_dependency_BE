@@ -1016,7 +1016,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 
 	user := r.Context.User.User
 	if user.ID != tok.UserID || user.Email != v["email"] {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ %b=v.", wl.X(ctx).CSEmail)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if user.EmailVerifiedAt.IsZero() {
