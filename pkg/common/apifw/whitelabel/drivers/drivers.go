@@ -38,6 +38,9 @@ func baseHost(env cmenv.EnvType) string {
 	case cmenv.EnvStag:
 		return "g.etop.vn"
 
+	case cmenv.EnvProd:
+		return "etop.vn"
+
 	default:
 		ll.S.Panicf("unexpected env: %v", env)
 		return ""
