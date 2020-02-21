@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
 
@@ -139,9 +140,11 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 				if err != nil {
 					ll.S.Errorf("Handler for topic %v:%v stopped: %+v", kafkaTopic, partition, err)
 					if h.bot != nil {
+						buf := make([]byte, 2048)
+						runtime.Stack(buf, false)
 						msg := fmt.Sprintf(
-							"🔥 Handler for topic %v:%v stoppped: %+v",
-							kafkaTopic, partition, err)
+							"🔥 Handler for topic %v:%v stoppped: %+v\n\n%s",
+							kafkaTopic, partition, err, buf)
 						h.bot.SendMessage(msg)
 					}
 				}
