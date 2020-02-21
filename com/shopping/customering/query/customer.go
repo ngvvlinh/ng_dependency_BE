@@ -84,7 +84,7 @@ func (q *CustomerQuery) GetCustomerByID(
 		return customer, nil
 	}
 	if args.ShopID != 0 && customer.ShopID != args.ShopID {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "khách hàng không thuộc cửa hàng")
+		return nil, cm.Errorf(cm.NotFound, nil, "Không tìm thấy.")
 	}
 	q1 := q.customerGroupCustomerStore(ctx).CustomerID(args.ID)
 	customerGroups, err := q1.ListShopCustomerGroupsCustomerByCustomerID()
@@ -157,6 +157,16 @@ func (q *CustomerQuery) ListCustomersByIDs(
 	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
+	}
+	for _, customerID := range args.IDs {
+		if customerID == customering.CustomerAnonymous {
+			customerAnonymous, err := q.store(ctx).ID(customerID).GetCustomer()
+			if err != nil {
+				return nil, err
+			}
+			customers = append(customers, customerAnonymous)
+			break
+		}
 	}
 	return &customering.CustomersResponse{
 		Customers: customers,
