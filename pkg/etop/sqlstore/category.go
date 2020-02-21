@@ -78,8 +78,8 @@ func RemoveShopShopCategory(ctx context.Context, cmd *catalogmodelx.RemoveShopCa
 	}
 
 	return inTransaction(func(s Qx) error {
-		if _, err := s.Table("shop_product").Where("shop_category_id = ?", cmd.ID).
-			UpdateMap(M{"shop_category_id": nil}); err != nil {
+		if _, err := s.Table("shop_product").Where("category_id = ?", cmd.ID).
+			UpdateMap(M{"category_id": nil}); err != nil {
 			return err
 		}
 
