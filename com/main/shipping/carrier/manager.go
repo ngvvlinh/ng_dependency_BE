@@ -240,9 +240,9 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		return cm.Errorf(cm.Internal, err, "ToDistrictCode: %v", err)
 	}
 
-	weight := ffm.GrossWeight
-	if weight == 0 {
-		weight = ffm.ChargeableWeight
+	weight, err := ValidateFfmWeight(ffm.GrossWeight, ffm.Length, ffm.Width, ffm.Height, ffm.ChargeableWeight)
+	if err != nil {
+		return err
 	}
 
 	args := &carriertypes.GetShippingServicesArgs{

@@ -120,16 +120,10 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 	length := q.Length
 	width := q.Width
 	height := q.Height
-	chargeableWeight := q.ChargeableWeight
-	calculatedChargeableWeight := model.CalcChargeableWeight(weight, length, width, height)
-	if chargeableWeight == 0 {
-		chargeableWeight = calculatedChargeableWeight
-	} else if chargeableWeight < calculatedChargeableWeight {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Khối lượng tính phí không hợp lệ.").
-			WithMetap("chargeable_weight", chargeableWeight).
-			WithMetap("gross_weight", q.GrossWeight).
-			WithMetap("volumetric_weight (= length*width*height / 5)", length*width*height/5).
-			WithMetap("expected chargeable_weight (= MAX(gross_weight, volumetric_weight))", calculatedChargeableWeight)
+
+	chargeableWeight, err := ValidateFfmWeight(weight, length, width, height, q.ChargeableWeight)
+	if err != nil {
+		return nil, err
 	}
 
 	return &GetShippingServicesArgs{
@@ -144,4 +138,18 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		BasketValue:      q.BasketValue,
 		CODAmount:        q.TotalCodAmount,
 	}, nil
+}
+
+func ValidateFfmWeight(grossWeight, length, width, height, chargeableWeight int) (int, error) {
+	calculatedChargeableWeight := model.CalcChargeableWeight(grossWeight, length, width, height)
+	if chargeableWeight == 0 {
+		chargeableWeight = calculatedChargeableWeight
+	} else if chargeableWeight < calculatedChargeableWeight {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Khối lượng tính phí không hợp lệ.").
+			WithMetap("chargeable_weight", chargeableWeight).
+			WithMetap("gross_weight", grossWeight).
+			WithMetap("volumetric_weight (= length*width*height / 5)", length*width*height/5).
+			WithMetap("expected chargeable_weight (= MAX(gross_weight, volumetric_weight))", calculatedChargeableWeight)
+	}
+	return chargeableWeight, nil
 }
