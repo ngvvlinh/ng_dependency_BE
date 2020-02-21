@@ -465,15 +465,15 @@ func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *exttypes.Fulfillment 
 	_ = m.AddressReturn().Unmarshal(&addressReturn)
 
 	return &exttypes.Fulfillment{
-		Id:                       m.ID().ID().Apply(0),
-		OrderId:                  m.OrderID().ID().Apply(0),
-		ShopId:                   m.ShopID().ID().Apply(0),
-		TotalItems:               m.TotalItems().Int(),
-		BasketValue:              m.BasketValue().Int(),
-		CreatedAt:                cmapi.PbTime(m.CreatedAt().Time()),
-		UpdatedAt:                cmapi.PbTime(m.UpdatedAt().Time()),
-		ClosedAt:                 cmapi.PbTime(m.ClosedAt().Time()),
-		CancelledAt:              cmapi.PbTime(m.CancelReason().Time()),
+		Id:          m.ID().ID().Apply(0),
+		OrderId:     m.OrderID().ID().Apply(0),
+		ShopId:      m.ShopID().ID().Apply(0),
+		TotalItems:  m.TotalItems().Int(),
+		BasketValue: m.BasketValue().Int(),
+		CreatedAt:   cmapi.PbTime(m.CreatedAt().Time()),
+		UpdatedAt:   cmapi.PbTime(m.UpdatedAt().Time()),
+		ClosedAt:    cmapi.PbTime(m.ClosedAt().Time()),
+		// CancelledAt: nothing (TODO: fix it)
 		CancelReason:             m.CancelReason().String(),
 		Carrier:                  convertpb.PbShippingProviderPtr(m.ShippingProvider().String()).Apply(0),
 		ShippingServiceName:      m.ExternalShippingName().String(),
