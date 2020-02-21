@@ -61,10 +61,9 @@ const (
 	TagEtop      = 101
 	TagImport    = 111
 
-	EtopAccountID         = TagEtop
-	EtopTradingAccountID  = 1000015764575267699
-	TopShipID             = 1000030662086749358
-	IndependentCustomerID = 1000080135776788835
+	EtopAccountID        = TagEtop
+	EtopTradingAccountID = 1000015764575267699
+	TopShipID            = 1000030662086749358
 
 	CurrencyVND = "vnd"
 

@@ -66,6 +66,9 @@ func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error 
 	q.Result = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
 	q.Result.ShopName = q.Context.Shop.Name
 	q.Result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
+	if err := checkValidateCustomer(ctx, []*types.Order{q.Result}); err != nil {
+		return err
+	}
 
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, []*types.Order{q.Result}); err != nil {
 		return err
@@ -127,8 +130,8 @@ func checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
 		mapCustomerValidate[customer.ID] = true
 	}
 	for _, order := range orders {
-		if order.CustomerId == 0 {
-			break
+		if order.CustomerId == 0 || order.CustomerId == customering.CustomerAnonymous {
+			continue
 		}
 		if !mapCustomerValidate[order.CustomerId] {
 			order.Customer.Deleted = true

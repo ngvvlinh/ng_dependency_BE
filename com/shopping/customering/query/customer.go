@@ -80,7 +80,10 @@ func (q *CustomerQuery) GetCustomerByID(
 	if err != nil {
 		return nil, err
 	}
-	if args.ShopID != 0 && customer.ShopID != 0 && customer.ShopID != args.ShopID {
+	if customer.ID == customering.CustomerAnonymous {
+		return customer, nil
+	}
+	if args.ShopID != 0 && customer.ShopID != args.ShopID {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "khách hàng không thuộc cửa hàng")
 	}
 	q1 := q.customerGroupCustomerStore(ctx).CustomerID(args.ID)

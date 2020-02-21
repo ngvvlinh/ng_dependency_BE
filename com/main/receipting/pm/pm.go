@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/shopping/customering"
 	"etop.vn/api/top/types/etc/ledger_type"
 	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
@@ -245,7 +246,7 @@ func (m *ProcessManager) createReceipts(
 
 		traderID := order.CustomerID
 		if traderID == 0 {
-			traderID = model.IndependentCustomerID
+			traderID = customering.CustomerAnonymous
 		}
 
 		cmd := &receipting.CreateReceiptCommand{

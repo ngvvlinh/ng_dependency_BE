@@ -282,9 +282,6 @@ func listTraders(
 	var supplierIDs, customerIDs, carrierIDs []dot.ID
 	mapTraderID := make(map[dot.ID]bool)
 	for _, traderID := range traderIDs {
-		if traderID == model.IndependentCustomerID {
-			customerIDs = append(customerIDs, traderID)
-		}
 		if traderID == model.TopShipID {
 			carrierIDs = append(carrierIDs, traderID)
 		}
@@ -333,24 +330,13 @@ func listTraders(
 			mapTraderID[customer.ID] = true
 		}
 
-		var hasIndependentCustomerID bool
-		for _, customerID := range customerIDs {
-			if customerID == model.IndependentCustomerID {
-				hasIndependentCustomerID = true
-				break
-			}
+		getIndependentCustomerQuery := &customering.GetCustomerIndependentQuery{}
+		if err := customerQuery.Dispatch(ctx, getIndependentCustomerQuery); err != nil {
+			return err
 		}
-
-		if hasIndependentCustomerID {
-			getIndependentCustomerQuery := &customering.GetCustomerByIDQuery{
-				ID: model.IndependentCustomerID,
-			}
-			if err := customerQuery.Dispatch(ctx, getIndependentCustomerQuery); err != nil {
-				return err
-			}
-			mapCustomer[model.IndependentCustomerID] = getIndependentCustomerQuery.Result
-			mapTraderID[model.IndependentCustomerID] = true
-		}
+		anonymousCustomer := getIndependentCustomerQuery.Result
+		mapCustomer[anonymousCustomer.ID] = getIndependentCustomerQuery.Result
+		mapTraderID[anonymousCustomer.ID] = true
 	}
 	if carrierIDs != nil && len(carrierIDs) > 0 {
 		query := &carrying.ListCarriersByIDsQuery{

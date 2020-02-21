@@ -593,8 +593,8 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 	var wg sync.WaitGroup
 	var errs []error
 
-	errs = make([]error, len(fulfillments))
-	for i, ffm := range fulfillments {
+	errs = make([]error, len(ffmToCancel))
+	for i, ffm := range ffmToCancel {
 		// https://golang.org/doc/faq#closures_and_goroutines
 		i, ffm := i, ffm
 
