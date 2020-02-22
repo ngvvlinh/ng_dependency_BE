@@ -28,6 +28,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
+	"etop.vn/common/l"
 )
 
 type ProcessManager struct {
@@ -57,6 +58,10 @@ func New(
 		identityQuery: identityQuery,
 	}
 }
+
+var (
+	ll = l.New()
+)
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTransactionConfirmed)
@@ -144,18 +149,25 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 		shopBankAccount := query.Result.BankAccount
 		bankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(shopBankAccount, bankAccount)
 	}
+	if bankAccount == nil {
+		// Bỏ qua trường hợp không tìm thấy sổ quỹ
+		// Một số shop nạp tiền trước (credit) để xài nên không cập nhật thông tin tài khoản ngân hàng
+		// -> Giải pháp tạm thời: bỏ qua, ko tạo receipt
+		ll.Error("MoneyTransactionConfirmedEvent failed: không tìm thấy tài khoản ngân hàng", l.ID("shop_id", event.ShopID), l.ID("money_transaction_id", event.MoneyTransactionID))
+		return nil
+	}
 	ledgerID, err := m.getOrCreateLedgerID(ctx, bankAccount, event.ShopID)
 	if err != nil {
-		return err
+		return cm.Errorf(cm.NotFound, err, "Không tìm thấy sổ quỹ").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
 	}
 
 	if err := m.createReceipts(ctx, mapOrderFulfillment, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID); err != nil {
-		return err
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu thu thất bại").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
 	}
 
 	// Create receipt type payment
 	if err := m.createPayment(ctx, totalShippingFee, fulfillments, event.ShopID, ledgerID); err != nil {
-		return err
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu chi thất bại").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
 	}
 
 	return nil
@@ -170,9 +182,13 @@ func (m *ProcessManager) createPayment(
 	{
 		receiptLines := []*receipting.ReceiptLine{}
 		for _, fulfillment := range fulfillments {
+			shippingFee := fulfillment.ShippingFeeShop
+			if shippingFee == 0 {
+				continue
+			}
 			receiptLines = append(receiptLines, &receipting.ReceiptLine{
 				RefID:  fulfillment.ID,
-				Amount: fulfillment.ShippingFeeShop,
+				Amount: shippingFee,
 			})
 		}
 		cmd := &receipting.CreateReceiptCommand{
@@ -210,9 +226,6 @@ func (m *ProcessManager) createReceipts(
 		title := ""
 		// remainAmount: Số tiền còn lại (cần thu)
 		remainAmount := totalAmount - mapOrderAndReceivedAmount[key]
-		if remainAmount == 0 {
-			continue
-		}
 		ffm := mapOrderFulfillment[key]
 		switch ffm.ShippingState {
 		case shipping.Delivered:
@@ -226,6 +239,9 @@ func (m *ProcessManager) createReceipts(
 		}
 		receiptLines := []*receipting.ReceiptLine{}
 		// TH: Tiền thu thực tế > số tiền cần thu -> cộng lại vào tài khoản của khách số tiền = Tiền thu thực tế - số tiền cần thu
+		if remainAmount == 0 || receiptCOD == 0 {
+			continue
+		}
 		if receiptCOD <= remainAmount {
 			line := &receipting.ReceiptLine{
 				RefID:  key,

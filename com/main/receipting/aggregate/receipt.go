@@ -321,7 +321,7 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int, 
 	for _, receiptLine := range receipt.Lines {
 		// check amount of a receiptLine < 0
 		if receiptLine.Amount <= 0 {
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Giá trị mỗi hàng phải lớn hơn 0")
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Giá trị mỗi hàng phải lớn hơn 0").WithMetap("receipt_line_ref_id", receiptLine.RefID)
 			return
 		}
 		totalAmount += receiptLine.Amount
