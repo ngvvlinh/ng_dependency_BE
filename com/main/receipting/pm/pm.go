@@ -191,6 +191,9 @@ func (m *ProcessManager) createPayment(
 				Amount: shippingFee,
 			})
 		}
+		if len(receiptLines) == 0 {
+			return nil
+		}
 		cmd := &receipting.CreateReceiptCommand{
 			ShopID:      shopID,
 			TraderID:    model.TopShipID,
