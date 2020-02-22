@@ -48,7 +48,8 @@ var (
 
 	// reject \, single and double quotes for preventing potential conflict with
 	// some query languages
-	externalCodeRegexp = regexp.MustCompile(`^[\-._$#:\w]{2,100}$`)
+	externalCodeRegexp          = regexp.MustCompile(`^[\-._$#:\w]{2,100}$`)
+	codeExternalCharacterRegexp = regexp.MustCompile(`[0-9a-zA-Z\w-]`)
 
 	spaceWhiteList = regexp.MustCompile(`\s\s+`)
 
@@ -202,6 +203,10 @@ func ID(s string) bool {
 
 func LowercaseID(s string) bool {
 	return lowercaseIdRegexp.MatchString(s)
+}
+
+func ExternalCodeCharacter(s byte) bool {
+	return codeExternalCharacterRegexp.MatchString(string(s))
 }
 
 // ExternalCode ...

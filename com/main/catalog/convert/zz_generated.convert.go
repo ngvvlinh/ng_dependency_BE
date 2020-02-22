@@ -32,9 +32,11 @@ Custom conversions:
 Ignored functions:
     GenerateCodeProduct         // params are not pointer to named types
     GenerateCodeVariant         // not recognized
+    NormalizeExternalCode       // params are not pointer to named types
     ParseCodeNorm               // not recognized
     ShopProductsWithVariants    // params are not pointer to named types
     ShopVariantsWithProduct     // params are not pointer to named types
+    normalizeExternalCode       // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {

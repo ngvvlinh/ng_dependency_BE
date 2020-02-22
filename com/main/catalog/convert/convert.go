@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -11,6 +12,7 @@ import (
 	"etop.vn/api/main/catalog"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
 )
 
@@ -18,6 +20,7 @@ import (
 // +gen:convert: etop.vn/api/main/catalog
 
 var ll = l.New()
+var htmlPolicy = bluemonday.UGCPolicy()
 
 const (
 	MaxCodeNorm        = 999999
@@ -127,12 +130,12 @@ func createShopBrand(args *catalog.CreateBrandArgs, out *catalog.ShopBrand) {
 
 func createShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProduct) {
 	apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg, out)
-	p := bluemonday.UGCPolicy()
-	var descHTML = p.Sanitize(arg.DescHTML)
 	out.ProductID = cm.NewID()
+	out.Code = NormalizeExternalCode(arg.Code)
+
 	out.ShortDesc = arg.ShortDesc
 	out.Description = arg.Description
-	out.DescHTML = descHTML
+	out.DescHTML = htmlPolicy.Sanitize(arg.DescHTML)
 	out.CostPrice = arg.CostPrice
 	out.ListPrice = arg.ListPrice
 	out.RetailPrice = arg.RetailPrice
@@ -145,8 +148,7 @@ func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.Shop
 	apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(args, in)
 	in.UpdatedAt = time.Now()
 	if args.DescHTML.Valid == true {
-		p := bluemonday.UGCPolicy()
-		var descHTML = p.Sanitize(args.DescHTML.String)
+		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)
 		in.DescHTML = descHTML
 	}
 	return in
@@ -156,9 +158,8 @@ func createShopVariant(arg *catalog.CreateShopVariantArgs, out *catalog.ShopVari
 	apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg, out)
 	out.VariantID = cm.NewID()
 	out.Status = 0
-	p := bluemonday.UGCPolicy()
-	var descHTML = p.Sanitize(arg.DescHTML)
-	out.DescHTML = descHTML
+	out.Code = NormalizeExternalCode(arg.Code)
+	out.DescHTML = htmlPolicy.Sanitize(arg.DescHTML)
 	out.ShortDesc = arg.ShortDesc
 	out.Description = arg.Description
 	out.CostPrice = arg.CostPrice
@@ -173,8 +174,7 @@ func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.Shop
 	apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, in)
 	in.UpdatedAt = time.Now()
 	if args.DescHTML.Valid == true {
-		p := bluemonday.UGCPolicy()
-		var descHTML = p.Sanitize(args.DescHTML.String)
+		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)
 		in.DescHTML = descHTML
 	}
 	return in
@@ -203,4 +203,35 @@ func updateShopProductCategory(args *catalog.UpdateShopProductCategoryArgs, in *
 	apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(args, in)
 	in.UpdatedAt = time.Now()
 	return in
+}
+
+func NormalizeExternalCode(s string) string {
+	s = strings.ReplaceAll(s, " ", "-")
+	if len(s) > 0 && (string(s[len(s)-1]) == "-" || string(s[0]) == "-") {
+		return normalizeExternalCode(s)
+	}
+	for i := 0; i < len(s); i++ {
+		if !validate.ExternalCodeCharacter(s[i]) || ((i < len(s)-1) && string(s[i]) == "-" && string(s[i+1]) == "-") {
+			return normalizeExternalCode(s)
+		}
+	}
+	return s
+}
+
+func normalizeExternalCode(s string) string {
+	res := make([]byte, 0, len(s))
+	spaceMark := true
+	for i := 0; i < len(s); i++ {
+		if validate.ExternalCodeCharacter(s[i]) {
+
+			if string(s[i]) == "-" && !spaceMark && (i < len(s)-1 && (s[i+1] != "-"[0])) {
+				res = append(res, "-"[0])
+			}
+			if string(s[i]) != "-" {
+				res = append(res, s[i])
+				spaceMark = false
+			}
+		}
+	}
+	return string(res)
 }

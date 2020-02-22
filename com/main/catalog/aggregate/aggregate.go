@@ -68,6 +68,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 	if err := scheme.Convert(args, product); err != nil {
 		return nil, err
 	}
+	product.Code = convert.NormalizeExternalCode(args.Code)
 	if product.Code != "" {
 		number, ok := convert.ParseCodeNorm(product.Code)
 		if ok {
