@@ -122,9 +122,12 @@ type TopSellItem struct {
 func (s *SummaryStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo time.Time) (TopSellItems, error) {
 	var topItem TopSellItems
 
-	q := s.query().SQL("FROM order_line ol, \"order\" o, shop_product sp")
+	q := s.query().SQL("FROM order_line ol, \"order\" o, shop_product sp, shop_variant sv")
 	q = q.Where("o.created_at BETWEEN ? AND ?", dateFrom, dateTo)
 	q = q.Where("ol.order_id = o.id and sp.product_id = ol.product_id")
+	q = q.Where("sp.product_id = sv.product_id")
+	q = q.Where("sp.deleted_at is null")
+	q = q.Where("sv.deleted_at is null")
 	q = q.Where("o.status != -1").Where("o.shop_id = ?", shopID)
 	q = q.GroupBy("sp.code, ol.product_id, sp.name, sp.image_urls").Limit(10).OrderBy("sum desc")
 	err := q.Find(&topItem)
