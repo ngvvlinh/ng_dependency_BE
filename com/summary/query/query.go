@@ -266,7 +266,12 @@ func (d *DashboardQuery) buildFfmByAreaTable(ctx context.Context, args []*sqlsto
 		Label: "Mã Huyện/Quận",
 	})
 
-	for key, value := range args {
+	key := -1
+	for _, value := range args {
+		if value.ProvinceCode == "0" || value.DistrictCode == "0" {
+			continue
+		}
+		key++
 		query := &location.GetLocationQuery{
 			ProvinceCode: value.ProvinceCode,
 			DistrictCode: value.DistrictCode,
