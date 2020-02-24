@@ -224,7 +224,7 @@ BEGIN
             RETURN 2;
         END IF;
     END IF;
-    RETURN 2;
+    RETURN 0;
 END;
 $$;
 
