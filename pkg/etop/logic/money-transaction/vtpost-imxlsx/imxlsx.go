@@ -29,6 +29,8 @@ type VTPostMoneyTransactionShippingExternalLine struct {
 	Total            int // Số tiền phải trả
 }
 
+var dateTimeLayouts = []string{"01-02-06", "02/01/2006 15:04"}
+
 func (line *VTPostMoneyTransactionShippingExternalLine) ToModel() *txmodel.MoneyTransactionShippingExternalLine {
 	return &txmodel.MoneyTransactionShippingExternalLine{
 		ExternalCode:             line.ExternalCode,
@@ -151,9 +153,9 @@ func parseRow(row []string) (*VTPostMoneyTransactionShippingExternalLine, error)
 	if externalCode == "" || totalStr == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Row has wrong format", nil).WithMetap("row", row)
 	}
-	layout := "01-02-06"
+
 	deliveredAtStr := row[6]
-	deliveredAt, err := time.ParseInLocation(layout, strings.TrimSpace(deliveredAtStr), time.Local)
+	deliveredAt, err := parseDateTime(deliveredAtStr)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "DeliveredAt is invalid!").WithMetap("row", row)
 	}
@@ -178,4 +180,15 @@ func parseRow(row []string) (*VTPostMoneyTransactionShippingExternalLine, error)
 		TotalShippingFee: int(totalshippingFee),
 		Total:            int(total),
 	}, nil
+}
+
+func parseDateTime(dateTimeStr string) (res time.Time, err error) {
+	dateTimeStr = strings.TrimSpace(dateTimeStr)
+	for _, layout := range dateTimeLayouts {
+		res, err = time.ParseInLocation(layout, dateTimeStr, time.Local)
+		if err == nil {
+			return
+		}
+	}
+	return
 }
