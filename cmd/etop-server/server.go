@@ -16,12 +16,14 @@ import (
 	"etop.vn/backend/com/external/payment/vtpay"
 	vtpaygatewayaggregate "etop.vn/backend/com/external/payment/vtpay/gateway/aggregate"
 	vtpaygatewayserver "etop.vn/backend/com/external/payment/vtpay/gateway/server"
+	"etop.vn/backend/com/web/ecom/webserver"
 	"etop.vn/backend/pkg/common/apifw/httpx"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/headers"
 	"etop.vn/backend/pkg/common/metrics"
+	"etop.vn/backend/pkg/common/projectpath"
 	"etop.vn/backend/pkg/common/sql/sqltrace"
 	api "etop.vn/backend/pkg/etop/api"
 	admin "etop.vn/backend/pkg/etop/api/admin"
@@ -53,6 +55,7 @@ import (
 func startServers() []*http.Server {
 	return []*http.Server{
 		startEtopServer(),
+		startWebServer(),
 		startGHNWebhookServer(),
 		startGHTKWebhookServer(),
 		startVTPostWebhookServer(),
@@ -233,6 +236,34 @@ func startEtopServer() *http.Server {
 			ll.Error("HTTP server", l.Error(err))
 		}
 		ll.Sync()
+	}()
+	return svr
+}
+
+func startWebServer() *http.Server {
+	ecom := cfg.Ecom
+	c := webserver.Config{
+		MainSite: ecom.MainSite,
+		RootPath: projectpath.GetPath(),
+	}
+
+	handler, err := webserver.New(c)
+	if err != nil {
+		ll.S.Panicf("error starting web server: %v", err)
+	}
+
+	svr := &http.Server{
+		Addr:    ecom.HTTP.Address(),
+		Handler: handler,
+	}
+	ll.S.Infof("Web server listening at %v", ecom.HTTP.Address())
+
+	go func() {
+		defer ctxCancel()
+		err := svr.ListenAndServe()
+		if err != http.ErrServerClosed {
+			ll.Error("Web server", l.Error(err))
+		}
 	}()
 	return svr
 }

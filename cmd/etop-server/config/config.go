@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/main/invitation"
 	crmsyncconfig "etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
+	ecomconfig "etop.vn/backend/com/web/ecom/config"
 	"etop.vn/backend/pkg/common/apifw/captcha"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
@@ -74,6 +75,7 @@ type Config struct {
 	VTPostWebhook  cc.HTTP              `yaml:"vtpost_webhook"`
 	Ahamove        ahamoveclient.Config `yaml:"ahamove"`
 	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
+	Ecom           ecomconfig.Config    `yaml:"ecom"`
 
 	Haravan haravanclient.Config `yaml:"haravan"`
 	VTPay   vtpayclient.Config   `yaml:"vtpay"`
@@ -136,8 +138,12 @@ func Default() Config {
 		VTPostWebhook:  cc.HTTP{Port: 9042},
 		Ahamove:        ahamoveclient.DefaultConfig(),
 		AhamoveWebhook: cc.HTTP{Port: 9052},
-		Haravan:        haravanclient.DefaultConfig(),
-		VTPay:          vtpayclient.DefaultConfig(),
+		Ecom: ecomconfig.Config{
+			HTTP:     cc.HTTP{Port: 8100},
+			MainSite: "http://localhost:8100",
+		},
+		Haravan: haravanclient.DefaultConfig(),
+		VTPay:   vtpayclient.DefaultConfig(),
 		SMS: sms.Config{
 			Mock:    true,
 			Enabled: true,

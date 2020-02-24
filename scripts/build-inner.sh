@@ -23,3 +23,7 @@ build ./cmd/pgevent-forwarder
 build ./cmd/shipping-sync-service
 build ./cmd/etop-notifier
 build ./cmd/haravan-gateway
+
+mkdir -p bin/com/web/ecom
+   cp -R     com/web/ecom/assets    bin/com/web/ecom/
+   cp -R     com/web/ecom/templates bin/com/web/ecom/

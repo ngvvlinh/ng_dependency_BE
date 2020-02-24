@@ -8,7 +8,8 @@ USAGE="Usage: build.sh [docker]"
 replace() { echo "$1" | sed "s/$2/$3/g"; }
 
 preprocess() {
-    rm "$BACKEND"/bin/* || true
+    rm -r "${BACKEND:?}/bin" || true
+    mkdir -p "$BACKEND/bin"
     "$BACKEND"/scripts/generate-release.sh
 
     COMMIT=$(git log -10 --pretty='¶%h <%ae> %B' | grep -E '^(¶[0-9a-f]{6,10} )|(Change-Id:)|(Issue:)')
