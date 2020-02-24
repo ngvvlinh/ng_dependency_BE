@@ -290,5 +290,11 @@ func PrintErrorWithStack(ctx context.Context, err error, stacktrace []byte) {
 		fmt.Printf("%#v\n", err) // Print err without stacktrace
 		fmt.Printf("%s", stacktrace)
 	}
-	bus.PrintAllStack(ctx, true)
+	if ll.Verbosed(6) {
+		bus.PrintAllStack(ctx, true)
+	} else if ll.Verbosed(3) {
+		bus.PrintAllStack(ctx, false)
+	} else if ll.Verbosed(1) {
+		bus.PrintStack(ctx)
+	}
 }
