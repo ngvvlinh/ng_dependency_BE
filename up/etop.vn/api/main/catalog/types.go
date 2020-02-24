@@ -70,6 +70,8 @@ type ShopProduct struct {
 	MetaFields []*MetaField
 
 	BrandID dot.ID
+
+	Deleted bool
 }
 
 type ShopVariant struct {
@@ -119,6 +121,8 @@ type ShopVariant struct {
 	UpdatedAt time.Time
 
 	DeletedAt time.Time
+
+	Deleted bool
 }
 
 type ShopCategory struct {
@@ -154,6 +158,8 @@ type ShopCollection struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Deleted bool
 }
 
 func (v *ShopVariant) GetName() string {

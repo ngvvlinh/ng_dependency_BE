@@ -241,8 +241,9 @@ func (h QueryServiceHandler) HandleGetCustomerIndependent(ctx context.Context, m
 }
 
 type ListCustomerGroupsQuery struct {
-	Paging  meta.Paging
-	Filters meta.Filters
+	Paging         meta.Paging
+	Filters        meta.Filters
+	IncludeDeleted bool
 
 	Result *CustomerGroupsResponse `json:"-"`
 }
@@ -280,10 +281,11 @@ func (h QueryServiceHandler) HandleListCustomers(ctx context.Context, msg *ListC
 }
 
 type ListCustomersByIDsQuery struct {
-	IDs     []dot.ID
-	ShopIDs []dot.ID
-	ShopID  dot.ID
-	Paging  meta.Paging
+	IDs            []dot.ID
+	ShopIDs        []dot.ID
+	ShopID         dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *CustomersResponse `json:"-"`
 }
@@ -542,14 +544,16 @@ func (q *GetCustomerIndependentQuery) SetEmpty(args *meta.Empty) {
 func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupArgs) {
 	return ctx,
 		&ListCustomerGroupArgs{
-			Paging:  q.Paging,
-			Filters: q.Filters,
+			Paging:         q.Paging,
+			Filters:        q.Filters,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *ListCustomerGroupsQuery) SetListCustomerGroupArgs(args *ListCustomerGroupArgs) {
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListCustomerGroupsCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupsCustomersArgs) {
@@ -587,10 +591,11 @@ func (q *ListCustomersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopAr
 func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerByIDsArgs) {
 	return ctx,
 		&ListCustomerByIDsArgs{
-			IDs:     q.IDs,
-			ShopIDs: q.ShopIDs,
-			ShopID:  q.ShopID,
-			Paging:  q.Paging,
+			IDs:            q.IDs,
+			ShopIDs:        q.ShopIDs,
+			ShopID:         q.ShopID,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -599,6 +604,7 @@ func (q *ListCustomersByIDsQuery) SetListCustomerByIDsArgs(args *ListCustomerByI
 	q.ShopIDs = args.ShopIDs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 // implement dispatching

@@ -28,8 +28,9 @@ type RemoveCustomerRequest struct {
 func (m *RemoveCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerGroup struct {
-	Id   dot.ID `json:"id"`
-	Name string `json:"name"`
+	Id      dot.ID `json:"id"`
+	Name    string `json:"name"`
+	Deleted bool   `json:"deleted"`
 }
 
 func (m *CustomerGroup) String() string { return jsonx.MustMarshalToString(m) }
@@ -48,8 +49,9 @@ type CustomerGroupFilter struct {
 func (m *CustomerGroupFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCustomerGroupsRequest struct {
-	Filter CustomerGroupFilter  `json:"filter"`
-	Paging *common.CursorPaging `json:"paging"`
+	Filter         CustomerGroupFilter  `json:"filter"`
+	Paging         *common.CursorPaging `json:"paging"`
+	IncludeDeleted bool                 `json:"include_deleted"`
 }
 
 func (m *ListCustomerGroupsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -83,10 +85,9 @@ type CustomerGroupRelationshipFilter struct {
 func (m *CustomerGroupRelationshipFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCustomerGroupRelationshipsRequest struct {
-	Filter CustomerGroupRelationshipFilter `json:"filter"`
-	// TODO: add cursor paging
-	//Paging         *common.CursorPaging            `json:"paging"`
-	IncludeDeleted dot.NullBool `json:"include_deleted"`
+	Filter         CustomerGroupRelationshipFilter `json:"filter"`
+	Paging         *common.CursorPaging            `json:"paging"`
+	IncludeDeleted bool                            `json:"include_deleted"`
 }
 
 func (m *ListCustomerGroupRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }

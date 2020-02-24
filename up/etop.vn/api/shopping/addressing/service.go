@@ -51,6 +51,7 @@ type ShopTraderAddress struct {
 	Coordinates  *ordertypes.Coordinates
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Deleted      bool
 }
 
 type ShopTraderAddressesResponse struct {
@@ -103,4 +104,6 @@ type ListAddressesByTraderIDsArgs struct {
 	TraderIDs []dot.ID
 
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }

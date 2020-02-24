@@ -189,7 +189,11 @@ func (s *ShopVariantStore) ListShopVariants() ([]*catalog.ShopVariant, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convert.Convert_catalogmodel_ShopVariants_catalog_ShopVariants(variantsModel), nil
+	variants := convert.Convert_catalogmodel_ShopVariants_catalog_ShopVariants(variantsModel)
+	for i := 0; i < len(variants); i++ {
+		variants[i].Deleted = !variantsModel[i].DeletedAt.IsZero()
+	}
+	return variants, nil
 }
 
 func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*model.ShopVariantWithProduct, error) {

@@ -39,9 +39,10 @@ func ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.Li
 	}
 
 	query := &customering.ListCustomersByIDsQuery{
-		ShopID: shopID,
-		IDs:    IDs,
-		Paging: *paging,
+		ShopID:         shopID,
+		IDs:            IDs,
+		Paging:         *paging,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -121,9 +122,10 @@ func ListAddresses(ctx context.Context, shopID dot.ID, request *externaltypes.Li
 		IDs = request.Filter.CustomerId
 	}
 	query := &addressing.ListAddressesByTraderIDsQuery{
-		TraderIDs: IDs,
-		ShopID:    shopID,
-		Paging:    *paging,
+		TraderIDs:      IDs,
+		ShopID:         shopID,
+		Paging:         *paging,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := addressQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -217,7 +219,7 @@ func ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request 
 	query := &customering.ListCustomerGroupsCustomersQuery{
 		CustomerIDs:    request.Filter.CustomerID,
 		GroupIDs:       request.Filter.GroupID,
-		IncludeDeleted: request.IncludeDeleted.Bool,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -268,7 +270,8 @@ func ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListC
 	}
 
 	query := &customering.ListCustomerGroupsQuery{
-		Paging: *paging,
+		Paging:         *paging,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

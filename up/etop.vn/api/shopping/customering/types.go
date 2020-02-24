@@ -31,12 +31,16 @@ type ShopCustomer struct {
 	Status    status3.Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Deleted bool
 }
 
 type ShopCustomerGroup struct {
 	ID     dot.ID
 	ShopID dot.ID
 	Name   string
+
+	Deleted bool
 }
 
 type ShopCustomerGroupCustomer struct {

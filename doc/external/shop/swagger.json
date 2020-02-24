@@ -2235,6 +2235,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "deleted": {
+          "type": "boolean"
+        },
         "email": {
           "type": "string"
         },
@@ -2294,6 +2297,9 @@
         "customer_id": {
           "type": "string",
           "format": "int64"
+        },
+        "deleted": {
+          "type": "boolean"
         },
         "district": {
           "type": "string"
@@ -2364,6 +2370,9 @@
     "mrCustomerGroup": {
       "type": "object",
       "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -2817,6 +2826,9 @@
         "filter": {
           "$ref": "#/definitions/mrCustomerAddressFilter"
         },
+        "include_deleted": {
+          "type": "boolean"
+        },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
         }
@@ -2829,8 +2841,10 @@
           "$ref": "#/definitions/mrCustomerGroupRelationshipFilter"
         },
         "include_deleted": {
-          "description": "**TODO:** add cursor paging\nPaging         *common.CursorPaging            `json:\"paging\"`\n",
           "type": "boolean"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -2839,6 +2853,9 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/mrCustomerGroupFilter"
+        },
+        "include_deleted": {
+          "type": "boolean"
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -2850,6 +2867,9 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/mrCustomerFilter"
+        },
+        "include_deleted": {
+          "type": "boolean"
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -2942,6 +2962,9 @@
         "filter": {
           "$ref": "#/definitions/mrProductFilter"
         },
+        "include_deleted": {
+          "type": "boolean"
+        },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
         }
@@ -2952,6 +2975,9 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/mrVariantFilter"
+        },
+        "include_deleted": {
+          "type": "boolean"
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -3270,6 +3296,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "deleted": {
+          "type": "boolean"
+        },
         "description": {
           "type": "string"
         },
@@ -3433,6 +3462,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "deleted": {
+          "type": "boolean"
+        },
         "description": {
           "type": "string"
         },
@@ -3513,6 +3545,9 @@
         },
         "cost_price": {
           "type": "integer"
+        },
+        "deleted": {
+          "type": "boolean"
         },
         "description": {
           "type": "string"

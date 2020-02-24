@@ -177,6 +177,8 @@ type ListShopProductsByIDsArgs struct {
 	IDs    []dot.ID
 	ShopID dot.ID
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }
 
 type CreateVariantsSupplier struct {
@@ -206,6 +208,8 @@ type ListShopVariantsByIDsArgs struct {
 	IDs    []dot.ID
 	ShopID dot.ID
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }
 
 type ShopProductsResponse struct {

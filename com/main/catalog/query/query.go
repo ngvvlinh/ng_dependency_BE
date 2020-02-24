@@ -226,6 +226,9 @@ func (s *QueryService) ListShopProductsByIDs(
 	} else {
 		query = query.WithPaging(args.Paging)
 	}
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
 	products, err := query.ListShopProducts()
 	if err != nil {
 		return nil, err
@@ -257,6 +260,9 @@ func (s *QueryService) ListShopVariantsByIDs(
 		query = query.IDs(args.IDs...)
 	} else {
 		query = query.WithPaging(args.Paging)
+	}
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
 	}
 	variants, err := query.ListShopVariants()
 	if err != nil {
@@ -402,14 +408,14 @@ func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID d
 }
 
 func (s *QueryService) ListShopCollectionsByIDs(ctx context.Context, args *catalog.ListShopCollectionsByIDsArg) (*catalog.ShopCollectionsResponse, error) {
-	query := s.shopCollection(ctx).ShopID(args.ShopID)
+	query := s.shopCollection(ctx).ShopID(args.ShopID).WithPaging(args.Paging)
 	if len(args.IDs) != 0 {
 		query = query.IDs(args.IDs)
 	}
 	if args.IncludeDeleted {
 		query = query.IncludeDeleted()
 	}
-	collections, err := query.WithPaging(args.Paging).ListShopCollections()
+	collections, err := query.ListShopCollections()
 	if err != nil {
 		return nil, err
 	}

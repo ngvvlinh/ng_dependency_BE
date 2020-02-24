@@ -85,11 +85,15 @@ type ListCustomerByIDsArgs struct {
 	ShopIDs []dot.ID
 	ShopID  dot.ID
 	Paging  meta.Paging
+
+	IncludeDeleted bool
 }
 
 type ListCustomerGroupArgs struct {
 	Paging  meta.Paging
 	Filters meta.Filters
+
+	IncludeDeleted bool
 }
 
 type CustomerGroupsCustomersResponse struct {

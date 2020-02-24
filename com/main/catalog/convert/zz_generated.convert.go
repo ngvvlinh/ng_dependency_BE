@@ -487,6 +487,7 @@ func convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmode
 	out.ShortDesc = arg.ShortDesc     // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.Deleted = false               // zero value
 }
 
 func Convert_catalogmodel_ShopCollections_catalog_ShopCollections(args []*catalogmodel.ShopCollection) (outs []*catalog.ShopCollection) {
@@ -520,6 +521,7 @@ func convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.Sho
 	out.ShortDesc = arg.ShortDesc     // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = time.Time{}       // zero value
 }
 
 func Convert_catalog_ShopCollections_catalogmodel_ShopCollections(args []*catalog.ShopCollection) (outs []*catalogmodel.ShopCollection) {
@@ -553,6 +555,7 @@ func apply_catalog_CreateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 	out.ShortDesc = arg.ShortDesc     // simple assign
 	out.CreatedAt = time.Time{}       // zero value
 	out.UpdatedAt = time.Time{}       // zero value
+	out.Deleted = false               // zero value
 }
 
 func Apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.UpdateShopCollectionArgs, out *catalog.ShopCollection) *catalog.ShopCollection {
@@ -570,6 +573,7 @@ func apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 	out.ShortDesc = arg.ShortDesc.Apply(out.ShortDesc)       // apply change
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
+	out.Deleted = out.Deleted                                // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopProduct --//
@@ -615,6 +619,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = nil                            // types do not match
 	out.BrandID = arg.BrandID                       // simple assign
+	out.Deleted = false                             // zero value
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -721,6 +726,7 @@ func apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg *catalog.Create
 	out.ProductType = arg.ProductType   // simple assign
 	out.MetaFields = arg.MetaFields     // simple assign
 	out.BrandID = arg.BrandID           // simple assign
+	out.Deleted = false                 // zero value
 }
 
 func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -757,6 +763,7 @@ func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 	out.ProductType = out.ProductType               // no change
 	out.MetaFields = out.MetaFields                 // no change
 	out.BrandID = out.BrandID                       // no change
+	out.Deleted = out.Deleted                       // no change
 }
 
 func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -793,6 +800,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.ProductType = arg.ProductType.Apply(out.ProductType) // apply change
 	out.MetaFields = out.MetaFields                          // no change
 	out.BrandID = arg.BrandID.Apply(out.BrandID)             // apply change
+	out.Deleted = out.Deleted                                // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopProductCollection --//
@@ -897,6 +905,7 @@ func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.Shop
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = arg.DeletedAt     // simple assign
+	out.Deleted = false               // zero value
 }
 
 func Convert_catalogmodel_ShopVariants_catalog_ShopVariants(args []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
@@ -992,6 +1001,7 @@ func apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg *catalog.Create
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
 	out.DeletedAt = time.Time{}         // zero value
+	out.Deleted = false                 // zero value
 }
 
 func Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) *catalog.ShopVariant {
@@ -1022,6 +1032,7 @@ func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 	out.DeletedAt = out.DeletedAt                            // no change
+	out.Deleted = out.Deleted                                // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopVariantSupplier --//

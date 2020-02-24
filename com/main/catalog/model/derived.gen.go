@@ -1830,8 +1830,8 @@ func sqlgenShopCollection(_ *ShopCollection) bool { return true }
 type ShopCollections []*ShopCollection
 
 const __sqlShopCollection_Table = "shop_collection"
-const __sqlShopCollection_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"external_id\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"created_at\",\"updated_at\""
-const __sqlShopCollection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"external_id\" = EXCLUDED.\"external_id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlShopCollection_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"external_id\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCollection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"external_id\" = EXCLUDED.\"external_id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"desc_html\" = EXCLUDED.\"desc_html\",\"short_desc\" = EXCLUDED.\"short_desc\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlShopCollection_Insert = "INSERT INTO \"shop_collection\" (" + __sqlShopCollection_ListCols + ") VALUES"
 const __sqlShopCollection_Select = "SELECT " + __sqlShopCollection_ListCols + " FROM \"shop_collection\""
 const __sqlShopCollection_Select_history = "SELECT " + __sqlShopCollection_ListCols + " FROM history.\"shop_collection\""
@@ -1866,6 +1866,7 @@ func (m *ShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ShortDesc),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
 	}
 }
 
@@ -1881,6 +1882,7 @@ func (m *ShopCollection) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShortDesc),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
 	}
 }
 
@@ -1918,7 +1920,7 @@ func (_ *ShopCollections) SQLSelect(w SQLWriter) error {
 func (m *ShopCollection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCollection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1928,7 +1930,7 @@ func (ms ShopCollections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCollection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(11)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2039,6 +2041,14 @@ func (m *ShopCollection) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -2049,7 +2059,7 @@ func (m *ShopCollection) SQLUpdate(w SQLWriter) error {
 func (m *ShopCollection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCollection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2081,17 +2091,18 @@ func (m ShopCollectionHistory) DescHTML() core.Interface    { return core.Interf
 func (m ShopCollectionHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
 func (m ShopCollectionHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ShopCollectionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ShopCollectionHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 
 func (m *ShopCollectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCollectionHistory, 10)
+	res := make(ShopCollectionHistory, 11)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -2102,14 +2113,15 @@ func (m *ShopCollectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["short_desc"] = data[7]
 	res["created_at"] = data[8]
 	res["updated_at"] = data[9]
+	res["deleted_at"] = data[10]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCollectionHistories, 0, 128)
@@ -2128,6 +2140,7 @@ func (ms *ShopCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["short_desc"] = data[7]
 		m["created_at"] = data[8]
 		m["updated_at"] = data[9]
+		m["deleted_at"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

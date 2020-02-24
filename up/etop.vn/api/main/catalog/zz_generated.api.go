@@ -652,9 +652,10 @@ func (h QueryServiceHandler) HandleListShopProducts(ctx context.Context, msg *Li
 }
 
 type ListShopProductsByIDsQuery struct {
-	IDs    []dot.ID
-	ShopID dot.ID
-	Paging meta.Paging
+	IDs            []dot.ID
+	ShopID         dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *ShopProductsResponse `json:"-"`
 }
@@ -719,9 +720,10 @@ func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, msg *Li
 }
 
 type ListShopVariantsByIDsQuery struct {
-	IDs    []dot.ID
-	ShopID dot.ID
-	Paging meta.Paging
+	IDs            []dot.ID
+	ShopID         dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *ShopVariantsResponse `json:"-"`
 }
@@ -1512,9 +1514,10 @@ func (q *ListShopProductsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductsByIDsArgs) {
 	return ctx,
 		&ListShopProductsByIDsArgs{
-			IDs:    q.IDs,
-			ShopID: q.ShopID,
-			Paging: q.Paging,
+			IDs:            q.IDs,
+			ShopID:         q.ShopID,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -1522,6 +1525,7 @@ func (q *ListShopProductsByIDsQuery) SetListShopProductsByIDsArgs(args *ListShop
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListShopProductsCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListProductsCollections) {
@@ -1591,9 +1595,10 @@ func (q *ListShopVariantsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopVariantsByIDsArgs) {
 	return ctx,
 		&ListShopVariantsByIDsArgs{
-			IDs:    q.IDs,
-			ShopID: q.ShopID,
-			Paging: q.Paging,
+			IDs:            q.IDs,
+			ShopID:         q.ShopID,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -1601,6 +1606,7 @@ func (q *ListShopVariantsByIDsQuery) SetListShopVariantsByIDsArgs(args *ListShop
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {

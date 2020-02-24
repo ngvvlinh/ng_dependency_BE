@@ -140,7 +140,11 @@ func (s *ShopCollectionStore) ListShopCollections() ([]*catalog.ShopCollection, 
 	if err != nil {
 		return nil, err
 	}
-	return convert.Convert_catalogmodel_ShopCollections_catalog_ShopCollections(collectionsModel), nil
+	collections := convert.Convert_catalogmodel_ShopCollections_catalog_ShopCollections(collectionsModel)
+	for i := 0; i < len(collections); i++ {
+		collections[i].Deleted = !collectionsModel[i].DeletedAt.IsZero()
+	}
+	return collections, nil
 }
 
 func (s *ShopCollectionStore) CreateShopCollection(Collection *catalog.ShopCollection) error {

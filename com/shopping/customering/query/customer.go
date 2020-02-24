@@ -162,6 +162,9 @@ func (q *CustomerQuery) ListCustomersByIDs(
 	} else {
 		query = query.IDs(args.IDs...)
 	}
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
 	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
@@ -194,6 +197,9 @@ func (q *CustomerQuery) ListCustomerGroups(
 	ctx context.Context, args *customering.ListCustomerGroupArgs,
 ) (*customering.CustomerGroupsResponse, error) {
 	query := q.customerGroupStore(ctx).WithPaging(args.Paging).Filters(args.Filters)
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
 	customerGroup, err := query.ListShopCustomerGroups()
 	if err != nil {
 		return nil, err

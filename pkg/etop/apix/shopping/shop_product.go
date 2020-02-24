@@ -36,9 +36,10 @@ func ListProducts(ctx context.Context, shopID dot.ID, request *externaltypes.Lis
 		IDs = request.Filter.ID
 	}
 	query := &catalog.ListShopProductsByIDsQuery{
-		IDs:    IDs,
-		ShopID: shopID,
-		Paging: *paging,
+		IDs:            IDs,
+		ShopID:         shopID,
+		Paging:         *paging,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

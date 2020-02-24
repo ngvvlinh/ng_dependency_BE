@@ -345,7 +345,7 @@ func (a *CustomerAggregate) DeleteGroup(ctx context.Context, args *customering.D
 		if err != nil {
 			return err
 		}
-		delete, err = a.customerGroupStore(ctx).ShopID(args.ShopID).ID(args.GroupID).DeleteShopCustomerGroup()
+		delete, err = a.customerGroupStore(ctx).ShopID(args.ShopID).ID(args.GroupID).SoftDelete()
 		return err
 	})
 	return delete, err

@@ -1544,6 +1544,25 @@ func (ft *ShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.Column
 	}
 }
 
+func (ft *ShopCollectionFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCollectionFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
 type ShopProductCollectionFilters struct{ prefix string }
 
 func NewShopProductCollectionFilters(prefix string) ShopProductCollectionFilters {

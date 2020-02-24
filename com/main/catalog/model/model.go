@@ -260,6 +260,7 @@ type ShopCollection struct {
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"  paging:"updated_at"`
+	DeletedAt time.Time
 }
 
 var _ = sqlgenShopProductCollection(&ShopProductCollection{})

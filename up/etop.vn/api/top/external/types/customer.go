@@ -27,6 +27,7 @@ type Customer struct {
 	CreatedAt    dot.Time       `json:"created_at"`
 	UpdatedAt    dot.Time       `json:"updated_at"`
 	Status       status3.Status `json:"status"`
+	Deleted      bool           `json:"deleted"`
 }
 
 func (m *Customer) String() string { return jsonx.MustMarshalToString(m) }
@@ -93,8 +94,9 @@ type CustomerFilter struct {
 func (m *CustomerFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCustomersRequest struct {
-	Filter CustomerFilter       `json:"filter"`
-	Paging *common.CursorPaging `json:"paging"`
+	Filter         CustomerFilter       `json:"filter"`
+	Paging         *common.CursorPaging `json:"paging"`
+	IncludeDeleted bool                 `json:"include_deleted"`
 }
 
 func (m *ListCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -116,6 +118,7 @@ type CustomerAddress struct {
 	Email        string            `json:"email"`
 	Position     string            `json:"position"`
 	Coordinates  *etop.Coordinates `json:"coordinates"`
+	Deleted      bool              `json:"deleted"`
 }
 
 func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }
@@ -134,8 +137,9 @@ type CustomerAddressFilter struct {
 func (m *CustomerAddressFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCustomerAddressesRequest struct {
-	Filter CustomerAddressFilter `json:"filter"`
-	Paging *common.CursorPaging  `json:"paging"`
+	Filter         CustomerAddressFilter `json:"filter"`
+	Paging         *common.CursorPaging  `json:"paging"`
+	IncludeDeleted bool                  `json:"include_deleted"`
 }
 
 func (m *ListCustomerAddressesRequest) String() string { return jsonx.MustMarshalToString(m) }

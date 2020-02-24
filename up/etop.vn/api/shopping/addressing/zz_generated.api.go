@@ -147,9 +147,10 @@ func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, 
 }
 
 type ListAddressesByTraderIDsQuery struct {
-	ShopID    dot.ID
-	TraderIDs []dot.ID
-	Paging    meta.Paging
+	ShopID         dot.ID
+	TraderIDs      []dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *ShopTraderAddressesResponse `json:"-"`
 }
@@ -291,9 +292,10 @@ func (q *ListAddressesByTraderIDQuery) SetListAddressesByTraderIDArgs(args *List
 func (q *ListAddressesByTraderIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAddressesByTraderIDsArgs) {
 	return ctx,
 		&ListAddressesByTraderIDsArgs{
-			ShopID:    q.ShopID,
-			TraderIDs: q.TraderIDs,
-			Paging:    q.Paging,
+			ShopID:         q.ShopID,
+			TraderIDs:      q.TraderIDs,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -301,6 +303,7 @@ func (q *ListAddressesByTraderIDsQuery) SetListAddressesByTraderIDsArgs(args *Li
 	q.ShopID = args.ShopID
 	q.TraderIDs = args.TraderIDs
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 // implement dispatching

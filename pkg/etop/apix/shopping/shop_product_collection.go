@@ -32,7 +32,7 @@ func ListCollections(ctx context.Context, shopID dot.ID, request *externaltypes.
 		IDs:            request.Filter.ID,
 		ShopID:         shopID,
 		Paging:         *paging,
-		IncludeDeleted: request.IncludeDeleted.Bool,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func ListRelationshipsProductCollection(ctx context.Context, shopID dot.ID, requ
 		ProductIds:     request.Filter.ProductID,
 		CollectionIDs:  request.Filter.CollectionID,
 		ShopID:         shopID,
-		IncludeDeleted: request.IncludeDeleted.Bool,
+		IncludeDeleted: request.IncludeDeleted,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

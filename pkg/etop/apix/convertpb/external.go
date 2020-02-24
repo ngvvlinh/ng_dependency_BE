@@ -113,6 +113,9 @@ func PbOrders(items []*ordermodel.Order) []*exttypes.Order {
 }
 
 func PbOrder(m *ordermodel.Order) *exttypes.Order {
+	if m == nil {
+		return nil
+	}
 	res := &exttypes.Order{
 		Id:                        m.ID,
 		ShopId:                    m.ShopID,
@@ -595,6 +598,12 @@ func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
 	if customer == nil {
 		return nil
 	}
+	if customer.Deleted {
+		return &exttypes.Customer{
+			Id:      customer.ID,
+			Deleted: true,
+		}
+	}
 	return &exttypes.Customer{
 		Id:           customer.ID,
 		ShopId:       customer.ShopID,
@@ -611,6 +620,7 @@ func PbShopCustomer(customer *customering.ShopCustomer) *exttypes.Customer {
 		CreatedAt:    dot.Time(customer.CreatedAt),
 		UpdatedAt:    dot.Time(customer.UpdatedAt),
 		Status:       customer.Status,
+		Deleted:      customer.Deleted,
 	}
 }
 
@@ -633,6 +643,12 @@ func PbCoordinates(in *ordertypes.Coordinates) *etop.Coordinates {
 }
 
 func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) *exttypes.CustomerAddress {
+	if in.Deleted {
+		return &exttypes.CustomerAddress{
+			Id:      in.ID,
+			Deleted: true,
+		}
+	}
 	query := &location.GetLocationQuery{
 		DistrictCode: in.DistrictCode,
 		WardCode:     in.WardCode,
@@ -681,6 +697,12 @@ func PbCustomerGroup(arg *customering.ShopCustomerGroup) *exttypes.CustomerGroup
 	if arg == nil {
 		return nil
 	}
+	if arg.Deleted {
+		return &exttypes.CustomerGroup{
+			Id:      arg.ID,
+			Deleted: true,
+		}
+	}
 	return &exttypes.CustomerGroup{
 		Id:   arg.ID,
 		Name: arg.Name,
@@ -719,6 +741,12 @@ func PbInventoryLevels(args []*inventory.InventoryVariant) []*exttypes.Inventory
 func PbShopProductCollection(arg *catalog.ShopCollection) *exttypes.ProductCollection {
 	if arg == nil {
 		return nil
+	}
+	if arg.Deleted {
+		return &exttypes.ProductCollection{
+			ID:      arg.ID,
+			Deleted: true,
+		}
 	}
 	return &exttypes.ProductCollection{
 		ID:          arg.ID,

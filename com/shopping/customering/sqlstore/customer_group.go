@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
@@ -123,11 +124,16 @@ func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGr
 }
 
 func (s *CustomerGroupStore) ListShopCustomerGroups() (result []*customering.ShopCustomerGroup, err error) {
-	customerGroup, err := s.ListShopCustomerGroupsDB()
+	customerGroups, err := s.ListShopCustomerGroupsDB()
 	if err != nil {
 		return nil, err
 	}
-	err = scheme.Convert(customerGroup, &result)
+	if err = scheme.Convert(customerGroups, &result); err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(customerGroups); i++ {
+		result[i].Deleted = !customerGroups[i].DeletedAt.IsZero()
+	}
 	return
 }
 
@@ -137,8 +143,22 @@ func (s *CustomerGroupStore) UpdateShopCustomerGroup(customerGroup *model.ShopCu
 	return err
 }
 
+func (s *CustomerGroupStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	_deleted, err := query.Table("shop_customer_group").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	return _deleted, err
+}
+
 func (s *CustomerGroupStore) DeleteShopCustomerGroup() (int, error) {
 	query := s.query().Where(s.preds)
 	_deleted, err := query.Table("shop_customer_group").Delete((*model.ShopCustomerGroup)(nil))
 	return _deleted, err
+}
+
+func (s *CustomerGroupStore) IncludeDeleted() *CustomerGroupStore {
+	s.includeDeleted = true
+	return s
 }

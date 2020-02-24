@@ -30,6 +30,8 @@ type ShopVariant struct {
 	CostPrice dot.NullInt `json:"cost_price"`
 
 	Attributes []*catalogtypes.Attribute `json:"attributes"`
+
+	Deleted bool `json:"deleted"`
 }
 
 func (m *ShopVariant) String() string { return jsonx.MustMarshalToString(m) }
@@ -56,8 +58,9 @@ type VariantFilter struct {
 func (m *VariantFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListVariantsRequest struct {
-	Filter VariantFilter        `json:"filter"`
-	Paging *common.CursorPaging `json:"paging"`
+	Filter         VariantFilter        `json:"filter"`
+	Paging         *common.CursorPaging `json:"paging"`
+	IncludeDeleted bool                 `json:"include_deleted"`
 }
 
 func (m *ListVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -171,6 +171,16 @@ func (s *AddressStore) ListAddresses() (result []*addressing.ShopTraderAddress, 
 	if err != nil {
 		return nil, err
 	}
-	err = scheme.Convert(addrs, &result)
+	if err = scheme.Convert(addrs, &result); err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(addrs); i++ {
+		result[i].Deleted = !addrs[i].DeletedAt.IsZero()
+	}
 	return
+}
+
+func (s *AddressStore) IncludeDeleted() *AddressStore {
+	s.includeDeleted = true
+	return s
 }

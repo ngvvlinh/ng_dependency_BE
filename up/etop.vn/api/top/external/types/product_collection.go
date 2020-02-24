@@ -15,6 +15,7 @@ type ProductCollection struct {
 	ShortDesc   string   `json:"short_desc"`
 	CreatedAt   dot.Time `json:"created_at"`
 	UpdatedAt   dot.Time `json:"updated_at"`
+	Deleted     bool     `json:"deleted"`
 }
 
 func (m *ProductCollection) String() string { return jsonx.MustMarshalToString(m) }
@@ -32,7 +33,7 @@ type ListProductCollectionRelationshipsRequest struct {
 	Filter ListProductCollectionRelationshipsFilter `json:"filter"`
 	// TODO: add cursor paging
 	//Paging         *common.CursorPaging                     `json:"paging"`
-	IncludeDeleted dot.NullBool `json:"include_deleted"`
+	IncludeDeleted bool `json:"include_deleted"`
 }
 
 func (m *ListProductCollectionRelationshipsRequest) String() string {
@@ -111,7 +112,7 @@ func (m *ListCollectionsFilter) String() string { return jsonx.MustMarshalToStri
 type ListCollectionsRequest struct {
 	Filter         ListCollectionsFilter `json:"filter"`
 	Paging         *common.CursorPaging  `json:"paging"`
-	IncludeDeleted dot.NullBool          `json:"include_deleted"`
+	IncludeDeleted bool                  `json:"include_deleted"`
 }
 
 func (m *ListCollectionsRequest) String() string { return jsonx.MustMarshalToString(m) }

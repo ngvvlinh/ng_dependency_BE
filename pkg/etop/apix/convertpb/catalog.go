@@ -14,6 +14,12 @@ func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {
 	if arg == nil {
 		return nil
 	}
+	if arg.Deleted {
+		return &exttypes.ShopProduct{
+			Id:      arg.ProductID,
+			Deleted: true,
+		}
+	}
 	return &exttypes.ShopProduct{
 		ExternalId:   dot.String(arg.ExternalID),
 		ExternalCode: dot.String(arg.ExternalCode),
@@ -74,6 +80,12 @@ func ConvertProductWithVariantsToPbProduct(arg *catalog.ShopProductWithVariants)
 func PbShopVariant(arg *catalog.ShopVariant) *exttypes.ShopVariant {
 	if arg == nil {
 		return nil
+	}
+	if arg.Deleted {
+		return &exttypes.ShopVariant{
+			Id:      arg.VariantID,
+			Deleted: true,
+		}
 	}
 	return &exttypes.ShopVariant{
 		ExternalId:   dot.String(arg.ExternalID),

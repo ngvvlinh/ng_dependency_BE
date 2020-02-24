@@ -176,6 +176,7 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 	out.Coordinates = addressconvert.Convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg.Coordinates, nil)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.Deleted = false           // zero value
 }
 
 func Convert_customeringmodel_ShopTraderAddresses_addressing_ShopTraderAddresses(args []*customeringmodel.ShopTraderAddress) (outs []*addressing.ShopTraderAddress) {
@@ -256,6 +257,7 @@ func apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.Coordinates = arg.Coordinates   // simple assign
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
+	out.Deleted = false                 // zero value
 }
 
 func Apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addressing.UpdateAddressArgs, out *addressing.ShopTraderAddress) *addressing.ShopTraderAddress {
@@ -286,6 +288,7 @@ func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.Coordinates = arg.Coordinates                           // simple assign
 	out.CreatedAt = out.CreatedAt                               // no change
 	out.UpdatedAt = out.UpdatedAt                               // no change
+	out.Deleted = out.Deleted                                   // no change
 }
 
 //-- convert etop.vn/api/shopping/customering.ShopCustomer --//
@@ -320,6 +323,7 @@ func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 	out.Status = status3.Status(arg.Status) // simple conversion
 	out.CreatedAt = arg.CreatedAt           // simple assign
 	out.UpdatedAt = arg.UpdatedAt           // simple assign
+	out.Deleted = false                     // zero value
 }
 
 func Convert_customeringmodel_ShopCustomers_customering_ShopCustomers(args []*customeringmodel.ShopCustomer) (outs []*customering.ShopCustomer) {
@@ -405,6 +409,7 @@ func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = 0                      // zero value
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
+	out.Deleted = false                 // zero value
 }
 
 func Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) *customering.ShopCustomer {
@@ -430,6 +435,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = out.Status                         // no change
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.Deleted = out.Deleted                       // no change
 }
 
 //-- convert etop.vn/api/shopping/customering.ShopCustomerGroup --//
@@ -449,6 +455,7 @@ func convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(ar
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
 	out.Name = arg.Name     // simple assign
+	out.Deleted = false     // zero value
 }
 
 func Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
@@ -477,6 +484,7 @@ func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(ar
 	out.ShopID = arg.ShopID     // simple assign
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
+	out.DeletedAt = time.Time{} // zero value
 }
 
 func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*customering.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {

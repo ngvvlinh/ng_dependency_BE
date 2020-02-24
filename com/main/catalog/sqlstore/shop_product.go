@@ -218,11 +218,15 @@ func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 }
 
 func (s *ShopProductStore) ListShopProducts() ([]*catalog.ShopProduct, error) {
-	products, err := s.ListShopProductsDB()
+	productsDB, err := s.ListShopProductsDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.Convert_catalogmodel_ShopProducts_catalog_ShopProducts(products), nil
+	products := convert.Convert_catalogmodel_ShopProducts_catalog_ShopProducts(productsDB)
+	for i := 0; i < len(productsDB); i++ {
+		products[i].Deleted = !productsDB[i].DeletedAt.IsZero()
+	}
+	return products, nil
 }
 
 func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*model.ShopProductWithVariants, error) {

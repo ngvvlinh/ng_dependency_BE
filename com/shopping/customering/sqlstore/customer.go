@@ -172,6 +172,10 @@ func (s *CustomerStore) GetCustomer() (*customering.ShopCustomer, error) {
 	}
 	result := &customering.ShopCustomer{}
 	err = scheme.Convert(customer, result)
+	if err != nil {
+		return nil, err
+	}
+	result.Deleted = !customer.DeletedAt.IsZero()
 	return result, err
 }
 
@@ -215,7 +219,12 @@ func (s *CustomerStore) ListCustomers() (result []*customering.ShopCustomer, err
 	if err != nil {
 		return nil, err
 	}
-	err = scheme.Convert(customers, &result)
+	if err = scheme.Convert(customers, &result); err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(customers); i++ {
+		result[i].Deleted = !customers[i].DeletedAt.IsZero()
+	}
 	return
 }
 

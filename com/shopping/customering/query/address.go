@@ -64,6 +64,9 @@ func (q *AddressQuery) ListAddressesByTraderIDs(ctx context.Context, args *addre
 	if len(args.TraderIDs) != 0 {
 		query = query.IDs(args.TraderIDs...)
 	}
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
 	addrs, err := query.WithPaging(args.Paging).ListAddresses()
 	if err != nil {
 		return nil, err

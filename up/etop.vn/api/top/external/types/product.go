@@ -36,6 +36,8 @@ type ShopProduct struct {
 	CreatedAt dot.Time   `json:"created_at"`
 	UpdatedAt dot.Time   `json:"updated_at"`
 	BrandId   dot.NullID `json:"brand_id"`
+
+	Deleted bool `json:"deleted"`
 }
 
 func (m *ShopProduct) String() string { return jsonx.MustMarshalToString(m) }
@@ -62,8 +64,9 @@ type ProductFilter struct {
 func (m *ProductFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListProductsRequest struct {
-	Filter ProductFilter        `json:"filter"`
-	Paging *common.CursorPaging `json:"paging"`
+	Filter         ProductFilter        `json:"filter"`
+	Paging         *common.CursorPaging `json:"paging"`
+	IncludeDeleted bool                 `json:"include_deleted"`
 }
 
 func (m *ListProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
