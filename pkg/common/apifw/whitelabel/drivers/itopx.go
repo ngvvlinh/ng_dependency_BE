@@ -39,7 +39,7 @@ func ITopX(env cmenv.EnvType) *whitelabel.WL {
 			},
 			Templates: &whitelabel.Templates{
 				RequestLoginSmsTpl: whitelabel.MustParseTemplate("request-login-sms",
-					`Su dung ma {{.Code}} de xac thuc tai khoan. Moi thac mac xin quy khach vui long LH: 1900636040`),
+					`IMGroup Thong bao: Ma xac thuc OTP cua quy khach la {{.Code}}. Moi thac mac xin quy khach vui long LH: 1900636040`),
 				NewAccountViaPartnerSmsTpl: nil, // not support
 			},
 		},
