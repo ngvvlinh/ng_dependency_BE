@@ -26,6 +26,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/httpx"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -78,13 +79,13 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 
 	file, err := imp.File.Open()
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
 	defer file.Close()
 
 	rawData, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
 
 	// We only store file if the file is valid.
@@ -167,7 +168,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 
 	excelFile, err := excelize.OpenReader(bytes.NewReader(rawData))
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid file format")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "invalid file format")
 	}
 
 	sheetName, err := validateSheets(excelFile)
@@ -176,7 +177,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	}
 	rows := excelFile.GetRows(sheetName)
 	if len(rows) <= 1 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "no rows")
 	}
 	cleanRows(rows)
 	imp.Rows = rows
@@ -188,7 +189,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	if len(_errs) > 0 {
 		return imp.generateErrorResponse(idx, _errs)
 	}
-	imp.LastRow, _errs, err = validateRows(idx, rows, idxOrderEdCode, idxLines)
+	imp.LastRow, _errs, err = validateRows(ctx, idx, rows, idxOrderEdCode, idxLines)
 	if err != nil {
 		return nil, err
 	}
@@ -266,7 +267,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 		_errs[i] = err
 	}
 	if xerrors.Errors(_errs).IsAll() {
-		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ hotro@etop.vn.")
+		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	resp := &types.ImportOrdersResponse{
@@ -286,20 +287,20 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 func validateSheets(file *excelize.File) (sheetName string, err error) {
 	sheetName = file.GetSheetName(1)
 	if sheetName == "" {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid sheet")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Không thể đọc được file.").WithMeta("reason", "invalid sheet")
 	}
 
 	norm := validate.NormalizeSearchSimple(sheetName)
 	if !strings.Contains(norm, "don hang") {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Sheet đầu tiên trong file phải là danh sách đơn hàng cần import. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid sheet name")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Sheet đầu tiên trong file phải là danh sách đơn hàng cần import.").WithMeta("reason", "invalid sheet name")
 	}
 
 	return sheetName, nil
 }
 
-func validateRows(idx imcsv.Indexer, rows [][]string, idxCode, idxLines int) (lastNonEmptyRow int, errs []error, _ error) {
+func validateRows(ctx context.Context, idx imcsv.Indexer, rows [][]string, idxCode, idxLines int) (lastNonEmptyRow int, errs []error, _ error) {
 	if len(rows) > MaxRows {
-		return 0, nil, cm.Errorf(cm.InvalidArgument, nil, "File import quá lớn. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.")
+		return 0, nil, cm.Errorf(cm.InvalidArgument, nil, "File import quá lớn. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	var orderRow []string
@@ -363,7 +364,7 @@ func validateRows(idx imcsv.Indexer, rows [][]string, idxCode, idxLines int) (la
 
 		case code == preCode:
 			if orderRow == nil {
-				return lastNonEmptyRow, nil, imcsv.CellError(idx, r, idxCode, "Mã đơn hàng không hợp lệ. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.")
+				return lastNonEmptyRow, nil, imcsv.CellError(idx, r, idxCode, "Mã đơn hàng không hợp lệ. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 			}
 
 			if idx.GetCell(row, idxLines) != "" {
@@ -389,7 +390,7 @@ func validateRows(idx imcsv.Indexer, rows [][]string, idxCode, idxLines int) (la
 	}
 
 	if orderRow == nil {
-		return lastNonEmptyRow, nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
+		return lastNonEmptyRow, nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "no rows")
 	}
 	return
 }

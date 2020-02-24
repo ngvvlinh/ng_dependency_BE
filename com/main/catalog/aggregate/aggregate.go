@@ -64,27 +64,9 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 				Throw()
 		}
 	}
-	product := &catalog.ShopProduct{
-		ExternalID:   args.ExternalID,
-		ExternalCode: args.ExternalCode,
-		PartnerID:    args.PartnerID,
-
-		ProductID:   cm.NewID(),
-		ShopID:      args.ShopID,
-		Code:        args.Code,
-		Name:        args.Name,
-		Unit:        args.Unit,
-		ImageURLs:   args.ImageURLs,
-		Note:        args.Note,
-		ShortDesc:   args.ShortDesc,
-		Description: args.Description,
-		DescHTML:    args.DescHTML,
-		CostPrice:   args.CostPrice,
-		ListPrice:   args.ListPrice,
-		RetailPrice: args.RetailPrice,
-		ProductType: args.ProductType,
-		MetaFields:  args.MetaFields,
-		BrandID:     args.BrandID,
+	var product = &catalog.ShopProduct{}
+	if err := scheme.Convert(args, product); err != nil {
+		return nil, err
 	}
 	if product.Code != "" {
 		number, ok := convert.ParseCodeNorm(product.Code)
@@ -186,26 +168,10 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	if err != nil {
 		return nil, err
 	}
-
-	variant := &catalog.ShopVariant{
-		ExternalID:   args.ExternalID,
-		ExternalCode: args.ExternalCode,
-		PartnerID:    args.PartnerID,
-		ShopID:       args.ShopID,
-		ProductID:    args.ProductID,
-		VariantID:    cm.NewID(),
-		Code:         args.Code,
-		Name:         args.Name,
-		ShortDesc:    args.ShortDesc,
-		Description:  args.Description,
-		DescHTML:     args.DescHTML,
-		ImageURLs:    args.ImageURLs,
-		Status:       0,
-		Attributes:   args.Attributes,
-		CostPrice:    args.CostPrice,
-		ListPrice:    args.ListPrice,
-		RetailPrice:  args.RetailPrice,
-		Note:         args.Note,
+	var variant = &catalog.ShopVariant{}
+	err = scheme.Convert(args, variant)
+	if err != nil {
+		return nil, err
 	}
 	if variant.Code != "" {
 		ss := strings.Split(variant.Code, "-")

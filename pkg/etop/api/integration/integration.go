@@ -856,7 +856,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 				ExternalID: requestInfo.ExternalShopID,
 			}
 			if err := bus.Dispatch(ctx, cmd); err != nil {
-				return cm.Errorf(cm.Internal, err, "Không thể cập nhật thông tin tài khoản. Vui lòng liên hệ hotro@etop.vn để được hỗ trợ.").
+				return cm.Errorf(cm.Internal, err, "Không thể cập nhật thông tin tài khoản. Vui lòng liên hệ %v để được hỗ trợ.", wl.X(ctx).CSEmail).
 					WithMeta("reason", "can not update external_shop_id")
 			}
 		}

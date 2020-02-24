@@ -17,6 +17,7 @@ import (
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/httpx"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -73,7 +74,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	fileType := fileTypes[0]
 	switch fileType {
 	case xlsxFileType:
-		rows, err = ReadXLSXFile(file)
+		rows, err = ReadXLSXFile(c.Context(), file)
 	case csvFileType:
 		rows, err = ReadCSVFile(file)
 	default:
@@ -140,20 +141,20 @@ func ReadCSVFile(file multipart.File) (rows [][]string, _ error) {
 	return
 }
 
-func ReadXLSXFile(file multipart.File) (rows [][]string, _ error) {
+func ReadXLSXFile(ctx context.Context, file multipart.File) (rows [][]string, _ error) {
 	rawData, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
 
 	excelFile, err := excelize.OpenReader(bytes.NewReader(rawData))
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid file format")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "invalid file format")
 	}
 	sheetName := excelFile.GetSheetName(1)
 	rows = excelFile.GetRows(sheetName)
 	if len(rows) <= 1 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "no rows")
 	}
 	return
 }

@@ -25,6 +25,7 @@ import (
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -573,7 +574,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *iden
 		shopCod = shipping.CodAmount
 	}
 	fakeOrder := &ordermodel.Order{}
-	if err := convertpb.OrderShippingToModel(shipping, fakeOrder); err != nil {
+	if err := convertpb.OrderShippingToModel(ctx, shipping, fakeOrder); err != nil {
 		return nil, err
 	}
 
@@ -975,7 +976,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
 	}
-	if err = convertpb.OrderShippingToModel(shipping, order); err != nil {
+	if err = convertpb.OrderShippingToModel(ctx, shipping, order); err != nil {
 		return nil, err
 	}
 
@@ -991,7 +992,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 			shippingServiceName, ok = ctrl.ParseServiceCode(carrier, shippingServiceCode)
 		}
 		if carrier != 0 && !ok {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ hotro@etop.vn")
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ %v", wl.X(ctx).CSEmail)
 		}
 		order.ShopShipping.ExternalServiceName = shippingServiceName
 	}

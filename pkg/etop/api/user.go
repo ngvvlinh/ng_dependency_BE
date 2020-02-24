@@ -1079,11 +1079,11 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	user := getUserByID.Result
 	tok, code, v := getToken(r.Context.Extra[keyRequestAuthUsage], user.ID, user.Phone)
 	if tok == nil || code == "" || v == nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if v["extra"] != user.Phone {
 		authStore.Revoke(auth.UsageSToken, tok.TokenStr)
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	var err error
@@ -1097,7 +1097,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 			v["tries"] += "."
 			authStore.SetTTL(tok, 60*60)
 		}
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if user.PhoneVerifiedAt.IsZero() {
@@ -1137,11 +1137,11 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 	user := r.Context.User.User
 	tok, code, v := getToken(auth.UsageSToken, user.ID, user.Email)
 	if tok == nil || code == "" || v == nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if v["extra"] != user.Email {
 		authStore.Revoke(auth.UsageSToken, tok.TokenStr)
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	var err error
@@ -1178,7 +1178,7 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 		v["tries"] += "."
 		authStore.SetTTL(tok, 60*60)
 	}
-	return r, cm.Errorf(cm.PermissionDenied, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
+	return r, cm.Errorf(cm.PermissionDenied, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 }
 
 func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) error {

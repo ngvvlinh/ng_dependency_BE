@@ -18,6 +18,8 @@ Custom conversions:
     ShopProductWithVariants      // not use, no conversions between params
     ShopVariantWithProduct       // not use, no conversions between params
     createShopBrand              // in use
+    createShopProduct            // in use
+    createShopVariant            // in use
     shopProduct                  // in use
     shopProductDB                // in use
     shopVariantDB                // in use
@@ -136,6 +138,10 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*catalogmodel.ShopProduct) = out0
 		return nil
 	})
+	s.Register((*catalog.CreateShopProductArgs)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg.(*catalog.CreateShopProductArgs), out.(*catalog.ShopProduct))
+		return nil
+	})
 	s.Register((*catalog.UpdateShopProductCategoryArgs)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
 		Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg.(*catalog.UpdateShopProductCategoryArgs), out.(*catalog.ShopProduct))
 		return nil
@@ -178,6 +184,10 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*catalog.ShopVariant)(nil), (*[]*catalogmodel.ShopVariant)(nil), func(arg, out interface{}) error {
 		out0 := Convert_catalog_ShopVariants_catalogmodel_ShopVariants(arg.([]*catalog.ShopVariant))
 		*out.(*[]*catalogmodel.ShopVariant) = out0
+		return nil
+	})
+	s.Register((*catalog.CreateShopVariantArgs)(nil), (*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg.(*catalog.CreateShopVariantArgs), out.(*catalog.ShopVariant))
 		return nil
 	})
 	s.Register((*catalog.UpdateShopVariantInfoArgs)(nil), (*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
@@ -668,6 +678,49 @@ func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.Shop
 	return outs
 }
 
+func Apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopProduct{}
+	}
+	createShopProduct(arg, out)
+	return out
+}
+
+func apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProduct) {
+	out.ExternalID = arg.ExternalID     // simple assign
+	out.ExternalCode = arg.ExternalCode // simple assign
+	out.ExternalBrandID = ""            // zero value
+	out.ExternalCategoryID = ""         // zero value
+	out.PartnerID = arg.PartnerID       // simple assign
+	out.ShopID = arg.ShopID             // simple assign
+	out.ProductID = 0                   // zero value
+	out.Code = arg.Code                 // simple assign
+	out.CodeNorm = 0                    // zero value
+	out.Name = arg.Name                 // simple assign
+	out.Unit = arg.Unit                 // simple assign
+	out.ImageURLs = arg.ImageURLs       // simple assign
+	out.Note = arg.Note                 // simple assign
+	out.ShortDesc = ""                  // zero value
+	out.Description = ""                // zero value
+	out.DescHTML = ""                   // zero value
+	out.CostPrice = 0                   // zero value
+	out.ListPrice = 0                   // zero value
+	out.RetailPrice = 0                 // zero value
+	out.CategoryID = 0                  // zero value
+	out.CollectionIDs = nil             // zero value
+	out.Tags = nil                      // zero value
+	out.Status = 0                      // zero value
+	out.CreatedAt = time.Time{}         // zero value
+	out.UpdatedAt = time.Time{}         // zero value
+	out.DeletedAt = time.Time{}         // zero value
+	out.ProductType = arg.ProductType   // simple assign
+	out.MetaFields = arg.MetaFields     // simple assign
+	out.BrandID = arg.BrandID           // simple assign
+}
+
 func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
 	return updateShopProductCategory(arg, out)
 }
@@ -899,6 +952,43 @@ func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(args []*catalog.Shop
 		outs[i] = Convert_catalog_ShopVariant_catalogmodel_ShopVariant(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg *catalog.CreateShopVariantArgs, out *catalog.ShopVariant) *catalog.ShopVariant {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopVariant{}
+	}
+	createShopVariant(arg, out)
+	return out
+}
+
+func apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg *catalog.CreateShopVariantArgs, out *catalog.ShopVariant) {
+	out.ExternalID = arg.ExternalID     // simple assign
+	out.ExternalCode = arg.ExternalCode // simple assign
+	out.ExternalProductID = ""          // zero value
+	out.PartnerID = arg.PartnerID       // simple assign
+	out.ShopID = arg.ShopID             // simple assign
+	out.ProductID = arg.ProductID       // simple assign
+	out.VariantID = 0                   // zero value
+	out.Code = arg.Code                 // simple assign
+	out.CodeNorm = 0                    // zero value
+	out.Name = arg.Name                 // simple assign
+	out.ShortDesc = ""                  // zero value
+	out.Description = ""                // zero value
+	out.DescHTML = ""                   // zero value
+	out.ImageURLs = arg.ImageURLs       // simple assign
+	out.Status = 0                      // zero value
+	out.Attributes = arg.Attributes     // simple assign
+	out.CostPrice = 0                   // zero value
+	out.ListPrice = 0                   // zero value
+	out.RetailPrice = 0                 // zero value
+	out.Note = arg.Note                 // simple assign
+	out.CreatedAt = time.Time{}         // zero value
+	out.UpdatedAt = time.Time{}         // zero value
+	out.DeletedAt = time.Time{}         // zero value
 }
 
 func Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.UpdateShopVariantInfoArgs, out *catalog.ShopVariant) *catalog.ShopVariant {

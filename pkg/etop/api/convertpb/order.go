@@ -27,6 +27,7 @@ import (
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -431,7 +432,7 @@ func PbOrderAddressFromAddress(m *addressmodel.Address) *types.OrderAddress {
 	}
 }
 
-func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
+func OrderShippingToModel(ctx context.Context, m *types.OrderShipping, mo *ordermodel.Order) error {
 	if m == nil {
 		return nil
 	}
@@ -479,7 +480,7 @@ func OrderShippingToModel(m *types.OrderShipping, mo *ordermodel.Order) error {
 		shippingServiceName, ok = model.GetShippingServiceRegistry().GetName(carrier, shippingServiceCode)
 	}
 	if carrier != 0 && !ok {
-		return cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ hotro@etop.vn")
+		return cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ %v", wl.X(ctx).CSEmail)
 	}
 
 	orderShipping := &ordermodel.OrderShipping{

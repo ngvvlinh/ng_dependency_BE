@@ -378,7 +378,7 @@ func handleResponse(ctx context.Context, res *httpreq.RestyResponse, result inte
 			}
 		}
 
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ viettelpost. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ viettelpost. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMetaM(meta)
 	default:
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ viettelpost: Invalid status (%v). Chúng tôi đang liên hệ với viettelpost để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v", status, wl.X(ctx).CSEmail)
 	}

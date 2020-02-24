@@ -21,6 +21,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/apifw/httpx"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -106,7 +107,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *ident
 
 	file, err := fileHeader.Open()
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
 	return handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
 }
@@ -126,7 +127,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 	startAt := time.Now()
 	rawData, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
 
 	// We only store file if the file is valid.
@@ -210,7 +211,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 
 	excelFile, err := excelize.OpenReader(bytes.NewReader(rawData))
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid file format")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "invalid file format")
 	}
 
 	sheetName, err := validateSheets(excelFile)
@@ -220,7 +221,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 
 	rows := excelFile.GetRows(sheetName)
 	if len(rows) <= 1 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "no rows")
 	}
 	imp.Rows = rows
 
@@ -278,12 +279,12 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 func validateSheets(file *excelize.File) (sheetName string, err error) {
 	sheetName = file.GetSheetName(1)
 	if sheetName == "" {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid sheet")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Không thể đọc được file.").WithMeta("reason", "invalid sheet")
 	}
 
 	norm := validate.NormalizeSearchSimple(sheetName)
 	if !strings.Contains(norm, "san pham") && !strings.Contains(norm, "sanpham") {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Sheet đầu tiên trong file phải là danh sách sản phẩm cần import. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "invalid sheet name")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Sheet đầu tiên trong file phải là danh sách sản phẩm cần import.").WithMeta("reason", "invalid sheet name")
 	}
 
 	return sheetName, nil
@@ -291,7 +292,7 @@ func validateSheets(file *excelize.File) (sheetName string, err error) {
 
 func validateRows(schema imcsv.Schema, rows [][]string, idx indexes) (lastNonEmptyRow int, errs []error, _ error) {
 	if len(rows) > MaxRows {
-		return 0, nil, cm.Errorf(cm.InvalidArgument, nil, "File import quá lớn. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.")
+		return 0, nil, cm.Errorf(cm.InvalidArgument, nil, "File import quá lớn.")
 	}
 
 	for r := 1; r < len(rows); r++ {

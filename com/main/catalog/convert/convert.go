@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/microcosm-cc/bluemonday"
+
 	"etop.vn/api/main/catalog"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
@@ -123,13 +125,45 @@ func createShopBrand(args *catalog.CreateBrandArgs, out *catalog.ShopBrand) {
 	out.ID = cm.NewID()
 }
 
+func createShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProduct) {
+	apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg, out)
+	p := bluemonday.UGCPolicy()
+	var descHTML = p.Sanitize(arg.DescHTML)
+	out.ProductID = cm.NewID()
+	out.ShortDesc = arg.ShortDesc
+	out.Description = arg.Description
+	out.DescHTML = descHTML
+	out.CostPrice = arg.CostPrice
+	out.ListPrice = arg.ListPrice
+	out.RetailPrice = arg.RetailPrice
+}
+
 func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.ShopProduct) (out *catalog.ShopProduct) {
 	if in == nil {
 		return nil
 	}
 	apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(args, in)
 	in.UpdatedAt = time.Now()
+	if args.DescHTML.Valid == true {
+		p := bluemonday.UGCPolicy()
+		var descHTML = p.Sanitize(args.DescHTML.String)
+		in.DescHTML = descHTML
+	}
 	return in
+}
+
+func createShopVariant(arg *catalog.CreateShopVariantArgs, out *catalog.ShopVariant) {
+	apply_catalog_CreateShopVariantArgs_catalog_ShopVariant(arg, out)
+	out.VariantID = cm.NewID()
+	out.Status = 0
+	p := bluemonday.UGCPolicy()
+	var descHTML = p.Sanitize(arg.DescHTML)
+	out.DescHTML = descHTML
+	out.ShortDesc = arg.ShortDesc
+	out.Description = arg.Description
+	out.CostPrice = arg.CostPrice
+	out.ListPrice = arg.ListPrice
+	out.RetailPrice = arg.RetailPrice
 }
 
 func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.ShopVariant) (out *catalog.ShopVariant) {
@@ -138,6 +172,11 @@ func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.Shop
 	}
 	apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, in)
 	in.UpdatedAt = time.Now()
+	if args.DescHTML.Valid == true {
+		p := bluemonday.UGCPolicy()
+		var descHTML = p.Sanitize(args.DescHTML.String)
+		in.DescHTML = descHTML
+	}
 	return in
 }
 

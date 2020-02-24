@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -98,7 +99,7 @@ func (schema Schema) MinColumns() int {
 func (schema Schema) ValidateSchema(ctx context.Context, headerRow *[]string) (idx Indexer, errs []error, _ error) {
 	minCol := schema.MinColumns()
 	if len(*headerRow) < minCol {
-		return Indexer{}, nil, CellError(Indexer{}, 0, -1, "Số cột không đúng cấu trúc yêu cầu. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").
+		return Indexer{}, nil, CellError(Indexer{}, 0, -1, "Số cột không đúng cấu trúc yêu cầu. Vui lòng tải lại file import hoặc liên hệ %v.", wl.X(ctx).CSEmail).
 			WithMetap("expect_min", minCol).
 			WithMetap("expect_max", len(schema)).
 			WithMetap("actual", len(*headerRow))

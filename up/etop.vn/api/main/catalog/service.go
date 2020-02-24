@@ -246,6 +246,7 @@ type ShopCollectionsResponse struct {
 
 //-- command --//
 
+// +convert:create=ShopProduct
 type CreateShopProductArgs struct {
 	ExternalID   string
 	ExternalCode string
@@ -336,6 +337,7 @@ type DeleteShopCategoryArgs struct {
 	ShopID dot.ID
 }
 
+// +convert:create=ShopVariant
 type CreateShopVariantArgs struct {
 	ExternalID   string
 	ExternalCode string

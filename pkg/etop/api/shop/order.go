@@ -510,7 +510,7 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
 	var order = new(ordermodel.Order)
-	if err := convertpb.OrderShippingToModel(q.Shipping, order); err != nil {
+	if err := convertpb.OrderShippingToModel(ctx, q.Shipping, order); err != nil {
 		return err
 	}
 	cmd := &ordermodelx.UpdateOrderShippingInfoCommand{
