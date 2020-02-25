@@ -13743,8 +13743,7 @@
         "purchase_refund",
         "stocktake",
         "purchase_order",
-        "order",
-        "cancel_order"
+        "order"
       ]
     },
     "rtAutoInventoryVoucher": {

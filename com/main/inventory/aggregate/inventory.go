@@ -903,7 +903,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu xuất kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	case inventory_type.In:
 		inventoryVoucherCreateRequest.Title = "Nhập kho khi Hủy bán hàng"
-		inventoryVoucherCreateRequest.RefName = inventory_voucher_ref.CancelOrder.GetLabelRefName()
+		inventoryVoucherCreateRequest.RefName = "Hủy " + inventory_voucher_ref.Order.GetLabelRefName()
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	}
 	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
@@ -1006,7 +1006,7 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 				Title:       "Phiếu xuất nhập kho",
 				RefID:       value.RefID,
 				RefType:     value.RefType,
-				RefName:     value.RefName,
+				RefName:     "Hủy " + value.RefName,
 				RefCode:     value.RefCode,
 				TraderID:    value.TraderID,
 				TotalAmount: value.TotalAmount,

@@ -33,8 +33,4 @@ const (
 	// +enum=order
 	// +enum:RefName:Bán hàng
 	Order InventoryVoucherRef = 5
-
-	// +enum=cancel_order
-	// +enum:RefName: Hủy đơn hàng
-	CancelOrder InventoryVoucherRef = 6
 )

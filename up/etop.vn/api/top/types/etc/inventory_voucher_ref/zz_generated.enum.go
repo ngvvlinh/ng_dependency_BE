@@ -21,7 +21,6 @@ var enumInventoryVoucherRefName = map[int]string{
 	3: "stocktake",
 	4: "purchase_order",
 	5: "order",
-	6: "cancel_order",
 }
 
 var enumInventoryVoucherRefValue = map[string]int{
@@ -31,7 +30,6 @@ var enumInventoryVoucherRefValue = map[string]int{
 	"stocktake":       3,
 	"purchase_order":  4,
 	"order":           5,
-	"cancel_order":    6,
 }
 
 var enumInventoryVoucherRefMapLabel = map[string]map[string]string{
@@ -52,9 +50,6 @@ var enumInventoryVoucherRefMapLabel = map[string]map[string]string{
 	},
 	"order": {
 		"RefName": "Bán hàng",
-	},
-	"cancel_order": {
-		"RefName": " Hủy đơn hàng",
 	},
 }
 
