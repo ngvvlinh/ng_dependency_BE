@@ -49,9 +49,10 @@ var SortShopCategory = map[string]string{
 }
 
 var SortShopCollection = map[string]string{
+	"id":            "id",
 	"collection_id": "",
 	"created_at":    "",
-	"updated_at":    "",
+	"updated_at":    "updated_at",
 	"deleted_at":    "",
 }
 
@@ -59,7 +60,7 @@ var SortShopProductCollection = map[string]string{
 	"product_id":    "",
 	"collection_id": "",
 	"created_at":    "",
-	"updated_at":    "",
+	"updated_at":    "updated_at",
 }
 
 var SortShopBrand = map[string]string{

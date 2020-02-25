@@ -253,9 +253,10 @@ func (h QueryServiceHandler) HandleListCustomerGroups(ctx context.Context, msg *
 }
 
 type ListCustomerGroupsCustomersQuery struct {
-	CustomerIDs []dot.ID
-	GroupIDs    []dot.ID
-	Paging      meta.Paging
+	CustomerIDs    []dot.ID
+	GroupIDs       []dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *CustomerGroupsCustomersResponse `json:"-"`
 }
@@ -554,9 +555,10 @@ func (q *ListCustomerGroupsQuery) SetListCustomerGroupArgs(args *ListCustomerGro
 func (q *ListCustomerGroupsCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupsCustomersArgs) {
 	return ctx,
 		&ListCustomerGroupsCustomersArgs{
-			CustomerIDs: q.CustomerIDs,
-			GroupIDs:    q.GroupIDs,
-			Paging:      q.Paging,
+			CustomerIDs:    q.CustomerIDs,
+			GroupIDs:       q.GroupIDs,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -564,6 +566,7 @@ func (q *ListCustomerGroupsCustomersQuery) SetListCustomerGroupsCustomersArgs(ar
 	q.CustomerIDs = args.CustomerIDs
 	q.GroupIDs = args.GroupIDs
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {

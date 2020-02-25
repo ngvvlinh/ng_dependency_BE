@@ -6,10 +6,12 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -23,6 +25,7 @@ type QueryService struct {
 	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
 	shopBrand             sqlstore.ShopBrandStoreFactory
 	shopVariantSupplier   sqlstore.ShopVariantSupplierStoreFactory
+	historyStore          historysqlstore.HistoryStoreFactory
 }
 
 func New(db *cmsql.Database) *QueryService {
@@ -34,6 +37,7 @@ func New(db *cmsql.Database) *QueryService {
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
 		shopBrand:             sqlstore.NewShopBrandStore(db),
 		shopVariantSupplier:   sqlstore.NewVariantSupplierStore(db),
+		historyStore:          historysqlstore.NewHistoryStore(db),
 	}
 }
 
@@ -398,7 +402,13 @@ func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID d
 }
 
 func (s *QueryService) ListShopCollectionsByIDs(ctx context.Context, args *catalog.ListShopCollectionsByIDsArg) (*catalog.ShopCollectionsResponse, error) {
-	query := s.shopCollection(ctx).IDs(args.IDs).ShopID(args.ShopID)
+	query := s.shopCollection(ctx).ShopID(args.ShopID)
+	if len(args.IDs) != 0 {
+		query = query.IDs(args.IDs)
+	}
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
 	collections, err := query.WithPaging(args.Paging).ListShopCollections()
 	if err != nil {
 		return nil, err
@@ -434,6 +444,22 @@ func (q *QueryService) ListShopProductsCollections(ctx context.Context, args *ca
 			ShopID:       args.ShopID,
 			CollectionID: productCollection.CollectionID,
 		})
+	}
+
+	if args.IncludeDeleted {
+		var productCollectionHistories catalogmodel.ProductShopCollectionHistories
+		if err := q.historyStore(ctx).ListProductCollectionRelationships(&productCollectionHistories, args.ShopID, args.ProductIds, args.CollectionIDs, historysqlstore.OpDelete); err != nil {
+			return nil, err
+		}
+		for _, arg := range productCollectionHistories {
+			temp := catalogmodel.ProductShopCollectionHistory(arg)
+			relationships = append(relationships, &catalog.ShopProductCollection{
+				ProductID:    temp.ProductID().ID().Apply(0),
+				CollectionID: temp.CollectionID().ID().Apply(0),
+				ShopID:       args.ShopID,
+				Deleted:      true,
+			})
+		}
 	}
 	return &catalog.ShopProductsCollectionResponse{
 		ProductsCollections: relationships,

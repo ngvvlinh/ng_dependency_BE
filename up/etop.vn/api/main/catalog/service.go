@@ -139,6 +139,8 @@ type ListProductsCollections struct {
 	ShopID        dot.ID
 
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }
 
 type ListShopCollectionsByIDsArg struct {
@@ -146,6 +148,8 @@ type ListShopCollectionsByIDsArg struct {
 	ShopID dot.ID
 
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }
 
 type IDsArgs struct {

@@ -237,6 +237,8 @@ type ShopProductCollection struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Deleted bool
 }
 
 type MetaField struct {

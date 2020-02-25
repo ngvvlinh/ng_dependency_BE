@@ -7,10 +7,12 @@ import (
 	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/customering/customer_type"
+	customermodel "etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/capi/dot"
 )
 
@@ -20,6 +22,7 @@ type CustomerQuery struct {
 	store                      sqlstore.CustomerStoreFactory
 	customerGroupStore         sqlstore.CustomerGroupStoreFactory
 	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
+	historyStore               historysqlstore.HistoryStoreFactory
 }
 
 func NewCustomerQuery(db *cmsql.Database) *CustomerQuery {
@@ -27,6 +30,7 @@ func NewCustomerQuery(db *cmsql.Database) *CustomerQuery {
 		store:                      sqlstore.NewCustomerStore(db),
 		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),
 		customerGroupCustomerStore: sqlstore.NewCustomerGroupCustomerStore(db),
+		historyStore:               historysqlstore.NewHistoryStore(db),
 	}
 }
 
@@ -252,6 +256,23 @@ func (q *CustomerQuery) ListCustomerGroupsCustomers(ctx context.Context, args *c
 			GroupID:    customerGroupCustomer.GroupID,
 		})
 	}
+
+	if args.IncludeDeleted {
+		var customerGroupsCustomerHistories customermodel.ShopCustomerGroupCustomerHistories
+
+		if err := q.historyStore(ctx).ListCustomerRelationships(&customerGroupsCustomerHistories, args.CustomerIDs, args.GroupIDs, historysqlstore.OpDelete); err != nil {
+			return nil, err
+		}
+		for _, arg := range customerGroupsCustomerHistories {
+			temp := customermodel.ShopCustomerGroupCustomerHistory(arg)
+			relationships = append(relationships, &customering.CustomerGroupCustomer{
+				CustomerID: temp.CustomerID().ID().Apply(0),
+				GroupID:    temp.GroupID().ID().Apply(0),
+				Deleted:    true,
+			})
+		}
+	}
+
 	return &customering.CustomerGroupsCustomersResponse{
 		CustomerGroupsCustomers: relationships,
 		Paging:                  query.GetPaging(),

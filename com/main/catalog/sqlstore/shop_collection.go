@@ -167,3 +167,8 @@ func (s *ShopCollectionStore) DeleteShopCollection() (int, error) {
 	n, err := s.query().Where(s.preds).Delete((*model.ShopCollection)(nil))
 	return n, err
 }
+
+func (s *ShopCollectionStore) IncludeDeleted() *ShopCollectionStore {
+	s.includeDeleted = true
+	return s
+}

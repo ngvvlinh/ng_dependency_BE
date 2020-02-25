@@ -467,7 +467,7 @@ func (a *Aggregate) AddShopProductCollection(ctx context.Context, args *catalog.
 	}
 	_, err = a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()
 	if err != nil {
-		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã sản phẩm không không tồn tại")
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã sản phẩm không tồn tại")
 	}
 	for _, collectionID := range args.CollectionIDs {
 		if collectionID == 0 {

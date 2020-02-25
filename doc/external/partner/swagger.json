@@ -2924,6 +2924,9 @@
           "type": "string",
           "format": "int64"
         },
+        "deleted": {
+          "type": "boolean"
+        },
         "group_id": {
           "type": "string",
           "format": "int64"
@@ -3336,6 +3339,9 @@
         "filter": {
           "$ref": "#/definitions/mrListCollectionsFilter"
         },
+        "include_deleted": {
+          "type": "boolean"
+        },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
         }
@@ -3358,8 +3364,9 @@
         "filter": {
           "$ref": "#/definitions/mrCustomerGroupRelationshipFilter"
         },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
+        "include_deleted": {
+          "description": "**TODO:** add cursor paging\nPaging         *common.CursorPaging            `json:\"paging\"`\n",
+          "type": "boolean"
         }
       }
     },
@@ -3459,8 +3466,9 @@
         "filter": {
           "$ref": "#/definitions/mrListProductCollectionRelationshipsFilter"
         },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
+        "include_deleted": {
+          "description": "**TODO:** add cursor paging\nPaging         *common.CursorPaging                     `json:\"paging\"`\n",
+          "type": "boolean"
         }
       }
     },
@@ -3979,6 +3987,9 @@
         "collection_id": {
           "type": "string",
           "format": "int64"
+        },
+        "deleted": {
+          "type": "boolean"
         },
         "product_id": {
           "type": "string",

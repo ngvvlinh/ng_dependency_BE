@@ -67,7 +67,9 @@ func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAdd
 }
 
 func (s *CustomerGroupRelationshipService) ListRelationships(ctx context.Context, r *CustomerGroupListRelationshipsEndpoint) error {
-	panic("TODO")
+	resp, err := shopping.ListRelationshipsGroupCustomer(ctx, r.Context.Shop.ID, r.ListCustomerGroupRelationshipsRequest)
+	r.Result = resp
+	return err
 }
 
 func (s *CustomerGroupRelationshipService) CreateRelationship(ctx context.Context, r *CustomerGroupCreateRelationshipEndpoint) error {

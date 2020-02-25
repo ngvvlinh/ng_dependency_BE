@@ -817,6 +817,7 @@ func convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(ar
 	out.ShopID = arg.ShopID                             // simple assign
 	out.CreatedAt = arg.CreatedAt                       // simple assign
 	out.UpdatedAt = arg.UpdatedAt                       // simple assign
+	out.Deleted = false                                 // zero value
 }
 
 func Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(args []*catalogmodel.ShopProductCollection) (outs []*catalog.ShopProductCollection) {

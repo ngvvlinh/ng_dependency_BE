@@ -29,9 +29,10 @@ func ListCollections(ctx context.Context, shopID dot.ID, request *externaltypes.
 		return nil, err
 	}
 	query := &catalog.ListShopCollectionsByIDsQuery{
-		IDs:    request.Filter.ID,
-		ShopID: shopID,
-		Paging: *paging,
+		IDs:            request.Filter.ID,
+		ShopID:         shopID,
+		Paging:         *paging,
+		IncludeDeleted: request.IncludeDeleted.Bool,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -81,22 +82,18 @@ func DeleteCollection(ctx context.Context, shopID dot.ID, request *externaltypes
 }
 
 func ListRelationshipsProductCollection(ctx context.Context, shopID dot.ID, request *externaltypes.ListProductCollectionRelationshipsRequest) (*externaltypes.ProductCollectionRelationshipsResponse, error) {
-	paging, err := cmapi.CMCursorPaging(request.Paging)
-	if err != nil {
-		return nil, err
-	}
+	// TODO: add cursor paging
 	query := &catalog.ListShopProductsCollectionsQuery{
-		ProductIds:    request.Filter.ProductID,
-		CollectionIDs: request.Filter.CollectionID,
-		ShopID:        shopID,
-		Paging:        *paging,
+		ProductIds:     request.Filter.ProductID,
+		CollectionIDs:  request.Filter.CollectionID,
+		ShopID:         shopID,
+		IncludeDeleted: request.IncludeDeleted.Bool,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return &externaltypes.ProductCollectionRelationshipsResponse{
 		Relationships: convertpb.PbShopProductCollectionRelationships(query.Result.ProductsCollections),
-		Paging:        convertpb.PbPageInfo(paging, &query.Result.Paging),
 	}, nil
 }
 

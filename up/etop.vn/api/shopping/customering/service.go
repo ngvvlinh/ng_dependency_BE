@@ -65,6 +65,8 @@ type ListCustomerGroupsCustomersArgs struct {
 	GroupIDs    []dot.ID
 
 	Paging meta.Paging
+
+	IncludeDeleted bool
 }
 
 type GetCustomerArgs struct {
@@ -98,6 +100,7 @@ type CustomerGroupsCustomersResponse struct {
 type CustomerGroupCustomer struct {
 	CustomerID dot.ID
 	GroupID    dot.ID
+	Deleted    bool
 }
 
 type CustomerGroupsResponse struct {

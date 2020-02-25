@@ -30,7 +30,9 @@ func (m *ListProductCollectionRelationshipsFilter) String() string {
 
 type ListProductCollectionRelationshipsRequest struct {
 	Filter ListProductCollectionRelationshipsFilter `json:"filter"`
-	Paging *common.CursorPaging                     `json:"paging"`
+	// TODO: add cursor paging
+	//Paging         *common.CursorPaging                     `json:"paging"`
+	IncludeDeleted dot.NullBool `json:"include_deleted"`
 }
 
 func (m *ListProductCollectionRelationshipsRequest) String() string {
@@ -66,6 +68,7 @@ func (m *UpdateCollectionRequest) String() string { return jsonx.MustMarshalToSt
 type ProductCollectionRelationship struct {
 	ProductId    dot.ID `json:"product_id"`
 	CollectionId dot.ID `json:"collection_id"`
+	Deleted      bool   `json:"deleted"`
 }
 
 func (m *ProductCollectionRelationship) String() string { return jsonx.MustMarshalToString(m) }
@@ -106,8 +109,9 @@ type ListCollectionsFilter struct {
 func (m *ListCollectionsFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCollectionsRequest struct {
-	Filter ListCollectionsFilter `json:"filter"`
-	Paging *common.CursorPaging  `json:"paging"`
+	Filter         ListCollectionsFilter `json:"filter"`
+	Paging         *common.CursorPaging  `json:"paging"`
+	IncludeDeleted dot.NullBool          `json:"include_deleted"`
 }
 
 func (m *ListCollectionsRequest) String() string { return jsonx.MustMarshalToString(m) }

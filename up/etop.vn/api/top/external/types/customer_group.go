@@ -70,6 +70,7 @@ func (m *UpdateCustomerGroupRequest) String() string { return jsonx.MustMarshalT
 type CustomerGroupRelationship struct {
 	CustomerID dot.ID `json:"customer_id"`
 	GroupID    dot.ID `json:"group_id"`
+	Deleted    bool   `json:"deleted"`
 }
 
 func (m *CustomerGroupRelationship) String() string { return jsonx.MustMarshalToString(m) }
@@ -83,7 +84,9 @@ func (m *CustomerGroupRelationshipFilter) String() string { return jsonx.MustMar
 
 type ListCustomerGroupRelationshipsRequest struct {
 	Filter CustomerGroupRelationshipFilter `json:"filter"`
-	Paging *common.CursorPaging            `json:"paging"`
+	// TODO: add cursor paging
+	//Paging         *common.CursorPaging            `json:"paging"`
+	IncludeDeleted dot.NullBool `json:"include_deleted"`
 }
 
 func (m *ListCustomerGroupRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -213,7 +213,18 @@ func DeleteAddress(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*
 }
 
 func ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerGroupRelationshipsRequest) (*externaltypes.CustomerGroupRelationshipsResponse, error) {
-	panic("TODO")
+	// TODO: add cursor paging
+	query := &customering.ListCustomerGroupsCustomersQuery{
+		CustomerIDs:    request.Filter.CustomerID,
+		GroupIDs:       request.Filter.GroupID,
+		IncludeDeleted: request.IncludeDeleted.Bool,
+	}
+	if err := customerQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return &externaltypes.CustomerGroupRelationshipsResponse{
+		Relationships: convertpb.PbRelationships(query.Result.CustomerGroupsCustomers),
+	}, nil
 }
 
 func CreateRelationshipGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.AddCustomerRequest) (*cm.Empty, error) {

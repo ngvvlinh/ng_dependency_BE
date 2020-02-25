@@ -613,9 +613,10 @@ func (h QueryServiceHandler) HandleListShopCollections(ctx context.Context, msg 
 }
 
 type ListShopCollectionsByIDsQuery struct {
-	IDs    []dot.ID
-	ShopID dot.ID
-	Paging meta.Paging
+	IDs            []dot.ID
+	ShopID         dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *ShopCollectionsResponse `json:"-"`
 }
@@ -664,10 +665,11 @@ func (h QueryServiceHandler) HandleListShopProductsByIDs(ctx context.Context, ms
 }
 
 type ListShopProductsCollectionsQuery struct {
-	ProductIds    []dot.ID
-	CollectionIDs []dot.ID
-	ShopID        dot.ID
-	Paging        meta.Paging
+	ProductIds     []dot.ID
+	CollectionIDs  []dot.ID
+	ShopID         dot.ID
+	Paging         meta.Paging
+	IncludeDeleted bool
 
 	Result *ShopProductsCollectionResponse `json:"-"`
 }
@@ -1465,9 +1467,10 @@ func (q *ListShopCollectionsQuery) SetListQueryShopArgs(args *shopping.ListQuery
 func (q *ListShopCollectionsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByIDsArg) {
 	return ctx,
 		&ListShopCollectionsByIDsArg{
-			IDs:    q.IDs,
-			ShopID: q.ShopID,
-			Paging: q.Paging,
+			IDs:            q.IDs,
+			ShopID:         q.ShopID,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -1475,6 +1478,7 @@ func (q *ListShopCollectionsByIDsQuery) SetListShopCollectionsByIDsArg(args *Lis
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListShopCollectionsByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByProductIDArgs) {
@@ -1523,10 +1527,11 @@ func (q *ListShopProductsByIDsQuery) SetListShopProductsByIDsArgs(args *ListShop
 func (q *ListShopProductsCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListProductsCollections) {
 	return ctx,
 		&ListProductsCollections{
-			ProductIds:    q.ProductIds,
-			CollectionIDs: q.CollectionIDs,
-			ShopID:        q.ShopID,
-			Paging:        q.Paging,
+			ProductIds:     q.ProductIds,
+			CollectionIDs:  q.CollectionIDs,
+			ShopID:         q.ShopID,
+			Paging:         q.Paging,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
@@ -1535,6 +1540,7 @@ func (q *ListShopProductsCollectionsQuery) SetListProductsCollections(args *List
 	q.CollectionIDs = args.CollectionIDs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {

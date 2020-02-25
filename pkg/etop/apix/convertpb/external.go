@@ -738,6 +738,7 @@ func PbShopProductCollectionRelationship(arg *catalog.ShopProductCollection) *ex
 	return &exttypes.ProductCollectionRelationship{
 		ProductId:    arg.ProductID,
 		CollectionId: arg.CollectionID,
+		Deleted:      arg.Deleted,
 	}
 }
 
@@ -764,6 +765,7 @@ func PbRelationship(args *customering.CustomerGroupCustomer) *exttypes.CustomerG
 	return &exttypes.CustomerGroupRelationship{
 		CustomerID: args.CustomerID,
 		GroupID:    args.GroupID,
+		Deleted:    args.Deleted,
 	}
 }
 
