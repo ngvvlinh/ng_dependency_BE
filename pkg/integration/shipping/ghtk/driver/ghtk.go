@@ -299,7 +299,7 @@ func (d *GHTKDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeA
 	for _, result := range results {
 		providerServiceID, err := d.GenerateServiceID(generator, result.Transport)
 		if err != nil {
-			return nil, err
+			continue
 		}
 		if !result.Result.Fee.Delivery {
 			continue

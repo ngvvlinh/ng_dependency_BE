@@ -369,7 +369,7 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 			var services []*model.AvailableShippingService
 			driver, err := m.getShipmentDriver(ctx, connID, accountID)
 			if err != nil {
-				ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
+				// ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
 				return err
 			}
 
@@ -381,7 +381,7 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 			}
 			services, err = driver.GetShippingServices(ctx, _args)
 			if err != nil {
-				ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
+				// ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
 				return err
 			}
 

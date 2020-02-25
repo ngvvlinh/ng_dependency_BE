@@ -310,7 +310,7 @@ func (d *GHNDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeAr
 	for _, s := range res {
 		providerServiceID, err := GenerateServiceID(generator, s.Name.String(), s.ServiceID.String())
 		if err != nil {
-			return nil, err
+			continue
 		}
 		result = append(result, s.ToShippingService(providerServiceID))
 	}

@@ -246,7 +246,7 @@ func (d *VTPostDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFe
 		serviceCode := vtpostclient.VTPostOrderServiceCode(s.MaDVChinh)
 		providerServiceID, err := d.GenerateServiceID(generator, serviceCode)
 		if err != nil {
-			return nil, err
+			continue
 		}
 
 		// ignore this service
