@@ -53,24 +53,16 @@ func (a *SupplierAggregate) CreateSupplier(
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
 	}
 	args.Phone = phone.String()
-	sup, err := a.store(ctx).Phone(args.Phone).ShopID(args.ShopID).GetSupplier()
-	if err == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v đã tồn tại", sup.Phone)
-	}
 	if args.Email != "" {
 		email, isEmail := validate.NormalizeEmail(args.Email)
 		if isEmail != true {
 			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
 		}
 		args.Email = email.String()
-		sup, err := a.store(ctx).Email(args.Email).ShopID(args.ShopID).GetSupplier()
-		if err == nil {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Nhà cung cấp với email: %v đã tồn tại", sup.Email)
-		}
 	}
 	supplier := new(suppliering.ShopSupplier)
 
-	if err = scheme.Convert(args, supplier); err != nil {
+	if err := scheme.Convert(args, supplier); err != nil {
 		return nil, err
 	}
 	var maxCodeNorm int

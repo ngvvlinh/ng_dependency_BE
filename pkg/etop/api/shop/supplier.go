@@ -2,6 +2,8 @@ package shop
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/purchaseorder"
@@ -80,20 +82,31 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 }
 
 func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierEndpoint) error {
-	cmd := &suppliering.CreateSupplierCommand{
-		ShopID:            r.Context.Shop.ID,
-		FullName:          r.FullName,
-		Note:              r.Note,
-		Phone:             r.Phone,
-		Email:             r.Email,
-		CompanyName:       r.CompanyName,
-		TaxNumber:         r.TaxNumber,
-		HeadquaterAddress: r.HeadquaterAddress,
-	}
-	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
+	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v",
+		r.Context.Shop.ID, r.Context.UserID, r.FullName, r.Phone, r.Email)
+	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
+		func() (interface{}, error) {
+			cmd := &suppliering.CreateSupplierCommand{
+				ShopID:            r.Context.Shop.ID,
+				FullName:          r.FullName,
+				Note:              r.Note,
+				Phone:             r.Phone,
+				Email:             r.Email,
+				CompanyName:       r.CompanyName,
+				TaxNumber:         r.TaxNumber,
+				HeadquaterAddress: r.HeadquaterAddress,
+			}
+			if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
+				return nil, err
+			}
+			r.Result = convertpb.PbSupplier(cmd.Result)
+			return r, nil
+		}, "tạo nhà cung cấp")
+
+	if err != nil {
 		return err
 	}
-	r.Result = convertpb.PbSupplier(cmd.Result)
+	r.Result = res.(*CreateSupplierEndpoint).Result
 	return nil
 }
 

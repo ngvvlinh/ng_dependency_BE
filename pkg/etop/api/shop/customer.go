@@ -2,6 +2,8 @@ package shop
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
@@ -38,20 +40,31 @@ func init() {
 }
 
 func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
-	cmd := &customering.CreateCustomerCommand{
-		ShopID:   r.Context.Shop.ID,
-		FullName: r.FullName,
-		Gender:   r.Gender,
-		Type:     r.Type,
-		Birthday: r.Birthday,
-		Note:     r.Note,
-		Phone:    r.Phone,
-		Email:    r.Email,
-	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	key := fmt.Sprintf("CreateCustomer %v-%v-%v-%v-%v",
+		r.Context.Shop.ID, r.Context.UserID, r.Phone, r.FullName, r.Email)
+	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
+		func() (interface{}, error) {
+			cmd := &customering.CreateCustomerCommand{
+				ShopID:   r.Context.Shop.ID,
+				FullName: r.FullName,
+				Gender:   r.Gender,
+				Type:     r.Type,
+				Birthday: r.Birthday,
+				Note:     r.Note,
+				Phone:    r.Phone,
+				Email:    r.Email,
+			}
+			if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+				return nil, err
+			}
+			r.Result = convertpb.PbCustomer(cmd.Result)
+			return r, nil
+		}, "tạo khách hàng")
+
+	if err != nil {
 		return err
 	}
-	r.Result = convertpb.PbCustomer(cmd.Result)
+	r.Result = res.(*CreateCustomerEndpoint).Result
 	return nil
 }
 
