@@ -27,7 +27,7 @@ type IntegrationService interface {
 	// LoginUsingTokenWL
 	//
 	// Do all stuff to grant access shop of whitelabel partner
-	LoginUsingTokenWL(context.Context, *LoginUsingTokenRequest) (*LoginResponse, error)
+	LoginUsingTokenWL(context.Context, *cm.Empty) (*LoginResponse, error)
 
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 

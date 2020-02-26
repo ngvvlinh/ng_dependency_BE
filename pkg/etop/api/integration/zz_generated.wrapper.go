@@ -160,13 +160,13 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.Lo
 }
 
 type LoginUsingTokenWLEndpoint struct {
-	*api.LoginUsingTokenRequest
+	*cm.Empty
 	Result     *api.LoginResponse
 	Context    claims.EmptyClaim
 	CtxPartner *identitymodel.Partner
 }
 
-func (s wrapIntegrationService) LoginUsingTokenWL(ctx context.Context, req *api.LoginUsingTokenRequest) (resp *api.LoginResponse, err error) {
+func (s wrapIntegrationService) LoginUsingTokenWL(ctx context.Context, req *cm.Empty) (resp *api.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -185,7 +185,7 @@ func (s wrapIntegrationService) LoginUsingTokenWL(ctx context.Context, req *api.
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &LoginUsingTokenWLEndpoint{LoginUsingTokenRequest: req}
+	query := &LoginUsingTokenWLEndpoint{Empty: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}

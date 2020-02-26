@@ -856,6 +856,14 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		account.UserAccount.Permission.Permissions = authservice.ListActionsByRoles(account.UserAccount.Permission.Roles)
 	}
 
+	/*
+		Trường hợp đối tác whitelabel
+		Mặc định xem như user này đã được xác thực email, phone
+	*/
+	if wl.X(ctx).IsWhiteLabel() {
+		resp.User.EmailVerifiedAt = dot.Time(time.Now())
+		resp.User.PhoneVerifiedAt = dot.Time(time.Now())
+	}
 	return resp, respShop, nil
 }
 
