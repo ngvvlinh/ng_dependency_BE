@@ -206,7 +206,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	now := time.Now()
 	orders := make([]*ordermodel.Order, len(rowOrders))
 	for i, rowOrder := range rowOrders {
-		order, errs := parseRowToModel(idx, imp.Mode, shop, rowOrder, now)
+		order, errs := parseRowToModel(idx, imp.Mode, shop, rowOrder, now, userID)
 		if len(errs) > 0 {
 			_errs = append(_errs, errs...)
 			if len(_errs) >= MaxCellErrors {
@@ -714,7 +714,7 @@ func parseAsGHNNoteCode(v string) (ghn_note_code.GHNNoteCode, error) {
 	}
 }
 
-func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, rowOrder *RowOrder, now time.Time) (_ *ordermodel.Order, _errs []error) {
+func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, rowOrder *RowOrder, now time.Time, userID dot.ID) (_ *ordermodel.Order, _errs []error) {
 	_errs = rowOrder.Validate(idx, mode)
 	address, err := parseAddress(rowOrder)
 	if err != nil {
@@ -742,6 +742,7 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, row
 	}
 
 	order := &ordermodel.Order{
+		CreatedBy:                 userID,
 		ID:                        0, // will be filled by sqlstore
 		ShopID:                    shop.ID,
 		Code:                      "",
