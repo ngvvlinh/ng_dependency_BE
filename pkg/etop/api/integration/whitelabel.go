@@ -63,9 +63,23 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		// continue
 	case cm.NotFound:
 		// --- register user ---
-		userQuery.Result.User, err = s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, verifiedEmail != "", verifiedPhone != "")
+		// trust thông tin từ đối tác gửi qua
+		// xem như email, phone đều đã xác thực
+		user, err := s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, true, true)
 		if err != nil {
 			return err
+		}
+		userQuery.Result.User = user
+		if requestInfo.ExternalUserID != "" {
+			// create partner relation with user
+			relationCmd := &identitymodelx.CreatePartnerRelationCommand{
+				UserID:     user.ID,
+				PartnerID:  partner.ID,
+				ExternalID: requestInfo.ExternalUserID,
+			}
+			if err := bus.Dispatch(ctx, relationCmd); err != nil {
+				return err
+			}
 		}
 	default:
 		return err
@@ -94,6 +108,17 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 	}
 	if requestInfo.ShopID != 0 && len(availableAccounts) == 0 {
 		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản: &v)", requestInfo.ShopID).WithMeta("reason", "shop_id not found")
+	}
+
+	if requestInfo.ExternalShopID == "" {
+		// Trường hợp invite user đối tác whitelabel
+		// Đối tác chỉ cung cấp ExternalUserID và ExtraToken
+		resp, err := s.generateNewSession(ctx, user, partner, nil, requestInfo)
+		if err != nil {
+			return err
+		}
+		r.Result = resp
+		return nil
 	}
 
 	var shop *identitymodel.Shop

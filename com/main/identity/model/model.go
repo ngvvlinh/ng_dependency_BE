@@ -378,6 +378,16 @@ type PartnerRelationFtShop struct {
 	*User
 }
 
+var _ = sqlgenPartnerRelationFtUser(
+	&PartnerRelationFtUser{}, &PartnerRelation{}, "pr",
+	sq.JOIN, &User{}, "u", "pr.subject_id = u.id",
+)
+
+type PartnerRelationFtUser struct {
+	*PartnerRelation
+	*User
+}
+
 type UserInner struct {
 	FullName  string
 	ShortName string

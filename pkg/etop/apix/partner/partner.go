@@ -2,6 +2,7 @@ package partner
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"regexp"
 	"strings"
@@ -53,6 +54,7 @@ const PrefixIdempPartnerAPI = "IdempPartnerAPI"
 const ttlShopRequest = 15 * 60 // 15 minutes
 const msgShopRequest = `Sử dụng mã này để hỏi quyền tạo đơn hàng với tư cách shop (có hiệu lực trong 15 phút)`
 const msgShopKey = `Sử dụng mã này để tạo đơn hàng với tư cách shop (có hiệu lực khi shop vẫn tiếp tục sử dụng dịch vụ của đối tác)`
+const msgUserKey = `Sử dụng mã này để truy cập hệ thống với tư cách user (có hiệu lực khi user vẫn tiếp tục sử dụng dịch vụ của đối tác)`
 
 func init() {
 	bus.AddHandlers("apix",
@@ -204,22 +206,27 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 	}
 	_, _ = emailNorm, phoneNorm // temporary ignore error here
 
+	// verify external code
+	if q.ExternalShopID != "" && !validate.ExternalCode(q.ExternalShopID) {
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị external_shop_id không hợp lệ")
+	}
+	if q.ExternalUserID != "" && !validate.ExternalCode(q.ExternalUserID) {
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị external_user_id không hợp lệ")
+	}
+
 	// case 1: if the shop has linked to the partner
-	if q.ShopId != 0 && q.ExternalShopId != "" {
+	if q.ShopId != 0 && q.ExternalShopID != "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Chỉ cần cung cấp shop_id hoặc external_shop_id")
 	}
-	if q.ShopId != 0 || q.ExternalShopId != "" {
+	if q.ShopId != 0 || q.ExternalShopID != "" {
 		if q.ShopId != 0 && (q.Email != "" || q.Phone != "") {
 			return cm.Errorf(cm.InvalidArgument, nil, "Nếu cung cấp shop_id thì không cần kèm theo email hoặc phone. Nếu cung cấp email hoặc phone thì không cần kèm theo shop_id.")
-		}
-		if q.ExternalShopId != "" && !validate.ExternalCode(q.ExternalShopId) {
-			return cm.Errorf(cm.InvalidArgument, nil, "Giá trị external_shop_id không hợp lệ")
 		}
 
 		relationQuery := &identitymodelx.GetPartnerRelationQuery{
 			PartnerID:         partner.ID,
 			AccountID:         q.ShopId,
-			ExternalAccountID: q.ExternalShopId,
+			ExternalAccountID: q.ExternalShopID,
 		}
 		err := bus.Dispatch(ctx, relationQuery)
 		switch {
@@ -234,7 +241,8 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				ShopOwnerEmail: user.Email,
 				ShopOwnerPhone: user.Phone,
 				ShopOwnerName:  user.FullName,
-				ExternalShopID: q.ExternalShopId,
+				ExternalShopID: q.ExternalShopID,
+				ExternalUserID: q.ExternalUserID,
 
 				// client must keep the current email/phone when calling
 				// request_login
@@ -300,7 +308,73 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			WithMeta("reason", "unexpected condition")
 	}
 
-	// case 2: if the shop has not linked to the partner
+	if q.ExternalUserID != "" {
+		if !wl.X(ctx).IsWhiteLabel() {
+			// only whitelabel partner can provide this field,
+			// we fake the error message here
+			return cm.Errorf(cm.InvalidArgument, nil, "external_user_id is removed")
+		}
+
+		// try retrieving the partner relation
+		relationQuery := &identitymodelx.GetPartnerRelationQuery{
+			PartnerID:      partner.ID,
+			ExternalUserID: q.ExternalUserID,
+		}
+		err := bus.Dispatch(ctx, relationQuery)
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			// generate user_key and redirect to whiteLabelData.Config.RootURL
+			rel := relationQuery.Result.PartnerRelation
+			user := relationQuery.Result.User
+			info := PartnerShopToken{
+				PartnerID:      partner.ID,
+				ShopOwnerEmail: user.Email,
+				ShopOwnerPhone: user.Phone,
+				ShopOwnerName:  user.FullName,
+				ExternalUserID: q.ExternalUserID,
+				ExtraToken:     q.ExtraToken,
+				// client must keep the current email/phone when calling
+				// request_login
+				RetainCurrentInfo: true,
+				Config:            getAuthorizeShopConfig(q.Config),
+				RedirectURL:       q.RedirectUrl,
+			}
+			if whiteLabelData != nil {
+				// Trường hợp whiteLabel
+				// Đã có sẵn tài khoản sẽ redirect về trang whiteLabel
+				if strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
+					info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURL, q.ExtraToken)
+				} else {
+					info.RedirectURL = whiteLabelData.Config.RootURL
+				}
+			}
+			token, err := generateAuthToken(info)
+			if err != nil {
+				return err
+			}
+
+			if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
+				user.Status == status3.P {
+				// TODO: handle config: "shipment"
+				q.Result = &extpartner.AuthorizeShopResponse{
+					Code:      "ok",
+					Msg:       msgUserKey,
+					Type:      "user_key",
+					AuthToken: rel.AuthKey,
+					ExpiresIn: -1,
+					AuthUrl:   generateAuthURL(whiteLabelData, authURL, token.TokenStr),
+				}
+				return nil
+			}
+
+		case cm.NotFound:
+			// continue to case 2 (the user/shop has not linked to the partner)
+		default:
+			return err
+		}
+	}
+
+	// case 2: if the user/shop has not linked to the partner
 	return generateAuthTokenWithRequestLogin(ctx, q, 0)
 }
 
@@ -315,13 +389,14 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 
 		// leave this field empty because we don't want to expose our account
 		// information to partner
-		ShopID:         0,
-		ShopName:       q.ShopName,
-		ShopOwnerEmail: q.Email,
-		ShopOwnerPhone: q.Phone,
-		ShopOwnerName:  q.Name,
-		ExternalShopID: q.ExternalShopId,
-
+		ShopID:            0,
+		ShopName:          q.ShopName,
+		ShopOwnerEmail:    q.Email,
+		ShopOwnerPhone:    q.Phone,
+		ShopOwnerName:     q.Name,
+		ExternalShopID:    q.ExternalShopID,
+		ExternalUserID:    q.ExternalUserID,
+		ExtraToken:        q.ExtraToken,
 		RetainCurrentInfo: false,
 		RedirectURL:       q.RedirectUrl,
 		Config:            getAuthorizeShopConfig(q.Config),
@@ -330,6 +405,13 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		info.ShopID = shopID
 		info.RetainCurrentInfo = true
 	}
+	if whiteLabelData != nil && q.ExternalShopID == "" && q.ExternalUserID != "" {
+		if !strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
+			return cm.Errorf(cm.InvalidArgument, nil, "extra_token does not valid")
+		}
+		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURL, q.ExtraToken)
+	}
+
 	token, err := generateAuthToken(info)
 	if err != nil {
 		return err
@@ -368,11 +450,10 @@ func generateAuthToken(info PartnerShopToken) (*auth.Token, error) {
 }
 
 func generateAuthURL(whitelabelData *whitelabel.WL, authURL string, token string) string {
-	redirectUrl := authURL
 	if whitelabelData != nil {
-		redirectUrl = whitelabelData.Config.AuthURL
+		authURL = whitelabelData.Config.AuthURL
 	}
-	u, err := url.Parse(redirectUrl)
+	u, err := url.Parse(authURL)
 	if err != nil {
 		ll.Panic("invalid auth_url", l.Error(err))
 	}
@@ -406,8 +487,8 @@ func validateRedirectURL(redirectURLs []string, redirectURL string, skipCheckIfN
 	return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url cần được đăng ký trước")
 }
 
-func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (*whitelabel.WL, error) {
-	wlPartner := wl.X(ctx)
+func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (wlPartner *whitelabel.WL, err error) {
+	wlPartner = wl.X(ctx)
 	if !wlPartner.IsWhiteLabel() {
 		return nil, nil
 	}
@@ -427,13 +508,22 @@ func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (*whitela
 			Name:  "redirect_url",
 			Value: q.RedirectUrl,
 		}, {
-			Name:  "Tên cửa hàng (shop_name)",
-			Value: q.ShopName,
-		}, {
-			Name:  "Mã shop (external_shop_id)",
-			Value: q.ExternalShopId,
+			Name:  "Mã người dùng (external_user_id)",
+			Value: q.ExternalUserID,
 		},
+		// NOTE(qv): external_shop_id may be empty
 	}
+
+	if q.ExternalShopID != "" {
+		validateFields := []cmapi.Field{
+			{
+				Name:  "Tên cửa hàng (shop_name)",
+				Value: q.ShopName,
+			},
+		}
+		fields = append(fields, validateFields...)
+	}
+
 	if err := cmapi.ValidateEmptyField(fields...); err != nil {
 		return nil, err
 	}

@@ -22,6 +22,8 @@ type PartnerShopToken struct {
 	// use the shop, otherwise automatically attach this external_shop_id to the
 	// partner_relation record.
 	ExternalShopID string `json:"external_shop_id"`
+	ExternalUserID string `json:"external_user_id"`
+	ExtraToken     string `json:"extra_token"`
 
 	AuthMode AuthMode `json:"auth_mode"`
 

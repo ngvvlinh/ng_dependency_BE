@@ -17,6 +17,7 @@ type KeyType int
 const (
 	TypeAPIKey KeyType = iota + 1
 	TypePartnerShopKey
+	TypePartnerUserKey
 )
 
 const DefaultKeyLength = 64 // chars
@@ -72,6 +73,9 @@ func GenerateAuthKey(typ KeyType, accountID dot.ID) string {
 
 	case TypePartnerShopKey:
 		return "shop" + cm.IDToDec(accountID) + ":" + subkey
+
+	case TypePartnerUserKey:
+		return "user" + cm.IDToDec(accountID) + ":" + subkey
 
 	default:
 		ll.Panic("Invalid key type")

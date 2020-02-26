@@ -1,0 +1,2 @@
+ALTER TABLE partner_relation
+DROP CONSTRAINT partner_relation_subject_id_fkey;

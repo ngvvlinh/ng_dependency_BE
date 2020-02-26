@@ -38,6 +38,7 @@ type GetPartnerRelationQuery struct {
 	PartnerID         dot.ID
 	AccountID         dot.ID
 	ExternalAccountID string
+	ExternalUserID    string
 	AuthKey           string
 
 	Result struct {
@@ -72,6 +73,7 @@ type CreatePartnerCommand struct {
 
 type CreatePartnerRelationCommand struct {
 	AccountID  dot.ID
+	UserID     dot.ID
 	PartnerID  dot.ID
 	ExternalID string
 

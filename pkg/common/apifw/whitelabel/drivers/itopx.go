@@ -28,6 +28,7 @@ func ITopX(env cmenv.EnvType) *whitelabel.WL {
 			Host:            cfg.host(env),
 			RootURL:         cfg.siteUrl(env, ""),
 			AuthURL:         cfg.siteUrl(env, "/welcome/login"),
+			InviteUserURL:   cfg.siteUrl(env, "/invitation"),
 			SiteName:        "iTopX",
 			CompanyName:     "IM Group",
 			CompanyFullName: "Công ty cổ phần đầu tư và phát triển IM",

@@ -239,12 +239,14 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
-			AccountID:     shop.ID,
 			AuthPartnerID: partner.ID,
 			Extra: map[string]string{
 				"request_login": jsonx.MustMarshalToString(info),
 			},
 		},
+	}
+	if shop != nil {
+		tokenCmd.ClaimInfo.AccountID = shop.ID
 	}
 	if user != nil {
 		tokenCmd.ClaimInfo.UserID = user.ID
@@ -738,8 +740,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 	}
 	user := cmd.Result.User
 
-	switch {
-	case verifiedEmail:
+	if verifiedEmail {
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
@@ -750,29 +751,28 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 
 		if sendConfirmInfo {
 			var b strings.Builder
-			if err := api.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
+			err := api.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
 				"FullName":          user.FullName,
 				"PartnerPublicName": partner.PublicName,
 				"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),
 				"LoginLabel":        "Email",
 				"Login":             userEmail,
 				"Password":          generatedPassword,
-			}); err != nil {
-				ll.Error("Can not send email", l.Error(err))
-				break
-			}
-			emailCmd := &email.SendEmailCommand{
-				FromName:    "eTop.vn (no-reply)",
-				ToAddresses: []string{userEmail},
-				Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
-				Content:     b.String(),
-			}
-			if err := bus.Dispatch(ctx, emailCmd); err != nil {
-				ll.Error("Can not send email", l.Error(err))
+			})
+			if err == nil {
+				emailCmd := &email.SendEmailCommand{
+					FromName:    "eTop.vn (no-reply)",
+					ToAddresses: []string{userEmail},
+					Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
+					Content:     b.String(),
+				}
+				if err := bus.Dispatch(ctx, emailCmd); err != nil {
+					ll.Error("Can not send email", l.Error(err))
+				}
 			}
 		}
-
-	case verifiedPhone:
+	}
+	if verifiedPhone {
 		verifyCmd := &identitymodelx.UpdateUserVerificationCommand{
 			UserID:          user.ID,
 			PhoneVerifiedAt: time.Now(),
@@ -784,18 +784,17 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 		if sendConfirmInfo {
 			tpl := wl.X(ctx).Templates.NewAccountViaPartnerSmsTpl
 			var b strings.Builder
-			if err := tpl.Execute(&b, map[string]interface{}{
+			err := tpl.Execute(&b, map[string]interface{}{
 				"Password": generatedPassword,
-			}); err != nil {
-				ll.Error("Can not send email", l.Error(err))
-				break
-			}
-			smsCmd := &sms.SendSMSCommand{
-				Phone:   userPhone,
-				Content: b.String(),
-			}
-			if err := bus.Dispatch(ctx, smsCmd); err != nil {
-				ll.Error("Can not send sms", l.Error(err))
+			})
+			if err == nil {
+				smsCmd := &sms.SendSMSCommand{
+					Phone:   userPhone,
+					Content: b.String(),
+				}
+				if err := bus.Dispatch(ctx, smsCmd); err != nil {
+					ll.Error("Can not send sms", l.Error(err))
+				}
 			}
 		}
 	}

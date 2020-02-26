@@ -130,15 +130,25 @@ func GetPartner(ctx context.Context, query *identitymodelx.GetPartner) error {
 func GetPartnerRelationQuery(ctx context.Context, query *identitymodelx.GetPartnerRelationQuery) error {
 	s := x.NewQuery()
 	count := 0
+	if query.PartnerID != 0 && query.ExternalUserID != "" {
+		count++ // TODO(qv): correctly handle this
+		s = s.Where("pr.partner_id = ?", query.PartnerID).
+			Where("pr.external_subject_id = ? AND pr.subject_type = 'user'", query.ExternalUserID)
+		var item identitymodel.PartnerRelationFtUser
+		err := s.ShouldGet(&item)
+		query.Result.PartnerRelation = item.PartnerRelation
+		query.Result.User = item.User
+		return err
+	}
 	if query.PartnerID != 0 && query.AccountID != 0 {
 		count++
 		s = s.Where("pr.partner_id = ?", query.PartnerID).
 			Where("pr.subject_id = ? AND pr.subject_type = 'account'", query.AccountID)
 	}
-	if query.ExternalAccountID != "" && query.PartnerID != 0 {
+	if query.PartnerID != 0 && query.ExternalAccountID != "" {
 		count++
 		s = s.Where("pr.partner_id = ?", query.PartnerID).
-			Where("pr.external_subject_id = ?", query.ExternalAccountID)
+			Where("pr.external_subject_id = ? AND pr.subject_type = 'account'", query.ExternalAccountID)
 	}
 	if query.AuthKey != "" {
 		count++
@@ -184,23 +194,44 @@ func GetPartnersFromRelation(ctx context.Context, query *identitymodelx.GetPartn
 
 // TODO: update old relation if exists
 func CreatePartnerRelation(ctx context.Context, cmd *identitymodelx.CreatePartnerRelationCommand) error {
-	if cmd.PartnerID == 0 || cmd.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
+	if cmd.PartnerID == 0 {
+		return cm.Errorf(cm.Internal, nil, "Missing partner_id")
 	}
+	if cmd.AccountID != 0 && cmd.UserID != 0 {
+		return cm.Errorf(cm.Internal, nil, "Must not provide both account_id and user_id")
+	}
+	switch {
+	case cmd.AccountID != 0:
+		key := authkey.GenerateAuthKey(authkey.TypePartnerShopKey, cmd.AccountID)
+		rel := &identitymodel.PartnerRelation{
+			AuthKey:           key,
+			PartnerID:         cmd.PartnerID,
+			SubjectID:         cmd.AccountID,
+			SubjectType:       identitymodel.SubjectTypeAccount,
+			ExternalSubjectID: cmd.ExternalID,
+			Nonce:             cm.NewID(), // TODO: use crypto/rand
+			Status:            1,
+		}
+		cmd.Result.PartnerRelation = rel
+		return x.ShouldInsert(rel)
 
-	key := authkey.GenerateAuthKey(authkey.TypePartnerShopKey, cmd.AccountID)
-	rel := &identitymodel.PartnerRelation{
-		AuthKey:           key,
-		PartnerID:         cmd.PartnerID,
-		SubjectID:         cmd.AccountID,
-		SubjectType:       identitymodel.SubjectTypeAccount,
-		ExternalSubjectID: cmd.ExternalID,
-		Nonce:             cm.NewID(), // TODO: use crypto/rand
-		Status:            1,
+	case cmd.UserID != 0:
+		key := authkey.GenerateAuthKey(authkey.TypePartnerUserKey, cmd.UserID)
+		rel := &identitymodel.PartnerRelation{
+			AuthKey:           key,
+			PartnerID:         cmd.PartnerID,
+			SubjectID:         cmd.UserID,
+			SubjectType:       identitymodel.SubjectTypeUser,
+			ExternalSubjectID: cmd.ExternalID,
+			Nonce:             cm.NewID(), // TODO: use crypto/rand
+			Status:            1,
+		}
+		cmd.Result.PartnerRelation = rel
+		return x.ShouldInsert(rel)
+
+	default:
+		return cm.Errorf(cm.Internal, nil, "Missing account_id or user_id")
 	}
-	cmd.Result.PartnerRelation = rel
-	err := x.ShouldInsert(rel)
-	return err
 }
 
 func UpdatePartnerRelationCommand(ctx context.Context, cmd *identitymodelx.UpdatePartnerRelationCommand) error {

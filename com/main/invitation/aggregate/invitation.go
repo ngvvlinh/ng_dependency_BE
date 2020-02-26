@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/com/main/invitation/model"
 	"etop.vn/backend/com/main/invitation/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/conversion"
@@ -102,7 +103,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	// generate token
 	expiresAt := time.Now().Add(convert.ExpiresIn)
 
-	token := "iv:" + auth.RandomToken(auth.DefaultTokenLength)
+	token := auth.UsageInviteUser + ":" + auth.RandomToken(auth.DefaultTokenLength)
 	invitationItem.ExpiresAt = expiresAt
 	invitationItem.Token = token
 
@@ -120,7 +121,7 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, err
 	}
 
-	invitationUrl := a.cfg.URL.MainSite + "/invitation"
+	invitationUrl := wl.X(ctx).InviteUserURL
 	URL, err := url.Parse(invitationUrl)
 	if err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")

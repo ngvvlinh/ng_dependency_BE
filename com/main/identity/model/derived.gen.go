@@ -3366,6 +3366,104 @@ func (m *PartnerRelationFtShop) SQLScanArgs(opts core.Opts) []interface{} {
 	return args
 }
 
+// Type PartnerRelationFtUser represents a join
+func sqlgenPartnerRelationFtUser(_ *PartnerRelationFtUser, _ *PartnerRelation, as sq.AS, t0 sq.JOIN_TYPE, _ *User, a0 sq.AS, c0 string) bool {
+	__sqlPartnerRelationFtUser_JoinTypes = []sq.JOIN_TYPE{t0}
+	__sqlPartnerRelationFtUser_As = as
+	__sqlPartnerRelationFtUser_JoinAs = []sq.AS{a0}
+	__sqlPartnerRelationFtUser_JoinConds = []string{c0}
+	return true
+}
+
+type PartnerRelationFtUsers []*PartnerRelationFtUser
+
+var __sqlPartnerRelationFtUser_JoinTypes []sq.JOIN_TYPE
+var __sqlPartnerRelationFtUser_As sq.AS
+var __sqlPartnerRelationFtUser_JoinAs []sq.AS
+var __sqlPartnerRelationFtUser_JoinConds []string
+
+func (m *PartnerRelationFtUser) SQLTableName() string  { return "partner_relation" }
+func (m *PartnerRelationFtUsers) SQLTableName() string { return "partner_relation" }
+
+func (m *PartnerRelationFtUser) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *PartnerRelationFtUsers) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(PartnerRelationFtUsers, 0, 128)
+	for rows.Next() {
+		m := new(PartnerRelationFtUser)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (m *PartnerRelationFtUser) SQLSelect(w SQLWriter) error {
+	(*PartnerRelationFtUser)(nil).__sqlSelect(w)
+	w.WriteByte(' ')
+	(*PartnerRelationFtUser)(nil).__sqlJoin(w, __sqlPartnerRelationFtUser_JoinTypes)
+	return nil
+}
+
+func (m *PartnerRelationFtUsers) SQLSelect(w SQLWriter) error {
+	return (*PartnerRelationFtUser)(nil).SQLSelect(w)
+}
+
+func (m *PartnerRelationFtUser) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
+	if len(types) == 0 {
+		types = __sqlPartnerRelationFtUser_JoinTypes
+	}
+	m.__sqlJoin(w, types)
+	return nil
+}
+
+func (m *PartnerRelationFtUsers) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
+	return (*PartnerRelationFtUser)(nil).SQLJoin(w, types)
+}
+
+func (m *PartnerRelationFtUser) __sqlSelect(w SQLWriter) {
+	w.WriteRawString("SELECT ")
+	core.WriteCols(w, string(__sqlPartnerRelationFtUser_As), (*PartnerRelation)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, string(__sqlPartnerRelationFtUser_JoinAs[0]), (*User)(nil).SQLListCols())
+}
+
+func (m *PartnerRelationFtUser) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
+	}
+	w.WriteRawString("FROM ")
+	w.WriteName("partner_relation")
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlPartnerRelationFtUser_As))
+	w.WriteByte(' ')
+	w.WriteRawString(string(types[0]))
+	w.WriteRawString(" JOIN ")
+	w.WriteName((*User)(nil).SQLTableName())
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlPartnerRelationFtUser_JoinAs[0]))
+	w.WriteRawString(" ON ")
+	w.WriteQueryString(__sqlPartnerRelationFtUser_JoinConds[0])
+}
+
+func (m *PartnerRelationFtUser) SQLScanArgs(opts core.Opts) []interface{} {
+	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
+	m.PartnerRelation = new(PartnerRelation)
+	args = append(args, m.PartnerRelation.SQLScanArgs(opts)...)
+	m.User = new(User)
+	args = append(args, m.User.SQLScanArgs(opts)...)
+
+	return args
+}
+
 // Type User represents table user
 func sqlgenUser(_ *User) bool { return true }
 

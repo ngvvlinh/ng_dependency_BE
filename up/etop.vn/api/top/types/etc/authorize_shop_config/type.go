@@ -11,7 +11,4 @@ type NullAuthorizeShopConfig struct {
 const (
 	// +enum=shipment
 	Shipment AuthorizeShopConfig = 1
-
-	// +enum=whitelabel
-	WhiteLabel AuthorizeShopConfig = 2
 )

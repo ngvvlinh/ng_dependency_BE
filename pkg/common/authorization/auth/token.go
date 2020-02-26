@@ -31,6 +31,7 @@ const (
 	UsageRegister          = "RT"
 
 	UsagePartnerIntegration = "PI"
+	UsageInviteUser         = "iv"
 )
 
 var ll = l.New()

@@ -199,7 +199,7 @@ func (s *UserService) register(
 	}
 
 	var invitationTemp *invitation.Invitation
-	if strings.HasPrefix(r.RegisterToken, "iv:") {
+	if strings.HasPrefix(r.RegisterToken, auth.UsageInviteUser+":") {
 		invitationTemp, err = getInvitation(ctx, r)
 		if err != nil {
 			return nil, err

@@ -8,12 +8,14 @@ import (
 
 type AuthorizeShopRequest struct {
 	ShopId         dot.ID `json:"shop_id"`
-	ExternalShopId string `json:"external_shop_id"`
+	ExternalShopID string `json:"external_shop_id"`
+	ExternalUserID string `json:"external_user_id"`
 	Name           string `json:"name"`
 	Phone          string `json:"phone"`
 	Email          string `json:"email"`
 	RedirectUrl    string `json:"redirect_url"`
 	ShopName       string `json:"shop_name"`
+	ExtraToken     string `json:"extra_token"`
 
 	Config []authorize_shop_config.AuthorizeShopConfig `json:"config"`
 }

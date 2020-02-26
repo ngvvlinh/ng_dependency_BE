@@ -1746,6 +1746,12 @@
         "external_shop_id": {
           "type": "string"
         },
+        "external_user_id": {
+          "type": "string"
+        },
+        "extra_token": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -1800,8 +1806,7 @@
     "jlAuthorizeShopConfig": {
       "type": "string",
       "enum": [
-        "shipment",
-        "whitelabel"
+        "shipment"
       ]
     },
     "kfIDs": {
