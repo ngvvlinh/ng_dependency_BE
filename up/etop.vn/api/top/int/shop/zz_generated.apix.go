@@ -499,7 +499,7 @@ func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Connection/DeleteShopConnection":
-		msg := &DeleteShopConnectionRequest{}
+		msg := &inttypes.DeleteShopConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteShopConnection(ctx, msg)
 		}
@@ -523,15 +523,21 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 		}
 		return msg, fn, nil
 	case "/shop.Connection/LoginShopConnection":
-		msg := &LoginShopConnectionRequest{}
+		msg := &inttypes.LoginShopConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LoginShopConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Connection/RegisterShopConnection":
-		msg := &RegisterShopConnectionRequest{}
+		msg := &inttypes.RegisterShopConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RegisterShopConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Connection/UpdateShopConnection":
+		msg := &inttypes.UpdateShopConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShopConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

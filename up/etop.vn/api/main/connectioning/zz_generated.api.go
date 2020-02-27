@@ -10,6 +10,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	connection_type "etop.vn/api/top/types/etc/connection_type"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -98,8 +99,22 @@ func (h AggregateHandler) HandleCreateShopConnection(ctx context.Context, msg *C
 	return err
 }
 
+type CreateTopshipConnectionCommand struct {
+	ID           dot.ID
+	Token        string
+	ExternalData *ShopConnectionExternalData
+
+	Result *Connection `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateTopshipConnection(ctx context.Context, msg *CreateTopshipConnectionCommand) (err error) {
+	msg.Result, err = h.inner.CreateTopshipConnection(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteConnectionCommand struct {
-	ID dot.ID
+	ID        dot.ID
+	PartnerID dot.ID
 
 	Result int `json:"-"`
 }
@@ -121,15 +136,41 @@ func (h AggregateHandler) HandleDeleteShopConnection(ctx context.Context, msg *D
 	return err
 }
 
-type UpdateConnectionDriverConfigCommand struct {
-	ConnectionID dot.ID
+type DisableConnectionCommand struct {
+	ID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDisableConnection(ctx context.Context, msg *DisableConnectionCommand) (err error) {
+	msg.Result, err = h.inner.DisableConnection(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateConnectionCommand struct {
+	ID           dot.ID
+	PartnerID    dot.ID
+	Name         string
+	ImageURL     string
 	DriverConfig *ConnectionDriverConfig
 
 	Result *Connection `json:"-"`
 }
 
-func (h AggregateHandler) HandleUpdateConnectionDriverConfig(ctx context.Context, msg *UpdateConnectionDriverConfigCommand) (err error) {
-	msg.Result, err = h.inner.UpdateConnectionDriverConfig(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleUpdateConnection(ctx context.Context, msg *UpdateConnectionCommand) (err error) {
+	msg.Result, err = h.inner.UpdateConnection(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateConnectionAffiliateAccountCommand struct {
+	ID                   dot.ID
+	EtopAffiliateAccount *EtopAffiliateAccount
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateConnectionAffiliateAccount(ctx context.Context, msg *UpdateConnectionAffiliateAccountCommand) (err error) {
+	msg.Result, err = h.inner.UpdateConnectionAffiliateAccount(msg.GetArgs(ctx))
 	return err
 }
 
@@ -183,6 +224,8 @@ func (h QueryServiceHandler) HandleGetShopConnectionByID(ctx context.Context, ms
 }
 
 type ListConnectionsQuery struct {
+	PartnerID          dot.ID
+	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
@@ -241,15 +284,18 @@ func (h QueryServiceHandler) HandleListShopConnectionsByShopID(ctx context.Conte
 
 // implement interfaces
 
-func (q *ConfirmConnectionCommand) command()            {}
-func (q *ConfirmShopConnectionCommand) command()        {}
-func (q *CreateConnectionCommand) command()             {}
-func (q *CreateOrUpdateShopConnectionCommand) command() {}
-func (q *CreateShopConnectionCommand) command()         {}
-func (q *DeleteConnectionCommand) command()             {}
-func (q *DeleteShopConnectionCommand) command()         {}
-func (q *UpdateConnectionDriverConfigCommand) command() {}
-func (q *UpdateShopConnectionTokenCommand) command()    {}
+func (q *ConfirmConnectionCommand) command()                {}
+func (q *ConfirmShopConnectionCommand) command()            {}
+func (q *CreateConnectionCommand) command()                 {}
+func (q *CreateOrUpdateShopConnectionCommand) command()     {}
+func (q *CreateShopConnectionCommand) command()             {}
+func (q *CreateTopshipConnectionCommand) command()          {}
+func (q *DeleteConnectionCommand) command()                 {}
+func (q *DeleteShopConnectionCommand) command()             {}
+func (q *DisableConnectionCommand) command()                {}
+func (q *UpdateConnectionCommand) command()                 {}
+func (q *UpdateConnectionAffiliateAccountCommand) command() {}
+func (q *UpdateShopConnectionTokenCommand) command()        {}
 
 func (q *GetConnectionByCodeQuery) query()               {}
 func (q *GetConnectionByIDQuery) query()                 {}
@@ -336,9 +382,32 @@ func (q *CreateShopConnectionCommand) SetCreateShopConnectionArgs(args *CreateSh
 	q.ExternalData = args.ExternalData
 }
 
-func (q *DeleteConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *CreateTopshipConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTopshipConnectionArgs) {
 	return ctx,
-		q.ID
+		&CreateTopshipConnectionArgs{
+			ID:           q.ID,
+			Token:        q.Token,
+			ExternalData: q.ExternalData,
+		}
+}
+
+func (q *CreateTopshipConnectionCommand) SetCreateTopshipConnectionArgs(args *CreateTopshipConnectionArgs) {
+	q.ID = args.ID
+	q.Token = args.Token
+	q.ExternalData = args.ExternalData
+}
+
+func (q *DeleteConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteConnectionArgs) {
+	return ctx,
+		&DeleteConnectionArgs{
+			ID:        q.ID,
+			PartnerID: q.PartnerID,
+		}
+}
+
+func (q *DeleteConnectionCommand) SetDeleteConnectionArgs(args *DeleteConnectionArgs) {
+	q.ID = args.ID
+	q.PartnerID = args.PartnerID
 }
 
 func (q *DeleteShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
@@ -347,17 +416,41 @@ func (q *DeleteShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Co
 		q.ConnectionID
 }
 
-func (q *UpdateConnectionDriverConfigCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateConnectionDriveConfig) {
+func (q *DisableConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
-		&UpdateConnectionDriveConfig{
-			ConnectionID: q.ConnectionID,
+		q.ID
+}
+
+func (q *UpdateConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateConnectionArgs) {
+	return ctx,
+		&UpdateConnectionArgs{
+			ID:           q.ID,
+			PartnerID:    q.PartnerID,
+			Name:         q.Name,
+			ImageURL:     q.ImageURL,
 			DriverConfig: q.DriverConfig,
 		}
 }
 
-func (q *UpdateConnectionDriverConfigCommand) SetUpdateConnectionDriveConfig(args *UpdateConnectionDriveConfig) {
-	q.ConnectionID = args.ConnectionID
+func (q *UpdateConnectionCommand) SetUpdateConnectionArgs(args *UpdateConnectionArgs) {
+	q.ID = args.ID
+	q.PartnerID = args.PartnerID
+	q.Name = args.Name
+	q.ImageURL = args.ImageURL
 	q.DriverConfig = args.DriverConfig
+}
+
+func (q *UpdateConnectionAffiliateAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateConnectionAffiliateAccountArgs) {
+	return ctx,
+		&UpdateConnectionAffiliateAccountArgs{
+			ID:                   q.ID,
+			EtopAffiliateAccount: q.EtopAffiliateAccount,
+		}
+}
+
+func (q *UpdateConnectionAffiliateAccountCommand) SetUpdateConnectionAffiliateAccountArgs(args *UpdateConnectionAffiliateAccountArgs) {
+	q.ID = args.ID
+	q.EtopAffiliateAccount = args.EtopAffiliateAccount
 }
 
 func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionExternalDataArgs) {
@@ -398,6 +491,8 @@ func (q *GetShopConnectionByIDQuery) GetArgs(ctx context.Context) (_ context.Con
 func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListConnectionsArgs) {
 	return ctx,
 		&ListConnectionsArgs{
+			PartnerID:          q.PartnerID,
+			Status:             q.Status,
 			ConnectionType:     q.ConnectionType,
 			ConnectionMethod:   q.ConnectionMethod,
 			ConnectionProvider: q.ConnectionProvider,
@@ -405,6 +500,8 @@ func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, 
 }
 
 func (q *ListConnectionsQuery) SetListConnectionsArgs(args *ListConnectionsArgs) {
+	q.PartnerID = args.PartnerID
+	q.Status = args.Status
 	q.ConnectionType = args.ConnectionType
 	q.ConnectionMethod = args.ConnectionMethod
 	q.ConnectionProvider = args.ConnectionProvider
@@ -460,9 +557,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateConnection)
 	b.AddHandler(h.HandleCreateOrUpdateShopConnection)
 	b.AddHandler(h.HandleCreateShopConnection)
+	b.AddHandler(h.HandleCreateTopshipConnection)
 	b.AddHandler(h.HandleDeleteConnection)
 	b.AddHandler(h.HandleDeleteShopConnection)
-	b.AddHandler(h.HandleUpdateConnectionDriverConfig)
+	b.AddHandler(h.HandleDisableConnection)
+	b.AddHandler(h.HandleUpdateConnection)
+	b.AddHandler(h.HandleUpdateConnectionAffiliateAccount)
 	b.AddHandler(h.HandleUpdateShopConnectionToken)
 	return CommandBus{b}
 }

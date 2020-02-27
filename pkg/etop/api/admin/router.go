@@ -18,6 +18,7 @@ func NewAdminServer(m httprpc.Muxer) {
 		service.NewShopServiceServer(WrapShopService(shopService)),
 		service.NewCreditServiceServer(WrapCreditService(creditService)),
 		service.NewNotificationServiceServer(WrapNotificationService(notificationService)),
+		service.NewConnectionServiceServer(WrapConnectionService(connectionService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

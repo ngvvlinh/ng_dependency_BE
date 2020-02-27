@@ -36,7 +36,7 @@ func startServers() *http.Server {
 	haravan := aggregate.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
 
 	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
-	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
+	connectionAggregate := connectionaggregate.NewConnectionAggregate(db, eventBus).MessageBus()
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
 	shipmentManager := shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore)
 

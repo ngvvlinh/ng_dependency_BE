@@ -758,6 +758,114 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 	}
 }
 
+type ShipmentConnectionServiceServer struct {
+	inner ShipmentConnectionService
+}
+
+func NewShipmentConnectionServiceServer(svc ShipmentConnectionService) Server {
+	return &ShipmentConnectionServiceServer{
+		inner: svc,
+	}
+}
+
+const ShipmentConnectionServicePathPrefix = "/partner.ShipmentConnection/"
+
+func (s *ShipmentConnectionServiceServer) PathPrefix() string {
+	return ShipmentConnectionServicePathPrefix
+}
+
+func (s *ShipmentConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.ShipmentConnection/CreateConnection":
+		msg := &CreateConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ShipmentConnection/DeleteConnection":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ShipmentConnection/GetConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetConnections(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/partner.ShipmentConnection/UpdateConnection":
+		msg := &UpdateConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ShipmentServiceServer struct {
+	inner ShipmentService
+}
+
+func NewShipmentServiceServer(svc ShipmentService) Server {
+	return &ShipmentServiceServer{
+		inner: svc,
+	}
+}
+
+const ShipmentServicePathPrefix = "/partner.Shipment/"
+
+func (s *ShipmentServiceServer) PathPrefix() string {
+	return ShipmentServicePathPrefix
+}
+
+func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ShipmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/partner.Shipment/UpdateFulfillment":
+		msg := &UpdateFulfillmentRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateFulfillment(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type ShippingServiceServer struct {
 	inner ShippingService
 }

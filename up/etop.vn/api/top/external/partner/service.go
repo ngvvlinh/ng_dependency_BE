@@ -25,6 +25,19 @@ type ShopService interface {
 	CurrentShop(context.Context, *cm.Empty) (*etop.PublicAccountInfo, error)
 }
 
+// +apix:path=/partner.ShipmentConnection
+type ShipmentConnectionService interface {
+	GetConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
+	CreateConnection(context.Context, *CreateConnectionRequest) (*ShipmentConnection, error)
+	UpdateConnection(context.Context, *UpdateConnectionRequest) (*ShipmentConnection, error)
+	DeleteConnection(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+}
+
+// +apix:path=/partner.Shipment
+type ShipmentService interface {
+	UpdateFulfillment(context.Context, *UpdateFulfillmentRequest) (*cm.UpdatedResponse, error)
+}
+
 // +apix:path=/partner.Webhook
 type WebhookService interface {
 	CreateWebhook(context.Context, *types.CreateWebhookRequest) (*types.Webhook, error)

@@ -460,11 +460,11 @@ func main() {
 
 	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
 	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
-	connectionAggregate := connectionaggregate.NewConnectionAggregate(db).MessageBus()
+	connectionAggregate := connectionaggregate.NewConnectionAggregate(db, eventBus).MessageBus()
 	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
-	shippingPM := shippingpm.New(eventBus, shippingAggr)
+	shippingPM := shippingpm.New(eventBus, shippingAggr, redisStore)
 	shippingPM.RegisterEventHandlers(eventBus)
 
 	moneyTxQuery = moneytxquery.NewMoneyTxQuery(db).MessageBus()
@@ -557,6 +557,9 @@ func main() {
 		&inventoryQuery,
 		&catalogQuery,
 		&catalogAggr,
+		connectionQuery,
+		connectionAggregate,
+		shippingAggr,
 	)
 	whitelabelapix.Init(db, &catalogAggr)
 	xshop.Init(
@@ -587,7 +590,7 @@ func main() {
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus, moneyTxQuery)
+	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

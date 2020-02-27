@@ -90,3 +90,12 @@ type CreditService interface {
 type NotificationService interface {
 	CreateNotifications(context.Context, *CreateNotificationsRequest) (*CreateNotificationsResponse, error)
 }
+
+// +apix:path=/admin.Connection
+type ConnectionService interface {
+	GetConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
+	ConfirmConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
+	DisableConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
+
+	CreateTopshipConnection(context.Context, *types.CreateTopshipConnectionRequest) (*types.Connection, error)
+}

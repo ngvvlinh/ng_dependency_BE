@@ -52,18 +52,28 @@ func (s *ConnectionStore) PartnerID(partnerID dot.ID) *ConnectionStore {
 	return s
 }
 
-func (s *ConnectionStore) ConnectionMethodOptional(method connection_type.ConnectionMethod) *ConnectionStore {
+func (s *ConnectionStore) OptionalPartnerID(partnerID dot.ID) *ConnectionStore {
+	s.preds = append(s.preds, s.ft.ByPartnerID(partnerID).Optional())
+	return s
+}
+
+func (s *ConnectionStore) OptionalConnectionMethod(method connection_type.ConnectionMethod) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionMethod(method).Optional())
 	return s
 }
 
-func (s *ConnectionStore) ConnectionTypeOptional(_type connection_type.ConnectionType) *ConnectionStore {
+func (s *ConnectionStore) OptionalConnectionType(_type connection_type.ConnectionType) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionType(_type).Optional())
 	return s
 }
 
-func (s *ConnectionStore) ConnectionProviderOptional(provider connection_type.ConnectionProvider) *ConnectionStore {
+func (s *ConnectionStore) OptionalConnectionProvider(provider connection_type.ConnectionProvider) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionProvider(provider).Optional())
+	return s
+}
+
+func (s *ConnectionStore) Status(status status3.Status) *ConnectionStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
 
@@ -73,7 +83,7 @@ func (s *ConnectionStore) SoftDelete() (int, error) {
 	_deleted, err := query.Table("connection").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
-	return int(_deleted), err
+	return _deleted, err
 }
 
 func (s *ConnectionStore) GetConnectionDB() (*model.Connection, error) {
@@ -97,14 +107,17 @@ func (s *ConnectionStore) GetConnection() (*connectioning.Connection, error) {
 }
 
 func (s *ConnectionStore) ListConnectionsDB() (res []*model.Connection, err error) {
-	query := s.query().Where(s.preds).Where(s.ft.ByStatus(status3.P))
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	err = query.Find((*model.Connections)(&res))
 	return
 }
 
-func (s *ConnectionStore) ListConnections() (res []*connectioning.Connection, _ error) {
+func (s *ConnectionStore) ListConnections(status status3.NullStatus) (res []*connectioning.Connection, _ error) {
+	if status.Valid {
+		s = s.Status(status.Enum)
+	}
 	connsDB, err := s.ListConnectionsDB()
 	if err != nil {
 		return nil, err
@@ -127,25 +140,30 @@ func (s *ConnectionStore) CreateConnection(conn *connectioning.Connection) (*con
 	return s.ID(conn.ID).GetConnection()
 }
 
-func (s *ConnectionStore) UpdateConnectionDriverConfig(args *connectioning.UpdateConnectionDriveConfig) (*connectioning.Connection, error) {
-	driverConfig := args.DriverConfig
-	update := &model.Connection{
-		DriverConfig: &connectioning.ConnectionDriverConfig{
-			CreateFulfillmentURL:   driverConfig.CreateFulfillmentURL,
-			GetFulfillmentURL:      driverConfig.GetFulfillmentURL,
-			GetShippingServicesURL: driverConfig.GetShippingServicesURL,
-			CancelFulfillmentURL:   driverConfig.CancelFulfillmentURL,
-		},
-	}
-	if err := s.query().Where(s.ft.ByID(args.ConnectionID)).ShouldUpdate(update); err != nil {
+func (s *ConnectionStore) UpdateConnection(conn *connectioning.Connection) (*connectioning.Connection, error) {
+	sqlstore.MustNoPreds(s.preds)
+	var connDB model.Connection
+	if err := scheme.Convert(conn, &connDB); err != nil {
 		return nil, err
 	}
-	return s.ID(args.ConnectionID).GetConnection()
+	if err := s.query().Where(s.ft.ByID(conn.ID)).ShouldUpdate(&connDB); err != nil {
+		return nil, err
+	}
+	return s.ID(conn.ID).GetConnection()
 }
 
 func (s *ConnectionStore) ConfirmConnection(connID dot.ID) (updated int, err error) {
 	if err := s.query().Table("connection").Where(s.ft.ByID(connID)).ShouldUpdateMap(map[string]interface{}{
 		"status": status3.P,
+	}); err != nil {
+		return 0, err
+	}
+	return 1, nil
+}
+
+func (s *ConnectionStore) DisableConnection(connID dot.ID) (updated int, err error) {
+	if err := s.query().Table("connection").Where(s.ft.ByID(connID)).ShouldUpdateMap(map[string]interface{}{
+		"status": status3.Z,
 	}); err != nil {
 		return 0, err
 	}

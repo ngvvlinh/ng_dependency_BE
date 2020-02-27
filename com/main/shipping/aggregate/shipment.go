@@ -327,7 +327,20 @@ func CompareFulfillments(olds []*shipmodel.Fulfillment, ffm *shipmodel.Fulfillme
 }
 
 func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *shipping.UpdateFulfillmentShippingStateArgs) (updated int, _ error) {
-	ffm, err := a.ffmStore(ctx).IDOrShippingCode(args.FulfillmentID, args.ShippingCode).GetFulfillment()
+	if args.ShippingState == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "shipping_state không được để trống.")
+	}
+	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID)
+	if args.FulfillmentID != 0 {
+		query = query.ID(args.FulfillmentID)
+	}
+	if args.ShippingCode != "" {
+		query = query.ShippingCode(args.ShippingCode)
+	}
+	if len(args.ConnectionIDs) > 0 {
+		query = query.ConnectionIDs(args.ConnectionIDs...)
+	}
+	ffm, err := query.GetFulfillment()
 	if err != nil {
 		return 0, err
 	}
@@ -347,7 +360,8 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 		}
 	}
 
-	if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args); err != nil {
+	args.FulfillmentID = ffm.ID
+	if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args, ffm.TotalCODAmount); err != nil {
 		return 0, nil
 	}
 	return 1, nil

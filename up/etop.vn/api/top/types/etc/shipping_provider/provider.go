@@ -30,6 +30,9 @@ const (
 
 	// +enum=etop
 	Etop ShippingProvider = 24
+
+	// +enum=partner
+	Partner ShippingProvider = 25
 )
 
 func (s ShippingProvider) Label() string {
@@ -42,6 +45,8 @@ func (s ShippingProvider) Label() string {
 		return "Viettel Post"
 	case Manual:
 		return "Tự giao"
+	case Partner:
+		return "Đối tác vận chuyển"
 	default:
 		return ""
 	}

@@ -975,7 +975,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paDeleteShopConnectionRequest"
+              "$ref": "#/definitions/qdDeleteShopConnectionRequest"
             }
           }
         ],
@@ -1010,7 +1010,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paGetConnectionsResponse"
+              "$ref": "#/definitions/qdGetConnectionsResponse"
             }
           }
         }
@@ -1037,7 +1037,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paGetConnectionsResponse"
+              "$ref": "#/definitions/qdGetConnectionsResponse"
             }
           }
         }
@@ -1064,7 +1064,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paGetShopConnectionsResponse"
+              "$ref": "#/definitions/qdGetShopConnectionsResponse"
             }
           }
         }
@@ -1083,7 +1083,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paLoginShopConnectionRequest"
+              "$ref": "#/definitions/qdLoginShopConnectionRequest"
             }
           }
         ],
@@ -1091,7 +1091,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paShopConnection"
+              "$ref": "#/definitions/qdShopConnection"
             }
           }
         }
@@ -1110,7 +1110,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paRegisterShopConnectionRequest"
+              "$ref": "#/definitions/qdRegisterShopConnectionRequest"
             }
           }
         ],
@@ -1118,7 +1118,34 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paShopConnection"
+              "$ref": "#/definitions/qdShopConnection"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/UpdateShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "UpdateShopConnection",
+        "operationId": "shop.Connection-UpdateShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -6393,40 +6420,8 @@
         "ghn",
         "ghtk",
         "vtpost",
-        "etop"
-      ]
-    },
-    "cdConnectionMethod": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "topship",
-        "direct"
-      ]
-    },
-    "cdConnectionProvider": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "ghn",
-        "ghtk",
-        "vtpost",
+        "etop",
         "partner"
-      ]
-    },
-    "cdConnectionSubtype": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipment",
-        "manual"
-      ]
-    },
-    "cdConnectionType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipping"
       ]
     },
     "csTryOnCode": {
@@ -6658,6 +6653,39 @@
           "type": "string"
         }
       }
+    },
+    "ljConnectionMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "topship",
+        "direct"
+      ]
+    },
+    "ljConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner"
+      ]
+    },
+    "ljConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual"
+      ]
+    },
+    "ljConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping"
+      ]
     },
     "ojFeeType": {
       "type": "string",
@@ -7078,41 +7106,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "paConnection": {
-      "type": "object",
-      "properties": {
-        "connection_method": {
-          "$ref": "#/definitions/cdConnectionMethod"
-        },
-        "connection_provider": {
-          "$ref": "#/definitions/cdConnectionProvider"
-        },
-        "connection_subtype": {
-          "$ref": "#/definitions/cdConnectionSubtype"
-        },
-        "connection_type": {
-          "$ref": "#/definitions/cdConnectionType"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },
@@ -7892,15 +7885,6 @@
         }
       }
     },
-    "paDeleteShopConnectionRequest": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "paDeprecatedCreateVariantRequest": {
       "type": "object",
       "required": [
@@ -8343,17 +8327,6 @@
         }
       }
     },
-    "paGetConnectionsResponse": {
-      "type": "object",
-      "properties": {
-        "connections": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/paConnection"
-          }
-        }
-      }
-    },
     "paGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
@@ -8775,17 +8748,6 @@
         }
       }
     },
-    "paGetShopConnectionsResponse": {
-      "type": "object",
-      "properties": {
-        "shop_connections": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/paShopConnection"
-          }
-        }
-      }
-    },
     "paGetStocktakesByIDsResponse": {
       "type": "object",
       "properties": {
@@ -9122,21 +9084,6 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
-        }
-      }
-    },
-    "paLoginShopConnectionRequest": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
         }
       }
     },
@@ -9784,36 +9731,6 @@
         }
       }
     },
-    "paRegisterShopConnectionRequest": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "district": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "province": {
-          "type": "string"
-        }
-      }
-    },
     "paRegisterShopRequest": {
       "type": "object",
       "required": [
@@ -10062,48 +9979,6 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
-        }
-      }
-    },
-    "paShopConnection": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "deleted_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "external_data": {
-          "$ref": "#/definitions/paShopConnectionExternalData"
-        },
-        "is_global": {
-          "type": "boolean"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "paShopConnectionExternalData": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
         }
       }
     },
@@ -11648,6 +11523,41 @@
         }
       }
     },
+    "qdConnection": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/ljConnectionMethod"
+        },
+        "connection_provider": {
+          "$ref": "#/definitions/ljConnectionProvider"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/ljConnectionSubtype"
+        },
+        "connection_type": {
+          "$ref": "#/definitions/ljConnectionType"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "qdConnectionInfo": {
       "type": "object",
       "properties": {
@@ -11880,6 +11790,15 @@
         },
         "shipping_service_fee": {
           "type": "integer"
+        }
+      }
+    },
+    "qdDeleteShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -12313,6 +12232,17 @@
         }
       }
     },
+    "qdGetConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdConnection"
+          }
+        }
+      }
+    },
     "qdGetExternalShippingServicesRequest": {
       "type": "object",
       "properties": {
@@ -12513,6 +12443,32 @@
           "items": {
             "$ref": "#/definitions/qdExternalShippingService"
           }
+        }
+      }
+    },
+    "qdGetShopConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "shop_connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShopConnection"
+          }
+        }
+      }
+    },
+    "qdLoginShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
         }
       }
     },
@@ -13200,6 +13156,36 @@
         }
       }
     },
+    "qdRegisterShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        }
+      }
+    },
     "qdShipnowDeliveryPoint": {
       "type": "object",
       "properties": {
@@ -13401,6 +13387,51 @@
         }
       }
     },
+    "qdShopConnection": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "is_global": {
+          "type": "boolean"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdShopConnectionExternalData": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
     "qdTradingCreateOrderRequest": {
       "type": "object",
       "properties": {
@@ -13585,6 +13616,21 @@
         },
         "shipping_service_fee": {
           "type": "integer"
+        }
+      }
+    },
+    "qdUpdateShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "token": {
+          "type": "string"
         }
       }
     },

@@ -84,10 +84,12 @@ type GetFulfillmentByIDQueryArgs struct {
 }
 
 type UpdateFulfillmentShippingStateArgs struct {
+	PartnerID                dot.ID
 	FulfillmentID            dot.ID
 	ShippingCode             string
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
+	ConnectionIDs            []dot.ID
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {

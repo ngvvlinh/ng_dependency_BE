@@ -81,10 +81,12 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingFees(ctx context.Contex
 }
 
 type UpdateFulfillmentShippingStateCommand struct {
+	PartnerID                dot.ID
 	FulfillmentID            dot.ID
 	ShippingCode             string
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
+	ConnectionIDs            []dot.ID
 
 	Result int `json:"-"`
 }
@@ -228,18 +230,22 @@ func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesA
 func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingStateArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingStateArgs{
+			PartnerID:                q.PartnerID,
 			FulfillmentID:            q.FulfillmentID,
 			ShippingCode:             q.ShippingCode,
 			ShippingState:            q.ShippingState,
 			ActualCompensationAmount: q.ActualCompensationAmount,
+			ConnectionIDs:            q.ConnectionIDs,
 		}
 }
 
 func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStateArgs(args *UpdateFulfillmentShippingStateArgs) {
+	q.PartnerID = args.PartnerID
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingCode = args.ShippingCode
 	q.ShippingState = args.ShippingState
 	q.ActualCompensationAmount = args.ActualCompensationAmount
+	q.ConnectionIDs = args.ConnectionIDs
 }
 
 func (q *UpdateFulfillmentsMoneyTxShippingExternalIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsMoneyTxShippingExternalIDArgs) {

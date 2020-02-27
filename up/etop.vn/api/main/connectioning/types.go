@@ -3,10 +3,13 @@ package connectioning
 import (
 	"time"
 
+	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
+
+// +gen:event:topic=event/connection
 
 var (
 	DefaultTopshipGHTKConnectionID   = dot.ID(1000804010396750738)
@@ -34,10 +37,13 @@ type Connection struct {
 }
 
 type ConnectionDriverConfig struct {
+	TrackingURL            string `json:"tracking_url"`
 	CreateFulfillmentURL   string `json:"create_fulfillment_url"`
 	GetFulfillmentURL      string `json:"get_fulfillment_url"`
 	GetShippingServicesURL string `json:"get_shipping_services_url"`
 	CancelFulfillmentURL   string `json:"cancel_fulfillment_url"`
+	SignInURL              string `json:"sign_in_url"`
+	SignUpURL              string `json:"sign_up_url"`
 }
 
 type EtopAffiliateAccount struct {
@@ -61,4 +67,9 @@ type ShopConnection struct {
 type ShopConnectionExternalData struct {
 	UserID string
 	Email  string
+}
+
+type ConnectionUpdatedEvent struct {
+	meta.EventMeta
+	ConnectionID dot.ID
 }

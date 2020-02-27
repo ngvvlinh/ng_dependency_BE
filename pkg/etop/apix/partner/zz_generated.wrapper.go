@@ -2225,6 +2225,257 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	return resp, nil
 }
 
+func WrapShipmentService(s *ShipmentService) api.ShipmentService {
+	return wrapShipmentService{s: s}
+}
+
+type wrapShipmentService struct {
+	s *ShipmentService
+}
+
+type UpdateFulfillmentEndpoint struct {
+	*api.UpdateFulfillmentRequest
+	Result  *cm.UpdatedResponse
+	Context claims.PartnerClaim
+}
+
+func (s wrapShipmentService) UpdateFulfillment(ctx context.Context, req *api.UpdateFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.Shipment/UpdateFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:    true,
+		RequireAPIKey:  true,
+		RequirePartner: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateFulfillmentEndpoint{UpdateFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Partner = session.Partner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapShipmentConnectionService(s *ShipmentConnectionService) api.ShipmentConnectionService {
+	return wrapShipmentConnectionService{s: s}
+}
+
+type wrapShipmentConnectionService struct {
+	s *ShipmentConnectionService
+}
+
+type CreateConnectionEndpoint struct {
+	*api.CreateConnectionRequest
+	Result  *api.ShipmentConnection
+	Context claims.PartnerClaim
+}
+
+func (s wrapShipmentConnectionService) CreateConnection(ctx context.Context, req *api.CreateConnectionRequest) (resp *api.ShipmentConnection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ShipmentConnection/CreateConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:    true,
+		RequireAPIKey:  true,
+		RequirePartner: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateConnectionEndpoint{CreateConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Partner = session.Partner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteConnectionEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context claims.PartnerClaim
+}
+
+func (s wrapShipmentConnectionService) DeleteConnection(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ShipmentConnection/DeleteConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:    true,
+		RequireAPIKey:  true,
+		RequirePartner: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteConnectionEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Partner = session.Partner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *api.GetConnectionsResponse
+	Context claims.PartnerClaim
+}
+
+func (s wrapShipmentConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *api.GetConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ShipmentConnection/GetConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:    true,
+		RequireAPIKey:  true,
+		RequirePartner: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetConnectionsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Partner = session.Partner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateConnectionEndpoint struct {
+	*api.UpdateConnectionRequest
+	Result  *api.ShipmentConnection
+	Context claims.PartnerClaim
+}
+
+func (s wrapShipmentConnectionService) UpdateConnection(ctx context.Context, req *api.UpdateConnectionRequest) (resp *api.ShipmentConnection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "partner.ShipmentConnection/UpdateConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:    true,
+		RequireAPIKey:  true,
+		RequirePartner: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateConnectionEndpoint{UpdateConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Partner = session.Partner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapShippingService(s *ShippingService) api.ShippingService {
 	return wrapShippingService{s: s}
 }

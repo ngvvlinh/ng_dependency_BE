@@ -63,7 +63,7 @@ func (s *FulfillmentStore) ShippingCode(code string) *FulfillmentStore {
 }
 
 func (s *FulfillmentStore) IDOrShippingCode(id dot.ID, shippingCode string) *FulfillmentStore {
-	s.preds = append(s.preds, sq.Once{
+	s.preds = append(s.preds, sq.Or{
 		s.ft.ByID(id),
 		s.ft.ByShippingCode(shippingCode),
 	})
@@ -80,6 +80,11 @@ func (s *FulfillmentStore) PartnerID(id dot.ID) *FulfillmentStore {
 	return s
 }
 
+func (s *FulfillmentStore) OptionalPartnerID(id dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByPartnerID(id).Optional())
+	return s
+}
+
 func (s *FulfillmentStore) OrderID(id dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, s.ft.ByOrderID(id))
 	return s
@@ -87,6 +92,11 @@ func (s *FulfillmentStore) OrderID(id dot.ID) *FulfillmentStore {
 
 func (s *FulfillmentStore) OrderIDs(ids ...dot.ID) *FulfillmentStore {
 	s.preds = append(s.preds, sq.In("order_id", ids))
+	return s
+}
+
+func (s *FulfillmentStore) ConnectionIDs(ids ...dot.ID) *FulfillmentStore {
+	s.preds = append(s.preds, sq.In("connection_id", ids))
 	return s
 }
 
@@ -175,11 +185,11 @@ func (s *FulfillmentStore) UpdateFulfillmentsDB(ctx context.Context, ffms []*mod
 	return nil
 }
 
-func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateFulfillmentShippingStateArgs) error {
+func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateFulfillmentShippingStateArgs, codAmount int) error {
 	if args.ActualCompensationAmount.Valid {
 		update := map[string]interface{}{
 			"shipping_state":             args.ShippingState.String(),
-			"actual_compensation_amount": args.ActualCompensationAmount.Apply(0),
+			"actual_compensation_amount": args.ActualCompensationAmount.Apply(codAmount),
 		}
 		return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
 	}

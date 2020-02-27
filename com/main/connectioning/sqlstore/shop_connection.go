@@ -135,6 +135,16 @@ func (s *ShopConnectionStore) CreateShopConnection(shopConn *connectioning.ShopC
 	return s.ShopID(shopConn.ShopID).ConnectionID(shopConn.ConnectionID).GetShopConnection()
 }
 
+func (s *ShopConnectionStore) CreateShopConnectionDB(shopConn *model.ShopConnection) error {
+	if shopConn.ConnectionID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
+	}
+	if err := s.query().ShouldInsert(shopConn); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.UpdateShopConnectionExternalDataArgs) (*connectioning.ShopConnection, error) {
 	var externalData model.ShopConnectionExternalData
 	if err := scheme.Convert(args.ExternalData, &externalData); err != nil {

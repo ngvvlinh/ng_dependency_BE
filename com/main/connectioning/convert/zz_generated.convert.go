@@ -45,6 +45,14 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg.(*connectioning.CreateConnectionArgs), out.(*connectioning.Connection))
 		return nil
 	})
+	s.Register((*connectioning.UpdateConnectionAffiliateAccountArgs)(nil), (*connectioning.Connection)(nil), func(arg, out interface{}) error {
+		Apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg.(*connectioning.UpdateConnectionAffiliateAccountArgs), out.(*connectioning.Connection))
+		return nil
+	})
+	s.Register((*connectioning.UpdateConnectionArgs)(nil), (*connectioning.Connection)(nil), func(arg, out interface{}) error {
+		Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg.(*connectioning.UpdateConnectionArgs), out.(*connectioning.Connection))
+		return nil
+	})
 	s.Register((*connectioningmodel.EtopAffiliateAccount)(nil), (*connectioning.EtopAffiliateAccount)(nil), func(arg, out interface{}) error {
 		Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg.(*connectioningmodel.EtopAffiliateAccount), out.(*connectioning.EtopAffiliateAccount))
 		return nil
@@ -217,6 +225,66 @@ func apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg *conn
 	out.EtopAffiliateAccount = nil                  // zero value
 	out.Code = ""                                   // zero value
 	out.ImageURL = ""                               // zero value
+}
+
+func Apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg *connectioning.UpdateConnectionAffiliateAccountArgs, out *connectioning.Connection) *connectioning.Connection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioning.Connection{}
+	}
+	apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg, out)
+	return out
+}
+
+func apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg *connectioning.UpdateConnectionAffiliateAccountArgs, out *connectioning.Connection) {
+	out.ID = arg.ID                                     // simple assign
+	out.Name = out.Name                                 // no change
+	out.Status = out.Status                             // no change
+	out.PartnerID = out.PartnerID                       // no change
+	out.CreatedAt = out.CreatedAt                       // no change
+	out.UpdatedAt = out.UpdatedAt                       // no change
+	out.DeletedAt = out.DeletedAt                       // no change
+	out.DriverConfig = out.DriverConfig                 // no change
+	out.Driver = out.Driver                             // no change
+	out.ConnectionType = out.ConnectionType             // no change
+	out.ConnectionSubtype = out.ConnectionSubtype       // no change
+	out.ConnectionMethod = out.ConnectionMethod         // no change
+	out.ConnectionProvider = out.ConnectionProvider     // no change
+	out.EtopAffiliateAccount = arg.EtopAffiliateAccount // simple assign
+	out.Code = out.Code                                 // no change
+	out.ImageURL = out.ImageURL                         // no change
+}
+
+func Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *connectioning.UpdateConnectionArgs, out *connectioning.Connection) *connectioning.Connection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioning.Connection{}
+	}
+	apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg, out)
+	return out
+}
+
+func apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *connectioning.UpdateConnectionArgs, out *connectioning.Connection) {
+	out.ID = arg.ID                                     // simple assign
+	out.Name = arg.Name                                 // simple assign
+	out.Status = out.Status                             // no change
+	out.PartnerID = out.PartnerID                       // identifier
+	out.CreatedAt = out.CreatedAt                       // no change
+	out.UpdatedAt = out.UpdatedAt                       // no change
+	out.DeletedAt = out.DeletedAt                       // no change
+	out.DriverConfig = arg.DriverConfig                 // simple assign
+	out.Driver = out.Driver                             // no change
+	out.ConnectionType = out.ConnectionType             // no change
+	out.ConnectionSubtype = out.ConnectionSubtype       // no change
+	out.ConnectionMethod = out.ConnectionMethod         // no change
+	out.ConnectionProvider = out.ConnectionProvider     // no change
+	out.EtopAffiliateAccount = out.EtopAffiliateAccount // no change
+	out.Code = out.Code                                 // no change
+	out.ImageURL = arg.ImageURL                         // simple assign
 }
 
 //-- convert etop.vn/api/main/connectioning.EtopAffiliateAccount --//

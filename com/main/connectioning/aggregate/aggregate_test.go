@@ -76,7 +76,7 @@ func TestConnectionAggregate(t *testing.T) {
 		}
 
 		ctx := bus.Ctx()
-		Aggr := NewConnectionAggregate(db).MessageBus()
+		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
 		_, err := db.Insert(_conn)
 		So(err, ShouldBeNil)
 
@@ -100,8 +100,8 @@ func TestConnectionAggregate(t *testing.T) {
 		})
 
 		Convey("Update Driver Config", func() {
-			cmd := &connectioning.UpdateConnectionDriverConfigCommand{
-				ConnectionID: connID,
+			cmd := &connectioning.UpdateConnectionCommand{
+				ID: connID,
 				DriverConfig: &connectioning.ConnectionDriverConfig{
 					CreateFulfillmentURL:   "http://create-fulfillment",
 					GetFulfillmentURL:      "http://get-fulfillment",
@@ -112,7 +112,7 @@ func TestConnectionAggregate(t *testing.T) {
 			err := Aggr.Dispatch(ctx, cmd)
 			So(err, ShouldBeNil)
 			conn := cmd.Result
-			So(conn.ID, ShouldEqual, cmd.ConnectionID)
+			So(conn.ID, ShouldEqual, cmd.ID)
 			So(conn.DriverConfig, ShouldDeepEqual, cmd.DriverConfig)
 		})
 
@@ -160,7 +160,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		Aggr := NewConnectionAggregate(db).MessageBus()
+		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
 		_, err := db.Insert(_shopConn)
 		So(err, ShouldBeNil)
 

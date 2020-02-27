@@ -30,6 +30,8 @@ import (
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	directclient "etop.vn/backend/pkg/integration/shipping/direct/client"
+	directdriver "etop.vn/backend/pkg/integration/shipping/direct/driver"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	ghndriver "etop.vn/backend/pkg/integration/shipping/ghn/driver"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
@@ -48,7 +50,7 @@ const (
 	MinShopBalance = -200000
 	DefaultTTl     = 2 * 60 * 60
 	SecretKey      = "connectionsecretkey"
-	versionCaching = "v0.1"
+	VersionCaching = "v0.1.5"
 )
 
 type ShipmentManager struct {
@@ -168,7 +170,14 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:
-		return nil, cm.ErrTODO
+		cfg := directclient.PartnerAccountCfg{
+			Token:      shopConnection.Token,
+			Connection: connection,
+		}
+		if etopAffiliateAccount != nil {
+			cfg.AffiliateID = etopAffiliateAccount.UserID
+		}
+		return directdriver.New(m.LocationQS, cfg)
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")
 	}
@@ -464,12 +473,11 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Do not support this feature for this connection")
 	}
 
-	if conn.EtopAffiliateAccount == nil {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Missing EtopAffiliateAcount in Connection")
+	var userID, token string
+	if conn.EtopAffiliateAccount != nil {
+		userID = conn.EtopAffiliateAccount.UserID
+		token = conn.EtopAffiliateAccount.Token
 	}
-
-	userID := conn.EtopAffiliateAccount.UserID
-	token := conn.EtopAffiliateAccount.Token
 
 	switch conn.ConnectionProvider {
 	case connection_type.ConnectionProviderGHN:
@@ -494,12 +502,14 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		}
 		driver := ghtkdriver.New(m.Env, cfg, m.LocationQS)
 		return driver, nil
-	case connection_type.ConnectionProviderVTP:
-		return nil, cm.Errorf(cm.Unimplemented, nil, "VTPost: không hỗ trợ affiliate account")
 	case connection_type.ConnectionProviderPartner:
-		return nil, cm.ErrTODO
+		cfg := directclient.PartnerAccountCfg{
+			Connection: conn,
+			Token:      token,
+		}
+		return directdriver.New(m.LocationQS, cfg)
 	default:
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hỗ trợ affiliate account (connType = %v, connName = %v)", conn.ConnectionProvider, conn.Name)
 	}
 }
 
@@ -526,7 +536,7 @@ func (m *ShipmentManager) UpdateFulfillment(ctx context.Context, ffm *shipmodel.
 }
 
 func (m *ShipmentManager) GetConnectionByID(ctx context.Context, connID dot.ID) (*connectioning.Connection, error) {
-	connKey := getRedisConnectionKeyByID(connID)
+	connKey := GetRedisConnectionKeyByID(connID)
 	var connection connectioning.Connection
 	err := m.loadRedis(connKey, &connection)
 	if err != nil {
@@ -556,7 +566,7 @@ func (m *ShipmentManager) GetConnectionByCode(ctx context.Context, connCode stri
 			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
 		}
 		connection = *query.Result
-		connKeyID := getRedisConnectionKeyByID(connection.ID)
+		connKeyID := GetRedisConnectionKeyByID(connection.ID)
 		m.setRedis(connKey, connection)
 		m.setRedis(connKeyID, connection)
 	}
@@ -583,15 +593,15 @@ func (m *ShipmentManager) getShopConnection(ctx context.Context, connID dot.ID, 
 }
 
 func getRedisShopConnectionKey(connID dot.ID, shopID dot.ID) string {
-	return fmt.Sprintf("shopConn:%v:%v%v", versionCaching, shopID.String(), connID.String())
+	return fmt.Sprintf("shopConn:%v:%v%v", VersionCaching, shopID.String(), connID.String())
 }
 
-func getRedisConnectionKeyByID(connID dot.ID) string {
-	return fmt.Sprintf("conn:id:%v:%v", versionCaching, connID.String())
+func GetRedisConnectionKeyByID(connID dot.ID) string {
+	return fmt.Sprintf("conn:id:%v:%v", VersionCaching, connID.String())
 }
 
 func getRedisConnectionKeyByCode(code string) string {
-	return fmt.Sprintf("conn:code:%v:%v", versionCaching, code)
+	return fmt.Sprintf("conn:code:%v:%v", VersionCaching, code)
 }
 
 func (m *ShipmentManager) loadRedis(key string, v interface{}) error {
@@ -639,6 +649,9 @@ func (m *ShipmentManager) setRedis(key string, data interface{}) {
 //
 // Check if this connection is allowed in whitelabel partner
 func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connectioning.Connection) bool {
+	if conn.Status != status3.P {
+		return false
+	}
 	wlPartner := wl.X(ctx)
 	if !wlPartner.IsWhiteLabel() {
 		return true

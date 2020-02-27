@@ -69,6 +69,114 @@
         }
       }
     },
+    "/api/admin.Connection/ConfirmConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "ConfirmConnection",
+        "operationId": "admin.Connection-ConfirmConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Connection/CreateTopshipConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "CreateTopshipConnection",
+        "operationId": "admin.Connection-CreateTopshipConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateTopshipConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdConnection"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Connection/DisableConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "DisableConnection",
+        "operationId": "admin.Connection-DisableConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Connection/GetConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetConnections",
+        "operationId": "admin.Connection-GetConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Credit/ConfirmCredit": {
       "post": {
         "tags": [
@@ -1750,7 +1858,14 @@
         "ghn",
         "ghtk",
         "vtpost",
-        "etop"
+        "etop",
+        "partner"
+      ]
+    },
+    "cdCreditType": {
+      "type": "string",
+      "enum": [
+        "shop"
       ]
     },
     "csTryOnCode": {
@@ -1938,10 +2053,37 @@
         }
       }
     },
-    "ljCreditType": {
+    "ljConnectionMethod": {
       "type": "string",
       "enum": [
-        "shop"
+        "unknown",
+        "topship",
+        "direct"
+      ]
+    },
+    "ljConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner"
+      ]
+    },
+    "ljConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual"
+      ]
+    },
+    "ljConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping"
       ]
     },
     "ojFeeType": {
@@ -1969,6 +2111,56 @@
         "female",
         "other"
       ]
+    },
+    "qdConnection": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/ljConnectionMethod"
+        },
+        "connection_provider": {
+          "$ref": "#/definitions/ljConnectionProvider"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/ljConnectionSubtype"
+        },
+        "connection_type": {
+          "$ref": "#/definitions/ljConnectionType"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdCreateTopshipConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
     },
     "qdDeliveryPoint": {
       "type": "object",
@@ -2307,6 +2499,17 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "qdGetConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdConnection"
+          }
         }
       }
     },
@@ -3274,6 +3477,17 @@
         }
       }
     },
+    "qdShopConnectionExternalData": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
     "qdValueInfo": {
       "type": "object",
       "properties": {
@@ -3702,7 +3916,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/ljCreditType"
+          "$ref": "#/definitions/cdCreditType"
         }
       }
     },
@@ -3987,7 +4201,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/ljCreditType"
+          "$ref": "#/definitions/cdCreditType"
         }
       }
     },
@@ -4148,6 +4362,9 @@
   "tags": [
     {
       "name": "Account"
+    },
+    {
+      "name": "Connection"
     },
     {
       "name": "Credit"

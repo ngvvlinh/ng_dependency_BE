@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/moneytx"
 	"etop.vn/api/top/int/admin"
 	"etop.vn/api/top/int/etop"
@@ -30,16 +31,22 @@ import (
 var ll = l.New()
 
 var (
-	eventBus     capi.EventBus
-	moneyTxQuery moneytx.QueryBus
+	eventBus        capi.EventBus
+	moneyTxQuery    moneytx.QueryBus
+	connectionAggr  connectioning.CommandBus
+	connectionQuery connectioning.QueryBus
 )
 
 func Init(
 	eventB capi.EventBus,
 	moneyTxQ moneytx.QueryBus,
+	connectionA connectioning.CommandBus,
+	connectionQ connectioning.QueryBus,
 ) {
 	eventBus = eventB
 	moneyTxQuery = moneyTxQ
+	connectionAggr = connectionA
+	connectionQuery = connectionQ
 }
 
 func init() {
@@ -86,6 +93,7 @@ type MoneyTransactionService struct{}
 type ShopService struct{}
 type CreditService struct{}
 type NotificationService struct{}
+type ConnectionService struct{}
 
 var miscService = &MiscService{}
 var accountService = &AccountService{}
@@ -95,6 +103,7 @@ var moneyTransactionService = &MoneyTransactionService{}
 var shopService = &ShopService{}
 var creditService = &CreditService{}
 var notificationService = &NotificationService{}
+var connectionService = &ConnectionService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

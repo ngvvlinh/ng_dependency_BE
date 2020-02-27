@@ -9,6 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
+	inttypes "etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
 	capi "etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
@@ -62,6 +63,69 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		msg := &GenerateAPIKeyRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GenerateAPIKey(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ConnectionServiceServer struct {
+	inner ConnectionService
+}
+
+func NewConnectionServiceServer(svc ConnectionService) Server {
+	return &ConnectionServiceServer{
+		inner: svc,
+	}
+}
+
+const ConnectionServicePathPrefix = "/admin.Connection/"
+
+func (s *ConnectionServiceServer) PathPrefix() string {
+	return ConnectionServicePathPrefix
+}
+
+func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/admin.Connection/ConfirmConnection":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ConfirmConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Connection/CreateTopshipConnection":
+		msg := &inttypes.CreateTopshipConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateTopshipConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Connection/DisableConnection":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DisableConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Connection/GetConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetConnections(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

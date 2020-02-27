@@ -247,13 +247,18 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	//-- external: partner --//
 
-	"ext/partner.Misc/CurrentAccount":   {Type: Partner, Auth: APIKey},
-	"ext/partner.History/GetChanges":    {Type: Partner, Auth: APIKey},
-	"ext/partner.Misc/GetLocationList":  {Type: Partner, Auth: APIKey},
-	"ext/partner.Shop/AuthorizeShop":    {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/CreateWebhook": {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/GetWebhooks":   {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/DeleteWebhook": {Type: Partner, Auth: APIKey},
+	"ext/partner.Misc/CurrentAccount":                 {Type: Partner, Auth: APIKey},
+	"ext/partner.History/GetChanges":                  {Type: Partner, Auth: APIKey},
+	"ext/partner.Misc/GetLocationList":                {Type: Partner, Auth: APIKey},
+	"ext/partner.Shop/AuthorizeShop":                  {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/CreateWebhook":               {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/GetWebhooks":                 {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/DeleteWebhook":               {Type: Partner, Auth: APIKey},
+	"ext/partner.ShipmentConnection/GetConnections":   {Type: Partner, Auth: APIKey},
+	"ext/partner.ShipmentConnection/CreateConnection": {Type: Partner, Auth: APIKey},
+	"ext/partner.ShipmentConnection/UpdateConnection": {Type: Partner, Auth: APIKey},
+	"ext/partner.ShipmentConnection/DeleteConnection": {Type: Partner, Auth: APIKey},
+	"ext/partner.Shipment/UpdateFulfillment":          {Type: Partner, Auth: APIKey},
 
 	//-- external: partner using partnerShopKey --//
 	"ext/partner.Import/Products":           {Type: Shop, Auth: APIPartnerShopKey},
@@ -472,6 +477,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.Credit/DeleteCredit":  {Type: EtopAdmin},
 
 	"admin.Notification/CreateNotifications": {Type: EtopAdmin},
+
+	"admin.Connection/GetConnections":          {Type: EtopAdmin},
+	"admin.Connection/ConfirmConnection":       {Type: EtopAdmin},
+	"admin.Connection/DisableConnection":       {Type: EtopAdmin},
+	"admin.Connection/CreateTopshipConnection": {Type: EtopAdmin},
 
 	//-- shop --//
 
@@ -697,6 +707,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Connection/LoginShopConnection":     {Type: Shop},
 	"shop.Connection/RegisterShopConnection":  {Type: Shop},
 	"shop.Connection/DeleteShopConnection":    {Type: Shop},
+	"shop.Connection/UpdateShopConnection":    {Type: Shop},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

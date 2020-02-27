@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/top/types/etc/connection_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 
@@ -15,11 +16,17 @@ type Aggregate interface {
 	// -- Connection -- //
 	CreateConnection(context.Context, *CreateConnectionArgs) (*Connection, error)
 
-	UpdateConnectionDriverConfig(context.Context, *UpdateConnectionDriveConfig) (*Connection, error)
+	UpdateConnection(context.Context, *UpdateConnectionArgs) (*Connection, error)
+
+	UpdateConnectionAffiliateAccount(context.Context, *UpdateConnectionAffiliateAccountArgs) (updated int, err error)
 
 	ConfirmConnection(ctx context.Context, ID dot.ID) (updated int, err error)
 
-	DeleteConnection(ctx context.Context, ID dot.ID) (deleted int, _ error)
+	DisableConnection(ctx context.Context, ID dot.ID) (updated int, err error)
+
+	DeleteConnection(context.Context, *DeleteConnectionArgs) (deleted int, _ error)
+
+	CreateTopshipConnection(context.Context, *CreateTopshipConnectionArgs) (*Connection, error)
 
 	// -- Shop Connection -- //
 	CreateShopConnection(context.Context, *CreateShopConnectionArgs) (*ShopConnection, error)
@@ -65,9 +72,30 @@ type CreateConnectionArgs struct {
 	ConnectionProvider connection_type.ConnectionProvider
 }
 
-type UpdateConnectionDriveConfig struct {
-	ConnectionID dot.ID
+// +convert:update=Connection(PartnerID)
+type UpdateConnectionArgs struct {
+	ID           dot.ID
+	PartnerID    dot.ID
+	Name         string
+	ImageURL     string
 	DriverConfig *ConnectionDriverConfig
+}
+
+type DeleteConnectionArgs struct {
+	ID        dot.ID
+	PartnerID dot.ID
+}
+
+type CreateTopshipConnectionArgs struct {
+	ID           dot.ID
+	Token        string
+	ExternalData *ShopConnectionExternalData
+}
+
+// +convert:update=Connection
+type UpdateConnectionAffiliateAccountArgs struct {
+	ID                   dot.ID
+	EtopAffiliateAccount *EtopAffiliateAccount
 }
 
 // +convert:create=ShopConnection
@@ -89,6 +117,8 @@ type UpdateShopConnectionExternalDataArgs struct {
 }
 
 type ListConnectionsArgs struct {
+	PartnerID          dot.ID
+	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider

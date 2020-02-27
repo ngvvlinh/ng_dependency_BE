@@ -40,8 +40,8 @@ func (q *ConnectionQuery) GetConnectionByCode(ctx context.Context, code string) 
 }
 
 func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioning.ListConnectionsArgs) ([]*connectioning.Connection, error) {
-	query := q.connectionStore(ctx).ConnectionTypeOptional(args.ConnectionType).ConnectionMethodOptional(args.ConnectionMethod).ConnectionProviderOptional(args.ConnectionProvider)
-	return query.ListConnections()
+	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
+	return query.ListConnections(args.Status)
 }
 
 func (q *ConnectionQuery) GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*connectioning.ShopConnection, error) {

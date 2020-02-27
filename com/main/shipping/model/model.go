@@ -119,7 +119,7 @@ type Fulfillment struct {
 	ShippingServiceName string
 
 	ExternalShippingName        string
-	ExternalShippingID          string // it's shipping_service_code
+	ExternalShippingID          string
 	ExternalShippingCode        string // it's shipping_code
 	ExternalShippingCreatedAt   time.Time
 	ExternalShippingUpdatedAt   time.Time

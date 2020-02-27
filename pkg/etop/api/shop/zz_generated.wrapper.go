@@ -2003,12 +2003,12 @@ type wrapConnectionService struct {
 }
 
 type DeleteShopConnectionEndpoint struct {
-	*api.DeleteShopConnectionRequest
+	*inttypes.DeleteShopConnectionRequest
 	Result  *cm.DeletedResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *api.DeleteShopConnectionRequest) (resp *cm.DeletedResponse, err error) {
+func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *inttypes.DeleteShopConnectionRequest) (resp *cm.DeletedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2050,11 +2050,11 @@ func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *ap
 
 type GetAvailableConnectionsEndpoint struct {
 	*cm.Empty
-	Result  *api.GetConnectionsResponse
+	Result  *inttypes.GetConnectionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req *cm.Empty) (resp *api.GetConnectionsResponse, err error) {
+func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetConnectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2096,11 +2096,11 @@ func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req 
 
 type GetConnectionsEndpoint struct {
 	*cm.Empty
-	Result  *api.GetConnectionsResponse
+	Result  *inttypes.GetConnectionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *api.GetConnectionsResponse, err error) {
+func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetConnectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2142,11 +2142,11 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 
 type GetShopConnectionsEndpoint struct {
 	*cm.Empty
-	Result  *api.GetShopConnectionsResponse
+	Result  *inttypes.GetShopConnectionsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.Empty) (resp *api.GetShopConnectionsResponse, err error) {
+func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetShopConnectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2187,12 +2187,12 @@ func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.E
 }
 
 type LoginShopConnectionEndpoint struct {
-	*api.LoginShopConnectionRequest
-	Result  *api.ShopConnection
+	*inttypes.LoginShopConnectionRequest
+	Result  *inttypes.ShopConnection
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *api.LoginShopConnectionRequest) (resp *api.ShopConnection, err error) {
+func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *inttypes.LoginShopConnectionRequest) (resp *inttypes.ShopConnection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2233,12 +2233,12 @@ func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *api
 }
 
 type RegisterShopConnectionEndpoint struct {
-	*api.RegisterShopConnectionRequest
-	Result  *api.ShopConnection
+	*inttypes.RegisterShopConnectionRequest
+	Result  *inttypes.ShopConnection
 	Context claims.ShopClaim
 }
 
-func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *api.RegisterShopConnectionRequest) (resp *api.ShopConnection, err error) {
+func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *inttypes.RegisterShopConnectionRequest) (resp *inttypes.ShopConnection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2267,6 +2267,52 @@ func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RegisterShopConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateShopConnectionEndpoint struct {
+	*inttypes.UpdateShopConnectionRequest
+	Result  *cm.UpdatedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapConnectionService) UpdateShopConnection(ctx context.Context, req *inttypes.UpdateShopConnectionRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Connection/UpdateShopConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShopConnectionEndpoint{UpdateShopConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

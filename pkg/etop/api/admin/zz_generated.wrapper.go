@@ -119,6 +119,198 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	return resp, nil
 }
 
+func WrapConnectionService(s *ConnectionService) api.ConnectionService {
+	return wrapConnectionService{s: s}
+}
+
+type wrapConnectionService struct {
+	s *ConnectionService
+}
+
+type ConfirmConnectionEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) ConfirmConnection(ctx context.Context, req *cm.IDRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/ConfirmConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConfirmConnectionEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ConfirmConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateTopshipConnectionEndpoint struct {
+	*inttypes.CreateTopshipConnectionRequest
+	Result  *inttypes.Connection
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) CreateTopshipConnection(ctx context.Context, req *inttypes.CreateTopshipConnectionRequest) (resp *inttypes.Connection, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/CreateTopshipConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateTopshipConnectionEndpoint{CreateTopshipConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateTopshipConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DisableConnectionEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) DisableConnection(ctx context.Context, req *cm.IDRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/DisableConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DisableConnectionEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DisableConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *inttypes.GetConnectionsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/GetConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetConnectionsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapCreditService(s *CreditService) api.CreditService {
 	return wrapCreditService{s: s}
 }

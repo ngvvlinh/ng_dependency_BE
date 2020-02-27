@@ -100,6 +100,10 @@ func (v Int) String() string {
 	return strconv.Itoa(int(v))
 }
 
+func (v Int) Int() int {
+	return int(v)
+}
+
 // Float handles null, string and float from json as float
 type Float float64
 

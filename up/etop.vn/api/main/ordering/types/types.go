@@ -29,28 +29,28 @@ type ProductInfo struct {
 }
 
 type Address struct {
-	FullName string
-	Phone    string
-	Email    string
-	Company  string
-	Address1 string
-	Address2 string
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+	Company  string `json:"company"`
+	Address1 string `json:"address_1"`
+	Address2 string `json:"address_2"`
 	Location
 }
 
 type Location struct {
-	ProvinceCode string
-	Province     string
-	DistrictCode string
-	District     string
-	WardCode     string
-	Ward         string
-	Coordinates  *Coordinates
+	ProvinceCode string       `json:"province_code"`
+	Province     string       `json:"province"`
+	DistrictCode string       `json:"district_code"`
+	District     string       `json:"district"`
+	WardCode     string       `json:"ward_code"`
+	Ward         string       `json:"ward"`
+	Coordinates  *Coordinates `json:"coordinates"`
 }
 
 type Coordinates struct {
-	Latitude  float32
-	Longitude float32
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
 }
 
 // +enum

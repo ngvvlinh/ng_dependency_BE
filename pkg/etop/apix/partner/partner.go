@@ -8,8 +8,10 @@ import (
 	"strings"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/shipping"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	extpartner "etop.vn/api/top/external/partner"
@@ -34,17 +36,20 @@ import (
 )
 
 var (
-	idempgroup        *idemp.RedisGroup
-	authStore         auth.Generator
-	authURL           string
-	locationQuery     location.QueryBus
-	customerQuery     *customering.QueryBus
-	customerAggregate *customering.CommandBus
-	addressQuery      *addressing.QueryBus
-	addressAggregate  *addressing.CommandBus
-	inventoryQuery    *inventory.QueryBus
-	catalogAggregate  *catalog.CommandBus
-	catalogQuery      *catalog.QueryBus
+	idempgroup          *idemp.RedisGroup
+	authStore           auth.Generator
+	authURL             string
+	locationQuery       location.QueryBus
+	customerQuery       *customering.QueryBus
+	customerAggregate   *customering.CommandBus
+	addressQuery        *addressing.QueryBus
+	addressAggregate    *addressing.CommandBus
+	inventoryQuery      *inventory.QueryBus
+	catalogAggregate    *catalog.CommandBus
+	catalogQuery        *catalog.QueryBus
+	connectionQuery     connectioning.QueryBus
+	connectionAggregate connectioning.CommandBus
+	shippingAggregate   shipping.CommandBus
 
 	ll = l.New()
 )
@@ -67,8 +72,11 @@ func init() {
 
 type MiscService struct{}
 type ShopService struct{}
+type ShipmentConnectionService struct{}
+type ShipmentService struct{}
 type WebhookService struct{}
 type HistoryService struct{}
+
 type ShippingService struct{}
 type CustomerService struct{}
 type CustomerAddressService struct{}
@@ -98,6 +106,8 @@ var productService = &ProductService{}
 var productCollectionService = &ProductCollectionService{}
 var productCollectionRelationshipService = &ProductCollectionRelationshipService{}
 var variantService = &VariantService{}
+var shipmentConnectionService = &ShipmentConnectionService{}
+var shipmentService = &ShipmentService{}
 
 func Init(
 	sd cmService.Shutdowner,
@@ -112,6 +122,9 @@ func Init(
 	inventoryQ *inventory.QueryBus,
 	catalogQ *catalog.QueryBus,
 	catalogA *catalog.CommandBus,
+	connectionQ connectioning.QueryBus,
+	connectionA connectioning.CommandBus,
+	shippingAggr shipping.CommandBus,
 ) {
 	if _authURL == "" {
 		ll.Panic("no auth_url")
@@ -134,6 +147,9 @@ func Init(
 	inventoryQuery = inventoryQ
 	catalogAggregate = catalogA
 	catalogQuery = catalogQ
+	connectionQuery = connectionQ
+	connectionAggregate = connectionA
+	shippingAggregate = shippingAggr
 }
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {

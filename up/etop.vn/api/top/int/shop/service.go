@@ -355,12 +355,13 @@ type StocktakeService interface {
 
 // +apix:path=/shop.Connection
 type ConnectionService interface {
-	GetConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
-	GetAvailableConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
-	GetShopConnections(context.Context, *cm.Empty) (*GetShopConnectionsResponse, error)
-	RegisterShopConnection(context.Context, *RegisterShopConnectionRequest) (*ShopConnection, error)
-	LoginShopConnection(context.Context, *LoginShopConnectionRequest) (*ShopConnection, error)
-	DeleteShopConnection(context.Context, *DeleteShopConnectionRequest) (*cm.DeletedResponse, error)
+	GetConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
+	GetAvailableConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
+	GetShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
+	RegisterShopConnection(context.Context, *types.RegisterShopConnectionRequest) (*types.ShopConnection, error)
+	LoginShopConnection(context.Context, *types.LoginShopConnectionRequest) (*types.ShopConnection, error)
+	DeleteShopConnection(context.Context, *types.DeleteShopConnectionRequest) (*cm.DeletedResponse, error)
+	UpdateShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Refund
