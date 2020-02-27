@@ -6846,6 +6846,7 @@
           "format": "int64"
         },
         "reason": {
+          "description": "**Deprecated:** use cancel_reason instead\n",
           "type": "string"
         }
       }
@@ -6876,6 +6877,7 @@
           "format": "int64"
         },
         "reson": {
+          "description": "**Deprecated:** use cancel_reason instead\n",
           "type": "string"
         }
       }

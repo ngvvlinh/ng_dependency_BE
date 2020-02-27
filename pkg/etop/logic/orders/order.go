@@ -1049,6 +1049,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 	// fulfillment errors when canceling order, it will appear in response
 	var errs []error
 	fulfillments := getOrderQuery.Result.Fulfillments
+	order.CancelReason = cancelReason
 	if len(fulfillments) > 0 {
 		_errs, err := TryCancellingFulfillments(ctx, order, fulfillments)
 		if err != nil {

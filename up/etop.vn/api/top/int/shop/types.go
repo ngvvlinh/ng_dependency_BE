@@ -117,8 +117,9 @@ type PurchaseOrderLine struct {
 func (m *PurchaseOrderLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelPurchaseOrderRequest struct {
-	Id                   dot.ID                              `json:"id"`
-	CancelReason         string                              `json:"cancel_reason"`
+	Id           dot.ID `json:"id"`
+	CancelReason string `json:"cancel_reason"`
+	// @deprecated use cancel_reason instead
 	Reason               string                              `json:"reason"`
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher `json:"auto_inventory_voucher"`
 }
@@ -1560,7 +1561,8 @@ func (m *UpdateReceiptRequest) String() string { return jsonx.MustMarshalToStrin
 type CancelReceiptRequest struct {
 	Id           dot.ID `json:"id"`
 	CancelReason string `json:"cancel_reason"`
-	Reason       string `json:"reson"`
+	// @deprecated use cancel_reason instead
+	Reason string `json:"reson"`
 }
 
 func (m *CancelReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }

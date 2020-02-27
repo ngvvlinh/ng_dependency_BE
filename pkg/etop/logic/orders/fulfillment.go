@@ -651,8 +651,9 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 					SyncAt: time.Now(),
 				},
-				ShopConfirm: status3.N,
-				Status:      status5.N,
+				ShopConfirm:  status3.N,
+				Status:       status5.N,
+				CancelReason: order.CancelReason,
 			}
 			update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
 			if err := bus.Dispatch(ctx, update2Cmd); err != nil {
