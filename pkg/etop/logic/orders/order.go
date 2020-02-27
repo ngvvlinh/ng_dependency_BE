@@ -387,6 +387,10 @@ func PrepareOrderLines(
 		if line == nil {
 			return nil, cm.Error(cm.InvalidArgument, "Invalid order line", nil)
 		}
+		productName := strings.ReplaceAll(line.ProductName, " ", "")
+		if len(productName) < 2 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tên sản phẩm phải có ít nhất hai kí tự trở lên: '%v'", line.ProductName)
+		}
 		if line.VariantId == 0 {
 			continue
 		}
