@@ -76,7 +76,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 	if args.PaidAt.IsZero() {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ngày tạo phiếu không hợp lệ")
 	}
-	if args.TraderID == 0 {
+	if args.TraderID == 0 && args.RefType != receipt_ref.Order {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đối tác không hợp lệ")
 	}
 	if args.LedgerID == 0 {
@@ -282,6 +282,9 @@ func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID 
 }
 
 func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID dot.ID, receipt *receipting.Receipt) error {
+	if receipt.RefType == receipt_ref.Order && receipt.TraderID == 0 {
+		return nil
+	}
 	query := &tradering.GetTraderInfoByIDQuery{
 		ID:     receipt.TraderID,
 		ShopID: shopID,

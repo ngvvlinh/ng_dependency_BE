@@ -10,7 +10,6 @@ import (
 	"etop.vn/api/main/shipping"
 	"etop.vn/api/services/affiliate"
 	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/customering/customer_type"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
 	"etop.vn/api/top/types/etc/status3"
@@ -216,7 +215,6 @@ func (p *ProcessManager) validateTotalAmountAndReceivedAmount(
 
 func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.ReceiptCreatingEvent) error {
 	var orders []*ordering.Order
-	var isIndependentCustomer bool
 	mOrder := make(map[dot.ID]*ordering.Order)
 	receipt := event.Receipt
 	refIDs := event.RefIDs
@@ -224,18 +222,15 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	if receipt.RefType != receipt_ref.Order {
 		return nil
 	}
-
-	getCustomerQuery := &customering.GetCustomerByIDQuery{
-		ID:     receipt.TraderID,
-		ShopID: receipt.ShopID,
+	if receipt.TraderID != 0 {
+		getCustomerQuery := &customering.GetCustomerByIDQuery{
+			ID:     receipt.TraderID,
+			ShopID: receipt.ShopID,
+		}
+		if err := p.customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
+			return err
+		}
 	}
-	if err := p.customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
-		return err
-	}
-	if getCustomerQuery.Result.Type == customer_type.Independent {
-		isIndependentCustomer = true
-	}
-
 	// List orders depend on refIDs
 	query := &ordering.GetOrdersQuery{
 		ShopID: receipt.ShopID,
@@ -247,11 +242,8 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	orders = query.Result.Orders
 	for _, order := range orders {
 		mOrder[order.ID] = order
-		if isIndependentCustomer && order.CustomerID == 0 {
-			continue
-		}
 		if order.CustomerID != receipt.TraderID {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn nhập hàng %v không thuộc đối tác đã chọn", order.Code)
+			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng %v không thuộc đối tác đã chọn", order.Code)
 		}
 	}
 
