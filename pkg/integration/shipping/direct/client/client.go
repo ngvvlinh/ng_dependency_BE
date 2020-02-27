@@ -115,7 +115,7 @@ func (c *Client) CancelFulfillment(ctx context.Context, req *CancelFulfillmentRe
 func (c *Client) sendPostRequest(ctx context.Context, path string, req interface{}, resp ResponseInterface, msg string) error {
 	res, err := c.rclient.R().
 		SetBody(req).
-		SetHeader("token", c.token).
+		SetHeader("Authorization", "Bearer "+c.token).
 		Post(path)
 	if err != nil {
 		return cm.Errorf(cm.Internal, err, "Lỗi kết nối với %v", c.connName)

@@ -15,6 +15,141 @@
     "version": "v1"
   },
   "paths": {
+    "/v1/carrier.Shipment/UpdateFulfillment": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillment",
+        "operationId": "carrier.Shipment-UpdateFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iqUpdateFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/CreateConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "CreateConnection",
+        "operationId": "carrier.ShipmentConnection-CreateConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iqCreateConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/iqShipmentConnection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/DeleteConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "DeleteConnection",
+        "operationId": "carrier.ShipmentConnection-DeleteConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/GetConnections": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "GetConnections",
+        "operationId": "carrier.ShipmentConnection-GetConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/iqGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/UpdateConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "UpdateConnection",
+        "operationId": "carrier.ShipmentConnection-UpdateConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/iqUpdateConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/iqShipmentConnection"
+            }
+          }
+        }
+      }
+    },
     "/v1/partner.Customer/CreateCustomer": {
       "post": {
         "tags": [
@@ -1226,141 +1361,6 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/mrProductCollectionRelationshipsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/partner.Shipment/UpdateFulfillment": {
-      "post": {
-        "tags": [
-          "Shipment"
-        ],
-        "summary": "UpdateFulfillment",
-        "operationId": "partner.Shipment-UpdateFulfillment",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqUpdateFulfillmentRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/partner.ShipmentConnection/CreateConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "CreateConnection",
-        "operationId": "partner.ShipmentConnection-CreateConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqCreateConnectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqShipmentConnection"
-            }
-          }
-        }
-      }
-    },
-    "/v1/partner.ShipmentConnection/DeleteConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "DeleteConnection",
-        "operationId": "partner.ShipmentConnection-DeleteConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktDeletedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/partner.ShipmentConnection/GetConnections": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "GetConnections",
-        "operationId": "partner.ShipmentConnection-GetConnections",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqGetConnectionsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/partner.ShipmentConnection/UpdateConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "UpdateConnection",
-        "operationId": "partner.ShipmentConnection-UpdateConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqUpdateConnectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqShipmentConnection"
             }
           }
         }

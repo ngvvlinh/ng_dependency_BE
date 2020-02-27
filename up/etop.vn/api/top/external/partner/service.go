@@ -25,7 +25,7 @@ type ShopService interface {
 	CurrentShop(context.Context, *cm.Empty) (*etop.PublicAccountInfo, error)
 }
 
-// +apix:path=/partner.ShipmentConnection
+// +apix:path=/carrier.ShipmentConnection
 type ShipmentConnectionService interface {
 	GetConnections(context.Context, *cm.Empty) (*GetConnectionsResponse, error)
 	CreateConnection(context.Context, *CreateConnectionRequest) (*ShipmentConnection, error)
@@ -33,7 +33,7 @@ type ShipmentConnectionService interface {
 	DeleteConnection(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
-// +apix:path=/partner.Shipment
+// +apix:path=/carrier.Shipment
 type ShipmentService interface {
 	UpdateFulfillment(context.Context, *UpdateFulfillmentRequest) (*cm.UpdatedResponse, error)
 }

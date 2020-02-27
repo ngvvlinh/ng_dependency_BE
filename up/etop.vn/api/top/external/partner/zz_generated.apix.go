@@ -768,7 +768,7 @@ func NewShipmentConnectionServiceServer(svc ShipmentConnectionService) Server {
 	}
 }
 
-const ShipmentConnectionServicePathPrefix = "/partner.ShipmentConnection/"
+const ShipmentConnectionServicePathPrefix = "/carrier.ShipmentConnection/"
 
 func (s *ShipmentConnectionServiceServer) PathPrefix() string {
 	return ShipmentConnectionServicePathPrefix
@@ -791,25 +791,25 @@ func (s *ShipmentConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, re
 
 func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.ShipmentConnection/CreateConnection":
+	case "/carrier.ShipmentConnection/CreateConnection":
 		msg := &CreateConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateConnection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.ShipmentConnection/DeleteConnection":
+	case "/carrier.ShipmentConnection/DeleteConnection":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteConnection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.ShipmentConnection/GetConnections":
+	case "/carrier.ShipmentConnection/GetConnections":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetConnections(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/partner.ShipmentConnection/UpdateConnection":
+	case "/carrier.ShipmentConnection/UpdateConnection":
 		msg := &UpdateConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateConnection(ctx, msg)
@@ -831,7 +831,7 @@ func NewShipmentServiceServer(svc ShipmentService) Server {
 	}
 }
 
-const ShipmentServicePathPrefix = "/partner.Shipment/"
+const ShipmentServicePathPrefix = "/carrier.Shipment/"
 
 func (s *ShipmentServiceServer) PathPrefix() string {
 	return ShipmentServicePathPrefix
@@ -854,7 +854,7 @@ func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *ShipmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/partner.Shipment/UpdateFulfillment":
+	case "/carrier.Shipment/UpdateFulfillment":
 		msg := &UpdateFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateFulfillment(ctx, msg)
