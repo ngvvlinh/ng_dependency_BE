@@ -38,6 +38,7 @@ import (
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/payment_provider"
 	"etop.vn/api/top/types/etc/payment_source"
+	"etop.vn/api/webserver"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
@@ -217,6 +218,8 @@ var (
 	connectionQuery     connectioning.QueryBus
 	connectionAggr      connectioning.CommandBus
 	shippingQuery       shipping.QueryBus
+	webserverAggr       webserver.CommandBus
+	webserverQuery      webserver.QueryBus
 )
 
 func Init(
@@ -264,6 +267,8 @@ func Init(
 	connectionQ connectioning.QueryBus,
 	connectionA connectioning.CommandBus,
 	shippingQ shipping.QueryBus,
+	webserverA webserver.CommandBus,
+	webserverQ webserver.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -306,10 +311,11 @@ func Init(
 	RefundQuery = refundQ
 	PurchaseRefundAggr = purchaseRefundA
 	PurchaseRefundQuery = purchaseRefundQ
-
 	connectionQuery = connectionQ
 	connectionAggr = connectionA
 	shippingQuery = shippingQ
+	webserverAggr = webserverA
+	webserverQuery = webserverQ
 }
 
 type MiscService struct{}
@@ -343,6 +349,7 @@ type ShipmentService struct{}
 type ConnectionService struct{}
 type RefundService struct{}
 type PurchaseRefundService struct{}
+type WebServerService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -375,6 +382,7 @@ var shipmentService = &ShipmentService{}
 var connectionService = &ConnectionService{}
 var refundService = &RefundService{}
 var purchaseRefundService = &PurchaseRefundService{}
+var webServerService = &WebServerService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

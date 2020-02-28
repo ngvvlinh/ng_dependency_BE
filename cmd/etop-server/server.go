@@ -10,6 +10,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/api/main/identity"
+	webserverinternal "etop.vn/api/webserver"
 	"etop.vn/backend/cmd/etop-server/config"
 	paymentlogaggregate "etop.vn/backend/com/etc/logging/payment/aggregate"
 	paymentaggregate "etop.vn/backend/com/external/payment/payment/aggregate"
@@ -52,10 +53,10 @@ import (
 	"etop.vn/common/l"
 )
 
-func startServers() []*http.Server {
+func startServers(webServerQuery webserverinternal.QueryBus) []*http.Server {
 	return []*http.Server{
 		startEtopServer(),
-		startWebServer(),
+		startWebServer(webServerQuery),
 		startGHNWebhookServer(),
 		startGHTKWebhookServer(),
 		startVTPostWebhookServer(),
@@ -240,14 +241,13 @@ func startEtopServer() *http.Server {
 	return svr
 }
 
-func startWebServer() *http.Server {
+func startWebServer(webServerQuery webserverinternal.QueryBus) *http.Server {
 	ecom := cfg.Ecom
 	c := webserver.Config{
 		MainSite: ecom.MainSite,
 		RootPath: projectpath.GetPath(),
 	}
-
-	handler, err := webserver.New(c)
+	handler, err := webserver.New(c, webServerQuery)
 	if err != nil {
 		ll.S.Panicf("error starting web server: %v", err)
 	}

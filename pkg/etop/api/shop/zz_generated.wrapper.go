@@ -11746,3 +11746,1075 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	errs = cmwrapper.HasErrors(resp)
 	return resp, nil
 }
+
+func WrapWebServerService(s *WebServerService) api.WebServerService {
+	return wrapWebServerService{s: s}
+}
+
+type wrapWebServerService struct {
+	s *WebServerService
+}
+
+type CreateOrUpdateWsCategoryEndpoint struct {
+	*api.CreateOrUpdateWsCategoryRequest
+	Result  *api.WsCategory
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) CreateOrUpdateWsCategory(ctx context.Context, req *api.CreateOrUpdateWsCategoryRequest) (resp *api.WsCategory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/CreateOrUpdateWsCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateWsCategoryEndpoint{CreateOrUpdateWsCategoryRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wscategory:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wscategory:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateOrUpdateWsCategory(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateOrUpdateWsProductEndpoint struct {
+	*api.CreateOrUpdateWsProductRequest
+	Result  *api.WsProduct
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) CreateOrUpdateWsProduct(ctx context.Context, req *api.CreateOrUpdateWsProductRequest) (resp *api.WsProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/CreateOrUpdateWsProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateWsProductEndpoint{CreateOrUpdateWsProductRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wsproduct:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wsproduct:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateOrUpdateWsProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateWsPageEndpoint struct {
+	*api.CreateWsPageRequest
+	Result  *api.WsPage
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) CreateWsPage(ctx context.Context, req *api.CreateWsPageRequest) (resp *api.WsPage, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/CreateWsPage"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateWsPageEndpoint{CreateWsPageRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateWsPage(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateWsWebsiteEndpoint struct {
+	*api.CreateWsWebsiteRequest
+	Result  *api.WsWebsite
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) CreateWsWebsite(ctx context.Context, req *api.CreateWsWebsiteRequest) (resp *api.WsWebsite, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/CreateWsWebsite"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateWsWebsiteEndpoint{CreateWsWebsiteRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wswebsite:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wswebsite:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateWsWebsite(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteWsPageEndpoint struct {
+	*api.DeteleWsPageRequest
+	Result  *api.DeteleWsPageResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) DeleteWsPage(ctx context.Context, req *api.DeteleWsPageRequest) (resp *api.DeteleWsPageResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/DeleteWsPage"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteWsPageEndpoint{DeteleWsPageRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:delete", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteWsPage(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsCategoriesEndpoint struct {
+	*api.GetWsCategoriesRequest
+	Result  *api.GetWsCategoriesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsCategories(ctx context.Context, req *api.GetWsCategoriesRequest) (resp *api.GetWsCategoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsCategories"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsCategoriesEndpoint{GetWsCategoriesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wscategory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsCategories(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsCategoriesByIDsEndpoint struct {
+	*api.GetWsCategoriesByIDsRequest
+	Result  *api.GetWsCategoriesByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsCategoriesByIDs(ctx context.Context, req *api.GetWsCategoriesByIDsRequest) (resp *api.GetWsCategoriesByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsCategoriesByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsCategoriesByIDsEndpoint{GetWsCategoriesByIDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wscategory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsCategoriesByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsCategoryEndpoint struct {
+	*api.GetWsCategoryRequest
+	Result  *api.WsCategory
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsCategory(ctx context.Context, req *api.GetWsCategoryRequest) (resp *api.WsCategory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsCategoryEndpoint{GetWsCategoryRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wscategory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsCategory(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsPageEndpoint struct {
+	*api.GetWsPageRequest
+	Result  *api.WsPage
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsPage(ctx context.Context, req *api.GetWsPageRequest) (resp *api.WsPage, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsPage"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsPageEndpoint{GetWsPageRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsPage(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsPagesEndpoint struct {
+	*api.GetWsPagesRequest
+	Result  *api.GetWsPagesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsPages(ctx context.Context, req *api.GetWsPagesRequest) (resp *api.GetWsPagesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsPages"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsPagesEndpoint{GetWsPagesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsPages(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsPagesByIDsEndpoint struct {
+	*api.GetWsPagesByIDsRequest
+	Result  *api.GetWsPagesByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsPagesByIDs(ctx context.Context, req *api.GetWsPagesByIDsRequest) (resp *api.GetWsPagesByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsPagesByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsPagesByIDsEndpoint{GetWsPagesByIDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsPagesByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsProductEndpoint struct {
+	*api.GetWsProductRequest
+	Result  *api.WsProduct
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsProduct(ctx context.Context, req *api.GetWsProductRequest) (resp *api.WsProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsProductEndpoint{GetWsProductRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wsproduct:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsProductsEndpoint struct {
+	*api.GetWsProductsRequest
+	Result  *api.GetWsProductsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsProducts(ctx context.Context, req *api.GetWsProductsRequest) (resp *api.GetWsProductsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsProducts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsProductsEndpoint{GetWsProductsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wsproduct:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsProducts(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsProductsByIDsEndpoint struct {
+	*api.GetWsProductsByIDsRequest
+	Result  *api.GetWsProductsByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsProductsByIDs(ctx context.Context, req *api.GetWsProductsByIDsRequest) (resp *api.GetWsProductsByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsProductsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsProductsByIDsEndpoint{GetWsProductsByIDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wsproduct:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsProductsByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsWebsiteEndpoint struct {
+	*api.GetWsWebsiteRequest
+	Result  *api.WsWebsite
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsWebsite(ctx context.Context, req *api.GetWsWebsiteRequest) (resp *api.WsWebsite, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsWebsite"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsWebsiteEndpoint{GetWsWebsiteRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wswebsite:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsWebsite(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsWebsitesEndpoint struct {
+	*api.GetWsWebsitesRequest
+	Result  *api.GetWsWebsitesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsWebsites(ctx context.Context, req *api.GetWsWebsitesRequest) (resp *api.GetWsWebsitesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsWebsites"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsWebsitesEndpoint{GetWsWebsitesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wswebsite:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsWebsites(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetWsWebsitesByIDsEndpoint struct {
+	*api.GetWsWebsitesByIDsRequest
+	Result  *api.GetWsWebsitesByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) GetWsWebsitesByIDs(ctx context.Context, req *api.GetWsWebsitesByIDsRequest) (resp *api.GetWsWebsitesByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/GetWsWebsitesByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetWsWebsitesByIDsEndpoint{GetWsWebsitesByIDsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wswebsite:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetWsWebsitesByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateWsPageEndpoint struct {
+	*api.UpdateWsPageRequest
+	Result  *api.WsPage
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) UpdateWsPage(ctx context.Context, req *api.UpdateWsPageRequest) (resp *api.WsPage, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/UpdateWsPage"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateWsPageEndpoint{UpdateWsPageRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wspage:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wspage:update", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateWsPage(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateWsWebsiteEndpoint struct {
+	*api.UpdateWsWebsiteRequest
+	Result  *api.WsWebsite
+	Context claims.ShopClaim
+}
+
+func (s wrapWebServerService) UpdateWsWebsite(ctx context.Context, req *api.UpdateWsWebsiteRequest) (resp *api.WsWebsite, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.WebServer/UpdateWsWebsite"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateWsWebsiteEndpoint{UpdateWsWebsiteRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/webserver/wswebsite:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/webserver/wswebsite:update", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateWsWebsite(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}

@@ -40,12 +40,14 @@ var SortShopProduct = map[string]string{
 	"product_id": "",
 	"created_at": "",
 	"updated_at": "updated_at",
+	"name":       "",
 }
 
 var SortShopCategory = map[string]string{
 	"category_id": "",
 	"created_at":  "",
 	"updated_at":  "",
+	"name":        "",
 }
 
 var SortShopCollection = map[string]string{

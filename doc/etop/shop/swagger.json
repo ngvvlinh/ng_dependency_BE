@@ -5640,6 +5640,523 @@
           }
         }
       }
+    },
+    "/api/shop.WebServer/CreateOrUpdateWsCategory": {
+      "post": {
+        "description": "ws_category\n",
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "CreateOrUpdateWsCategory",
+        "operationId": "shop.WebServer-CreateOrUpdateWsCategory",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateOrUpdateWsCategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsCategory"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/CreateOrUpdateWsProduct": {
+      "post": {
+        "description": "ws_product\n",
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "CreateOrUpdateWsProduct",
+        "operationId": "shop.WebServer-CreateOrUpdateWsProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateOrUpdateWsProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/CreateWsPage": {
+      "post": {
+        "description": "ws_page\n",
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "CreateWsPage",
+        "operationId": "shop.WebServer-CreateWsPage",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateWsPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsPage"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/CreateWsWebsite": {
+      "post": {
+        "description": "ws_website\n",
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "CreateWsWebsite",
+        "operationId": "shop.WebServer-CreateWsWebsite",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateWsWebsiteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsWebsite"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/DeleteWsPage": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "DeleteWsPage",
+        "operationId": "shop.WebServer-DeleteWsPage",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paDeteleWsPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paDeteleWsPageResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsCategories": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsCategories",
+        "operationId": "shop.WebServer-GetWsCategories",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsCategoriesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsCategoriesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsCategoriesByIDs": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsCategoriesByIDs",
+        "operationId": "shop.WebServer-GetWsCategoriesByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsCategoriesByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsCategoriesByIDsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsCategory": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsCategory",
+        "operationId": "shop.WebServer-GetWsCategory",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsCategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsCategory"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsPage": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsPage",
+        "operationId": "shop.WebServer-GetWsPage",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsPage"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsPages": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsPages",
+        "operationId": "shop.WebServer-GetWsPages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsPagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsPagesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsPagesByIDs": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsPagesByIDs",
+        "operationId": "shop.WebServer-GetWsPagesByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsPagesByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsPagesByIDsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsProduct": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsProduct",
+        "operationId": "shop.WebServer-GetWsProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsProducts": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsProducts",
+        "operationId": "shop.WebServer-GetWsProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsProductsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsProductsByIDs": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsProductsByIDs",
+        "operationId": "shop.WebServer-GetWsProductsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsProductsByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsProductsByIDsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsWebsite": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsWebsite",
+        "operationId": "shop.WebServer-GetWsWebsite",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsWebsiteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsWebsite"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsWebsites": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsWebsites",
+        "operationId": "shop.WebServer-GetWsWebsites",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsWebsitesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsWebsitesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/GetWsWebsitesByIDs": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "GetWsWebsitesByIDs",
+        "operationId": "shop.WebServer-GetWsWebsitesByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetWsWebsitesByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetWsWebsitesByIDsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/UpdateWsPage": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "UpdateWsPage",
+        "operationId": "shop.WebServer-UpdateWsPage",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateWsPageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsPage"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.WebServer/UpdateWsWebsite": {
+      "post": {
+        "tags": [
+          "WebServer"
+        ],
+        "summary": "UpdateWsWebsite",
+        "operationId": "shop.WebServer-UpdateWsWebsite",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateWsWebsiteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paWsWebsite"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -6331,6 +6848,13 @@
         }
       }
     },
+    "fjWsBannerShowStyle": {
+      "type": "string",
+      "enum": [
+        "slider",
+        "grid"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -6650,6 +7174,34 @@
         }
       }
     },
+    "paBanner": {
+      "type": "object",
+      "properties": {
+        "banner_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paBannerItem"
+          }
+        },
+        "style": {
+          "$ref": "#/definitions/fjWsBannerShowStyle"
+        }
+      }
+    },
+    "paBannerItem": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "paBrand": {
       "type": "object",
       "properties": {
@@ -6896,6 +7448,18 @@
           "items": {
             "$ref": "#/definitions/paShopCollection"
           }
+        }
+      }
+    },
+    "paComparePrice": {
+      "type": "object",
+      "properties": {
+        "compare_price": {
+          "type": "integer"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -7242,6 +7806,54 @@
         }
       }
     },
+    "paCreateOrUpdateWsCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image": {
+          "type": "string"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "slug": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateOrUpdateWsProductRequest": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "compare_prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paComparePrice"
+          }
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "slug": {
+          "type": "string"
+        }
+      }
+    },
     "paCreatePSCategoryRequest": {
       "type": "object",
       "properties": {
@@ -7555,6 +8167,73 @@
         }
       }
     },
+    "paCreateWsPageRequest": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "slug": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateWsWebsiteRequest": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "$ref": "#/definitions/paBanner"
+        },
+        "description": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "facebook": {
+          "$ref": "#/definitions/paFacebook"
+        },
+        "favicon_image": {
+          "type": "string"
+        },
+        "google_analytics_id": {
+          "type": "string"
+        },
+        "logo_image": {
+          "type": "string"
+        },
+        "main_color": {
+          "type": "string"
+        },
+        "new_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "outstanding_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "over_stock": {
+          "type": "boolean"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsGeneralSEO"
+        },
+        "shop_info": {
+          "$ref": "#/definitions/paShopInfo"
+        }
+      }
+    },
     "paCustomer": {
       "type": "object",
       "properties": {
@@ -7839,6 +8518,23 @@
         }
       }
     },
+    "paDeteleWsPageRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paDeteleWsPageResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
     "paEtopProduct": {
       "type": "object",
       "properties": {
@@ -8046,6 +8742,17 @@
           "format": "date-time"
         },
         "website_url": {
+          "type": "string"
+        }
+      }
+    },
+    "paFacebook": {
+      "type": "object",
+      "properties": {
+        "facebook_id": {
+          "type": "string"
+        },
+        "welcome_message": {
           "type": "string"
         }
       }
@@ -8659,6 +9366,246 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetWsCategoriesByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paGetWsCategoriesByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "ws_categorys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsCategory"
+          }
+        }
+      }
+    },
+    "paGetWsCategoriesRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetWsCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "ws_categorys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsCategory"
+          }
+        }
+      }
+    },
+    "paGetWsCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetWsPageRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetWsPagesByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paGetWsPagesByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "ws_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsPage"
+          }
+        }
+      }
+    },
+    "paGetWsPagesRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetWsPagesResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "ws_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsPage"
+          }
+        }
+      }
+    },
+    "paGetWsProductRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetWsProductsByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paGetWsProductsByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "ws_products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsProduct"
+          }
+        }
+      }
+    },
+    "paGetWsProductsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetWsProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "ws_products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsProduct"
+          }
+        }
+      }
+    },
+    "paGetWsWebsiteRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetWsWebsitesByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paGetWsWebsitesByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "ws_websites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsWebsite"
+          }
+        }
+      }
+    },
+    "paGetWsWebsitesRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetWsWebsitesResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "ws_websites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paWsWebsite"
+          }
         }
       }
     },
@@ -9799,6 +10746,23 @@
         }
       }
     },
+    "paShopInfo": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "facebook_fanpage": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "paShopProduct": {
       "type": "object",
       "required": [
@@ -10043,6 +11007,27 @@
           "items": {
             "$ref": "#/definitions/paShopVariant"
           }
+        }
+      }
+    },
+    "paSpecialProduct": {
+      "type": "object",
+      "properties": {
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopProduct"
+          }
+        },
+        "style": {
+          "$ref": "#/definitions/ueWsListProductShowStyle"
         }
       }
     },
@@ -11250,6 +12235,81 @@
         }
       }
     },
+    "paUpdateWsPageRequest": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "slug": {
+          "type": "string"
+        }
+      }
+    },
+    "paUpdateWsWebsiteRequest": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "$ref": "#/definitions/paBanner"
+        },
+        "description": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "facebook": {
+          "$ref": "#/definitions/paFacebook"
+        },
+        "favicon_image": {
+          "type": "string"
+        },
+        "google_analytics_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "logo_image": {
+          "type": "string"
+        },
+        "main_color": {
+          "type": "string"
+        },
+        "new_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "outstanding_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "over_stock": {
+          "type": "boolean"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsGeneralSEO"
+        },
+        "shop_info": {
+          "$ref": "#/definitions/paShopInfo"
+        }
+      }
+    },
     "paUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",
       "properties": {
@@ -11283,6 +12343,212 @@
         },
         "website_url": {
           "type": "string"
+        }
+      }
+    },
+    "paWsCategory": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "category": {
+          "$ref": "#/definitions/paShopCategory"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image": {
+          "type": "string"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "paWsGeneralSEO": {
+      "type": "object",
+      "properties": {
+        "site_content": {
+          "type": "string"
+        },
+        "site_meta_description": {
+          "type": "string"
+        },
+        "site_meta_keyword": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "paWsPage": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "paWsProduct": {
+      "type": "object",
+      "properties": {
+        "appear": {
+          "type": "boolean"
+        },
+        "compare_price": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paComparePrice"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsSEOConfig"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_product": {
+          "$ref": "#/definitions/paShopProduct"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "paWsSEOConfig": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "keyword": {
+          "type": "string"
+        }
+      }
+    },
+    "paWsWebsite": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "$ref": "#/definitions/paBanner"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "domain_name": {
+          "type": "string"
+        },
+        "facebook": {
+          "$ref": "#/definitions/paFacebook"
+        },
+        "favicon_image": {
+          "type": "string"
+        },
+        "google_analytics_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "logo_image": {
+          "type": "string"
+        },
+        "main_color": {
+          "type": "string"
+        },
+        "new_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "outstanding_product": {
+          "$ref": "#/definitions/paSpecialProduct"
+        },
+        "over_stock": {
+          "type": "boolean"
+        },
+        "seo_config": {
+          "$ref": "#/definitions/paWsGeneralSEO"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_info": {
+          "$ref": "#/definitions/paShopInfo"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -13833,6 +15099,15 @@
         "anonymous"
       ]
     },
+    "ueWsListProductShowStyle": {
+      "type": "string",
+      "enum": [
+        "first",
+        "second",
+        "third",
+        "fourth"
+      ]
+    },
     "ujLedgerType": {
       "type": "string",
       "enum": [
@@ -13977,6 +15252,9 @@
     },
     {
       "name": "Trading"
+    },
+    {
+      "name": "WebServer"
     }
   ]
 }

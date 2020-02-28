@@ -2477,3 +2477,156 @@ func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
 	}
 }
+
+type WebServerServiceServer struct {
+	inner WebServerService
+}
+
+func NewWebServerServiceServer(svc WebServerService) Server {
+	return &WebServerServiceServer{
+		inner: svc,
+	}
+}
+
+const WebServerServicePathPrefix = "/shop.WebServer/"
+
+func (s *WebServerServiceServer) PathPrefix() string {
+	return WebServerServicePathPrefix
+}
+
+func (s *WebServerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *WebServerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.WebServer/CreateOrUpdateWsCategory":
+		msg := &CreateOrUpdateWsCategoryRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateOrUpdateWsCategory(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/CreateOrUpdateWsProduct":
+		msg := &CreateOrUpdateWsProductRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateOrUpdateWsProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/CreateWsPage":
+		msg := &CreateWsPageRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateWsPage(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/CreateWsWebsite":
+		msg := &CreateWsWebsiteRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateWsWebsite(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/DeleteWsPage":
+		msg := &DeteleWsPageRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteWsPage(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsCategories":
+		msg := &GetWsCategoriesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsCategories(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsCategoriesByIDs":
+		msg := &GetWsCategoriesByIDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsCategoriesByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsCategory":
+		msg := &GetWsCategoryRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsCategory(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsPage":
+		msg := &GetWsPageRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsPage(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsPages":
+		msg := &GetWsPagesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsPages(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsPagesByIDs":
+		msg := &GetWsPagesByIDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsPagesByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsProduct":
+		msg := &GetWsProductRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsProducts":
+		msg := &GetWsProductsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsProducts(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsProductsByIDs":
+		msg := &GetWsProductsByIDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsProductsByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsWebsite":
+		msg := &GetWsWebsiteRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsWebsite(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsWebsites":
+		msg := &GetWsWebsitesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsWebsites(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/GetWsWebsitesByIDs":
+		msg := &GetWsWebsitesByIDsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetWsWebsitesByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/UpdateWsPage":
+		msg := &UpdateWsPageRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateWsPage(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.WebServer/UpdateWsWebsite":
+		msg := &UpdateWsWebsiteRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateWsWebsite(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}

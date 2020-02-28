@@ -175,6 +175,23 @@ const (
 
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
+
+	WsWebsiteCreate permission.ActionType = "shop/webserver/wswebsite:create"
+	WsWebsiteUpdate permission.ActionType = "shop/webserver/wswebsite:update"
+	WsWebsiteView   permission.ActionType = "shop/webserver/wswebsite:view"
+
+	WsProductCreate permission.ActionType = "shop/webserver/wsproduct:create"
+	WsProductUpdate permission.ActionType = "shop/webserver/wsproduct:update"
+	WsProductView   permission.ActionType = "shop/webserver/wsproduct:view"
+
+	WsCategoryCreate permission.ActionType = "shop/webserver/wscategory:create"
+	WsCategoryUpdate permission.ActionType = "shop/webserver/wscategory:update"
+	WsCategoryView   permission.ActionType = "shop/webserver/wscategory:view"
+
+	WsPageCreate permission.ActionType = "shop/webserver/wspage:create"
+	WsPageUpdate permission.ActionType = "shop/webserver/wspage:update"
+	WsPageDelete permission.ActionType = "shop/webserver/wspage:delete"
+	WsPageView   permission.ActionType = "shop/webserver/wspage:view"
 )
 
 // ACL declares access control list
@@ -846,6 +863,29 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.PurchaseRefund/GetPurchaseRefund":       {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
 	"shop.PurchaseRefund/GetPurchaseRefundsByIDs": {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
 	"shop.PurchaseRefund/GetPurchaseRefunds":      {Type: Shop, Actions: actions(ShopPurchaseRefundView)},
+
+	"shop.WebServer/CreateWsWebsite":    {Type: Shop, Actions: actions(WsWebsiteCreate)},
+	"shop.WebServer/UpdateWsWebsite":    {Type: Shop, Actions: actions(WsWebsiteUpdate)},
+	"shop.WebServer/GetWsWebsite":       {Type: Shop, Actions: actions(WsWebsiteView)},
+	"shop.WebServer/GetWsWebsites":      {Type: Shop, Actions: actions(WsWebsiteView)},
+	"shop.WebServer/GetWsWebsitesByIDs": {Type: Shop, Actions: actions(WsWebsiteView)},
+
+	"shop.WebServer/CreateOrUpdateWsProduct": {Type: Shop, Actions: actions(WsProductCreate)},
+	"shop.WebServer/GetWsProduct":            {Type: Shop, Actions: actions(WsProductView)},
+	"shop.WebServer/GetWsProducts":           {Type: Shop, Actions: actions(WsProductView)},
+	"shop.WebServer/GetWsProductsByIDs":      {Type: Shop, Actions: actions(WsProductView)},
+
+	"shop.WebServer/CreateOrUpdateWsCategory": {Type: Shop, Actions: actions(WsCategoryCreate)},
+	"shop.WebServer/GetWsCategory":            {Type: Shop, Actions: actions(WsCategoryView)},
+	"shop.WebServer/GetWsCategories":          {Type: Shop, Actions: actions(WsCategoryView)},
+	"shop.WebServer/GetWsCategoriesByIDs":     {Type: Shop, Actions: actions(WsCategoryView)},
+
+	"shop.WebServer/CreateWsPage":    {Type: Shop, Actions: actions(WsPageCreate)},
+	"shop.WebServer/UpdateWsPage":    {Type: Shop, Actions: actions(WsPageUpdate)},
+	"shop.WebServer/DeleteWsPage":    {Type: Shop, Actions: actions(WsPageDelete)},
+	"shop.WebServer/GetWsPage":       {Type: Shop, Actions: actions(WsPageView)},
+	"shop.WebServer/GetWsPages":      {Type: Shop, Actions: actions(WsPageView)},
+	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

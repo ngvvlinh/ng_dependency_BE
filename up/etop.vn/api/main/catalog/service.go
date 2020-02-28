@@ -105,6 +105,7 @@ type QueryService interface {
 	//--Category --//
 	GetShopCategory(context.Context, *GetShopCategoryArgs) (*ShopCategory, error)
 	ListShopCategories(context.Context, *shopping.ListQueryShopArgs) (*ShopCategoriesResponse, error)
+	ListShopCategoriesByIDs(ctx context.Context, shopID dot.ID, ids []dot.ID) (*ShopCategoriesByIDsResponse, error)
 
 	//-- Collection--//
 	GetShopCollection(context.Context, *GetShopCollectionArgs) (*ShopCollection, error)
@@ -225,6 +226,11 @@ type ShopProductsResponse struct {
 }
 
 type ShopCategoriesResponse struct {
+	Categories []*ShopCategory
+	Paging     meta.PageInfo
+}
+
+type ShopCategoriesByIDsResponse struct {
 	Categories []*ShopCategory
 	Paging     meta.PageInfo
 }

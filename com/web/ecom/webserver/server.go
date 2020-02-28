@@ -7,9 +7,13 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
+	"etop.vn/api/webserver"
 	"etop.vn/backend/com/web/ecom/middlewares"
 	cm "etop.vn/backend/pkg/common"
 )
+
+var webserverQueryBus webserver.QueryBus
+var config Config
 
 type Config struct {
 	MainSite string
@@ -22,7 +26,8 @@ type Server struct {
 	cfg  Config
 }
 
-func New(cfg Config) (*Server, error) {
+func New(cfg Config, query webserver.QueryBus) (*Server, error) {
+	webserverQueryBus = query
 	if cfg.MainSite == "" {
 		return nil, cm.Errorf(cm.Internal, nil, "missing main_site")
 	}
@@ -35,6 +40,11 @@ func New(cfg Config) (*Server, error) {
 	e.Use(middleware.Recover())
 	e.Use(middlewares.SiteRouter)
 	e.Static("/assets", filepath.Join(cfg.RootPath, "com/web/ecom/assets"))
+	e.Static("/fonts", filepath.Join(cfg.RootPath, "com/web/ecom/templates/fonts"))
+	e.Static("/css", filepath.Join(cfg.RootPath, "com/web/ecom/templates/css"))
+	e.Static("/js", filepath.Join(cfg.RootPath, "com/web/ecom/templates/js"))
+	e.Static("/images", filepath.Join(cfg.RootPath, "com/web/ecom/templates/images"))
+	e.Static("/vendor", filepath.Join(cfg.RootPath, "com/web/ecom/templates/vendor"))
 
 	templates, err := parseTemplates(filepath.Join(cfg.RootPath, "com/web/ecom/templates", "*.html"))
 	if err != nil {

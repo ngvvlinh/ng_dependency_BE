@@ -130,6 +130,20 @@ func (s *QueryService) ListShopCategories(
 	}, nil
 }
 
+func (s *QueryService) ListShopCategoriesByIDs(
+	ctx context.Context, shopID dot.ID, IDs []dot.ID,
+) (*catalog.ShopCategoriesByIDsResponse, error) {
+	q := s.shopCategory(ctx).OptionalShopID(shopID).IDs(IDs...)
+	categories, err := q.ListShopCategories()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopCategoriesByIDsResponse{
+		Categories: categories,
+		Paging:     q.GetPaging(),
+	}, nil
+}
+
 func (s *QueryService) GetShopVariant(
 	ctx context.Context, args *catalog.GetShopVariantQueryArgs,
 ) (*catalog.ShopVariant, error) {

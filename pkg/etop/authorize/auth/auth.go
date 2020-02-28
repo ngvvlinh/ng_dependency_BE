@@ -158,7 +158,21 @@ const (
     p, shop/trading/order:view, admin, owner
 	# payment
 	p, shop/payment:create, admin, owner
-	p, shop/payment:view, admin, owner`
+	p, shop/payment:view, admin, owner
+	# webserver
+	p, shop/webserver/wswebsite:create, admin, owner
+	p, shop/webserver/wswebsite:update, admin, owner
+	p, shop/webserver/wswebsite:view, admin, owner
+	p, shop/webserver/wsproduct:create, admin, owner
+	p, shop/webserver/wsproduct:update, admin, owner
+	p, shop/webserver/wsproduct:view, admin, owner
+	p, shop/webserver/wscategory:create, admin, owner
+	p, shop/webserver/wscategory:update, admin, owner
+	p, shop/webserver/wscategory:view, admin, owner
+	p, shop/webserver/wspage:create, admin, owner
+	p, shop/webserver/wspage:update, admin, owner
+	p, shop/webserver/wspage:delete, admin, owner,
+	p, shop/webserver/wspage:view, admin, owner`
 )
 
 var (

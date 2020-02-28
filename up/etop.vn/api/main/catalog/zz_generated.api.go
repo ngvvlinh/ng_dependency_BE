@@ -612,6 +612,18 @@ func (h QueryServiceHandler) HandleListShopCategories(ctx context.Context, msg *
 	return err
 }
 
+type ListShopCategoriesByIDsQuery struct {
+	ShopID dot.ID
+	Ids    []dot.ID
+
+	Result *ShopCategoriesByIDsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCategoriesByIDs(ctx context.Context, msg *ListShopCategoriesByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCategoriesByIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListShopCollectionsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -816,6 +828,7 @@ func (q *GetSupplierIDsByVariantIDQuery) query()         {}
 func (q *GetVariantsBySupplierIDQuery) query()           {}
 func (q *ListBrandsQuery) query()                        {}
 func (q *ListShopCategoriesQuery) query()                {}
+func (q *ListShopCategoriesByIDsQuery) query()           {}
 func (q *ListShopCollectionsQuery) query()               {}
 func (q *ListShopCollectionsByIDsQuery) query()          {}
 func (q *ListShopCollectionsByProductIDQuery) query()    {}
@@ -1480,6 +1493,12 @@ func (q *ListShopCategoriesQuery) SetListQueryShopArgs(args *shopping.ListQueryS
 	q.Filters = args.Filters
 }
 
+func (q *ListShopCategoriesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, ids []dot.ID) {
+	return ctx,
+		q.ShopID,
+		q.Ids
+}
+
 func (q *ListShopCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -1728,6 +1747,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetVariantsBySupplierID)
 	b.AddHandler(h.HandleListBrands)
 	b.AddHandler(h.HandleListShopCategories)
+	b.AddHandler(h.HandleListShopCategoriesByIDs)
 	b.AddHandler(h.HandleListShopCollections)
 	b.AddHandler(h.HandleListShopCollectionsByIDs)
 	b.AddHandler(h.HandleListShopCollectionsByProductID)

@@ -82,6 +82,8 @@ import (
 	traderpm "etop.vn/backend/com/shopping/tradering/pm"
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	summaryquery "etop.vn/backend/com/summary/query"
+	webserveraggregate "etop.vn/backend/com/web/webserver/aggregate"
+	webserverquery "etop.vn/backend/com/web/webserver/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/captcha"
 	"etop.vn/backend/pkg/common/apifw/health"
@@ -148,6 +150,7 @@ var (
 
 	eventStreamer         *eventstream.EventStreamer
 	db                    *cmsql.Database
+	dbWebServer           *cmsql.Database
 	dbLogs                *cmsql.Database
 	ghnCarrier            *ghn.Carrier
 	ghtkCarrier           *ghtk.Carrier
@@ -448,6 +451,13 @@ func main() {
 	shippingQuery := shippingquery.NewQueryService(db).MessageBus()
 	moneyTxAggr = moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, eventBus).MessageBus()
 
+	dbWebServer, err = cmsql.Connect(cfg.PostgresWebServer)
+	if err != nil {
+		ll.Fatal("Unable to connect to Postgres", l.Error(err))
+	}
+	webServerAggregate := webserveraggregate.New(eventBus, dbWebServer, catalogQuery).MessageBus()
+	webServerQuery := webserverquery.New(eventBus, dbWebServer, catalogQuery).MessageBus()
+
 	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, shippingQuery)
 	moneyTxPM.RegisterEvenHandlers(eventBus)
 
@@ -518,6 +528,8 @@ func main() {
 		connectionQuery,
 		connectionAggregate,
 		shippingQuery,
+		webServerAggregate,
+		webServerQuery,
 	)
 	partner.Init(
 		shutdowner,
@@ -574,7 +586,7 @@ func main() {
 		ll.Error("Fail to verify Database", l.Error(err))
 	}
 
-	svrs := startServers()
+	svrs := startServers(webServerQuery)
 	if bot != nil {
 		bot.SendMessage(fmt.Sprintf("–––\n✨ Server started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👻 Server stopped 👻\n–––")

@@ -1,21 +1,23 @@
 package shop
 
 import (
+	"time"
+
 	catalogtypes "etop.vn/api/main/catalog/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/shopping/customering/customer_type"
-	etop "etop.vn/api/top/int/etop"
+	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
-	spreadsheet "etop.vn/api/top/int/types/spreadsheet"
-	common "etop.vn/api/top/types/common"
+	"etop.vn/api/top/int/types/spreadsheet"
+	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/gender"
-	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
+	"etop.vn/api/top/types/etc/ghn_note_code"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/inventory_type"
 	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/ledger_type"
-	payment_provider "etop.vn/api/top/types/etc/payment_provider"
-	product_type "etop.vn/api/top/types/etc/product_type"
+	"etop.vn/api/top/types/etc/payment_provider"
+	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
@@ -25,10 +27,359 @@ import (
 	status4 "etop.vn/api/top/types/etc/status4"
 	"etop.vn/api/top/types/etc/status5"
 	"etop.vn/api/top/types/etc/stocktake_type"
-	try_on "etop.vn/api/top/types/etc/try_on"
+	"etop.vn/api/top/types/etc/try_on"
+	"etop.vn/api/top/types/etc/ws_banner_show_style"
+	"etop.vn/api/top/types/etc/ws_list_product_show_style"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
+
+type GetWsCategoriesByIDsResponse struct {
+	WsCategories []*WsCategory `json:"ws_categorys"`
+}
+
+func (m *GetWsCategoriesByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsCategoriesResponse struct {
+	WsCategories []*WsCategory    `json:"ws_categorys"`
+	Paging       *common.PageInfo `json:"paging"`
+}
+
+func (m *GetWsCategoriesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsCategoriesRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetWsCategoriesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsCategoriesByIDsRequest struct {
+	IDs []dot.ID `json:"ids"`
+}
+
+func (m *GetWsCategoriesByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsCategoryRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetWsCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateOrUpdateWsCategoryRequest struct {
+	CategoryID dot.ID         `json:"category_id"`
+	Slug       dot.NullString `json:"slug"`
+	SEOConfig  *WsSEOConfig   `json:"seo_config"`
+	Image      dot.NullString `json:"image"`
+	Appear     dot.NullBool   `json:"appear"`
+}
+
+func (m *CreateOrUpdateWsCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsCategory struct {
+	ID        dot.ID        `json:"id"`
+	ShopID    dot.ID        `json:"shop_id"`
+	Slug      string        `json:"slug"`
+	SEOConfig *WsSEOConfig  `json:"seo_config"`
+	Image     string        `json:"image"`
+	Appear    bool          `json:"appear"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+	Category  *ShopCategory `json:"category"`
+}
+
+func (m *WsCategory) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeteleWsPageRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *DeteleWsPageRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeteleWsPageResponse struct {
+	Count int `json:"count"`
+}
+
+func (m *DeteleWsPageResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateWsPageRequest struct {
+	ID        dot.ID         `json:"id"`
+	SEOConfig *WsSEOConfig   `json:"seo_config"`
+	Name      dot.NullString `json:"name"`
+	Slug      dot.NullString `json:"slug"`
+	DescHTML  dot.NullString `json:"desc_html"`
+	Image     dot.NullString `json:"image"`
+	Appear    dot.NullBool   `json:"appear"`
+}
+
+func (m *UpdateWsPageRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateWsPageRequest struct {
+	SEOConfig *WsSEOConfig `json:"seo_config"`
+	Name      string       `json:"name"`
+	Slug      string       `json:"slug"`
+	DescHTML  string       `json:"desc_html"`
+	Image     string       `json:"image"`
+	Appear    bool         `json:"appear"`
+}
+
+func (m *CreateWsPageRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsPagesByIDsResponse struct {
+	WsPages []*WsPage `json:"ws_pages"`
+}
+
+func (m *GetWsPagesByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsPagesResponse struct {
+	WsPages []*WsPage        `json:"ws_pages"`
+	Paging  *common.PageInfo `json:"paging"`
+}
+
+func (m *GetWsPagesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsPagesRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetWsPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsPagesByIDsRequest struct {
+	IDs []dot.ID `json:"ids"`
+}
+
+func (m *GetWsPagesByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsPageRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetWsPageRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsPage struct {
+	ShopID    dot.ID       `json:"shop_id"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	ID        dot.ID       `json:"id"`
+	SEOConfig *WsSEOConfig `json:"seo_config"`
+	Slug      string       `json:"slug"`
+	Appear    bool         `json:"appear"`
+	DescHTML  string       `json:"desc_html"`
+}
+
+func (m *WsPage) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsProductsByIDsResponse struct {
+	WsProducts []*WsProduct `json:"ws_products"`
+}
+
+func (m *GetWsProductsByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsProductsResponse struct {
+	WsProducts []*WsProduct     `json:"ws_products"`
+	Paging     *common.PageInfo `json:"paging"`
+}
+
+func (m *GetWsProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsProductsRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetWsProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsProductsByIDsRequest struct {
+	IDs []dot.ID `json:"ids"`
+}
+
+func (m *GetWsProductsByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsProductRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetWsProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsProduct struct {
+	ShopID       dot.ID          `json:"shop_id"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+	ID           dot.ID          `json:"id"`
+	SEOConfig    *WsSEOConfig    `json:"seo_config"`
+	Slug         string          `json:"slug"`
+	Appear       bool            `json:"appear"`
+	ComparePrice []*ComparePrice `json:"compare_price"`
+	DescHTML     string          `json:"desc_html"`
+	Product      *ShopProduct    `json:"shop_product"`
+}
+
+func (m *WsProduct) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateOrUpdateWsProductRequest struct {
+	ProductID     dot.ID          `json:"product_id"`
+	SEOConfig     *WsSEOConfig    `json:"seo_config"`
+	Slug          dot.NullString  `json:"slug"`
+	Appear        dot.NullBool    `json:"appear"`
+	ComparePrices []*ComparePrice `json:"compare_prices"`
+	DescHTML      dot.NullString  `json:"desc_html"`
+}
+
+type ComparePrice struct {
+	VariantID    dot.ID `json:"variant_id"`
+	ComparePrice int    `json:"compare_price"`
+}
+
+func (m *CreateOrUpdateWsProductRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsSEOConfig struct {
+	Content     string `json:"content"`
+	Keyword     string `json:"keyword"`
+	Description string `json:"description"`
+}
+
+func (m *WsSEOConfig) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsWebsitesByIDsResponse struct {
+	WsWebsites []*WsWebsite `json:"ws_websites"`
+}
+
+func (m *GetWsWebsitesByIDsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsWebsitesResponse struct {
+	WsWebsites []*WsWebsite     `json:"ws_websites"`
+	Paging     *common.PageInfo `json:"paging"`
+}
+
+func (m *GetWsWebsitesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsWebsitesRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetWsWebsitesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsWebsitesByIDsRequest struct {
+	IDs []dot.ID `json:"ids"`
+}
+
+func (m *GetWsWebsitesByIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetWsWebsiteRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetWsWebsiteRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsWebsite struct {
+	ShopID             dot.ID          `json:"shop_id"`
+	ID                 dot.ID          `json:"id"`
+	MainColor          string          `json:"main_color"`
+	Banner             *Banner         `json:"banner"`
+	OutstandingProduct *SpecialProduct `json:"outstanding_product"`
+	NewProduct         *SpecialProduct `json:"new_product"`
+	SEOConfig          *WsGeneralSEO   `json:"seo_config"`
+	Facebook           *Facebook       `json:"facebook"`
+	GoogleAnalyticsID  string          `json:"google_analytics_id"`
+	DomainName         string          `json:"domain_name"`
+	OverStock          bool            `json:"over_stock"`
+	ShopInfo           *ShopInfo       `json:"shop_info"`
+	Description        string          `json:"description"`
+	LogoImage          string          `json:"logo_image"`
+	FaviconImage       string          `json:"favicon_image"`
+	DeletedAt          time.Time       `json:"deleted_at"`
+	UpdatedAt          time.Time       `json:"updated_at"`
+	CreatedAt          time.Time       `json:"created_at"`
+}
+
+func (m *WsWebsite) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateWsWebsiteRequest struct {
+	MainColor          string          `json:"main_color"`
+	Banner             *Banner         `json:"banner"`
+	OutstandingProduct *SpecialProduct `json:"outstanding_product"`
+	NewProduct         *SpecialProduct `json:"new_product"`
+	SEOConfig          *WsGeneralSEO   `json:"seo_config"`
+	Facebook           *Facebook       `json:"facebook"`
+	GoogleAnalyticsID  string          `json:"google_analytics_id"`
+	DomainName         string          `json:"domain_name"`
+	OverStock          bool            `json:"over_stock"`
+	ShopInfo           *ShopInfo       `json:"shop_info"`
+	Description        string          `json:"description"`
+	LogoImage          string          `json:"logo_image"`
+	FaviconImage       string          `json:"favicon_image"`
+}
+
+func (m *CreateWsWebsiteRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateWsWebsiteRequest struct {
+	ID                 dot.ID          `json:"id"`
+	MainColor          dot.NullString  `json:"main_color"`
+	Banner             *Banner         `json:"banner"`
+	OutstandingProduct *SpecialProduct `json:"outstanding_product"`
+	NewProduct         *SpecialProduct `json:"new_product"`
+	SEOConfig          *WsGeneralSEO   `json:"seo_config"`
+	Facebook           *Facebook       `json:"facebook"`
+	GoogleAnalyticsID  dot.NullString  `json:"google_analytics_id"`
+	DomainName         dot.NullString  `json:"domain_name"`
+	OverStock          dot.NullBool    `json:"over_stock"`
+	ShopInfo           *ShopInfo       `json:"shop_info"`
+	Description        dot.NullString  `json:"description"`
+	LogoImage          dot.NullString  `json:"logo_image"`
+	FaviconImage       dot.NullString  `json:"favicon_image"`
+}
+
+func (m *UpdateWsWebsiteRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopInfo struct {
+	Name            string        `json:"name"`
+	Phone           string        `json:"phone"`
+	Address         *etop.Address `json:"address"`
+	FacebookFanpage string        `json:"facebook_fanpage"`
+}
+
+func (m *ShopInfo) String() string { return jsonx.MustMarshalToString(m) }
+
+type Facebook struct {
+	FacebookID     string `json:"facebook_id"`
+	WelcomeMessage string `json:"welcome_message"`
+}
+
+func (m *Facebook) String() string { return jsonx.MustMarshalToString(m) }
+
+type WsGeneralSEO struct {
+	Title               string `json:"title"`
+	SiteContent         string `json:"site_content"`
+	SiteMetaKeyword     string `json:"site_meta_keyword"`
+	SiteMetaDescription string `json:"site_meta_description"`
+}
+
+func (m *WsGeneralSEO) String() string { return jsonx.MustMarshalToString(m) }
+
+type Banner struct {
+	BannerItems []*BannerItem                          `json:"banner_items"`
+	Style       ws_banner_show_style.WsBannerShowStyle `json:"style"`
+}
+
+func (m *Banner) String() string { return jsonx.MustMarshalToString(m) }
+
+type BannerItem struct {
+	Alt   string `json:"alt"`
+	Url   string `json:"url"`
+	Image string `json:"image"`
+}
+
+func (m *BannerItem) String() string { return jsonx.MustMarshalToString(m) }
+
+type SpecialProduct struct {
+	ProductIDs []dot.ID                                          `json:"product_ids"`
+	Style      ws_list_product_show_style.WsListProductShowStyle `json:"style"`
+	Products   []*ShopProduct                                    `json:"products"`
+}
+
+func (m *SpecialProduct) String() string { return jsonx.MustMarshalToString(m) }
 
 type PurchaseOrder struct {
 	Id                      dot.ID                  `json:"id"`

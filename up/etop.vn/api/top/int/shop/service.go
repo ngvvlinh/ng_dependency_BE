@@ -378,3 +378,37 @@ type PurchaseRefundService interface {
 	GetPurchaseRefundsByIDs(context.Context, *cm.IDsRequest) (*GetPurchaseRefundsByIDsResponse, error)
 	GetPurchaseRefunds(context.Context, *GetPurchaseRefundsRequest) (*GetPurchaseRefundsResponse, error)
 }
+
+// +apix:path=/shop.WebServer
+type WebServerService interface {
+	// ws_website
+	CreateWsWebsite(context.Context, *CreateWsWebsiteRequest) (*WsWebsite, error)
+	UpdateWsWebsite(context.Context, *UpdateWsWebsiteRequest) (*WsWebsite, error)
+
+	GetWsWebsite(context.Context, *GetWsWebsiteRequest) (*WsWebsite, error)
+	GetWsWebsites(context.Context, *GetWsWebsitesRequest) (*GetWsWebsitesResponse, error)
+	GetWsWebsitesByIDs(context.Context, *GetWsWebsitesByIDsRequest) (*GetWsWebsitesByIDsResponse, error)
+
+	// ws_product
+	CreateOrUpdateWsProduct(context.Context, *CreateOrUpdateWsProductRequest) (*WsProduct, error)
+
+	GetWsProduct(context.Context, *GetWsProductRequest) (*WsProduct, error)
+	GetWsProducts(context.Context, *GetWsProductsRequest) (*GetWsProductsResponse, error)
+	GetWsProductsByIDs(context.Context, *GetWsProductsByIDsRequest) (*GetWsProductsByIDsResponse, error)
+
+	// ws_category
+	CreateOrUpdateWsCategory(context.Context, *CreateOrUpdateWsCategoryRequest) (*WsCategory, error)
+
+	GetWsCategory(context.Context, *GetWsCategoryRequest) (*WsCategory, error)
+	GetWsCategories(context.Context, *GetWsCategoriesRequest) (*GetWsCategoriesResponse, error)
+	GetWsCategoriesByIDs(context.Context, *GetWsCategoriesByIDsRequest) (*GetWsCategoriesByIDsResponse, error)
+
+	// ws_page
+	CreateWsPage(context.Context, *CreateWsPageRequest) (*WsPage, error)
+	UpdateWsPage(context.Context, *UpdateWsPageRequest) (*WsPage, error)
+	DeleteWsPage(context.Context, *DeteleWsPageRequest) (*DeteleWsPageResponse, error)
+
+	GetWsPage(context.Context, *GetWsPageRequest) (*WsPage, error)
+	GetWsPages(context.Context, *GetWsPagesRequest) (*GetWsPagesResponse, error)
+	GetWsPagesByIDs(context.Context, *GetWsPagesByIDsRequest) (*GetWsPagesByIDsResponse, error)
+}

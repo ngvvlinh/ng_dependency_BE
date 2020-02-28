@@ -51,6 +51,7 @@ type EmailConfig struct {
 // Config ...
 type Config struct {
 	Postgres          cc.Postgres      `yaml:"postgres"`
+	PostgresWebServer cc.Postgres      `yaml:"postgres_web_server"`
 	PostgresLogs      cc.Postgres      `yaml:"postgres_logs"`
 	PostgresNotifier  cc.Postgres      `yaml:"postgres_notifier"`
 	PostgresAffiliate cc.Postgres      `yaml:"postgres_affiliate"`
@@ -105,6 +106,7 @@ func Default() Config {
 	cfg := Config{
 		Postgres:          cc.DefaultPostgres(),
 		PostgresNotifier:  cc.DefaultPostgres(),
+		PostgresWebServer: cc.DefaultPostgres(),
 		PostgresLogs:      cc.DefaultPostgres(),
 		PostgresAffiliate: cc.DefaultPostgres(),
 		Redis:             cc.DefaultRedis(),
@@ -189,6 +191,7 @@ func Load(isTest bool) (Config, error) {
 	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
 	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
+	cc.PostgresMustLoadEnv(&cfg.PostgresWebServer, "ET_POSTGRES_WEB_SERVER")
 	cfg.Redis.MustLoadEnv()
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.SMS.MustLoadEnv()

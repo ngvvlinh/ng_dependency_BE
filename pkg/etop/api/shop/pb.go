@@ -1,16 +1,339 @@
 package shop
 
 import (
+	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaserefund"
 	"etop.vn/api/main/refund"
 	"etop.vn/api/main/stocktaking"
+	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/shop"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/api/top/types/etc/address_type"
+	"etop.vn/api/webserver"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/capi/dot"
 )
+
+func PbWsPages(arg []*webserver.WsPage) []*shop.WsPage {
+	var wsPages []*shop.WsPage
+	for _, value := range arg {
+		wsPages = append(wsPages, PbWsPage(value))
+	}
+	return wsPages
+}
+
+func PbWsPage(arg *webserver.WsPage) *shop.WsPage {
+	if arg == nil {
+		return nil
+	}
+	return &shop.WsPage{
+		ShopID:    arg.ShopID,
+		CreatedAt: arg.CreatedAt,
+		UpdatedAt: arg.UpdatedAt,
+		ID:        arg.ID,
+		SEOConfig: PbWsSEOConfig(arg.SEOConfig),
+		Slug:      arg.Slug,
+		Appear:    arg.Appear,
+		DescHTML:  arg.DescHTML,
+	}
+}
+
+func PbWsCategories(arg []*webserver.WsCategory) []*shop.WsCategory {
+	var wsCategories []*shop.WsCategory
+	for _, value := range arg {
+		wsCategories = append(wsCategories, PbWsCategory(value))
+	}
+	return wsCategories
+}
+
+func PbWsCategory(arg *webserver.WsCategory) *shop.WsCategory {
+	if arg == nil {
+		return nil
+	}
+	return &shop.WsCategory{
+		Image:     arg.Image,
+		ShopID:    arg.ShopID,
+		CreatedAt: arg.CreatedAt,
+		UpdatedAt: arg.UpdatedAt,
+		ID:        arg.ID,
+		SEOConfig: PbWsSEOConfig(arg.SEOConfig),
+		Slug:      arg.Slug,
+		Appear:    arg.Appear,
+		Category:  PbShopCategory(arg.Category),
+	}
+}
+
+func PbWsProducts(arg []*webserver.WsProduct) []*shop.WsProduct {
+	var wsProducts []*shop.WsProduct
+	for _, value := range arg {
+		wsProducts = append(wsProducts, PbWsProduct(value))
+	}
+	return wsProducts
+}
+
+func PbWsProduct(arg *webserver.WsProduct) *shop.WsProduct {
+	if arg == nil {
+		return nil
+	}
+	return &shop.WsProduct{
+		ShopID:       arg.ShopID,
+		CreatedAt:    arg.CreatedAt,
+		UpdatedAt:    arg.UpdatedAt,
+		ID:           arg.ID,
+		SEOConfig:    PbWsSEOConfig(arg.SEOConfig),
+		Slug:         arg.Slug,
+		Appear:       arg.Appear,
+		ComparePrice: PbComparePrice(arg.ComparePrice),
+		DescHTML:     arg.DescHTML,
+		Product:      PbShopProductWithVariants(arg.Product),
+	}
+}
+
+func PbComparePrice(arg []*webserver.ComparePrice) []*shop.ComparePrice {
+	if arg == nil {
+		return nil
+	}
+	var listComparePrice []*shop.ComparePrice
+	for _, value := range arg {
+		listComparePrice = append(listComparePrice, &shop.ComparePrice{
+			VariantID:    value.VariantID,
+			ComparePrice: value.ComparePrice,
+		})
+	}
+	return listComparePrice
+}
+
+func PbWsSEOConfig(arg *webserver.WsSEOConfig) *shop.WsSEOConfig {
+	if arg == nil {
+		return nil
+	}
+	return &shop.WsSEOConfig{
+		Content:     arg.Content,
+		Keyword:     arg.Keyword,
+		Description: arg.Description,
+	}
+}
+func PbWsWebsites(arg []*webserver.WsWebsite) []*shop.WsWebsite {
+	var wsWebsites []*shop.WsWebsite
+	for _, value := range arg {
+		wsWebsites = append(wsWebsites, PbWsWebsite(value))
+	}
+	return wsWebsites
+}
+
+func PbWsWebsite(arg *webserver.WsWebsite) *shop.WsWebsite {
+	return &shop.WsWebsite{
+		ShopID:             arg.ShopID,
+		ID:                 arg.ID,
+		MainColor:          arg.MainColor,
+		Banner:             PbWsBanner(arg.Banner),
+		OutstandingProduct: PbWsSpecialProduct(arg.OutstandingProduct),
+		NewProduct:         PbWsSpecialProduct(arg.NewProduct),
+		SEOConfig:          PbWsGeneralSEO(arg.SEOConfig),
+		Facebook:           PbWsFacebook(arg.Facebook),
+		GoogleAnalyticsID:  arg.GoogleAnalyticsID,
+		DomainName:         arg.DomainName,
+		OverStock:          arg.OverStock,
+		ShopInfo:           PbWsShopInfo(arg.ShopInfo),
+		Description:        arg.Description,
+		LogoImage:          arg.LogoImage,
+		FaviconImage:       arg.FaviconImage,
+		UpdatedAt:          arg.UpdatedAt,
+		CreatedAt:          arg.CreatedAt,
+	}
+}
+
+func PbWsShopInfo(arg *webserver.ShopInfo) *shop.ShopInfo {
+	if arg == nil {
+		return nil
+	}
+	return &shop.ShopInfo{
+		Name:  arg.Name,
+		Phone: arg.Phone,
+		Address: &etop.Address{
+			Id:           arg.Address.ID,
+			FullName:     arg.Address.FullName,
+			Phone:        arg.Address.Phone,
+			Position:     arg.Address.Position,
+			Email:        arg.Address.Email,
+			Country:      arg.Address.Country,
+			Province:     arg.Address.Province,
+			District:     arg.Address.District,
+			Ward:         arg.Address.Ward,
+			Zip:          arg.Address.Zip,
+			DistrictCode: arg.Address.DistrictCode,
+			ProvinceCode: arg.Address.ProvinceCode,
+			WardCode:     arg.Address.WardCode,
+			Address1:     arg.Address.Address1,
+			Address2:     arg.Address.Address2,
+			Type:         address_type.ParseAddressTypeWithDefault(arg.Address.Type, address_type.Unknown),
+		},
+		FacebookFanpage: arg.FacebookFanpage,
+	}
+}
+func PbWsFacebook(arg *webserver.Facebook) *shop.Facebook {
+	if arg == nil {
+		return nil
+	}
+	return &shop.Facebook{
+		FacebookID:     arg.FacebookID,
+		WelcomeMessage: arg.WelcomeMessage,
+	}
+}
+
+func PbWsGeneralSEO(arg *webserver.WsGeneralSEO) *shop.WsGeneralSEO {
+	if arg == nil {
+		return nil
+	}
+	return &shop.WsGeneralSEO{
+		Title:               arg.Title,
+		SiteContent:         arg.SiteContent,
+		SiteMetaKeyword:     arg.SiteMetaKeyword,
+		SiteMetaDescription: arg.SiteMetaDescription,
+	}
+}
+
+func PbWsSpecialProduct(arg *webserver.SpecialProduct) *shop.SpecialProduct {
+	if arg == nil {
+		return nil
+	}
+	return &shop.SpecialProduct{
+		ProductIDs: arg.ProductIDs,
+		Style:      arg.Style,
+	}
+}
+
+func PbWsBanner(arg *webserver.Banner) *shop.Banner {
+	if arg == nil {
+		return nil
+	}
+	return &shop.Banner{
+		BannerItems: PbWsBannerItems(arg.BannerItems),
+		Style:       arg.Style,
+	}
+}
+
+func PbWsBannerItems(arg []*webserver.BannerItem) []*shop.BannerItem {
+	if arg == nil {
+		return nil
+	}
+	var result []*shop.BannerItem
+	for _, v := range arg {
+		result = append(result, &shop.BannerItem{
+			Alt:   v.Alt,
+			Url:   v.Url,
+			Image: v.Image,
+		})
+	}
+	return result
+}
+
+func ConvertShopInfo(args *shop.ShopInfo) *webserver.ShopInfo {
+	var shopInfo *webserver.ShopInfo
+	if args != nil {
+		shopInfo = &webserver.ShopInfo{}
+		shopInfo.Phone = args.Phone
+		shopInfo.FacebookFanpage = args.FacebookFanpage
+		shopInfo.Name = args.Name
+		if args.Address != nil {
+			shopInfo.Address = &address.Address{
+				ID:           args.Address.Id,
+				FullName:     args.Address.FullName,
+				Phone:        args.Address.Phone,
+				Position:     args.Address.Position,
+				Email:        args.Address.Email,
+				Country:      args.Address.Country,
+				Province:     args.Address.Province,
+				District:     args.Address.District,
+				Ward:         args.Address.Ward,
+				Zip:          args.Address.Zip,
+				DistrictCode: args.Address.DistrictCode,
+				ProvinceCode: args.Address.ProvinceCode,
+				WardCode:     args.Address.WardCode,
+				Address1:     args.Address.Address1,
+				Address2:     args.Address.Address2,
+				Type:         args.Address.Type.String(),
+			}
+		}
+
+	}
+	return shopInfo
+}
+
+func ConvertBanner(args *shop.Banner) *webserver.Banner {
+	var banner *webserver.Banner
+	if args != nil {
+		banner = &webserver.Banner{}
+		banner.Style = args.Style
+		var bannerItems = []*webserver.BannerItem{}
+		for _, item := range args.BannerItems {
+			bannerItems = append(bannerItems, &webserver.BannerItem{
+				Alt:   item.Alt,
+				Url:   item.Url,
+				Image: item.Image,
+			})
+		}
+		banner.BannerItems = bannerItems
+	}
+	return banner
+}
+
+func ConvertFacebook(args *shop.Facebook) *webserver.Facebook {
+	var facebook *webserver.Facebook
+	if args != nil {
+		facebook = &webserver.Facebook{}
+		facebook.FacebookID = args.FacebookID
+		facebook.WelcomeMessage = args.WelcomeMessage
+	}
+	return facebook
+}
+
+func ConvertSpecialProduct(args *shop.SpecialProduct) *webserver.SpecialProduct {
+	var specialProduct *webserver.SpecialProduct
+	if args != nil {
+		specialProduct = &webserver.SpecialProduct{}
+		specialProduct.Style = args.Style
+		specialProduct.ProductIDs = args.ProductIDs
+	}
+	return specialProduct
+}
+
+func ConvertSEOConfig(args *shop.WsSEOConfig) *webserver.WsSEOConfig {
+	var wsSEOConfig *webserver.WsSEOConfig
+	if args != nil {
+		wsSEOConfig = &webserver.WsSEOConfig{}
+		wsSEOConfig.Content = args.Content
+		wsSEOConfig.Description = args.Description
+		wsSEOConfig.Keyword = args.Keyword
+	}
+	return wsSEOConfig
+}
+
+func ConvertComparePrice(args []*shop.ComparePrice) []*webserver.ComparePrice {
+	var listComparePrice []*webserver.ComparePrice
+	for _, value := range args {
+		comparePriceItem := &webserver.ComparePrice{
+			VariantID:    value.VariantID,
+			ComparePrice: value.ComparePrice,
+		}
+		listComparePrice = append(listComparePrice, comparePriceItem)
+	}
+	return listComparePrice
+}
+
+func ConvertWsGeneralSEO(args *shop.WsGeneralSEO) *webserver.WsGeneralSEO {
+	var wsGeneralSEO *webserver.WsGeneralSEO
+	if args != nil {
+		wsGeneralSEO = &webserver.WsGeneralSEO{}
+		wsGeneralSEO.Title = args.Title
+		wsGeneralSEO.SiteContent = args.SiteContent
+		wsGeneralSEO.SiteMetaDescription = args.SiteMetaDescription
+		wsGeneralSEO.SiteMetaKeyword = args.SiteMetaKeyword
+	}
+	return wsGeneralSEO
+}
 
 func PbPurchaseRefunds(args []*purchaserefund.PurchaseRefund) []*shop.PurchaseRefund {
 	var result []*shop.PurchaseRefund
