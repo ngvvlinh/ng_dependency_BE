@@ -99,7 +99,7 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 	buf.WriteString(cmenv.Env().String())
 	buf.WriteString(",")
 	buf.WriteString(headers.GetHeader(ctx).Get("X-Forwarded-Host"))
-	buf.WriteString("] ERROR: ")
+	buf.WriteString("] @thangtran268 ERROR: ")
 	buf.WriteString(rpcName)
 	buf.WriteString(" (")
 	buf.WriteString(strconv.Itoa(int(d / time.Millisecond)))
