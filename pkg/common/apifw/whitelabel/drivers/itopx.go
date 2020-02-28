@@ -12,7 +12,7 @@ const ITopXKey = "itopx"
 
 func ITopX(env cmenv.EnvType) *whitelabel.WL {
 	cfg := config{
-		prodHost: "itopx.vn",
+		prodHost: "pos.itopx.vn",
 		key:      ITopXKey,
 	}
 	return &whitelabel.WL{

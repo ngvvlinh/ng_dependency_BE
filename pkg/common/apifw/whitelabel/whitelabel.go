@@ -121,6 +121,9 @@ func (w *WhiteLabel) fromHost(host string) *WL {
 		if p.Key == parts[0] {
 			return p
 		}
+		if p.Host == host {
+			return p
+		}
 	}
 	return w.etop
 }
