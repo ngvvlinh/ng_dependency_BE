@@ -171,10 +171,10 @@ func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, arg
 		// update external_ticket_id
 		externalData, _ := jsonx.Marshal(res)
 		update := &sqlstore.UpdateXAccountAhamoveVerifiedInfoArgs{
-			ID:                    account.ID,
-			ExternalTickerID:      res.TicketID,
-			LastSendVerifiedAt:    time.Now(),
-			ExternaleDataVerified: externalData,
+			ID:                   account.ID,
+			ExternalTickerID:     res.TicketID,
+			LastSendVerifiedAt:   time.Now(),
+			ExternalDataVerified: externalData,
 		}
 		_, err = a.xAccountAhamove(ctx).UpdateXAccountAhamoveVerifiedInfo(update)
 		return err

@@ -116,11 +116,11 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamove
 }
 
 type UpdateXAccountAhamoveVerifiedInfoArgs struct {
-	ID                    dot.ID
-	ExternalTickerID      string
-	LastSendVerifiedAt    time.Time
-	ExternalVerified      bool
-	ExternaleDataVerified json.RawMessage
+	ID                   dot.ID
+	ExternalTickerID     string
+	LastSendVerifiedAt   time.Time
+	ExternalVerified     bool
+	ExternalDataVerified json.RawMessage
 }
 
 func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAccountAhamoveVerifiedInfoArgs) (*identity.ExternalAccountAhamove, error) {
@@ -128,7 +128,7 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAc
 		ExternalTicketID:     args.ExternalTickerID,
 		LastSendVerifiedAt:   args.LastSendVerifiedAt,
 		ExternalVerified:     args.ExternalVerified,
-		ExternalDataVerified: args.ExternaleDataVerified,
+		ExternalDataVerified: args.ExternalDataVerified,
 	}
 	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account); err != nil {
 		return nil, err

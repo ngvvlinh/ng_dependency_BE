@@ -95,8 +95,8 @@ type VerifyExternalAccountCommand struct {
 }
 
 type VerifyExternalAccountResult struct {
-	TicketID    string
-	Subject     string
-	Description string
-	CreatedAt   string
+	TicketID    string `json:"ticket_id"`
+	Subject     string `json:"subject"`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
 }
