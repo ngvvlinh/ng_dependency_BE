@@ -93,13 +93,13 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 
 	buf := &strings.Builder{}
 	if lvl >= xerrors.LevelTrace {
-		buf.WriteString("🔥 ")
+		buf.WriteString("🔥 @thangtran268 ")
 	}
 	buf.WriteString("[")
 	buf.WriteString(cmenv.Env().String())
 	buf.WriteString(",")
 	buf.WriteString(headers.GetHeader(ctx).Get("X-Forwarded-Host"))
-	buf.WriteString("] @thangtran268 ERROR: ")
+	buf.WriteString("] ERROR: ")
 	buf.WriteString(rpcName)
 	buf.WriteString(" (")
 	buf.WriteString(strconv.Itoa(int(d / time.Millisecond)))
