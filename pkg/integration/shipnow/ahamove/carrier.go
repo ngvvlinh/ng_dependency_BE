@@ -281,6 +281,9 @@ func prepareRemarksForDeliveryPoint(point *shipnow.DeliveryPoint) string {
 }
 
 func (c *Carrier) ValidateAndGetAddress(ctx context.Context, in *ordertypes.Address) (*location.LocationQueryResult, error) {
+	if in == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ không được để trống")
+	}
 	if in.Coordinates == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ thiếu thông tin latitude, longitude")
 	}
