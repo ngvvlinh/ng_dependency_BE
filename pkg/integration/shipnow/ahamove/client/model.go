@@ -111,7 +111,7 @@ func (s DeliveryStatus) ToStatus5() status5.Status {
 	case StateDeliveryCompleted:
 		return status5.P
 	case StateDeliveryFailed:
-		return status5.N
+		return status5.NS
 	default:
 		return status5.S
 	}

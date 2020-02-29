@@ -199,6 +199,7 @@ type UpdateOrderShippingStatusArgs struct {
 	FulfillmentShippingStates  []string
 	FulfillmentShippingStatus  status5.Status
 	FulfillmentPaymentStatuses []int
+	FulfillmentStatuses        []int
 	EtopPaymentStatus          status4.Status
 	CODEtopPaidAt              time.Time
 }

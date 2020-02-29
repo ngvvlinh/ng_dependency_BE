@@ -198,16 +198,29 @@ func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint
 
 	dStatus := client.DeliveryStatus(point.Status)
 	orderState := dStatus.ToCoreState(shippingState)
-	updateOrder := &ordering.UpdateOrderShippingStatusCommand{
-		ID:                         orderID,
-		FulfillmentShippingStates:  []string{orderState.String()},
-		FulfillmentShippingStatus:  dStatus.ToStatus5(),
-		FulfillmentPaymentStatuses: []int{int(paymentStatus)},
-		EtopPaymentStatus:          paymentStatus,
-	}
+	return wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updateOrder := &ordering.UpdateOrderShippingStatusCommand{
+			ID:                         orderID,
+			FulfillmentShippingStates:  []string{orderState.String()},
+			FulfillmentShippingStatus:  dStatus.ToStatus5(),
+			FulfillmentPaymentStatuses: []int{int(paymentStatus)},
+			FulfillmentStatuses:        []int{dStatus.ToStatus5().Enum()},
+			EtopPaymentStatus:          paymentStatus,
+		}
 
-	if err := wh.order.Dispatch(ctx, updateOrder); err != nil {
-		return err
-	}
-	return nil
+		if err := wh.order.Dispatch(ctx, updateOrder); err != nil {
+			return err
+		}
+
+		// update payment_status trong đơn hàng
+		// xem như đơn hàng đã thanh toán (ko quản lý phiếu thu/chi)
+		updateOrderPayment := &ordering.UpdateOrderPaymentStatusCommand{
+			OrderID:       orderID,
+			PaymentStatus: paymentStatus.Wrap(),
+		}
+		if err := wh.order.Dispatch(ctx, updateOrderPayment); err != nil {
+			return err
+		}
+		return nil
+	})
 }

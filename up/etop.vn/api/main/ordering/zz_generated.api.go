@@ -96,6 +96,7 @@ type UpdateOrderShippingStatusCommand struct {
 	FulfillmentShippingStates  []string
 	FulfillmentShippingStatus  status5.Status
 	FulfillmentPaymentStatuses []int
+	FulfillmentStatuses        []int
 	EtopPaymentStatus          status4.Status
 	CODEtopPaidAt              time.Time
 
@@ -305,6 +306,7 @@ func (q *UpdateOrderShippingStatusCommand) GetArgs(ctx context.Context) (_ conte
 			FulfillmentShippingStates:  q.FulfillmentShippingStates,
 			FulfillmentShippingStatus:  q.FulfillmentShippingStatus,
 			FulfillmentPaymentStatuses: q.FulfillmentPaymentStatuses,
+			FulfillmentStatuses:        q.FulfillmentStatuses,
 			EtopPaymentStatus:          q.EtopPaymentStatus,
 			CODEtopPaidAt:              q.CODEtopPaidAt,
 		}
@@ -315,6 +317,7 @@ func (q *UpdateOrderShippingStatusCommand) SetUpdateOrderShippingStatusArgs(args
 	q.FulfillmentShippingStates = args.FulfillmentShippingStates
 	q.FulfillmentShippingStatus = args.FulfillmentShippingStatus
 	q.FulfillmentPaymentStatuses = args.FulfillmentPaymentStatuses
+	q.FulfillmentStatuses = args.FulfillmentStatuses
 	q.EtopPaymentStatus = args.EtopPaymentStatus
 	q.CODEtopPaidAt = args.CODEtopPaidAt
 }

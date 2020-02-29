@@ -130,6 +130,7 @@ func (a *Aggregate) UpdateOrderShippingStatus(ctx context.Context, args *orderin
 		FulfillmentShippingStates:  args.FulfillmentShippingStates,
 		FulfillmentShippingStatus:  args.FulfillmentShippingStatus,
 		FulfillmentPaymentStatuses: args.FulfillmentPaymentStatuses,
+		FulfillmentStatuses:        args.FulfillmentStatuses,
 		EtopPaymentStatus:          args.EtopPaymentStatus,
 	}
 	err := a.store(ctx).UpdateOrderShippingStatus(update)
@@ -186,16 +187,13 @@ func (a *Aggregate) UpdateOrderStatus(ctx context.Context, args *ordering.Update
 }
 
 func (a *Aggregate) UpdateOrderPaymentStatus(ctx context.Context, args *ordering.UpdateOrderPaymentStatusArgs) error {
-	if args.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ShopID", nil)
-	}
 	if args.OrderID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
 	}
 	if !args.PaymentStatus.Valid {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing payment status")
 	}
-	if _, err := a.store(ctx).ID(args.OrderID).ShopID(args.ShopID).GetOrder(); err != nil {
+	if _, err := a.store(ctx).ID(args.OrderID).OptionalShopID(args.ShopID).GetOrder(); err != nil {
 		return err
 	}
 

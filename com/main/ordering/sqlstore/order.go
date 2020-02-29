@@ -50,6 +50,11 @@ func (s *OrderStore) ShopID(id dot.ID) *OrderStore {
 	return s
 }
 
+func (s *OrderStore) OptionalShopID(id dot.ID) *OrderStore {
+	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
+	return s
+}
+
 func (s *OrderStore) PartnerID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(id))
 	return s
@@ -196,6 +201,7 @@ type UpdateOrderShippingStatusArgs struct {
 
 	FulfillmentShippingStates  []string
 	FulfillmentPaymentStatuses []int
+	FulfillmentStatuses        []int
 }
 
 func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArgs) error {
@@ -207,6 +213,7 @@ func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArg
 		EtopPaymentStatus:          args.EtopPaymentStatus,
 		FulfillmentShippingStates:  args.FulfillmentShippingStates,
 		FulfillmentPaymentStatuses: args.FulfillmentPaymentStatuses,
+		FulfillmentStatuses:        args.FulfillmentStatuses,
 	}
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(update); err != nil {
 		return err
