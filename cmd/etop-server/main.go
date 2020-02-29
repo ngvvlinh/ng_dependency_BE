@@ -453,7 +453,6 @@ func main() {
 	invitationPM.RegisterEventHandlers(eventBus)
 	purchaseRefundPM := purchaserefundpm.New(&purchaseRefundAggr, &purchaseRefundQuery, &receiptQuery)
 	purchaseRefundPM.RegisterEventHandlers(eventBus)
-	identityPM.RegisterEventHandlers(eventBus)
 	authorizationQuery := authorizationquery.NewAuthorizationQuery().MessageBus()
 	authorizationAggregate := authorizationaggregate.NewAuthorizationAggregate().MessageBus()
 
