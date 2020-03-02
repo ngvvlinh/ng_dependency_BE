@@ -71,7 +71,7 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message,
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingTokenWL":
-		msg := &common.Empty{}
+		msg := &LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LoginUsingTokenWL(ctx, msg)
 		}

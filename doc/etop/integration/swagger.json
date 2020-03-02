@@ -110,7 +110,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/fuLoginUsingTokenRequest"
             }
           }
         ],

@@ -188,15 +188,6 @@ func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.
 }
 
 func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *identitymodel.Partner, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
-	if partner.WhiteLabelKey != "" {
-		/*
-			Trường hợp đối tác whitelabel
-			Trust thông tin đối tác gửi qua
-			Chuyển thẳng qua bước LoginUsingTokenWL
-		*/
-		return s.actionLoginUsingTokenWL(ctx, partner, info)
-	}
-
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",

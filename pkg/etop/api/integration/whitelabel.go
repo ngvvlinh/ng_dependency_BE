@@ -2,14 +2,17 @@ package integration
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
-	"etop.vn/api/top/int/integration"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/validate"
 	apipartner "etop.vn/backend/pkg/etop/apix/partner"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
@@ -17,6 +20,10 @@ import (
 )
 
 func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsingTokenWLEndpoint) (_err error) {
+	if r.Login == "" || r.VerificationCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
+	}
+	r.VerificationCode = strings.Replace(r.VerificationCode, " ", "", -1)
 	if _, err := s.validateWhiteLabel(ctx); err != nil {
 		return err
 	}
@@ -25,18 +32,38 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
 	}
 
-	partner := r.CtxPartner
-	// wl: định danh bằng email
-	userQuery := &identitymodelx.GetUserByLoginQuery{
-		PhoneOrEmail: requestInfo.ShopOwnerEmail,
+	verifiedEmail, verifiedPhone, ok := validate.NormalizeEmailOrPhone(r.Login)
+	if !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "Email hoặc số điện thoại không hợp lệ")
 	}
-	err := bus.Dispatch(ctx, userQuery)
+
+	partner := r.CtxPartner
+	key := fmt.Sprintf("%v-%v", partner.ID, cm.Coalesce(verifiedEmail, verifiedPhone))
+
+	var v map[string]string
+	tok, err := authStore.Validate(auth.UsageRequestLogin, key, &v)
+	if err != nil {
+		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác nhận không hợp lệ")
+	}
+	if v == nil || v["code"] != r.VerificationCode {
+		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác thực không hợp lệ")
+	}
+	// delete the token after 5 minutes if login successfully
+	defer func() {
+		if _err != nil {
+			_ = authStore.SetTTL(tok, 5*60)
+		}
+	}()
+	userQuery := &identitymodelx.GetUserByLoginQuery{
+		PhoneOrEmail: r.Login,
+	}
+	err = bus.Dispatch(ctx, userQuery)
 	switch cm.ErrorCode(err) {
 	case cm.OK:
 		// continue
 	case cm.NotFound:
 		// --- register user ---
-		userQuery.Result.User, err = s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, false, false)
+		userQuery.Result.User, err = s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, verifiedEmail != "", verifiedPhone != "")
 		if err != nil {
 			return err
 		}
@@ -123,32 +150,4 @@ func (s *IntegrationService) validateWhiteLabel(ctx context.Context) (*whitelabe
 		return nil, cm.Errorf(cm.NotFound, nil, "Không tìm thấy thông tin whitelabel của partner")
 	}
 	return wlPartner, nil
-}
-
-func (s *IntegrationService) actionLoginUsingTokenWL(ctx context.Context, partner *identitymodel.Partner, info apipartner.PartnerShopToken) (*integration.LoginResponse, error) {
-	tokenCmd := &tokens.GenerateTokenCommand{
-		ClaimInfo: claims.ClaimInfo{
-			Token:         "",
-			AccountID:     0,
-			AuthPartnerID: partner.ID,
-			Extra: map[string]string{
-				"request_login": jsonx.MustMarshalToString(info),
-			},
-		},
-		TTL: 2 * 60 * 60,
-	}
-
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
-		return nil, cm.Errorf(cm.Internal, err, "")
-	}
-	actions := []*integration.Action{
-		{
-			Name: "login_using_token_wl",
-		},
-	}
-	resp := generateShopLoginResponse(
-		tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn,
-		nil, partner, nil, actions, info.RedirectURL,
-	)
-	return resp, nil
 }
