@@ -351,7 +351,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 
 		var b strings.Builder
 		if err := api.RequestLoginEmailTpl.Execute(&b, map[string]interface{}{
-			"Code":              formatVerificationCode(generatedCode),
+			"Code":              generatedCode,
 			"Hello":             hello,
 			"Email":             emailNorm,
 			"PartnerPublicName": partner.PublicName,
@@ -377,7 +377,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		tpl := wl.X(ctx).Templates.RequestLoginSmsTpl
 		var b strings.Builder
 		if err := tpl.Execute(&b, map[string]interface{}{
-			"Code":           formatVerificationCode(generatedCode),
+			"Code":           generatedCode,
 			"PartnerWebsite": validate.DomainFromURL(partner.WebsiteURL),
 			"Notice":         "",
 		}); err != nil {
@@ -411,13 +411,6 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 	return r, nil
 }
 
-func formatVerificationCode(code string) string {
-	if len(code) != 8 {
-		panic("unexpected length")
-	}
-	return code[:4] + " " + code[4:]
-}
-
 func getToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
 	var v map[string]string
@@ -440,7 +433,7 @@ func generateTokenWithVerificationCode(partnerID dot.ID, login string, extra map
 		return tok, code, v, nil
 	}
 
-	code, err := gencode.Random8Digits()
+	code, err := gencode.Random6Digits()
 	if err != nil {
 		return nil, "", nil, cm.Errorf(cm.Internal, nil, "")
 	}
