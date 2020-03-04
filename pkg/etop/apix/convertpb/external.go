@@ -335,9 +335,9 @@ func PbOrderLine(m *ordermodel.OrderLine) *exttypes.OrderLine {
 		ProductId:    m.ProductID,
 		ProductName:  m.ProductName,
 		Quantity:     m.Quantity,
-		ListPrice:    m.ListPrice,
-		RetailPrice:  m.RetailPrice,
-		PaymentPrice: m.PaymentPrice,
+		ListPrice:    dot.Int(m.ListPrice),
+		RetailPrice:  dot.Int(m.RetailPrice),
+		PaymentPrice: dot.Int(m.PaymentPrice),
 		ImageUrl:     m.ImageURL,
 		Attributes:   convert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(m.Attributes),
 	}
@@ -545,7 +545,7 @@ func OrderLineToCreateOrderLine(m *exttypes.OrderLine) (*types.CreateOrderLine, 
 	if m == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "order_line must not be null")
 	}
-	if m.PaymentPrice == 0 {
+	if !m.PaymentPrice.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp payment_price")
 	}
 
@@ -553,9 +553,9 @@ func OrderLineToCreateOrderLine(m *exttypes.OrderLine) (*types.CreateOrderLine, 
 		VariantId:    m.VariantId,
 		ProductName:  m.ProductName,
 		Quantity:     m.Quantity,
-		ListPrice:    m.ListPrice,
-		RetailPrice:  m.RetailPrice,
-		PaymentPrice: m.PaymentPrice,
+		ListPrice:    m.ListPrice.Apply(0),
+		RetailPrice:  m.RetailPrice.Apply(0),
+		PaymentPrice: m.PaymentPrice.Apply(0),
 		ImageUrl:     m.ImageUrl,
 		Attributes:   m.Attributes,
 	}, nil

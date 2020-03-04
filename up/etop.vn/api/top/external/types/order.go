@@ -224,14 +224,14 @@ type CreateOrderRequest struct {
 func (m *CreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type OrderLine struct {
-	VariantId   dot.ID `json:"variant_id"`
-	ProductId   dot.ID `json:"product_id"`
-	ProductName string `json:"product_name"`
-	Quantity    int    `json:"quantity"`
-	ListPrice   int    `json:"list_price"`
-	RetailPrice int    `json:"retail_price"`
+	VariantId   dot.ID      `json:"variant_id"`
+	ProductId   dot.ID      `json:"product_id"`
+	ProductName string      `json:"product_name"`
+	Quantity    int         `json:"quantity"`
+	ListPrice   dot.NullInt `json:"list_price"`
+	RetailPrice dot.NullInt `json:"retail_price"`
 	// payment_price = retail_price - discount_per_item
-	PaymentPrice int                       `json:"payment_price"`
+	PaymentPrice dot.NullInt               `json:"payment_price"`
 	ImageUrl     string                    `json:"image_url"`
 	Attributes   []*catalogtypes.Attribute `json:"attributes"`
 }
