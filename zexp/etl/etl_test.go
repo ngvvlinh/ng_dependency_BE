@@ -11,6 +11,7 @@ import (
 
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/zexp/etl/tests/testdst"
 	"etop.vn/backend/zexp/etl/tests/testsrc"
@@ -56,7 +57,7 @@ func populateSampleData(db *cmsql.Database) {
 			FirstName: fmt.Sprintf("Al%02dce", i),
 			LastName:  fmt.Sprintf("St%02drk", i),
 		}
-		_, err := srcDB.Insert(account)
+		_, err := db.Insert(account)
 		must(err)
 	}
 }
@@ -75,7 +76,11 @@ func TestScan(t *testing.T) {
 
 	Convey("scan account", t, func() {
 		plistSrc := reflect.New(reflect.TypeOf(src.Model).Elem())
-		err := ng.scanModels(src.DB, plistSrc.Interface().(types.Model), 10020, 15)
+		err := ng.scanModels(src.DB, plistSrc.Interface().(types.Model), ETLQuery{
+			OrderBy: "id",
+			Where:   []interface{}{sq.NewExpr("id >= ?", 10020)},
+			Limit:   15,
+		})
 		So(err, ShouldBeNil)
 
 		accounts := plistSrc.Elem().Interface().(testsrc.Accounts)
@@ -95,7 +100,11 @@ func TestTransform(t *testing.T) {
 
 	Convey("scan & transform", t, func() {
 		plistSrc := reflect.New(reflect.TypeOf(src.Model).Elem())
-		err := ng.scanModels(src.DB, plistSrc.Interface().(types.Model), 10020, 15)
+		err := ng.scanModels(src.DB, plistSrc.Interface().(types.Model), ETLQuery{
+			OrderBy: "id",
+			Where:   []interface{}{sq.NewExpr("id >= ?", 10020)},
+			Limit:   15,
+		})
 		So(err, ShouldBeNil)
 
 		Convey("transform", func() {
@@ -108,5 +117,92 @@ func TestTransform(t *testing.T) {
 			So(accounts[0].ID, ShouldEqual, 10020)
 			So(accounts[0].FullName, ShouldEqual, "Al20ce St20rk")
 		})
+	})
+}
+
+func TestIsEqual(t *testing.T) {
+	tests := []struct {
+		obj         interface{}
+		otherObject interface{}
+		result      bool
+	}{
+		{
+			obj: struct {
+				FirstName string
+				LastName  string
+				Age       int
+			}{
+				FirstName: "A",
+				LastName:  "Nguyen Van",
+				Age:       18,
+			},
+			otherObject: struct {
+				FirstName string
+				LastName  string
+				FullName  string
+			}{
+				FirstName: "A",
+				LastName:  "Nguyen Van",
+				FullName:  "Nguyen Van A",
+			},
+			result: true,
+		},
+		{
+			obj: struct {
+				FirstName string
+				LastName  string
+			}{
+				FirstName: "A",
+				LastName:  "Nguyen Van",
+			},
+			otherObject: struct {
+				FirstName string
+				LastName  string
+			}{
+				FirstName: "B",
+				LastName:  "Nguyen Van",
+			},
+			result: false,
+		},
+	}
+	Convey("isEqual", t, func() {
+		for _, test := range tests {
+			So(isEqual(reflect.ValueOf(test.obj), reflect.ValueOf(test.otherObject)), ShouldEqual, test.result)
+		}
+	})
+}
+
+func TestDeleteModelsByRids(t *testing.T) {
+	accountModel := types.NewDataSource(srcDB, (*testsrc.Accounts)(nil)).Model
+	Convey("test deleteModelsByRids", t, func() {
+		var insertedRIDs []dot.ID
+		for i := 0; i < 10; i++ {
+			account := &testsrc.Account{
+				ID:        101,
+				FirstName: "a",
+				LastName:  "b",
+				Rid:       dot.ID(100 + i),
+			}
+			_, _err := srcDB.Insert(account)
+			must(_err)
+
+			insertedRIDs = append(insertedRIDs, dot.ID(100+i))
+		}
+
+		err := deleteModelsByRids(srcDB, accountModel, insertedRIDs)
+		So(err, ShouldBeNil)
+
+		rows, err := srcDB.Select("rid").From(accountModel.SQLTableName()).In("rid", insertedRIDs).Query()
+		must(err)
+
+		var rids []dot.ID
+		var rid dot.ID
+		for rows.Next() {
+			err := rows.Scan(&rid)
+			must(err)
+			rids = append(rids, rid)
+		}
+
+		So(len(rids), ShouldEqual, 0)
 	})
 }

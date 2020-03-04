@@ -10,4 +10,6 @@ type Account struct {
 	ID        dot.ID
 	FirstName string
 	LastName  string
+
+	Rid dot.ID
 }

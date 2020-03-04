@@ -23,9 +23,10 @@ import (
 )
 
 const (
-	ChannelWebhook = "webhook"
-	ChannelImport  = "import"
-	ChannelSMS     = "sms"
+	ChannelWebhook       = "webhook"
+	ChannelImport        = "import"
+	ChannelSMS           = "sms"
+	ChannelDataWarehouse = "etl"
 
 	PathAhamoveUserVerification = "/ahamove/user_verification"
 )

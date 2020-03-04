@@ -3,4 +3,5 @@ CREATE TABLE account (
 , first_name text
 , last_name text
 , full_name text
+, rid int8
 );

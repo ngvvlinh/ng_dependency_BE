@@ -251,8 +251,8 @@ func sqlgenShopCustomer(_ *ShopCustomer) bool { return true }
 type ShopCustomers []*ShopCustomer
 
 const __sqlShopCustomer_Table = "shop_customer"
-const __sqlShopCustomer_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"id\",\"shop_id\",\"code\",\"code_norm\",\"full_name\",\"gender\",\"type\",\"birthday\",\"note\",\"phone\",\"email\",\"status\",\"full_name_norm\",\"phone_norm\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlShopCustomer_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"full_name\" = EXCLUDED.\"full_name\",\"gender\" = EXCLUDED.\"gender\",\"type\" = EXCLUDED.\"type\",\"birthday\" = EXCLUDED.\"birthday\",\"note\" = EXCLUDED.\"note\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"status\" = EXCLUDED.\"status\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlShopCustomer_ListCols = "\"external_id\",\"external_code\",\"partner_id\",\"id\",\"shop_id\",\"code\",\"code_norm\",\"full_name\",\"gender\",\"type\",\"birthday\",\"note\",\"phone\",\"email\",\"status\",\"full_name_norm\",\"phone_norm\",\"created_at\",\"updated_at\",\"deleted_at\",\"rid\""
+const __sqlShopCustomer_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_code\" = EXCLUDED.\"external_code\",\"partner_id\" = EXCLUDED.\"partner_id\",\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"full_name\" = EXCLUDED.\"full_name\",\"gender\" = EXCLUDED.\"gender\",\"type\" = EXCLUDED.\"type\",\"birthday\" = EXCLUDED.\"birthday\",\"note\" = EXCLUDED.\"note\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"status\" = EXCLUDED.\"status\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopCustomer_Insert = "INSERT INTO \"shop_customer\" (" + __sqlShopCustomer_ListCols + ") VALUES"
 const __sqlShopCustomer_Select = "SELECT " + __sqlShopCustomer_ListCols + " FROM \"shop_customer\""
 const __sqlShopCustomer_Select_history = "SELECT " + __sqlShopCustomer_ListCols + " FROM history.\"shop_customer\""
@@ -297,6 +297,7 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -322,6 +323,7 @@ func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -359,7 +361,7 @@ func (_ *ShopCustomers) SQLSelect(w SQLWriter) error {
 func (m *ShopCustomer) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -369,7 +371,7 @@ func (ms ShopCustomers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -560,6 +562,14 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -570,7 +580,7 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 func (m *ShopCustomer) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -612,17 +622,18 @@ func (m ShopCustomerHistory) PhoneNorm() core.Interface    { return core.Interfa
 func (m ShopCustomerHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m ShopCustomerHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 func (m ShopCustomerHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m ShopCustomerHistory) Rid() core.Interface          { return core.Interface{m["rid"]} }
 
 func (m *ShopCustomerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCustomerHistory, 20)
+	res := make(ShopCustomerHistory, 21)
 	res["external_id"] = data[0]
 	res["external_code"] = data[1]
 	res["partner_id"] = data[2]
@@ -643,14 +654,15 @@ func (m *ShopCustomerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[17]
 	res["updated_at"] = data[18]
 	res["deleted_at"] = data[19]
+	res["rid"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCustomerHistories, 0, 128)
@@ -679,6 +691,7 @@ func (ms *ShopCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[17]
 		m["updated_at"] = data[18]
 		m["deleted_at"] = data[19]
+		m["rid"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

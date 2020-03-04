@@ -852,8 +852,8 @@ func sqlgenAccount(_ *Account) bool { return true }
 type Accounts []*Account
 
 const __sqlAccount_Table = "account"
-const __sqlAccount_ListCols = "\"id\",\"owner_id\",\"name\",\"type\",\"image_url\",\"url_slug\""
-const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"type\" = EXCLUDED.\"type\",\"image_url\" = EXCLUDED.\"image_url\",\"url_slug\" = EXCLUDED.\"url_slug\""
+const __sqlAccount_ListCols = "\"id\",\"owner_id\",\"name\",\"type\",\"image_url\",\"url_slug\",\"rid\""
+const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"type\" = EXCLUDED.\"type\",\"image_url\" = EXCLUDED.\"image_url\",\"url_slug\" = EXCLUDED.\"url_slug\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccount_Insert = "INSERT INTO \"account\" (" + __sqlAccount_ListCols + ") VALUES"
 const __sqlAccount_Select = "SELECT " + __sqlAccount_ListCols + " FROM \"account\""
 const __sqlAccount_Select_history = "SELECT " + __sqlAccount_ListCols + " FROM history.\"account\""
@@ -883,6 +883,7 @@ func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Type,
 		core.String(m.ImageURL),
 		core.String(m.URLSlug),
+		m.Rid,
 	}
 }
 
@@ -894,6 +895,7 @@ func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Type,
 		(*core.String)(&m.ImageURL),
 		(*core.String)(&m.URLSlug),
+		&m.Rid,
 	}
 }
 
@@ -931,7 +933,7 @@ func (_ *Accounts) SQLSelect(w SQLWriter) error {
 func (m *Account) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(7)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -941,7 +943,7 @@ func (ms Accounts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(6)
+		w.WriteMarkers(7)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1020,6 +1022,14 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.URLSlug)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1030,7 +1040,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 func (m *Account) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(7)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1058,31 +1068,33 @@ func (m AccountHistory) Name() core.Interface     { return core.Interface{m["nam
 func (m AccountHistory) Type() core.Interface     { return core.Interface{m["type"]} }
 func (m AccountHistory) ImageURL() core.Interface { return core.Interface{m["image_url"]} }
 func (m AccountHistory) URLSlug() core.Interface  { return core.Interface{m["url_slug"]} }
+func (m AccountHistory) Rid() core.Interface      { return core.Interface{m["rid"]} }
 
 func (m *AccountHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountHistory, 6)
+	res := make(AccountHistory, 7)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["name"] = data[2]
 	res["type"] = data[3]
 	res["image_url"] = data[4]
 	res["url_slug"] = data[5]
+	res["rid"] = data[6]
 	*m = res
 	return nil
 }
 
 func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountHistories, 0, 128)
@@ -1097,6 +1109,7 @@ func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["type"] = data[3]
 		m["image_url"] = data[4]
 		m["url_slug"] = data[5]
+		m["rid"] = data[6]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1112,8 +1125,8 @@ func sqlgenShop(_ *Shop) bool { return true }
 type Shops []*Shop
 
 const __sqlShop_Table = "shop"
-const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\""
-const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\""
+const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\",\"rid\""
+const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
@@ -1165,6 +1178,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.SurveyInfo},
 		core.JSON{m.ShippingServiceSelectStrategy},
 		m.InventoryOverstock,
+		m.Rid,
 	}
 }
 
@@ -1197,6 +1211,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.SurveyInfo},
 		core.JSON{&m.ShippingServiceSelectStrategy},
 		&m.InventoryOverstock,
+		&m.Rid,
 	}
 }
 
@@ -1234,7 +1249,7 @@ func (_ *Shops) SQLSelect(w SQLWriter) error {
 func (m *Shop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(28)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1244,7 +1259,7 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(27)
+		w.WriteMarkers(28)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1491,6 +1506,14 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.InventoryOverstock)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1501,7 +1524,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 func (m *Shop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(28)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1558,17 +1581,18 @@ func (m ShopHistory) ShippingServiceSelectStrategy() core.Interface {
 func (m ShopHistory) InventoryOverstock() core.Interface {
 	return core.Interface{m["inventory_overstock"]}
 }
+func (m ShopHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 28)
+	args := make([]interface{}, 28)
+	for i := 0; i < 28; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopHistory, 27)
+	res := make(ShopHistory, 28)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["owner_id"] = data[2]
@@ -1596,14 +1620,15 @@ func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["survey_info"] = data[24]
 	res["shipping_service_select_strategy"] = data[25]
 	res["inventory_overstock"] = data[26]
+	res["rid"] = data[27]
 	*m = res
 	return nil
 }
 
 func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 28)
+	args := make([]interface{}, 28)
+	for i := 0; i < 28; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopHistories, 0, 128)
@@ -1639,6 +1664,7 @@ func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["survey_info"] = data[24]
 		m["shipping_service_select_strategy"] = data[25]
 		m["inventory_overstock"] = data[26]
+		m["rid"] = data[27]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -3470,8 +3496,8 @@ func sqlgenUser(_ *User) bool { return true }
 type Users []*User
 
 const __sqlUser_Table = "user"
-const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\",\"wl_partner_id\""
-const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
+const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\",\"wl_partner_id\",\"rid\""
+const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
@@ -3515,6 +3541,7 @@ func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.RefUserID,
 		m.RefSaleID,
 		m.WLPartnerID,
+		core.Int(m.Rid),
 	}
 }
 
@@ -3539,6 +3566,7 @@ func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.RefUserID,
 		&m.RefSaleID,
 		&m.WLPartnerID,
+		(*core.Int)(&m.Rid),
 	}
 }
 
@@ -3576,7 +3604,7 @@ func (_ *Users) SQLSelect(w SQLWriter) error {
 func (m *User) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3586,7 +3614,7 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3769,6 +3797,14 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.WLPartnerID)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -3779,7 +3815,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 func (m *User) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3826,17 +3862,18 @@ func (m UserHistory) Source() core.Interface      { return core.Interface{m["sou
 func (m UserHistory) RefUserID() core.Interface   { return core.Interface{m["ref_user_id"]} }
 func (m UserHistory) RefSaleID() core.Interface   { return core.Interface{m["ref_sale_id"]} }
 func (m UserHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
+func (m UserHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(UserHistory, 19)
+	res := make(UserHistory, 20)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["short_name"] = data[2]
@@ -3856,14 +3893,15 @@ func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["ref_user_id"] = data[16]
 	res["ref_sale_id"] = data[17]
 	res["wl_partner_id"] = data[18]
+	res["rid"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(UserHistories, 0, 128)
@@ -3891,6 +3929,7 @@ func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["ref_user_id"] = data[16]
 		m["ref_sale_id"] = data[17]
 		m["wl_partner_id"] = data[18]
+		m["rid"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

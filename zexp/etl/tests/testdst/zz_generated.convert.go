@@ -60,6 +60,7 @@ func convert_Account_testsrc_Account(arg *Account, out *testsrc.Account) {
 	out.ID = arg.ID               // simple assign
 	out.FirstName = arg.FirstName // simple assign
 	out.LastName = arg.LastName   // simple assign
+	out.Rid = arg.Rid             // simple assign
 }
 
 func Convert_Accounts_testsrc_Accounts(args []*Account) (outs []*testsrc.Account) {
@@ -87,6 +88,7 @@ func convert_testsrc_Account_Account(arg *testsrc.Account, out *Account) {
 	out.FirstName = arg.FirstName // simple assign
 	out.LastName = arg.LastName   // simple assign
 	out.FullName = ""             // zero value
+	out.Rid = arg.Rid             // simple assign
 }
 
 func Convert_testsrc_Accounts_Accounts(args []*testsrc.Account) (outs []*Account) {

@@ -290,6 +290,7 @@ func convert_ordering_Order_orderingmodel_Order(arg *ordering.Order, out *orderi
 	out.ReferralMeta = nil                    // types do not match
 	out.CustomerID = arg.CustomerID           // simple assign
 	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.Rid = 0                               // zero value
 }
 
 func Convert_ordering_Orders_orderingmodel_Orders(args []*ordering.Order) (outs []*orderingmodel.Order) {

@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sq"
+	"etop.vn/capi/dot"
 )
 
 type PartnerStoreFactory func(context.Context) *PartnerStore
@@ -24,6 +25,27 @@ type PartnerStore struct {
 	query cmsql.QueryFactory
 	preds []interface{}
 	ft    PartnerFilters
+}
+
+func (s *PartnerStore) ByID(id dot.ID) *PartnerStore {
+	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *PartnerStore) GetPartnerDB() (*model.Partner, error) {
+	var partner model.Partner
+	query := s.query().Where(s.preds)
+	err := query.ShouldGet(&partner)
+	return &partner, err
+}
+
+func (s *PartnerStore) GetPartner() (partner *identity.Partner, _ error) {
+	partnerDB, err := s.GetPartnerDB()
+	if err != nil {
+		return nil, err
+	}
+	err = scheme.Convert(partnerDB, partner)
+	return partner, err
 }
 
 func (s *PartnerStore) WhiteLabel() *PartnerStore {

@@ -1019,6 +1019,25 @@ func (ft *OrderFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *OrderFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *OrderFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type OrderLineFilters struct{ prefix string }
 
 func NewOrderLineFilters(prefix string) OrderLineFilters {

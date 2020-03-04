@@ -73,7 +73,7 @@ func main() {
 	etl.Register(db, (*identitymodel.Accounts)(nil), dbTest, (*models.Accounts)(nil))
 	etl.RegisterConversion(convert.RegisterConversions)
 
-	etl.Run(ctx)
+	etl.Run()
 
 	mux := http.NewServeMux()
 	svr := &http.Server{

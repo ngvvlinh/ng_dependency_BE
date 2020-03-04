@@ -47,6 +47,8 @@ type ShopCustomer struct {
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt    time.Time
+
+	Rid dot.ID
 }
 
 var _ = sqlgenShopTraderAddress(&ShopTraderAddress{})

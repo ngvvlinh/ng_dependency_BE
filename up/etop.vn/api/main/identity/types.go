@@ -123,6 +123,8 @@ type GetCustomersByShop struct {
 type Partner struct {
 	ID dot.ID
 
+	OwnerID dot.ID
+
 	Name string
 
 	PublicName string

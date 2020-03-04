@@ -231,6 +231,17 @@ func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx con
 	return err
 }
 
+type GetPartnerByIDQuery struct {
+	ID dot.ID
+
+	Result *Partner `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetPartnerByID(ctx context.Context, msg *GetPartnerByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetPartnerByID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopByIDQuery struct {
 	ID dot.ID
 
@@ -315,6 +326,7 @@ func (q *GetAffiliatesByIDsQuery) query()                    {}
 func (q *GetAffiliatesByOwnerIDQuery) query()                {}
 func (q *GetExternalAccountAhamoveQuery) query()             {}
 func (q *GetExternalAccountAhamoveByExternalIDQuery) query() {}
+func (q *GetPartnerByIDQuery) query()                        {}
 func (q *GetShopByIDQuery) query()                           {}
 func (q *GetUserByEmailQuery) query()                        {}
 func (q *GetUserByIDQuery) query()                           {}
@@ -545,6 +557,17 @@ func (q *GetExternalAccountAhamoveByExternalIDQuery) SetGetExternalAccountAhamov
 	q.ExternalID = args.ExternalID
 }
 
+func (q *GetPartnerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetPartnerByIDArgs) {
+	return ctx,
+		&GetPartnerByIDArgs{
+			ID: q.ID,
+		}
+}
+
+func (q *GetPartnerByIDQuery) SetGetPartnerByIDArgs(args *GetPartnerByIDArgs) {
+	q.ID = args.ID
+}
+
 func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
@@ -635,6 +658,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
+	b.AddHandler(h.HandleGetPartnerByID)
 	b.AddHandler(h.HandleGetShopByID)
 	b.AddHandler(h.HandleGetUserByEmail)
 	b.AddHandler(h.HandleGetUserByID)

@@ -96,6 +96,8 @@ type Account struct {
 	Type     account_type.AccountType
 	ImageURL string
 	URLSlug  string
+
+	Rid dot.ID
 }
 
 type AccountInterface interface {
@@ -167,6 +169,8 @@ type Shop struct {
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem
 
 	InventoryOverstock dot.NullBool
+
+	Rid dot.ID
 }
 
 type ShippingServiceSelectStrategyItem struct {
@@ -420,6 +424,8 @@ type User struct {
 	RefUserID   dot.ID
 	RefSaleID   dot.ID
 	WLPartnerID dot.ID
+
+	Rid int
 }
 
 type UserExtended struct {

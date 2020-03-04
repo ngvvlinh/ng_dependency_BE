@@ -22,7 +22,11 @@ build ./cmd/etop-uploader
 build ./cmd/pgevent-forwarder
 build ./cmd/shipping-sync-service
 build ./cmd/etop-notifier
+build ./cmd/etop-etl
 
 mkdir -p bin/com/web/ecom
    cp -R     com/web/ecom/assets    bin/com/web/ecom/
    cp -R     com/web/ecom/templates bin/com/web/ecom/
+
+mkdir -p bin/zexp/etl
+   cp -R     zexp/etl/db   bin/zexp/etl/

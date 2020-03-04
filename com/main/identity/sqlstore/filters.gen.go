@@ -703,6 +703,25 @@ func (ft *AccountFilters) ByURLSlugPtr(URLSlug *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *AccountFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *AccountFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type ShopFilters struct{ prefix string }
 
 func NewShopFilters(prefix string) ShopFilters {
@@ -1113,6 +1132,25 @@ func (ft *ShopFilters) ByMoneyTransactionRRulePtr(MoneyTransactionRRule *string)
 		Value:  MoneyTransactionRRule,
 		IsNil:  MoneyTransactionRRule == nil,
 		IsZero: MoneyTransactionRRule != nil && (*MoneyTransactionRRule) == "",
+	}
+}
+
+func (ft *ShopFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
 
@@ -2152,6 +2190,25 @@ func (ft *UserFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr
 		Value:  WLPartnerID,
 		IsNil:  WLPartnerID == nil,
 		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
+func (ft *UserFilters) ByRid(Rid int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *UserFilters) ByRidPtr(Rid *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
 

@@ -64,6 +64,8 @@ type QueryService interface {
 	GetAffiliatesByOwnerID(context.Context, *GetAffiliatesByOwnerIDArgs) ([]*Affiliate, error)
 
 	ListPartnersForWhiteLabel(context.Context, *meta.Empty) ([]*Partner, error)
+
+	GetPartnerByID(context.Context, *GetPartnerByIDArgs) (*Partner, error)
 }
 
 //-- queries --//
@@ -167,4 +169,8 @@ type UpdateAffiliateBankAccountArgs struct {
 	ID          dot.ID
 	OwnerID     dot.ID
 	BankAccount *identitytypes.BankAccount
+}
+
+type GetPartnerByIDArgs struct {
+	ID dot.ID
 }

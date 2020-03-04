@@ -46,6 +46,8 @@ type Config struct {
 	Shipment *ShipmentConfig
 
 	Templates *Templates
+
+	DatabaseName string
 }
 
 type Driver interface {

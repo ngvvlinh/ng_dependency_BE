@@ -117,3 +117,7 @@ func (a *QueryService) GetAffiliatesByOwnerID(ctx context.Context, args *identit
 func (a *QueryService) ListPartnersForWhiteLabel(ctx context.Context, _ *meta.Empty) ([]*identity.Partner, error) {
 	return a.partnerStore(ctx).WhiteLabel().ListPartners()
 }
+
+func (a *QueryService) GetPartnerByID(ctx context.Context, args *identity.GetPartnerByIDArgs) (*identity.Partner, error) {
+	return a.partnerStore(ctx).ByID(args.ID).GetPartner()
+}

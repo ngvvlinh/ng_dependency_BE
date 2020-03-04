@@ -226,7 +226,7 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 			}()
 			var _res []*identitymodel.AccountUser
 			s := x.Table("account_user").
-				Where("au.user_id = ? AND au.deleted_at is NULL", uID)
+				Where("user_id = ? AND deleted_at is NULL", uID)
 			if query.Type.Valid {
 				s = s.Where("type = ?", query.Type)
 			}
@@ -236,6 +236,9 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 				m.Unlock()
 			}
 		}(userID)
+	}
+
+	for len(guard) > 0 {
 	}
 
 	query.Result = res

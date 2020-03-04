@@ -11,4 +11,5 @@ type Account struct {
 	FirstName string
 	LastName  string
 	FullName  string
+	Rid       dot.ID
 }

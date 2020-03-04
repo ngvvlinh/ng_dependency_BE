@@ -30,8 +30,8 @@ func sqlgenAccount(_ *Account) bool { return true }
 type Accounts []*Account
 
 const __sqlAccount_Table = "account"
-const __sqlAccount_ListCols = "\"id\",\"first_name\",\"last_name\""
-const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\""
+const __sqlAccount_ListCols = "\"id\",\"first_name\",\"last_name\",\"rid\""
+const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccount_Insert = "INSERT INTO \"account\" (" + __sqlAccount_ListCols + ") VALUES"
 const __sqlAccount_Select = "SELECT " + __sqlAccount_ListCols + " FROM \"account\""
 const __sqlAccount_Select_history = "SELECT " + __sqlAccount_ListCols + " FROM history.\"account\""
@@ -58,6 +58,7 @@ func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		core.String(m.FirstName),
 		core.String(m.LastName),
+		m.Rid,
 	}
 }
 
@@ -66,6 +67,7 @@ func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		(*core.String)(&m.FirstName),
 		(*core.String)(&m.LastName),
+		&m.Rid,
 	}
 }
 
@@ -103,7 +105,7 @@ func (_ *Accounts) SQLSelect(w SQLWriter) error {
 func (m *Account) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(3)
+	w.WriteMarkers(4)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -113,7 +115,7 @@ func (ms Accounts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(3)
+		w.WriteMarkers(4)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -168,6 +170,14 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.LastName)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -178,7 +188,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 func (m *Account) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(3)
+	w.WriteMarkers(4)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -203,28 +213,30 @@ func (m AccountHistories) SQLSelect(w SQLWriter) error {
 func (m AccountHistory) ID() core.Interface        { return core.Interface{m["id"]} }
 func (m AccountHistory) FirstName() core.Interface { return core.Interface{m["first_name"]} }
 func (m AccountHistory) LastName() core.Interface  { return core.Interface{m["last_name"]} }
+func (m AccountHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *AccountHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 3)
-	args := make([]interface{}, 3)
-	for i := 0; i < 3; i++ {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountHistory, 3)
+	res := make(AccountHistory, 4)
 	res["id"] = data[0]
 	res["first_name"] = data[1]
 	res["last_name"] = data[2]
+	res["rid"] = data[3]
 	*m = res
 	return nil
 }
 
 func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 3)
-	args := make([]interface{}, 3)
-	for i := 0; i < 3; i++ {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountHistories, 0, 128)
@@ -236,6 +248,7 @@ func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["first_name"] = data[1]
 		m["last_name"] = data[2]
+		m["rid"] = data[3]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

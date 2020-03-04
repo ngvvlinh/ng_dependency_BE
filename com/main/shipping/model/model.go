@@ -167,6 +167,8 @@ type Fulfillment struct {
 
 	DeliveryRoute       string
 	ExternalAffiliateID string
+
+	Rid dot.ID
 }
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {

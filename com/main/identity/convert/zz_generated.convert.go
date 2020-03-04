@@ -372,6 +372,7 @@ func Convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, 
 
 func convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, out *identity.Partner) {
 	out.ID = arg.ID                       // simple assign
+	out.OwnerID = arg.OwnerID             // simple assign
 	out.Name = arg.Name                   // simple assign
 	out.PublicName = arg.PublicName       // simple assign
 	out.ImageURL = arg.ImageURL           // simple assign
@@ -401,7 +402,7 @@ func Convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *
 
 func convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *identitymodel.Partner) {
 	out.ID = arg.ID                       // simple assign
-	out.OwnerID = 0                       // zero value
+	out.OwnerID = arg.OwnerID             // simple assign
 	out.Status = 0                        // zero value
 	out.IsTest = 0                        // zero value
 	out.Name = arg.Name                   // simple assign
@@ -552,6 +553,7 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.SurveyInfo = nil                    // zero value
 	out.ShippingServiceSelectStrategy = nil // zero value
 	out.InventoryOverstock = dot.NullBool{} // zero value
+	out.Rid = 0                             // zero value
 }
 
 func Convert_identity_Shops_identitymodel_Shops(args []*identity.Shop) (outs []*identitymodel.Shop) {
@@ -622,6 +624,7 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	out.RefUserID = arg.RefUserID             // simple assign
 	out.RefSaleID = arg.RefSaleID             // simple assign
 	out.WLPartnerID = arg.WLPartnerID         // simple assign
+	out.Rid = 0                               // zero value
 }
 
 func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*identitymodel.User) {
