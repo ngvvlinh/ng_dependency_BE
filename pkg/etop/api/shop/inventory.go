@@ -56,10 +56,10 @@ func (s *InventoryService) CancelInventoryVoucher(ctx context.Context, q *Cancel
 	userID := q.Context.UserID
 
 	cmd := &inventory.CancelInventoryVoucherCommand{
-		ShopID:    shopID,
-		ID:        q.Id,
-		UpdatedBy: userID,
-		Reason:    q.Reason,
+		ShopID:       shopID,
+		ID:           q.Id,
+		UpdatedBy:    userID,
+		CancelReason: q.CancelReason,
 	}
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err

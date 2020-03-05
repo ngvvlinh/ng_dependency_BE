@@ -242,10 +242,10 @@ type InventoryVoucherItem struct {
 }
 
 type CancelInventoryVoucherArgs struct {
-	ShopID    dot.ID
-	ID        dot.ID
-	UpdatedBy dot.ID
-	Reason    string
+	ShopID       dot.ID
+	ID           dot.ID
+	UpdatedBy    dot.ID
+	CancelReason string
 }
 
 type AdjustInventoryQuantityArgs struct {

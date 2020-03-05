@@ -6800,12 +6800,12 @@
     "paCancelInventoryVoucherRequest": {
       "type": "object",
       "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
-        },
-        "reason": {
-          "type": "string"
         }
       }
     },

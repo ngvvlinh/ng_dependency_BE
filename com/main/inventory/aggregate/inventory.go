@@ -455,7 +455,7 @@ func AvgValue(value1 int, value2 int, quantity1 int, quantity2 int) int {
 }
 
 func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *inventory.CancelInventoryVoucherArgs) (*inventory.InventoryVoucher, error) {
-	if args.ShopID == 0 || args.ID == 0 || args.Reason == "" {
+	if args.ShopID == 0 || args.ID == 0 || args.CancelReason == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	inventoryVoucher, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).GetDB()
@@ -484,7 +484,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	}
 	inventoryVoucher.Status = status3.N
 	inventoryVoucher.CancelledAt = time.Now()
-	inventoryVoucher.CancelReason = args.Reason
+	inventoryVoucher.CancelReason = args.CancelReason
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAllDB(inventoryVoucher)
 	if err != nil {
 		return nil, err
@@ -1034,10 +1034,10 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 			inventoryVouchers = append(inventoryVouchers, result)
 		case status3.Z:
 			cancelResult, err := q.CancelInventoryVoucher(ctx, &inventory.CancelInventoryVoucherArgs{
-				ShopID:    value.ShopID,
-				ID:        value.ID,
-				UpdatedBy: args.UpdateBy,
-				Reason:    getCancelReason(value.RefType, value.RefCode),
+				ShopID:       value.ShopID,
+				ID:           value.ID,
+				UpdatedBy:    args.UpdateBy,
+				CancelReason: getCancelReason(value.RefType, value.RefCode),
 			})
 			if err != nil {
 				return nil, err

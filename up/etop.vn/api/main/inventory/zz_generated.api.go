@@ -61,10 +61,10 @@ func (h AggregateHandler) HandleCancelInventoryByRefID(ctx context.Context, msg 
 }
 
 type CancelInventoryVoucherCommand struct {
-	ShopID    dot.ID
-	ID        dot.ID
-	UpdatedBy dot.ID
-	Reason    string
+	ShopID       dot.ID
+	ID           dot.ID
+	UpdatedBy    dot.ID
+	CancelReason string
 
 	Result *InventoryVoucher `json:"-"`
 }
@@ -387,10 +387,10 @@ func (q *CancelInventoryByRefIDCommand) SetCancelInventoryByRefIDRequest(args *C
 func (q *CancelInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelInventoryVoucherArgs) {
 	return ctx,
 		&CancelInventoryVoucherArgs{
-			ShopID:    q.ShopID,
-			ID:        q.ID,
-			UpdatedBy: q.UpdatedBy,
-			Reason:    q.Reason,
+			ShopID:       q.ShopID,
+			ID:           q.ID,
+			UpdatedBy:    q.UpdatedBy,
+			CancelReason: q.CancelReason,
 		}
 }
 
@@ -398,7 +398,7 @@ func (q *CancelInventoryVoucherCommand) SetCancelInventoryVoucherArgs(args *Canc
 	q.ShopID = args.ShopID
 	q.ID = args.ID
 	q.UpdatedBy = args.UpdatedBy
-	q.Reason = args.Reason
+	q.CancelReason = args.CancelReason
 }
 
 func (q *CheckInventoryVariantsQuantityCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckInventoryVariantQuantityRequest) {

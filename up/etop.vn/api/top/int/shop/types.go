@@ -1650,8 +1650,8 @@ type ConfirmInventoryVoucherResponse struct {
 func (m *ConfirmInventoryVoucherResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CancelInventoryVoucherRequest struct {
-	Id     dot.ID `json:"id"`
-	Reason string `json:"reason"`
+	Id           dot.ID `json:"id"`
+	CancelReason string `json:"cancel_reason"`
 }
 
 func (m *CancelInventoryVoucherRequest) String() string { return jsonx.MustMarshalToString(m) }
