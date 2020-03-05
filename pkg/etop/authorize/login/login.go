@@ -64,7 +64,7 @@ func LoginUser(ctx context.Context, query *LoginUserQuery) error {
 	// If the user is activated, verify password and login
 	if user.Status != status3.Z {
 		if !VerifyPassword(query.Password, hashpwd) {
-			return cm.Error(cm.Unauthenticated, MsgLoginUnauthenticated, nil).MarkTrivial()
+			return cm.Errorf(cm.Unauthenticated, nil, MsgLoginUnauthenticated, wl.X(ctx).CSEmail).MarkTrivial()
 		}
 
 		// The user must be activated
