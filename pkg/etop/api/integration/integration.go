@@ -413,13 +413,13 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 	return r, nil
 }
 
-func getToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
+func GetRequestLoginToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
 	var v map[string]string
 	var code string
 
 	tok, err := authStore.Validate(auth.UsageRequestLogin, tokStr, &v)
-	if err == nil && v != nil && len(v["code"]) == 8 {
+	if err == nil && v != nil && len(v["code"]) == 6 {
 		code = v["code"]
 		return tok, code, v
 	}
@@ -430,7 +430,7 @@ func getToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]s
 
 func generateTokenWithVerificationCode(partnerID dot.ID, login string, extra map[string]string) (*auth.Token, string, map[string]string, error) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
-	tok, code, v := getToken(partnerID, login)
+	tok, code, v := GetRequestLoginToken(partnerID, login)
 	if code != "" {
 		return tok, code, v, nil
 	}
@@ -480,7 +480,6 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	}
 
 	partner := r.CtxPartner
-	getToken(partner.ID, cm.Coalesce(emailNorm, phoneNorm))
 	key := fmt.Sprintf("%v-%v", partner.ID, cm.Coalesce(emailNorm, phoneNorm))
 
 	var v map[string]string
