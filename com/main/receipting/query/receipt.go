@@ -70,7 +70,7 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *receipting.GetReceipt
 func (q *ReceiptQuery) ListReceiptsByRefsAndStatus(
 	ctx context.Context, args *receipting.ListReceiptsByRefsAndStatusArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).RefType(args.RefType).Status(status3.Status(args.Status))
+	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.IsContains, args.RefIDs...).RefType(args.RefType).Status(status3.Status(args.Status))
 	receipts, err := query.ListReceipts()
 	if err != nil {
 		return nil, err

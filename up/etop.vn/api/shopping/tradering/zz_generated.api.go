@@ -39,8 +39,9 @@ func (h AggregateHandler) HandleDeleteTrader(ctx context.Context, msg *DeleteTra
 }
 
 type GetTraderByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 
 	Result *ShopTrader `json:"-"`
 }
@@ -94,14 +95,16 @@ func (q *DeleteTraderCommand) GetArgs(ctx context.Context) (_ context.Context, I
 func (q *GetTraderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			ID:             q.ID,
+			ShopID:         q.ShopID,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *GetTraderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *GetTraderInfoByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {

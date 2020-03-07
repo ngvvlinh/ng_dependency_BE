@@ -196,8 +196,9 @@ func (h QueryServiceHandler) HandleGetCustomerByEmail(ctx context.Context, msg *
 }
 
 type GetCustomerByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -500,14 +501,16 @@ func (q *GetCustomerByEmailQuery) GetArgs(ctx context.Context) (_ context.Contex
 func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			ID:             q.ID,
+			ShopID:         q.ShopID,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *GetCustomerByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *GetCustomerByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, phone string, shopID dot.ID) {

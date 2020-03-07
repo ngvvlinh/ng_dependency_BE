@@ -59,7 +59,8 @@ func (q *TraderQuery) GetTraderInfoByID(
 	switch trader.Type {
 	case tradering.CustomerType:
 		query := &customering.GetCustomerByIDQuery{
-			ID: id,
+			ID:             id,
+			IncludeDeleted: true,
 		}
 		if err := q.customerQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).

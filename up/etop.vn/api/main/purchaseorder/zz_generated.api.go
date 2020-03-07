@@ -112,8 +112,9 @@ func (h AggregateHandler) HandleUpdatePurchaseOrder(ctx context.Context, msg *Up
 }
 
 type GetPurchaseOrderByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 
 	Result *PurchaseOrder `json:"-"`
 }
@@ -294,14 +295,16 @@ func (q *UpdatePurchaseOrderCommand) SetUpdatePurchaseOrderArgs(args *UpdatePurc
 func (q *GetPurchaseOrderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			ID:             q.ID,
+			ShopID:         q.ShopID,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *GetPurchaseOrderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *GetPurchaseOrdersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, ShopID dot.ID) {

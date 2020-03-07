@@ -179,10 +179,11 @@ func (h QueryServiceHandler) HandleListReceiptsByLedgerIDs(ctx context.Context, 
 }
 
 type ListReceiptsByRefsAndStatusQuery struct {
-	ShopID  dot.ID
-	RefIDs  []dot.ID
-	RefType receipt_ref.ReceiptRef
-	Status  int
+	ShopID     dot.ID
+	RefIDs     []dot.ID
+	RefType    receipt_ref.ReceiptRef
+	Status     int
+	IsContains bool
 
 	Result *ReceiptsResponse `json:"-"`
 }
@@ -398,10 +399,11 @@ func (q *ListReceiptsByLedgerIDsQuery) SetListReceiptsByLedgerIDsArgs(args *List
 func (q *ListReceiptsByRefsAndStatusQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListReceiptsByRefsAndStatusArgs) {
 	return ctx,
 		&ListReceiptsByRefsAndStatusArgs{
-			ShopID:  q.ShopID,
-			RefIDs:  q.RefIDs,
-			RefType: q.RefType,
-			Status:  q.Status,
+			ShopID:     q.ShopID,
+			RefIDs:     q.RefIDs,
+			RefType:    q.RefType,
+			Status:     q.Status,
+			IsContains: q.IsContains,
 		}
 }
 
@@ -410,6 +412,7 @@ func (q *ListReceiptsByRefsAndStatusQuery) SetListReceiptsByRefsAndStatusArgs(ar
 	q.RefIDs = args.RefIDs
 	q.RefType = args.RefType
 	q.Status = args.Status
+	q.IsContains = args.IsContains
 }
 
 func (q *ListReceiptsByTraderIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status) {

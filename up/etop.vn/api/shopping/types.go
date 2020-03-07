@@ -6,8 +6,9 @@ import (
 )
 
 type IDQueryShopArg struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 }
 
 type IDsQueryShopArgs struct {

@@ -76,8 +76,9 @@ func (h AggregateHandler) HandleUpdateSupplier(ctx context.Context, msg *UpdateS
 }
 
 type GetSupplierByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 
 	Result *ShopSupplier `json:"-"`
 }
@@ -186,14 +187,16 @@ func (q *UpdateSupplierCommand) SetUpdateSupplierArgs(args *UpdateSupplierArgs) 
 func (q *GetSupplierByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			ID:             q.ID,
+			ShopID:         q.ShopID,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *GetSupplierByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListSuppliersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {

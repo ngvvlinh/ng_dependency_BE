@@ -76,7 +76,11 @@ func (q *CustomerQuery) GetCustomer(
 func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
-	customer, err := q.store(ctx).ID(args.ID).GetCustomer()
+	query := q.store(ctx).ID(args.ID)
+	if args.IncludeDeleted {
+		query = query.IncludeDeleted()
+	}
+	customer, err := query.GetCustomer()
 	if err != nil {
 		return nil, err
 	}

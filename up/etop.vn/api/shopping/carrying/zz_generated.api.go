@@ -66,8 +66,9 @@ func (h AggregateHandler) HandleUpdateCarrier(ctx context.Context, msg *UpdateCa
 }
 
 type GetCarrierByIDQuery struct {
-	ID     dot.ID
-	ShopID dot.ID
+	ID             dot.ID
+	ShopID         dot.ID
+	IncludeDeleted bool
 
 	Result *ShopCarrier `json:"-"`
 }
@@ -156,14 +157,16 @@ func (q *UpdateCarrierCommand) SetUpdateCarrierArgs(args *UpdateCarrierArgs) {
 func (q *GetCarrierByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
-			ID:     q.ID,
-			ShopID: q.ShopID,
+			ID:             q.ID,
+			ShopID:         q.ShopID,
+			IncludeDeleted: q.IncludeDeleted,
 		}
 }
 
 func (q *GetCarrierByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+	q.IncludeDeleted = args.IncludeDeleted
 }
 
 func (q *ListCarriersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {

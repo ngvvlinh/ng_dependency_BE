@@ -114,8 +114,9 @@ type ListReceiptsByLedgerIDsArgs struct {
 }
 
 type ListReceiptsByRefsAndStatusArgs struct {
-	ShopID  dot.ID
-	RefIDs  []dot.ID
-	RefType receipt_ref.ReceiptRef
-	Status  int
+	ShopID     dot.ID
+	RefIDs     []dot.ID
+	RefType    receipt_ref.ReceiptRef
+	Status     int
+	IsContains bool
 }

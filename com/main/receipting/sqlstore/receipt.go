@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"etop.vn/api/main/receipting"
@@ -91,22 +90,18 @@ func (s *ReceiptStore) RefsID(id dot.ID) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) RefIDs(ids ...dot.ID) *ReceiptStore {
+func (s *ReceiptStore) RefIDs(isContains bool, ids ...dot.ID) *ReceiptStore {
 	if len(ids) == 0 {
 		s.preds = append(s.preds, sq.NewExpr("false"))
 		return s
 	}
 
-	strConditions := "ref_ids && '{"
-	for i, id := range ids {
-		strConditions += fmt.Sprintf("%d", id)
-		if i < len(ids)-1 {
-			strConditions += ","
-		}
+	// default operator is overlap
+	operator := "&&"
+	if isContains {
+		operator = "@>"
 	}
-	strConditions += "}'"
-
-	s.preds = append(s.preds, sq.NewExpr(strConditions))
+	s.preds = append(s.preds, sq.NewExpr("ref_ids "+operator+" ?", core.Array{V: ids}))
 	return s
 }
 

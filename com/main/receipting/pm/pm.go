@@ -162,12 +162,12 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 	}
 
 	if err := m.createReceipts(ctx, mapOrderFulfillment, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu thu thất bại").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu thu thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
 	}
 
 	// Create receipt type payment
 	if err := m.createPayment(ctx, totalShippingFee, fulfillments, event.ShopID, ledgerID); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu chi thất bại").WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
+		return cm.Errorf(cm.FailedPrecondition, err, "Tạo phiếu chi thất bại (%v)", err.Error()).WithMetap("shop_id", event.ShopID).WithMetap("money_transaction_id", event.MoneyTransactionID)
 	}
 
 	return nil
@@ -179,39 +179,57 @@ func (m *ProcessManager) createPayment(
 	fulfillments []*modely.FulfillmentExtended,
 	shopID, ledgerID dot.ID,
 ) error {
-	{
-		receiptLines := []*receipting.ReceiptLine{}
-		for _, fulfillment := range fulfillments {
-			shippingFee := fulfillment.ShippingFeeShop
-			if shippingFee == 0 {
-				continue
-			}
-			receiptLines = append(receiptLines, &receipting.ReceiptLine{
-				RefID:  fulfillment.ID,
-				Amount: shippingFee,
-			})
+	receiptLines := []*receipting.ReceiptLine{}
+	refIDs := []dot.ID{}
+	for _, fulfillment := range fulfillments {
+		shippingFee := fulfillment.ShippingFeeShop
+		if shippingFee == 0 {
+			continue
 		}
-		if len(receiptLines) == 0 {
-			return nil
-		}
-		cmd := &receipting.CreateReceiptCommand{
-			ShopID:      shopID,
-			TraderID:    model.TopShipID,
-			Title:       "Thanh toán phí vận chuyển Topship",
-			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
-			Type:        receipt_type.Payment,
-			Status:      int(status3.P),
-			Amount:      totalShippingFee,
-			LedgerID:    ledgerID,
-			Lines:       receiptLines,
-			PaidAt:      time.Now(),
-			Mode:        receipt_mode.Auto,
-			ConfirmedAt: time.Now(),
-			RefType:     receipt_ref.Fulfillment,
-		}
-		if err := m.receiptAggr.Dispatch(ctx, cmd); err != nil {
-			return err
-		}
+		receiptLines = append(receiptLines, &receipting.ReceiptLine{
+			RefID:  fulfillment.ID,
+			Amount: shippingFee,
+		})
+		refIDs = append(refIDs, fulfillment.ID)
+	}
+	if len(receiptLines) == 0 {
+		return nil
+	}
+
+	query := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:     shopID,
+		RefIDs:     refIDs,
+		RefType:    receipt_ref.Fulfillment,
+		Status:     int(status3.P),
+		IsContains: true,
+	}
+	if err := m.receiptQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	if len(query.Result.Receipts) > 0 {
+		// Đã tạo phiếu thanh toán phí vận chuyển Topship
+		// Không tạo thêm nữa
+		return nil
+	}
+
+	// Tạo mới phiếu thanh toán phí vận chuyển
+	cmd := &receipting.CreateReceiptCommand{
+		ShopID:      shopID,
+		TraderID:    model.TopShipID,
+		Title:       "Thanh toán phí vận chuyển Topship",
+		Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
+		Type:        receipt_type.Payment,
+		Status:      int(status3.P),
+		Amount:      totalShippingFee,
+		LedgerID:    ledgerID,
+		Lines:       receiptLines,
+		PaidAt:      time.Now(),
+		Mode:        receipt_mode.Auto,
+		ConfirmedAt: time.Now(),
+		RefType:     receipt_ref.Fulfillment,
+	}
+	if err := m.receiptAggr.Dispatch(ctx, cmd); err != nil {
+		return err
 	}
 	return nil
 }

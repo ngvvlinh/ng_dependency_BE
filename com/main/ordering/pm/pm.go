@@ -224,8 +224,9 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	}
 	if receipt.TraderID != 0 {
 		getCustomerQuery := &customering.GetCustomerByIDQuery{
-			ID:     receipt.TraderID,
-			ShopID: receipt.ShopID,
+			ID:             receipt.TraderID,
+			ShopID:         receipt.ShopID,
+			IncludeDeleted: true,
 		}
 		if err := p.customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
 			return err
