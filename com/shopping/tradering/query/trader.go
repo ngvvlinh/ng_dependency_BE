@@ -51,7 +51,7 @@ func (q *TraderQuery) GetTraderInfoByID(
 	ctx context.Context, id, shopID dot.ID,
 ) (*tradering.ShopTrader, error) {
 	var fullName, phone string
-	trader, err := q.store(ctx).ID(id).GetTrader()
+	trader, err := q.store(ctx).IncludeDeleted().ID(id).GetTrader()
 	if err != nil {
 		return nil, err
 	}

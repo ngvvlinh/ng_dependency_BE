@@ -49,6 +49,11 @@ func (s *TraderStore) Filters(filters meta.Filters) *TraderStore {
 	return s
 }
 
+func (s *TraderStore) IncludeDeleted() *TraderStore {
+	s.includeDeleted = true
+	return s
+}
+
 func (s *TraderStore) ID(id dot.ID) *TraderStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
