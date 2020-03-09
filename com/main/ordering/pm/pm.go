@@ -243,6 +243,9 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	orders = query.Result.Orders
 	for _, order := range orders {
 		mOrder[order.ID] = order
+		if receipt.TraderID == customering.CustomerAnonymous && order.CustomerID == 0 {
+			continue
+		}
 		if order.CustomerID != receipt.TraderID {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng %v không thuộc đối tác đã chọn", order.Code)
 		}
