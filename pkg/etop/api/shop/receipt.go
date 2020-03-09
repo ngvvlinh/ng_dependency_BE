@@ -370,7 +370,7 @@ func listTraders(
 		}
 	}
 	for _, receipt := range receiptsResult {
-		if _, ok := mapTraderID[receipt.TraderId]; !ok {
+		if _, ok := mapTraderID[receipt.TraderId]; !ok && receipt.Trader != nil {
 			receipt.Trader.Deleted = true
 		}
 	}
