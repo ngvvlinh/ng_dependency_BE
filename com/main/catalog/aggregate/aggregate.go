@@ -64,6 +64,10 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 				Throw()
 		}
 	}
+	productName := strings.ReplaceAll(args.Name, " ", "")
+	if len(productName) < 2 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tên sản phẩm phải có ít nhất 2 kí tự không tính dấu cách")
+	}
 	var product = &catalog.ShopProduct{}
 	if err := scheme.Convert(args, product); err != nil {
 		return nil, err
@@ -107,6 +111,12 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 			return nil, cm.MapError(err).
 				Map(cm.NotFound, cm.InvalidArgument, "Mã thương hiệu không tồn tại").
 				Throw()
+		}
+	}
+	if args.Name.Valid {
+		productName := strings.ReplaceAll(args.Name.String, " ", "")
+		if len(productName) < 2 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tên sản phẩm phải có ít nhất 2 kí tự không tính dấu cách")
 		}
 	}
 	product, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()

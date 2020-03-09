@@ -141,7 +141,7 @@ func createShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProd
 	out.RetailPrice = arg.RetailPrice
 }
 
-func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.ShopProduct) (out *catalog.ShopProduct) {
+func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.ShopProduct) *catalog.ShopProduct {
 	if in == nil {
 		return nil
 	}
@@ -150,6 +150,9 @@ func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.Shop
 	if args.DescHTML.Valid == true {
 		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)
 		in.DescHTML = descHTML
+	}
+	if args.Code.Valid {
+		in.Code = NormalizeExternalCode(args.Code.String)
 	}
 	return in
 }
@@ -167,7 +170,7 @@ func createShopVariant(arg *catalog.CreateShopVariantArgs, out *catalog.ShopVari
 	out.RetailPrice = arg.RetailPrice
 }
 
-func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.ShopVariant) (out *catalog.ShopVariant) {
+func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.ShopVariant) *catalog.ShopVariant {
 	if in == nil {
 		return nil
 	}
@@ -176,6 +179,9 @@ func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.Shop
 	if args.DescHTML.Valid == true {
 		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)
 		in.DescHTML = descHTML
+	}
+	if args.Code.Valid {
+		in.Code = NormalizeExternalCode(args.Code.String)
 	}
 	return in
 }
