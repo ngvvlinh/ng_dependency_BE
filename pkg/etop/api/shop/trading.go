@@ -87,7 +87,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 		}
 		if _orderID != 0 {
 			// cancel Order an inform error message
-			if _, err := logicorder.CancelOrder(ctx, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), inventory_auto.Unknown); err != nil {
+			if _, err := logicorder.CancelOrder(ctx, r.Context.UserID, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), inventory_auto.Unknown); err != nil {
 				return
 			}
 		}

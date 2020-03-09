@@ -219,7 +219,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			},
 		},
 	}
-	resp, err := shipping.CreateAndConfirmOrder(ctx, shop.ID, shopClaim, reqCreateOrder)
+	resp, err := shipping.CreateAndConfirmOrder(ctx, 0, shop.ID, shopClaim, reqCreateOrder)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +269,7 @@ func (a *Aggregate) CancelOrder(ctx context.Context, args *gateway.CancelOrderRe
 	ffm := ffmQuery.Result
 	orderID := ffm.OrderID
 
-	_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng", inventory_auto.Unknown)
+	_, err := logicorder.CancelOrder(ctx, 0, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng", inventory_auto.Unknown)
 	if err != nil {
 		return nil, err
 	}

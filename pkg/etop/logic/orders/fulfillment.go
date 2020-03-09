@@ -83,7 +83,7 @@ var blockCarrierByProvinces = map[typeshippingprovider.ShippingProvider][]string
 	typeshippingprovider.GHN: []string{},
 }
 
-func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
+func ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
 	autoCreateFfm := r.AutoCreateFulfillment
 
 	query := &ordermodelx.GetOrderQuery{
@@ -131,6 +131,7 @@ func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.Conf
 			AutoInventoryVoucher: r.AutoInventoryVoucher,
 			ShopID:               shop.ID,
 			InventoryOverStock:   shop.InventoryOverstock.Apply(true),
+			UpdatedBy:            userID,
 		}
 		if err := eventBus.Publish(ctx, event); err != nil {
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
@@ -141,7 +142,7 @@ func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.Conf
 		req := &apishop.OrderIDRequest{
 			OrderId: r.OrderId,
 		}
-		_res, err := ConfirmOrderAndCreateFulfillments(ctx, shop, 0, req)
+		_res, err := ConfirmOrderAndCreateFulfillments(ctx, userID, shop, 0, req)
 		if err != nil {
 			return nil, err
 		}
@@ -150,7 +151,7 @@ func ConfirmOrder(ctx context.Context, shop *identitymodel.Shop, r *apishop.Conf
 	return resp, nil
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &types.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -234,7 +235,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *identitymodel.
 			order.ShopShipping.ShippingProvider != typeshippingprovider.GHTK {
 			go func() {
 				time.Sleep(5 * time.Minute)
-				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", inventory_auto.Unknown)
+				_, err := CancelOrder(ctx, userID, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", inventory_auto.Unknown)
 				if err != nil {
 					ll.Error("Can not cancel order on sandbox", l.Error(err))
 				}

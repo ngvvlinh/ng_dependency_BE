@@ -97,18 +97,17 @@ func CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.C
 	return convertpb.PbOrderWithoutShipping(orderQuery.Result.Order), nil
 }
 
-func ConfirmOrder(ctx context.Context, shopClaim *claims.ShopClaim, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
+func ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *claims.ShopClaim, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
+			_, err := logicorder.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
-
-	_, err := logicorder.ConfirmOrder(ctx, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err := logicorder.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
 		OrderId:              orderID,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	})
@@ -119,7 +118,7 @@ func ConfirmOrder(ctx context.Context, shopClaim *claims.ShopClaim, orderID dot.
 	return nil
 }
 
-func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
+func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
 	shipping := r.Shipping
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
@@ -229,14 +228,14 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
+			_, err := logicorder.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
 
-	_, err = logicorder.ConfirmOrder(ctx, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err = logicorder.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
 		OrderId: orderID,
 	})
 	if err != nil {
@@ -284,7 +283,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *cla
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func CancelOrder(ctx context.Context, shopID dot.ID, r *exttypes.CancelOrderRequest) (*exttypes.OrderAndFulfillments, error) {
+func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.CancelOrderRequest) (*exttypes.OrderAndFulfillments, error) {
 	var orderID dot.ID
 	var sqlQuery *ordersqlstore.OrderStore
 
@@ -312,7 +311,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, r *exttypes.CancelOrderRequ
 		orderID = order.ID
 	}
 
-	resp, err := logicorder.CancelOrder(ctx, shopID, 0, orderID, r.CancelReason, inventory_auto.Unknown)
+	resp, err := logicorder.CancelOrder(ctx, userID, shopID, 0, orderID, r.CancelReason, inventory_auto.Unknown)
 	if err != nil {
 		return nil, err
 	}

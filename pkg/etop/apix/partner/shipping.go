@@ -31,13 +31,13 @@ func (s *ShippingService) GetShippingServices(ctx context.Context, r *GetShippin
 }
 
 func (s *ShippingService) CreateAndConfirmOrder(ctx context.Context, r *CreateAndConfirmOrderEndpoint) error {
-	resp, err := shipping.CreateAndConfirmOrder(ctx, r.Context.Shop.ID, &r.Context, r.CreateAndConfirmOrderRequest)
+	resp, err := shipping.CreateAndConfirmOrder(ctx, r.Context.UserID, r.Context.Shop.ID, &r.Context, r.CreateAndConfirmOrderRequest)
 	r.Result = resp
 	return err
 }
 
 func (s *ShippingService) CancelOrder(ctx context.Context, r *CancelOrderEndpoint) error {
-	resp, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
+	resp, err := shipping.CancelOrder(ctx, r.Context.UserID, r.Context.Shop.ID, r.CancelOrderRequest)
 	r.Result = resp
 	return err
 }

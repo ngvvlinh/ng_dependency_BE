@@ -31,13 +31,13 @@ func (s *OrderService) ConfirmOrder(ctx context.Context, r *OrderConfirmOrderEnd
 	if r.InventoryPolicy == inventory_policy.Obey {
 		autoInventoryVoucher = r.AutoInventoryVoucher
 	}
-	err := shipping.ConfirmOrder(ctx, &r.Context, r.OrderId, autoInventoryVoucher)
+	err := shipping.ConfirmOrder(ctx, r.Context.UserID, &r.Context, r.OrderId, autoInventoryVoucher)
 	r.Result = &common.Empty{}
 	return err
 }
 
 func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
-	_, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
+	_, err := shipping.CancelOrder(ctx, r.Context.UserID, r.Context.Shop.ID, r.CancelOrderRequest)
 	r.Result = &common.Empty{}
 	return err
 }

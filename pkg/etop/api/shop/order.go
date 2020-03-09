@@ -274,7 +274,7 @@ func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) 
 }
 
 func (s *OrderService) cancelOrder(ctx context.Context, q *CancelOrderEndpoint) (*CancelOrderEndpoint, error) {
-	resp, err := logicorder.CancelOrder(ctx, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason, q.AutoInventoryVoucher)
+	resp, err := logicorder.CancelOrder(ctx, q.Context.UserID, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason, q.AutoInventoryVoucher)
 	q.Result = resp
 	return q, err
 }
@@ -306,7 +306,7 @@ func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint
 }
 
 func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) (_ *ConfirmOrderEndpoint, _err error) {
-	resp, err := logicorder.ConfirmOrder(ctx, q.Context.Shop, q.ConfirmOrderRequest)
+	resp, err := logicorder.ConfirmOrder(ctx, q.Context.UserID, q.Context.Shop, q.ConfirmOrderRequest)
 	if err != nil {
 		return q, err
 	}
@@ -384,7 +384,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 }
 
 func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
-	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
+	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.User.ID, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
 	if err != nil {
 		return q, err
 	}

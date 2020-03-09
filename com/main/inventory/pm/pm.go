@@ -171,11 +171,12 @@ func (m *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 	var inventoryVoucherID dot.ID
 	if isCreate {
 		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
-			RefType:   inventory_voucher_ref.Order,
-			RefID:     event.OrderID,
-			ShopID:    event.ShopID,
-			UserID:    event.UpdatedBy,
-			Type:      inventory_type.Out,
+			RefType: inventory_voucher_ref.Order,
+			RefID:   event.OrderID,
+			ShopID:  event.ShopID,
+			UserID:  event.UpdatedBy,
+			Type:    inventory_type.Out,
+
 			OverStock: event.InventoryOverStock,
 		}
 		err = m.inventoryAgg.Dispatch(ctx, cmdCreate)

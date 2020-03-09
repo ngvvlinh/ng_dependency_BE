@@ -1014,7 +1014,7 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 			}
 			newVoucher := &inventory.CreateInventoryVoucherArgs{
 				ShopID:      value.ShopID,
-				CreatedBy:   value.CreatedBy,
+				CreatedBy:   args.UpdateBy,
 				Title:       "Phiếu xuất nhập kho",
 				RefID:       value.RefID,
 				RefType:     value.RefType,

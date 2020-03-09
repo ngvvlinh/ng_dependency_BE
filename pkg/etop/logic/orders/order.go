@@ -1004,7 +1004,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (*types.OrderWithErrorsResponse, error) {
+func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (*types.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1046,6 +1046,7 @@ func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, order
 		OrderID:              order.ID,
 		ShopID:               shopID,
 		AutoInventoryVoucher: autoInventoryVoucher,
+		UpdatedBy:            userID,
 	}
 	if err := eventBus.Publish(ctx, event); err != nil {
 		ll.Error("RaiseOrderCancelledEvent", l.Error(err))

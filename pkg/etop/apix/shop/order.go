@@ -11,7 +11,7 @@ import (
 )
 
 func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
-	resp, err := shipping.CancelOrder(ctx, r.Context.Shop.ID, r.CancelOrderRequest)
+	resp, err := shipping.CancelOrder(ctx, r.Context.User.ID, r.Context.Shop.ID, r.CancelOrderRequest)
 	r.Result = resp
 	return err
 }
@@ -37,7 +37,7 @@ func (s *OrderService) ConfirmOrder(ctx context.Context, r *OrderConfirmOrderEnd
 	if r.InventoryPolicy == inventory_policy.Obey {
 		autoInventoryVoucher = r.AutoInventoryVoucher
 	}
-	err := shipping.ConfirmOrder(ctx, &r.Context, r.OrderId, autoInventoryVoucher)
+	err := shipping.ConfirmOrder(ctx, r.Context.UserID, &r.Context, r.OrderId, autoInventoryVoucher)
 	r.Result = &common.Empty{}
 	return err
 }
