@@ -359,7 +359,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				// Trường hợp whiteLabel
 				// Đã có sẵn tài khoản sẽ redirect về trang whiteLabel
 				if strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
-					info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURL, q.ExtraToken)
+					info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserByEmailURL, q.ExtraToken)
 				} else {
 					info.RedirectURL = whiteLabelData.Config.RootURL
 				}
@@ -425,7 +425,7 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		if !strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
 			return cm.Errorf(cm.InvalidArgument, nil, "extra_token does not valid")
 		}
-		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURL, q.ExtraToken)
+		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserByEmailURL, q.ExtraToken)
 	}
 
 	token, err := generateAuthToken(info)

@@ -1717,6 +1717,7 @@
       "type": "object",
       "required": [
         "email",
+        "phone",
         "roles"
       ],
       "properties": {
@@ -1725,6 +1726,9 @@
         },
         "full_name": {
           "description": "@Optional\n",
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         },
         "position": {

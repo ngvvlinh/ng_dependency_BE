@@ -71,6 +71,7 @@ func convert_invitationmodel_Invitation_invitation_Invitation(arg *invitationmod
 	out.ID = arg.ID                 // simple assign
 	out.AccountID = arg.AccountID   // simple assign
 	out.Email = arg.Email           // simple assign
+	out.Phone = arg.Phone           // simple assign
 	out.FullName = arg.FullName     // simple assign
 	out.ShortName = arg.ShortName   // simple assign
 	out.Position = ""               // zero value
@@ -109,6 +110,7 @@ func convert_invitation_Invitation_invitationmodel_Invitation(arg *invitation.In
 	out.ID = arg.ID                 // simple assign
 	out.AccountID = arg.AccountID   // simple assign
 	out.Email = arg.Email           // simple assign
+	out.Phone = arg.Phone           // simple assign
 	out.FullName = arg.FullName     // simple assign
 	out.ShortName = arg.ShortName   // simple assign
 	out.Roles = nil                 // types do not match
@@ -147,6 +149,7 @@ func apply_invitation_CreateInvitationArgs_invitation_Invitation(arg *invitation
 	out.ID = 0                    // zero value
 	out.AccountID = arg.AccountID // simple assign
 	out.Email = arg.Email         // simple assign
+	out.Phone = arg.Phone         // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.ShortName = arg.ShortName // simple assign
 	out.Position = arg.Position   // simple assign

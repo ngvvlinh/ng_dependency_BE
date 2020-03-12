@@ -81,6 +81,25 @@ func (ft *InvitationFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *InvitationFilters) ByPhone(Phone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == "",
+	}
+}
+
+func (ft *InvitationFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == nil,
+		IsZero: Phone != nil && (*Phone) == "",
+	}
+}
+
 func (ft *InvitationFilters) ByFullName(FullName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

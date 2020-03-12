@@ -44,6 +44,7 @@ func (h AggregateHandler) HandleAcceptInvitation(ctx context.Context, msg *Accep
 type CreateInvitationCommand struct {
 	AccountID dot.ID
 	Email     string
+	Phone     string
 	FullName  string
 	ShortName string
 	Position  string
@@ -170,6 +171,7 @@ func (q *CreateInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 		&CreateInvitationArgs{
 			AccountID: q.AccountID,
 			Email:     q.Email,
+			Phone:     q.Phone,
 			FullName:  q.FullName,
 			ShortName: q.ShortName,
 			Position:  q.Position,
@@ -183,6 +185,7 @@ func (q *CreateInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 func (q *CreateInvitationCommand) SetCreateInvitationArgs(args *CreateInvitationArgs) {
 	q.AccountID = args.AccountID
 	q.Email = args.Email
+	q.Phone = args.Phone
 	q.FullName = args.FullName
 	q.ShortName = args.ShortName
 	q.Position = args.Position

@@ -40,6 +40,8 @@ Nếu bạn không nhận ra cửa hàng trên, hãy bỏ qua email này.<br><br
 Đội ngũ eTop
 `))
 
+var PhoneInvitationTpl = template.Must(template.New("phone-verification").Parse(`Bạn được {{.FullName}} mời tham gia cửa hàng {{.ShopName}} với vai trò {{.ShopRoles}}. Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hiệu lực trong 24 giờ) {{.URL}}`))
+
 var emailSTokenTpl = template.Must(template.New("email-verification").Parse(`
 Gửi {{.FullName}},<br><br>
 

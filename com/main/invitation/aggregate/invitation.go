@@ -26,6 +26,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/integration/email"
+	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 )
@@ -67,11 +68,15 @@ func (a *InvitationAggregate) MessageBus() invitation.CommandBus {
 func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
-	emailNorm, ok := validate.NormalizeEmail(args.Email)
-	if !ok {
-		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+	var emailNorm validate.NormalizedEmail
+	if args.Email != "" {
+		var ok bool
+		emailNorm, ok = validate.NormalizeEmail(args.Email)
+		if !ok {
+			return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+		}
+		args.Email = emailNorm.String()
 	}
-	args.Email = emailNorm.String()
 
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
@@ -79,18 +84,23 @@ func (a *InvitationAggregate) CreateInvitation(
 	if err := a.havePermissionToInvite(ctx, args); err != nil {
 		return nil, err
 	}
-	if err := a.checkUserBelongsToShop(ctx, args.Email, args.AccountID); err != nil {
+	if err := a.checkUserBelongsToShop(ctx, args.Email, args.Phone, args.AccountID); err != nil {
 		return nil, err
 	}
 
 	// check have invitation that was sent to email
-	_, err := a.store(ctx).AccountID(args.AccountID).Email(args.Email).NotExpires().
+	_, err := a.store(ctx).AccountID(args.AccountID).PhoneOrEmail(args.Phone, args.Email).NotExpires().
 		AcceptedAt(nil).RejectedAt(nil).GetInvitation()
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
 	case cm.NoError:
-		return nil, cm.Errorf(cm.NotFound, nil, "Email %s đã được gửi lời mời.", args.Email)
+		if args.Phone != "" {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Phone %s đã được gửi lời mời.", args.Phone)
+		}
+		if args.Email != "" {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email %s đã được gửi lời mời.", args.Email)
+		}
 	default:
 		return nil, err
 	}
@@ -121,7 +131,13 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, err
 	}
 
-	invitationUrl := wl.X(ctx).InviteUserURL
+	var invitationUrl string
+	if args.Email != "" {
+		invitationUrl = wl.X(ctx).InviteUserByEmailURL
+	} else {
+		invitationUrl = wl.X(ctx).InviteUserByPhoneURL
+	}
+
 	URL, err := url.Parse(invitationUrl)
 	if err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
@@ -134,34 +150,58 @@ func (a *InvitationAggregate) CreateInvitation(
 	if args.FullName != "" {
 		fullName = args.FullName
 	}
+	shopRoles := strings.Join(authorization.ParseRoleLabels(invitationItem.Roles), ", ")
+	shopName := getAccountQuery.Result.Name
+	invitingUsername := getUserQuery.Result.FullName
 
-	var b strings.Builder
-	if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
-		"FullName":         fullName,
-		"URL":              URL.String(),
-		"ShopRoles":        strings.Join(authorization.ParseRoleLabels(invitationItem.Roles), ", "),
-		"ShopName":         getAccountQuery.Result.Name,
-		"InvitingUsername": getUserQuery.Result.FullName,
-	}); err != nil {
-		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
-	}
+	a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
+		// create invitation
+		if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
+			return err
+		}
 
-	// create invitation
-	if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
-		return nil, err
-	}
+		var b strings.Builder
+		if args.Email != "" {
+			if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
+				"FullName":         fullName,
+				"URL":              URL.String(),
+				"ShopRoles":        shopRoles,
+				"ShopName":         shopName,
+				"InvitingUsername": invitingUsername,
+			}); err != nil {
+				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+			}
 
-	// send mail
-	// TODO: change content and subject
-	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
-		ToAddresses: []string{string(emailNorm)},
-		Subject:     "Invitation",
-		Content:     b.String(),
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
+			cmd := &email.SendEmailCommand{
+				FromName:    "eTop.vn (no-reply)",
+				ToAddresses: []string{string(emailNorm)},
+				Subject:     "Invitation",
+				Content:     b.String(),
+			}
+			if err := bus.Dispatch(ctx, cmd); err != nil {
+				return err
+			}
+		} else {
+			if err := api.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
+				"FullName":  fullName,
+				"URL":       URL.String(),
+				"ShopRoles": shopRoles,
+				"ShopName":  shopName,
+			}); err != nil {
+				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
+			}
+
+			cmd := &sms.SendSMSCommand{
+				Phone:   args.Phone,
+				Content: b.String(),
+			}
+			if err := bus.Dispatch(ctx, cmd); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
 	return invitationItem, nil
 }
 
@@ -178,8 +218,10 @@ func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation
 	return nil
 }
 
-func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email string, shopID dot.ID) error {
-	getUserQuery := &identity.GetUserByEmailQuery{
+func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email, phone string, shopID dot.ID) error {
+	var userIsInvited *identity.User
+	getUserQuery := &identity.GetUserByPhoneOrEmailQuery{
+		Phone: phone,
 		Email: email,
 	}
 	err := a.identityQuery.Dispatch(ctx, getUserQuery)
@@ -191,7 +233,7 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email 
 	default:
 		return err
 	}
-	userIsInvited := getUserQuery.Result
+	userIsInvited = getUserQuery.Result
 
 	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
 		UserID:    userIsInvited.ID,
@@ -250,7 +292,7 @@ func (a *InvitationAggregate) AcceptInvitation(
 		return 0, err
 	}
 
-	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email); err != nil {
+	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
 		return 0, err
 	}
 
@@ -281,7 +323,7 @@ func (a *InvitationAggregate) RejectInvitation(
 		return 0, err
 	}
 
-	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email); err != nil {
+	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
 		return 0, err
 	}
 
@@ -292,7 +334,7 @@ func (a *InvitationAggregate) RejectInvitation(
 	return updated, err
 }
 
-func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userID dot.ID, email string) error {
+func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userID dot.ID, email, phone string) error {
 	getUserQuery := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}
@@ -302,11 +344,21 @@ func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userI
 			Throw()
 	}
 	userCurr := getUserQuery.Result
-	if userCurr.EmailVerifiedAt.IsZero() {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Email bạn chưa được xác nhận nên, không thể thực hiện thao tác này.")
-	}
-	if userCurr.Email != email {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Không tìm thấy lời mời")
+
+	if email != "" {
+		if userCurr.EmailVerifiedAt.IsZero() {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Email bạn chưa được xác nhận nên, không thể thực hiện thao tác này.")
+		}
+		if userCurr.Email != email {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Không tìm thấy lời mời")
+		}
+	} else {
+		if userCurr.PhoneVerifiedAt.IsZero() {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Phone bạn chưa được xác nhận nên không thể thực hiện thao tác này.")
+		}
+		if userCurr.Phone != phone {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Không tìm thấy lời mời")
+		}
 	}
 	return nil
 }

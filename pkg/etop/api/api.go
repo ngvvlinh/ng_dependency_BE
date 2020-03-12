@@ -392,6 +392,10 @@ func (s *UserRelationshipService) LeaveAccount(ctx context.Context, q *UserRelat
 }
 
 func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *AccountRelationshipCreateInvitationEndpoint) error {
+	if q.Email == "" && q.Phone == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "email and phone must not be null")
+	}
+
 	var roles []authorization.Role
 	for _, role := range q.Roles {
 		roles = append(roles, authorization.Role(role))
@@ -399,6 +403,7 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *Ac
 	cmd := &invitation.CreateInvitationCommand{
 		AccountID: q.Context.Shop.ID,
 		Email:     q.Email,
+		Phone:     q.Phone,
 		FullName:  q.FullName,
 		ShortName: q.ShortName,
 		Position:  q.Position,

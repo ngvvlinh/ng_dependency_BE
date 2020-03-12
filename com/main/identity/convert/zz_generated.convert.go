@@ -577,6 +577,7 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 	out.Phone = ""                            // zero value
 	out.Status = arg.Status                   // simple assign
 	out.EmailVerifiedAt = arg.EmailVerifiedAt // simple assign
+	out.PhoneVerifiedAt = arg.PhoneVerifiedAt // simple assign
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 	out.RefUserID = arg.RefUserID             // simple assign
@@ -613,7 +614,7 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	out.AgreedTOSAt = time.Time{}             // zero value
 	out.AgreedEmailInfoAt = time.Time{}       // zero value
 	out.EmailVerifiedAt = arg.EmailVerifiedAt // simple assign
-	out.PhoneVerifiedAt = time.Time{}         // zero value
+	out.PhoneVerifiedAt = arg.PhoneVerifiedAt // simple assign
 	out.EmailVerificationSentAt = time.Time{} // zero value
 	out.PhoneVerificationSentAt = time.Time{} // zero value
 	out.IsTest = 0                            // zero value

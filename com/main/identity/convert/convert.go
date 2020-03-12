@@ -42,6 +42,7 @@ func User(in *identitymodel.User) (out *identity.User) {
 		Email:           in.Email,
 		Phone:           in.Phone,
 		Status:          in.Status,
+		PhoneVerifiedAt: in.PhoneVerifiedAt,
 		EmailVerifiedAt: in.EmailVerifiedAt,
 		CreatedAt:       in.CreatedAt,
 		UpdatedAt:       in.UpdatedAt,

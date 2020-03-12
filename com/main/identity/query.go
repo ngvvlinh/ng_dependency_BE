@@ -47,6 +47,24 @@ func (a *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserBy
 	return a.userStore(ctx).ByID(args.UserID).GetUser(ctx)
 }
 
+func (a *QueryService) GetUserByPhoneOrEmail(ctx context.Context, args *identity.GetUserByPhoneOrEmailArgs) (*identity.User, error) {
+	count := 0
+	query := a.userStore(ctx)
+
+	if args.Phone != "" {
+		count += 1
+		query = query.ByPhone(args.Phone)
+	}
+	if args.Email != "" {
+		count += 1
+		query = query.ByEmail(args.Email)
+	}
+	if count != 1 {
+		return nil, cm.Error(cm.InvalidArgument, "", nil)
+	}
+	return query.GetUser(ctx)
+}
+
 func (a *QueryService) GetUserByPhone(ctx context.Context, phone string) (*identity.User, error) {
 	return a.userStore(ctx).ByPhone(phone).GetUser(ctx)
 }

@@ -30,8 +30,8 @@ func sqlgenInvitation(_ *Invitation) bool { return true }
 type Invitations []*Invitation
 
 const __sqlInvitation_Table = "invitation"
-const __sqlInvitation_ListCols = "\"id\",\"account_id\",\"email\",\"full_name\",\"short_name\",\"roles\",\"token\",\"status\",\"invited_by\",\"accepted_at\",\"rejected_at\",\"expires_at\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlInvitation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"email\" = EXCLUDED.\"email\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"roles\" = EXCLUDED.\"roles\",\"token\" = EXCLUDED.\"token\",\"status\" = EXCLUDED.\"status\",\"invited_by\" = EXCLUDED.\"invited_by\",\"accepted_at\" = EXCLUDED.\"accepted_at\",\"rejected_at\" = EXCLUDED.\"rejected_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlInvitation_ListCols = "\"id\",\"account_id\",\"email\",\"phone\",\"full_name\",\"short_name\",\"roles\",\"token\",\"status\",\"invited_by\",\"accepted_at\",\"rejected_at\",\"expires_at\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlInvitation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"roles\" = EXCLUDED.\"roles\",\"token\" = EXCLUDED.\"token\",\"status\" = EXCLUDED.\"status\",\"invited_by\" = EXCLUDED.\"invited_by\",\"accepted_at\" = EXCLUDED.\"accepted_at\",\"rejected_at\" = EXCLUDED.\"rejected_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlInvitation_Insert = "INSERT INTO \"invitation\" (" + __sqlInvitation_ListCols + ") VALUES"
 const __sqlInvitation_Select = "SELECT " + __sqlInvitation_ListCols + " FROM \"invitation\""
 const __sqlInvitation_Select_history = "SELECT " + __sqlInvitation_ListCols + " FROM history.\"invitation\""
@@ -59,6 +59,7 @@ func (m *Invitation) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.AccountID,
 		core.String(m.Email),
+		core.String(m.Phone),
 		core.String(m.FullName),
 		core.String(m.ShortName),
 		core.Array{m.Roles, opts},
@@ -79,6 +80,7 @@ func (m *Invitation) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.AccountID,
 		(*core.String)(&m.Email),
+		(*core.String)(&m.Phone),
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.ShortName),
 		core.Array{&m.Roles, opts},
@@ -128,7 +130,7 @@ func (_ *Invitations) SQLSelect(w SQLWriter) error {
 func (m *Invitation) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -138,7 +140,7 @@ func (ms Invitations) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -192,6 +194,14 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Email)
+	}
+	if m.Phone != "" {
+		flag = true
+		w.WriteName("phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Phone)
 	}
 	if m.FullName != "" {
 		flag = true
@@ -299,7 +309,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 func (m *Invitation) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -324,6 +334,7 @@ func (m InvitationHistories) SQLSelect(w SQLWriter) error {
 func (m InvitationHistory) ID() core.Interface         { return core.Interface{m["id"]} }
 func (m InvitationHistory) AccountID() core.Interface  { return core.Interface{m["account_id"]} }
 func (m InvitationHistory) Email() core.Interface      { return core.Interface{m["email"]} }
+func (m InvitationHistory) Phone() core.Interface      { return core.Interface{m["phone"]} }
 func (m InvitationHistory) FullName() core.Interface   { return core.Interface{m["full_name"]} }
 func (m InvitationHistory) ShortName() core.Interface  { return core.Interface{m["short_name"]} }
 func (m InvitationHistory) Roles() core.Interface      { return core.Interface{m["roles"]} }
@@ -338,38 +349,39 @@ func (m InvitationHistory) UpdatedAt() core.Interface  { return core.Interface{m
 func (m InvitationHistory) DeletedAt() core.Interface  { return core.Interface{m["deleted_at"]} }
 
 func (m *InvitationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(InvitationHistory, 15)
+	res := make(InvitationHistory, 16)
 	res["id"] = data[0]
 	res["account_id"] = data[1]
 	res["email"] = data[2]
-	res["full_name"] = data[3]
-	res["short_name"] = data[4]
-	res["roles"] = data[5]
-	res["token"] = data[6]
-	res["status"] = data[7]
-	res["invited_by"] = data[8]
-	res["accepted_at"] = data[9]
-	res["rejected_at"] = data[10]
-	res["expires_at"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
-	res["deleted_at"] = data[14]
+	res["phone"] = data[3]
+	res["full_name"] = data[4]
+	res["short_name"] = data[5]
+	res["roles"] = data[6]
+	res["token"] = data[7]
+	res["status"] = data[8]
+	res["invited_by"] = data[9]
+	res["accepted_at"] = data[10]
+	res["rejected_at"] = data[11]
+	res["expires_at"] = data[12]
+	res["created_at"] = data[13]
+	res["updated_at"] = data[14]
+	res["deleted_at"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *InvitationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(InvitationHistories, 0, 128)
@@ -381,18 +393,19 @@ func (ms *InvitationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["account_id"] = data[1]
 		m["email"] = data[2]
-		m["full_name"] = data[3]
-		m["short_name"] = data[4]
-		m["roles"] = data[5]
-		m["token"] = data[6]
-		m["status"] = data[7]
-		m["invited_by"] = data[8]
-		m["accepted_at"] = data[9]
-		m["rejected_at"] = data[10]
-		m["expires_at"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
-		m["deleted_at"] = data[14]
+		m["phone"] = data[3]
+		m["full_name"] = data[4]
+		m["short_name"] = data[5]
+		m["roles"] = data[6]
+		m["token"] = data[7]
+		m["status"] = data[8]
+		m["invited_by"] = data[9]
+		m["accepted_at"] = data[10]
+		m["rejected_at"] = data[11]
+		m["expires_at"] = data[12]
+		m["created_at"] = data[13]
+		m["updated_at"] = data[14]
+		m["deleted_at"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

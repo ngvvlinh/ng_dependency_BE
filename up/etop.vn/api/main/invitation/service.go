@@ -48,6 +48,7 @@ type ListInvitationsByEmailArgs struct {
 type CreateInvitationArgs struct {
 	AccountID dot.ID
 	Email     string
+	Phone     string
 	FullName  string
 	ShortName string
 	Position  string

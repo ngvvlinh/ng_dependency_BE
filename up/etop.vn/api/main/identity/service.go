@@ -47,6 +47,8 @@ type QueryService interface {
 
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 
+	GetUserByPhoneOrEmail(context.Context, *GetUserByPhoneOrEmailArgs) (*User, error)
+
 	// -- ExternalAccountAhamove -- //
 	GetExternalAccountAhamove(context.Context, *GetExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
@@ -67,6 +69,11 @@ type QueryService interface {
 //-- queries --//
 type GetUserByIDQueryArgs struct {
 	UserID dot.ID
+}
+
+type GetUserByPhoneOrEmailArgs struct {
+	Phone string
+	Email string
 }
 
 type GetExternalAccountAhamoveArgs struct {

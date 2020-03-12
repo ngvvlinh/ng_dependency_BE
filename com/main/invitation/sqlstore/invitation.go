@@ -74,6 +74,21 @@ func (s *InvitationStore) Email(email string) *InvitationStore {
 	return s
 }
 
+func (s *InvitationStore) Phone(phone string) *InvitationStore {
+	s.preds = append(s.preds, s.ft.ByPhone(phone))
+	return s
+}
+
+func (s *InvitationStore) PhoneOrEmail(phone, email string) *InvitationStore {
+	if phone != "" {
+		s.preds = append(s.preds, sq.NewExpr("phone = ?", phone))
+	}
+	if email != "" {
+		s.preds = append(s.preds, sq.NewExpr("email = ?", email))
+	}
+	return s
+}
+
 func (s *InvitationStore) Status(status status3.Status) *InvitationStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s

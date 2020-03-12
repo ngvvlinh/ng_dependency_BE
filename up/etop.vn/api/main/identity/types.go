@@ -66,6 +66,7 @@ type User struct {
 	Status status3.Status // 1: actual user, 0: stub, -1: disabled
 
 	EmailVerifiedAt time.Time
+	PhoneVerifiedAt time.Time
 
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

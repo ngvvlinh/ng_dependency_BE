@@ -94,7 +94,7 @@ type GetInvitationsRequest struct {
 func (m *GetInvitationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteInvitationRequest struct {
-	Token string `json:"token""`
+	Token string `json:"token"`
 }
 
 func (m *DeleteInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -108,6 +108,8 @@ func (m *UserRelationshipLeaveAccountRequest) String() string { return jsonx.Mus
 type CreateInvitationRequest struct {
 	// @Required
 	Email string `json:"email"`
+	// @Required
+	Phone string `json:"phone"`
 	// @Optional
 	FullName  string `json:"full_name"`
 	ShortName string `json:"short_name"`

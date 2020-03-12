@@ -40,29 +40,31 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 	}
 	currInvitation := getInvitationQuery.Result
 
-	getUserQuery := &identity.GetUserByEmailQuery{
+	getUserQuery := &identity.GetUserByPhoneOrEmailQuery{
 		Email: currInvitation.Email,
+		Phone: currInvitation.Phone,
 	}
-	err := m.identityQuery.Dispatch(ctx, getUserQuery)
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-		// no-op
-	case cm.NotFound:
-		return nil
-	default:
+	if err := m.identityQuery.Dispatch(ctx, getUserQuery); err != nil {
 		return err
 	}
-
 	currUser := getUserQuery.Result
-	if currUser.EmailVerifiedAt.IsZero() {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Thao tác thất bại, email chưa được xác nhận")
+	userID := currUser.ID
+
+	if currInvitation.Email != "" {
+		if currUser.EmailVerifiedAt.IsZero() {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Thao tác thất bại, email chưa được xác nhận")
+		}
+	} else {
+		if currUser.PhoneVerifiedAt.IsZero() {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Thao tác thất bại, phone chưa được xác nhận")
+		}
 	}
 
 	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
-		UserID:    currUser.ID,
+		UserID:    userID,
 		AccountID: currInvitation.AccountID,
 	}
-	err = bus.Dispatch(ctx, getAccountUserQuery)
+	err := bus.Dispatch(ctx, getAccountUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 		err := m.createAccountUserWithRoles(ctx, currInvitation, currUser)

@@ -275,6 +275,18 @@ func (h QueryServiceHandler) HandleGetUserByPhone(ctx context.Context, msg *GetU
 	return err
 }
 
+type GetUserByPhoneOrEmailQuery struct {
+	Phone string
+	Email string
+
+	Result *User `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUserByPhoneOrEmail(ctx context.Context, msg *GetUserByPhoneOrEmailQuery) (err error) {
+	msg.Result, err = h.inner.GetUserByPhoneOrEmail(msg.GetArgs(ctx))
+	return err
+}
+
 type ListPartnersForWhiteLabelQuery struct {
 	Result []*Partner `json:"-"`
 }
@@ -307,6 +319,7 @@ func (q *GetShopByIDQuery) query()                           {}
 func (q *GetUserByEmailQuery) query()                        {}
 func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
+func (q *GetUserByPhoneOrEmailQuery) query()                 {}
 func (q *ListPartnersForWhiteLabelQuery) query()             {}
 
 // implement conversion
@@ -558,6 +571,19 @@ func (q *GetUserByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, p
 		q.Phone
 }
 
+func (q *GetUserByPhoneOrEmailQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserByPhoneOrEmailArgs) {
+	return ctx,
+		&GetUserByPhoneOrEmailArgs{
+			Phone: q.Phone,
+			Email: q.Email,
+		}
+}
+
+func (q *GetUserByPhoneOrEmailQuery) SetGetUserByPhoneOrEmailArgs(args *GetUserByPhoneOrEmailArgs) {
+	q.Phone = args.Phone
+	q.Email = args.Email
+}
+
 func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
 		&meta.Empty{}
@@ -613,6 +639,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByEmail)
 	b.AddHandler(h.HandleGetUserByID)
 	b.AddHandler(h.HandleGetUserByPhone)
+	b.AddHandler(h.HandleGetUserByPhoneOrEmail)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	return QueryBus{b}
 }
