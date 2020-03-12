@@ -122,6 +122,12 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 			return s.inner.DisableConnection(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/admin.Connection/GetConnectionServices":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetConnectionServices(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/admin.Connection/GetConnections":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -270,6 +276,75 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 		msg := &UpdateFulfillmentShippingStateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateFulfillmentShippingState(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type LocationServiceServer struct {
+	inner LocationService
+}
+
+func NewLocationServiceServer(svc LocationService) Server {
+	return &LocationServiceServer{
+		inner: svc,
+	}
+}
+
+const LocationServicePathPrefix = "/admin.Location/"
+
+func (s *LocationServiceServer) PathPrefix() string {
+	return LocationServicePathPrefix
+}
+
+func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/admin.Location/CreateCustomRegion":
+		msg := &CreateCustomRegionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateCustomRegion(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Location/DeleteCustomRegion":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteCustomRegion(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Location/GetCustomRegion":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetCustomRegion(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Location/GetCustomRegions":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetCustomRegions(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Location/UpdateCustomRegion":
+		msg := &CustomRegion{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateCustomRegion(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -564,6 +639,147 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrdersByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ShipmentPriceServiceServer struct {
+	inner ShipmentPriceService
+}
+
+func NewShipmentPriceServiceServer(svc ShipmentPriceService) Server {
+	return &ShipmentPriceServiceServer{
+		inner: svc,
+	}
+}
+
+const ShipmentPriceServicePathPrefix = "/admin.ShipmentPrice/"
+
+func (s *ShipmentPriceServiceServer) PathPrefix() string {
+	return ShipmentPriceServicePathPrefix
+}
+
+func (s *ShipmentPriceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/admin.ShipmentPrice/ActivateShipmentPriceList":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.ActivateShipmentPriceList(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShipmentPrice":
+		msg := &CreateShipmentPriceRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateShipmentPrice(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShipmentPriceList":
+		msg := &CreateShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateShipmentPriceList(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShipmentService":
+		msg := &CreateShipmentServiceRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateShipmentService(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShipmentPrice":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteShipmentPrice(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShipmentPriceList":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteShipmentPriceList(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShipmentService":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteShipmentService(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPrice":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentPrice(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPriceList":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentPriceList(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPriceLists":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentPriceLists(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPrices":
+		msg := &GetShipmentPricesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentPrices(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentService":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentService(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentServices":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShipmentServices(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentPrice":
+		msg := &UpdateShipmentPriceRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentPrice(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentPriceList":
+		msg := &UpdateShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentPriceList(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint":
+		msg := &UpdateShipmentPricesPriorityPointRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentPricesPriorityPoint(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentService":
+		msg := &UpdateShipmentServiceRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentService(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

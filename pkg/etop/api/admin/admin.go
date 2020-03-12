@@ -4,7 +4,11 @@ import (
 	"context"
 
 	"etop.vn/api/main/connectioning"
+	"etop.vn/api/main/location"
 	"etop.vn/api/main/moneytx"
+	"etop.vn/api/main/shipmentpricing/pricelist"
+	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"etop.vn/api/main/shipmentpricing/shipmentservice"
 	"etop.vn/api/top/int/admin"
 	"etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
@@ -31,10 +35,18 @@ import (
 var ll = l.New()
 
 var (
-	eventBus        capi.EventBus
-	moneyTxQuery    moneytx.QueryBus
-	connectionAggr  connectioning.CommandBus
-	connectionQuery connectioning.QueryBus
+	eventBus               capi.EventBus
+	moneyTxQuery           moneytx.QueryBus
+	connectionAggr         connectioning.CommandBus
+	connectionQuery        connectioning.QueryBus
+	shipmentPriceAggr      shipmentprice.CommandBus
+	shipmentPriceQuery     shipmentprice.QueryBus
+	shipmentServiceAggr    shipmentservice.CommandBus
+	shipmentServiceQuery   shipmentservice.QueryBus
+	shipmentPriceListAggr  pricelist.CommandBus
+	shipmentPriceListQuery pricelist.QueryBus
+	locationAggr           location.CommandBus
+	locationQuery          location.QueryBus
 )
 
 func Init(
@@ -42,11 +54,27 @@ func Init(
 	moneyTxQ moneytx.QueryBus,
 	connectionA connectioning.CommandBus,
 	connectionQ connectioning.QueryBus,
+	shipmentpriceA shipmentprice.CommandBus,
+	shipmentpriceQ shipmentprice.QueryBus,
+	shipmentServiceA shipmentservice.CommandBus,
+	shipmentServiceQ shipmentservice.QueryBus,
+	shipmentPriceListA pricelist.CommandBus,
+	shipmentPriceListQ pricelist.QueryBus,
+	locationA location.CommandBus,
+	locationQ location.QueryBus,
 ) {
 	eventBus = eventB
 	moneyTxQuery = moneyTxQ
 	connectionAggr = connectionA
 	connectionQuery = connectionQ
+	shipmentPriceAggr = shipmentpriceA
+	shipmentPriceQuery = shipmentpriceQ
+	shipmentServiceAggr = shipmentServiceA
+	shipmentServiceQuery = shipmentServiceQ
+	shipmentPriceListAggr = shipmentPriceListA
+	shipmentPriceListQuery = shipmentPriceListQ
+	locationAggr = locationA
+	locationQuery = locationQ
 }
 
 func init() {
@@ -94,6 +122,8 @@ type ShopService struct{}
 type CreditService struct{}
 type NotificationService struct{}
 type ConnectionService struct{}
+type ShipmentPriceService struct{}
+type LocationService struct{}
 
 var miscService = &MiscService{}
 var accountService = &AccountService{}
@@ -104,6 +134,8 @@ var shopService = &ShopService{}
 var creditService = &CreditService{}
 var notificationService = &NotificationService{}
 var connectionService = &ConnectionService{}
+var shipmentPriceService = &ShipmentPriceService{}
+var locationService = &LocationService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

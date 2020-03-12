@@ -24,6 +24,8 @@ type ShipmentCarrier interface {
 	// Return "chuẩn" or "nhanh"
 	GetServiceName(code string) (serviceName string, ok bool)
 
+	ParseServiceID(code string) (serviceID string, err error)
+
 	GetMaxValueFreeInsuranceFee() int
 
 	SignIn(context.Context, *SignInArgs) (*AccountResponse, error)

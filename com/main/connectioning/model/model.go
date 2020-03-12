@@ -28,6 +28,7 @@ type Connection struct {
 	EtopAffiliateAccount *EtopAffiliateAccount
 	Code                 string
 	ImageURL             string
+	Services             []*ConnectionService
 }
 
 // +sqlgen
@@ -57,4 +58,9 @@ type EtopAffiliateAccount struct {
 type ShopConnectionExternalData struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
+}
+
+type ConnectionService struct {
+	ServiceID string `json:"service_id"`
+	Name      string `json:"name"`
 }

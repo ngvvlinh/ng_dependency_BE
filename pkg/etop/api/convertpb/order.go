@@ -32,7 +32,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var locationBus = servicelocation.New().MessageBus()
+var locationBus = servicelocation.New(nil).MessageBus()
 
 func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*identitymodel.Shop) []*types.Order {
 	res := make([]*types.Order, len(items))
@@ -870,6 +870,8 @@ func PbAvailableShippingService(s *model.AvailableShippingService) *types.Extern
 		EstimatedPickupAt:   cmapi.PbTime(s.ExpectedPickAt),
 		EstimatedDeliveryAt: cmapi.PbTime(s.ExpectedDeliveryAt),
 		ConnectionInfo:      PbConnectionInfo(s.ConnectionInfo),
+		ShipmentServiceInfo: PbShipmentServiceInfo(s.ShipmentServiceInfo),
+		ShipmentPriceInfo:   PbShipmentPriceInfo(s.ShipmentPriceInfo),
 	}
 }
 
@@ -881,6 +883,29 @@ func PbConnectionInfo(item *model.ConnectionInfo) *types.ConnectionInfo {
 		ID:       item.ID,
 		Name:     item.Name,
 		ImageURL: item.ImageURL,
+	}
+}
+
+func PbShipmentServiceInfo(item *model.ShipmentServiceInfo) *types.ShipmentServiceInfo {
+	if item == nil {
+		return nil
+	}
+	return &types.ShipmentServiceInfo{
+		ID:   item.ID,
+		Code: item.Code,
+		Name: item.Name,
+	}
+}
+
+func PbShipmentPriceInfo(item *model.ShipmentPriceInfo) *types.ShipmentPriceInfo {
+	if item == nil {
+		return nil
+	}
+	return &types.ShipmentPriceInfo{
+		ID:            item.ID,
+		OriginFee:     item.OriginFee,
+		OriginMainFee: item.OriginMainFee,
+		MakeupMainFee: item.MakeupMainFee,
 	}
 }
 

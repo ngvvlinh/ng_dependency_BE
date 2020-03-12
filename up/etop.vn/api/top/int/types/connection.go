@@ -88,6 +88,23 @@ func (m *GetConnectionsResponse) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
+type ConnectionService struct {
+	ServiceID string `json:"service_id"`
+	Name      string `json:"name"`
+}
+
+func (m *ConnectionService) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetConnectionServicesResponse struct {
+	ConnectionService []*ConnectionService `json:"connection_service"`
+}
+
+func (m *GetConnectionServicesResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type GetShopConnectionsResponse struct {
 	ShopConnections []*ShopConnection `json:"shop_connections"`
 }

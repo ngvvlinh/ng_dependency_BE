@@ -602,6 +602,25 @@ type CalculateFeeResponse struct {
 	WeightDimension int          `json:"WeightDimension"`
 }
 
+func (r *CalculateFeeResponse) ToShippingService(providerServiceID string) *model.AvailableShippingService {
+	if r == nil {
+		return nil
+	}
+	return &model.AvailableShippingService{
+		Name:                "",
+		ServiceFee:          r.CalculatedFee,
+		ShippingFeeMain:     r.ServiceFee,
+		Provider:            shipping_provider.GHN,
+		ProviderServiceID:   providerServiceID,
+		ExpectedPickAt:      time.Time{},
+		ExpectedDeliveryAt:  time.Time{},
+		Source:              "",
+		ConnectionInfo:      nil,
+		ShipmentServiceInfo: nil,
+		ShipmentPriceInfo:   nil,
+	}
+}
+
 type OrderCost struct {
 	Cost      int    `json:"Cost"`
 	Name      string `json:"Name"`

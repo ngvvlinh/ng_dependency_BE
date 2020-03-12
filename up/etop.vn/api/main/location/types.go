@@ -1,5 +1,11 @@
 package location
 
+import (
+	"time"
+
+	"etop.vn/capi/dot"
+)
+
 const CountryVietnam = "Việt Nam"
 
 type VietnamRegion int
@@ -81,4 +87,15 @@ type Extra struct {
 	GhnId       int
 	VtpostId    int
 	HaravanCode string
+}
+
+type CustomRegion struct {
+	ID            dot.ID
+	Name          string
+	ProvinceCodes []string
+	Description   string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     time.Time
+	WLPartnerID   dot.ID
 }

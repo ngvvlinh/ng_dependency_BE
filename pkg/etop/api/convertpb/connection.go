@@ -54,3 +54,21 @@ func PbConnections(items []*connectioning.Connection) []*types.Connection {
 	}
 	return result
 }
+
+func PbConnectionService(in *connectioning.ConnectionService) *types.ConnectionService {
+	if in == nil {
+		return nil
+	}
+	return &types.ConnectionService{
+		ServiceID: in.ServiceID,
+		Name:      in.Name,
+	}
+}
+
+func PbConnectionServices(items []*connectioning.ConnectionService) []*types.ConnectionService {
+	result := make([]*types.ConnectionService, len(items))
+	for i, item := range items {
+		result[i] = PbConnectionService(item)
+	}
+	return result
+}

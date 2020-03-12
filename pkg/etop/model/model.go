@@ -323,12 +323,29 @@ type AvailableShippingService struct {
 	ExpectedDeliveryAt time.Time
 	Source             ShippingPriceSource
 	ConnectionInfo     *ConnectionInfo
+
+	// Thông tin các gói được admin định nghĩa
+	ShipmentServiceInfo *ShipmentServiceInfo
+	ShipmentPriceInfo   *ShipmentPriceInfo
 }
 
 type ConnectionInfo struct {
 	ID       dot.ID
 	Name     string
 	ImageURL string
+}
+
+type ShipmentServiceInfo struct {
+	ID   dot.ID
+	Code string
+	Name string
+}
+
+type ShipmentPriceInfo struct {
+	ID            dot.ID
+	OriginFee     int
+	OriginMainFee int
+	MakeupMainFee int
 }
 
 func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {

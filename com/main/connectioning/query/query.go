@@ -5,10 +5,13 @@ import (
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/meta"
+	"etop.vn/api/top/types/etc/connection_type"
+	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/backend/com/main/connectioning/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
+	shippingservices "etop.vn/backend/pkg/integration/shipping/services"
 	"etop.vn/capi/dot"
 )
 
@@ -42,6 +45,33 @@ func (q *ConnectionQuery) GetConnectionByCode(ctx context.Context, code string) 
 func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioning.ListConnectionsArgs) ([]*connectioning.Connection, error) {
 	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
 	return query.ListConnections(args.Status)
+}
+
+func (q *ConnectionQuery) ListConnectionServicesByID(ctx context.Context, id dot.ID) ([]*connectioning.ConnectionService, error) {
+	conn, err := q.connectionStore(ctx).ID(id).GetConnection()
+	if err != nil {
+		return nil, err
+	}
+	if conn.Services != nil && len(conn.Services) > 0 {
+		return conn.Services, nil
+	}
+
+	// Get default service in case of shipment
+	var res = []*connectioning.ConnectionService{}
+	if conn.ConnectionType == connection_type.Shipping {
+		carrier, ok := shipping_provider.ParseShippingProvider(conn.ConnectionProvider.Name())
+		if !ok {
+			return res, nil
+		}
+		services := shippingservices.GetServicesByCarrier(carrier)
+		for _, s := range services {
+			res = append(res, &connectioning.ConnectionService{
+				ServiceID: s.ServiceID,
+				Name:      s.Name,
+			})
+		}
+	}
+	return res, nil
 }
 
 func (q *ConnectionQuery) GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*connectioning.ShopConnection, error) {

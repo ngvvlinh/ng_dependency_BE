@@ -29,7 +29,7 @@ type M map[string]interface{}
 func main() {
 	cc.InitFlags()
 	flag.Parse()
-	locationBus := servicelocation.New().MessageBus()
+	locationBus := servicelocation.New(db).MessageBus()
 	var err error
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))

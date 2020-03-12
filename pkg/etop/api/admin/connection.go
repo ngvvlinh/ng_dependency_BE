@@ -64,3 +64,16 @@ func (s *ConnectionService) CreateTopshipConnection(ctx context.Context, r *Crea
 	r.Result = convertpb.PbConnection(cmd.Result)
 	return nil
 }
+
+func (s *ConnectionService) GetConnectionServices(ctx context.Context, r *GetConnectionServicesEndpoint) error {
+	query := &connectioning.ListConnectionServicesByIDQuery{
+		ID: r.Id,
+	}
+	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = &types.GetConnectionServicesResponse{
+		ConnectionService: convertpb.PbConnectionServices(query.Result),
+	}
+	return nil
+}

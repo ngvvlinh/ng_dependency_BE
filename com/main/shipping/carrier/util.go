@@ -26,7 +26,7 @@ func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee
 }
 
 func CheckShippingService(ffm *shipmodel.Fulfillment, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
-	providerServiceID := cm.Coalesce(ffm.ProviderServiceID)
+	providerServiceID := ffm.ProviderServiceID
 	if providerServiceID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần chọn gói dịch vụ giao hàng")
 	}

@@ -34,6 +34,7 @@ type Connection struct {
 	EtopAffiliateAccount *EtopAffiliateAccount
 	Code                 string
 	ImageURL             string
+	Services             []*ConnectionService
 }
 
 type ConnectionDriverConfig struct {
@@ -72,4 +73,9 @@ type ShopConnectionExternalData struct {
 type ConnectionUpdatedEvent struct {
 	meta.EventMeta
 	ConnectionID dot.ID
+}
+
+type ConnectionService struct {
+	ServiceID string
+	Name      string
 }

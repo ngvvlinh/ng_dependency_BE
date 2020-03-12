@@ -49,6 +49,7 @@ func init() {
 			, etop_affiliate_account JSONB
 			, code TEXT
 			, image_url TEXT
+			, services JSON
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8

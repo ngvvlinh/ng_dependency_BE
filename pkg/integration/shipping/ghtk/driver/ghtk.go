@@ -86,7 +86,7 @@ func (d *GHTKDriver) CreateFulfillment(
 		})
 	}
 
-	transport, err := d.ParseServiceID(service.ProviderServiceID)
+	transport, err := d.parseServiceID(service.ProviderServiceID)
 	if err != nil {
 		return nil, err
 	}
@@ -369,7 +369,15 @@ func (d *GHTKDriver) SignUp(ctx context.Context, args *carriertypes.SignUpArgs) 
 	}, nil
 }
 
-func (d *GHTKDriver) ParseServiceID(code string) (transport ghtkclient.TransportType, err error) {
+func (d *GHTKDriver) parseServiceID(code string) (transport ghtkclient.TransportType, err error) {
+	res, err := d.ParseServiceID(code)
+	if err != nil {
+		return "", err
+	}
+	return ghtkclient.TransportType(res), nil
+}
+
+func (d *GHTKDriver) ParseServiceID(code string) (serviceID string, err error) {
 	if code == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "Missing service id")
 		return
@@ -380,15 +388,15 @@ func (d *GHTKDriver) ParseServiceID(code string) (transport ghtkclient.Transport
 	}
 
 	if code[5] == 'R' {
-		transport = ghtkclient.TransportRoad
+		serviceID = string(ghtkclient.TransportRoad)
 	}
 	if code[6] == 'F' {
-		if transport != "" {
+		if serviceID != "" {
 			err = cm.Errorf(cm.InvalidArgument, nil, "GHTK invalid service id. Transport is invalid (code = %v)", code)
 		}
-		transport = ghtkclient.TransportFly
+		serviceID = string(ghtkclient.TransportFly)
 	}
-	if transport == "" {
+	if serviceID == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "GHTK invalid service id (code = %v)", code)
 	}
 	return

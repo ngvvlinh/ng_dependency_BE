@@ -51,7 +51,7 @@ func init() {
 }
 
 var ll = l.New()
-var locationBus = servicelocation.New().MessageBus()
+var locationBus = servicelocation.New(nil).MessageBus()
 
 type MiscService struct{}
 type LocationService struct{}

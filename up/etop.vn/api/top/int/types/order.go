@@ -513,6 +513,8 @@ type ExternalShippingService struct {
 	EstimatedPickupAt   dot.Time                           `json:"estimated_pickup_at"`
 	EstimatedDeliveryAt dot.Time                           `json:"estimated_delivery_at"`
 	ConnectionInfo      *ConnectionInfo                    `json:"connection_info"`
+	ShipmentServiceInfo *ShipmentServiceInfo               `json:"shipment_service_info"`
+	ShipmentPriceInfo   *ShipmentPriceInfo                 `json:"shipment_price_info"`
 }
 
 func (m *ExternalShippingService) String() string { return jsonx.MustMarshalToString(m) }
@@ -524,6 +526,23 @@ type ConnectionInfo struct {
 }
 
 func (m *ConnectionInfo) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShipmentServiceInfo struct {
+	ID   dot.ID `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+func (m *ShipmentServiceInfo) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShipmentPriceInfo struct {
+	ID            dot.ID `json:"id"`
+	OriginFee     int    `json:"origin_fee"`
+	OriginMainFee int    `json:"origin_main_fee"`
+	MakeupMainFee int    `json:"makeup_main_fee"`
+}
+
+func (m *ShipmentPriceInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type FulfillmentSyncStates struct {
 	SyncAt            dot.Time       `json:"sync_at"`

@@ -48,6 +48,8 @@ type QueryService interface {
 
 	ListConnections(context.Context, *ListConnectionsArgs) ([]*Connection, error)
 
+	ListConnectionServicesByID(ctx context.Context, ID dot.ID) ([]*ConnectionService, error)
+
 	// -- Shop Connection -- //
 	GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*ShopConnection, error)
 

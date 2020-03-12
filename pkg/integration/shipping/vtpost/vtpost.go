@@ -140,7 +140,14 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		}
 		expectedDeliveryTime := expectedPickTime.Add(expectedDeliveryDuration)
 
-		resItem := result.Result.ToAvailableShippingService(providerServiceID, expectedPickTime, expectedDeliveryTime)
+		// Tính cước chính (main fee)
+		// Dùng để áp dụng bảng giá riêng vào cước chính
+		feeLines, err := resp.Data.CalcAndConvertShippingFeeLines()
+		feeMain := 0
+		if err == nil {
+			feeMain = shippingsharemodel.GetMainFee(feeLines)
+		}
+		resItem := result.Result.ToAvailableShippingService(providerServiceID, expectedPickTime, expectedDeliveryTime, feeMain)
 		res = append(res, resItem)
 	}
 	res = shipping.CalcServicesTime(shipping_provider.VTPost, cmd.FromDistrict, cmd.ToDistrict, res)

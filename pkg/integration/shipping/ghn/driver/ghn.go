@@ -84,7 +84,7 @@ func (d *GHNDriver) CreateFulfillment(
 	toDistrict := toQuery.Result.District
 	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
 
-	serviceID, err := d.ParseServiceID(service.ProviderServiceID)
+	serviceID, err := d.parseServiceID(service.ProviderServiceID)
 	if err != nil {
 		return nil, err
 	}
@@ -246,7 +246,7 @@ func (d *GHNDriver) GetMaxValueFreeInsuranceFee() int {
 	return 1000000
 }
 
-func (d *GHNDriver) ParseServiceID(code string) (serviceID int, err error) {
+func (d *GHNDriver) ParseServiceID(code string) (serviceID string, err error) {
 	if code == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "Missing service id")
 		return
@@ -259,8 +259,16 @@ func (d *GHNDriver) ParseServiceID(code string) (serviceID int, err error) {
 	// old service id format: "DC123123"
 	// Thống nhất service id cho tất cả NVC, sau đó parse tương ứng
 
-	serviceIDStr := code[2:]
-	serviceID, err = strconv.Atoi(serviceIDStr)
+	serviceID = code[2:]
+	return serviceID, nil
+}
+
+func (d *GHNDriver) parseServiceID(code string) (serviceID int, err error) {
+	res, err := d.ParseServiceID(code)
+	if err != nil {
+		return 0, err
+	}
+	serviceID, err = strconv.Atoi(res)
 	if err != nil {
 		err = cm.Errorf(cm.InvalidArgument, nil, "Invalid Service ID: %v", code)
 	}

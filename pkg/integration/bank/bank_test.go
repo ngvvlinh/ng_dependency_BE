@@ -12,7 +12,7 @@ import (
 	locationlist "etop.vn/backend/com/main/location/list"
 )
 
-var locationBus = servicelocation.New().MessageBus()
+var locationBus = servicelocation.New(nil).MessageBus()
 
 func TestProvinceCode(t *testing.T) {
 	mapProvinces := make(map[string]bool)

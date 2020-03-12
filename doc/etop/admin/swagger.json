@@ -150,6 +150,33 @@
         }
       }
     },
+    "/api/admin.Connection/GetConnectionServices": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetConnectionServices",
+        "operationId": "admin.Connection-GetConnectionServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetConnectionServicesResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Connection/GetConnections": {
       "post": {
         "tags": [
@@ -462,6 +489,141 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/xuUpdateFulfillmentShippingStateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Location/CreateCustomRegion": {
+      "post": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "CreateCustomRegion",
+        "operationId": "admin.Location-CreateCustomRegion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateCustomRegionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuCustomRegion"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Location/DeleteCustomRegion": {
+      "post": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "DeleteCustomRegion",
+        "operationId": "admin.Location-DeleteCustomRegion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Location/GetCustomRegion": {
+      "post": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "GetCustomRegion",
+        "operationId": "admin.Location-GetCustomRegion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuCustomRegion"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Location/GetCustomRegions": {
+      "post": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "GetCustomRegions",
+        "operationId": "admin.Location-GetCustomRegions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetCustomRegionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Location/UpdateCustomRegion": {
+      "post": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "UpdateCustomRegion",
+        "operationId": "admin.Location-UpdateCustomRegion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCustomRegion"
             }
           }
         ],
@@ -1096,6 +1258,465 @@
         }
       }
     },
+    "/api/admin.ShipmentPrice/ActivateShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "ActivateShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-ActivateShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/CreateShipmentPrice": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShipmentPrice",
+        "operationId": "admin.ShipmentPrice-CreateShipmentPrice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShipmentPriceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPrice"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/CreateShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-CreateShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShipmentPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/CreateShipmentService": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShipmentService",
+        "operationId": "admin.ShipmentPrice-CreateShipmentService",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShipmentServiceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentService"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShipmentPrice": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShipmentPrice",
+        "operationId": "admin.ShipmentPrice-DeleteShipmentPrice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-DeleteShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShipmentService": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShipmentService",
+        "operationId": "admin.ShipmentPrice-DeleteShipmentService",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPrice": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPrice",
+        "operationId": "admin.ShipmentPrice-GetShipmentPrice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPrice"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-GetShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPriceLists": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPriceLists",
+        "operationId": "admin.ShipmentPrice-GetShipmentPriceLists",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentPriceListsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPrices": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPrices",
+        "operationId": "admin.ShipmentPrice-GetShipmentPrices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentPricesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentPricesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentService": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentService",
+        "operationId": "admin.ShipmentPrice-GetShipmentService",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentService"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentServices": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentServices",
+        "operationId": "admin.ShipmentPrice-GetShipmentServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentPrice": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentPrice",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentPrice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentPriceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPrice"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentPricesPriorityPoint",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentPricesPriorityPoint",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentPricesPriorityPointRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentService": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentService",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentService",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentServiceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Shop/GetShop": {
       "post": {
         "tags": [
@@ -1160,6 +1781,36 @@
         "warehouse",
         "shipto",
         "shipfrom"
+      ]
+    },
+    "ajCustomRegionRouteType": {
+      "type": "string",
+      "enum": [
+        "noi_vung",
+        "lien_vung"
+      ]
+    },
+    "ajProvinceRouteType": {
+      "type": "string",
+      "enum": [
+        "noi_tinh",
+        "lien_tinh"
+      ]
+    },
+    "ajRegionRouteType": {
+      "type": "string",
+      "enum": [
+        "noi_mien",
+        "lien_mien"
+      ]
+    },
+    "ajUrbanType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "noi_thanh",
+        "ngoai_thanh_1",
+        "ngoai_thanh_2"
       ]
     },
     "baAddress": {
@@ -2147,6 +2798,17 @@
         }
       }
     },
+    "qdConnectionService": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "service_id": {
+          "type": "string"
+        }
+      }
+    },
     "qdCreateTopshipConnectionRequest": {
       "type": "object",
       "properties": {
@@ -2499,6 +3161,17 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "qdGetConnectionServicesResponse": {
+      "type": "object",
+      "properties": {
+        "connection_service": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdConnectionService"
+          }
         }
       }
     },
@@ -3920,6 +4593,23 @@
         }
       }
     },
+    "xuCreateCustomRegionRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "province_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "xuCreateNotificationsRequest": {
       "type": "object",
       "properties": {
@@ -3968,6 +4658,132 @@
         }
       }
     },
+    "xuCreateShipmentPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "xuCreateShipmentPriceRequest": {
+      "type": "object",
+      "properties": {
+        "custom_region_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "custom_region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajCustomRegionRouteType"
+          }
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuPricingDetail"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority_point": {
+          "type": "integer"
+        },
+        "province_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajProvinceRouteType"
+          }
+        },
+        "region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajRegionRouteType"
+          }
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipment_service_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "urban_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajUrbanType"
+          }
+        }
+      }
+    },
+    "xuCreateShipmentServiceRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "service_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "xuCustomRegion": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "province_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "xuGenerateAPIKeyRequest": {
       "type": "object",
       "properties": {
@@ -4011,6 +4827,17 @@
         "shop_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "xuGetCustomRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "custom_regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuCustomRegion"
+          }
         }
       }
     },
@@ -4127,6 +4954,52 @@
         }
       }
     },
+    "xuGetShipmentPriceListsResponse": {
+      "type": "object",
+      "properties": {
+        "shipment_price_lists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShipmentPriceList"
+          }
+        }
+      }
+    },
+    "xuGetShipmentPricesRequest": {
+      "type": "object",
+      "properties": {
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipment_service_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetShipmentPricesResponse": {
+      "type": "object",
+      "properties": {
+        "shipment_prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShipmentPrice"
+          }
+        }
+      }
+    },
+    "xuGetShipmentServicesResponse": {
+      "type": "object",
+      "properties": {
+        "shipment_services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShipmentService"
+          }
+        }
+      }
+    },
     "xuGetShopsRequest": {
       "type": "object",
       "properties": {
@@ -4166,6 +5039,40 @@
         }
       }
     },
+    "xuPricingDetail": {
+      "type": "object",
+      "properties": {
+        "overweight": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuPricingDetailOverweight"
+          }
+        },
+        "price": {
+          "type": "integer"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuPricingDetailOverweight": {
+      "type": "object",
+      "properties": {
+        "max_weight": {
+          "type": "integer"
+        },
+        "min_weight": {
+          "type": "integer"
+        },
+        "price_step": {
+          "type": "integer"
+        },
+        "weight_step": {
+          "type": "integer"
+        }
+      }
+    },
     "xuRemoveMoneyTransactionShippingExternalLinesRequest": {
       "type": "object",
       "properties": {
@@ -4179,6 +5086,142 @@
         "money_transaction_shipping_external_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "xuShipmentPrice": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "custom_region_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "custom_region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajCustomRegionRouteType"
+          }
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuPricingDetail"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority_point": {
+          "type": "integer"
+        },
+        "province_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajProvinceRouteType"
+          }
+        },
+        "region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajRegionRouteType"
+          }
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipment_service_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "urban_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajUrbanType"
+          }
+        }
+      }
+    },
+    "xuShipmentPriceList": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "xuShipmentService": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "service_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -4346,6 +5389,138 @@
         }
       }
     },
+    "xuUpdateShipmentPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "xuUpdateShipmentPricePriorityPointRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "priority_point": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuUpdateShipmentPriceRequest": {
+      "type": "object",
+      "properties": {
+        "custom_region_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "custom_region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajCustomRegionRouteType"
+          }
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuPricingDetail"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority_point": {
+          "type": "integer"
+        },
+        "province_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajProvinceRouteType"
+          }
+        },
+        "region_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajRegionRouteType"
+          }
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipment_service_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "urban_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ajUrbanType"
+          }
+        }
+      }
+    },
+    "xuUpdateShipmentPricesPriorityPointRequest": {
+      "type": "object",
+      "properties": {
+        "shipment_prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuUpdateShipmentPricePriorityPointRequest"
+          }
+        }
+      }
+    },
+    "xuUpdateShipmentServiceRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "service_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
     "yiPaymentMethod": {
       "type": "string",
       "enum": [
@@ -4373,6 +5548,9 @@
       "name": "Fulfillment"
     },
     {
+      "name": "Location"
+    },
+    {
       "name": "Misc"
     },
     {
@@ -4383,6 +5561,9 @@
     },
     {
       "name": "Order"
+    },
+    {
+      "name": "ShipmentPrice"
     },
     {
       "name": "Shop"

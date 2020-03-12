@@ -13,7 +13,7 @@ import (
 	"etop.vn/common/l"
 )
 
-var locationBus = servicelocation.New().MessageBus()
+var locationBus = servicelocation.New(nil).MessageBus()
 
 func TestGetPriceRuleDetail(t *testing.T) {
 	priceRuleDetail := map[int]*ESPricingDetail{

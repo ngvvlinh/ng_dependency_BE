@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"etop.vn/api/main/shipmentpricing/shipmentservice"
 	"etop.vn/api/top/types/etc/connection_type"
 	shippingstate "etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/status3"
@@ -27,7 +30,6 @@ import (
 	"etop.vn/backend/pkg/common/cipherx"
 	"etop.vn/backend/pkg/common/cmenv"
 	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	directclient "etop.vn/backend/pkg/integration/shipping/direct/client"
@@ -47,31 +49,43 @@ var (
 )
 
 const (
-	MinShopBalance = -200000
-	DefaultTTl     = 2 * 60 * 60
-	SecretKey      = "connectionsecretkey"
-	VersionCaching = "v0.1.5"
+	MinShopBalance        = -200000
+	DefaultTTl            = 2 * 60 * 60
+	SecretKey             = "connectionsecretkey"
+	VersionCaching        = "v0.1.6"
+	PrefixMakeupPriceCode = "###"
 )
 
 type ShipmentManager struct {
-	LocationQS     location.QueryBus
-	ConnectionQS   connectioning.QueryBus
-	connectionAggr connectioning.CommandBus
-	Env            string
-	driver         carriertypes.ShipmentCarrier
-	redisStore     redis.Store
-	cipherx        *cipherx.Cipherx
+	LocationQS        location.QueryBus
+	ConnectionQS      connectioning.QueryBus
+	connectionAggr    connectioning.CommandBus
+	Env               string
+	driver            carriertypes.ShipmentCarrier
+	redisStore        redis.Store
+	cipherx           *cipherx.Cipherx
+	shipmentServiceQS shipmentservice.QueryBus
+	shipmentPriceQS   shipmentprice.QueryBus
 }
 
-func NewShipmentManager(locationQS location.QueryBus, connectionQS connectioning.QueryBus, connectionAggr connectioning.CommandBus, redisS redis.Store) *ShipmentManager {
+func NewShipmentManager(
+	locationQS location.QueryBus,
+	connectionQS connectioning.QueryBus,
+	connectionAggr connectioning.CommandBus,
+	redisS redis.Store,
+	shipmentServiceQS shipmentservice.QueryBus,
+	shipmentPriceQS shipmentprice.QueryBus,
+) *ShipmentManager {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	return &ShipmentManager{
-		LocationQS:     locationQS,
-		ConnectionQS:   connectionQS,
-		connectionAggr: connectionAggr,
-		Env:            cmenv.PartnerEnv(),
-		redisStore:     redisS,
-		cipherx:        _cipherx,
+		LocationQS:        locationQS,
+		ConnectionQS:      connectionQS,
+		connectionAggr:    connectionAggr,
+		Env:               cmenv.PartnerEnv(),
+		redisStore:        redisS,
+		cipherx:           _cipherx,
+		shipmentServiceQS: shipmentServiceQS,
+		shipmentPriceQS:   shipmentPriceQS,
 	}
 }
 
@@ -254,60 +268,44 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		return err
 	}
 
-	args := &carriertypes.GetShippingServicesArgs{
-		ArbitraryID:            ffm.ConnectionID,
-		AccountID:              order.ShopID,
-		FromDistrictCode:       fromDistrict.Code,
-		ToDistrictCode:         toDistrict.Code,
-		ChargeableWeight:       cm.CoalesceInt(weight, 100),
-		Length:                 ffm.Length,
-		Width:                  ffm.Width,
-		Height:                 ffm.Height,
-		IncludeInsurance:       ffm.IncludeInsurance,
-		BasketValue:            ffm.BasketValue,
-		CODAmount:              ffm.TotalCODAmount,
-		IncludeTopshipServices: true,
+	args := &GetShippingServicesArgs{
+		FromDistrictCode: fromDistrict.Code,
+		ToDistrictCode:   toDistrict.Code,
+		ChargeableWeight: cm.CoalesceInt(weight, 100),
+		Length:           ffm.Length,
+		Width:            ffm.Width,
+		Height:           ffm.Height,
+		IncludeInsurance: ffm.IncludeInsurance,
+		BasketValue:      ffm.BasketValue,
+		CODAmount:        ffm.TotalCODAmount,
 	}
-
-	allServices, err := driver.GetShippingServices(ctx, args)
+	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, ffm.ShopID, args, ffm.ConnectionID)
+	if err != nil {
+		return err
+	}
+	providerService, err := CheckShippingService(ffm, allServices)
 	if err != nil {
 		return err
 	}
 
-	// check if etop package
-	var etopService, providerService *model.AvailableShippingService
-	sType, isEtopService := etop_shipping_price.ParseEtopServiceCode(ffm.ProviderServiceID)
-	if isEtopService {
-		// ETOP serivce
-		// => Get cheapest provider service
-		etopService, err = GetEtopServiceFromSeviceCode(ffm.ProviderServiceID, ffm.ShippingServiceFee, allServices)
-		if err != nil {
-			return err
-		}
-
-		providerService = shipping_provider.GetCheapestService(allServices, sType)
-		if providerService == nil {
-			return cm.Error(cm.InvalidArgument, "Không có gói vận chuyển phù hợp.", nil)
-		}
-	} else {
-		// Provider service
-		// => Check price
-		// => Get this service
-		providerService, err = CheckShippingService(ffm, allServices)
-		if err != nil {
-			return err
-		}
+	// Check service with markup fee
+	isMakeupPrice := false
+	providerServiceID := providerService.ProviderServiceID
+	if strings.HasPrefix(providerServiceID, PrefixMakeupPriceCode) {
+		isMakeupPrice = true
+		providerServiceID = providerServiceID[len(PrefixMakeupPriceCode):]
 	}
-
-	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, args, providerService)
+	providerService.ProviderServiceID = providerServiceID
+	_args := args.ToShipmentServiceArgs(ffm.ConnectionID, ffm.ShopID)
+	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, _args, providerService)
 	if err != nil {
 		return err
 	}
 	// update shipping service name
 	ffmToUpdate.ShippingServiceName = providerService.Name
 
-	if etopService != nil {
-		err := ffmToUpdate.ApplyEtopPrice(etopService.ShippingFeeMain)
+	if isMakeupPrice {
+		err := ffmToUpdate.ApplyEtopPrice(providerService.ShippingFeeMain)
 		if err != nil {
 			return err
 		}
@@ -365,42 +363,11 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 		go func() error {
 			defer wg.Done()
 			if shopConn.Status != status3.P || shopConn.Token == "" {
-				return cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid (check status or token)")
+				return cm.Errorf(cm.FailedPrecondition, nil, "Connection does not valid (check status or token)")
 			}
-			conn, err := m.GetConnectionByID(ctx, connID)
+			services, err := m.GetShipmentServicesAndMakeupPrice(ctx, accountID, args, connID)
 			if err != nil {
 				return err
-			}
-			if !m.validateConnection(ctx, conn) {
-				return nil
-			}
-
-			var services []*model.AvailableShippingService
-			driver, err := m.getShipmentDriver(ctx, connID, accountID)
-			if err != nil {
-				// ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
-				return err
-			}
-
-			_args := args.ToShipmentServiceArgs() // clone the request to prevent race condition
-			_args.ArbitraryID = connID
-			_args.AccountID = accountID
-			if conn.ConnectionMethod == connection_type.ConnectionMethodTopship {
-				_args.IncludeTopshipServices = true
-			}
-			services, err = driver.GetShippingServices(ctx, _args)
-			if err != nil {
-				// ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
-				return err
-			}
-
-			// assign connection info to services
-			for _, s := range services {
-				s.ConnectionInfo = &model.ConnectionInfo{
-					ID:       connID,
-					Name:     conn.Name,
-					ImageURL: conn.ImageURL,
-				}
 			}
 			mutex.Lock()
 			res = append(res, services...)
@@ -666,4 +633,120 @@ func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connecti
 		}
 	}
 	return false
+}
+
+func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context, accountID dot.ID, args *GetShippingServicesArgs, connID dot.ID) ([]*model.AvailableShippingService, error) {
+	conn, err := m.GetConnectionByID(ctx, connID)
+	if err != nil {
+		return nil, err
+	}
+	if !m.validateConnection(ctx, conn) {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Connection does not valid")
+	}
+
+	var services []*model.AvailableShippingService
+	driver, err := m.getShipmentDriver(ctx, connID, accountID)
+	if err != nil {
+		// ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
+		return nil, err
+	}
+
+	_args := args.ToShipmentServiceArgs(connID, accountID)
+	// if conn.ConnectionMethod == connection_type.ConnectionMethodTopship {
+	// 	_args.IncludeTopshipServices = true
+	// }
+	services, err = driver.GetShippingServices(ctx, _args)
+	if err != nil {
+		// ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
+		return nil, err
+	}
+
+	var res []*model.AvailableShippingService
+	// assign connection info to services
+	for _, s := range services {
+		s.ConnectionInfo = &model.ConnectionInfo{
+			ID:       connID,
+			Name:     conn.Name,
+			ImageURL: conn.ImageURL,
+		}
+		serviceID, err := driver.ParseServiceID(s.ProviderServiceID)
+		if err != nil {
+			ll.Error("Parse service ID failed", l.String("serviceID", serviceID), l.ID("connectionID", connID), l.Error(err))
+		}
+
+		s, err = m.mapWithShipmentService(ctx, serviceID, connID, s)
+		if err != nil {
+			continue
+		}
+		// Makeup price & change provider_service_id
+		s, err = m.makeupPriceByShipmentPrice(ctx, s, args)
+		if err != nil {
+			ll.Error("MakeupPriceByShipmentPrice failed", l.String("serviceID", serviceID), l.ID("connectionID", connID), l.Error(err))
+		}
+		res = append(res, s)
+	}
+	return res, nil
+}
+
+func (m *ShipmentManager) mapWithShipmentService(ctx context.Context, serviceID string, connID dot.ID, service *model.AvailableShippingService) (*model.AvailableShippingService, error) {
+	query := &shipmentservice.GetShipmentServiceByServiceIDQuery{
+		ServiceID: serviceID,
+		ConnID:    connID,
+	}
+	if err := m.shipmentServiceQS.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	sService := query.Result
+	if sService.Status != status3.P {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Gói dịch vụ đã tắt (shipment_service_id = %v).", sService.ID)
+	}
+	service.ShipmentServiceInfo = &model.ShipmentServiceInfo{
+		ID:   sService.ID,
+		Code: sService.EdCode,
+		Name: sService.Name,
+	}
+	service.Name = sService.Name
+	return service, nil
+}
+
+func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, service *model.AvailableShippingService, args *GetShippingServicesArgs) (*model.AvailableShippingService, error) {
+	// Cập nhật giá Makeup vào phí chính của gói
+	// TH gói dịch vụ ko tính được phí chính
+	// Tạm thời để an toàn không áp dụng bảng giá vào đây
+	if service.ShippingFeeMain == 0 {
+		return service, cm.Errorf(cm.FailedPrecondition, nil, "Gói dịch vụ chưa tính được phí chính. Không đủ điều kiện để áp dụng bảng giá vào đây")
+	}
+	if service.ShipmentServiceInfo == nil || service.ShipmentServiceInfo.ID == 0 {
+		return service, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu shipment service.")
+	}
+	originMainFee := service.ShippingFeeMain
+	additionFee := service.ServiceFee - originMainFee
+	originFee := service.ServiceFee
+
+	query := &shipmentprice.CalculatePriceQuery{
+		FromDistrictCode:  args.FromDistrictCode,
+		ToDistrictCode:    args.ToDistrictCode,
+		ShipmentServiceID: service.ShipmentServiceInfo.ID,
+		Weight:            args.ChargeableWeight,
+	}
+	err := m.shipmentPriceQS.Dispatch(ctx, query)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+	// continue
+	case cm.NotFound:
+		return service, nil
+	default:
+		return service, cm.Errorf(cm.Internal, err, "")
+	}
+	calcPriceResp := query.Result
+	service.ProviderServiceID = PrefixMakeupPriceCode + service.ProviderServiceID
+	service.ServiceFee = calcPriceResp.Price + additionFee
+	service.ShippingFeeMain = calcPriceResp.Price
+	service.ShipmentPriceInfo = &model.ShipmentPriceInfo{
+		ID:            calcPriceResp.ShipmentPriceID,
+		OriginFee:     originFee,
+		OriginMainFee: originMainFee,
+		MakeupMainFee: calcPriceResp.Price,
+	}
+	return service, nil
 }

@@ -23,7 +23,7 @@ import (
 )
 
 var _ connectioning.Aggregate = &ConnectionAggregate{}
-var schemas = conversion.Build(convert.RegisterConversions)
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type ConnectionAggregate struct {
 	db                  cmsql.Transactioner
@@ -55,7 +55,7 @@ func (a *ConnectionAggregate) CreateConnection(ctx context.Context, args *connec
 	}
 
 	var conn connectioning.Connection
-	if err := schemas.Convert(args, &conn); err != nil {
+	if err := scheme.Convert(args, &conn); err != nil {
 		return nil, err
 	}
 	conn.ID = cm.NewID()
@@ -112,7 +112,7 @@ func (a *ConnectionAggregate) UpdateConnection(ctx context.Context, args *connec
 		}
 	}
 	var update connectioning.Connection
-	if err := schemas.Convert(args, &update); err != nil {
+	if err := scheme.Convert(args, &update); err != nil {
 		return nil, err
 	}
 	res, err := a.connectionStore(ctx).UpdateConnection(&update)
@@ -172,7 +172,7 @@ func (a *ConnectionAggregate) UpdateConnectionAffiliateAccount(ctx context.Conte
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing userID affiliate account.")
 	}
 	var update connectioning.Connection
-	if err := schemas.Convert(args, &update); err != nil {
+	if err := scheme.Convert(args, &update); err != nil {
 		return 0, err
 	}
 	if _, err := a.connectionStore(ctx).UpdateConnection(&update); err != nil {
@@ -264,7 +264,7 @@ func (a *ConnectionAggregate) CreateShopConnection(ctx context.Context, args *co
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}
 	var shopConn connectioning.ShopConnection
-	if err := schemas.Convert(args, &shopConn); err != nil {
+	if err := scheme.Convert(args, &shopConn); err != nil {
 		return nil, err
 	}
 	// always set status = 1

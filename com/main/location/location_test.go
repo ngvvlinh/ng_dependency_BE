@@ -213,7 +213,7 @@ func TestUrban(t *testing.T) {
 }
 
 func TestGetAllLocations(t *testing.T) {
-	locationBus := New().MessageBus()
+	locationBus := New(nil).MessageBus()
 	ctx := context.Background()
 
 	t.Run("no input (error)", func(t *testing.T) {
@@ -271,7 +271,7 @@ func TestGetAllLocations(t *testing.T) {
 }
 
 func TestGetLocation(t *testing.T) {
-	locationBus := New().MessageBus()
+	locationBus := New(nil).MessageBus()
 	ctx := context.Background()
 
 	t.Run("no input (error)", func(t *testing.T) {

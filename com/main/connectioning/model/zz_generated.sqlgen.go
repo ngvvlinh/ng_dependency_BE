@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Connections []*Connection
 
 const __sqlConnection_Table = "connection"
-const __sqlConnection_ListCols = "\"id\",\"name\",\"status\",\"partner_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"driver_config\",\"driver\",\"connection_type\",\"connection_subtype\",\"connection_method\",\"connection_provider\",\"etop_affiliate_account\",\"code\",\"image_url\""
-const __sqlConnection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"partner_id\" = EXCLUDED.\"partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"driver_config\" = EXCLUDED.\"driver_config\",\"driver\" = EXCLUDED.\"driver\",\"connection_type\" = EXCLUDED.\"connection_type\",\"connection_subtype\" = EXCLUDED.\"connection_subtype\",\"connection_method\" = EXCLUDED.\"connection_method\",\"connection_provider\" = EXCLUDED.\"connection_provider\",\"etop_affiliate_account\" = EXCLUDED.\"etop_affiliate_account\",\"code\" = EXCLUDED.\"code\",\"image_url\" = EXCLUDED.\"image_url\""
+const __sqlConnection_ListCols = "\"id\",\"name\",\"status\",\"partner_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"driver_config\",\"driver\",\"connection_type\",\"connection_subtype\",\"connection_method\",\"connection_provider\",\"etop_affiliate_account\",\"code\",\"image_url\",\"services\""
+const __sqlConnection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"partner_id\" = EXCLUDED.\"partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"driver_config\" = EXCLUDED.\"driver_config\",\"driver\" = EXCLUDED.\"driver\",\"connection_type\" = EXCLUDED.\"connection_type\",\"connection_subtype\" = EXCLUDED.\"connection_subtype\",\"connection_method\" = EXCLUDED.\"connection_method\",\"connection_provider\" = EXCLUDED.\"connection_provider\",\"etop_affiliate_account\" = EXCLUDED.\"etop_affiliate_account\",\"code\" = EXCLUDED.\"code\",\"image_url\" = EXCLUDED.\"image_url\",\"services\" = EXCLUDED.\"services\""
 const __sqlConnection_Insert = "INSERT INTO \"connection\" (" + __sqlConnection_ListCols + ") VALUES"
 const __sqlConnection_Select = "SELECT " + __sqlConnection_ListCols + " FROM \"connection\""
 const __sqlConnection_Select_history = "SELECT " + __sqlConnection_ListCols + " FROM history.\"connection\""
@@ -170,6 +170,13 @@ func (m *Connection) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"services": {
+			ColumnName:       "services",
+			ColumnType:       "[]*ConnectionService",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "connection", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -199,6 +206,7 @@ func (m *Connection) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.EtopAffiliateAccount},
 		core.String(m.Code),
 		core.String(m.ImageURL),
+		core.JSON{m.Services},
 	}
 }
 
@@ -220,6 +228,7 @@ func (m *Connection) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.EtopAffiliateAccount},
 		(*core.String)(&m.Code),
 		(*core.String)(&m.ImageURL),
+		core.JSON{&m.Services},
 	}
 }
 
@@ -257,7 +266,7 @@ func (_ *Connections) SQLSelect(w SQLWriter) error {
 func (m *Connection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -267,7 +276,7 @@ func (ms Connections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -426,6 +435,14 @@ func (m *Connection) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ImageURL)
 	}
+	if m.Services != nil {
+		flag = true
+		w.WriteName("services")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.Services})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -436,7 +453,7 @@ func (m *Connection) SQLUpdate(w SQLWriter) error {
 func (m *Connection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -484,17 +501,18 @@ func (m ConnectionHistory) EtopAffiliateAccount() core.Interface {
 }
 func (m ConnectionHistory) Code() core.Interface     { return core.Interface{m["code"]} }
 func (m ConnectionHistory) ImageURL() core.Interface { return core.Interface{m["image_url"]} }
+func (m ConnectionHistory) Services() core.Interface { return core.Interface{m["services"]} }
 
 func (m *ConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ConnectionHistory, 16)
+	res := make(ConnectionHistory, 17)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["status"] = data[2]
@@ -511,14 +529,15 @@ func (m *ConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["etop_affiliate_account"] = data[13]
 	res["code"] = data[14]
 	res["image_url"] = data[15]
+	res["services"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ConnectionHistories, 0, 128)
@@ -543,6 +562,7 @@ func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["etop_affiliate_account"] = data[13]
 		m["code"] = data[14]
 		m["image_url"] = data[15]
+		m["services"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -104,7 +104,7 @@ func (d VTPostDriver) CreateFulfillment(
 		})
 	}
 
-	orderService, err := d.ParseServiceID(service.ProviderServiceID)
+	orderService, err := d.parseServiceID(service.ProviderServiceID)
 	if err != nil {
 		return nil, err
 	}
@@ -272,6 +272,13 @@ func (d *VTPostDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFe
 		if err != nil {
 			continue
 		}
+		// Tính cước chính (main fee)
+		// Dùng để áp dụng bảng giá riêng vào cước chính
+		feeLines, err := r.Data.CalcAndConvertShippingFeeLines()
+		feeMain := 0
+		if err == nil {
+			feeMain = shippingsharemodel.GetMainFee(feeLines)
+		}
 		s.GiaCuoc = r.Data.MoneyTotal
 
 		thoigian := s.ThoiGian // has format: "12 giờ"
@@ -284,7 +291,7 @@ func (d *VTPostDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFe
 			expectedDeliveryDuration = time.Duration(hours) * time.Hour
 		}
 		expectedDeliveryAt := expectedPickAt.Add(expectedDeliveryDuration)
-		service := s.ToAvailableShippingService(providerServiceID, expectedPickAt, expectedDeliveryAt)
+		service := s.ToAvailableShippingService(providerServiceID, expectedPickAt, expectedDeliveryAt, feeMain)
 		result = append(result, service)
 	}
 	result = shipping.CalcServicesTime(shipping_provider.VTPost, args.FromDistrict, args.ToDistrict, result)
@@ -325,7 +332,15 @@ func getLast3Character(code vtpostclient.VTPostOrderServiceCode) string {
 	return string(code[len(code)-3:])
 }
 
-func (d *VTPostDriver) ParseServiceID(code string) (orderService vtpostclient.VTPostOrderServiceCode, err error) {
+func (d *VTPostDriver) parseServiceID(code string) (orderService vtpostclient.VTPostOrderServiceCode, err error) {
+	res, err := d.ParseServiceID(code)
+	if err != nil {
+		return "", err
+	}
+	return vtpostclient.VTPostOrderServiceCode(res), nil
+}
+
+func (d *VTPostDriver) ParseServiceID(code string) (orderService string, err error) {
 	if code == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "missing service id")
 		return
@@ -335,10 +350,10 @@ func (d *VTPostDriver) ParseServiceID(code string) (orderService vtpostclient.VT
 		return
 	}
 
-	serviceCode := code[len(code)-3:]
-	switch serviceCode {
+	res := code[len(code)-3:]
+	switch res {
 	case getLast3Character(vtpostclient.OrderServiceCodeSCOD):
-		orderService = vtpostclient.OrderServiceCodeSCOD
+		orderService = vtpostclient.OrderServiceCodeSCOD.String()
 	case string(vtpostclient.OrderServiceCodeVCN),
 		string(vtpostclient.OrderServiceCodeVTK),
 		string(vtpostclient.OrderServiceCodePHS),
@@ -348,13 +363,13 @@ func (d *VTPostDriver) ParseServiceID(code string) (orderService vtpostclient.VT
 		string(vtpostclient.OrderServiceCodePHT),
 		string(vtpostclient.OrderServiceCodeVBS),
 		string(vtpostclient.OrderServiceCodeVBE):
-		orderService = vtpostclient.VTPostOrderServiceCode(serviceCode)
+		orderService = res
 	default:
 	}
-
 	if orderService == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "invalid service id")
 	}
+
 	return
 }
 

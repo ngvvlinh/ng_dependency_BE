@@ -391,11 +391,12 @@ func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServ
 	}
 }
 
-func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string, expectedPickTime, expectedDeliveryTime time.Time) *model.AvailableShippingService {
+func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string, expectedPickTime, expectedDeliveryTime time.Time, shippingFeeMain int) *model.AvailableShippingService {
 	serviceCode := VTPostOrderServiceCode(s.MaDVChinh)
 	return &model.AvailableShippingService{
 		Name:               serviceCode.Name(),
 		ServiceFee:         s.GiaCuoc,
+		ShippingFeeMain:    shippingFeeMain,
 		Provider:           shipping_provider.VTPost,
 		ProviderServiceID:  providerServiceID,
 		ExpectedPickAt:     expectedPickTime,

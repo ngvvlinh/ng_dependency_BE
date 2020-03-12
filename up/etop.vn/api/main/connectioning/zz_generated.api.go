@@ -223,6 +223,17 @@ func (h QueryServiceHandler) HandleGetShopConnectionByID(ctx context.Context, ms
 	return err
 }
 
+type ListConnectionServicesByIDQuery struct {
+	ID dot.ID
+
+	Result []*ConnectionService `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListConnectionServicesByID(ctx context.Context, msg *ListConnectionServicesByIDQuery) (err error) {
+	msg.Result, err = h.inner.ListConnectionServicesByID(msg.GetArgs(ctx))
+	return err
+}
+
 type ListConnectionsQuery struct {
 	PartnerID          dot.ID
 	Status             status3.NullStatus
@@ -300,6 +311,7 @@ func (q *UpdateShopConnectionTokenCommand) command()        {}
 func (q *GetConnectionByCodeQuery) query()               {}
 func (q *GetConnectionByIDQuery) query()                 {}
 func (q *GetShopConnectionByIDQuery) query()             {}
+func (q *ListConnectionServicesByIDQuery) query()        {}
 func (q *ListConnectionsQuery) query()                   {}
 func (q *ListGlobalShopConnectionsQuery) query()         {}
 func (q *ListShopConnectionsQuery) query()               {}
@@ -488,6 +500,11 @@ func (q *GetShopConnectionByIDQuery) GetArgs(ctx context.Context) (_ context.Con
 		q.ConnectionID
 }
 
+func (q *ListConnectionServicesByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
+}
+
 func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListConnectionsArgs) {
 	return ctx,
 		&ListConnectionsArgs{
@@ -582,6 +599,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetConnectionByCode)
 	b.AddHandler(h.HandleGetConnectionByID)
 	b.AddHandler(h.HandleGetShopConnectionByID)
+	b.AddHandler(h.HandleListConnectionServicesByID)
 	b.AddHandler(h.HandleListConnections)
 	b.AddHandler(h.HandleListGlobalShopConnections)
 	b.AddHandler(h.HandleListShopConnections)

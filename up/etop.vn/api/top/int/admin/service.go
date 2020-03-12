@@ -96,6 +96,39 @@ type ConnectionService interface {
 	GetConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
 	ConfirmConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	DisableConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
+	GetConnectionServices(context.Context, *cm.IDRequest) (*types.GetConnectionServicesResponse, error)
 
 	CreateTopshipConnection(context.Context, *types.CreateTopshipConnectionRequest) (*types.Connection, error)
+}
+
+// +apix:path=/admin.ShipmentPrice
+type ShipmentPriceService interface {
+	GetShipmentServices(context.Context, *cm.Empty) (*GetShipmentServicesResponse, error)
+	GetShipmentService(context.Context, *cm.IDRequest) (*ShipmentService, error)
+	CreateShipmentService(context.Context, *CreateShipmentServiceRequest) (*ShipmentService, error)
+	UpdateShipmentService(context.Context, *UpdateShipmentServiceRequest) (*cm.UpdatedResponse, error)
+	DeleteShipmentService(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+
+	GetShipmentPriceLists(context.Context, *cm.Empty) (*GetShipmentPriceListsResponse, error)
+	GetShipmentPriceList(context.Context, *cm.IDRequest) (*ShipmentPriceList, error)
+	CreateShipmentPriceList(context.Context, *CreateShipmentPriceListRequest) (*ShipmentPriceList, error)
+	UpdateShipmentPriceList(context.Context, *UpdateShipmentPriceListRequest) (*cm.UpdatedResponse, error)
+	ActivateShipmentPriceList(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
+	DeleteShipmentPriceList(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+
+	GetShipmentPrices(context.Context, *GetShipmentPricesRequest) (*GetShipmentPricesResponse, error)
+	GetShipmentPrice(context.Context, *cm.IDRequest) (*ShipmentPrice, error)
+	CreateShipmentPrice(context.Context, *CreateShipmentPriceRequest) (*ShipmentPrice, error)
+	UpdateShipmentPrice(context.Context, *UpdateShipmentPriceRequest) (*ShipmentPrice, error)
+	DeleteShipmentPrice(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+	UpdateShipmentPricesPriorityPoint(context.Context, *UpdateShipmentPricesPriorityPointRequest) (*cm.UpdatedResponse, error)
+}
+
+// +apix:path=/admin.Location
+type LocationService interface {
+	GetCustomRegion(context.Context, *cm.IDRequest) (*CustomRegion, error)
+	GetCustomRegions(context.Context, *cm.Empty) (*GetCustomRegionsResponse, error)
+	CreateCustomRegion(context.Context, *CreateCustomRegionRequest) (*CustomRegion, error)
+	UpdateCustomRegion(context.Context, *CustomRegion) (*cm.UpdatedResponse, error)
+	DeleteCustomRegion(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }

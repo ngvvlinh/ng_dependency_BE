@@ -60,6 +60,10 @@ import (
 	refundaggregate "etop.vn/backend/com/main/refund/aggregate"
 	refundpm "etop.vn/backend/com/main/refund/pm"
 	refundquery "etop.vn/backend/com/main/refund/query"
+	"etop.vn/backend/com/main/shipmentpricing/pricelist"
+	pricelistpm "etop.vn/backend/com/main/shipmentpricing/pricelist/pm"
+	"etop.vn/backend/com/main/shipmentpricing/shipmentprice"
+	"etop.vn/backend/com/main/shipmentpricing/shipmentservice"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
@@ -278,7 +282,8 @@ func main() {
 		sqlstore.InitDBNotifier(dbNotifier)
 	}
 
-	locationBus := servicelocation.New().MessageBus()
+	locationBus := servicelocation.New(db).MessageBus()
+	locationAggr := servicelocation.NewAggregate(db).MessageBus()
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
@@ -441,7 +446,16 @@ func main() {
 	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
 	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
 	connectionAggregate := connectionaggregate.NewConnectionAggregate(db, eventBus).MessageBus()
-	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore)
+	shipmentServiceAggr := shipmentservice.NewAggregate(db, redisStore).MessageBus()
+	shipmentServiceQuery := shipmentservice.NewQueryService(db, redisStore).MessageBus()
+	shipmentPriceListAggr := pricelist.NewAggregate(db, eventBus).MessageBus()
+	shipmentPriceListQuery := pricelist.NewQueryService(db, redisStore).MessageBus()
+	shipmentPriceAggr := shipmentprice.NewAggregate(db, redisStore).MessageBus()
+	shipmentPriceQuery := shipmentprice.NewQueryService(db, redisStore, locationBus, shipmentPriceListQuery).MessageBus()
+	shipmentPriceListPM := pricelistpm.New(redisStore)
+	shipmentPriceListPM.RegisterEventHandlers(eventBus)
+
+	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
 	shippingPM := shippingpm.New(eventBus, shippingAggr, redisStore)
@@ -577,7 +591,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery)
+	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

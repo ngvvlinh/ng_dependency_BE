@@ -507,6 +507,33 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.Connection/ConfirmConnection":       {Type: EtopAdmin},
 	"admin.Connection/DisableConnection":       {Type: EtopAdmin},
 	"admin.Connection/CreateTopshipConnection": {Type: EtopAdmin},
+	"admin.Connection/GetConnectionServices":   {Type: EtopAdmin},
+
+	"admin.ShipmentPrice/GetShipmentServices":   {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentService":    {Type: EtopAdmin},
+	"admin.ShipmentPrice/CreateShipmentService": {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentService": {Type: EtopAdmin},
+	"admin.ShipmentPrice/DeleteShipmentService": {Type: EtopAdmin},
+
+	"admin.ShipmentPrice/GetShipmentPriceLists":     {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentPriceList":      {Type: EtopAdmin},
+	"admin.ShipmentPrice/CreateShipmentPriceList":   {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentPriceList":   {Type: EtopAdmin},
+	"admin.ShipmentPrice/ActivateShipmentPriceList": {Type: EtopAdmin},
+	"admin.ShipmentPrice/DeleteShipmentPriceList":   {Type: EtopAdmin},
+
+	"admin.ShipmentPrice/GetShipmentPrice":                  {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentPrices":                 {Type: EtopAdmin},
+	"admin.ShipmentPrice/CreateShipmentPrice":               {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentPrice":               {Type: EtopAdmin},
+	"admin.ShipmentPrice/DeleteShipmentPrice":               {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {Type: EtopAdmin},
+
+	"admin.Location/GetCustomRegion":    {Type: EtopAdmin},
+	"admin.Location/GetCustomRegions":   {Type: EtopAdmin},
+	"admin.Location/CreateCustomRegion": {Type: EtopAdmin},
+	"admin.Location/UpdateCustomRegion": {Type: EtopAdmin},
+	"admin.Location/DeleteCustomRegion": {Type: EtopAdmin},
 
 	//-- shop --//
 

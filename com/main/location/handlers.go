@@ -4,11 +4,15 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/location/convert"
 	"etop.vn/backend/com/main/location/list"
+	"etop.vn/backend/com/main/location/sqlstore"
 	"etop.vn/backend/com/main/location/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -17,10 +21,13 @@ var ll = l.New()
 var _ location.QueryService = &Impl{}
 
 type Impl struct {
+	customRegionStore sqlstore.CustomRegionFactory
 }
 
-func New() *Impl {
-	return &Impl{}
+func New(db *cmsql.Database) *Impl {
+	return &Impl{
+		customRegionStore: sqlstore.NewCustomRegionStore(db),
+	}
 }
 
 func (im *Impl) MessageBus() location.QueryBus {
@@ -172,4 +179,16 @@ func (im *Impl) FindOrGetLocation(ctx context.Context, query *location.FindOrGet
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Must provide all code or leave it all empty")
 	}
+}
+
+func (im *Impl) GetCustomRegion(ctx context.Context, id dot.ID) (*location.CustomRegion, error) {
+	return im.customRegionStore(ctx).ID(id).GetCustomRegion()
+}
+
+func (im *Impl) GetCustomRegionByProvinceCode(ctx context.Context, provinceCode string) (*location.CustomRegion, error) {
+	return im.customRegionStore(ctx).ProvinceCode(provinceCode).GetCustomRegion()
+}
+
+func (im *Impl) ListCustomRegions(ctx context.Context, _ *meta.Empty) ([]*location.CustomRegion, error) {
+	return im.customRegionStore(ctx).ListCustomRegions()
 }

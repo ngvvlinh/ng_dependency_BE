@@ -55,7 +55,7 @@ type GetShippingServicesArgs struct {
 	CODAmount        int
 }
 
-func (a *GetShippingServicesArgs) ToShipmentServiceArgs() *carriertypes.GetShippingServicesArgs {
+func (a *GetShippingServicesArgs) ToShipmentServiceArgs(arbitraryID, accountID dot.ID) *carriertypes.GetShippingServicesArgs {
 	return &carriertypes.GetShippingServicesArgs{
 		FromDistrictCode:       a.FromDistrictCode,
 		ToDistrictCode:         a.ToDistrictCode,
@@ -66,8 +66,8 @@ func (a *GetShippingServicesArgs) ToShipmentServiceArgs() *carriertypes.GetShipp
 		IncludeInsurance:       a.IncludeInsurance,
 		BasketValue:            a.BasketValue,
 		CODAmount:              a.CODAmount,
-		ArbitraryID:            0,     // fill it
-		AccountID:              0,     // fill it
+		ArbitraryID:            arbitraryID,
+		AccountID:              accountID,
 		IncludeTopshipServices: false, // fill it
 	}
 }

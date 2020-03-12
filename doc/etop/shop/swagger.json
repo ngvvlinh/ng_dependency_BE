@@ -6170,14 +6170,6 @@
         "shipfrom"
       ]
     },
-    "ajReceiptType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "receipt",
-        "payment"
-      ]
-    },
     "akReceiptRef": {
       "type": "string",
       "enum": [
@@ -8035,7 +8027,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/ajReceiptType"
+          "$ref": "#/definitions/peReceiptType"
         }
       }
     },
@@ -10275,7 +10267,7 @@
         },
         "created_type": {
           "description": "**Deprecated:** use mode\n",
-          "$ref": "#/definitions/peReceiptMode"
+          "$ref": "#/definitions/umReceiptMode"
         },
         "description": {
           "type": "string"
@@ -10298,7 +10290,7 @@
           }
         },
         "mode": {
-          "$ref": "#/definitions/peReceiptMode"
+          "$ref": "#/definitions/umReceiptMode"
         },
         "paid_at": {
           "type": "string",
@@ -10325,7 +10317,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/ajReceiptType"
+          "$ref": "#/definitions/peReceiptType"
         },
         "updated_at": {
           "type": "string",
@@ -12552,12 +12544,12 @@
         }
       }
     },
-    "peReceiptMode": {
+    "peReceiptType": {
       "type": "string",
       "enum": [
         "unknown",
-        "manual",
-        "auto"
+        "receipt",
+        "payment"
       ]
     },
     "pjGHNNoteCode": {
@@ -13009,6 +13001,12 @@
         "service_fee": {
           "description": "**Deprecated:** use fee\n",
           "type": "integer"
+        },
+        "shipment_price_info": {
+          "$ref": "#/definitions/qdShipmentPriceInfo"
+        },
+        "shipment_service_info": {
+          "$ref": "#/definitions/qdShipmentServiceInfo"
         }
       }
     },
@@ -14273,6 +14271,39 @@
         }
       }
     },
+    "qdShipmentPriceInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "makeup_main_fee": {
+          "type": "integer"
+        },
+        "origin_fee": {
+          "type": "integer"
+        },
+        "origin_main_fee": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdShipmentServiceInfo": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "qdShipnowDeliveryPoint": {
       "type": "object",
       "properties": {
@@ -15114,6 +15145,14 @@
         "unknown",
         "cash",
         "bank"
+      ]
+    },
+    "umReceiptMode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "manual",
+        "auto"
       ]
     },
     "xjSource": {

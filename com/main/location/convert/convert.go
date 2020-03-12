@@ -5,6 +5,9 @@ import (
 	"etop.vn/backend/com/main/location/types"
 )
 
+// +gen:convert: etop.vn/backend/com/main/location/model->etop.vn/api/main/location
+// +gen:convert: etop.vn/api/main/location
+
 func Provinces(ins []*types.Province, outs *[]*location.Province) error {
 	if *outs == nil {
 		*outs = make([]*location.Province, len(ins))

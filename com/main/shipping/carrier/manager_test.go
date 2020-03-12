@@ -7,6 +7,8 @@ import (
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"etop.vn/api/main/shipmentpricing/shipmentservice"
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
@@ -58,7 +60,9 @@ func TestShipmentManager(t *testing.T) {
 	})
 	connectionQS := connectioning.NewQueryBus(mockBus)
 	connectionAggr := connectioning.NewCommandBus(mockBus)
-	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil)
+	shipmentServiceQS := shipmentservice.NewQueryBus(mockBus)
+	shipmentPriceQS := shipmentprice.NewQueryBus(mockBus)
+	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS)
 	Convey("Get Shipment driver", t, func() {
 		shipmentType, err := shipmentManager.getShipmentDriver(ctx, connID, 0)
 		So(err, ShouldBeNil)

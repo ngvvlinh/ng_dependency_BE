@@ -2,9 +2,20 @@ package location
 
 import (
 	"context"
+
+	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
+
+type Aggregate interface {
+	CreateCustomRegion(context.Context, *CreateCustomRegionArgs) (*CustomRegion, error)
+
+	UpdateCustomRegion(context.Context, *CustomRegion) error
+
+	DeleteCustomRegion(ctx context.Context, ID dot.ID) error
+}
 
 type QueryService interface {
 	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*GetAllLocationsQueryResult, error)
@@ -14,6 +25,13 @@ type QueryService interface {
 	FindLocation(ctx context.Context, _ *FindLocationQueryArgs) (*LocationQueryResult, error)
 
 	FindOrGetLocation(ctx context.Context, _ *FindOrGetLocationQueryArgs) (*LocationQueryResult, error)
+
+	// --- CustomRegion --- //
+	GetCustomRegion(ctx context.Context, ID dot.ID) (*CustomRegion, error)
+
+	GetCustomRegionByProvinceCode(ctx context.Context, ProvinceCode string) (*CustomRegion, error)
+
+	ListCustomRegions(context.Context, *meta.Empty) ([]*CustomRegion, error)
 }
 
 func (b QueryBus) DispatchAll(ctx context.Context, msgs ...interface{ query() }) error {
@@ -65,4 +83,11 @@ type FindOrGetLocationQueryArgs struct {
 	ProvinceCode string
 	DistrictCode string
 	WardCode     string
+}
+
+// +convert:create=CustomRegion
+type CreateCustomRegionArgs struct {
+	Name          string
+	Description   string
+	ProvinceCodes []string
 }

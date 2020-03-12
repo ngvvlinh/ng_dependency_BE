@@ -251,3 +251,9 @@ func (d *DirectShipmentDriver) SignUp(ctx context.Context, args *carriertypes.Si
 		UserID: resp.UserID.String(),
 	}, nil
 }
+
+func (d *DirectShipmentDriver) ParseServiceID(code string) (serviceID string, err error) {
+	// Giữ nguyên serviceID của đối tác
+	// Có thể bổ sung rule sau
+	return code, nil
+}

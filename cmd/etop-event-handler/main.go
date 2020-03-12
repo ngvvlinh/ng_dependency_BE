@@ -105,7 +105,7 @@ func main() {
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	stocktakeQuery := stocktakequery.NewQueryStocktake(db).MessageBus()
 	inventoryquery := inventoryquery.NewQueryInventory(stocktakeQuery, bus.New(), db).MessageBus()
-	locationBus := servicelocation.New().MessageBus()
+	locationBus := servicelocation.New(db).MessageBus()
 	addressQuery := customerquery.NewAddressQuery(db).MessageBus()
 
 	var intctlHandler *intctl.Handler

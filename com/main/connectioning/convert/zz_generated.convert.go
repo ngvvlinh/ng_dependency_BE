@@ -53,6 +53,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg.(*connectioning.UpdateConnectionArgs), out.(*connectioning.Connection))
 		return nil
 	})
+	s.Register((*connectioningmodel.ConnectionService)(nil), (*connectioning.ConnectionService)(nil), func(arg, out interface{}) error {
+		Convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(arg.(*connectioningmodel.ConnectionService), out.(*connectioning.ConnectionService))
+		return nil
+	})
+	s.Register(([]*connectioningmodel.ConnectionService)(nil), (*[]*connectioning.ConnectionService)(nil), func(arg, out interface{}) error {
+		out0 := Convert_connectioningmodel_ConnectionServices_connectioning_ConnectionServices(arg.([]*connectioningmodel.ConnectionService))
+		*out.(*[]*connectioning.ConnectionService) = out0
+		return nil
+	})
+	s.Register((*connectioning.ConnectionService)(nil), (*connectioningmodel.ConnectionService)(nil), func(arg, out interface{}) error {
+		Convert_connectioning_ConnectionService_connectioningmodel_ConnectionService(arg.(*connectioning.ConnectionService), out.(*connectioningmodel.ConnectionService))
+		return nil
+	})
+	s.Register(([]*connectioning.ConnectionService)(nil), (*[]*connectioningmodel.ConnectionService)(nil), func(arg, out interface{}) error {
+		out0 := Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServices(arg.([]*connectioning.ConnectionService))
+		*out.(*[]*connectioningmodel.ConnectionService) = out0
+		return nil
+	})
 	s.Register((*connectioningmodel.EtopAffiliateAccount)(nil), (*connectioning.EtopAffiliateAccount)(nil), func(arg, out interface{}) error {
 		Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg.(*connectioningmodel.EtopAffiliateAccount), out.(*connectioning.EtopAffiliateAccount))
 		return nil
@@ -147,6 +165,7 @@ func convert_connectioningmodel_Connection_connectioning_Connection(arg *connect
 	out.EtopAffiliateAccount = Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg.EtopAffiliateAccount, nil)
 	out.Code = arg.Code         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
+	out.Services = Convert_connectioningmodel_ConnectionServices_connectioning_ConnectionServices(arg.Services)
 }
 
 func Convert_connectioningmodel_Connections_connectioning_Connections(args []*connectioningmodel.Connection) (outs []*connectioning.Connection) {
@@ -189,6 +208,7 @@ func convert_connectioning_Connection_connectioningmodel_Connection(arg *connect
 	out.EtopAffiliateAccount = Convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliateAccount(arg.EtopAffiliateAccount, nil)
 	out.Code = arg.Code         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
+	out.Services = Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServices(arg.Services)
 }
 
 func Convert_connectioning_Connections_connectioningmodel_Connections(args []*connectioning.Connection) (outs []*connectioningmodel.Connection) {
@@ -231,6 +251,7 @@ func apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg *conn
 	out.EtopAffiliateAccount = nil                  // zero value
 	out.Code = ""                                   // zero value
 	out.ImageURL = ""                               // zero value
+	out.Services = nil                              // zero value
 }
 
 func Apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg *connectioning.UpdateConnectionAffiliateAccountArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -261,6 +282,7 @@ func apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Conn
 	out.EtopAffiliateAccount = arg.EtopAffiliateAccount // simple assign
 	out.Code = out.Code                                 // no change
 	out.ImageURL = out.ImageURL                         // no change
+	out.Services = out.Services                         // no change
 }
 
 func Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *connectioning.UpdateConnectionArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -291,6 +313,65 @@ func apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *conn
 	out.EtopAffiliateAccount = out.EtopAffiliateAccount // no change
 	out.Code = out.Code                                 // no change
 	out.ImageURL = arg.ImageURL                         // simple assign
+	out.Services = out.Services                         // no change
+}
+
+//-- convert etop.vn/api/main/connectioning.ConnectionService --//
+
+func Convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(arg *connectioningmodel.ConnectionService, out *connectioning.ConnectionService) *connectioning.ConnectionService {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioning.ConnectionService{}
+	}
+	convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(arg, out)
+	return out
+}
+
+func convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(arg *connectioningmodel.ConnectionService, out *connectioning.ConnectionService) {
+	out.ServiceID = arg.ServiceID // simple assign
+	out.Name = arg.Name           // simple assign
+}
+
+func Convert_connectioningmodel_ConnectionServices_connectioning_ConnectionServices(args []*connectioningmodel.ConnectionService) (outs []*connectioning.ConnectionService) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]connectioning.ConnectionService, len(args))
+	outs = make([]*connectioning.ConnectionService, len(args))
+	for i := range tmps {
+		outs[i] = Convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_connectioning_ConnectionService_connectioningmodel_ConnectionService(arg *connectioning.ConnectionService, out *connectioningmodel.ConnectionService) *connectioningmodel.ConnectionService {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioningmodel.ConnectionService{}
+	}
+	convert_connectioning_ConnectionService_connectioningmodel_ConnectionService(arg, out)
+	return out
+}
+
+func convert_connectioning_ConnectionService_connectioningmodel_ConnectionService(arg *connectioning.ConnectionService, out *connectioningmodel.ConnectionService) {
+	out.ServiceID = arg.ServiceID // simple assign
+	out.Name = arg.Name           // simple assign
+}
+
+func Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServices(args []*connectioning.ConnectionService) (outs []*connectioningmodel.ConnectionService) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]connectioningmodel.ConnectionService, len(args))
+	outs = make([]*connectioningmodel.ConnectionService, len(args))
+	for i := range tmps {
+		outs[i] = Convert_connectioning_ConnectionService_connectioningmodel_ConnectionService(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert etop.vn/api/main/connectioning.EtopAffiliateAccount --//

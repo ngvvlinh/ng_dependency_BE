@@ -6,16 +6,66 @@ package location
 
 import (
 	context "context"
+	time "time"
 
+	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
+type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewQueryBus(bus capi.Bus) QueryBus { return QueryBus{bus} }
+func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
 
+func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
+}
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
+}
+
+type CreateCustomRegionCommand struct {
+	Name          string
+	Description   string
+	ProvinceCodes []string
+
+	Result *CustomRegion `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateCustomRegion(ctx context.Context, msg *CreateCustomRegionCommand) (err error) {
+	msg.Result, err = h.inner.CreateCustomRegion(msg.GetArgs(ctx))
+	return err
+}
+
+type DeleteCustomRegionCommand struct {
+	ID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteCustomRegion(ctx context.Context, msg *DeleteCustomRegionCommand) (err error) {
+	return h.inner.DeleteCustomRegion(msg.GetArgs(ctx))
+}
+
+type UpdateCustomRegionCommand struct {
+	ID            dot.ID
+	Name          string
+	ProvinceCodes []string
+	Description   string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     time.Time
+	WLPartnerID   dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateCustomRegion(ctx context.Context, msg *UpdateCustomRegionCommand) (err error) {
+	return h.inner.UpdateCustomRegion(msg.GetArgs(ctx))
 }
 
 type FindLocationQuery struct {
@@ -60,6 +110,28 @@ func (h QueryServiceHandler) HandleGetAllLocations(ctx context.Context, msg *Get
 	return err
 }
 
+type GetCustomRegionQuery struct {
+	ID dot.ID
+
+	Result *CustomRegion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomRegion(ctx context.Context, msg *GetCustomRegionQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomRegion(msg.GetArgs(ctx))
+	return err
+}
+
+type GetCustomRegionByProvinceCodeQuery struct {
+	ProvinceCode string
+
+	Result *CustomRegion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomRegionByProvinceCode(ctx context.Context, msg *GetCustomRegionByProvinceCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomRegionByProvinceCode(msg.GetArgs(ctx))
+	return err
+}
+
 type GetLocationQuery struct {
 	ProvinceCode     string
 	DistrictCode     string
@@ -74,14 +146,75 @@ func (h QueryServiceHandler) HandleGetLocation(ctx context.Context, msg *GetLoca
 	return err
 }
 
+type ListCustomRegionsQuery struct {
+	Result []*CustomRegion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomRegions(ctx context.Context, msg *ListCustomRegionsQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomRegions(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
-func (q *FindLocationQuery) query()      {}
-func (q *FindOrGetLocationQuery) query() {}
-func (q *GetAllLocationsQuery) query()   {}
-func (q *GetLocationQuery) query()       {}
+func (q *CreateCustomRegionCommand) command() {}
+func (q *DeleteCustomRegionCommand) command() {}
+func (q *UpdateCustomRegionCommand) command() {}
+
+func (q *FindLocationQuery) query()                  {}
+func (q *FindOrGetLocationQuery) query()             {}
+func (q *GetAllLocationsQuery) query()               {}
+func (q *GetCustomRegionQuery) query()               {}
+func (q *GetCustomRegionByProvinceCodeQuery) query() {}
+func (q *GetLocationQuery) query()                   {}
+func (q *ListCustomRegionsQuery) query()             {}
 
 // implement conversion
+
+func (q *CreateCustomRegionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomRegionArgs) {
+	return ctx,
+		&CreateCustomRegionArgs{
+			Name:          q.Name,
+			Description:   q.Description,
+			ProvinceCodes: q.ProvinceCodes,
+		}
+}
+
+func (q *CreateCustomRegionCommand) SetCreateCustomRegionArgs(args *CreateCustomRegionArgs) {
+	q.Name = args.Name
+	q.Description = args.Description
+	q.ProvinceCodes = args.ProvinceCodes
+}
+
+func (q *DeleteCustomRegionCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
+}
+
+func (q *UpdateCustomRegionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CustomRegion) {
+	return ctx,
+		&CustomRegion{
+			ID:            q.ID,
+			Name:          q.Name,
+			ProvinceCodes: q.ProvinceCodes,
+			Description:   q.Description,
+			CreatedAt:     q.CreatedAt,
+			UpdatedAt:     q.UpdatedAt,
+			DeletedAt:     q.DeletedAt,
+			WLPartnerID:   q.WLPartnerID,
+		}
+}
+
+func (q *UpdateCustomRegionCommand) SetCustomRegion(args *CustomRegion) {
+	q.ID = args.ID
+	q.Name = args.Name
+	q.ProvinceCodes = args.ProvinceCodes
+	q.Description = args.Description
+	q.CreatedAt = args.CreatedAt
+	q.UpdatedAt = args.UpdatedAt
+	q.DeletedAt = args.DeletedAt
+	q.WLPartnerID = args.WLPartnerID
+}
 
 func (q *FindLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *FindLocationQueryArgs) {
 	return ctx,
@@ -134,6 +267,16 @@ func (q *GetAllLocationsQuery) SetGetAllLocationsQueryArgs(args *GetAllLocations
 	q.DistrictCode = args.DistrictCode
 }
 
+func (q *GetCustomRegionQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
+}
+
+func (q *GetCustomRegionByProvinceCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ProvinceCode string) {
+	return ctx,
+		q.ProvinceCode
+}
+
 func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetLocationQueryArgs) {
 	return ctx,
 		&GetLocationQueryArgs{
@@ -151,7 +294,31 @@ func (q *GetLocationQuery) SetGetLocationQueryArgs(args *GetLocationQueryArgs) {
 	q.LocationCodeType = args.LocationCodeType
 }
 
+func (q *ListCustomRegionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
+	return ctx,
+		&meta.Empty{}
+}
+
+func (q *ListCustomRegionsQuery) SetEmpty(args *meta.Empty) {
+}
+
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	capi.Bus
+	AddHandler(handler interface{})
+}) CommandBus {
+	b.AddHandler(h.HandleCreateCustomRegion)
+	b.AddHandler(h.HandleDeleteCustomRegion)
+	b.AddHandler(h.HandleUpdateCustomRegion)
+	return CommandBus{b}
+}
 
 type QueryServiceHandler struct {
 	inner QueryService
@@ -168,6 +335,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleFindLocation)
 	b.AddHandler(h.HandleFindOrGetLocation)
 	b.AddHandler(h.HandleGetAllLocations)
+	b.AddHandler(h.HandleGetCustomRegion)
+	b.AddHandler(h.HandleGetCustomRegionByProvinceCode)
 	b.AddHandler(h.HandleGetLocation)
+	b.AddHandler(h.HandleListCustomRegions)
 	return QueryBus{b}
 }

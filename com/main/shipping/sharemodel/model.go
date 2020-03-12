@@ -81,6 +81,17 @@ func GetReturnedFee(items []*ShippingFeeLine) int {
 	return result
 }
 
+func GetMainFee(items []*ShippingFeeLine) int {
+	result := 0
+	for _, item := range items {
+		if item.ShippingFeeType == shipping_fee_type.Main {
+			result = item.Cost
+			break
+		}
+	}
+	return result
+}
+
 func GetTotalShippingFee(items []*ShippingFeeLine) int {
 	result := 0
 	for _, item := range items {
