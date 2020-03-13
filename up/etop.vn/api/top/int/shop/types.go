@@ -377,6 +377,7 @@ type ShopVariant struct {
 
 	Attributes []*catalogtypes.Attribute `json:"attributes"`
 	Product    *ShopShortProduct         `json:"product"`
+	ProductId  dot.ID                    `json:"product_id"`
 }
 
 func (m *ShopVariant) String() string { return jsonx.MustMarshalToString(m) }

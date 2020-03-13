@@ -555,6 +555,7 @@ func (s *ProductService) GetProduct(ctx context.Context, q *GetProductEndpoint) 
 	if err != nil {
 		return err
 	}
+	applyProductInfoForVariants([]*shop.ShopProduct{productPb})
 	q.Result = productPb
 	return nil
 }
@@ -593,6 +594,9 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 	if err != nil {
 		return err
 	}
+
+	applyProductInfoForVariants(products)
+
 	q.Result = &shop.ShopProductsResponse{
 		Paging: cmapi.PbPaging(cm.Paging{
 			Limit: query.Result.Paging.Limit,
@@ -601,6 +605,20 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 		Products: products,
 	}
 	return nil
+}
+
+func applyProductInfoForVariants(products []*shop.ShopProduct) {
+	for _, product := range products {
+		productID := product.Id
+		productName := product.Name
+		for _, variant := range product.Variants {
+			variant.ProductId = productID
+			variant.Product = &shop.ShopShortProduct{
+				Id:   productID,
+				Name: productName,
+			}
+		}
+	}
 }
 
 func (s *ProductService) CreateProduct(ctx context.Context, q *CreateProductEndpoint) error {
@@ -731,6 +749,29 @@ func (s *ProductService) UpdateProductsTags(ctx context.Context, q *UpdateProduc
 	return nil
 }
 
+func applyVariantInfos(ctx context.Context, shopID dot.ID, variants []*shop.ShopVariant) error {
+	shopIDs := make([]dot.ID, 0, len(variants))
+	query := &catalog.ListShopProductsByIDsQuery{
+		IDs:    shopIDs,
+		ShopID: shopID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	mapShopProduct := make(map[dot.ID]*catalog.ShopProduct)
+	for _, product := range query.Result.Products {
+		mapShopProduct[product.ProductID] = product
+	}
+
+	for _, variant := range variants {
+		variant.Product = &shop.ShopShortProduct{
+			Id:   variant.ProductId,
+			Name: mapShopProduct[variant.ProductId].Name,
+		}
+	}
+	return nil
+}
+
 func (s *ProductService) GetVariant(ctx context.Context, q *GetVariantEndpoint) error {
 	query := &catalog.GetShopVariantQuery{
 		Code:      q.Code,
@@ -740,8 +781,11 @@ func (s *ProductService) GetVariant(ctx context.Context, q *GetVariantEndpoint) 
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-
-	q.Result = PbShopVariant(query.Result)
+	shopVariantPb := PbShopVariant(query.Result)
+	if err := applyVariantInfos(ctx, q.Context.Shop.ID, []*shop.ShopVariant{shopVariantPb}); err != nil {
+		return err
+	}
+	q.Result = shopVariantPb
 
 	return nil
 }
@@ -1886,6 +1930,11 @@ func (s *ProductService) GetVariantsBySupplierID(ctx context.Context, q *GetVari
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shop.ShopVariantsResponse{Variants: PbShopVariants(query.Result.Variants)}
+
+	shopVariantsPb := PbShopVariants(query.Result.Variants)
+	if err := applyVariantInfos(ctx, q.Context.Shop.ID, shopVariantsPb); err != nil {
+		return err
+	}
+	q.Result = &shop.ShopVariantsResponse{Variants: shopVariantsPb}
 	return nil
 }

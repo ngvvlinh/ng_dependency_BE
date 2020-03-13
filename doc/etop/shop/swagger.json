@@ -10178,6 +10178,10 @@
         "product": {
           "$ref": "#/definitions/paShopShortProduct"
         },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "quantity": {
           "type": "integer"
         },

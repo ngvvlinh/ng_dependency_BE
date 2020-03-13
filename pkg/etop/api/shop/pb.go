@@ -342,6 +342,7 @@ func PbShopVariant(m *catalog.ShopVariant) *shop.ShopVariant {
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  m.Attributes,
+		ProductId:   m.ProductID,
 	}
 	return res
 }
@@ -424,6 +425,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *shop.ShopVaria
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt(m.RetailPrice, m.ListPrice),
 		Attributes:  m.Attributes,
+		ProductId:   m.ShopProduct.ProductID,
 	}
 	if m.ShopProduct != nil {
 		res.Product = &shop.ShopShortProduct{
