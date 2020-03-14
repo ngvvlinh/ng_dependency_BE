@@ -3,10 +3,14 @@ package partner
 import "etop.vn/capi/dot"
 
 type AuthMode string
+type AuthType string
 
 const (
 	AuthModeDefault AuthMode = "default"
 	AuthModeManual  AuthMode = "manual"
+
+	AuthTypeUserKey AuthType = "user_key"
+	AuthTypeShopKey AuthType = "shop_key"
 )
 
 type PartnerShopToken struct {
@@ -26,6 +30,7 @@ type PartnerShopToken struct {
 	ExtraToken     string `json:"extra_token"`
 
 	AuthMode AuthMode `json:"auth_mode"`
+	AuthType AuthType `json:"auth_key"`
 
 	// if this is set, client must send the same email/phone to request_login
 	RetainCurrentInfo bool   `json:"retain,omitempty"`

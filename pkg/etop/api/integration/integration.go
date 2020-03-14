@@ -137,6 +137,29 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 	if err != nil {
 		return err
 	}
+
+	if requestInfo.AuthType == apipartner.AuthTypeUserKey {
+		// Trường hợp đã xác định cần trả về user_key
+		// Các trường hợp:
+		// - Invitation
+		// - Auth with external_user_id (trường hợp đăng nhập vào account do invitation
+		relationQuery := &identitymodelx.GetPartnerRelationQuery{
+			PartnerID:      partner.ID,
+			ExternalUserID: requestInfo.ExternalUserID,
+		}
+		err := bus.Dispatch(ctx, relationQuery)
+		if cm.ErrorCode(err) == cm.OK {
+			// User đã có sẵn tài khoản
+			user := relationQuery.Result.User
+			if user.Status != status3.P {
+				return cm.Errorf(cm.AccountClosed, nil, "")
+			}
+			resp, err := s.generateNewSession(ctx, user, partner, nil, requestInfo)
+			q.Result = resp
+			return err
+		}
+	}
+
 	if requestInfo.ShopID == 0 {
 		resp, err := s.actionRequestLogin(ctx, partner, requestInfo)
 		q.Result = resp

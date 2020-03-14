@@ -1921,6 +1921,12 @@
         "expires_in": {
           "type": "integer"
         },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "msg": {
           "type": "string"
         },

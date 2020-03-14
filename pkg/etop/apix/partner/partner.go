@@ -234,6 +234,18 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 	if q.ShopId != 0 && q.ExternalShopID != "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Chỉ cần cung cấp shop_id hoặc external_shop_id")
 	}
+
+	if q.ExternalUserID != "" {
+		if !wl.X(ctx).IsWhiteLabel() || whiteLabelData == nil {
+			// only whitelabel partner can provide this field,
+			// we fake the error message here
+			return cm.Errorf(cm.InvalidArgument, nil, "external_user_id is removed")
+		}
+		if q.ExtraToken != "" || q.ExternalShopID == "" {
+			return handleWLAuthorizeShopByExternalUserID(ctx, q)
+		}
+	}
+
 	if q.ShopId != 0 || q.ExternalShopID != "" {
 		if q.ShopId != 0 && (q.Email != "" || q.Phone != "") {
 			return cm.Errorf(cm.InvalidArgument, nil, "Nếu cung cấp shop_id thì không cần kèm theo email hoặc phone. Nếu cung cấp email hoặc phone thì không cần kèm theo shop_id.")
@@ -250,6 +262,19 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			rel := relationQuery.Result.PartnerRelation
 			shop := relationQuery.Result.Shop
 			user := relationQuery.Result.User
+			if q.ExternalUserID != "" {
+				relationUserQuery := &identitymodelx.GetPartnerRelationQuery{
+					PartnerID:      partner.ID,
+					ExternalUserID: q.ExternalUserID,
+				}
+				if err2 := bus.Dispatch(ctx, relationUserQuery); err2 == nil {
+					userID := relationUserQuery.Result.SubjectID
+					if userID != 0 && userID != user.ID {
+						return cm.Errorf(cm.FailedPrecondition, nil, "external_shop_id (id=%v) does not belong to external_user_id (id=%v).", q.ExternalShopID, q.ExternalUserID)
+					}
+				}
+			}
+
 			info := PartnerShopToken{
 				PartnerID:      partner.ID,
 				ShopID:         shop.ID,
@@ -265,6 +290,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 				RetainCurrentInfo: true,
 				Config:            getAuthorizeShopConfig(q.Config),
 				RedirectURL:       q.RedirectUrl,
+				AuthType:          AuthTypeShopKey,
 			}
 			if whiteLabelData != nil {
 				// Trường hợp whiteLabel
@@ -324,74 +350,87 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoin
 			WithMeta("reason", "unexpected condition")
 	}
 
-	if q.ExternalUserID != "" {
-		if !wl.X(ctx).IsWhiteLabel() {
-			// only whitelabel partner can provide this field,
-			// we fake the error message here
-			return cm.Errorf(cm.InvalidArgument, nil, "external_user_id is removed")
-		}
-
-		// try retrieving the partner relation
-		relationQuery := &identitymodelx.GetPartnerRelationQuery{
-			PartnerID:      partner.ID,
-			ExternalUserID: q.ExternalUserID,
-		}
-		err := bus.Dispatch(ctx, relationQuery)
-		switch cm.ErrorCode(err) {
-		case cm.NoError:
-			// generate user_key and redirect to whiteLabelData.Config.RootURL
-			rel := relationQuery.Result.PartnerRelation
-			user := relationQuery.Result.User
-			info := PartnerShopToken{
-				PartnerID:      partner.ID,
-				ShopOwnerEmail: user.Email,
-				ShopOwnerPhone: user.Phone,
-				ShopOwnerName:  user.FullName,
-				ExternalUserID: q.ExternalUserID,
-				ExtraToken:     q.ExtraToken,
-				// client must keep the current email/phone when calling
-				// request_login
-				RetainCurrentInfo: true,
-				Config:            getAuthorizeShopConfig(q.Config),
-				RedirectURL:       q.RedirectUrl,
-			}
-			if whiteLabelData != nil {
-				// Trường hợp whiteLabel
-				// Đã có sẵn tài khoản sẽ redirect về trang whiteLabel
-				if strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
-					info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserByEmailURL, q.ExtraToken)
-				} else {
-					info.RedirectURL = whiteLabelData.Config.RootURL
-				}
-			}
-			token, err := generateAuthToken(info)
-			if err != nil {
-				return err
-			}
-
-			if rel.Status == status3.P && rel.DeletedAt.IsZero() &&
-				user.Status == status3.P {
-				// TODO: handle config: "shipment"
-				q.Result = &extpartner.AuthorizeShopResponse{
-					Code:      "ok",
-					Msg:       msgUserKey,
-					Type:      "user_key",
-					AuthToken: rel.AuthKey,
-					ExpiresIn: -1,
-					AuthUrl:   generateAuthURL(whiteLabelData, authURL, token.TokenStr),
-				}
-				return nil
-			}
-
-		case cm.NotFound:
-			// continue to case 2 (the user/shop has not linked to the partner)
-		default:
-			return err
-		}
-	}
-
 	// case 2: if the user/shop has not linked to the partner
 	return generateAuthTokenWithRequestLogin(ctx, q, 0)
+}
+
+func handleWLAuthorizeShopByExternalUserID(ctx context.Context, q *AuthorizeShopEndpoint) error {
+	if !wl.X(ctx).IsWhiteLabel() {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Only whitelabel partner can use this function")
+	}
+
+	wlPartner := wl.X(ctx)
+	redirectURL := ""
+	switch {
+	case q.ExternalUserID != "" && q.ExtraToken != "":
+		// TH invitation
+		// check if invitation
+		if err := checkExtraTokenInvitation(q.ExtraToken); err != nil {
+			return err
+		}
+		redirectURL = fmt.Sprintf("%v?t=%v", wlPartner.InviteUserByEmailURL, q.ExtraToken)
+	case q.ExternalUserID != "" && q.ExternalShopID == "":
+		// TH login bằng external_user_id
+		redirectURL = wlPartner.Config.RootURL
+	default:
+		return cm.Errorf(cm.Internal, nil, "").WithMeta("reason", "unexpected condition")
+	}
+
+	// try retrieving the partner relation
+	relationQuery := &identitymodelx.GetPartnerRelationQuery{
+		PartnerID:      wlPartner.ID,
+		ExternalUserID: q.ExternalUserID,
+	}
+	err := bus.Dispatch(ctx, relationQuery)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		// generate user_key and redirect to whiteLabelData.Config.RootURL
+		rel := relationQuery.Result.PartnerRelation
+		user := relationQuery.Result.User
+		info := PartnerShopToken{
+			PartnerID:      wlPartner.ID,
+			ShopOwnerEmail: user.Email,
+			ShopOwnerPhone: user.Phone,
+			ShopOwnerName:  user.FullName,
+			ExternalUserID: q.ExternalUserID,
+			ExtraToken:     q.ExtraToken,
+			// client must keep the current email/phone when calling
+			// request_login
+			RetainCurrentInfo: true,
+			Config:            getAuthorizeShopConfig(q.Config),
+			RedirectURL:       redirectURL,
+			AuthType:          AuthTypeUserKey,
+		}
+		token, err := generateAuthToken(info)
+		if err != nil {
+			return err
+		}
+
+		if user.Status != status3.P {
+			return cm.Errorf(cm.AccountClosed, nil, "")
+		}
+		// TODO: handle config: "shipment"
+		q.Result = &extpartner.AuthorizeShopResponse{
+			Code:      "ok",
+			Msg:       msgUserKey,
+			Type:      "user_key",
+			AuthToken: rel.AuthKey,
+			ExpiresIn: -1,
+			AuthUrl:   generateAuthURL(wlPartner, authURL, token.TokenStr),
+		}
+		return nil
+
+	case cm.NotFound:
+		// chỉ cho phép pass bước này trong trường hợp invitation
+		if _err := checkExtraTokenInvitation(q.ExtraToken); _err != nil {
+			return cm.Errorf(cm.InvalidArgument, err, "Request không hợp lệ.")
+		}
+
+		// continue to case 2 (the user/shop has not linked to the partner)
+		return generateAuthTokenWithRequestLogin(ctx, q, 0)
+	default:
+		return err
+	}
 }
 
 func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndpoint, shopID dot.ID) error {
@@ -421,9 +460,9 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		info.ShopID = shopID
 		info.RetainCurrentInfo = true
 	}
-	if whiteLabelData != nil && q.ExternalShopID == "" && q.ExternalUserID != "" {
-		if !strings.HasPrefix(q.ExtraToken, auth.UsageInviteUser+":") {
-			return cm.Errorf(cm.InvalidArgument, nil, "extra_token does not valid")
+	if whiteLabelData != nil && q.ExternalUserID != "" && q.ExtraToken != "" {
+		if err := checkExtraTokenInvitation(q.ExtraToken); err != nil {
+			return err
 		}
 		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserByEmailURL, q.ExtraToken)
 	}
@@ -439,6 +478,9 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		Type:      "shop_request",
 		AuthToken: token.TokenStr,
 		ExpiresIn: token.ExpiresIn,
+		Meta: map[string]string{
+			"recaptcha_token": "1",
+		},
 	}
 	if q.RedirectUrl != "" {
 		q.Result.AuthUrl = generateAuthURL(whiteLabelData, authURL, q.Result.AuthToken)
@@ -544,4 +586,11 @@ func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (wlPartne
 		return nil, err
 	}
 	return wlPartner, nil
+}
+
+func checkExtraTokenInvitation(extraToken string) error {
+	if strings.HasPrefix(extraToken, auth.UsageInviteUser+":") {
+		return nil
+	}
+	return cm.Errorf(cm.InvalidArgument, nil, "extra_token does not valid")
 }

@@ -27,12 +27,13 @@ type AuthorizeShopRequest struct {
 func (m *AuthorizeShopRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AuthorizeShopResponse struct {
-	Code      string `json:"code"`
-	Msg       string `json:"msg"`
-	Type      string `json:"type"`
-	AuthToken string `json:"auth_token"`
-	ExpiresIn int    `json:"expires_in"`
-	AuthUrl   string `json:"auth_url"`
+	Code      string            `json:"code"`
+	Msg       string            `json:"msg"`
+	Type      string            `json:"type"`
+	AuthToken string            `json:"auth_token"`
+	ExpiresIn int               `json:"expires_in"`
+	AuthUrl   string            `json:"auth_url"`
+	Meta      map[string]string `json:"meta"`
 }
 
 func (m *AuthorizeShopResponse) String() string { return jsonx.MustMarshalToString(m) }

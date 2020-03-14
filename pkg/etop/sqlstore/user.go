@@ -224,8 +224,8 @@ func NormalizeFullName(fullName, shortName string) (string, string, error) {
 const (
 	UserEmailKey            = "user_email_key"
 	UserPhoneKey            = "user_phone_key"
-	UserEmailWLPartnerIDKey = "user_phone_wl_partner_id_idx"
-	UserPhoneWLPartnerIDKey = "user_email_wl_partner_id_idx"
+	UserPhoneWLPartnerIDKey = "user_phone_wl_partner_id_idx"
+	UserEmailWLPartnerIDKey = "user_email_wl_partner_id_idx"
 
 	MsgCreateUserDuplicatedPhone = `Số điện thoại đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`
 	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`

@@ -54,22 +54,52 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			_ = authStore.SetTTL(tok, 5*60)
 		}
 	}()
-	userQuery := &identitymodelx.GetUserByLoginQuery{
-		PhoneOrEmail: r.Login,
+
+	actionUser := ""
+	var user *identitymodel.User
+	if requestInfo.ExternalUserID != "" {
+		relationUserQuery := &identitymodelx.GetPartnerRelationQuery{
+			PartnerID:      partner.ID,
+			ExternalUserID: requestInfo.ExternalUserID,
+		}
+		err = bus.Dispatch(ctx, relationUserQuery)
+		switch cm.ErrorCode(err) {
+		case cm.OK:
+			actionUser = "ok"
+			user = relationUserQuery.Result.User
+		case cm.NotFound:
+			actionUser = "create"
+		default:
+			return err
+		}
+	} else {
+		userQuery := &identitymodelx.GetUserByLoginQuery{
+			PhoneOrEmail: r.Login,
+		}
+		err = bus.Dispatch(ctx, userQuery)
+		switch cm.ErrorCode(err) {
+		case cm.OK:
+			actionUser = "ok"
+			user = userQuery.Result.User
+		case cm.NotFound:
+			actionUser = "create"
+		default:
+			return err
+		}
 	}
-	err = bus.Dispatch(ctx, userQuery)
-	switch cm.ErrorCode(err) {
-	case cm.OK:
-		// continue
-	case cm.NotFound:
+
+	switch actionUser {
+	case "ok":
+	// continue
+	case "create":
 		// --- register user ---
 		// trust thông tin từ đối tác gửi qua
 		// xem như email, phone đều đã xác thực
-		user, err := s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, true, true)
+		newUser, err := s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, true, true)
 		if err != nil {
 			return err
 		}
-		userQuery.Result.User = user
+		user = newUser
 		if requestInfo.ExternalUserID != "" {
 			// create partner relation with user
 			relationCmd := &identitymodelx.CreatePartnerRelationCommand{
@@ -81,10 +111,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 				return err
 			}
 		}
-	default:
-		return err
 	}
-	user := userQuery.Result.User
 
 	userTokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
@@ -110,7 +137,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản: &v)", requestInfo.ShopID).WithMeta("reason", "shop_id not found")
 	}
 
-	if requestInfo.ExternalShopID == "" {
+	if requestInfo.ExternalUserID != "" && isExtraTokenInvitation(requestInfo.ExtraToken) {
 		// Trường hợp invite user đối tác whitelabel
 		// Đối tác chỉ cung cấp ExternalUserID và ExtraToken
 		resp, err := s.generateNewSession(ctx, user, partner, nil, requestInfo)
@@ -175,4 +202,11 @@ func (s *IntegrationService) validateWhiteLabel(ctx context.Context) (*whitelabe
 		return nil, cm.Errorf(cm.NotFound, nil, "Không tìm thấy thông tin whitelabel của partner")
 	}
 	return wlPartner, nil
+}
+
+func isExtraTokenInvitation(extraToken string) bool {
+	if strings.HasPrefix(extraToken, auth.UsageInviteUser+":") {
+		return true
+	}
+	return false
 }
