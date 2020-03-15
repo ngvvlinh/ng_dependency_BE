@@ -44,6 +44,30 @@ func (a *Aggregate) MessageBus() identity.CommandBus {
 	return identity.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
+func (a *Aggregate) UpdateUserEmail(ctx context.Context, userID dot.ID, email string) error {
+	if email == "" || userID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	res, ok := validate.NormalizeEmail(email)
+	if !ok {
+		return cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+	}
+	_, err := a.userStore(ctx).ByID(userID).UpdateUserEmail(res.String())
+	return err
+}
+
+func (a *Aggregate) UpdateUserPhone(ctx context.Context, userID dot.ID, phone string) error {
+	if phone == "" || userID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	res, isPhone := validate.NormalizePhone(phone)
+	if !isPhone {
+		return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+	_, err := a.userStore(ctx).ByID(userID).UpdateUserPhone(res.String())
+	return err
+}
+
 func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *identity.CreateExternalAccountAhamoveArgs) (_result *identity.ExternalAccountAhamove, _err error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()

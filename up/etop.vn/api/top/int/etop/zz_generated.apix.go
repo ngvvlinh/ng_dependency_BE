@@ -595,6 +595,18 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 			return s.inner.UpdateReferenceUser(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/etop.User/UpdateUserEmail":
+		msg := &UpdateUserEmailRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateUserEmail(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.User/UpdateUserPhone":
+		msg := &UpdateUserPhoneRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateUserPhone(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/etop.User/UpgradeAccessToken":
 		msg := &UpgradeAccessTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

@@ -45,6 +45,10 @@ type UserService interface {
 
 	UpgradeAccessToken(context.Context, *UpgradeAccessTokenRequest) (*AccessTokenResponse, error)
 
+	UpdateUserEmail(context.Context, *UpdateUserEmailRequest) (*UpdateUserEmailResponse, error)
+
+	UpdateUserPhone(context.Context, *UpdateUserPhoneRequest) (*UpdateUserPhoneResponse, error)
+
 	// ResetPassword
 	//
 	// Send email or sms to allow the user reset their password.

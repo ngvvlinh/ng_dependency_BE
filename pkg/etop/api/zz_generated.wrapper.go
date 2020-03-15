@@ -1896,6 +1896,94 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	return resp, nil
 }
 
+type UpdateUserEmailEndpoint struct {
+	*api.UpdateUserEmailRequest
+	Result  *api.UpdateUserEmailResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserService) UpdateUserEmail(ctx context.Context, req *api.UpdateUserEmailRequest) (resp *api.UpdateUserEmailResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/UpdateUserEmail"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateUserEmailEndpoint{UpdateUserEmailRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateUserEmail(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateUserPhoneEndpoint struct {
+	*api.UpdateUserPhoneRequest
+	Result  *api.UpdateUserPhoneResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserService) UpdateUserPhone(ctx context.Context, req *api.UpdateUserPhoneRequest) (resp *api.UpdateUserPhoneResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/UpdateUserPhone"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateUserPhoneEndpoint{UpdateUserPhoneRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateUserPhone(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpgradeAccessTokenEndpoint struct {
 	*api.UpgradeAccessTokenRequest
 	Result  *api.AccessTokenResponse

@@ -16,6 +16,10 @@ type Aggregate interface {
 
 	UpdateUserReferenceSaleID(context.Context, *UpdateUserReferenceSaleIDArgs) error
 
+	UpdateUserEmail(ctx context.Context, userID dot.ID, email string) error
+
+	UpdateUserPhone(ctx context.Context, userID dot.ID, phone string) error
+
 	// -- External Account Ahamove -- //
 	// TODO: move External Account Ahamove to its own module
 	CreateExternalAccountAhamove(context.Context, *CreateExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)

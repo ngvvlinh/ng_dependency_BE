@@ -482,6 +482,7 @@ func main() {
 		authStore,
 		cfg.Email,
 		cfg.SMS,
+		bot,
 	)
 	shop.Init(
 		locationBus,
@@ -607,6 +608,7 @@ func main() {
 	} else {
 		ll.Warn("Disabled sending email")
 	}
+
 	if cfg.SMS.Enabled {
 		smsBot := cfg.TelegramBot.MustConnectChannel(config.ChannelSMS)
 

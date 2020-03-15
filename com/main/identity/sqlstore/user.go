@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
@@ -56,6 +57,22 @@ func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) 
 	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
 	err := query.ShouldGet(&user)
 	return &user, err
+}
+
+func (s *UserStore) UpdateUserEmail(email string) (int, error) {
+	return s.query().Where(s.preds).Table("user").UpdateMap(
+		map[string]interface{}{
+			"email":             email,
+			"email_verified_at": time.Now(),
+		})
+}
+
+func (s *UserStore) UpdateUserPhone(phone string) (int, error) {
+	return s.query().Where(s.preds).Table("user").UpdateMap(
+		map[string]interface{}{
+			"phone":             phone,
+			"phone_verified_at": time.Now(),
+		})
 }
 
 func (s *UserStore) GetUser(ctx context.Context) (*identity.User, error) {

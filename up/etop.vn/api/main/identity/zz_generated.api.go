@@ -127,6 +127,30 @@ func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx con
 	return err
 }
 
+type UpdateUserEmailCommand struct {
+	UserID dot.ID
+	Email  string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateUserEmail(ctx context.Context, msg *UpdateUserEmailCommand) (err error) {
+	return h.inner.UpdateUserEmail(msg.GetArgs(ctx))
+}
+
+type UpdateUserPhoneCommand struct {
+	UserID dot.ID
+	Phone  string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateUserPhone(ctx context.Context, msg *UpdateUserPhoneCommand) (err error) {
+	return h.inner.UpdateUserPhone(msg.GetArgs(ctx))
+}
+
 type UpdateUserReferenceSaleIDCommand struct {
 	UserID       dot.ID
 	RefSalePhone string
@@ -327,6 +351,8 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) command()      {}
 func (q *UpdateAffiliateBankAccountCommand) command()               {}
 func (q *UpdateAffiliateInfoCommand) command()                      {}
 func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
+func (q *UpdateUserEmailCommand) command()                          {}
+func (q *UpdateUserPhoneCommand) command()                          {}
 func (q *UpdateUserReferenceSaleIDCommand) command()                {}
 func (q *UpdateUserReferenceUserIDCommand) command()                {}
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
@@ -471,6 +497,18 @@ func (q *UpdateExternalAccountAhamoveVerificationCommand) SetUpdateExternalAccou
 	q.FanpageURL = args.FanpageURL
 	q.CompanyImgs = args.CompanyImgs
 	q.BusinessLicenseImgs = args.BusinessLicenseImgs
+}
+
+func (q *UpdateUserEmailCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, email string) {
+	return ctx,
+		q.UserID,
+		q.Email
+}
+
+func (q *UpdateUserPhoneCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, phone string) {
+	return ctx,
+		q.UserID,
+		q.Phone
 }
 
 func (q *UpdateUserReferenceSaleIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserReferenceSaleIDArgs) {
@@ -657,6 +695,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
+	b.AddHandler(h.HandleUpdateUserEmail)
+	b.AddHandler(h.HandleUpdateUserPhone)
 	b.AddHandler(h.HandleUpdateUserReferenceSaleID)
 	b.AddHandler(h.HandleUpdateUserReferenceUserID)
 	b.AddHandler(h.HandleUpdateVerifiedExternalAccountAhamove)

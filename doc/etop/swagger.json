@@ -1104,6 +1104,60 @@
         }
       }
     },
+    "/api/etop.User/UpdateUserEmail": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "UpdateUserEmail",
+        "operationId": "etop.User-UpdateUserEmail",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baUpdateUserEmailRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUpdateUserEmailResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/UpdateUserPhone": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "UpdateUserPhone",
+        "operationId": "etop.User-UpdateUserPhone",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baUpdateUserPhoneRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUpdateUserPhoneResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/UpgradeAccessToken": {
       "post": {
         "tags": [
@@ -2829,6 +2883,56 @@
         }
       }
     },
+    "baUpdateUserEmailRequest": {
+      "type": "object",
+      "properties": {
+        "authentication_method": {
+          "$ref": "#/definitions/jiAuthenticationMethod"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_code": {
+          "type": "string"
+        },
+        "second_code": {
+          "type": "string"
+        }
+      }
+    },
+    "baUpdateUserEmailResponse": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "baUpdateUserPhoneRequest": {
+      "type": "object",
+      "properties": {
+        "authentication_method": {
+          "$ref": "#/definitions/jiAuthenticationMethod"
+        },
+        "first_code": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "second_code": {
+          "type": "string"
+        }
+      }
+    },
+    "baUpdateUserPhoneResponse": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
     "baUpgradeAccessTokenRequest": {
       "type": "object",
       "required": [
@@ -3067,6 +3171,13 @@
         "partner",
         "etop_app_ios",
         "etop_app_android"
+      ]
+    },
+    "jiAuthenticationMethod": {
+      "type": "string",
+      "enum": [
+        "email",
+        "phone"
       ]
     },
     "jjAccountType": {

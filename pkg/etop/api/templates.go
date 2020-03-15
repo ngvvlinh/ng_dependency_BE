@@ -15,6 +15,45 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
+var updateEmailTpl = template.Must(template.New("update-email").Parse(`
+Gửi {{.FullName}},<br><br>
+
+Bạn (hoặc một ai đó) đang muốn thay đổi email của tài khoản <b>{{.Email}}</b>.<br>
+Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục thực hiện thay đổi: (có hiệu lực trong 2 giờ)<br><br>
+
+<div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>
+
+Nếu không phải bạn, hãy bỏ qua email này.<br><br>
+
+Đội ngũ {{.WlName}}
+`))
+
+var updateEmailTplConfirm = template.Must(template.New("update-email").Parse(`
+Gửi {{.FullName}},<br><br>
+
+Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email của tài khoản <b>{{.Email}}</b>.<br>
+Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục thực hiện thay đổi: (có hiệu lực trong 2 giờ)<br><br>
+
+<div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>
+
+Nếu không phải bạn, hãy bỏ qua email này.<br><br>
+
+Đội ngũ {{.WlName}}
+`))
+
+var updatePhoneTpl = template.Must(template.New("update-phone").Parse(`
+Gửi {{.FullName}},<br><br>
+
+Bạn (hoặc một ai đó) đang muốn thay đổi thông tin số điện thoại của tài khoản <b>{{.Email}}</b>.<br>
+Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục thực hiện thay đổi: (có hiệu lực trong 2 giờ)<br><br>
+
+<div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>
+
+Nếu không phải bạn, hãy bỏ qua email này.<br><br>
+
+Đội ngũ {{.WlName}}
+`))
+
 var emailVerificationTpl = template.Must(template.New("email-verification").Parse(`
 Gửi {{.FullName}},<br><br>
 
@@ -55,9 +94,21 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 2 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+
+var smsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+
+var smsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+
+var smsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+
+var smsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+
+var smsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+
+var smsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
 var RequestLoginEmailTpl = template.Must(template.New("request-login-email").Parse(`
 {{.Hello}},<br><br>

@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/top/int/etop"
 	pbcm "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
+	"etop.vn/api/top/types/etc/authentication_method"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/cmd/etop-server/config"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -26,6 +27,7 @@ import (
 	"etop.vn/backend/pkg/common/authorization/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/code/gencode"
+	"etop.vn/backend/pkg/common/extservice/telebot"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -35,11 +37,13 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/logic/usering"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/capi"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
+	"etop.vn/common/timex"
 )
 
 var (
@@ -56,15 +60,23 @@ var (
 	invitationQuery        invitation.QueryBus
 	authorizationQuery     authorization.QueryBus
 	authorizationAggregate authorization.CommandBus
+	redisStore             redis.Store
+	botTelegram            *telebot.Channel
 )
 
 const PrefixIdempUser = "IdempUser"
 
+type SignalUpdate string
+
 const (
-	keyRequestVerifyCode                string = "request_phone_verification_code"
-	keyRequestVerifyPhone               string = "request_phone_verification"
-	keyRequestPhoneVerificationVerified string = "request_phone_verification_verified"
-	keyRequestAuthUsage                 string = "request_auth_usage"
+	keyRequestVerifyCode                string       = "request_phone_verification_code"
+	keyRequestVerifyPhone               string       = "request_phone_verification"
+	keyRequestPhoneVerificationVerified string       = "request_phone_verification_verified"
+	keyRequestAuthUsage                 string       = "request_auth_usage"
+	keyRedisFirstCodeUpdateUser         string       = "update-first-code"
+	keyRedisSecondCodeUpdateUser        string       = "update-second-code"
+	signalUpdateUserEmail               SignalUpdate = "update-email"
+	signalUpdateUserPhone               SignalUpdate = "update-phone"
 )
 
 func init() {
@@ -110,6 +122,7 @@ func Init(
 	s auth.Generator,
 	_cfgEmail EmailConfig,
 	_cfgSMS sms.Config,
+	bot *telebot.Channel,
 ) {
 	eventBus = bus
 	smsAggr = smsCommandBus
@@ -125,12 +138,452 @@ func Init(
 	cfgEmail = _cfgEmail
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempUser, 0)
 	sd.Register(idempgroup.Shutdown)
-
+	redisStore = rd
+	botTelegram = bot
 	if enabledEmail {
 		if _, err := validate.ValidateStruct(cfgEmail); err != nil {
 			ll.Fatal("Can not validate config", l.Error(err))
 		}
 	}
+}
+
+func (s *UserService) UpdateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) error {
+	key := fmt.Sprintf("UpdateUserEmail %v-%v-%v-%v", r.Email, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
+	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
+		func() (interface{}, error) {
+			return s.updateUserEmail(ctx, r)
+		}, "thay đổi email")
+
+	if err != nil {
+		return err
+	}
+	r.Result = res.(*UpdateUserEmailEndpoint).Result
+	return err
+}
+
+func (s *UserService) UpdateUserPhone(ctx context.Context, r *UpdateUserPhoneEndpoint) error {
+	key := fmt.Sprintf("UpdateUserPhone %v-%v-%v-%v", r.Phone, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
+	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
+		func() (interface{}, error) {
+			return s.updateUserPhone(ctx, r)
+		}, "thay đổi số điện thoại")
+
+	if err != nil {
+		return err
+	}
+	r.Result = res.(*UpdateUserPhoneEndpoint).Result
+	return err
+}
+
+func (s *UserService) updateUserPhone(ctx context.Context, r *UpdateUserPhoneEndpoint) (*UpdateUserPhoneEndpoint, error) {
+	code, count, err := getRedisCode(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
+	if err != nil && err != redis.ErrNil {
+		return nil, err
+	}
+	var failCount int
+	failCount, err = checkFailCount(r.Context.UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
+	if err != nil {
+		return r, err
+	}
+	user, err := checkUserInfo(ctx, r.Context.User.ID, r.AuthenticationMethod)
+	if err != nil {
+		return nil, err
+	}
+	if r.AuthenticationMethod == authentication_method.Phone && timex.IsZeroTime(user.PhoneVerifiedAt) {
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Số điện thoại chưa được xác thực.")
+	}
+	if r.AuthenticationMethod == authentication_method.Email && timex.IsZeroTime(user.EmailVerifiedAt) {
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Email chưa được xác thực.")
+	}
+	switch r.FirstCode {
+	case "":
+		if r.AuthenticationMethod == authentication_method.Phone {
+			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
+			return r, nil
+		}
+		if r.AuthenticationMethod == authentication_method.Email {
+			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
+			return r, nil
+		}
+		return nil, cm.Errorf(cm.STokenRequired, nil, "Cần chọn phương thức xác nhận. Vui lòng chọn email hoặc số điện thoại.")
+	case code:
+		return s.updatePhoneVerifySecondCode(ctx, r, user)
+	default:
+		failCount++
+		err = setFailCountToRedis(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone, failCount)
+		if err != nil {
+			return r, err
+		}
+		return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
+	}
+}
+
+func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *UpdateUserPhoneEndpoint, user *identitymodel.User) (*UpdateUserPhoneEndpoint, error) {
+	if r.Phone == user.Phone {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại mới đang trùng với số điện thoại hiện tại.")
+	}
+	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: r.Phone,
+	}
+	err := bus.Dispatch(ctx, userByPhoneQuery)
+	if err == nil || cm.ErrorCode(err) != cm.NotFound {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại đã tồn tại vui lòng kiểm tra lại.")
+	}
+	var codeSecond string
+	codeSecond, count, err := getRedisCode(user.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
+	switch err {
+	case redis.ErrNil:
+		msg, err := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+		if err != nil {
+			return r, err
+		}
+		r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
+		return r, nil
+	case nil:
+		switch r.SecondCode {
+		case "":
+			msg, err := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
+			return r, nil
+		case codeSecond:
+			cmd := &identity.UpdateUserPhoneCommand{
+				UserID: user.ID,
+				Phone:  r.Phone,
+			}
+			err = identityAggr.Dispatch(ctx, cmd)
+			if err != nil {
+				return nil, err
+			}
+			err = clearRedisUpdateUser(user.ID, r.AuthenticationMethod, signalUpdateUserPhone)
+			if err != nil {
+				return nil, err
+			}
+			r.Result = &etop.UpdateUserPhoneResponse{
+				Msg: "Cập nhật số điện thoại thành công",
+			}
+			botTelegram.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi số điện thoại từ %v thành %v", user.FullName, user.ID, user.Phone, r.Phone))
+		default:
+			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
+		}
+	default:
+		return r, err
+	}
+	return r, err
+}
+
+func (s *UserService) updateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) (*UpdateUserEmailEndpoint, error) {
+	code, count, err := getRedisCode(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+	if err != nil && err != redis.ErrNil {
+		return nil, err
+	}
+	var failCount int
+	failCount, err = checkFailCount(r.Context.UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+	if err != nil {
+		return r, err
+	}
+	user, err := checkUserInfo(ctx, r.Context.User.ID, r.AuthenticationMethod)
+	if err != nil {
+		return nil, err
+	}
+	switch r.FirstCode {
+	case "":
+		if r.AuthenticationMethod == authentication_method.Phone {
+			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
+			return r, nil
+		}
+		if r.AuthenticationMethod == authentication_method.Email {
+			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
+			return r, nil
+		}
+		return nil, cm.Errorf(cm.STokenRequired, nil, "Cần chọn phương thức xác nhận. Vui lòng chọn email hoặc số điện thoại.")
+	case code:
+		return s.updateEmailVerifySecondCode(ctx, r, user)
+	default:
+		failCount++
+		err = setFailCountToRedis(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail, failCount)
+		if err != nil {
+			return r, err
+		}
+		return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
+	}
+}
+
+func getRedisCode(userID dot.ID, keyCode string, method authentication_method.AuthenticationMethod, signal SignalUpdate) (string, int, error) {
+	var code string
+	var count int
+	var err error
+	err = redisStore.Get(fmt.Sprintf("Code:%v-%v-%v-%v", userID, keyCode, method.String(), signal), &code)
+	if err != nil {
+		return "", 0, err
+	}
+	err = redisStore.Get(fmt.Sprintf("Code-Count:%v-%v-%v-%v", userID, keyCode, method.String(), signal), &count)
+	if err != nil && err != redis.ErrNil {
+		return "", 0, err
+	}
+	return code, count, nil
+}
+
+func setRedisCode(userID dot.ID, redisKeyCode string, method string, code string, count int, signal SignalUpdate) error {
+	err := redisStore.SetWithTTL(fmt.Sprintf("Code:%v-%v-%v-%v", userID, redisKeyCode, method, signal), code, 2*60*60)
+	if err != nil {
+		return err
+	}
+	err = redisStore.SetWithTTL(fmt.Sprintf("Code-Count:%v-%v-%v-%v", userID, redisKeyCode, method, signal), count, 2*60*60)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkUserInfo(ctx context.Context, userID dot.ID, method authentication_method.AuthenticationMethod) (*identitymodel.User, error) {
+	user, err := sqlstore.User(ctx).ID(userID).Get()
+	if err != nil {
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "User không tồn tại")
+	}
+	if method == authentication_method.Phone && timex.IsZeroTime(user.PhoneVerifiedAt) {
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Số điện thoại chưa được xác thực.")
+	}
+	if method == authentication_method.Email && timex.IsZeroTime(user.EmailVerifiedAt) {
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Email chưa được xác thực.")
+	}
+	return user, nil
+}
+
+func setFailCountToRedis(userID dot.ID, keyRedisCode string, method authentication_method.AuthenticationMethod, signal SignalUpdate, failCount int) error {
+	if failCount >= 3 {
+		err := clearRedisUpdateUser(userID, method, signal)
+		if err != nil {
+			return err
+		}
+	}
+	err := redisStore.SetWithTTL(fmt.Sprintf("UpdateUserFailCount-%v-%v-%v-%v", keyRedisCode, userID, method.String(), signal), failCount, 30*60)
+	return err
+}
+
+func checkFailCount(userID dot.ID, keyRediscode string, method authentication_method.AuthenticationMethod, signal SignalUpdate) (int, error) {
+	var failCount int
+	redisKey := fmt.Sprintf("UpdateUserFailCount-%v-%v-%v-%v", keyRediscode, userID, method.String(), signal)
+	err := redisStore.Get(redisKey, &failCount)
+	if err != nil && err != redis.ErrNil {
+		return 0, err
+	}
+	if err == redis.ErrNil {
+		failCount = 0
+	}
+	ttl, err := redisStore.GetTTL(redisKey)
+	minutes := (ttl - 1) / 60
+	minutes = minutes / 10
+	if minutes > 0 {
+		minutes = minutes*10 + 10
+	} else {
+		minutes = 5
+	}
+	if failCount >= 3 {
+		return 0, cm.Errorf(cm.FailedPrecondition, err, fmt.Sprintf("Mã sai quá 3 lần. Vui lòng thử lại sau %v phút", minutes))
+	}
+	return failCount, nil
+}
+
+func clearRedisUpdateUser(userID dot.ID, method authentication_method.AuthenticationMethod, signal SignalUpdate) error {
+	err := redisStore.Del(fmt.Sprintf("UpdateUserFailCount-%v-%v-%v", keyRedisFirstCodeUpdateUser, userID, method.String()))
+	if err != nil && err != redis.ErrNil {
+		return err
+	}
+	err = redisStore.Del(fmt.Sprintf("Code:%v-%v-%v-%v", userID, keyRedisFirstCodeUpdateUser, method.String(), signal))
+	if err != nil && err != redis.ErrNil {
+		return err
+	}
+	err = redisStore.Del(fmt.Sprintf("Code-Count:%v-%v-%v-%v", userID, keyRedisFirstCodeUpdateUser, method.String(), signal))
+	if err != nil && err != redis.ErrNil {
+		return err
+	}
+	err = redisStore.Del(fmt.Sprintf("Code:%v-%v-%v-%v", userID, keyRedisSecondCodeUpdateUser, method.String(), signal))
+	if err != nil && err != redis.ErrNil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *UpdateUserEmailEndpoint, user *identitymodel.User) (*UpdateUserEmailEndpoint, error) {
+	if r.Email == user.Email {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email mới đang trùng với email hiện tại.")
+	}
+	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Email: r.Email,
+	}
+	err := bus.Dispatch(ctx, userByPhoneQuery)
+	if err == nil || cm.ErrorCode(err) != cm.NotFound {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email đã tồn tại vui lòng kiểm tra lại.")
+	}
+	codeSecond, count, err := getRedisCode(r.Context.User.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+	switch err {
+	case redis.ErrNil:
+		msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
+		if err != nil {
+			return r, err
+		}
+		r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
+		return r, nil
+	case nil:
+		switch r.SecondCode {
+		case "":
+			msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
+			if err != nil {
+				return r, err
+			}
+			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
+			return r, nil
+		case codeSecond:
+			cmd := &identity.UpdateUserEmailCommand{
+				Email:  r.Email,
+				UserID: user.ID,
+			}
+			err = identityAggr.Dispatch(ctx, cmd)
+			if err != nil {
+				return nil, err
+			}
+			err = clearRedisUpdateUser(user.ID, r.AuthenticationMethod, signalUpdateUserEmail)
+			if err != nil {
+				return nil, err
+			}
+			r.Result = &etop.UpdateUserEmailResponse{
+				Msg: "Cập nhật email thành công",
+			}
+			botTelegram.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi email từ %v thành %v", user.FullName, user.ID, user.Email, r.Email))
+		default:
+			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
+		}
+	default:
+		return nil, err
+	}
+	return r, err
+}
+
+func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel.User, phone string, redisCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod) (string, error) {
+	phoneUse := phone
+	var code string
+	var err error
+	if code6Digits == "" {
+		code, err = gencode.Random6Digits()
+		if err != nil {
+			return "", err
+		}
+	} else {
+		code = code6Digits
+	}
+	sendCount++
+	var msgUser string
+	if redisCode == keyRedisFirstCodeUpdateUser {
+		if signal == signalUpdateUserEmail {
+			if sendCount > 1 {
+				msgUser = fmt.Sprintf(smsChangeEmailTplRepeat, code, wl.X(ctx).Name, sendCount)
+			} else {
+				msgUser = fmt.Sprintf(smsChangeEmailTpl, code, wl.X(ctx).Name)
+			}
+		} else {
+			if sendCount > 1 {
+				msgUser = fmt.Sprintf(smsChangePhoneTplRepeat, code, wl.X(ctx).Name, sendCount)
+			} else {
+				msgUser = fmt.Sprintf(smsChangePhoneTpl, code, wl.X(ctx).Name)
+			}
+		}
+	} else {
+		if sendCount > 1 {
+			msgUser = fmt.Sprintf(smsChangePhoneTplConfirmRepeat, code, wl.X(ctx).Name, sendCount)
+		} else {
+			msgUser = fmt.Sprintf(smsChangePhoneTplConfirm, code, wl.X(ctx).Name)
+		}
+	}
+
+	err = setRedisCode(user.ID, redisCode, method.String(), code, sendCount, signal)
+	if err != nil {
+		return "", err
+	}
+	cmd := &sms.SendSMSCommand{
+		Phone:   phoneUse,
+		Content: msgUser,
+	}
+	if err = bus.Dispatch(ctx, cmd); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phoneUse, wl.X(ctx).CSEmail), nil
+}
+
+func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel.User, emailVerify string, redisKeyCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod) (string, error) {
+	if !enabledEmail {
+		return "", cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+	}
+	if !validate.IsEmail(emailVerify) {
+		return "", cm.Errorf(cm.FailedPrecondition, nil, "Email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+	}
+	var code string
+	var err error
+	code = code6Digits
+	if code6Digits == "" {
+		code, err = gencode.Random6Digits()
+		if err != nil {
+			return "", err
+		}
+	}
+	emailData := map[string]interface{}{
+		"FullName": user.FullName,
+		"Code":     code,
+		"Email":    emailVerify,
+		"WlName":   wl.X(ctx).Name,
+	}
+	var b strings.Builder
+
+	if redisKeyCode == keyRedisFirstCodeUpdateUser {
+		if signal == signalUpdateUserEmail {
+			if err = updateEmailTpl.Execute(&b, emailData); err != nil {
+				return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
+			}
+		} else {
+			if err = updatePhoneTpl.Execute(&b, emailData); err != nil {
+				return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
+			}
+		}
+	} else {
+		if err = updateEmailTplConfirm.Execute(&b, emailData); err != nil {
+			return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
+		}
+	}
+	err = setRedisCode(user.ID, redisKeyCode, method.String(), code, sendCount, signal)
+	if err != nil {
+		return "", err
+	}
+	address := emailVerify
+	cmd := &email.SendEmailCommand{
+		FromName:    "eTop.vn (no-reply)",
+		ToAddresses: []string{address},
+		Subject:     "Xác nhận thay đổi thông tin tài khoản",
+		Content:     b.String(),
+	}
+	if err = bus.Dispatch(ctx, cmd); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(
+		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail), nil
 }
 
 // Register
@@ -517,7 +970,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 	r.Result = &etop.ResetPasswordResponse{
 		Code: "ok",
 		Msg: fmt.Sprintf(
-			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail),
+			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra updatepemail (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail),
 	}
 	return r, nil
 }

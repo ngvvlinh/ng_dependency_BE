@@ -4,6 +4,7 @@ import (
 	common "etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/account_type"
 	address_type "etop.vn/api/top/types/etc/address_type"
+	"etop.vn/api/top/types/etc/authentication_method"
 	"etop.vn/api/top/types/etc/ghn_note_code"
 	status3 "etop.vn/api/top/types/etc/status3"
 	try_on "etop.vn/api/top/types/etc/try_on"
@@ -480,6 +481,40 @@ type SwitchAccountRequest struct {
 }
 
 func (m *SwitchAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserEmailRequest struct {
+	Email string `json:"email"`
+
+	FirstCode  string `json:"first_code"`
+	SecondCode string `json:"second_code"`
+
+	AuthenticationMethod authentication_method.AuthenticationMethod `json:"authentication_method"`
+}
+
+func (m *UpdateUserEmailRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserEmailResponse struct {
+	Msg string `json:"msg"`
+}
+
+func (m *UpdateUserEmailResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserPhoneRequest struct {
+	Phone string `json:"phone"`
+
+	FirstCode  string `json:"first_code"`
+	SecondCode string `json:"second_code"`
+
+	AuthenticationMethod authentication_method.AuthenticationMethod `json:"authentication_method"`
+}
+
+func (m *UpdateUserPhoneRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserPhoneResponse struct {
+	Msg string `json:"msg"`
+}
+
+func (m *UpdateUserPhoneResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpgradeAccessTokenRequest struct {
 	// @required
