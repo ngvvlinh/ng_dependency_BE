@@ -44,15 +44,15 @@ func (a *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Sh
 }
 
 func (a *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.User, error) {
-	return a.userStore(ctx).ByID(args.UserID).GetUser()
+	return a.userStore(ctx).ByID(args.UserID).GetUser(ctx)
 }
 
 func (a *QueryService) GetUserByPhone(ctx context.Context, phone string) (*identity.User, error) {
-	return a.userStore(ctx).ByPhone(phone).GetUser()
+	return a.userStore(ctx).ByPhone(phone).GetUser(ctx)
 }
 
 func (a *QueryService) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
-	return a.userStore(ctx).ByEmail(email).GetUser()
+	return a.userStore(ctx).ByEmail(email).GetUser(ctx)
 }
 
 func (a *QueryService) GetExternalAccountAhamove(ctx context.Context, args *identity.GetExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {

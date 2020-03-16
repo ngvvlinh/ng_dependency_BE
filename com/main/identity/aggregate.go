@@ -234,12 +234,12 @@ func (a *Aggregate) UpdateExternalAccountAhamoveVerification(ctx context.Context
 }
 
 func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identity.UpdateUserReferenceUserIDArgs) error {
-	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx); err != nil {
 		return err
 	} else if currentUser.RefSaleID != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "RefUserID đã tồn tại. Không thể cập nhật.")
 	}
-	refUser, err := a.userStore(ctx).ByPhone(args.RefUserPhone).GetUserDB()
+	refUser, err := a.userStore(ctx).ByPhone(args.RefUserPhone).GetUserDB(ctx)
 	if err != nil {
 		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
 	}
@@ -252,12 +252,12 @@ func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identit
 }
 
 func (a *Aggregate) UpdateUserReferenceSaleID(ctx context.Context, args *identity.UpdateUserReferenceSaleIDArgs) error {
-	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx); err != nil {
 		return err
 	} else if currentUser.RefSaleID != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "RefSaleID đã tồn tại. Không thể cập nhật.")
 	}
-	refUser, err := a.userStore(ctx).ByPhone(args.RefSalePhone).GetUserDB()
+	refUser, err := a.userStore(ctx).ByPhone(args.RefSalePhone).GetUserDB(ctx)
 	if err != nil {
 		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
 	}

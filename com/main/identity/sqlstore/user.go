@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
@@ -44,14 +45,16 @@ func (s *UserStore) ByEmail(email string) *UserStore {
 	return s
 }
 
-func (s *UserStore) GetUserDB() (*identitymodel.User, error) {
+func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) {
 	var user identitymodel.User
-	err := s.query().Where(s.preds).ShouldGet(&user)
+	query := s.query().Where(s.preds)
+	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	err := query.ShouldGet(&user)
 	return &user, err
 }
 
-func (s *UserStore) GetUser() (*identity.User, error) {
-	result, err := s.GetUserDB()
+func (s *UserStore) GetUser(ctx context.Context) (*identity.User, error) {
+	result, err := s.GetUserDB(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -80,4 +83,11 @@ func (s *UserStore) UpdateUserRefferenceID(args *UpdateRefferenceIDArgs) error {
 		return err
 	}
 	return nil
+}
+
+func (s *UserStore) FilterByWhiteLabelPartner(query cmsql.Query, wlPartnerID dot.ID) cmsql.Query {
+	if wlPartnerID != 0 {
+		return query.Where(s.ft.ByWLPartnerID(wlPartnerID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }
