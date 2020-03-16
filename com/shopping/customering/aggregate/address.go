@@ -81,9 +81,6 @@ func ValidateCreateShopTraderAddress(args *addressing.CreateAddressArgs) error {
 	if args.DistrictCode == "" {
 		return EditErrorMsg("Quận/Huyện")
 	}
-	if args.WardCode == "" {
-		return EditErrorMsg("Phường/Xã")
-	}
 	if args.Address1 == "" {
 		return EditErrorMsg("Địa chỉ cụ thể")
 	}
