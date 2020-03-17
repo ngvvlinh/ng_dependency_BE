@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -86,7 +87,7 @@ func UploadHandler(c *httpx.Context) error {
 			}
 			defer func() { _ = dst.Close() }()
 
-			if _, err = io.Copy(dst, uploadedImage.Source); err != nil {
+			if _, err = io.Copy(dst, bytes.NewReader(uploadedImage.Source)); err != nil {
 				ll.Info("Error writing file", l.Error(err))
 				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename)
 				return false
@@ -119,28 +120,31 @@ func UploadHandler(c *httpx.Context) error {
 	return nil
 }
 
-func verifyImage(filename string, size int, src *reader) (format string, err error) {
+func verifyImage(filename string, size int, src io.Reader) (format string, data []byte, err error) {
 	if size < minSize {
-		return "", NewUploadError(cm.InvalidArgument, "Invalid filesize", filename)
+		return "", nil, NewUploadError(cm.InvalidArgument, "Invalid filesize", filename)
 	}
 	if size > maxSize {
-		return "", NewUploadError(cm.InvalidArgument, "File is too big (maximum 1MB)", filename)
+		return "", nil, NewUploadError(cm.InvalidArgument, "File is too big (maximum 1MB)", filename)
 	}
-	img, format, err := image.DecodeConfig(src)
-	src.Reset()
+	data, err = readAll(src, size)
+	if err != nil {
+		return "", nil, NewUploadError(cm.InvalidArgument, fmt.Sprintf("Can not read file: %v", err), filename)
+	}
+	img, format, err := image.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
 		ll.Error("Unrecognized image file", l.String("filename", filename), l.Error(err))
-		return "", NewUploadError(cm.InvalidArgument, "Unrecognized image file", filename)
+		return "", nil, NewUploadError(cm.InvalidArgument, "Unrecognized image file", filename)
 	}
 	if img.Width < minWH || img.Width > maxWH || img.Height < minWH || img.Height > maxWH {
-		return "", NewUploadError(cm.InvalidArgument, "Image must be at least 200px * 200px and at most 2500px * 2500px", filename)
+		return "", nil, NewUploadError(cm.InvalidArgument, "Image must be at least 200px * 200px and at most 2500px * 2500px", filename)
 	}
 
 	// Haravan does not accept .jpeg, so we have to change the extension
 	if format == "jpeg" {
 		format = "jpg"
 	}
-	return format, nil
+	return format, data, nil
 }
 
 func ensureDir(dir string) error {
