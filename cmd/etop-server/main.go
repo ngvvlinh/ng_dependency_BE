@@ -19,7 +19,6 @@ import (
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/cmd/etop-server/config"
 	smsAgg "etop.vn/backend/com/etc/logging/smslog/aggregate"
-	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/main/address"
@@ -377,8 +376,6 @@ func main() {
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
 	orderQuery = serviceordering.NewQueryService(db).MessageBus()
-	haravanIdentityAggr := haravanidentity.NewAggregate(db, cfg.ThirdPartyHost, cfg.Haravan).MessageBus()
-	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 
 	orderAggr = serviceordering.NewAggregate(eventBus, db)
 	shipnowCarrierManager := shipnowcarrier.NewManager(db, locationBus, &shipnowcarrier.Carrier{
@@ -506,8 +503,6 @@ func main() {
 		identityQuery,
 		addressQuery,
 		shippingManager,
-		haravanIdentityAggr,
-		haravanIdentityQuery,
 		customerAggr,
 		customerQuery,
 		traderAddressAggr,

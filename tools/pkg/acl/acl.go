@@ -503,13 +503,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Account/UpdateExternalAccountAhamoveVerification":       {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 	"shop.Account/UpdateExternalAccountAhamoveVerificationImages": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 
-	"shop.ExternalAccount/GetExternalAccountHaravan":                           {Type: Shop},
-	"shop.ExternalAccount/CreateExternalAccountHaravan":                        {Type: Shop, Actions: actions(ShopExternalAccountManage)},
-	"shop.ExternalAccount/UpdateExternalAccountHaravanToken":                   {Type: Shop, Actions: actions(ShopExternalAccountManage)},
-	"shop.ExternalAccount/UpdateExternalAccountHaravan":                        {Type: Shop, Actions: actions(ShopExternalAccountManage)},
-	"shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan":         {Type: Shop, Actions: actions(ShopExternalAccountManage)},
-	"shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
-
 	"shop.Browse/BrowseCategories":    {Type: Shop},
 	"shop.Browse/BrowseProduct":       {Type: Shop},
 	"shop.Browse/BrowseVariant":       {Type: Shop},

@@ -11,7 +11,6 @@ import (
 	"github.com/Shopify/sarama"
 
 	"etop.vn/backend/cmd/etop-event-handler/config"
-	haravanhandler "etop.vn/backend/com/external/haravan/handler"
 	handler "etop.vn/backend/com/handler/etop-handler"
 	handlerapi "etop.vn/backend/com/handler/etop-handler/api"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
@@ -136,15 +135,6 @@ func main() {
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)
-	}
-	{
-		// Haravan carrier service synced status
-		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, haravanhandler.ConsumerGroup)
-		if err != nil {
-			ll.Fatal("Unable to connect to Kafka", l.Error(err))
-		}
-		h := haravanhandler.New(db, bot, consumer, cfg.Kafka.TopicPrefix)
-		h.ConsumeAndHandleAllTopics(ctx)
 	}
 
 	intctlHandler.ConsumeAndHandle(ctx)

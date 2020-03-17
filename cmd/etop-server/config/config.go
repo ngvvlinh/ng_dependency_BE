@@ -13,7 +13,6 @@ import (
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/email"
-	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "etop.vn/backend/pkg/integration/shipnow/ahamove/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
@@ -77,8 +76,7 @@ type Config struct {
 	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
 	Ecom           ecomconfig.Config    `yaml:"ecom"`
 
-	Haravan haravanclient.Config `yaml:"haravan"`
-	VTPay   vtpayclient.Config   `yaml:"vtpay"`
+	VTPay vtpayclient.Config `yaml:"vtpay"`
 
 	SAdminToken string `yaml:"sadmin_token"`
 	ServeDoc    bool   `yaml:"serve_doc"`
@@ -142,8 +140,7 @@ func Default() Config {
 			HTTP:     cc.HTTP{Port: 8100},
 			MainSite: "http://localhost:8100",
 		},
-		Haravan: haravanclient.DefaultConfig(),
-		VTPay:   vtpayclient.DefaultConfig(),
+		VTPay: vtpayclient.DefaultConfig(),
 		SMS: sms.Config{
 			Mock:    true,
 			Enabled: true,
@@ -205,7 +202,6 @@ func Load(isTest bool) (Config, error) {
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
-	cfg.Haravan.MustLoadEnv()
 	cfg.GHN.MustLoadEnv()
 	cfg.GHTK.MustLoadEnv()
 	cfg.VTPost.MustLoadEnv()
@@ -215,9 +211,6 @@ func Load(isTest bool) (Config, error) {
 	cfg.Vht.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 
-	if cfg.Haravan.Secret == "" {
-		return cfg, errors.New("Empty Haravan secret")
-	}
 	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
 		return cfg, errors.New("Empty third_party_host")
 	}

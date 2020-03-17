@@ -22,7 +22,6 @@ func NewShopServer(m httprpc.Muxer) {
 		service.NewBrandServiceServer(WrapBrandService(brandService)),
 		service.NewInventoryServiceServer(WrapInventoryService(inventoryService)),
 		service.NewAccountServiceServer(WrapAccountService(accountService)),
-		service.NewExternalAccountServiceServer(WrapExternalAccountService(externalAccountService)),
 		service.NewCollectionServiceServer(WrapCollectionService(collectionService)),
 		service.NewCustomerServiceServer(WrapCustomerService(customerService)),
 		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService)),

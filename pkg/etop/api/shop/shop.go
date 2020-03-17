@@ -6,7 +6,6 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
-	haravanidentity "etop.vn/api/external/haravan/identity"
 	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/authorization"
@@ -132,12 +131,6 @@ func init() {
 	bus.AddHandler("api", accountService.RequestVerifyExternalAccountAhamove)
 	bus.AddHandler("api", accountService.UpdateExternalAccountAhamoveVerification)
 
-	bus.AddHandler("api", externalAccountService.GetExternalAccountHaravan)
-	bus.AddHandler("api", externalAccountService.CreateExternalAccountHaravan)
-	bus.AddHandler("api", externalAccountService.UpdateExternalAccountHaravanToken)
-	bus.AddHandler("api", externalAccountService.ConnectCarrierServiceExternalAccountHaravan)
-	bus.AddHandler("api", externalAccountService.DeleteConnectedCarrierServiceExternalAccountHaravan)
-
 	bus.AddHandler("api", paymentService.PaymentTradingOrder)
 	bus.AddHandler("api", paymentService.PaymentCheckReturnData)
 
@@ -180,52 +173,50 @@ const (
 )
 
 var (
-	locationQuery        location.QueryBus
-	idempgroup           *idemp.RedisGroup
-	idempgroupReceipt    *idemp.RedisGroup
-	shipnowAggr          shipnow.CommandBus
-	shipnowQuery         shipnow.QueryBus
-	identityAggr         identity.CommandBus
-	identityQuery        identity.QueryBus
-	addressQuery         address.QueryBus
-	shippingCtrl         *shipping_provider.ProviderManager
-	catalogQuery         catalog.QueryBus
-	catalogAggr          catalog.CommandBus
-	haravanIdentityAggr  haravanidentity.CommandBus
-	haravanIdentityQuery haravanidentity.QueryBus
-	customerQuery        customering.QueryBus
-	customerAggr         customering.CommandBus
-	orderAggr            ordering.CommandBus
-	orderQuery           ordering.QueryBus
-	traderAddressAggr    addressing.CommandBus
-	traderAddressQuery   addressing.QueryBus
-	paymentCtrl          paymentmanager.CommandBus
-	supplierAggr         suppliering.CommandBus
-	supplierQuery        suppliering.QueryBus
-	carrierAggr          carrying.CommandBus
-	carrierQuery         carrying.QueryBus
-	traderQuery          tradering.QueryBus
-	summaryQuery         summary.QueryBus
-	eventBus             capi.EventBus
-	receiptAggr          receipting.CommandBus
-	receiptQuery         receipting.QueryBus
-	inventoryAggregate   inventory.CommandBus
-	inventoryQuery       inventory.QueryBus
-	ledgerAggr           ledgering.CommandBus
-	ledgerQuery          ledgering.QueryBus
-	purchaseOrderAggr    purchaseorder.CommandBus
-	purchaseOrderQuery   purchaseorder.QueryBus
-	StocktakeQuery       st.QueryBus
-	StocktakeAggregate   st.CommandBus
-	shipmentManager      *shippingcarrier.ShipmentManager
-	shippingAggregate    shipping.CommandBus
-	RefundAggr           refund.CommandBus
-	RefundQuery          refund.QueryBus
-	PurchaseRefundAggr   purchaserefund.CommandBus
-	PurchaseRefundQuery  purchaserefund.QueryBus
-	connectionQuery      connectioning.QueryBus
-	connectionAggr       connectioning.CommandBus
-	shippingQuery        shipping.QueryBus
+	locationQuery       location.QueryBus
+	idempgroup          *idemp.RedisGroup
+	idempgroupReceipt   *idemp.RedisGroup
+	shipnowAggr         shipnow.CommandBus
+	shipnowQuery        shipnow.QueryBus
+	identityAggr        identity.CommandBus
+	identityQuery       identity.QueryBus
+	addressQuery        address.QueryBus
+	shippingCtrl        *shipping_provider.ProviderManager
+	catalogQuery        catalog.QueryBus
+	catalogAggr         catalog.CommandBus
+	customerQuery       customering.QueryBus
+	customerAggr        customering.CommandBus
+	orderAggr           ordering.CommandBus
+	orderQuery          ordering.QueryBus
+	traderAddressAggr   addressing.CommandBus
+	traderAddressQuery  addressing.QueryBus
+	paymentCtrl         paymentmanager.CommandBus
+	supplierAggr        suppliering.CommandBus
+	supplierQuery       suppliering.QueryBus
+	carrierAggr         carrying.CommandBus
+	carrierQuery        carrying.QueryBus
+	traderQuery         tradering.QueryBus
+	summaryQuery        summary.QueryBus
+	eventBus            capi.EventBus
+	receiptAggr         receipting.CommandBus
+	receiptQuery        receipting.QueryBus
+	inventoryAggregate  inventory.CommandBus
+	inventoryQuery      inventory.QueryBus
+	ledgerAggr          ledgering.CommandBus
+	ledgerQuery         ledgering.QueryBus
+	purchaseOrderAggr   purchaseorder.CommandBus
+	purchaseOrderQuery  purchaseorder.QueryBus
+	StocktakeQuery      st.QueryBus
+	StocktakeAggregate  st.CommandBus
+	shipmentManager     *shippingcarrier.ShipmentManager
+	shippingAggregate   shipping.CommandBus
+	RefundAggr          refund.CommandBus
+	RefundQuery         refund.QueryBus
+	PurchaseRefundAggr  purchaserefund.CommandBus
+	PurchaseRefundQuery purchaserefund.QueryBus
+	connectionQuery     connectioning.QueryBus
+	connectionAggr      connectioning.CommandBus
+	shippingQuery       shipping.QueryBus
 )
 
 func Init(
@@ -238,8 +229,6 @@ func Init(
 	identityQS identity.QueryBus,
 	addressQS address.QueryBus,
 	providerManager *shipping_provider.ProviderManager,
-	haravanIdentity haravanidentity.CommandBus,
-	haravanIdentityQS haravanidentity.QueryBus,
 	customerA customering.CommandBus,
 	customerQS customering.QueryBus,
 	traderAddressA addressing.CommandBus,
@@ -286,8 +275,6 @@ func Init(
 	identityAggr = identity
 	identityQuery = identityQS
 	addressQuery = addressQS
-	haravanIdentityAggr = haravanIdentity
-	haravanIdentityQuery = haravanIdentityQS
 	customerQuery = customerQS
 	customerAggr = customerA
 	traderAddressAggr = traderAddressA
@@ -328,7 +315,6 @@ func Init(
 type MiscService struct{}
 type InventoryService struct{}
 type AccountService struct{}
-type ExternalAccountService struct{}
 type CollectionService struct{}
 type CustomerService struct{}
 type CustomerGroupService struct{}
@@ -361,7 +347,6 @@ type PurchaseRefundService struct{}
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
 var accountService = &AccountService{}
-var externalAccountService = &ExternalAccountService{}
 var collectionService = &CollectionService{}
 var customerService = &CustomerService{}
 var customerGroupService = &CustomerGroupService{}
@@ -1547,76 +1532,6 @@ func validateUrl(imgsUrl ...string) error {
 		if !govalidator.IsURL(url) {
 			return cm.Errorf(cm.InvalidArgument, nil, "Invalid url: %v", url)
 		}
-	}
-	return nil
-}
-
-func (s *ExternalAccountService) GetExternalAccountHaravan(ctx context.Context, r *GetExternalAccountHaravanEndpoint) error {
-	query := &haravanidentity.GetExternalAccountHaravanByShopIDQuery{
-		ShopID: r.Context.Shop.ID,
-	}
-	if err := haravanIdentityQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	var hideInfo bool
-	if !authorization.IsContainsActionString(authorizeauth.ListActionsByRoles(r.Context.Roles), string(acl.ShopExternalAccountManage)) {
-		hideInfo = true
-	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result, hideInfo)
-	return nil
-}
-
-func (s *ExternalAccountService) CreateExternalAccountHaravan(ctx context.Context, r *CreateExternalAccountHaravanEndpoint) error {
-	cmd := &haravanidentity.CreateExternalAccountHaravanCommand{
-		ShopID:      r.Context.Shop.ID,
-		Subdomain:   r.Subdomain,
-		Code:        r.Code,
-		RedirectURI: r.RedirectUri,
-	}
-	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result, false)
-	return nil
-}
-
-func (s *ExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.Context, r *UpdateExternalAccountHaravanTokenEndpoint) error {
-	cmd := &haravanidentity.UpdateExternalAccountHaravanTokenCommand{
-		ShopID:      r.Context.Shop.ID,
-		Subdomain:   r.Subdomain,
-		RedirectURI: r.RedirectUri,
-		Code:        r.Code,
-	}
-	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result, false)
-	return nil
-}
-
-func (s *ExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
-	cmd := &haravanidentity.ConnectCarrierServiceExternalAccountHaravanCommand{
-		ShopID: r.Context.Shop.ID,
-	}
-	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &pbcm.UpdatedResponse{
-		Updated: 1,
-	}
-	return nil
-}
-
-func (s *ExternalAccountService) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r *DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint) error {
-	cmd := &haravanidentity.DeleteConnectedCarrierServiceExternalAccountHaravanCommand{
-		ShopID: r.Context.Shop.ID,
-	}
-	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &pbcm.DeletedResponse{
-		Deleted: 1,
 	}
 	return nil
 }

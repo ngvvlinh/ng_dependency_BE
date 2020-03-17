@@ -1,7 +1,6 @@
 package convertpb
 
 import (
-	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/identity"
 	identitytypes "etop.vn/api/main/identity/types"
 	"etop.vn/api/main/purchaseorder"
@@ -38,27 +37,6 @@ func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAc
 		WebsiteUrl:          in.WebsiteURL,
 		CompanyImgs:         in.CompanyImgs,
 		BusinessLicenseImgs: in.BusinessLicenseImgs,
-	}
-}
-
-func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.ExternalAccountHaravan, hide bool) *shop.ExternalAccountHaravan {
-	if in == nil {
-		return nil
-	}
-	if hide {
-		return &shop.ExternalAccountHaravan{
-			Id: in.ID,
-		}
-	}
-	return &shop.ExternalAccountHaravan{
-		Id:                                in.ID,
-		ShopId:                            in.ShopID,
-		Subdomain:                         in.Subdomain,
-		ExternalCarrierServiceId:          in.ExternalCarrierServiceID,
-		ExternalConnectedCarrierServiceAt: cmapi.PbTime(in.ExternalConnectedCarrierServiceAt),
-		ExpiresAt:                         cmapi.PbTime(in.ExpiresAt),
-		CreatedAt:                         cmapi.PbTime(in.CreatedAt),
-		UpdatedAt:                         cmapi.PbTime(in.UpdatedAt),
 	}
 }
 

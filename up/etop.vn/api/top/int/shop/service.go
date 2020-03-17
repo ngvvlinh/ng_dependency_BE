@@ -62,15 +62,6 @@ type AccountService interface {
 	UpdateExternalAccountAhamoveVerificationImages(context.Context, *UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
 }
 
-// +apix:path=/shop.ExternalAccount
-type ExternalAccountService interface {
-	GetExternalAccountHaravan(context.Context, *cm.Empty) (*ExternalAccountHaravan, error)
-	CreateExternalAccountHaravan(context.Context, *ExternalAccountHaravanRequest) (*ExternalAccountHaravan, error)
-	UpdateExternalAccountHaravanToken(context.Context, *ExternalAccountHaravanRequest) (*ExternalAccountHaravan, error)
-	ConnectCarrierServiceExternalAccountHaravan(context.Context, *cm.Empty) (*cm.UpdatedResponse, error)
-	DeleteConnectedCarrierServiceExternalAccountHaravan(context.Context, *cm.Empty) (*cm.DeletedResponse, error)
-}
-
 // +apix:path=/shop.Collection
 type CollectionService interface {
 	CreateCollection(context.Context, *CreateCollectionRequest) (*ShopCollection, error)
