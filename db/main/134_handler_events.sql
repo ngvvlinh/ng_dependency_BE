@@ -15,11 +15,6 @@ ALTER TABLE history.shop_customer_group
 CREATE TRIGGER notify_pgrid AFTER INSERT ON history.shop_customer
   FOR EACH ROW EXECUTE PROCEDURE notify_pgrid_id();
 
-SELECT init_history('inventory_variant', '{variant_id,shop_id}');
-
-CREATE TRIGGER notify_pgrid AFTER INSERT ON history.inventory_variant
-  FOR EACH ROW EXECUTE PROCEDURE notify_pgrid_id();
-
 CREATE TRIGGER notify_pgrid AFTER INSERT ON history.shop_trader_address
   FOR EACH ROW EXECUTE PROCEDURE notify_pgrid_id();
 
