@@ -305,6 +305,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 
 	getUserQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: query.Result.Email,
+		Phone: query.Result.Phone,
 	}
 	err := bus.Dispatch(ctx, getUserQuery)
 	switch cm.ErrorCode(err) {

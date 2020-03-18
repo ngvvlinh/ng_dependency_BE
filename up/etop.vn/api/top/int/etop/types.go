@@ -45,6 +45,7 @@ type Invitation struct {
 	Id            dot.ID         `json:"id"`
 	UserId        dot.ID         `json:"user_id"`
 	ShopId        dot.ID         `json:"shop_id"`
+	Phone         string         `json:"phone"`
 	Email         string         `json:"email"`
 	FullName      string         `json:"full_name"`
 	ShortName     string         `json:"short_name"`

@@ -800,6 +800,7 @@ func PbInvitation(m *invitation.Invitation) *etop.Invitation {
 		Id:         m.ID,
 		ShopId:     m.AccountID,
 		Email:      m.Email,
+		Phone:      m.Phone,
 		FullName:   m.FullName,
 		ShortName:  m.ShortName,
 		Roles:      roles,

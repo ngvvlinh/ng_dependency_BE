@@ -2039,6 +2039,9 @@
         "invited_by_user": {
           "type": "string"
         },
+        "phone": {
+          "type": "string"
+        },
         "roles": {
           "type": "array",
           "items": {

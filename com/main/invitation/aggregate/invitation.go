@@ -154,7 +154,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	shopName := getAccountQuery.Result.Name
 	invitingUsername := getUserQuery.Result.FullName
 
-	a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
+	if err := a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
 		// create invitation
 		if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
 			return err
@@ -200,7 +200,9 @@ func (a *InvitationAggregate) CreateInvitation(
 			}
 		}
 		return nil
-	})
+	}); err != nil {
+		return nil, err
+	}
 
 	return invitationItem, nil
 }
