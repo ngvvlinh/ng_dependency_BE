@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -70,7 +71,7 @@ func main() {
 
 	svrs := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ shipping-sync-service started ✨\n" + cm.CommitMessage())
+		bot.SendMessage(fmt.Sprintf("–––\n✨ shipping-sync-service started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
 	}
 

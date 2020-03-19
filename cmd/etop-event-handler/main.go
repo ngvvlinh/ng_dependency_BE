@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -167,7 +168,7 @@ func main() {
 	}()
 
 	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-handler started ✨\n" + cm.CommitMessage())
+		bot.SendMessage(fmt.Sprintf("–––\n✨ etop-handler started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👹 etop-handler stopped 👹\n–––")
 	}
 

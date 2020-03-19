@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -136,7 +137,7 @@ func main() {
 	}()
 
 	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-notification started ✨\n" + cm.CommitMessage())
+		bot.SendMessage(fmt.Sprintf("–––\n✨ etop-notification started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👹 etop-notification stopped 👹\n–––")
 	}
 

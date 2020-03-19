@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -575,7 +576,7 @@ func main() {
 
 	svrs := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ Server started ✨\n" + cm.CommitMessage())
+		bot.SendMessage(fmt.Sprintf("–––\n✨ Server started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👻 Server stopped 👻\n–––")
 	}
 
