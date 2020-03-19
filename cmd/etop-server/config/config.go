@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"etop.vn/api/main/invitation"
-	crmsyncconfig "etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	ecomconfig "etop.vn/backend/com/web/ecom/config"
 	"etop.vn/backend/pkg/common/apifw/captcha"
@@ -53,7 +52,6 @@ type Config struct {
 	Postgres          cc.Postgres      `yaml:"postgres"`
 	PostgresLogs      cc.Postgres      `yaml:"postgres_logs"`
 	PostgresNotifier  cc.Postgres      `yaml:"postgres_notifier"`
-	PostgresCRM       cc.Postgres      `yaml:"postgres_crm"`
 	PostgresAffiliate cc.Postgres      `yaml:"postgres_affiliate"`
 	Redis             cc.Redis         `yaml:"redis"`
 	HTTP              cc.HTTP          `yaml:"http"`
@@ -90,9 +88,6 @@ type Config struct {
 	ThirdPartyHost string `yaml:"third_party_host"`
 	Secret         string `yaml:"secret"`
 
-	Vtiger crmsyncconfig.Vtiger `yaml:"vtiger"`
-	Vht    crmsyncconfig.Vht    `yaml:"vht"`
-
 	Invitation invitation.Config
 
 	WhiteLabel struct {
@@ -110,7 +105,6 @@ func Default() Config {
 		Postgres:          cc.DefaultPostgres(),
 		PostgresNotifier:  cc.DefaultPostgres(),
 		PostgresLogs:      cc.DefaultPostgres(),
-		PostgresCRM:       cc.DefaultPostgres(),
 		PostgresAffiliate: cc.DefaultPostgres(),
 		Redis:             cc.DefaultRedis(),
 		HTTP:              cc.HTTP{Port: 8080},
@@ -154,8 +148,6 @@ func Default() Config {
 		Env:            cmenv.EnvDev.String(),
 		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
-		Vtiger:         crmsyncconfig.DefaultVtiger(),
-		Vht:            crmsyncconfig.DefaultVht(),
 
 		Invitation: invitation.Config{
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
@@ -195,7 +187,6 @@ func Load(isTest bool) (Config, error) {
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
-	cc.PostgresMustLoadEnv(&cfg.PostgresCRM, "ET_POSTGRES_CRM")
 	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
 	cfg.Redis.MustLoadEnv()
 	cfg.TelegramBot.MustLoadEnv()
@@ -207,8 +198,6 @@ func Load(isTest bool) (Config, error) {
 	cfg.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
-	cfg.Vtiger.MustLoadEnv()
-	cfg.Vht.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {

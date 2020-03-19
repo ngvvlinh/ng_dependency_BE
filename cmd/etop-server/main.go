@@ -81,10 +81,6 @@ import (
 	traderpm "etop.vn/backend/com/shopping/tradering/pm"
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	summaryquery "etop.vn/backend/com/summary/query"
-	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
-	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
-	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
-	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/captcha"
 	"etop.vn/backend/pkg/common/apifw/health"
@@ -102,7 +98,6 @@ import (
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/admin"
 	"etop.vn/backend/pkg/etop/api/affiliate"
-	"etop.vn/backend/pkg/etop/api/crm"
 	"etop.vn/backend/pkg/etop/api/export"
 	"etop.vn/backend/pkg/etop/api/integration"
 	"etop.vn/backend/pkg/etop/api/shop"
@@ -133,7 +128,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
 	imgroupsms "etop.vn/backend/pkg/integration/sms/imgroup"
-	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 	apiaff "etop.vn/backend/pkg/services/affiliate/api"
 	"etop.vn/common/l"
 )
@@ -336,10 +330,6 @@ func main() {
 			ll.Fatal("ahamove: No token")
 		}
 	}
-	configMap, err := config.ReadMappingFile(cfg.Vtiger.MappingFile)
-	//if err != nil {
-	//	ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
-	//}
 
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 
@@ -351,19 +341,8 @@ func main() {
 		DirExport: cfg.Export.DirExport,
 	})
 
-	crmDB, err := cmsql.Connect(cfg.PostgresCRM)
-	if err != nil {
-		ll.Fatal("Unable to connect to Postgres", l.Error(err))
-	}
-
-	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
 	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore, locationBus).MessageBus()
-
-	vhtQuery := vhtquery.New(crmDB).MessageBus()
-	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
-	vtigerQuery := vtigerquery.New(crmDB, configMap, vtigerClient).MessageBus()
-	vtigerAggregate := vtigeraggregate.New(crmDB, configMap, vtigerClient).MessageBus()
 
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	identityPM := identitypm.New(identityQuery, &invitationQuery)
@@ -582,7 +561,6 @@ func main() {
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, shippingQuery, connectionQuery)
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
-	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
 	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery)
