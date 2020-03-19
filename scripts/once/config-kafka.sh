@@ -1,27 +1,46 @@
 #!/usr/bin/env bash
-set -e
 
 : ${1?"expect PREFIX (should be d for local)"}
 
 PREFIX=${1}_
 
+create_topic() {
+    : ${1?"Usage: create_topic PARTITIONS TOPIC_NAME"}
+    : ${2?"Usage: create_topic PARTITIONS TOPIC_NAME"}
+
+    kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions "$1" --topic "${PREFIX}$2"
+    kafka-topics --alter  --zookeeper zookeeper:2181                        --partitions "$1" --topic "${PREFIX}$2"
+}
+
 # Run this file inside the kafka container
 
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_fulfillment
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_order
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 8  --topic ${PREFIX}pgrid_money_transaction_shipping
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_notification
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_product
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_collection
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_product_collection
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_variant
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_inventory_variant
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_trader_address
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_customer
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_customer_group
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 64 --topic ${PREFIX}pgrid_shop_customer_group_customer
+create_topic 64 pgrid_fulfillment
+create_topic 64 pgrid_order
+create_topic 64 pgrid_order
+create_topic 8  pgrid_money_transaction_shipping
+create_topic 8  pgrid_money_transaction_shipping
+create_topic 64 pgrid_notification
+create_topic 64 pgrid_notification
+create_topic 64 pgrid_shop_product
+create_topic 64 pgrid_shop_product
+create_topic 64 pgrid_shop_collection
+create_topic 64 pgrid_shop_collection
+create_topic 64 pgrid_shop_product_collection
+create_topic 64 pgrid_shop_product_collection
+create_topic 64 pgrid_shop_variant
+create_topic 64 pgrid_shop_variant
+create_topic 64 pgrid_inventory_variant
+create_topic 64 pgrid_inventory_variant
+create_topic 64 pgrid_shop_trader_address
+create_topic 64 pgrid_shop_trader_address
+create_topic 64 pgrid_shop_customer
+create_topic 64 pgrid_shop_customer
+create_topic 64 pgrid_shop_customer_group
+create_topic 64 pgrid_shop_customer_group
+create_topic 64 pgrid_shop_customer_group_customer
+create_topic 64 pgrid_shop_customer_group_customer
 
 # UpdateInfo 2018-06-12
 
 # Internal control channel
-kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions   1 --topic ${PREFIX}intctl
+create_topic  1 intctl
