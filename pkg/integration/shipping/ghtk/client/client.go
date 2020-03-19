@@ -158,9 +158,49 @@ func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*Cre
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	var resp CreateOrderResponse
-	err := c.sendPostRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
-	return &resp, err
+	type Resp struct {
+		Err           error
+		OrderResponse *CreateOrderResponse
+	}
+	var ch = make(chan Resp, 1)
+	go func() {
+		var resp CreateOrderResponse
+		err := c.sendPostRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
+		ch <- Resp{
+			Err:           err,
+			OrderResponse: &resp,
+		}
+	}()
+	tick := time.NewTicker(10 * time.Second)
+	defer tick.Stop()
+	go func() {
+		for _ = range tick.C {
+			newCtx, ctxCancel := context.WithTimeout(ctx, 10*time.Second)
+			defer ctxCancel()
+			orderResp, err := c.GetOrder(newCtx, "", req.Order.ID)
+			if err == nil && orderResp != nil {
+				order := orderResp.Order
+				resp := &CreateOrderResponse{
+					CommonResponse: orderResp.CommonResponse,
+					Order: OrderResponse{
+						PartnerID:            order.PartnerID,
+						Label:                order.LabelID,
+						Fee:                  order.ShipMoney,
+						InsuranceFee:         order.Insurance,
+						EstimatedPickTime:    order.PickDate,
+						EstimatedDeliverTime: order.DeliverDate,
+						StatusID:             order.Status,
+					},
+				}
+				ch <- Resp{
+					Err:           nil,
+					OrderResponse: resp,
+				}
+			}
+		}
+	}()
+	resp := <-ch
+	return resp.OrderResponse, resp.Err
 }
 
 func (c *Client) GetOrder(ctx context.Context, labelID, orderPartnerID string) (*GetOrderResponse, error) {
@@ -168,7 +208,7 @@ func (c *Client) GetOrder(ctx context.Context, labelID, orderPartnerID string) (
 	if labelID != "" {
 		endPoint += "/" + labelID
 	} else if orderPartnerID != "" {
-		endPoint += "/" + orderPartnerID
+		endPoint += "/partner_id:" + orderPartnerID
 	}
 	var resp GetOrderResponse
 	err := c.sendGetRequest(ctx, endPoint, nil, &resp, "Không thể lấy thông tin đơn hàng")

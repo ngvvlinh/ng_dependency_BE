@@ -320,8 +320,8 @@ type OrderResponse struct {
 
 type OrderInfo struct {
 	LabelID          String `json:"label_id"`   // Mã đơn hàng của hệ thống GHTK
-	Partner          String `json:"partner_id"` // Mã đơn hàng thuộc hệ thống của đối tác
-	Status           String `json:"status"`
+	PartnerID        String `json:"partner_id"` // Mã đơn hàng thuộc hệ thống của đối tác
+	Status           Int    `json:"status"`
 	StatusText       String `json:"status_text"`
 	Created          String `json:"created"` // Thời gian tạo đơn hàng, định dạng YY-MM-DD hh:mm:ss
 	Modified         String `json:"modified"`
