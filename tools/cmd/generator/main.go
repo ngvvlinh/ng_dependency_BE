@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/tools/pkg/generators/enum"
 	"etop.vn/backend/tools/pkg/generators/event"
 	"etop.vn/backend/tools/pkg/generators/sample"
+	"etop.vn/backend/tools/pkg/generators/sqlgen"
 	"etop.vn/backend/tools/pkg/generators/swagger"
 	"etop.vn/backend/tools/pkg/generators/wrapper"
 )
@@ -39,6 +40,7 @@ func main() {
 		enum.New(),
 		event.New(),
 		sample.New(),
+		sqlgen.New(),
 		swagger.New(),
 		wrapper.New(),
 	}

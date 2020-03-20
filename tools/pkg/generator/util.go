@@ -191,6 +191,9 @@ func parseDirective(text string, result []Directive) ([]Directive, error) {
 		result = append(result, directive)
 		return parseDirective(text[idx:], result)
 	}
+	if strings.HasPrefix(remain, "_") {
+		return nil, Errorf(nil, "invalid directive (directive commands should contain -, not _)")
+	}
 	return nil, Errorf(nil, "invalid directive")
 }
 

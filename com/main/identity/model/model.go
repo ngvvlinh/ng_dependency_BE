@@ -15,13 +15,12 @@ import (
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
+// +gen:sqlgen
 
 type (
 	SubjectType string
@@ -32,8 +31,7 @@ const (
 	SubjectTypeUser    SubjectType = "user"
 )
 
-var _ = sqlgenExternalAccountAhamove(&ExternalAccountAhamove{})
-
+// +sqlgen
 type ExternalAccountAhamove struct {
 	ID                  dot.ID
 	OwnerID             dot.ID
@@ -60,8 +58,7 @@ type ExternalAccountAhamove struct {
 	UploadedAt time.Time
 }
 
-var _ = sqlgenSale(&Affiliate{})
-
+// +sqlgen
 type Affiliate struct {
 	ID          dot.ID
 	OwnerID     dot.ID
@@ -87,8 +84,7 @@ func (s *Affiliate) GetAccount() *Account {
 	}
 }
 
-var _ = sqlgenAccount(&Account{})
-
+// +sqlgen
 type Account struct {
 	ID       dot.ID
 	OwnerID  dot.ID
@@ -126,8 +122,7 @@ func (s *Partner) GetAccount() *Account {
 	}
 }
 
-var _ = sqlgenShop(&Shop{})
-
+// +sqlgen
 type Shop struct {
 	ID      dot.ID
 	Name    string
@@ -220,26 +215,21 @@ func (s *Shop) GetTryOn() try_on.TryOnCode {
 	return etopmodel.TryOnFromGHNNoteCode(s.GhnNoteCode)
 }
 
-var _ = sqlgenShopExtended(
-	&ShopExtended{}, &Shop{}, "s",
-	sq.LEFT_JOIN, &addressmodel.Address{}, "a", "s.address_id = a.id",
-	sq.LEFT_JOIN, &User{}, "u", "s.owner_id = u.id",
-)
-
+// +sqlgen:           Shop    as s
+// +sqlgen:left-join: Address as a on s.address_id = a.id
+// +sqlgen:left-join: User    as u on s.owner_id = u.id
 type ShopExtended struct {
 	*Shop
 	Address *addressmodel.Address
 	User    *User
 }
 
-var _ = sqlgenShopDelete(&ShopDelete{}, &Shop{})
-
+// +sqlgen=Shop
 type ShopDelete struct {
 	DeletedAt time.Time
 }
 
-var _ = sqlgenPartner(&Partner{})
-
+// +sqlgen
 type Partner struct {
 	ID      dot.ID
 	OwnerID dot.ID
@@ -308,8 +298,7 @@ func (p *Partner) validate() error {
 	return nil
 }
 
-var _ = sqlgenAccountAuth(&AccountAuth{})
-
+// +sqlgen
 type AccountAuth struct {
 	AuthKey     string
 	AccountID   dot.ID
@@ -332,28 +321,21 @@ func (m *AccountAuth) BeforeInsert() error {
 	return nil
 }
 
-var _ = sqlgenAccountAuthFtPartner(
-	&AccountAuthFtPartner{}, &AccountAuth{}, "aa",
-	sq.JOIN, &Partner{}, "p", `aa.account_id = p.id`,
-)
-
+// +sqlgen:      AccountAuth as aa
+// +sqlgen:join: Partner     as p on aa.account_id = p.id
 type AccountAuthFtPartner struct {
 	*AccountAuth
 	*Partner
 }
 
-var _ = sqlgenAccountAuthFtShop(
-	&AccountAuthFtShop{}, &AccountAuth{}, "aa",
-	sq.JOIN, &Shop{}, "s", `aa.account_id = s.id`,
-)
-
+// +sqlgen:      AccountAuth as aa
+// +sqlgen:join: Shop        as s on aa.account_id = s.id
 type AccountAuthFtShop struct {
 	*AccountAuth
 	*Shop
 }
 
-var _ = sqlgenPartnerRelation(&PartnerRelation{})
-
+// +sqlgen
 type PartnerRelation struct {
 	AuthKey           string
 	PartnerID         dot.ID
@@ -370,23 +352,17 @@ type PartnerRelation struct {
 	Permission `sq:"inline"`
 }
 
-var _ = sqlgenPartnerRelationFtShop(
-	&PartnerRelationFtShop{}, &PartnerRelation{}, "pr",
-	sq.JOIN, &Shop{}, "s", "pr.subject_id = s.id",
-	sq.JOIN, &User{}, "u", "s.owner_id = u.id",
-)
-
+// +sqlgen:      PartnerRelation as pr
+// +sqlgen:join: Shop as s on pr.subject_id = s.id
+// +sqlgen:join: User as u on s.owner_id = u.id
 type PartnerRelationFtShop struct {
 	*PartnerRelation
 	*Shop
 	*User
 }
 
-var _ = sqlgenPartnerRelationFtUser(
-	&PartnerRelationFtUser{}, &PartnerRelation{}, "pr",
-	sq.JOIN, &User{}, "u", "pr.subject_id = u.id",
-)
-
+// +sqlgen:      PartnerRelation as pr
+// +sqlgen:join: User as u on pr.subject_id = u.id
 type PartnerRelationFtUser struct {
 	*PartnerRelation
 	*User
@@ -399,8 +375,7 @@ type UserInner struct {
 	Phone     string
 }
 
-var _ = sqlgenUser(&User{})
-
+// +sqlgen
 type User struct {
 	ID dot.ID
 
@@ -439,8 +414,7 @@ type Permission struct {
 	Permissions []string
 }
 
-var _ = sqlgenAccountUser(&AccountUser{})
-
+// +sqlgen
 type AccountUser struct {
 	AccountID dot.ID
 	UserID    dot.ID
@@ -468,12 +442,9 @@ type AccountUser struct {
 	DisableReason string
 }
 
-var _ = sqlgenAccountUserExtended(
-	&AccountUserExtended{}, &AccountUser{}, "au",
-	sq.JOIN, &Account{}, "a", "au.account_id = a.id",
-	sq.JOIN, &User{}, "u", "au.user_id = u.id",
-)
-
+// +sqlgen:      AccountUser as au
+// +sqlgen:join: Account as a on au.account_id = a.id
+// +sqlgen:join: User    as u on au.user_id = u.id
 type AccountUserExtended struct {
 	AccountUser *AccountUser
 	Account     *Account
@@ -486,14 +457,12 @@ func (m *AccountUserExtended) GetUserName() (fullName, shortName string) {
 	return
 }
 
-var _ = sqlgenAccountUserDelete(&AccountUserDelete{}, &AccountUser{})
-
+// +sqlgen=AccountUser
 type AccountUserDelete struct {
 	DeletedAt time.Time
 }
 
-var _ = sqlgenUserAuth(&UserAuth{})
-
+// +sqlgen
 type UserAuth struct {
 	UserID   dot.ID
 	AuthType string
@@ -503,8 +472,7 @@ type UserAuth struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenUserInternal(&UserInternal{})
-
+// +sqlgen
 type UserInternal struct {
 	ID      dot.ID
 	Hashpwd string

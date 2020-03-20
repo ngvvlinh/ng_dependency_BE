@@ -28,6 +28,17 @@ func UnwrapNamed(typ types.Type) types.Type {
 	}
 }
 
+func ExtractNamed(typ types.Type) *types.Named {
+	for typ != typ.Underlying() {
+		named, ok := typ.(*types.Named)
+		if ok {
+			return named
+		}
+		typ = typ.Underlying()
+	}
+	return nil
+}
+
 func ExtractType(typ types.Type) (_ []types.Type, inner types.Type) {
 	return extractType(false, typ, nil)
 }

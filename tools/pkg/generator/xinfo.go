@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"strings"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -64,6 +65,20 @@ func (ds Directives) GetArg(cmd string) string {
 		}
 	}
 	return ""
+}
+
+func (ds Directives) FilterBy(prefix string) Directives {
+	if !strings.HasSuffix(prefix, ":") {
+		prefix = prefix + ":"
+	}
+	res := make([]Directive, 0, len(ds))
+	for _, d := range ds {
+		if d.Cmd == prefix[:len(prefix)-1] ||
+			strings.HasPrefix(d.Cmd, prefix) {
+			res = append(res, d)
+		}
+	}
+	return res
 }
 
 type declaration struct {
