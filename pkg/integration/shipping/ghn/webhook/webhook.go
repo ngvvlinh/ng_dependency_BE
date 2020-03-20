@@ -80,7 +80,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 
 	ctx := c.Req.Context()
 	query := &modelx.GetFulfillmentQuery{
-		FulfillmentID: ffmID,
+		ShippingProvider: shipping_provider.GHN,
+		FulfillmentID:    ffmID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return cm.MapError(err).
