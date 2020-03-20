@@ -235,7 +235,8 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 
 	// Get all users into receipts
 	getUsersOfCurrAccount := &identitymodelx.GetAccountUserExtendedsQuery{
-		AccountIDs: []dot.ID{shopID},
+		AccountIDs:     []dot.ID{shopID},
+		IncludeDeleted: true,
 	}
 	if err := bus.Dispatch(ctx, getUsersOfCurrAccount); err != nil {
 		return nil, err
