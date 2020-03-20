@@ -26,7 +26,9 @@ func NewResty(cfg RestyConfig) *Resty {
 	if cfg.Client != nil {
 		*httpClient = *cfg.Client // copy the provided client
 	}
-	httpClient.Transport = newRoundTripper(httpClient.Transport)
+	if _, ok := httpClient.Transport.(MeasuredTransport); !ok {
+		httpClient.Transport = NewMeasuredTransport(httpClient.Transport)
+	}
 
 	client := &Resty{}
 	if cfg.Client == nil {
@@ -41,22 +43,26 @@ func NewResty(cfg RestyConfig) *Resty {
 	return client
 }
 
-type measuredRoundTripper struct {
+type MeasuredTransport struct {
 	http.RoundTripper
 }
 
-func newRoundTripper(rt http.RoundTripper) measuredRoundTripper {
+func NewMeasuredTransport(rt http.RoundTripper) http.RoundTripper {
 	if rt == nil {
 		rt = http.DefaultTransport
 	}
-	return measuredRoundTripper{RoundTripper: rt}
+	return MeasuredTransport{RoundTripper: rt}
 }
 
-func (m measuredRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, _ error) {
+func (m MeasuredTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	t0 := time.Now()
 	defer func() {
 		d := time.Now().Sub(t0)
-		metrics.EgressRequest(req.URL, resp.StatusCode, d)
+		if err != nil {
+			metrics.EgressRequest(req.URL, -1, d)
+		} else {
+			metrics.EgressRequest(req.URL, resp.StatusCode, d)
+		}
 	}()
 	return m.RoundTripper.RoundTrip(req)
 }
