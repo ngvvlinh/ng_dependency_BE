@@ -19,6 +19,7 @@ import (
 	"etop.vn/api/top/types/etc/receipt_mode"
 	"etop.vn/api/top/types/etc/receipt_ref"
 	"etop.vn/api/top/types/etc/receipt_type"
+	"etop.vn/api/top/types/etc/ref_action"
 	shipping "etop.vn/api/top/types/etc/shipping"
 	status3 "etop.vn/api/top/types/etc/status3"
 	status4 "etop.vn/api/top/types/etc/status4"
@@ -1750,6 +1751,7 @@ type InventoryVoucher struct {
 	RefId        dot.ID                  `json:"ref_id"`
 	RefType      string                  `json:"ref_type"`
 	RefName      string                  `json:"ref_name"`
+	RefAction    ref_action.RefAction    `json:"ref_action"`
 	RefCode      string                  `json:"ref_code"`
 	Code         string                  `json:"code"`
 	CreatedAt    dot.Time                `json:"created_at"`
@@ -1759,7 +1761,6 @@ type InventoryVoucher struct {
 	CancelReason string                  `json:"cancel_reason"`
 	Trader       *Trader                 `json:"trader"`
 	Status       status3.Status          `json:"status"`
-	Rollback     bool                    `json:"rollback"`
 }
 
 func (m *InventoryVoucher) String() string { return jsonx.MustMarshalToString(m) }

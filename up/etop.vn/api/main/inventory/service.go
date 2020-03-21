@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/inventory_type"
 	"etop.vn/api/top/types/etc/inventory_voucher_ref"
+	"etop.vn/api/top/types/etc/ref_action"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
 	"etop.vn/capi/dot"
@@ -143,17 +144,14 @@ type CreateInventoryVoucherArgs struct {
 	ShopID    dot.ID
 	CreatedBy dot.ID
 	Title     string
-	Rollback  bool
 
 	RefID   dot.ID
 	RefType inventory_voucher_ref.InventoryVoucherRef
-	RefName string
 	RefCode string
 
 	TraderID    dot.ID
 	TotalAmount int
 	Type        inventory_type.InventoryVoucherType
-	Note        string
 	Lines       []*InventoryVoucherItem
 }
 
@@ -162,12 +160,9 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 
 	RefID   dot.ID
 	RefType inventory_voucher_ref.InventoryVoucherRef
-	RefName string
 	RefCode string
 
-	NoteIn  string
-	NoteOut string
-	Title   string
+	Title string
 
 	Overstock bool
 
@@ -201,10 +196,11 @@ type InventoryVoucher struct {
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 
-	RefID   dot.ID
-	RefType inventory_voucher_ref.InventoryVoucherRef
-	RefName string
-	RefCode string
+	RefID     dot.ID
+	RefType   inventory_voucher_ref.InventoryVoucherRef
+	RefName   string
+	RefCode   string
+	RefAction ref_action.RefAction
 
 	TraderID    dot.ID
 	Trader      *Trader
@@ -217,7 +213,6 @@ type InventoryVoucher struct {
 	Note         string
 	Lines        []*InventoryVoucherItem
 	Status       status3.Status
-	Rollback     bool
 }
 
 type Trader struct {

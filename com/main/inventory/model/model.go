@@ -35,7 +35,6 @@ type InventoryVoucher struct {
 	Code         string
 	CodeNorm     int
 	Status       status3.Status
-	Note         string
 	TraderID     dot.ID
 	Trader       *Trader
 	TotalAmount  int
@@ -45,7 +44,6 @@ type InventoryVoucher struct {
 	RefID        dot.ID
 	RefCode      string
 	RefType      inventory_voucher_ref.InventoryVoucherRef
-	RefName      string
 	Title        string
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
@@ -53,7 +51,6 @@ type InventoryVoucher struct {
 	CancelledAt  time.Time
 	CancelReason string
 	ProductIDs   []dot.ID
-	Rollback     bool
 }
 
 type InventoryVoucherItem struct {

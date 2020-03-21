@@ -260,6 +260,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 		})
 	}
 	return &shop.InventoryVoucher{
+		RefAction:    args.RefAction,
 		Title:        args.Title,
 		TotalAmount:  args.TotalAmount,
 		CreatedBy:    args.CreatedBy,
@@ -282,7 +283,6 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *shop.InventoryVou
 		CancelledAt:  cmapi.PbTime(args.CancelledAt),
 		ConfirmedAt:  cmapi.PbTime(args.ConfirmedAt),
 		CancelReason: args.CancelReason,
-		Rollback:     args.Rollback,
 	}
 }
 

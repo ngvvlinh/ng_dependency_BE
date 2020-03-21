@@ -118,15 +118,12 @@ type CreateInventoryVoucherCommand struct {
 	ShopID      dot.ID
 	CreatedBy   dot.ID
 	Title       string
-	Rollback    bool
 	RefID       dot.ID
 	RefType     inventory_voucher_ref.InventoryVoucherRef
-	RefName     string
 	RefCode     string
 	TraderID    dot.ID
 	TotalAmount int
 	Type        inventory_type.InventoryVoucherType
-	Note        string
 	Lines       []*InventoryVoucherItem
 
 	Result *InventoryVoucher `json:"-"`
@@ -141,10 +138,7 @@ type CreateInventoryVoucherByQuantityChangeCommand struct {
 	ShopID    dot.ID
 	RefID     dot.ID
 	RefType   inventory_voucher_ref.InventoryVoucherRef
-	RefName   string
 	RefCode   string
-	NoteIn    string
-	NoteOut   string
 	Title     string
 	Overstock bool
 	CreatedBy dot.ID
@@ -453,15 +447,12 @@ func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 			ShopID:      q.ShopID,
 			CreatedBy:   q.CreatedBy,
 			Title:       q.Title,
-			Rollback:    q.Rollback,
 			RefID:       q.RefID,
 			RefType:     q.RefType,
-			RefName:     q.RefName,
 			RefCode:     q.RefCode,
 			TraderID:    q.TraderID,
 			TotalAmount: q.TotalAmount,
 			Type:        q.Type,
-			Note:        q.Note,
 			Lines:       q.Lines,
 		}
 }
@@ -470,15 +461,12 @@ func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *Crea
 	q.ShopID = args.ShopID
 	q.CreatedBy = args.CreatedBy
 	q.Title = args.Title
-	q.Rollback = args.Rollback
 	q.RefID = args.RefID
 	q.RefType = args.RefType
-	q.RefName = args.RefName
 	q.RefCode = args.RefCode
 	q.TraderID = args.TraderID
 	q.TotalAmount = args.TotalAmount
 	q.Type = args.Type
-	q.Note = args.Note
 	q.Lines = args.Lines
 }
 
@@ -488,10 +476,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) GetArgs(ctx context.Cont
 			ShopID:    q.ShopID,
 			RefID:     q.RefID,
 			RefType:   q.RefType,
-			RefName:   q.RefName,
 			RefCode:   q.RefCode,
-			NoteIn:    q.NoteIn,
-			NoteOut:   q.NoteOut,
 			Title:     q.Title,
 			Overstock: q.Overstock,
 			CreatedBy: q.CreatedBy,
@@ -503,10 +488,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) SetCreateInventoryVouche
 	q.ShopID = args.ShopID
 	q.RefID = args.RefID
 	q.RefType = args.RefType
-	q.RefName = args.RefName
 	q.RefCode = args.RefCode
-	q.NoteIn = args.NoteIn
-	q.NoteOut = args.NoteOut
 	q.Title = args.Title
 	q.Overstock = args.Overstock
 	q.CreatedBy = args.CreatedBy

@@ -392,7 +392,7 @@ func main() {
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
-	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
+	inventoryQuery := inventoryquery.NewQueryInventory(stocktakeQuery, eventBus, db).MessageBus()
 	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
 	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
 

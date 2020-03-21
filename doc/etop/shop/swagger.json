@@ -5672,6 +5672,13 @@
         "purchase_refund"
       ]
     },
+    "asRefAction": {
+      "type": "string",
+      "enum": [
+        "create",
+        "cancel"
+      ]
+    },
     "baAddress": {
       "type": "object",
       "properties": {
@@ -8763,6 +8770,9 @@
         "note": {
           "type": "string"
         },
+        "ref_action": {
+          "$ref": "#/definitions/asRefAction"
+        },
         "ref_code": {
           "type": "string"
         },
@@ -8775,9 +8785,6 @@
         },
         "ref_type": {
           "type": "string"
-        },
-        "rollback": {
-          "type": "boolean"
         },
         "shop_id": {
           "type": "string",

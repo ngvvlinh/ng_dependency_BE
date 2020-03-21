@@ -306,25 +306,6 @@ func (ft *InventoryVoucherFilters) ByStatusPtr(Status *status3.Status) *sq.Colum
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByNote(Note string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "note",
-		Value:  Note,
-		IsNil:  Note == "",
-	}
-}
-
-func (ft *InventoryVoucherFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "note",
-		Value:  Note,
-		IsNil:  Note == nil,
-		IsZero: Note != nil && (*Note) == "",
-	}
-}
-
 func (ft *InventoryVoucherFilters) ByTraderID(TraderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -439,25 +420,6 @@ func (ft *InventoryVoucherFilters) ByRefTypePtr(RefType *inventory_voucher_ref.I
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByRefName(RefName string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ref_name",
-		Value:  RefName,
-		IsNil:  RefName == "",
-	}
-}
-
-func (ft *InventoryVoucherFilters) ByRefNamePtr(RefName *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ref_name",
-		Value:  RefName,
-		IsNil:  RefName == nil,
-		IsZero: RefName != nil && (*RefName) == "",
-	}
-}
-
 func (ft *InventoryVoucherFilters) ByTitle(Title string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -569,24 +531,5 @@ func (ft *InventoryVoucherFilters) ByCancelReasonPtr(CancelReason *string) *sq.C
 		Value:  CancelReason,
 		IsNil:  CancelReason == nil,
 		IsZero: CancelReason != nil && (*CancelReason) == "",
-	}
-}
-
-func (ft *InventoryVoucherFilters) ByRollback(Rollback bool) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "rollback",
-		Value:  Rollback,
-		IsNil:  bool(!Rollback),
-	}
-}
-
-func (ft *InventoryVoucherFilters) ByRollbackPtr(Rollback *bool) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "rollback",
-		Value:  Rollback,
-		IsNil:  Rollback == nil,
-		IsZero: Rollback != nil && bool(!(*Rollback)),
 	}
 }

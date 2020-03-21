@@ -4,11 +4,14 @@ import (
 	"context"
 
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/top/types/etc/inventory_voucher_ref"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/api/top/types/etc/status4"
+	"etop.vn/api/top/types/etc/stocktake_type"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/sqlstore"
+	"etop.vn/backend/com/main/inventory/util"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sql/cmsql"
@@ -22,13 +25,15 @@ type InventoryQueryService struct {
 	InventoryStore        sqlstore.InventoryFactory
 	InventoryVoucherStore sqlstore.InventoryVoucherFactory
 	EventBus              capi.EventBus
+	StocktakeQuery        stocktaking.QueryBus
 }
 
-func NewQueryInventory(eventBus capi.EventBus, db *cmsql.Database) *InventoryQueryService {
+func NewQueryInventory(stocktakeQuery stocktaking.QueryBus, eventBus capi.EventBus, db *cmsql.Database) *InventoryQueryService {
 	return &InventoryQueryService{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
 		EventBus:              eventBus,
+		StocktakeQuery:        stocktakeQuery,
 	}
 }
 
@@ -63,6 +68,10 @@ func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, args *
 	for _, value := range result {
 		inventoryVoucherItems = append(inventoryVoucherItems, convert.Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(value, nil))
 	}
+	inventoryVoucherItems, err = q.populateInventoryVouchers(ctx, inventoryVoucherItems)
+	if err != nil {
+		return nil, err
+	}
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVoucherItems}, nil
 }
 
@@ -89,6 +98,10 @@ func (q *InventoryQueryService) GetInventoryVouchersByIDs(ctx context.Context, a
 	for _, value := range result {
 		inventoryVoucherItems = append(inventoryVoucherItems, convert.Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(value, nil))
 	}
+	inventoryVoucherItems, err = q.populateInventoryVouchers(ctx, inventoryVoucherItems)
+	if err != nil {
+		return nil, err
+	}
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVoucherItems}, nil
 }
 
@@ -97,7 +110,7 @@ func (q *InventoryQueryService) GetInventoryVoucher(ctx context.Context, ShopID 
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return q.populateInventoryVoucher(ctx, result)
 }
 
 func (q *InventoryQueryService) GetInventoryVariant(ctx context.Context, ShopID dot.ID, VariantID dot.ID) (*inventory.InventoryVariant, error) {
@@ -112,6 +125,10 @@ func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
 	ctx context.Context, RefIDs []dot.ID, ShopID dot.ID,
 ) (*inventory.GetInventoryVouchersResponse, error) {
 	inventoryVouchers, err := q.InventoryVoucherStore(ctx).RefIDs(RefIDs...).ShopID(ShopID).ListInventoryVoucher()
+	if err != nil {
+		return nil, err
+	}
+	inventoryVouchers, err = q.populateInventoryVouchers(ctx, inventoryVouchers)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +155,10 @@ func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Conte
 			}
 		}
 	}
+	result, err = q.populateInventoryVouchers(ctx, result)
+	if err != nil {
+		return nil, err
+	}
 	return &inventory.GetInventoryVoucherByReferenceResponse{
 		InventoryVouchers: result,
 		Status:            status,
@@ -152,4 +173,44 @@ func (q *InventoryQueryService) ListInventoryVariantsByVariantIDs(
 		return nil, err
 	}
 	return &inventory.GetInventoryVariantsResponse{InventoryVariants: inventoryVariants}, nil
+}
+
+func (q *InventoryQueryService) populateInventoryVouchers(ctx context.Context, args []*inventory.InventoryVoucher) ([]*inventory.InventoryVoucher, error) {
+	var stocktakeIDs []dot.ID
+	for _, v := range args {
+		if v.RefType == inventory_voucher_ref.StockTake {
+			stocktakeIDs = append(stocktakeIDs, v.RefID)
+		}
+	}
+	var mapStocktake = make(map[dot.ID]stocktake_type.StocktakeType)
+	if len(stocktakeIDs) > 0 {
+		queryStocktake := &stocktaking.GetStocktakesByIDsQuery{
+			Ids:    stocktakeIDs,
+			ShopID: args[0].ShopID,
+		}
+		err := q.StocktakeQuery.Dispatch(ctx, queryStocktake)
+		if err != nil {
+			return nil, err
+		}
+		for _, value := range queryStocktake.Result {
+			mapStocktake[value.ID] = value.Type
+		}
+	}
+	return util.PopulateInventoryVouchers(args, mapStocktake)
+}
+
+func (q *InventoryQueryService) populateInventoryVoucher(ctx context.Context, arg *inventory.InventoryVoucher) (*inventory.InventoryVoucher, error) {
+	var stocktake *stocktaking.ShopStocktake
+	if arg.RefType == inventory_voucher_ref.StockTake {
+		queryStocktake := &stocktaking.GetStocktakeByIDQuery{
+			Id:     arg.RefID,
+			ShopID: arg.ShopID,
+		}
+		err := q.StocktakeQuery.Dispatch(ctx, queryStocktake)
+		if err != nil {
+			return nil, err
+		}
+		stocktake = queryStocktake.Result
+	}
+	return util.PopulateInventoryVoucher(arg, stocktake)
 }

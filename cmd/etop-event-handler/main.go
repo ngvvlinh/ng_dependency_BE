@@ -20,6 +20,7 @@ import (
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	inventoryquery "etop.vn/backend/com/main/inventory/query"
 	servicelocation "etop.vn/backend/com/main/location"
+	stocktakequery "etop.vn/backend/com/main/stocktaking/query"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
@@ -102,7 +103,8 @@ func main() {
 
 	catalogQuery := catalogquery.New(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
-	inventoryquery := inventoryquery.NewQueryInventory(bus.New(), db).MessageBus()
+	stocktakeQuery := stocktakequery.NewQueryStocktake(db).MessageBus()
+	inventoryquery := inventoryquery.NewQueryInventory(stocktakeQuery, bus.New(), db).MessageBus()
 	locationBus := servicelocation.New().MessageBus()
 	addressQuery := customerquery.NewAddressQuery(db).MessageBus()
 
