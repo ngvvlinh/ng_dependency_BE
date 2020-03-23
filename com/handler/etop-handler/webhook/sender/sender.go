@@ -211,12 +211,10 @@ func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot
 			return err
 		}
 
-		value := ""
 		for _, partner := range query.Result.Partners {
 			partnerIDs = append(partnerIDs, partner.ID)
-			value += partner.ID.String() + ","
 		}
-		value = value[:len(value)-1]
+		value := dot.JoinIDs(partnerIDs)
 
 		if err := redisStore.SetStringWithTTL(PrefixGetPartnerIDs+"-"+shopID.String(), value, TTL); err != nil {
 			return err
