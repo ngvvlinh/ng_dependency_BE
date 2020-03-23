@@ -21,6 +21,8 @@ var enumTableNameName = map[int]string{
 	3: "order",
 	4: "shop",
 	5: "fulfillment",
+	6: "shop_brand",
+	7: "shop_product",
 }
 
 var enumTableNameValue = map[string]int{
@@ -30,6 +32,8 @@ var enumTableNameValue = map[string]int{
 	"order":         3,
 	"shop":          4,
 	"fulfillment":   5,
+	"shop_brand":    6,
+	"shop_product":  7,
 }
 
 func ParseTableName(s string) (TableName, bool) {

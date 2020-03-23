@@ -45,6 +45,11 @@ func (s *UserStore) ByEmail(email string) *UserStore {
 	return s
 }
 
+func (s *UserStore) ByWLPartnerID(WLPartnerID dot.ID) *UserStore {
+	s.preds = append(s.preds, s.ft.ByWLPartnerID(WLPartnerID))
+	return s
+}
+
 func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) {
 	var user identitymodel.User
 	query := s.query().Where(s.preds)
@@ -59,6 +64,21 @@ func (s *UserStore) GetUser(ctx context.Context) (*identity.User, error) {
 		return nil, err
 	}
 	return convert.User(result), nil
+}
+
+func (s *UserStore) ListUsersDB() ([]*identitymodel.User, error) {
+	var users identitymodel.Users
+	err := s.query().Where(s.preds).Find(&users)
+	return users, err
+}
+
+func (s *UserStore) ListUsers() (users []*identity.User, err error) {
+	usersDB, err := s.ListUsersDB()
+	if err != nil {
+		return nil, err
+	}
+	err = scheme.Convert(usersDB, &users)
+	return users, err
 }
 
 type UpdateRefferenceIDArgs struct {

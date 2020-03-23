@@ -61,8 +61,8 @@ type Shop struct {
 }
 
 type ShippingServiceSelectStrategyItem struct {
-	Key   string
-	Value string
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type SurveyInfo struct {

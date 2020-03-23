@@ -307,6 +307,17 @@ func (h QueryServiceHandler) HandleListPartnersForWhiteLabel(ctx context.Context
 	return err
 }
 
+type ListUsersByWLPartnerIDQuery struct {
+	ID dot.ID
+
+	Result []*User `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, msg *ListUsersByWLPartnerIDQuery) (err error) {
+	msg.Result, err = h.inner.ListUsersByWLPartnerID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateAffiliateCommand) command()                          {}
@@ -333,6 +344,7 @@ func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
 func (q *GetUserByPhoneOrEmailQuery) query()                 {}
 func (q *ListPartnersForWhiteLabelQuery) query()             {}
+func (q *ListUsersByWLPartnerIDQuery) query()                {}
 
 // implement conversion
 
@@ -615,6 +627,17 @@ func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context
 func (q *ListPartnersForWhiteLabelQuery) SetEmpty(args *meta.Empty) {
 }
 
+func (q *ListUsersByWLPartnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersByWLPartnerID) {
+	return ctx,
+		&ListUsersByWLPartnerID{
+			ID: q.ID,
+		}
+}
+
+func (q *ListUsersByWLPartnerIDQuery) SetListUsersByWLPartnerID(args *ListUsersByWLPartnerID) {
+	q.ID = args.ID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -665,5 +688,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByPhone)
 	b.AddHandler(h.HandleGetUserByPhoneOrEmail)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
+	b.AddHandler(h.HandleListUsersByWLPartnerID)
 	return QueryBus{b}
 }

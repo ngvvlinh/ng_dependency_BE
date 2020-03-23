@@ -8,9 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-etl/config"
 	"etop.vn/backend/cmd/etop-etl/register"
 	"etop.vn/backend/cmd/etop-etl/register/table_name"
+	identityquery "etop.vn/backend/com/main/identity"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	_ "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
@@ -34,6 +36,7 @@ type ETLUtil struct {
 	mapDBCfgs     map[string]config.Database
 	mapDBs        map[string]*cmsql.Database
 	mapTableNames map[string][]table_name.TableName
+	identityQuery identity.QueryBus
 	resetDB       bool
 }
 
@@ -46,6 +49,7 @@ func initDBs(mapDBCfgs map[string]config.Database) map[string]*cmsql.Database {
 		}
 		if wlName == drivers.ETop(cmenv.Env()).Key {
 			sqlstore.Init(db)
+
 		}
 		mapDBs[wlName] = db
 	}
@@ -71,6 +75,7 @@ func New(
 		mapTableNames: convertTableNames(mapDBCfgs),
 		resetDB:       resetDB,
 	}
+	etlUtil.identityQuery = identityquery.NewQueryService(etlUtil.mapDBs[drivers.ETop(cmenv.Env()).Key]).MessageBus()
 	return etlUtil
 }
 
@@ -134,7 +139,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 		}
 
 		// GET userID and accountIDs by WlPartnerID
-		userID, accountIDs, err := s.getUserIDAndAccountIDs(ctx, driver.ID)
+		userIDs, accountIDs, err := s.getUserIDsAndAccountIDs(ctx, driver.ID)
 		if err != nil {
 			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
 			continue
@@ -147,7 +152,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 			funcz := register.GetRegisterFuncFromTableName(tableName)
 			switch tableName {
 			case table_name.User:
-				funcz(ng, srcDB, dstDB, userID)
+				funcz(ng, srcDB, dstDB, userIDs)
 			default:
 				funcz(ng, srcDB, dstDB, accountIDs)
 			}
@@ -190,20 +195,23 @@ func checkDBExists(db *cmsql.Database, databaseName string) (exists bool, err er
 	return
 }
 
-func (s *ETLUtil) getUserIDAndAccountIDs(ctx context.Context, partnerID dot.ID) (userID dot.ID, accountIDs []dot.ID, err error) {
-	getPartnerQuery := &identitymodelx.GetPartner{
-		PartnerID: partnerID,
+func (s *ETLUtil) getUserIDsAndAccountIDs(ctx context.Context, partnerID dot.ID) (userIDs []dot.ID, accountIDs []dot.ID, err error) {
+	getUsersByWLPartnerID := &identity.ListUsersByWLPartnerIDQuery{
+		ID: partnerID,
 	}
-	if err := bus.Dispatch(ctx, getPartnerQuery); err != nil {
-		return 0, nil, err
+	if err := s.identityQuery.Dispatch(ctx, getUsersByWLPartnerID); err != nil {
+		return nil, nil, err
 	}
-	userID = getPartnerQuery.Result.Partner.OwnerID
+
+	for _, user := range getUsersByWLPartnerID.Result {
+		userIDs = append(userIDs, user.ID)
+	}
 
 	getAccountsByUserID := &identitymodelx.GetAllAccountUsersQuery{
-		UserIDs: []dot.ID{userID},
+		UserIDs: userIDs,
 	}
 	if err := bus.Dispatch(ctx, getAccountsByUserID); err != nil {
-		return 0, nil, err
+		return nil, nil, err
 	}
 	for _, accountUser := range getAccountsByUserID.Result {
 		accountIDs = append(accountIDs, accountUser.AccountID)

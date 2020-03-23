@@ -152,6 +152,8 @@ type ShopProduct struct {
 	ProductType product_type.ProductType
 
 	MetaFields []*MetaField
+
+	Rid dot.ID
 }
 
 type ShopProductWithVariants struct {
@@ -294,6 +296,8 @@ type ShopBrand struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
+
+	Rid dot.ID
 }
 
 var _ = sqlgenShopSupplierVariant(&ShopVariantSupplier{})

@@ -29,6 +29,12 @@ const (
 
 	// +enum=fulfillment
 	Fulfillment TableName = 5
+
+	// +enum=shop_brand
+	ShopBrand TableName = 6
+
+	// +enum=shop_product
+	ShopProduct TableName = 7
 )
 
 func ConvertStringsToTableNames(args []string) []TableName {

@@ -293,6 +293,7 @@ func convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg *catalog.ShopBrand, ou
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = arg.DeletedAt     // simple assign
+	out.Rid = 0                       // zero value
 }
 
 func Convert_catalog_ShopBrands_catalogmodel_ShopBrands(args []*catalog.ShopBrand) (outs []*catalogmodel.ShopBrand) {
@@ -674,6 +675,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.NameNormUa = ""                             // zero value
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = nil                            // types do not match
+	out.Rid = 0                                     // zero value
 }
 
 func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {

@@ -1,5 +1,5 @@
 CREATE TABLE if not exists shop (
-    id bigint,
+    id bigint PRIMARY KEY,
     rid bigint,
     name text,
     owner_id bigint,
@@ -21,5 +21,13 @@ CREATE TABLE if not exists shop (
     inventory_overstock boolean,
     code text,
     auto_create_ffm boolean DEFAULT FALSE,
-    recognized_hosts text[]
+    recognized_hosts text[],
+    ship_to_address_id int8,
+    ship_from_address_id int8,
+    ghn_note_code ghn_note_code,
+    try_on try_on,
+    company_info jsonb,
+    money_transaction_rrule text,
+    survey_info jsonb,
+    shipping_service_select_strategy jsonb
 );

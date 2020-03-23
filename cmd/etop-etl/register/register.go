@@ -2,6 +2,7 @@ package register
 
 import (
 	"etop.vn/backend/cmd/etop-etl/register/table_name"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	shopmodel "etop.vn/backend/com/main/identity/model"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
@@ -20,6 +21,10 @@ import (
 	etlordermodel "etop.vn/backend/zexp/etl/main/order/model"
 	shopconvert "etop.vn/backend/zexp/etl/main/shop/convert"
 	etlshopmodel "etop.vn/backend/zexp/etl/main/shop/model"
+	shopbrandconvert "etop.vn/backend/zexp/etl/main/shopbrand/convert"
+	etlshopbrandmodel "etop.vn/backend/zexp/etl/main/shopbrand/model"
+	shopproductconvert "etop.vn/backend/zexp/etl/main/shopproduct/convert"
+	etlshopproductmodel "etop.vn/backend/zexp/etl/main/shopproduct/model"
 	userconvert "etop.vn/backend/zexp/etl/main/user/convert"
 	etlusermodel "etop.vn/backend/zexp/etl/main/user/model"
 	"etop.vn/capi/dot"
@@ -34,6 +39,8 @@ var mapFieldRegisters = map[table_name.TableName]ETLRegisterFunc{
 	table_name.Order:        registerOrder,
 	table_name.Shop:         registerShop,
 	table_name.Fulfillment:  registerFulfillment,
+	table_name.ShopBrand:    registerShopBrand,
+	table_name.ShopProduct:  registerShopProduct,
 }
 
 func GetRegisterFuncFromTableName(name table_name.TableName) ETLRegisterFunc {
@@ -41,12 +48,12 @@ func GetRegisterFuncFromTableName(name table_name.TableName) ETLRegisterFunc {
 }
 
 func registerUser(ng *etl.ETLEngine, DB, dstDB *cmsql.Database, args ...interface{}) {
-	userID := args[0]
+	userIDs := args[0]
 	ng.Register(DB, (*identitymodel.Users)(nil), dstDB, (*etlusermodel.Users)(nil))
 	ng.RegisterConversion(userconvert.RegisterConversions)
 	ng.RegisterQuery(etl.ETLQuery{
 		OrderBy: etl.OrderByRidASC,
-		Where:   []interface{}{sq.NewExpr("id = ?", userID.(dot.ID))},
+		Where:   []interface{}{sq.In("id", userIDs.([]dot.ID))},
 		Limit:   100,
 	})
 	ng.Bootstrap()
@@ -103,6 +110,28 @@ func registerFulfillment(ng *etl.ETLEngine, DB, dstDB *cmsql.Database, args ...i
 	accountIDs := args[0]
 	ng.Register(DB, (*fulfillmentmodel.Fulfillments)(nil), dstDB, (*etlfulfillmentmodel.Fulfillments)(nil))
 	ng.RegisterConversion(fulfillmentconvert.RegisterConversions)
+	ng.RegisterQuery(etl.ETLQuery{
+		OrderBy: etl.OrderByRidASC,
+		Where:   []interface{}{sq.In("shop_id", accountIDs.([]dot.ID))},
+		Limit:   100,
+	})
+}
+
+func registerShopBrand(ng *etl.ETLEngine, DB, dstDB *cmsql.Database, args ...interface{}) {
+	accountIDs := args[0]
+	ng.Register(DB, (*catalogmodel.ShopBrands)(nil), dstDB, (*etlshopbrandmodel.ShopBrands)(nil))
+	ng.RegisterConversion(shopbrandconvert.RegisterConversions)
+	ng.RegisterQuery(etl.ETLQuery{
+		OrderBy: etl.OrderByRidASC,
+		Where:   []interface{}{sq.In("shop_id", accountIDs.([]dot.ID))},
+		Limit:   100,
+	})
+}
+
+func registerShopProduct(ng *etl.ETLEngine, DB, dstdB *cmsql.Database, args ...interface{}) {
+	accountIDs := args[0]
+	ng.Register(DB, (*catalogmodel.ShopProducts)(nil), dstdB, (*etlshopproductmodel.ShopProducts)(nil))
+	ng.RegisterConversion(shopproductconvert.RegisterConversions)
 	ng.RegisterQuery(etl.ETLQuery{
 		OrderBy: etl.OrderByRidASC,
 		Where:   []interface{}{sq.In("shop_id", accountIDs.([]dot.ID))},

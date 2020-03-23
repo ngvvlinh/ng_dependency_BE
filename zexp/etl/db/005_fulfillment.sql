@@ -46,7 +46,7 @@ END
 $$;
 
 CREATE TABLE if not exists fulfillment (
-    id bigint,
+    id bigint primary key,
     order_id bigint,
     lines jsonb,
     variant_ids bigint[],
@@ -149,6 +149,13 @@ CREATE TABLE if not exists fulfillment (
     width int,
     height int,
     external_affiliate_id text,
+    original_cod_amount int4,
+    shipping_service_fee int4,
+    address_return jsonb,
+    shipping_fee_shop_transfered_at timestamp with time zone,
+    include_insurance boolean,
+    external_shipping_name text,
+    created_by int8,
 
     rid bigint
 );

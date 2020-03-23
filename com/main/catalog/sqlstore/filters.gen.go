@@ -989,6 +989,25 @@ func (ft *ShopProductFilters) ByProductTypePtr(ProductType *product_type.Product
 	}
 }
 
+func (ft *ShopProductFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopProductFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type ProductShopCollectionFilters struct{ prefix string }
 
 func NewProductShopCollectionFilters(prefix string) ProductShopCollectionFilters {
@@ -1911,6 +1930,25 @@ func (ft *ShopBrandFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilte
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *ShopBrandFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopBrandFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
 
