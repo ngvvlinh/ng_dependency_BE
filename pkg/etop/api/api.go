@@ -330,8 +330,9 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 
 func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRelationshipGetInvitationsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
-	query := &invitation.ListInvitationsByEmailQuery{
+	query := &invitation.ListInvitationsByEmailAndPhoneQuery{
 		Email:   q.Context.User.Email,
+		Phone:   q.Context.User.Phone,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}

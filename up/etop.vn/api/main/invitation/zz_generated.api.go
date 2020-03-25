@@ -132,16 +132,17 @@ func (h QueryServiceHandler) HandleListInvitationsAcceptedByEmail(ctx context.Co
 	return err
 }
 
-type ListInvitationsByEmailQuery struct {
+type ListInvitationsByEmailAndPhoneQuery struct {
 	Email   string
+	Phone   string
 	Paging  meta.Paging
 	Filters meta.Filters
 
 	Result *InvitationsResponse `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListInvitationsByEmail(ctx context.Context, msg *ListInvitationsByEmailQuery) (err error) {
-	msg.Result, err = h.inner.ListInvitationsByEmail(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListInvitationsByEmailAndPhone(ctx context.Context, msg *ListInvitationsByEmailAndPhoneQuery) (err error) {
+	msg.Result, err = h.inner.ListInvitationsByEmailAndPhone(msg.GetArgs(ctx))
 	return err
 }
 
@@ -156,7 +157,7 @@ func (q *GetInvitationQuery) query()                  {}
 func (q *GetInvitationByTokenQuery) query()           {}
 func (q *ListInvitationsQuery) query()                {}
 func (q *ListInvitationsAcceptedByEmailQuery) query() {}
-func (q *ListInvitationsByEmailQuery) query()         {}
+func (q *ListInvitationsByEmailAndPhoneQuery) query() {}
 
 // implement conversion
 
@@ -238,17 +239,19 @@ func (q *ListInvitationsAcceptedByEmailQuery) GetArgs(ctx context.Context) (_ co
 		q.Email
 }
 
-func (q *ListInvitationsByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListInvitationsByEmailArgs) {
+func (q *ListInvitationsByEmailAndPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListInvitationsByEmailAndPhoneArgs) {
 	return ctx,
-		&ListInvitationsByEmailArgs{
+		&ListInvitationsByEmailAndPhoneArgs{
 			Email:   q.Email,
+			Phone:   q.Phone,
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
 }
 
-func (q *ListInvitationsByEmailQuery) SetListInvitationsByEmailArgs(args *ListInvitationsByEmailArgs) {
+func (q *ListInvitationsByEmailAndPhoneQuery) SetListInvitationsByEmailAndPhoneArgs(args *ListInvitationsByEmailAndPhoneArgs) {
 	q.Email = args.Email
+	q.Phone = args.Phone
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 }
@@ -288,6 +291,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetInvitationByToken)
 	b.AddHandler(h.HandleListInvitations)
 	b.AddHandler(h.HandleListInvitationsAcceptedByEmail)
-	b.AddHandler(h.HandleListInvitationsByEmail)
+	b.AddHandler(h.HandleListInvitationsByEmailAndPhone)
 	return QueryBus{b}
 }

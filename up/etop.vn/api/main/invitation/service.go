@@ -25,7 +25,7 @@ type QueryService interface {
 	GetInvitationByToken(ctx context.Context, token string) (*Invitation, error)
 
 	ListInvitations(context.Context, *shopping.ListQueryShopArgs) (*InvitationsResponse, error)
-	ListInvitationsByEmail(context.Context, *ListInvitationsByEmailArgs) (*InvitationsResponse, error)
+	ListInvitationsByEmailAndPhone(context.Context, *ListInvitationsByEmailAndPhoneArgs) (*InvitationsResponse, error)
 	ListInvitationsAcceptedByEmail(ctx context.Context, email string) (*InvitationsResponse, error)
 }
 
@@ -36,8 +36,9 @@ type InvitationsResponse struct {
 	Paging      meta.PageInfo
 }
 
-type ListInvitationsByEmailArgs struct {
+type ListInvitationsByEmailAndPhoneArgs struct {
 	Email   string
+	Phone   string
 	Paging  meta.Paging
 	Filters meta.Filters
 }

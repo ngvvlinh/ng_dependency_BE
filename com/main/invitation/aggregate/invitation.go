@@ -84,22 +84,27 @@ func (a *InvitationAggregate) CreateInvitation(
 	if err := a.havePermissionToInvite(ctx, args); err != nil {
 		return nil, err
 	}
-	if err := a.checkUserBelongsToShop(ctx, args.Email, args.Phone, args.AccountID); err != nil {
+	userIsInvited, err := a.checkUserBelongsToShop(ctx, args.Email, args.Phone, args.AccountID)
+	if err != nil {
 		return nil, err
 	}
 
 	// check have invitation that was sent to email
-	_, err := a.store(ctx).AccountID(args.AccountID).PhoneOrEmail(args.Phone, args.Email).NotExpires().
+	_, err = a.store(ctx).AccountID(args.AccountID).NotExpires().PhoneOrEmail(userIsInvited.Phone, userIsInvited.Email).
 		AcceptedAt(nil).RejectedAt(nil).GetInvitation()
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
 	case cm.NoError:
-		if args.Phone != "" {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Phone %s đã được gửi lời mời.", args.Phone)
-		}
-		if args.Email != "" {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email %s đã được gửi lời mời.", args.Email)
+		if userIsInvited == nil {
+			if args.Phone != "" {
+				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại %s đã được gửi lời mời.", args.Phone)
+			}
+			if args.Email != "" {
+				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email %s đã được gửi lời mời.", args.Email)
+			}
+		} else {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản đã được gửi lời mời.")
 		}
 	default:
 		return nil, err
@@ -132,11 +137,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	var invitationUrl string
-	if args.Email != "" {
-		invitationUrl = wl.X(ctx).InviteUserByEmailURL
-	} else {
-		invitationUrl = wl.X(ctx).InviteUserByPhoneURL
-	}
+	invitationUrl = wl.X(ctx).InviteUserURL
 
 	URL, err := url.Parse(invitationUrl)
 	if err != nil {
@@ -152,7 +153,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 	shopRoles := strings.Join(authorization.ParseRoleLabels(invitationItem.Roles), ", ")
 	shopName := getAccountQuery.Result.Name
-	invitingUsername := getUserQuery.Result.FullName
+	invitedUsername := getUserQuery.Result.FullName
 
 	if err := a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
 		// create invitation
@@ -163,11 +164,11 @@ func (a *InvitationAggregate) CreateInvitation(
 		var b strings.Builder
 		if args.Email != "" {
 			if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
-				"FullName":         fullName,
-				"URL":              URL.String(),
-				"ShopRoles":        shopRoles,
-				"ShopName":         shopName,
-				"InvitingUsername": invitingUsername,
+				"FullName":        fullName,
+				"URL":             URL.String(),
+				"ShopRoles":       shopRoles,
+				"ShopName":        shopName,
+				"InvitedUsername": invitedUsername,
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 			}
@@ -183,10 +184,10 @@ func (a *InvitationAggregate) CreateInvitation(
 			}
 		} else {
 			if err := api.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
-				"FullName":  fullName,
-				"URL":       URL.String(),
-				"ShopRoles": shopRoles,
-				"ShopName":  shopName,
+				"InvitedUsername": invitedUsername,
+				"URL":             URL.String(),
+				"ShopRoles":       shopRoles,
+				"ShopName":        shopName,
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
 			}
@@ -220,7 +221,7 @@ func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation
 	return nil
 }
 
-func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email, phone string, shopID dot.ID) error {
+func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email, phone string, shopID dot.ID) (user *identity.User, _ error) {
 	var userIsInvited *identity.User
 	getUserQuery := &identity.GetUserByPhoneOrEmailQuery{
 		Phone: phone,
@@ -229,11 +230,11 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email,
 	err := a.identityQuery.Dispatch(ctx, getUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
-		return nil
+		return nil, nil
 	case cm.NoError:
 	// no-op
 	default:
-		return err
+		return nil, err
 	}
 	userIsInvited = getUserQuery.Result
 
@@ -244,11 +245,11 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email,
 	err = bus.Dispatch(ctx, getAccountUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
-		return nil
+		return userIsInvited, nil
 	case cm.NoError:
-		return cm.Errorf(cm.FailedPrecondition, nil, "Người dùng đã là thành viên của shop")
+		return userIsInvited, cm.Errorf(cm.FailedPrecondition, nil, "Người dùng đã là thành viên của shop")
 	default:
-		return err
+		return userIsInvited, err
 	}
 }
 

@@ -80,12 +80,7 @@ func (s *InvitationStore) Phone(phone string) *InvitationStore {
 }
 
 func (s *InvitationStore) PhoneOrEmail(phone, email string) *InvitationStore {
-	if phone != "" {
-		s.preds = append(s.preds, sq.NewExpr("phone = ?", phone))
-	}
-	if email != "" {
-		s.preds = append(s.preds, sq.NewExpr("email = ?", email))
-	}
+	s.preds = append(s.preds, sq.NewExpr("phone = ? or email = ?", phone, email))
 	return s
 }
 

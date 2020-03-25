@@ -60,10 +60,10 @@ func (q *InvitationQuery) GetInvitationByToken(
 	return invitation, nil
 }
 
-func (q *InvitationQuery) ListInvitationsByEmail(
-	ctx context.Context, args *invitation.ListInvitationsByEmailArgs,
+func (q *InvitationQuery) ListInvitationsByEmailAndPhone(
+	ctx context.Context, args *invitation.ListInvitationsByEmailAndPhoneArgs,
 ) (*invitation.InvitationsResponse, error) {
-	query := q.store(ctx).Email(args.Email).Filters(args.Filters)
+	query := q.store(ctx).PhoneOrEmail(args.Phone, args.Email).Filters(args.Filters)
 	invitations, err := query.WithPaging(args.Paging).ListInvitations()
 	if err != nil {
 		return nil, err
