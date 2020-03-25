@@ -13,7 +13,7 @@ import (
 	common "etop.vn/backend/pkg/common"
 	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	bus "etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/headers"
+	headers "etop.vn/backend/pkg/common/headers"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )

@@ -345,7 +345,8 @@ func generate(printer generator.Printer, pkg *packages.Package, services []*Serv
 	printer.Import("middleware", "etop.vn/backend/pkg/etop/authorize/middleware")
 	printer.Import("identitymodel", "etop.vn/backend/com/main/identity/model")
 	printer.Import("permission", "etop.vn/backend/pkg/etop/authorize/permission")
-	printer.Import("", "etop.vn/backend/pkg/etop/authorize/auth")
+	printer.Import("auth", "etop.vn/backend/pkg/etop/authorize/auth")
+	printer.Import("headers", "etop.vn/backend/pkg/common/headers")
 
 	vars := map[string]interface{}{
 		"PackageName":   services[0].PkgName,
