@@ -71,6 +71,8 @@ type ShopTraderAddress struct {
 
 	//Default status = 1
 	Status status3.Status
+
+	Rid dot.ID
 }
 
 // +convert:type=customering.ShopCustomerGroupCustomer
@@ -81,6 +83,8 @@ type ShopCustomerGroupCustomer struct {
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+
+	Rid dot.ID
 }
 
 // +convert:type=customering.ShopCustomerGroup
@@ -94,4 +98,6 @@ type ShopCustomerGroup struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt time.Time
+
+	Rid dot.ID
 }

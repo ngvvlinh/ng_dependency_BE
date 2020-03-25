@@ -1,0 +1,42 @@
+package model
+
+import (
+	"time"
+
+	"etop.vn/api/top/types/etc/status3"
+	"etop.vn/capi/dot"
+)
+
+// +sqlgen
+type AccountUser struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
+	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	Permission `sq:"inline"`
+
+	FullName  string
+	ShortName string
+	Position  string
+
+	InvitationSentAt     time.Time
+	InvitationSentBy     dot.ID
+	InvitationAcceptedAt time.Time
+	InvitationRejectedAt time.Time
+
+	DisabledAt    time.Time
+	DisabledBy    time.Time
+	DisableReason string
+
+	Rid dot.ID
+}
+
+type Permission struct {
+	Roles       []string
+	Permissions []string
+}

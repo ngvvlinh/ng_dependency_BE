@@ -574,6 +574,25 @@ func (ft *ShopCustomerGroupFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Col
 	}
 }
 
+func (ft *ShopCustomerGroupFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type ShopCustomerGroupCustomerFilters struct{ prefix string }
 
 func NewShopCustomerGroupCustomerFilters(prefix string) ShopCustomerGroupCustomerFilters {
@@ -661,6 +680,25 @@ func (ft *ShopCustomerGroupCustomerFilters) ByUpdatedAtPtr(UpdatedAt *time.Time)
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
 
@@ -1088,5 +1126,24 @@ func (ft *ShopTraderAddressFilters) ByStatusPtr(Status *status3.Status) *sq.Colu
 		Value:  Status,
 		IsNil:  Status == nil,
 		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }

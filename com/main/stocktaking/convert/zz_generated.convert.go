@@ -143,6 +143,7 @@ func convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stock
 	out.Lines = Convert_stocktaking_StocktakeLines_stocktakingmodel_StocktakeLines(arg.Lines)
 	out.Note = arg.Note  // simple assign
 	out.ProductIDs = nil // zero value
+	out.Rid = 0          // zero value
 }
 
 func Convert_stocktaking_ShopStocktakes_stocktakingmodel_ShopStocktakes(args []*stocktaking.ShopStocktake) (outs []*stocktakingmodel.ShopStocktake) {

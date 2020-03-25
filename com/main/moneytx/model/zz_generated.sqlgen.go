@@ -32,8 +32,8 @@ type SQLWriter = core.SQLWriter
 type MoneyTransactionShippings []*MoneyTransactionShipping
 
 const __sqlMoneyTransactionShipping_Table = "money_transaction_shipping"
-const __sqlMoneyTransactionShipping_ListCols = "\"id\",\"shop_id\",\"created_at\",\"updated_at\",\"closed_at\",\"status\",\"total_cod\",\"total_amount\",\"total_orders\",\"code\",\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\",\"provider\",\"confirmed_at\",\"etop_transfered_at\",\"bank_account\",\"note\",\"invoice_number\",\"type\""
-const __sqlMoneyTransactionShipping_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"status\" = EXCLUDED.\"status\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_orders\" = EXCLUDED.\"total_orders\",\"code\" = EXCLUDED.\"code\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\" = EXCLUDED.\"money_transaction_shipping_etop_id\",\"provider\" = EXCLUDED.\"provider\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"etop_transfered_at\" = EXCLUDED.\"etop_transfered_at\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"type\" = EXCLUDED.\"type\""
+const __sqlMoneyTransactionShipping_ListCols = "\"id\",\"shop_id\",\"created_at\",\"updated_at\",\"closed_at\",\"status\",\"total_cod\",\"total_amount\",\"total_orders\",\"code\",\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\",\"provider\",\"confirmed_at\",\"etop_transfered_at\",\"bank_account\",\"note\",\"invoice_number\",\"type\",\"rid\""
+const __sqlMoneyTransactionShipping_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"status\" = EXCLUDED.\"status\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_orders\" = EXCLUDED.\"total_orders\",\"code\" = EXCLUDED.\"code\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\" = EXCLUDED.\"money_transaction_shipping_etop_id\",\"provider\" = EXCLUDED.\"provider\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"etop_transfered_at\" = EXCLUDED.\"etop_transfered_at\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"type\" = EXCLUDED.\"type\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlMoneyTransactionShipping_Insert = "INSERT INTO \"money_transaction_shipping\" (" + __sqlMoneyTransactionShipping_ListCols + ") VALUES"
 const __sqlMoneyTransactionShipping_Select = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM \"money_transaction_shipping\""
 const __sqlMoneyTransactionShipping_Select_history = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM history.\"money_transaction_shipping\""
@@ -79,6 +79,7 @@ func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interf
 		core.String(m.Note),
 		core.String(m.InvoiceNumber),
 		core.String(m.Type),
+		m.Rid,
 	}
 }
 
@@ -103,6 +104,7 @@ func (m *MoneyTransactionShipping) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Note),
 		(*core.String)(&m.InvoiceNumber),
 		(*core.String)(&m.Type),
+		&m.Rid,
 	}
 }
 
@@ -140,7 +142,7 @@ func (_ *MoneyTransactionShippings) SQLSelect(w SQLWriter) error {
 func (m *MoneyTransactionShipping) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -150,7 +152,7 @@ func (ms MoneyTransactionShippings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -333,6 +335,14 @@ func (m *MoneyTransactionShipping) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Type)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -343,7 +353,7 @@ func (m *MoneyTransactionShipping) SQLUpdate(w SQLWriter) error {
 func (m *MoneyTransactionShipping) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -414,17 +424,18 @@ func (m MoneyTransactionShippingHistory) InvoiceNumber() core.Interface {
 	return core.Interface{m["invoice_number"]}
 }
 func (m MoneyTransactionShippingHistory) Type() core.Interface { return core.Interface{m["type"]} }
+func (m MoneyTransactionShippingHistory) Rid() core.Interface  { return core.Interface{m["rid"]} }
 
 func (m *MoneyTransactionShippingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(MoneyTransactionShippingHistory, 19)
+	res := make(MoneyTransactionShippingHistory, 20)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["created_at"] = data[2]
@@ -444,14 +455,15 @@ func (m *MoneyTransactionShippingHistory) SQLScan(opts core.Opts, row *sql.Row) 
 	res["note"] = data[16]
 	res["invoice_number"] = data[17]
 	res["type"] = data[18]
+	res["rid"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(MoneyTransactionShippingHistories, 0, 128)
@@ -479,6 +491,7 @@ func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.R
 		m["note"] = data[16]
 		m["invoice_number"] = data[17]
 		m["type"] = data[18]
+		m["rid"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

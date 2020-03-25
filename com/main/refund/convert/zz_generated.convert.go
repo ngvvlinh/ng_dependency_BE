@@ -150,6 +150,7 @@ func convert_refund_Refund_refundmodel_Refund(arg *refund.Refund, out *refundmod
 	out.CustomerID = arg.CustomerID           // simple assign
 	out.TotalAmount = arg.TotalAmount         // simple assign
 	out.BasketValue = arg.BasketValue         // simple assign
+	out.Rid = 0                               // zero value
 }
 
 func Convert_refund_Refunds_refundmodel_Refunds(args []*refund.Refund) (outs []*refundmodel.Refund) {

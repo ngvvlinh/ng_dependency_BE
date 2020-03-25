@@ -220,6 +220,7 @@ func convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value
 	out.Status = 0                // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_addressing_ShopTraderAddresses_customeringmodel_ShopTraderAddresses(args []*addressing.ShopTraderAddress) (outs []*customeringmodel.ShopTraderAddress) {
@@ -492,6 +493,7 @@ func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(ar
 	out.CreatedAt = time.Time{}   // zero value
 	out.UpdatedAt = time.Time{}   // zero value
 	out.DeletedAt = time.Time{}   // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*customering.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {
@@ -548,6 +550,7 @@ func convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomer
 	out.CustomerID = arg.CustomerID // simple assign
 	out.CreatedAt = arg.CreatedAt   // simple assign
 	out.UpdatedAt = arg.UpdatedAt   // simple assign
+	out.Rid = 0                     // zero value
 }
 
 func Convert_customering_ShopCustomerGroupCustomers_customeringmodel_ShopCustomerGroupCustomers(args []*customering.ShopCustomerGroupCustomer) (outs []*customeringmodel.ShopCustomerGroupCustomer) {

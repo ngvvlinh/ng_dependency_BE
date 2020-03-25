@@ -77,6 +77,8 @@ type ShipnowFulfillment struct {
 
 	AddressToProvinceCode string
 	AddressToDistrictCode string
+
+	Rid dot.ID
 }
 
 func (m *ShipnowFulfillment) Validate() error {

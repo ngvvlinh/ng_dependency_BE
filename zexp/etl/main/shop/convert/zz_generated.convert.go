@@ -5,9 +5,12 @@
 package convert
 
 import (
+	time "time"
+
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 	shopmodel "etop.vn/backend/zexp/etl/main/shop/model"
+	dot "etop.vn/capi/dot"
 )
 
 /*
@@ -146,7 +149,7 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.ID = arg.ID                                       // simple assign
 	out.Name = arg.Name                                   // simple assign
 	out.OwnerID = arg.OwnerID                             // simple assign
-	out.IsTest = arg.IsTest                               // simple assign
+	out.IsTest = 0                                        // zero value
 	out.AddressID = arg.AddressID                         // simple assign
 	out.ShipToAddressID = arg.ShipToAddressID             // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
@@ -157,11 +160,11 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.Email = arg.Email                                 // simple assign
 	out.Code = arg.Code                                   // simple assign
 	out.AutoCreateFFM = arg.AutoCreateFFM                 // simple assign
-	out.OrderSourceID = arg.OrderSourceID                 // simple assign
+	out.OrderSourceID = 0                                 // zero value
 	out.Status = arg.Status                               // simple assign
 	out.CreatedAt = arg.CreatedAt                         // simple assign
 	out.UpdatedAt = arg.UpdatedAt                         // simple assign
-	out.DeletedAt = arg.DeletedAt                         // simple assign
+	out.DeletedAt = time.Time{}                           // zero value
 	out.Address = arg.Address                             // simple assign
 	out.RecognizedHosts = arg.RecognizedHosts             // simple assign
 	out.GhnNoteCode = arg.GhnNoteCode                     // simple assign
@@ -169,9 +172,9 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.CompanyInfo = arg.CompanyInfo                     // simple assign
 	out.MoneyTransactionRRule = arg.MoneyTransactionRRule // simple assign
 	out.SurveyInfo = Convert_shopmodel_SurveyInfoes_identitymodel_SurveyInfoes(arg.SurveyInfo)
-	out.ShippingServiceSelectStrategy = Convert_shopmodel_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(arg.ShippingServiceSelectStrategy)
-	out.InventoryOverstock = arg.InventoryOverstock // simple assign
-	out.Rid = arg.Rid                               // simple assign
+	out.ShippingServiceSelectStrategy = nil // zero value
+	out.InventoryOverstock = dot.NullBool{} // zero value
+	out.Rid = arg.Rid                       // simple assign
 }
 
 func Convert_shopmodel_Shops_identitymodel_Shops(args []*shopmodel.Shop) (outs []*identitymodel.Shop) {
@@ -198,7 +201,6 @@ func convert_identitymodel_Shop_shopmodel_Shop(arg *identitymodel.Shop, out *sho
 	out.ID = arg.ID                                       // simple assign
 	out.Name = arg.Name                                   // simple assign
 	out.OwnerID = arg.OwnerID                             // simple assign
-	out.IsTest = arg.IsTest                               // simple assign
 	out.AddressID = arg.AddressID                         // simple assign
 	out.ShipToAddressID = arg.ShipToAddressID             // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
@@ -209,11 +211,9 @@ func convert_identitymodel_Shop_shopmodel_Shop(arg *identitymodel.Shop, out *sho
 	out.Email = arg.Email                                 // simple assign
 	out.Code = arg.Code                                   // simple assign
 	out.AutoCreateFFM = arg.AutoCreateFFM                 // simple assign
-	out.OrderSourceID = arg.OrderSourceID                 // simple assign
 	out.Status = arg.Status                               // simple assign
 	out.CreatedAt = arg.CreatedAt                         // simple assign
 	out.UpdatedAt = arg.UpdatedAt                         // simple assign
-	out.DeletedAt = arg.DeletedAt                         // simple assign
 	out.Address = arg.Address                             // simple assign
 	out.RecognizedHosts = arg.RecognizedHosts             // simple assign
 	out.GhnNoteCode = arg.GhnNoteCode                     // simple assign
@@ -221,9 +221,7 @@ func convert_identitymodel_Shop_shopmodel_Shop(arg *identitymodel.Shop, out *sho
 	out.CompanyInfo = arg.CompanyInfo                     // simple assign
 	out.MoneyTransactionRRule = arg.MoneyTransactionRRule // simple assign
 	out.SurveyInfo = Convert_identitymodel_SurveyInfoes_shopmodel_SurveyInfoes(arg.SurveyInfo)
-	out.ShippingServiceSelectStrategy = Convert_identitymodel_ShippingServiceSelectStrategyItems_shopmodel_ShippingServiceSelectStrategyItems(arg.ShippingServiceSelectStrategy)
-	out.InventoryOverstock = arg.InventoryOverstock // simple assign
-	out.Rid = arg.Rid                               // simple assign
+	out.Rid = arg.Rid // simple assign
 }
 
 func Convert_identitymodel_Shops_shopmodel_Shops(args []*identitymodel.Shop) (outs []*shopmodel.Shop) {

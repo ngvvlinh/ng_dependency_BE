@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 	shopbrandmodel "etop.vn/backend/zexp/etl/main/shopbrand/model"
@@ -63,7 +65,7 @@ func convert_shopbrandmodel_ShopBrand_catalogmodel_ShopBrand(arg *shopbrandmodel
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
-	out.DeletedAt = arg.DeletedAt     // simple assign
+	out.DeletedAt = time.Time{}       // zero value
 	out.Rid = arg.Rid                 // simple assign
 }
 
@@ -96,7 +98,6 @@ func convert_catalogmodel_ShopBrand_shopbrandmodel_ShopBrand(arg *catalogmodel.S
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
-	out.DeletedAt = arg.DeletedAt     // simple assign
 	out.Rid = arg.Rid                 // simple assign
 }
 

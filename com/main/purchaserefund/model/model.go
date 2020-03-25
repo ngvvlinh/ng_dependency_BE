@@ -31,6 +31,8 @@ type PurchaseRefund struct {
 	SupplierID      dot.ID
 	TotalAmount     int
 	BasketValue     int
+
+	Rid dot.ID
 }
 
 type PurchaseRefundLine struct {

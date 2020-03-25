@@ -85,6 +85,7 @@ type MoneyTransactionShipping struct {
 	Note                               string
 	InvoiceNumber                      string
 	Type                               string
+	Rid                                dot.ID
 }
 
 // +sqlgen:           MoneyTransactionShipping as m

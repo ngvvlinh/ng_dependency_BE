@@ -28,6 +28,8 @@ type ShopStocktake struct {
 	Lines         []*StocktakeLine
 	Note          string
 	ProductIDs    []dot.ID
+
+	Rid dot.ID
 }
 
 type StocktakeLine struct {

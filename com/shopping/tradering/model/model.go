@@ -12,4 +12,6 @@ type ShopTrader struct {
 	ShopID    dot.ID
 	Type      string
 	DeletedAt time.Time
+
+	Rid dot.ID
 }

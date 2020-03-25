@@ -311,3 +311,22 @@ func (ft *ShopStocktakeFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 		IsZero: Note != nil && (*Note) == "",
 	}
 }
+
+func (ft *ShopStocktakeFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopStocktakeFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

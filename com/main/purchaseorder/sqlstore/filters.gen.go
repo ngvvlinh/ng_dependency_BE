@@ -405,3 +405,22 @@ func (ft *PurchaseOrderFilters) BySupplierPhoneNormPtr(SupplierPhoneNorm *string
 		IsZero: SupplierPhoneNorm != nil && (*SupplierPhoneNorm) == "",
 	}
 }
+
+func (ft *PurchaseOrderFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *PurchaseOrderFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

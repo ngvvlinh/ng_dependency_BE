@@ -95,6 +95,8 @@ type ShopVariant struct {
 
 	// key-value normalization, must be non-null. Empty attributes is '_'
 	AttrNormKv string
+
+	Rid dot.ID
 }
 
 type MetaField struct {
@@ -160,6 +162,7 @@ type ProductShopCollection struct {
 	Status       int
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
+	Rid          dot.ID
 }
 
 type ProductAttributes []*ProductAttribute
@@ -232,6 +235,8 @@ type ShopCategory struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
+
+	Rid dot.ID
 }
 
 // +convert:type=catalog.ShopCollection
@@ -251,6 +256,8 @@ type ShopCollection struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"  paging:"updated_at"`
 	DeletedAt time.Time
+
+	Rid dot.ID
 }
 
 // +convert:type=catalog.ShopProductCollection
@@ -266,6 +273,8 @@ type ShopProductCollection struct {
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+
+	Rid dot.ID
 }
 
 // +convert:type=catalog.ShopBrand
@@ -294,4 +303,6 @@ type ShopVariantSupplier struct {
 	VariantID  dot.ID
 	CreatedAt  time.Time `sq:"create"`
 	UpdatedAt  time.Time `sq:"update"`
+
+	Rid dot.ID
 }

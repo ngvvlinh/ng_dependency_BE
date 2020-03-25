@@ -21,7 +21,6 @@ type ShopProduct struct {
 	CollectionIDs []dot.ID `sq:"-"`
 
 	Code        string
-	CodeNorm    int
 	Name        string
 	Description string
 	DescHTML    string
@@ -41,10 +40,7 @@ type ShopProduct struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt time.Time
 
-	NameNorm    string
-	NameNormUa  string // unaccent normalization
 	ProductType product_type.ProductType
 
 	MetaFields []*MetaField

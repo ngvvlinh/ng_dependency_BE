@@ -210,6 +210,7 @@ func convert_moneytx_MoneyTransactionShipping_moneytxmodel_MoneyTransactionShipp
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
 	out.Type = arg.Type                   // simple assign
+	out.Rid = 0                           // zero value
 }
 
 func Convert_moneytx_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShippings(args []*moneytx.MoneyTransactionShipping) (outs []*moneytxmodel.MoneyTransactionShipping) {

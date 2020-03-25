@@ -38,6 +38,8 @@ type Address struct {
 	CreatedAt   time.Time    `sq:"create" json:"-"`
 	UpdatedAt   time.Time    `sq:"update" json:"-"`
 	Coordinates *Coordinates `json:"coordinates"`
+
+	Rid dot.ID `json:"rid"`
 }
 
 type Coordinates struct {

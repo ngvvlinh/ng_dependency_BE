@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type ShopCarriers []*ShopCarrier
 
 const __sqlShopCarrier_Table = "shop_carrier"
-const __sqlShopCarrier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlShopCarrier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlShopCarrier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"rid\""
+const __sqlShopCarrier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopCarrier_Insert = "INSERT INTO \"shop_carrier\" (" + __sqlShopCarrier_ListCols + ") VALUES"
 const __sqlShopCarrier_Select = "SELECT " + __sqlShopCarrier_ListCols + " FROM \"shop_carrier\""
 const __sqlShopCarrier_Select_history = "SELECT " + __sqlShopCarrier_ListCols + " FROM history.\"shop_carrier\""
@@ -63,6 +63,7 @@ func (m *ShopCarrier) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -76,6 +77,7 @@ func (m *ShopCarrier) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -113,7 +115,7 @@ func (_ *ShopCarriers) SQLSelect(w SQLWriter) error {
 func (m *ShopCarrier) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCarrier_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -123,7 +125,7 @@ func (ms ShopCarriers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCarrier_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -218,6 +220,14 @@ func (m *ShopCarrier) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -228,7 +238,7 @@ func (m *ShopCarrier) SQLUpdate(w SQLWriter) error {
 func (m *ShopCarrier) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCarrier_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -258,17 +268,18 @@ func (m ShopCarrierHistory) Status() core.Interface    { return core.Interface{m
 func (m ShopCarrierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShopCarrierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 func (m ShopCarrierHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ShopCarrierHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *ShopCarrierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCarrierHistory, 8)
+	res := make(ShopCarrierHistory, 9)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
@@ -277,14 +288,15 @@ func (m *ShopCarrierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[5]
 	res["updated_at"] = data[6]
 	res["deleted_at"] = data[7]
+	res["rid"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCarrierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCarrierHistories, 0, 128)
@@ -301,6 +313,7 @@ func (ms *ShopCarrierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[5]
 		m["updated_at"] = data[6]
 		m["deleted_at"] = data[7]
+		m["rid"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

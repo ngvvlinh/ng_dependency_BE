@@ -151,7 +151,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 		for _, tableName := range tableNames {
 			funcz := register.GetRegisterFuncFromTableName(tableName)
 			switch tableName {
-			case table_name.User:
+			case table_name.User, table_name.AccountUser:
 				funcz(ng, srcDB, dstDB, userIDs)
 			default:
 				funcz(ng, srcDB, dstDB, accountIDs)

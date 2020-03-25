@@ -25,4 +25,5 @@ type Invitation struct {
 	CreatedAt  time.Time `sq:"create"`
 	UpdatedAt  time.Time `sq:"update"`
 	DeletedAt  time.Time
+	Rid        dot.ID
 }

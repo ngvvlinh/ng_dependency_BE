@@ -5,6 +5,5 @@ create table if not exists shop_brand (
 	brand_name text,
 	updated_at timestamptz,
 	created_at timestamptz,
-	deleted_at timestamptz,
 	rid int8
 );

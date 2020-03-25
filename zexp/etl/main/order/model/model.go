@@ -7,7 +7,6 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/top/types/etc/fee"
 	"etop.vn/api/top/types/etc/ghn_note_code"
-	"etop.vn/api/top/types/etc/order_source"
 	"etop.vn/api/top/types/etc/payment_method"
 	"etop.vn/api/top/types/etc/shipping_provider"
 	"etop.vn/api/top/types/etc/status3"
@@ -27,9 +26,7 @@ type Order struct {
 	EdCode     string
 	ProductIDs []dot.ID
 	VariantIDs []dot.ID
-	PartnerID  dot.ID
 
-	Currency      string
 	PaymentMethod payment_method.PaymentMethod
 
 	Customer        *OrderCustomer
@@ -48,9 +45,8 @@ type Order struct {
 	CancelledAt  time.Time
 	CancelReason string
 
-	CustomerConfirm status3.Status
-	ShopConfirm     status3.Status
-	ConfirmStatus   status3.Status
+	ShopConfirm   status3.Status
+	ConfirmStatus status3.Status
 
 	FulfillmentShippingStatus status5.Status
 	EtopPaymentStatus         status4.Status
@@ -85,8 +81,6 @@ type Order struct {
 	OrderNote       string
 	ShopNote        string
 	ShippingNote    string
-	OrderSourceType order_source.Source
-	OrderSourceID   dot.ID
 	ExternalOrderID string
 	ReferenceURL    string
 	ExternalURL     string
@@ -97,18 +91,13 @@ type Order struct {
 	GhnNoteCode ghn_note_code.GHNNoteCode
 	TryOn       try_on.TryOnCode
 
-	CustomerNameNorm string
-	ProductNameNorm  string
-	FulfillmentType  ordertypes.ShippingType
-	FulfillmentIDs   []dot.ID
-	ExternalMeta     json.RawMessage
-	TradingShopID    dot.ID
+	FulfillmentType ordertypes.ShippingType
+	FulfillmentIDs  []dot.ID
+	ExternalMeta    json.RawMessage
 
 	// payment
 	PaymentStatus status4.Status
 	PaymentID     dot.ID
-
-	ReferralMeta json.RawMessage
 
 	CustomerID dot.ID
 	CreatedBy  dot.ID

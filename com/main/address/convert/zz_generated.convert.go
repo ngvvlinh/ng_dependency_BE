@@ -158,6 +158,7 @@ func convert_address_Address_addressmodel_Address(arg *address.Address, out *add
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.Coordinates = Convert_orderingtypes_Coordinates_addressmodel_Coordinates(arg.Coordinates, nil)
+	out.Rid = 0 // zero value
 }
 
 func Convert_address_Addresses_addressmodel_Addresses(args []*address.Address) (outs []*addressmodel.Address) {
@@ -224,6 +225,7 @@ func convert_orderingtypes_Address_addressmodel_Address(arg *orderingtypes.Addre
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
 	out.Coordinates = nil       // zero value
+	out.Rid = 0                 // zero value
 }
 
 func Convert_orderingtypes_Addresses_addressmodel_Addresses(args []*orderingtypes.Address) (outs []*addressmodel.Address) {

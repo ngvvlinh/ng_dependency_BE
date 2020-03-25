@@ -367,3 +367,22 @@ func (ft *RefundFilters) ByBasketValuePtr(BasketValue *int) *sq.ColumnFilterPtr 
 		IsZero: BasketValue != nil && (*BasketValue) == 0,
 	}
 }
+
+func (ft *RefundFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *RefundFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

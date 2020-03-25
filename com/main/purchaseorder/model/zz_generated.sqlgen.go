@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type PurchaseOrders []*PurchaseOrder
 
 const __sqlPurchaseOrder_Table = "purchase_order"
-const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"discount_lines\",\"total_discount\",\"fee_lines\",\"total_fee\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\""
-const __sqlPurchaseOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"supplier\" = EXCLUDED.\"supplier\",\"basket_value\" = EXCLUDED.\"basket_value\",\"discount_lines\" = EXCLUDED.\"discount_lines\",\"total_discount\" = EXCLUDED.\"total_discount\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_amount\" = EXCLUDED.\"total_amount\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"created_by\" = EXCLUDED.\"created_by\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"supplier_full_name_norm\" = EXCLUDED.\"supplier_full_name_norm\",\"supplier_phone_norm\" = EXCLUDED.\"supplier_phone_norm\""
+const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"discount_lines\",\"total_discount\",\"fee_lines\",\"total_fee\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\",\"rid\""
+const __sqlPurchaseOrder_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"supplier\" = EXCLUDED.\"supplier\",\"basket_value\" = EXCLUDED.\"basket_value\",\"discount_lines\" = EXCLUDED.\"discount_lines\",\"total_discount\" = EXCLUDED.\"total_discount\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_amount\" = EXCLUDED.\"total_amount\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"status\" = EXCLUDED.\"status\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"created_by\" = EXCLUDED.\"created_by\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"supplier_full_name_norm\" = EXCLUDED.\"supplier_full_name_norm\",\"supplier_phone_norm\" = EXCLUDED.\"supplier_phone_norm\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlPurchaseOrder_Insert = "INSERT INTO \"purchase_order\" (" + __sqlPurchaseOrder_ListCols + ") VALUES"
 const __sqlPurchaseOrder_Select = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM \"purchase_order\""
 const __sqlPurchaseOrder_Select_history = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM history.\"purchase_order\""
@@ -80,6 +80,7 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.DeletedAt),
 		core.String(m.SupplierFullNameNorm),
 		core.String(m.SupplierPhoneNorm),
+		m.Rid,
 	}
 }
 
@@ -110,6 +111,7 @@ func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.DeletedAt),
 		(*core.String)(&m.SupplierFullNameNorm),
 		(*core.String)(&m.SupplierPhoneNorm),
+		&m.Rid,
 	}
 }
 
@@ -147,7 +149,7 @@ func (_ *PurchaseOrders) SQLSelect(w SQLWriter) error {
 func (m *PurchaseOrder) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -157,7 +159,7 @@ func (ms PurchaseOrders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -388,6 +390,14 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.SupplierPhoneNorm)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -398,7 +408,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 func (m *PurchaseOrder) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -455,17 +465,18 @@ func (m PurchaseOrderHistory) SupplierFullNameNorm() core.Interface {
 func (m PurchaseOrderHistory) SupplierPhoneNorm() core.Interface {
 	return core.Interface{m["supplier_phone_norm"]}
 }
+func (m PurchaseOrderHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *PurchaseOrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PurchaseOrderHistory, 25)
+	res := make(PurchaseOrderHistory, 26)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["supplier_id"] = data[2]
@@ -491,14 +502,15 @@ func (m *PurchaseOrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["deleted_at"] = data[22]
 	res["supplier_full_name_norm"] = data[23]
 	res["supplier_phone_norm"] = data[24]
+	res["rid"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PurchaseOrderHistories, 0, 128)
@@ -532,6 +544,7 @@ func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["deleted_at"] = data[22]
 		m["supplier_full_name_norm"] = data[23]
 		m["supplier_phone_norm"] = data[24]
+		m["rid"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

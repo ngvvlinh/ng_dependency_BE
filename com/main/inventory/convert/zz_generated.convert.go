@@ -151,6 +151,7 @@ func convert_inventory_InventoryVariant_inventorymodel_InventoryVariant(arg *inv
 	out.CostPrice = arg.CostPrice           // simple assign
 	out.CreatedAt = arg.CreatedAt           // simple assign
 	out.UpdatedAt = arg.UpdatedAt           // simple assign
+	out.Rid = 0                             // zero value
 }
 
 func Convert_inventory_InventoryVariants_inventorymodel_InventoryVariants(args []*inventory.InventoryVariant) (outs []*inventorymodel.InventoryVariant) {
@@ -232,6 +233,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.CancelledAt = arg.CancelledAt   // simple assign
 	out.CancelReason = arg.CancelReason // simple assign
 	out.ProductIDs = nil                // zero value
+	out.Rid = 0                         // zero value
 }
 
 func Convert_inventory_InventoryVouchers_inventorymodel_InventoryVouchers(args []*inventory.InventoryVoucher) (outs []*inventorymodel.InventoryVoucher) {

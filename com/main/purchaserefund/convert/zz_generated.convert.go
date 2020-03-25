@@ -151,6 +151,7 @@ func convert_purchaserefund_PurchaseRefund_purchaserefundmodel_PurchaseRefund(ar
 	out.SupplierID = arg.SupplierID     // simple assign
 	out.TotalAmount = arg.TotalAmount   // simple assign
 	out.BasketValue = arg.BasketValue   // simple assign
+	out.Rid = 0                         // zero value
 }
 
 func Convert_purchaserefund_PurchaseRefunds_purchaserefundmodel_PurchaseRefunds(args []*purchaserefund.PurchaseRefund) (outs []*purchaserefundmodel.PurchaseRefund) {

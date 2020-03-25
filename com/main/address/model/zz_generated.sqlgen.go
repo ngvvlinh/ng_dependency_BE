@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type Addresses []*Address
 
 const __sqlAddress_Table = "address"
-const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\",\"coordinates\""
-const __sqlAddress_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\",\"phone\" = EXCLUDED.\"phone\",\"position\" = EXCLUDED.\"position\",\"email\" = EXCLUDED.\"email\",\"country\" = EXCLUDED.\"country\",\"city\" = EXCLUDED.\"city\",\"province\" = EXCLUDED.\"province\",\"district\" = EXCLUDED.\"district\",\"ward\" = EXCLUDED.\"ward\",\"zip\" = EXCLUDED.\"zip\",\"district_code\" = EXCLUDED.\"district_code\",\"province_code\" = EXCLUDED.\"province_code\",\"ward_code\" = EXCLUDED.\"ward_code\",\"company\" = EXCLUDED.\"company\",\"address1\" = EXCLUDED.\"address1\",\"address2\" = EXCLUDED.\"address2\",\"type\" = EXCLUDED.\"type\",\"account_id\" = EXCLUDED.\"account_id\",\"notes\" = EXCLUDED.\"notes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"coordinates\" = EXCLUDED.\"coordinates\""
+const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\",\"coordinates\",\"rid\""
+const __sqlAddress_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"first_name\" = EXCLUDED.\"first_name\",\"last_name\" = EXCLUDED.\"last_name\",\"phone\" = EXCLUDED.\"phone\",\"position\" = EXCLUDED.\"position\",\"email\" = EXCLUDED.\"email\",\"country\" = EXCLUDED.\"country\",\"city\" = EXCLUDED.\"city\",\"province\" = EXCLUDED.\"province\",\"district\" = EXCLUDED.\"district\",\"ward\" = EXCLUDED.\"ward\",\"zip\" = EXCLUDED.\"zip\",\"district_code\" = EXCLUDED.\"district_code\",\"province_code\" = EXCLUDED.\"province_code\",\"ward_code\" = EXCLUDED.\"ward_code\",\"company\" = EXCLUDED.\"company\",\"address1\" = EXCLUDED.\"address1\",\"address2\" = EXCLUDED.\"address2\",\"type\" = EXCLUDED.\"type\",\"account_id\" = EXCLUDED.\"account_id\",\"notes\" = EXCLUDED.\"notes\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"coordinates\" = EXCLUDED.\"coordinates\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAddress_Insert = "INSERT INTO \"address\" (" + __sqlAddress_ListCols + ") VALUES"
 const __sqlAddress_Select = "SELECT " + __sqlAddress_ListCols + " FROM \"address\""
 const __sqlAddress_Select_history = "SELECT " + __sqlAddress_ListCols + " FROM history.\"address\""
@@ -80,6 +80,7 @@ func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.JSON{m.Coordinates},
+		m.Rid,
 	}
 }
 
@@ -110,6 +111,7 @@ func (m *Address) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		core.JSON{&m.Coordinates},
+		&m.Rid,
 	}
 }
 
@@ -147,7 +149,7 @@ func (_ *Addresses) SQLSelect(w SQLWriter) error {
 func (m *Address) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -157,7 +159,7 @@ func (ms Addresses) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -388,6 +390,14 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Coordinates})
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -398,7 +408,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 func (m *Address) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -445,17 +455,18 @@ func (m AddressHistory) Notes() core.Interface        { return core.Interface{m[
 func (m AddressHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m AddressHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 func (m AddressHistory) Coordinates() core.Interface  { return core.Interface{m["coordinates"]} }
+func (m AddressHistory) Rid() core.Interface          { return core.Interface{m["rid"]} }
 
 func (m *AddressHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AddressHistory, 25)
+	res := make(AddressHistory, 26)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["first_name"] = data[2]
@@ -481,14 +492,15 @@ func (m *AddressHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[22]
 	res["updated_at"] = data[23]
 	res["coordinates"] = data[24]
+	res["rid"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *AddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AddressHistories, 0, 128)
@@ -522,6 +534,7 @@ func (ms *AddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[22]
 		m["updated_at"] = data[23]
 		m["coordinates"] = data[24]
+		m["rid"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type PurchaseRefunds []*PurchaseRefund
 
 const __sqlPurchaseRefund_Table = "purchase_refund"
-const __sqlPurchaseRefund_ListCols = "\"id\",\"shop_id\",\"purchase_order_id\",\"code\",\"code_norm\",\"note\",\"lines\",\"total_adjustment\",\"adjustment_lines\",\"created_at\",\"updated_at\",\"cancelled_at\",\"confirmed_at\",\"created_by\",\"updated_by\",\"cancel_reason\",\"status\",\"supplier_id\",\"total_amount\",\"basket_value\""
-const __sqlPurchaseRefund_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"purchase_order_id\" = EXCLUDED.\"purchase_order_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"lines\" = EXCLUDED.\"lines\",\"total_adjustment\" = EXCLUDED.\"total_adjustment\",\"adjustment_lines\" = EXCLUDED.\"adjustment_lines\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"basket_value\" = EXCLUDED.\"basket_value\""
+const __sqlPurchaseRefund_ListCols = "\"id\",\"shop_id\",\"purchase_order_id\",\"code\",\"code_norm\",\"note\",\"lines\",\"total_adjustment\",\"adjustment_lines\",\"created_at\",\"updated_at\",\"cancelled_at\",\"confirmed_at\",\"created_by\",\"updated_by\",\"cancel_reason\",\"status\",\"supplier_id\",\"total_amount\",\"basket_value\",\"rid\""
+const __sqlPurchaseRefund_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"purchase_order_id\" = EXCLUDED.\"purchase_order_id\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"note\" = EXCLUDED.\"note\",\"lines\" = EXCLUDED.\"lines\",\"total_adjustment\" = EXCLUDED.\"total_adjustment\",\"adjustment_lines\" = EXCLUDED.\"adjustment_lines\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"supplier_id\" = EXCLUDED.\"supplier_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"basket_value\" = EXCLUDED.\"basket_value\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlPurchaseRefund_Insert = "INSERT INTO \"purchase_refund\" (" + __sqlPurchaseRefund_ListCols + ") VALUES"
 const __sqlPurchaseRefund_Select = "SELECT " + __sqlPurchaseRefund_ListCols + " FROM \"purchase_refund\""
 const __sqlPurchaseRefund_Select_history = "SELECT " + __sqlPurchaseRefund_ListCols + " FROM history.\"purchase_refund\""
@@ -75,6 +75,7 @@ func (m *PurchaseRefund) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.SupplierID,
 		core.Int(m.TotalAmount),
 		core.Int(m.BasketValue),
+		m.Rid,
 	}
 }
 
@@ -100,6 +101,7 @@ func (m *PurchaseRefund) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.SupplierID,
 		(*core.Int)(&m.TotalAmount),
 		(*core.Int)(&m.BasketValue),
+		&m.Rid,
 	}
 }
 
@@ -137,7 +139,7 @@ func (_ *PurchaseRefunds) SQLSelect(w SQLWriter) error {
 func (m *PurchaseRefund) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseRefund_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -147,7 +149,7 @@ func (ms PurchaseRefunds) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseRefund_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -338,6 +340,14 @@ func (m *PurchaseRefund) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.BasketValue)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -348,7 +358,7 @@ func (m *PurchaseRefund) SQLUpdate(w SQLWriter) error {
 func (m *PurchaseRefund) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseRefund_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -398,17 +408,18 @@ func (m PurchaseRefundHistory) Status() core.Interface      { return core.Interf
 func (m PurchaseRefundHistory) SupplierID() core.Interface  { return core.Interface{m["supplier_id"]} }
 func (m PurchaseRefundHistory) TotalAmount() core.Interface { return core.Interface{m["total_amount"]} }
 func (m PurchaseRefundHistory) BasketValue() core.Interface { return core.Interface{m["basket_value"]} }
+func (m PurchaseRefundHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *PurchaseRefundHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PurchaseRefundHistory, 20)
+	res := make(PurchaseRefundHistory, 21)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["purchase_order_id"] = data[2]
@@ -429,14 +440,15 @@ func (m *PurchaseRefundHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["supplier_id"] = data[17]
 	res["total_amount"] = data[18]
 	res["basket_value"] = data[19]
+	res["rid"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *PurchaseRefundHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PurchaseRefundHistories, 0, 128)
@@ -465,6 +477,7 @@ func (ms *PurchaseRefundHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["supplier_id"] = data[17]
 		m["total_amount"] = data[18]
 		m["basket_value"] = data[19]
+		m["rid"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

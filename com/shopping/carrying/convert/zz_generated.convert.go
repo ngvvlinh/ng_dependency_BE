@@ -106,6 +106,7 @@ func convert_carrying_ShopCarrier_carryingmodel_ShopCarrier(arg *carrying.ShopCa
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_carrying_ShopCarriers_carryingmodel_ShopCarriers(args []*carrying.ShopCarrier) (outs []*carryingmodel.ShopCarrier) {

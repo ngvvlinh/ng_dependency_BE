@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type ShopSuppliers []*ShopSupplier
 
 const __sqlShopSupplier_Table = "shop_supplier"
-const __sqlShopSupplier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"email\",\"code\",\"code_norm\",\"company_name\",\"company_name_norm\",\"tax_number\",\"headquater_address\",\"note\",\"full_name_norm\",\"phone_norm\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlShopSupplier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"company_name\" = EXCLUDED.\"company_name\",\"company_name_norm\" = EXCLUDED.\"company_name_norm\",\"tax_number\" = EXCLUDED.\"tax_number\",\"headquater_address\" = EXCLUDED.\"headquater_address\",\"note\" = EXCLUDED.\"note\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlShopSupplier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"email\",\"code\",\"code_norm\",\"company_name\",\"company_name_norm\",\"tax_number\",\"headquater_address\",\"note\",\"full_name_norm\",\"phone_norm\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"rid\""
+const __sqlShopSupplier_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"code_norm\" = EXCLUDED.\"code_norm\",\"company_name\" = EXCLUDED.\"company_name\",\"company_name_norm\" = EXCLUDED.\"company_name_norm\",\"tax_number\" = EXCLUDED.\"tax_number\",\"headquater_address\" = EXCLUDED.\"headquater_address\",\"note\" = EXCLUDED.\"note\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopSupplier_Insert = "INSERT INTO \"shop_supplier\" (" + __sqlShopSupplier_ListCols + ") VALUES"
 const __sqlShopSupplier_Select = "SELECT " + __sqlShopSupplier_ListCols + " FROM \"shop_supplier\""
 const __sqlShopSupplier_Select_history = "SELECT " + __sqlShopSupplier_ListCols + " FROM history.\"shop_supplier\""
@@ -73,6 +73,7 @@ func (m *ShopSupplier) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -96,6 +97,7 @@ func (m *ShopSupplier) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -133,7 +135,7 @@ func (_ *ShopSuppliers) SQLSelect(w SQLWriter) error {
 func (m *ShopSupplier) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(19)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -143,7 +145,7 @@ func (ms ShopSuppliers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(18)
+		w.WriteMarkers(19)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -318,6 +320,14 @@ func (m *ShopSupplier) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -328,7 +338,7 @@ func (m *ShopSupplier) SQLUpdate(w SQLWriter) error {
 func (m *ShopSupplier) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(19)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -374,17 +384,18 @@ func (m ShopSupplierHistory) Status() core.Interface    { return core.Interface{
 func (m ShopSupplierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShopSupplierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 func (m ShopSupplierHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ShopSupplierHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *ShopSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopSupplierHistory, 18)
+	res := make(ShopSupplierHistory, 19)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
@@ -403,14 +414,15 @@ func (m *ShopSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[15]
 	res["updated_at"] = data[16]
 	res["deleted_at"] = data[17]
+	res["rid"] = data[18]
 	*m = res
 	return nil
 }
 
 func (ms *ShopSupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopSupplierHistories, 0, 128)
@@ -437,6 +449,7 @@ func (ms *ShopSupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[15]
 		m["updated_at"] = data[16]
 		m["deleted_at"] = data[17]
+		m["rid"] = data[18]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

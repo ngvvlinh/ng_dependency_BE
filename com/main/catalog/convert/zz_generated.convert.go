@@ -410,6 +410,7 @@ func convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCat
 	out.CreatedAt = arg.CreatedAt               // simple assign
 	out.UpdatedAt = arg.UpdatedAt               // simple assign
 	out.DeletedAt = arg.DeletedAt               // simple assign
+	out.Rid = 0                                 // zero value
 }
 
 func Convert_catalog_ShopCategories_catalogmodel_ShopCategories(args []*catalog.ShopCategory) (outs []*catalogmodel.ShopCategory) {
@@ -523,6 +524,7 @@ func convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.Sho
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = time.Time{}       // zero value
+	out.Rid = 0                       // zero value
 }
 
 func Convert_catalog_ShopCollections_catalogmodel_ShopCollections(args []*catalog.ShopCollection) (outs []*catalogmodel.ShopCollection) {
@@ -859,6 +861,7 @@ func convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(ar
 	out.CollectionID = arg.CollectionID                 // simple assign
 	out.CreatedAt = arg.CreatedAt                       // simple assign
 	out.UpdatedAt = arg.UpdatedAt                       // simple assign
+	out.Rid = 0                                         // zero value
 }
 
 func Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(args []*catalog.ShopProductCollection) (outs []*catalogmodel.ShopProductCollection) {
@@ -957,6 +960,7 @@ func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVaria
 	out.DeletedAt = arg.DeletedAt // simple assign
 	out.NameNorm = ""             // zero value
 	out.AttrNormKv = ""           // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(args []*catalog.ShopVariant) (outs []*catalogmodel.ShopVariant) {
@@ -1084,6 +1088,7 @@ func convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(arg *c
 	out.VariantID = arg.VariantID   // simple assign
 	out.CreatedAt = arg.CreatedAt   // simple assign
 	out.UpdatedAt = arg.UpdatedAt   // simple assign
+	out.Rid = 0                     // zero value
 }
 
 func Convert_catalog_ShopVariantSuppliers_catalogmodel_ShopVariantSuppliers(args []*catalog.ShopVariantSupplier) (outs []*catalogmodel.ShopVariantSupplier) {

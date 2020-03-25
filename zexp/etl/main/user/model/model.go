@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/user_source"
 	"etop.vn/capi/dot"
 )
 
@@ -33,10 +32,6 @@ type User struct {
 
 	EmailVerificationSentAt time.Time
 	PhoneVerificationSentAt time.Time
-
-	Source    user_source.UserSource
-	RefUserID dot.ID
-	RefSaleID dot.ID
 
 	Rid dot.ID
 }

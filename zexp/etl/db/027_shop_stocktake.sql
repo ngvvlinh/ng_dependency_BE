@@ -1,0 +1,20 @@
+CREATE TABLE if not exists shop_stocktake (
+	id BIGINT primary key,
+	shop_id BIGINT,
+	created_by BIGINT,
+	updated_by BIGINT,
+	created_at timestamptz,
+	updated_at timestamptz,
+	confirmed_at timestamptz,
+	cancelled_at timestamptz,
+	variant_ids INT8[],
+	total_quantity INT4,
+	status int4,
+	lines jsonb,
+	code text,
+	cancel_reason TEXT,
+	product_ids INT8[],
+	note text,
+	type text,
+	rid INT8
+);

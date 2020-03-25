@@ -461,3 +461,22 @@ func (ft *AddressFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterP
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
+
+func (ft *AddressFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *AddressFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

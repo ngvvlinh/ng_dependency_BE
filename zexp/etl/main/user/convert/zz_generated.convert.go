@@ -87,9 +87,9 @@ func convert_usermodel_User_identitymodel_User(arg *usermodel.User, out *identit
 	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
 	out.PhoneVerificationSentAt = arg.PhoneVerificationSentAt // simple assign
 	out.IsTest = 0                                            // zero value
-	out.Source = arg.Source                                   // simple assign
-	out.RefUserID = arg.RefUserID                             // simple assign
-	out.RefSaleID = arg.RefSaleID                             // simple assign
+	out.Source = 0                                            // zero value
+	out.RefUserID = 0                                         // zero value
+	out.RefSaleID = 0                                         // zero value
 	out.WLPartnerID = 0                                       // zero value
 	out.Rid = int(arg.Rid)                                    // simple conversion
 }
@@ -126,9 +126,6 @@ func convert_identitymodel_User_usermodel_User(arg *identitymodel.User, out *use
 	out.PhoneVerifiedAt = arg.PhoneVerifiedAt                 // simple assign
 	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
 	out.PhoneVerificationSentAt = arg.PhoneVerificationSentAt // simple assign
-	out.Source = arg.Source                                   // simple assign
-	out.RefUserID = arg.RefUserID                             // simple assign
-	out.RefSaleID = arg.RefSaleID                             // simple assign
 	out.Rid = dot.ID(arg.Rid)                                 // simple conversion
 }
 

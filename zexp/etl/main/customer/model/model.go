@@ -14,24 +14,20 @@ type ShopCustomer struct {
 	ExternalCode string
 	PartnerID    dot.ID
 
-	ID           dot.ID `paging:"id"`
-	ShopID       dot.ID
-	Code         string
-	CodeNorm     int
-	FullName     string
-	Gender       gender.Gender
-	Type         customer_type.CustomerType
-	Birthday     string
-	Note         string
-	Phone        string
-	Email        string
-	Status       int
-	FullNameNorm string
-	PhoneNorm    string
-	GroupIDs     []dot.ID `sq:"-"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    time.Time
+	ID        dot.ID `paging:"id"`
+	ShopID    dot.ID
+	Code      string
+	FullName  string
+	Gender    gender.Gender
+	Type      customer_type.CustomerType
+	Birthday  string
+	Note      string
+	Phone     string
+	Email     string
+	Status    int
+	GroupIDs  []dot.ID `sq:"-"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	Rid dot.ID
 }

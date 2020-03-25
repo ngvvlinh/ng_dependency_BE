@@ -728,8 +728,8 @@ func (m *AccountAuthFtShop) SQLScanArgs(opts core.Opts) []interface{} {
 type AccountUsers []*AccountUser
 
 const __sqlAccountUser_Table = "account_user"
-const __sqlAccountUser_ListCols = "\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\""
-const __sqlAccountUser_ListColsOnConflict = "\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\""
+const __sqlAccountUser_ListCols = "\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\",\"rid\""
+const __sqlAccountUser_ListColsOnConflict = "\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccountUser_Insert = "INSERT INTO \"account_user\" (" + __sqlAccountUser_ListCols + ") VALUES"
 const __sqlAccountUser_Select = "SELECT " + __sqlAccountUser_ListCols + " FROM \"account_user\""
 const __sqlAccountUser_Select_history = "SELECT " + __sqlAccountUser_ListCols + " FROM history.\"account_user\""
@@ -773,6 +773,7 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.DisabledAt),
 		core.Time(m.DisabledBy),
 		core.String(m.DisableReason),
+		m.Rid,
 	}
 }
 
@@ -797,6 +798,7 @@ func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.DisabledAt),
 		(*core.Time)(&m.DisabledBy),
 		(*core.String)(&m.DisableReason),
+		&m.Rid,
 	}
 }
 
@@ -834,7 +836,7 @@ func (_ *AccountUsers) SQLSelect(w SQLWriter) error {
 func (m *AccountUser) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -844,7 +846,7 @@ func (ms AccountUsers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1027,6 +1029,14 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DisableReason)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1037,7 +1047,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 func (m *AccountUser) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1090,17 +1100,18 @@ func (m AccountUserHistory) DisabledBy() core.Interface { return core.Interface{
 func (m AccountUserHistory) DisableReason() core.Interface {
 	return core.Interface{m["disable_reason"]}
 }
+func (m AccountUserHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountUserHistory, 19)
+	res := make(AccountUserHistory, 20)
 	res["account_id"] = data[0]
 	res["user_id"] = data[1]
 	res["status"] = data[2]
@@ -1120,14 +1131,15 @@ func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["disabled_at"] = data[16]
 	res["disabled_by"] = data[17]
 	res["disable_reason"] = data[18]
+	res["rid"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountUserHistories, 0, 128)
@@ -1155,6 +1167,7 @@ func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["disabled_at"] = data[16]
 		m["disabled_by"] = data[17]
 		m["disable_reason"] = data[18]
+		m["rid"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

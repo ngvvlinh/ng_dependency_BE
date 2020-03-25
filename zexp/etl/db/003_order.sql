@@ -45,12 +45,9 @@ CREATE TABLE if not exists "order" (
     id bigint primary key,
     rid bigint,
     shop_id bigint,
-    shop_name text,
     code text,
     product_ids bigint[],
     variant_ids bigint[],
-    supplier_ids bigint[],
-    currency text,
     payment_method text,
     customer jsonb,
     customer_address jsonb,
@@ -66,7 +63,6 @@ CREATE TABLE if not exists "order" (
     confirmed_at timestamp with time zone,
     cancelled_at timestamp with time zone,
     cancel_reason text,
-    customer_confirm smallint,
     external_confirm smallint,
     shop_confirm smallint,
     confirm_status smallint,
@@ -85,12 +81,10 @@ CREATE TABLE if not exists "order" (
     fulfillment_payment_statuses INT2[],
     fulfillment_statuses INT2[],
     order_discount INT4,
-
     order_note text,
     shop_note text,
     shipping_note text,
-    order_source_id int8,
-    order_source_type order_source_type,
+
     external_order_id text,
     ed_code text,
     external_url text,
@@ -105,17 +99,11 @@ CREATE TABLE if not exists "order" (
     is_outside_etop boolean,
     ghn_note_code ghn_note_code,
     try_on try_on,
-    customer_name_norm tsvector,
-    product_name_norm tsvector,
     fulfillment_type int2,
     fulfillment_ids int8[],
     external_meta JSONB,
-    trading_shop_id int8,
     payment_status int2,
     payment_id int8,
-    referral_meta JSONB,
     customer_id int8,
-    created_by int8,
-
-    partner_id int8
+    created_by int8
 );

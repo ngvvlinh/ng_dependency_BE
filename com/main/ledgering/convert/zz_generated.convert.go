@@ -112,6 +112,7 @@ func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_ledgering_ShopLedgers_ledgeringmodel_ShopLedgers(args []*ledgering.ShopLedger) (outs []*ledgeringmodel.ShopLedger) {

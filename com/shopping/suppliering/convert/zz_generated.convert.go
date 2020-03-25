@@ -124,6 +124,7 @@ func convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *supplie
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 	out.DeletedAt = time.Time{}                   // zero value
+	out.Rid = 0                                   // zero value
 }
 
 func Convert_suppliering_ShopSuppliers_supplieringmodel_ShopSuppliers(args []*suppliering.ShopSupplier) (outs []*supplieringmodel.ShopSupplier) {

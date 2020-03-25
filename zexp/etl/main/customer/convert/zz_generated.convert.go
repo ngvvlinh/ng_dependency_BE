@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 	customermodel "etop.vn/backend/zexp/etl/main/customer/model"
@@ -61,7 +63,7 @@ func convert_customermodel_ShopCustomer_customeringmodel_ShopCustomer(arg *custo
 	out.ID = arg.ID                     // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.Code = arg.Code                 // simple assign
-	out.CodeNorm = arg.CodeNorm         // simple assign
+	out.CodeNorm = 0                    // zero value
 	out.FullName = arg.FullName         // simple assign
 	out.Gender = arg.Gender             // simple assign
 	out.Type = arg.Type                 // simple assign
@@ -70,12 +72,12 @@ func convert_customermodel_ShopCustomer_customeringmodel_ShopCustomer(arg *custo
 	out.Phone = arg.Phone               // simple assign
 	out.Email = arg.Email               // simple assign
 	out.Status = arg.Status             // simple assign
-	out.FullNameNorm = arg.FullNameNorm // simple assign
-	out.PhoneNorm = arg.PhoneNorm       // simple assign
+	out.FullNameNorm = ""               // zero value
+	out.PhoneNorm = ""                  // zero value
 	out.GroupIDs = arg.GroupIDs         // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
-	out.DeletedAt = arg.DeletedAt       // simple assign
+	out.DeletedAt = time.Time{}         // zero value
 	out.Rid = arg.Rid                   // simple assign
 }
 
@@ -106,7 +108,6 @@ func convert_customeringmodel_ShopCustomer_customermodel_ShopCustomer(arg *custo
 	out.ID = arg.ID                     // simple assign
 	out.ShopID = arg.ShopID             // simple assign
 	out.Code = arg.Code                 // simple assign
-	out.CodeNorm = arg.CodeNorm         // simple assign
 	out.FullName = arg.FullName         // simple assign
 	out.Gender = arg.Gender             // simple assign
 	out.Type = arg.Type                 // simple assign
@@ -115,12 +116,9 @@ func convert_customeringmodel_ShopCustomer_customermodel_ShopCustomer(arg *custo
 	out.Phone = arg.Phone               // simple assign
 	out.Email = arg.Email               // simple assign
 	out.Status = arg.Status             // simple assign
-	out.FullNameNorm = arg.FullNameNorm // simple assign
-	out.PhoneNorm = arg.PhoneNorm       // simple assign
 	out.GroupIDs = arg.GroupIDs         // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
-	out.DeletedAt = arg.DeletedAt       // simple assign
 	out.Rid = arg.Rid                   // simple assign
 }
 

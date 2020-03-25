@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type Invitations []*Invitation
 
 const __sqlInvitation_Table = "invitation"
-const __sqlInvitation_ListCols = "\"id\",\"account_id\",\"email\",\"phone\",\"full_name\",\"short_name\",\"roles\",\"token\",\"status\",\"invited_by\",\"accepted_at\",\"rejected_at\",\"expires_at\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlInvitation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"roles\" = EXCLUDED.\"roles\",\"token\" = EXCLUDED.\"token\",\"status\" = EXCLUDED.\"status\",\"invited_by\" = EXCLUDED.\"invited_by\",\"accepted_at\" = EXCLUDED.\"accepted_at\",\"rejected_at\" = EXCLUDED.\"rejected_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlInvitation_ListCols = "\"id\",\"account_id\",\"email\",\"phone\",\"full_name\",\"short_name\",\"roles\",\"token\",\"status\",\"invited_by\",\"accepted_at\",\"rejected_at\",\"expires_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"rid\""
+const __sqlInvitation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"roles\" = EXCLUDED.\"roles\",\"token\" = EXCLUDED.\"token\",\"status\" = EXCLUDED.\"status\",\"invited_by\" = EXCLUDED.\"invited_by\",\"accepted_at\" = EXCLUDED.\"accepted_at\",\"rejected_at\" = EXCLUDED.\"rejected_at\",\"expires_at\" = EXCLUDED.\"expires_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlInvitation_Insert = "INSERT INTO \"invitation\" (" + __sqlInvitation_ListCols + ") VALUES"
 const __sqlInvitation_Select = "SELECT " + __sqlInvitation_ListCols + " FROM \"invitation\""
 const __sqlInvitation_Select_history = "SELECT " + __sqlInvitation_ListCols + " FROM history.\"invitation\""
@@ -71,6 +71,7 @@ func (m *Invitation) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -92,6 +93,7 @@ func (m *Invitation) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -129,7 +131,7 @@ func (_ *Invitations) SQLSelect(w SQLWriter) error {
 func (m *Invitation) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -139,7 +141,7 @@ func (ms Invitations) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -298,6 +300,14 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -308,7 +318,7 @@ func (m *Invitation) SQLUpdate(w SQLWriter) error {
 func (m *Invitation) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvitation_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -346,17 +356,18 @@ func (m InvitationHistory) ExpiresAt() core.Interface  { return core.Interface{m
 func (m InvitationHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
 func (m InvitationHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
 func (m InvitationHistory) DeletedAt() core.Interface  { return core.Interface{m["deleted_at"]} }
+func (m InvitationHistory) Rid() core.Interface        { return core.Interface{m["rid"]} }
 
 func (m *InvitationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(InvitationHistory, 16)
+	res := make(InvitationHistory, 17)
 	res["id"] = data[0]
 	res["account_id"] = data[1]
 	res["email"] = data[2]
@@ -373,14 +384,15 @@ func (m *InvitationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[13]
 	res["updated_at"] = data[14]
 	res["deleted_at"] = data[15]
+	res["rid"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *InvitationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(InvitationHistories, 0, 128)
@@ -405,6 +417,7 @@ func (ms *InvitationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[13]
 		m["updated_at"] = data[14]
 		m["deleted_at"] = data[15]
+		m["rid"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

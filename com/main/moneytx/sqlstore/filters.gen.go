@@ -369,6 +369,25 @@ func (ft *MoneyTransactionShippingFilters) ByTypePtr(Type *string) *sq.ColumnFil
 	}
 }
 
+func (ft *MoneyTransactionShippingFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type MoneyTransactionShippingEtopFilters struct{ prefix string }
 
 func NewMoneyTransactionShippingEtopFilters(prefix string) MoneyTransactionShippingEtopFilters {

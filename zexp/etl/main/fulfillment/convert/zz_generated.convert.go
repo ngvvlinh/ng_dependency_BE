@@ -89,8 +89,8 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.VariantIDs = arg.VariantIDs                                   // simple assign
 	out.Lines = orderconvert.Convert_ordermodel_OrderLines_orderingmodel_OrderLines(arg.Lines)
-	out.TypeFrom = arg.TypeFrom                                                     // simple assign
-	out.TypeTo = arg.TypeTo                                                         // simple assign
+	out.TypeFrom = ""                                                               // zero value
+	out.TypeTo = ""                                                                 // zero value
 	out.AddressFrom = arg.AddressFrom                                               // simple assign
 	out.AddressTo = arg.AddressTo                                                   // simple assign
 	out.AddressReturn = arg.AddressReturn                                           // simple assign
@@ -121,10 +121,10 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
-	out.ShippingType = arg.ShippingType                                             // simple assign
+	out.ShippingType = 0                                                            // zero value
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
-	out.ShopCarrierID = arg.ShopCarrierID                                           // simple assign
+	out.ShopCarrierID = 0                                                           // zero value
 	out.ShippingServiceName = arg.ShippingServiceName                               // simple assign
 	out.ExternalShippingName = arg.ExternalShippingName                             // simple assign
 	out.ExternalShippingID = arg.ExternalShippingID                                 // simple assign
@@ -158,7 +158,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.Width = arg.Width                                                           // simple assign
 	out.Height = arg.Height                                                         // simple assign
 	out.DeliveryRoute = arg.DeliveryRoute                                           // simple assign
-	out.ExternalAffiliateID = arg.ExternalAffiliateID                               // simple assign
+	out.ExternalAffiliateID = ""                                                    // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 
@@ -216,8 +216,6 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.VariantIDs = arg.VariantIDs                                   // simple assign
 	out.Lines = orderconvert.Convert_orderingmodel_OrderLines_ordermodel_OrderLines(arg.Lines)
-	out.TypeFrom = arg.TypeFrom                                                     // simple assign
-	out.TypeTo = arg.TypeTo                                                         // simple assign
 	out.AddressFrom = arg.AddressFrom                                               // simple assign
 	out.AddressTo = arg.AddressTo                                                   // simple assign
 	out.AddressReturn = arg.AddressReturn                                           // simple assign
@@ -248,10 +246,8 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
-	out.ShippingType = arg.ShippingType                                             // simple assign
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
-	out.ShopCarrierID = arg.ShopCarrierID                                           // simple assign
 	out.ShippingServiceName = arg.ShippingServiceName                               // simple assign
 	out.ExternalShippingName = arg.ExternalShippingName                             // simple assign
 	out.ExternalShippingID = arg.ExternalShippingID                                 // simple assign
@@ -285,7 +281,6 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 	out.Width = arg.Width                                                           // simple assign
 	out.Height = arg.Height                                                         // simple assign
 	out.DeliveryRoute = arg.DeliveryRoute                                           // simple assign
-	out.ExternalAffiliateID = arg.ExternalAffiliateID                               // simple assign
 	out.Rid = arg.Rid                                                               // simple assign
 }
 

@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 	shopproductmodel "etop.vn/backend/zexp/etl/main/shopproduct/model"
@@ -134,7 +136,7 @@ func convert_shopproductmodel_ShopProduct_catalogmodel_ShopProduct(arg *shopprod
 	out.ProductID = arg.ProductID                   // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Code = arg.Code                             // simple assign
-	out.CodeNorm = arg.CodeNorm                     // simple assign
+	out.CodeNorm = 0                                // zero value
 	out.Name = arg.Name                             // simple assign
 	out.Description = arg.Description               // simple assign
 	out.DescHTML = arg.DescHTML                     // simple assign
@@ -151,9 +153,9 @@ func convert_shopproductmodel_ShopProduct_catalogmodel_ShopProduct(arg *shopprod
 	out.Status = arg.Status                         // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
-	out.DeletedAt = arg.DeletedAt                   // simple assign
-	out.NameNorm = arg.NameNorm                     // simple assign
-	out.NameNormUa = arg.NameNormUa                 // simple assign
+	out.DeletedAt = time.Time{}                     // zero value
+	out.NameNorm = ""                               // zero value
+	out.NameNormUa = ""                             // zero value
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = Convert_shopproductmodel_MetaFields_catalogmodel_MetaFields(arg.MetaFields)
 	out.Rid = arg.Rid // simple assign
@@ -189,7 +191,6 @@ func convert_catalogmodel_ShopProduct_shopproductmodel_ShopProduct(arg *catalogm
 	out.ProductID = arg.ProductID                   // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Code = arg.Code                             // simple assign
-	out.CodeNorm = arg.CodeNorm                     // simple assign
 	out.Name = arg.Name                             // simple assign
 	out.Description = arg.Description               // simple assign
 	out.DescHTML = arg.DescHTML                     // simple assign
@@ -206,9 +207,6 @@ func convert_catalogmodel_ShopProduct_shopproductmodel_ShopProduct(arg *catalogm
 	out.Status = arg.Status                         // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
-	out.DeletedAt = arg.DeletedAt                   // simple assign
-	out.NameNorm = arg.NameNorm                     // simple assign
-	out.NameNormUa = arg.NameNormUa                 // simple assign
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = Convert_catalogmodel_MetaFields_shopproductmodel_MetaFields(arg.MetaFields)
 	out.Rid = arg.Rid // simple assign

@@ -17,9 +17,5 @@ CREATE TABLE IF NOT EXISTS "user" (
     email_verification_sent_at timestamp with time zone,
     phone_verification_sent_at timestamp with time zone,
 
-    source text,
-    ref_user_id bigint,
-    ref_sale_id bigint,
-
     rid bigint
 );

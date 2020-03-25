@@ -161,6 +161,25 @@ func (ft *InventoryVariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.Colu
 	}
 }
 
+func (ft *InventoryVariantFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *InventoryVariantFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}
+
 type InventoryVoucherFilters struct{ prefix string }
 
 func NewInventoryVoucherFilters(prefix string) InventoryVoucherFilters {
@@ -533,5 +552,24 @@ func (ft *InventoryVoucherFilters) ByCancelReasonPtr(CancelReason *string) *sq.C
 		Value:  CancelReason,
 		IsNil:  CancelReason == nil,
 		IsZero: CancelReason != nil && (*CancelReason) == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }

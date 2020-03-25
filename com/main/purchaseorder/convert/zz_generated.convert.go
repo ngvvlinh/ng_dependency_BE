@@ -181,6 +181,7 @@ func convert_purchaseorder_PurchaseOrder_purchaseordermodel_PurchaseOrder(arg *p
 	out.DeletedAt = time.Time{}       // zero value
 	out.SupplierFullNameNorm = ""     // zero value
 	out.SupplierPhoneNorm = ""        // zero value
+	out.Rid = 0                       // zero value
 }
 
 func Convert_purchaseorder_PurchaseOrders_purchaseordermodel_PurchaseOrders(args []*purchaseorder.PurchaseOrder) (outs []*purchaseordermodel.PurchaseOrder) {

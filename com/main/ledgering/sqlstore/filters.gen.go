@@ -215,3 +215,22 @@ func (ft *ShopLedgerFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilt
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }
+
+func (ft *ShopLedgerFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopLedgerFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

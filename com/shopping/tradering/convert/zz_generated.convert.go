@@ -89,6 +89,7 @@ func convert_tradering_ShopTrader_traderingmodel_ShopTrader(arg *tradering.ShopT
 	out.ShopID = arg.ShopID     // simple assign
 	out.Type = arg.Type         // simple assign
 	out.DeletedAt = time.Time{} // zero value
+	out.Rid = 0                 // zero value
 }
 
 func Convert_tradering_ShopTraders_traderingmodel_ShopTraders(args []*tradering.ShopTrader) (outs []*traderingmodel.ShopTrader) {

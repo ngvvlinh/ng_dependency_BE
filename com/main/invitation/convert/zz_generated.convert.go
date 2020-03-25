@@ -123,6 +123,7 @@ func convert_invitation_Invitation_invitationmodel_Invitation(arg *invitation.In
 	out.CreatedAt = arg.CreatedAt   // simple assign
 	out.UpdatedAt = arg.UpdatedAt   // simple assign
 	out.DeletedAt = time.Time{}     // zero value
+	out.Rid = 0                     // zero value
 }
 
 func Convert_invitation_Invitations_invitationmodel_Invitations(args []*invitation.Invitation) (outs []*invitationmodel.Invitation) {

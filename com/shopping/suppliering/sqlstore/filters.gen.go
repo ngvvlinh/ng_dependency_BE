@@ -366,3 +366,22 @@ func (ft *ShopSupplierFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFi
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }
+
+func (ft *ShopSupplierFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == 0,
+	}
+}
+
+func (ft *ShopSupplierFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "rid",
+		Value:  Rid,
+		IsNil:  Rid == nil,
+		IsZero: Rid != nil && (*Rid) == 0,
+	}
+}

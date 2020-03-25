@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/api/top/types/etc/shipping"
 	"etop.vn/api/top/types/etc/shipping_provider"
@@ -66,8 +65,6 @@ type Fulfillment struct {
 	VariantIDs []dot.ID
 	Lines      []*etlordermodel.OrderLine
 
-	TypeFrom      etopmodel.FulfillmentEndpoint
-	TypeTo        etopmodel.FulfillmentEndpoint
 	AddressFrom   *addressmodel.Address
 	AddressTo     *addressmodel.Address
 	AddressReturn *addressmodel.Address
@@ -107,10 +104,8 @@ type Fulfillment struct {
 	ShippingNote        string
 	TryOn               try_on.TryOnCode
 	IncludeInsurance    bool
-	ShippingType        ordertypes.ShippingType
 	ConnectionID        dot.ID
 	ConnectionMethod    connection_type.ConnectionMethod
-	ShopCarrierID       dot.ID
 	ShippingServiceName string
 
 	ExternalShippingName        string
@@ -160,8 +155,7 @@ type Fulfillment struct {
 	Width            int
 	Height           int
 
-	DeliveryRoute       string
-	ExternalAffiliateID string
+	DeliveryRoute string
 
 	Rid dot.ID
 }

@@ -1,0 +1,23 @@
+CREATE TABLE if not exists shop_variant (
+    shop_id bigint,
+    variant_id bigint,
+    rid bigint,
+    collection_id bigint,
+    name text,
+    description text,
+    desc_html text,
+    short_desc text,
+    retail_price integer,
+    tags text[],
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    note text,
+    image_urls text[],
+    status smallint,
+    product_id bigint,
+    code TEXT,
+    cost_price INT4,
+    list_price INT4,
+    attributes JSONB,
+    PRIMARY KEY (variant_id)
+);

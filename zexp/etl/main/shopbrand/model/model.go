@@ -18,7 +18,6 @@ type ShopBrand struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt time.Time
 
 	Rid dot.ID
 }

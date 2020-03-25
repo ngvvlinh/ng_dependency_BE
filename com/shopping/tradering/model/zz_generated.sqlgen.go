@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type ShopTraders []*ShopTrader
 
 const __sqlShopTrader_Table = "shop_trader"
-const __sqlShopTrader_ListCols = "\"id\",\"shop_id\",\"type\",\"deleted_at\""
-const __sqlShopTrader_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"type\" = EXCLUDED.\"type\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlShopTrader_ListCols = "\"id\",\"shop_id\",\"type\",\"deleted_at\",\"rid\""
+const __sqlShopTrader_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"type\" = EXCLUDED.\"type\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopTrader_Insert = "INSERT INTO \"shop_trader\" (" + __sqlShopTrader_ListCols + ") VALUES"
 const __sqlShopTrader_Select = "SELECT " + __sqlShopTrader_ListCols + " FROM \"shop_trader\""
 const __sqlShopTrader_Select_history = "SELECT " + __sqlShopTrader_ListCols + " FROM history.\"shop_trader\""
@@ -58,6 +58,7 @@ func (m *ShopTrader) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ShopID,
 		core.String(m.Type),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -67,6 +68,7 @@ func (m *ShopTrader) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ShopID,
 		(*core.String)(&m.Type),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -104,7 +106,7 @@ func (_ *ShopTraders) SQLSelect(w SQLWriter) error {
 func (m *ShopTrader) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(4)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -114,7 +116,7 @@ func (ms ShopTraders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(4)
+		w.WriteMarkers(5)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -177,6 +179,14 @@ func (m *ShopTrader) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -187,7 +197,7 @@ func (m *ShopTrader) SQLUpdate(w SQLWriter) error {
 func (m *ShopTrader) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(4)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -213,29 +223,31 @@ func (m ShopTraderHistory) ID() core.Interface        { return core.Interface{m[
 func (m ShopTraderHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
 func (m ShopTraderHistory) Type() core.Interface      { return core.Interface{m["type"]} }
 func (m ShopTraderHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ShopTraderHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *ShopTraderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 4)
-	args := make([]interface{}, 4)
-	for i := 0; i < 4; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopTraderHistory, 4)
+	res := make(ShopTraderHistory, 5)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["type"] = data[2]
 	res["deleted_at"] = data[3]
+	res["rid"] = data[4]
 	*m = res
 	return nil
 }
 
 func (ms *ShopTraderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 4)
-	args := make([]interface{}, 4)
-	for i := 0; i < 4; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopTraderHistories, 0, 128)
@@ -248,6 +260,7 @@ func (ms *ShopTraderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["shop_id"] = data[1]
 		m["type"] = data[2]
 		m["deleted_at"] = data[3]
+		m["rid"] = data[4]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

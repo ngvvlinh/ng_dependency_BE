@@ -11,7 +11,8 @@ import (
 )
 
 /*
-Custom conversions: (none)
+Custom conversions:
+    ConvertOrder    // in use
 
 Ignored functions: (none)
 */
@@ -241,8 +242,8 @@ func convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *or
 	out.EdCode = arg.EdCode               // simple assign
 	out.ProductIDs = arg.ProductIDs       // simple assign
 	out.VariantIDs = arg.VariantIDs       // simple assign
-	out.PartnerID = arg.PartnerID         // simple assign
-	out.Currency = arg.Currency           // simple assign
+	out.PartnerID = 0                     // zero value
+	out.Currency = ""                     // zero value
 	out.PaymentMethod = arg.PaymentMethod // simple assign
 	out.Customer = Convert_ordermodel_OrderCustomer_orderingmodel_OrderCustomer(arg.Customer, nil)
 	out.CustomerAddress = Convert_ordermodel_OrderAddress_orderingmodel_OrderAddress(arg.CustomerAddress, nil)
@@ -258,7 +259,7 @@ func convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *or
 	out.ConfirmedAt = arg.ConfirmedAt                               // simple assign
 	out.CancelledAt = arg.CancelledAt                               // simple assign
 	out.CancelReason = arg.CancelReason                             // simple assign
-	out.CustomerConfirm = arg.CustomerConfirm                       // simple assign
+	out.CustomerConfirm = 0                                         // zero value
 	out.ShopConfirm = arg.ShopConfirm                               // simple assign
 	out.ConfirmStatus = arg.ConfirmStatus                           // simple assign
 	out.FulfillmentShippingStatus = arg.FulfillmentShippingStatus   // simple assign
@@ -283,27 +284,27 @@ func convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *or
 	out.OrderNote = arg.OrderNote             // simple assign
 	out.ShopNote = arg.ShopNote               // simple assign
 	out.ShippingNote = arg.ShippingNote       // simple assign
-	out.OrderSourceType = arg.OrderSourceType // simple assign
-	out.OrderSourceID = arg.OrderSourceID     // simple assign
+	out.OrderSourceType = 0                   // zero value
+	out.OrderSourceID = 0                     // zero value
 	out.ExternalOrderID = arg.ExternalOrderID // simple assign
 	out.ReferenceURL = arg.ReferenceURL       // simple assign
 	out.ExternalURL = arg.ExternalURL         // simple assign
 	out.ShopShipping = Convert_ordermodel_OrderShipping_orderingmodel_OrderShipping(arg.ShopShipping, nil)
-	out.IsOutsideEtop = arg.IsOutsideEtop       // simple assign
-	out.GhnNoteCode = arg.GhnNoteCode           // simple assign
-	out.TryOn = arg.TryOn                       // simple assign
-	out.CustomerNameNorm = arg.CustomerNameNorm // simple assign
-	out.ProductNameNorm = arg.ProductNameNorm   // simple assign
-	out.FulfillmentType = arg.FulfillmentType   // simple assign
-	out.FulfillmentIDs = arg.FulfillmentIDs     // simple assign
-	out.ExternalMeta = arg.ExternalMeta         // simple assign
-	out.TradingShopID = arg.TradingShopID       // simple assign
-	out.PaymentStatus = arg.PaymentStatus       // simple assign
-	out.PaymentID = arg.PaymentID               // simple assign
-	out.ReferralMeta = arg.ReferralMeta         // simple assign
-	out.CustomerID = arg.CustomerID             // simple assign
-	out.CreatedBy = arg.CreatedBy               // simple assign
-	out.Rid = arg.Rid                           // simple assign
+	out.IsOutsideEtop = arg.IsOutsideEtop     // simple assign
+	out.GhnNoteCode = arg.GhnNoteCode         // simple assign
+	out.TryOn = arg.TryOn                     // simple assign
+	out.CustomerNameNorm = ""                 // zero value
+	out.ProductNameNorm = ""                  // zero value
+	out.FulfillmentType = arg.FulfillmentType // simple assign
+	out.FulfillmentIDs = arg.FulfillmentIDs   // simple assign
+	out.ExternalMeta = arg.ExternalMeta       // simple assign
+	out.TradingShopID = 0                     // zero value
+	out.PaymentStatus = arg.PaymentStatus     // simple assign
+	out.PaymentID = arg.PaymentID             // simple assign
+	out.ReferralMeta = nil                    // zero value
+	out.CustomerID = arg.CustomerID           // simple assign
+	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.Rid = arg.Rid                         // simple assign
 }
 
 func Convert_ordermodel_Orders_orderingmodel_Orders(args []*ordermodel.Order) (outs []*orderingmodel.Order) {
@@ -322,7 +323,7 @@ func Convert_orderingmodel_Order_ordermodel_Order(arg *orderingmodel.Order, out 
 	if out == nil {
 		out = &ordermodel.Order{}
 	}
-	convert_orderingmodel_Order_ordermodel_Order(arg, out)
+	ConvertOrder(arg, out)
 	return out
 }
 
@@ -333,8 +334,6 @@ func convert_orderingmodel_Order_ordermodel_Order(arg *orderingmodel.Order, out 
 	out.EdCode = arg.EdCode               // simple assign
 	out.ProductIDs = arg.ProductIDs       // simple assign
 	out.VariantIDs = arg.VariantIDs       // simple assign
-	out.PartnerID = arg.PartnerID         // simple assign
-	out.Currency = arg.Currency           // simple assign
 	out.PaymentMethod = arg.PaymentMethod // simple assign
 	out.Customer = Convert_orderingmodel_OrderCustomer_ordermodel_OrderCustomer(arg.Customer, nil)
 	out.CustomerAddress = Convert_orderingmodel_OrderAddress_ordermodel_OrderAddress(arg.CustomerAddress, nil)
@@ -350,7 +349,6 @@ func convert_orderingmodel_Order_ordermodel_Order(arg *orderingmodel.Order, out 
 	out.ConfirmedAt = arg.ConfirmedAt                               // simple assign
 	out.CancelledAt = arg.CancelledAt                               // simple assign
 	out.CancelReason = arg.CancelReason                             // simple assign
-	out.CustomerConfirm = arg.CustomerConfirm                       // simple assign
 	out.ShopConfirm = arg.ShopConfirm                               // simple assign
 	out.ConfirmStatus = arg.ConfirmStatus                           // simple assign
 	out.FulfillmentShippingStatus = arg.FulfillmentShippingStatus   // simple assign
@@ -375,27 +373,21 @@ func convert_orderingmodel_Order_ordermodel_Order(arg *orderingmodel.Order, out 
 	out.OrderNote = arg.OrderNote             // simple assign
 	out.ShopNote = arg.ShopNote               // simple assign
 	out.ShippingNote = arg.ShippingNote       // simple assign
-	out.OrderSourceType = arg.OrderSourceType // simple assign
-	out.OrderSourceID = arg.OrderSourceID     // simple assign
 	out.ExternalOrderID = arg.ExternalOrderID // simple assign
 	out.ReferenceURL = arg.ReferenceURL       // simple assign
 	out.ExternalURL = arg.ExternalURL         // simple assign
 	out.ShopShipping = Convert_orderingmodel_OrderShipping_ordermodel_OrderShipping(arg.ShopShipping, nil)
-	out.IsOutsideEtop = arg.IsOutsideEtop       // simple assign
-	out.GhnNoteCode = arg.GhnNoteCode           // simple assign
-	out.TryOn = arg.TryOn                       // simple assign
-	out.CustomerNameNorm = arg.CustomerNameNorm // simple assign
-	out.ProductNameNorm = arg.ProductNameNorm   // simple assign
-	out.FulfillmentType = arg.FulfillmentType   // simple assign
-	out.FulfillmentIDs = arg.FulfillmentIDs     // simple assign
-	out.ExternalMeta = arg.ExternalMeta         // simple assign
-	out.TradingShopID = arg.TradingShopID       // simple assign
-	out.PaymentStatus = arg.PaymentStatus       // simple assign
-	out.PaymentID = arg.PaymentID               // simple assign
-	out.ReferralMeta = arg.ReferralMeta         // simple assign
-	out.CustomerID = arg.CustomerID             // simple assign
-	out.CreatedBy = arg.CreatedBy               // simple assign
-	out.Rid = arg.Rid                           // simple assign
+	out.IsOutsideEtop = arg.IsOutsideEtop     // simple assign
+	out.GhnNoteCode = arg.GhnNoteCode         // simple assign
+	out.TryOn = arg.TryOn                     // simple assign
+	out.FulfillmentType = arg.FulfillmentType // simple assign
+	out.FulfillmentIDs = arg.FulfillmentIDs   // simple assign
+	out.ExternalMeta = arg.ExternalMeta       // simple assign
+	out.PaymentStatus = arg.PaymentStatus     // simple assign
+	out.PaymentID = arg.PaymentID             // simple assign
+	out.CustomerID = arg.CustomerID           // simple assign
+	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.Rid = arg.Rid                         // simple assign
 }
 
 func Convert_orderingmodel_Orders_ordermodel_Orders(args []*orderingmodel.Order) (outs []*ordermodel.Order) {

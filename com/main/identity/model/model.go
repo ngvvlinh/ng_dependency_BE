@@ -438,6 +438,8 @@ type AccountUser struct {
 	DisabledAt    time.Time
 	DisabledBy    time.Time
 	DisableReason string
+
+	Rid dot.ID
 }
 
 // +sqlgen:      AccountUser as au

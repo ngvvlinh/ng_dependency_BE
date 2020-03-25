@@ -36,6 +36,7 @@ type PurchaseOrder struct {
 	DeletedAt            time.Time
 	SupplierFullNameNorm string
 	SupplierPhoneNorm    string
+	Rid                  dot.ID
 }
 
 type PurchaseOrderLine struct {

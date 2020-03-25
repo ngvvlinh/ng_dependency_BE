@@ -20,6 +20,8 @@ type InventoryVariant struct {
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+
+	Rid dot.ID
 }
 
 // +sqlgen
@@ -47,6 +49,8 @@ type InventoryVoucher struct {
 	CancelledAt  time.Time
 	CancelReason string
 	ProductIDs   []dot.ID
+
+	Rid dot.ID
 }
 
 type InventoryVoucherItem struct {

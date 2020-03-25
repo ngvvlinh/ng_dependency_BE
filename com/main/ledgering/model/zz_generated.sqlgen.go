@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type ShopLedgers []*ShopLedger
 
 const __sqlShopLedger_Table = "shop_ledger"
-const __sqlShopLedger_ListCols = "\"id\",\"shop_id\",\"name\",\"bank_account\",\"note\",\"type\",\"status\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlShopLedger_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"name\" = EXCLUDED.\"name\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlShopLedger_ListCols = "\"id\",\"shop_id\",\"name\",\"bank_account\",\"note\",\"type\",\"status\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\",\"rid\""
+const __sqlShopLedger_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"name\" = EXCLUDED.\"name\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"type\" = EXCLUDED.\"type\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopLedger_Insert = "INSERT INTO \"shop_ledger\" (" + __sqlShopLedger_ListCols + ") VALUES"
 const __sqlShopLedger_Select = "SELECT " + __sqlShopLedger_ListCols + " FROM \"shop_ledger\""
 const __sqlShopLedger_Select_history = "SELECT " + __sqlShopLedger_ListCols + " FROM history.\"shop_ledger\""
@@ -66,6 +66,7 @@ func (m *ShopLedger) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Rid,
 	}
 }
 
@@ -82,6 +83,7 @@ func (m *ShopLedger) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Rid,
 	}
 }
 
@@ -119,7 +121,7 @@ func (_ *ShopLedgers) SQLSelect(w SQLWriter) error {
 func (m *ShopLedger) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopLedger_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -129,7 +131,7 @@ func (ms ShopLedgers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopLedger_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -248,6 +250,14 @@ func (m *ShopLedger) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Rid != 0 {
+		flag = true
+		w.WriteName("rid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Rid)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -258,7 +268,7 @@ func (m *ShopLedger) SQLUpdate(w SQLWriter) error {
 func (m *ShopLedger) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopLedger_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -291,17 +301,18 @@ func (m ShopLedgerHistory) CreatedBy() core.Interface   { return core.Interface{
 func (m ShopLedgerHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ShopLedgerHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m ShopLedgerHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m ShopLedgerHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *ShopLedgerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopLedgerHistory, 11)
+	res := make(ShopLedgerHistory, 12)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["name"] = data[2]
@@ -313,14 +324,15 @@ func (m *ShopLedgerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[8]
 	res["updated_at"] = data[9]
 	res["deleted_at"] = data[10]
+	res["rid"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *ShopLedgerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopLedgerHistories, 0, 128)
@@ -340,6 +352,7 @@ func (ms *ShopLedgerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[8]
 		m["updated_at"] = data[9]
 		m["deleted_at"] = data[10]
+		m["rid"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -26,14 +26,10 @@ create table if not exists shop_customer (
     phone text,
     email text,
     status int2,
-    code_norm int4,
-    full_name_norm tsvector,
-    phone_norm tsvector,
     external_id TEXT,
     external_code TEXT,
     partner_id bigint,
     created_at timestamp with time zone,
     updated_at timestamp with time zone,
-    deleted_at timestamp with time zone,
     rid bigint
 );
