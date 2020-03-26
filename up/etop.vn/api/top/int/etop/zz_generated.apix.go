@@ -607,6 +607,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 			return s.inner.VerifyEmailUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/etop.User/VerifyPhoneResetPasswordUsingToken":
+		msg := &VerifyPhoneResetPasswordUsingTokenRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/etop.User/VerifyPhoneUsingToken":
 		msg := &VerifyPhoneUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {

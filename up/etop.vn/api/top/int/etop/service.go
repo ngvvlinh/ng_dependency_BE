@@ -67,6 +67,8 @@ type UserService interface {
 
 	VerifyPhoneUsingToken(context.Context, *VerifyPhoneUsingTokenRequest) (*cm.MessageResponse, error)
 
+	VerifyPhoneResetPasswordUsingToken(context.Context, *VerifyPhoneResetPasswordUsingTokenRequest) (*VerifyPhoneResetPasswordUsingTokenResponse, error)
+
 	UpdatePermission(context.Context, *UpdatePermissionRequest) (*UpdatePermissionResponse, error)
 
 	UpdateReferenceUser(context.Context, *UpdateReferenceUserRequest) (*cm.UpdatedResponse, error)

@@ -541,6 +541,23 @@ type VerifyPhoneUsingTokenRequest struct {
 
 func (m *VerifyPhoneUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type VerifyPhoneResetPasswordUsingTokenRequest struct {
+	// @required
+	VerificationToken string `json:"verification_token"`
+}
+
+func (m *VerifyPhoneResetPasswordUsingTokenRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type VerifyPhoneResetPasswordUsingTokenResponse struct {
+	ResetPasswordToken string `json:"reset_password_token"`
+}
+
+func (m *VerifyPhoneResetPasswordUsingTokenResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type InviteUserToAccountRequest struct {
 	// @required account to manage, must be owner of the account
 	AccountId dot.ID `json:"account_id"`

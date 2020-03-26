@@ -429,7 +429,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 	if err != nil {
 		return r, err
 	}
-	exprisesIn := 0
+	expiresIn := 0
 	if r.Context.Claim == nil {
 		tokenCmd := &tokens.GenerateTokenCommand{
 			ClaimInfo: claims.ClaimInfo{},
@@ -442,14 +442,14 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 				Token: tokenCmd.Result.TokenStr,
 			},
 		}
-		exprisesIn = tokenCmd.Result.ExpiresIn
+		expiresIn = tokenCmd.Result.ExpiresIn
 	}
 	if err := verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, smsResetPasswordTpl, r.Context, false); err != nil {
 		return r, err
 	}
 	r.Result = &etop.ResetPasswordResponse{
 		AccessToken: r.Context.Token,
-		ExpiresIn:   exprisesIn,
+		ExpiresIn:   expiresIn,
 		Code:        "ok",
 		Msg: fmt.Sprintf(
 			"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail),
@@ -570,17 +570,6 @@ func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *ChangePas
 }
 
 func (s *UserService) changePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) (*ChangePasswordUsingTokenEndpoint, error) {
-	if r.Context.Claim != nil && r.Context.Claim.Extra[keyRequestAuthUsage] == auth.UsageResetPassword {
-		request := &etop.ChangePasswordForPhoneUsingTokenRequest{
-			NewPassword:     r.NewPassword,
-			ConfirmPassword: r.ConfirmPassword,
-		}
-		if err := changePasswordUsingTokenForPhone(ctx, request, r.Context); err != nil {
-			return r, err
-		}
-		r.Result = &pbcm.Empty{}
-		return r, nil
-	}
 	return changePasswordUsingTokenForEmail(ctx, r)
 }
 
@@ -600,26 +589,6 @@ func changePasswordUsingTokenForEmail(ctx context.Context, r *ChangePasswordUsin
 	authStore.Revoke(auth.UsageResetPassword, r.ResetPasswordToken)
 	r.Result = &pbcm.Empty{}
 	return r, nil
-}
-
-func changePasswordUsingTokenForPhone(ctx context.Context, request *etop.ChangePasswordForPhoneUsingTokenRequest, r claims.EmptyClaim) error {
-	if r.Claim == nil {
-		return cm.Error(cm.FailedPrecondition, "Token không hợp lệ", nil)
-	}
-	if r.Extra[keyRequestVerifyPhone] == "" || r.Extra[keyRequestPhoneVerificationVerified] == "" {
-		return cm.Error(cm.FailedPrecondition, "Token không hợp lệ", nil)
-	}
-	userByPhone := &identitymodelx.GetUserByEmailOrPhoneQuery{
-		Phone: r.Extra[keyRequestVerifyPhone],
-	}
-	if err := bus.Dispatch(ctx, userByPhone); err != nil {
-		return err
-	}
-	if err := changePassword(userByPhone.Result.Phone, "", userByPhone.Result.ID, ctx, request.NewPassword, request.ConfirmPassword); err != nil {
-		return err
-	}
-	authStore.Revoke(auth.UsageAccessToken, r.Token)
-	return nil
 }
 
 func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
@@ -1112,6 +1081,74 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 
 	authStore.Revoke(auth.UsagePhoneVerification, tok.TokenStr)
 	r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+	return r, nil
+}
+
+func (s *UserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context, r *VerifyPhoneResetPasswordUsingTokenEndpoint) error {
+	key := fmt.Sprintf("VerifyPhoneResetPasswordUsingToken %v-%v", r.Context.Token, r.VerificationToken)
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
+		func() (interface{}, error) {
+			return s.verifyPhoneResetPasswordUsingToken(ctx, r)
+		}, "xác nhận số điện thoại")
+	if err != nil {
+		return err
+	}
+	r.Result = res.(*VerifyPhoneResetPasswordUsingTokenEndpoint).Result
+	return nil
+}
+
+func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r *VerifyPhoneResetPasswordUsingTokenEndpoint) (*VerifyPhoneResetPasswordUsingTokenEndpoint, error) {
+	if r.VerificationToken == "" {
+		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
+	}
+	if r.Context.Extra[keyRequestVerifyCode] != "" && r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
+		return r, cm.Error(cm.InvalidArgument, "Mã xác thực không chính xác.", nil)
+	}
+	getUserByID := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: r.Context.Extra[keyRequestVerifyPhone],
+	}
+	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return r, err
+	}
+	var v map[string]string
+	user := getUserByID.Result
+	tok, code, v := getToken(r.Context.Extra[keyRequestAuthUsage], user.ID, user.Phone)
+	if tok == nil || code == "" || v == nil {
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+	if v["extra"] != user.Phone {
+		authStore.Revoke(auth.UsageSToken, tok.TokenStr)
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+
+	var err error
+	if code != r.VerificationToken {
+		// Delete token after 3 times
+		if len(v["tries"]) >= 2 {
+			if err = authStore.Revoke(auth.UsageSToken, tok.TokenStr); err != nil {
+				ll.Error("Can not revoke token", l.Error(err))
+			}
+		} else {
+			v["tries"] += "."
+			authStore.SetTTL(tok, 60*60)
+		}
+		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+
+	recaptchaToken := &auth.Token{
+		TokenStr: "",
+		Usage:    auth.UsageResetPassword,
+		UserID:   user.ID,
+		Value: map[string]string{
+			"email": user.Email,
+		},
+	}
+	if _, err := authStore.GenerateWithValue(recaptchaToken, 1*60*60); err != nil {
+		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
+	}
+
+	authStore.Revoke(auth.UsagePhoneVerification, tok.TokenStr)
+	r.Result = &etop.VerifyPhoneResetPasswordUsingTokenResponse{ResetPasswordToken: recaptchaToken.TokenStr}
 	return r, nil
 }
 

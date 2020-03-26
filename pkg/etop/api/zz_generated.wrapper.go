@@ -1984,6 +1984,48 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	return resp, nil
 }
 
+type VerifyPhoneResetPasswordUsingTokenEndpoint struct {
+	*api.VerifyPhoneResetPasswordUsingTokenRequest
+	Result  *api.VerifyPhoneResetPasswordUsingTokenResponse
+	Context claims.EmptyClaim
+}
+
+func (s wrapUserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context, req *api.VerifyPhoneResetPasswordUsingTokenRequest) (resp *api.VerifyPhoneResetPasswordUsingTokenResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/VerifyPhoneResetPasswordUsingToken"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		// ignore invalid authentication token
+		if common.ErrorCode(err) != common.Unauthenticated {
+			return nil, err
+		}
+	}
+	session = sessionQuery.Result
+	query := &VerifyPhoneResetPasswordUsingTokenEndpoint{VerifyPhoneResetPasswordUsingTokenRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.VerifyPhoneResetPasswordUsingToken(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type VerifyPhoneUsingTokenEndpoint struct {
 	*api.VerifyPhoneUsingTokenRequest
 	Result  *cm.MessageResponse

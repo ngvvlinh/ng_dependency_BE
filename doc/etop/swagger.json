@@ -1158,6 +1158,33 @@
         }
       }
     },
+    "/api/etop.User/VerifyPhoneResetPasswordUsingToken": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "VerifyPhoneResetPasswordUsingToken",
+        "operationId": "etop.User-VerifyPhoneResetPasswordUsingToken",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baVerifyPhoneResetPasswordUsingTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baVerifyPhoneResetPasswordUsingTokenResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/VerifyPhoneUsingToken": {
       "post": {
         "tags": [
@@ -2959,6 +2986,25 @@
       ],
       "properties": {
         "verification_token": {
+          "type": "string"
+        }
+      }
+    },
+    "baVerifyPhoneResetPasswordUsingTokenRequest": {
+      "type": "object",
+      "required": [
+        "verification_token"
+      ],
+      "properties": {
+        "verification_token": {
+          "type": "string"
+        }
+      }
+    },
+    "baVerifyPhoneResetPasswordUsingTokenResponse": {
+      "type": "object",
+      "properties": {
+        "reset_password_token": {
           "type": "string"
         }
       }
