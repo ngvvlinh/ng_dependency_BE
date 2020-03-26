@@ -117,7 +117,7 @@ func NewClientWithToken(env string, token string) *ClientImpl {
 			AccessToken: token,
 		},
 	}
-	c.baseUrl = "https://partner.viettelpost.vn/v2/"
+	c.baseUrl = "https://partner.viettelpost.vn/v2"
 	return c
 }
 
