@@ -69,7 +69,7 @@ var filterOrderWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   []string{"fulfillment.shipping_code", "fulfillment.shipping_state", "fulfillment.ids"},
 	Contains: []string{"customer.name", "product.name"},
 	Dates:    []string{"created_at", "updated_at"},
-	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone", "customer.id"},
+	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone", "customer.id", "pre_order"},
 	Numbers:  []string{"total_amount", "chargeable_weight"},
 	Status:   []string{"status", "confirm_status", "fulfillment.shipping_status", "etop_payment_status"},
 	PrefixOrRename: map[string]string{

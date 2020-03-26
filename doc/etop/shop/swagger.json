@@ -7178,6 +7178,32 @@
         }
       }
     },
+    "paAddressShopInfo": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
     "paAdjustInventoryQuantityRequest": {
       "type": "object",
       "properties": {
@@ -8286,6 +8312,9 @@
         },
         "shop_info": {
           "$ref": "#/definitions/paShopInfo"
+        },
+        "site_subdomain": {
+          "type": "string"
         }
       }
     },
@@ -10805,7 +10834,10 @@
       "type": "object",
       "properties": {
         "address": {
-          "$ref": "#/definitions/baAddress"
+          "$ref": "#/definitions/paAddressShopInfo"
+        },
+        "email": {
+          "type": "string"
         },
         "facebook_fanpage": {
           "type": "string"
@@ -12362,6 +12394,9 @@
         },
         "shop_info": {
           "$ref": "#/definitions/paShopInfo"
+        },
+        "site_subdomain": {
+          "type": "string"
         }
       }
     },
@@ -12471,6 +12506,9 @@
           "type": "string",
           "format": "int64"
         },
+        "name": {
+          "type": "string"
+        },
         "seo_config": {
           "$ref": "#/definitions/paWsSEOConfig"
         },
@@ -12490,10 +12528,13 @@
     "paWsProduct": {
       "type": "object",
       "properties": {
+        "Sale": {
+          "type": "boolean"
+        },
         "appear": {
           "type": "boolean"
         },
-        "compare_price": {
+        "compare_prices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/paComparePrice"
@@ -12600,6 +12641,9 @@
         },
         "shop_info": {
           "$ref": "#/definitions/paShopInfo"
+        },
+        "site_subdomain": {
+          "type": "string"
         },
         "updated_at": {
           "type": "string",
@@ -12819,6 +12863,9 @@
         },
         "payment_method": {
           "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "pre_order": {
+          "type": "boolean"
         },
         "reference_url": {
           "type": "string"
@@ -13878,6 +13925,9 @@
         },
         "payment_status": {
           "$ref": "#/definitions/bmStatus"
+        },
+        "pre_order": {
+          "type": "boolean"
         },
         "processed_at": {
           "type": "string",
@@ -15362,7 +15412,8 @@
         "etop_cmx",
         "ts_app",
         "etop_app",
-        "haravan"
+        "haravan",
+        "ecomify"
       ]
     },
     "yiPaymentMethod": {

@@ -1040,6 +1040,25 @@ func (ft *OrderFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *OrderFilters) ByPreOrder(PreOrder bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "pre_order",
+		Value:  PreOrder,
+		IsNil:  bool(!PreOrder),
+	}
+}
+
+func (ft *OrderFilters) ByPreOrderPtr(PreOrder *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "pre_order",
+		Value:  PreOrder,
+		IsNil:  PreOrder == nil,
+		IsZero: PreOrder != nil && bool(!(*PreOrder)),
+	}
+}
+
 type OrderLineFilters struct{ prefix string }
 
 func NewOrderLineFilters(prefix string) OrderLineFilters {

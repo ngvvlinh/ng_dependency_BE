@@ -3,7 +3,6 @@ package webserver
 import (
 	"time"
 
-	"o.o/api/main/address"
 	"o.o/api/main/catalog"
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
@@ -41,6 +40,7 @@ type WsProduct struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	Product      *catalog.ShopProductWithVariants
+	IsSale       bool
 }
 type ComparePrice struct {
 	VariantID    dot.ID
@@ -79,13 +79,27 @@ type WsWebsite struct {
 	FaviconImage       string
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
+	SiteSubdomain      string
 }
 
 type ShopInfo struct {
 	Name            string
+	Email           string
 	Phone           string
-	Address         *address.Address
+	Address         *AddressShopInfo
 	FacebookFanpage string
+}
+
+type AddressShopInfo struct {
+	ProvinceCode string
+	DistrictCode string
+	WardCode     string
+
+	Province string
+	District string
+	Ward     string
+
+	Address string
 }
 
 type Facebook struct {
@@ -114,4 +128,5 @@ type BannerItem struct {
 type SpecialProduct struct {
 	ProductIDs []dot.ID
 	Style      ws_list_product_show_style.WsListProductShowStyle
+	Products   []*WsProduct
 }

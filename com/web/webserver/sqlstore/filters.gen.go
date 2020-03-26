@@ -694,6 +694,25 @@ func (ft *WsWebsiteFilters) ByFaviconImagePtr(FaviconImage *string) *sq.ColumnFi
 	}
 }
 
+func (ft *WsWebsiteFilters) BySiteSubdomain(SiteSubdomain string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "site_subdomain",
+		Value:  SiteSubdomain,
+		IsNil:  SiteSubdomain == "",
+	}
+}
+
+func (ft *WsWebsiteFilters) BySiteSubdomainPtr(SiteSubdomain *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "site_subdomain",
+		Value:  SiteSubdomain,
+		IsNil:  SiteSubdomain == nil,
+		IsZero: SiteSubdomain != nil && (*SiteSubdomain) == "",
+	}
+}
+
 func (ft *WsWebsiteFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

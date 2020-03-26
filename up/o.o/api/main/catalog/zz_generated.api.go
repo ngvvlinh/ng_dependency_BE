@@ -663,6 +663,31 @@ func (h QueryServiceHandler) HandleListShopCollectionsByProductID(ctx context.Co
 	return err
 }
 
+type ListShopProductWithVariantByCategoriesIDsQuery struct {
+	ShopID        dot.ID
+	CategoriesIds []dot.ID
+
+	Result *ShopProductsWithVariantsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopProductWithVariantByCategoriesIDs(ctx context.Context, msg *ListShopProductWithVariantByCategoriesIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopProductWithVariantByCategoriesIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopProductWithVariantByIDsWithPagingQuery struct {
+	ShopID dot.ID
+	IDs    []dot.ID
+	Paging meta.Paging
+
+	Result *ListShopProductWithVariantByIDsWithPagingResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopProductWithVariantByIDsWithPaging(ctx context.Context, msg *ListShopProductWithVariantByIDsWithPagingQuery) (err error) {
+	msg.Result, err = h.inner.ListShopProductWithVariantByIDsWithPaging(msg.GetArgs(ctx))
+	return err
+}
+
 type ListShopProductsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -771,6 +796,18 @@ func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.
 	return err
 }
 
+type SearchProductByNameQuery struct {
+	ShopID dot.ID
+	Name   string
+
+	Result *ListShopProductWithVariantByIDsWithPagingResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleSearchProductByName(ctx context.Context, msg *SearchProductByNameQuery) (err error) {
+	msg.Result, err = h.inner.SearchProductByName(msg.GetArgs(ctx))
+	return err
+}
+
 type ValidateVariantIDsQuery struct {
 	ShopId         dot.ID
 	ShopVariantIds []dot.ID
@@ -814,33 +851,36 @@ func (q *UpdateShopVariantImagesCommand) command()     {}
 func (q *UpdateShopVariantInfoCommand) command()       {}
 func (q *UpdateShopVariantStatusCommand) command()     {}
 
-func (q *GetBrandByIDQuery) query()                      {}
-func (q *GetBrandsByIDsQuery) query()                    {}
-func (q *GetShopCategoryQuery) query()                   {}
-func (q *GetShopCollectionQuery) query()                 {}
-func (q *GetShopProductQuery) query()                    {}
-func (q *GetShopProductByIDQuery) query()                {}
-func (q *GetShopProductCollectionQuery) query()          {}
-func (q *GetShopProductWithVariantsByIDQuery) query()    {}
-func (q *GetShopVariantQuery) query()                    {}
-func (q *GetShopVariantWithProductByIDQuery) query()     {}
-func (q *GetSupplierIDsByVariantIDQuery) query()         {}
-func (q *GetVariantsBySupplierIDQuery) query()           {}
-func (q *ListBrandsQuery) query()                        {}
-func (q *ListShopCategoriesQuery) query()                {}
-func (q *ListShopCategoriesByIDsQuery) query()           {}
-func (q *ListShopCollectionsQuery) query()               {}
-func (q *ListShopCollectionsByIDsQuery) query()          {}
-func (q *ListShopCollectionsByProductIDQuery) query()    {}
-func (q *ListShopProductsQuery) query()                  {}
-func (q *ListShopProductsByIDsQuery) query()             {}
-func (q *ListShopProductsCollectionsQuery) query()       {}
-func (q *ListShopProductsWithVariantsQuery) query()      {}
-func (q *ListShopProductsWithVariantsByIDsQuery) query() {}
-func (q *ListShopVariantsQuery) query()                  {}
-func (q *ListShopVariantsByIDsQuery) query()             {}
-func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
-func (q *ValidateVariantIDsQuery) query()                {}
+func (q *GetBrandByIDQuery) query()                              {}
+func (q *GetBrandsByIDsQuery) query()                            {}
+func (q *GetShopCategoryQuery) query()                           {}
+func (q *GetShopCollectionQuery) query()                         {}
+func (q *GetShopProductQuery) query()                            {}
+func (q *GetShopProductByIDQuery) query()                        {}
+func (q *GetShopProductCollectionQuery) query()                  {}
+func (q *GetShopProductWithVariantsByIDQuery) query()            {}
+func (q *GetShopVariantQuery) query()                            {}
+func (q *GetShopVariantWithProductByIDQuery) query()             {}
+func (q *GetSupplierIDsByVariantIDQuery) query()                 {}
+func (q *GetVariantsBySupplierIDQuery) query()                   {}
+func (q *ListBrandsQuery) query()                                {}
+func (q *ListShopCategoriesQuery) query()                        {}
+func (q *ListShopCategoriesByIDsQuery) query()                   {}
+func (q *ListShopCollectionsQuery) query()                       {}
+func (q *ListShopCollectionsByIDsQuery) query()                  {}
+func (q *ListShopCollectionsByProductIDQuery) query()            {}
+func (q *ListShopProductWithVariantByCategoriesIDsQuery) query() {}
+func (q *ListShopProductWithVariantByIDsWithPagingQuery) query() {}
+func (q *ListShopProductsQuery) query()                          {}
+func (q *ListShopProductsByIDsQuery) query()                     {}
+func (q *ListShopProductsCollectionsQuery) query()               {}
+func (q *ListShopProductsWithVariantsQuery) query()              {}
+func (q *ListShopProductsWithVariantsByIDsQuery) query()         {}
+func (q *ListShopVariantsQuery) query()                          {}
+func (q *ListShopVariantsByIDsQuery) query()                     {}
+func (q *ListShopVariantsWithProductByIDsQuery) query()          {}
+func (q *SearchProductByNameQuery) query()                       {}
+func (q *ValidateVariantIDsQuery) query()                        {}
 
 // implement conversion
 
@@ -1544,6 +1584,34 @@ func (q *ListShopCollectionsByProductIDQuery) SetListShopCollectionsByProductIDA
 	q.ShopID = args.ShopID
 }
 
+func (q *ListShopProductWithVariantByCategoriesIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductWithVariantByCategoriesIDsRequest) {
+	return ctx,
+		&ListShopProductWithVariantByCategoriesIDsRequest{
+			ShopID:        q.ShopID,
+			CategoriesIds: q.CategoriesIds,
+		}
+}
+
+func (q *ListShopProductWithVariantByCategoriesIDsQuery) SetListShopProductWithVariantByCategoriesIDsRequest(args *ListShopProductWithVariantByCategoriesIDsRequest) {
+	q.ShopID = args.ShopID
+	q.CategoriesIds = args.CategoriesIds
+}
+
+func (q *ListShopProductWithVariantByIDsWithPagingQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductWithVariantByIDsWithPagingRequest) {
+	return ctx,
+		&ListShopProductWithVariantByIDsWithPagingRequest{
+			ShopID: q.ShopID,
+			IDs:    q.IDs,
+			Paging: q.Paging,
+		}
+}
+
+func (q *ListShopProductWithVariantByIDsWithPagingQuery) SetListShopProductWithVariantByIDsWithPagingRequest(args *ListShopProductWithVariantByIDsWithPagingRequest) {
+	q.ShopID = args.ShopID
+	q.IDs = args.IDs
+	q.Paging = args.Paging
+}
+
 func (q *ListShopProductsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -1672,6 +1740,19 @@ func (q *ListShopVariantsWithProductByIDsQuery) SetIDsQueryShopArgs(args *shoppi
 	q.Paging = args.Paging
 }
 
+func (q *SearchProductByNameQuery) GetArgs(ctx context.Context) (_ context.Context, _ *SearchProductByNameArgs) {
+	return ctx,
+		&SearchProductByNameArgs{
+			ShopID: q.ShopID,
+			Name:   q.Name,
+		}
+}
+
+func (q *SearchProductByNameQuery) SetSearchProductByNameArgs(args *SearchProductByNameArgs) {
+	q.ShopID = args.ShopID
+	q.Name = args.Name
+}
+
 func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId dot.ID, shopVariantIds []dot.ID) {
 	return ctx,
 		q.ShopId,
@@ -1751,6 +1832,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListShopCollections)
 	b.AddHandler(h.HandleListShopCollectionsByIDs)
 	b.AddHandler(h.HandleListShopCollectionsByProductID)
+	b.AddHandler(h.HandleListShopProductWithVariantByCategoriesIDs)
+	b.AddHandler(h.HandleListShopProductWithVariantByIDsWithPaging)
 	b.AddHandler(h.HandleListShopProducts)
 	b.AddHandler(h.HandleListShopProductsByIDs)
 	b.AddHandler(h.HandleListShopProductsCollections)
@@ -1759,6 +1842,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListShopVariants)
 	b.AddHandler(h.HandleListShopVariantsByIDs)
 	b.AddHandler(h.HandleListShopVariantsWithProductByIDs)
+	b.AddHandler(h.HandleSearchProductByName)
 	b.AddHandler(h.HandleValidateVariantIDs)
 	return QueryBus{b}
 }

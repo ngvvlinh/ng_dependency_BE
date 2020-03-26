@@ -90,6 +90,7 @@ type CreateWsWebsiteCommand struct {
 	Description        string
 	LogoImage          string
 	FaviconImage       string
+	SiteSubdomain      string
 
 	Result *WsWebsite `json:"-"`
 }
@@ -145,12 +146,24 @@ type UpdateWsWebsiteCommand struct {
 	Description        dot.NullString
 	LogoImage          dot.NullString
 	FaviconImage       dot.NullString
+	SiteSubdomain      dot.NullString
 
 	Result *WsWebsite `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateWsWebsite(ctx context.Context, msg *UpdateWsWebsiteCommand) (err error) {
 	msg.Result, err = h.inner.UpdateWsWebsite(msg.GetArgs(ctx))
+	return err
+}
+
+type GetShopIDBySiteSubdomainQuery struct {
+	SiteSubDoimain string
+
+	Result dot.ID `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopIDBySiteSubdomain(ctx context.Context, msg *GetShopIDBySiteSubdomainQuery) (err error) {
+	msg.Result, err = h.inner.GetShopIDBySiteSubdomain(msg.GetArgs(ctx))
 	return err
 }
 
@@ -277,6 +290,19 @@ func (h QueryServiceHandler) HandleListWsProductsByIDs(ctx context.Context, msg 
 	return err
 }
 
+type ListWsProductsByIDsWithPagingQuery struct {
+	ShopID dot.ID
+	IDs    []dot.ID
+	Paging meta.Paging
+
+	Result *ListWsProductsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListWsProductsByIDsWithPaging(ctx context.Context, msg *ListWsProductsByIDsWithPagingQuery) (err error) {
+	msg.Result, err = h.inner.ListWsProductsByIDsWithPaging(msg.GetArgs(ctx))
+	return err
+}
+
 type ListWsWebsitesQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -302,6 +328,18 @@ func (h QueryServiceHandler) HandleListWsWebsitesByIDs(ctx context.Context, msg 
 	return err
 }
 
+type SearchProductByNameQuery struct {
+	ShopID dot.ID
+	Name   string
+
+	Result *ListWsProductsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleSearchProductByName(ctx context.Context, msg *SearchProductByNameQuery) (err error) {
+	msg.Result, err = h.inner.SearchProductByName(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateOrUpdateWsCategoryCommand) command() {}
@@ -312,18 +350,21 @@ func (q *DeleteWsPageCommand) command()             {}
 func (q *UpdateWsPageCommand) command()             {}
 func (q *UpdateWsWebsiteCommand) command()          {}
 
-func (q *GetWsCategoryByIDQuery) query()     {}
-func (q *GetWsPageByIDQuery) query()         {}
-func (q *GetWsProductByIDQuery) query()      {}
-func (q *GetWsWebsiteByIDQuery) query()      {}
-func (q *ListWsCategoriesQuery) query()      {}
-func (q *ListWsCategoriesByIDsQuery) query() {}
-func (q *ListWsPagesQuery) query()           {}
-func (q *ListWsPagesByIDsQuery) query()      {}
-func (q *ListWsProductsQuery) query()        {}
-func (q *ListWsProductsByIDsQuery) query()   {}
-func (q *ListWsWebsitesQuery) query()        {}
-func (q *ListWsWebsitesByIDsQuery) query()   {}
+func (q *GetShopIDBySiteSubdomainQuery) query()      {}
+func (q *GetWsCategoryByIDQuery) query()             {}
+func (q *GetWsPageByIDQuery) query()                 {}
+func (q *GetWsProductByIDQuery) query()              {}
+func (q *GetWsWebsiteByIDQuery) query()              {}
+func (q *ListWsCategoriesQuery) query()              {}
+func (q *ListWsCategoriesByIDsQuery) query()         {}
+func (q *ListWsPagesQuery) query()                   {}
+func (q *ListWsPagesByIDsQuery) query()              {}
+func (q *ListWsProductsQuery) query()                {}
+func (q *ListWsProductsByIDsQuery) query()           {}
+func (q *ListWsProductsByIDsWithPagingQuery) query() {}
+func (q *ListWsWebsitesQuery) query()                {}
+func (q *ListWsWebsitesByIDsQuery) query()           {}
+func (q *SearchProductByNameQuery) query()           {}
 
 // implement conversion
 
@@ -411,6 +452,7 @@ func (q *CreateWsWebsiteCommand) GetArgs(ctx context.Context) (_ context.Context
 			Description:        q.Description,
 			LogoImage:          q.LogoImage,
 			FaviconImage:       q.FaviconImage,
+			SiteSubdomain:      q.SiteSubdomain,
 		}
 }
 
@@ -429,6 +471,7 @@ func (q *CreateWsWebsiteCommand) SetCreateWsWebsiteArgs(args *CreateWsWebsiteArg
 	q.Description = args.Description
 	q.LogoImage = args.LogoImage
 	q.FaviconImage = args.FaviconImage
+	q.SiteSubdomain = args.SiteSubdomain
 }
 
 func (q *DeleteWsPageCommand) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, ID dot.ID) {
@@ -480,6 +523,7 @@ func (q *UpdateWsWebsiteCommand) GetArgs(ctx context.Context) (_ context.Context
 			Description:        q.Description,
 			LogoImage:          q.LogoImage,
 			FaviconImage:       q.FaviconImage,
+			SiteSubdomain:      q.SiteSubdomain,
 		}
 }
 
@@ -499,6 +543,12 @@ func (q *UpdateWsWebsiteCommand) SetUpdateWsWebsiteArgs(args *UpdateWsWebsiteArg
 	q.Description = args.Description
 	q.LogoImage = args.LogoImage
 	q.FaviconImage = args.FaviconImage
+	q.SiteSubdomain = args.SiteSubdomain
+}
+
+func (q *GetShopIDBySiteSubdomainQuery) GetArgs(ctx context.Context) (_ context.Context, siteSubDoimain string) {
+	return ctx,
+		q.SiteSubDoimain
 }
 
 func (q *GetWsCategoryByIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, ID dot.ID) {
@@ -588,6 +638,13 @@ func (q *ListWsProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Conte
 		q.IDs
 }
 
+func (q *ListWsProductsByIDsWithPagingQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, IDs []dot.ID, paging meta.Paging) {
+	return ctx,
+		q.ShopID,
+		q.IDs,
+		q.Paging
+}
+
 func (q *ListWsWebsitesQuery) GetArgs(ctx context.Context) (_ context.Context, _ ListWsWebsitesArgs) {
 	return ctx,
 		ListWsWebsitesArgs{
@@ -607,6 +664,12 @@ func (q *ListWsWebsitesByIDsQuery) GetArgs(ctx context.Context) (_ context.Conte
 	return ctx,
 		q.ShopID,
 		q.IDs
+}
+
+func (q *SearchProductByNameQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, name string) {
+	return ctx,
+		q.ShopID,
+		q.Name
 }
 
 // implement dispatching
@@ -643,6 +706,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetShopIDBySiteSubdomain)
 	b.AddHandler(h.HandleGetWsCategoryByID)
 	b.AddHandler(h.HandleGetWsPageByID)
 	b.AddHandler(h.HandleGetWsProductByID)
@@ -653,7 +717,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListWsPagesByIDs)
 	b.AddHandler(h.HandleListWsProducts)
 	b.AddHandler(h.HandleListWsProductsByIDs)
+	b.AddHandler(h.HandleListWsProductsByIDsWithPaging)
 	b.AddHandler(h.HandleListWsWebsites)
 	b.AddHandler(h.HandleListWsWebsitesByIDs)
+	b.AddHandler(h.HandleSearchProductByName)
 	return QueryBus{b}
 }

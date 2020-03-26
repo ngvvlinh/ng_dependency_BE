@@ -199,6 +199,7 @@ func convert_orderingmodel_Order_ordering_Order(arg *orderingmodel.Order, out *o
 	out.ReferenceURL = arg.ReferenceURL       // simple assign
 	out.GhnNoteCode = arg.GhnNoteCode         // simple assign
 	out.TryOn = arg.TryOn                     // simple assign
+	out.PreOrder = arg.PreOrder               // simple assign
 }
 
 func Convert_orderingmodel_Orders_ordering_Orders(args []*orderingmodel.Order) (outs []*ordering.Order) {
@@ -294,6 +295,7 @@ func convert_ordering_Order_orderingmodel_Order(arg *ordering.Order, out *orderi
 	out.CustomerID = arg.CustomerID           // simple assign
 	out.CreatedBy = arg.CreatedBy             // simple assign
 	out.Rid = 0                               // zero value
+	out.PreOrder = arg.PreOrder               // simple assign
 }
 
 func Convert_ordering_Orders_orderingmodel_Orders(args []*ordering.Order) (outs []*orderingmodel.Order) {

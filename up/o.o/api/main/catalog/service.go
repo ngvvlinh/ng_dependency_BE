@@ -95,6 +95,9 @@ type QueryService interface {
 	ListShopProductsByIDs(context.Context, *ListShopProductsByIDsArgs) (*ShopProductsResponse, error)
 	ListShopProductsWithVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 	ListShopProductsWithVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
+	ListShopProductWithVariantByCategoriesIDs(context.Context, *ListShopProductWithVariantByCategoriesIDsRequest) (*ShopProductsWithVariantsResponse, error)
+	ListShopProductWithVariantByIDsWithPaging(context.Context, *ListShopProductWithVariantByIDsWithPagingRequest) (*ListShopProductWithVariantByIDsWithPagingResponse, error)
+	SearchProductByName(context.Context, *SearchProductByNameArgs) (*ListShopProductWithVariantByIDsWithPagingResponse, error)
 
 	GetShopVariant(context.Context, *GetShopVariantQueryArgs) (*ShopVariant, error)
 	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
@@ -128,8 +131,28 @@ type QueryService interface {
 
 	ListShopProductsCollections(ctx context.Context, _ *ListProductsCollections) (*ShopProductsCollectionResponse, error)
 }
+type SearchProductByNameArgs struct {
+	ShopID dot.ID
+	Name   string
+}
+
+type ListShopProductWithVariantByIDsWithPagingRequest struct {
+	ShopID dot.ID
+	IDs    []dot.ID
+	Paging meta.Paging
+}
+
+type ListShopProductWithVariantByIDsWithPagingResponse struct {
+	Paging   meta.PageInfo
+	Total    int
+	Products []*ShopProductWithVariants
+}
 
 //-- query --//
+type ListShopProductWithVariantByCategoriesIDsRequest struct {
+	ShopID        dot.ID
+	CategoriesIds []dot.ID
+}
 
 type ShopProductsCollectionResponse struct {
 	ProductsCollections []*ShopProductCollection

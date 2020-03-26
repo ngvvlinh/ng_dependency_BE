@@ -5,7 +5,6 @@ import (
 
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
-	"o.o/backend/com/main/address/model"
 	"o.o/capi/dot"
 )
 
@@ -60,7 +59,7 @@ type WsWebsite struct {
 	ShopID             dot.ID
 	ID                 dot.ID
 	MainColor          string
-	Banner             []*Banner
+	Banner             *Banner
 	OutstandingProduct *SpecialProduct
 	NewProduct         *SpecialProduct
 	SEOConfig          *WsGeneralSEO
@@ -72,6 +71,7 @@ type WsWebsite struct {
 	Description        string
 	LogoImage          string
 	FaviconImage       string
+	SiteSubdomain      string
 	CreatedAt          time.Time `sq:"create"`
 	UpdatedAt          time.Time `sq:"update"`
 }
@@ -82,10 +82,11 @@ type ComparePrice struct {
 }
 
 type ShopInfo struct {
-	Name            string         `json:"name"`
-	Phone           string         `json:"phone"`
-	Address         *model.Address `json:"address"`
-	FacebookFanpage string         `json:"facebook_fanpage"`
+	Email           string           `json:"email"`
+	Name            string           `json:"name"`
+	Phone           string           `json:"phone"`
+	Address         *AddressShopInfo `json:"address"`
+	FacebookFanpage string           `json:"facebook_fanpage"`
 }
 
 type Facebook struct {
@@ -114,4 +115,16 @@ type BannerItem struct {
 type SpecialProduct struct {
 	ProductIDs []dot.ID                                          `json:"product_ids"`
 	Style      ws_list_product_show_style.WsListProductShowStyle `json:"style"`
+}
+
+type AddressShopInfo struct {
+	ProvinceCode string `json:"province_code"`
+	DistrictCode string `json:"district_code"`
+	WardCode     string `json:"ward_code"`
+
+	Province string `json:"province"`
+	District string `json:"district"`
+	Ward     string `json:"ward"`
+
+	Address string `json:"address"`
 }

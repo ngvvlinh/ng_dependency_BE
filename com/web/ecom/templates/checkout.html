@@ -1,0 +1,289 @@
+
+        <!-- site__body -->
+        <div class="site__body">
+            <div class="page-header">
+                <div class="page-header__container container">
+                    <div class="page-header__breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/">Home</a>
+                                    <svg class="breadcrumb-arrow" width="6px" height="9px">
+                                        <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>
+                                    </svg>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Thanh toán</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="page-header__title">
+                        <h1>Thanh toán</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="checkout block">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 col-xl-7">
+                            <div class="card mb-lg-0">
+                                <div class="card-body">
+                                    <h3 class="card-title">Khách hàng</h3>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="checkout-first-name">Họ và tên*</label>
+                                            <input type="text" class="form-control" id="checkout-first-name" placeholder="First Name">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="checkout-phone">Số điện thoại*</label>
+                                            <input type="text" class="form-control" id="checkout-phone" placeholder="Phone">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                                <label for="province">Tỉnh thành*</label>
+                                                <select class="form-control" name="province">
+                                                    <option value="" disabled selected>Chọn tỉnh thành</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                                <label for="district">Quận huyện*</label>
+                                                <select class="form-control" name="district">
+                                                    <option value="" disabled selected>Chọn quận huyện</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="ward">Phường xã</label>
+                                            <select class="form-control" name="ward">
+                                                <option value="" disabled selected>Chọn phường xã</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="checkout-address">Địa chỉ*</label>
+                                            <input type="text" class="form-control" id="checkout-address" placeholder="Số nhà, tên đường, ...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-divider"></div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="checkout-comment">Ghi chú <span class="text-muted">(Không bắt buộc)</span></label>
+                                        <textarea id="checkout-comment" class="form-control" rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 col-xl-5 mt-4 mt-lg-0">
+                            <div class="card mb-0">
+                                <div class="card-body">
+                                    <h3 class="card-title">Đơn hàng</h3>
+                                    <table class="checkout__totals">
+                                        <thead class="checkout__totals-header">
+                                            <tr>
+                                                <th>Sản phẩm</th>
+                                                <th>Tạm tính</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="checkout__totals-products">
+                                            {{range .Cart.Products}}
+                                                <tr>
+                                                    <td>{{.Product.Name}} × {{.Count}}
+                                                        {{if .Variant.Attributes }}
+                                                            <ul class="dropcart__product-options"><li>
+                                                                    {{$lenghAttribute := len .Variant.Attributes}}
+                                                                {{ range $index, $element :=  .Variant.Attributes}}
+                                                                    {{if eq $index (add $lenghAttribute -1)}}
+                                                                        {{$element.Name}}: {{$element.Value}}.
+                                                                    {{else}}
+                                                                        {{$element.Name}}: {{$element.Value}},
+                                                                    {{end}}
+                                                                {{end}}
+                                                                </li>
+                                                            </ul>
+                                                        {{end}}</td>
+                                                    <td>{{formatNumber (mul .Variant.RetailPrice .Count)}}đ</td>
+                                                </tr>
+                                            {{end}}
+                                        </tbody>
+                                        <tfoot class="checkout__totals-footer">
+                                            <tr>
+                                                <th>Total</th>
+                                                <td>{{formatNumber .Cart.TotalAmount}}đ</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <button type="submit" class="btn btn-primary btn-xl btn-block" onclick="Checkout()">Đặt hàng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- site__body / end -->
+
+        <script>
+            var provinces
+            var districts
+            var wards
+
+            var active_province
+            var active_district
+            var active_ward
+
+            function checkPhone(mobile){
+                var vnf_regex = /(^[0-9]{10,12}\b)/g;
+                if(mobile !==''){
+                    if (vnf_regex.test(mobile) == false)
+                    {
+                        return false
+                    }else{
+                        return true
+                    }
+                }else{
+                    return false
+                }
+            }
+            function Checkout() {
+                var name = $('input[id="checkout-first-name"]').val();
+                var phone = $('input[id="checkout-phone"]').val();
+                var address1 = $('input[id="checkout-address"]').val();
+                var note = $('textarea[id="checkout-comment"]').val();
+
+                if (name === "")  {
+                    toastr.warning("Vui lòng nhập họ và tên",  'Lưu ý!')
+                    return
+                }
+                if (phone === "")  {
+                    toastr.warning("Vui lòng nhập số điện thoại",  'Lưu ý!')
+                    return
+                } else {
+                    if (!checkPhone(phone)) {
+                        toastr.warning("Vui lòng nhập đúng định dạng số điện thoai (từ 10 đến 12 ký tự, chỉ chứa số)",  'Lưu ý!')
+                        return
+                    }
+                }
+                if ( active_province == 0 || active_province == null ) {
+                    toastr.warning("Vui lòng nhập Tỉnh thành",  'Lưu ý!')
+                    return
+                }
+                if ( active_district == 0 || active_district == null ) {
+                    toastr.warning("Vui lòng nhập Quận huyện",  'Lưu ý!')
+                    return
+                }
+                if (address1 === "") {
+                    toastr.warning("Vui lòng nhập Số nhà, tên đường",  'Lưu ý!')
+                    return
+                }
+
+                var formData = new FormData();
+                formData.append("full_name", name);
+                formData.append("phone", phone);
+                formData.append("note", note);
+
+                formData.append("province_code", active_province)
+                formData.append("district_code", active_district)
+                formData.append("ward_code", active_ward)
+                formData.append("address1", address1)
+
+
+                var request = new XMLHttpRequest();
+                request.open("POST", "/checkout/create-order");
+                request.onreadystatechange = function() {
+                    if (this.readyState === 4) {
+                        if ( this.status == 200) {
+                            window.location = '/order';
+                        } else if (this.status == 202) {
+                            var result = JSON.parse(request.response);
+                            var listProductRemove = "Sản phẩm :\"";
+                            for (var i = 0 ; i< result.length; i++ ) {
+                                listProductRemove += result[i].product.name;
+                                if (i == result.length - 1) {
+                                    listProductRemove += "."
+                                } else {
+                                    listProductRemove += ", "
+                                }
+                            }
+                            listProductRemove += "\" chưa được đăng bán";
+                            toastr.error(listProductRemove)
+                        } else {
+                            toastr.error("Tạo đơn hàng lỗi",  'Lỗi!')
+                        }
+                    }
+                };
+                request.send(formData);
+            }
+            $('document').ready(function () {
+                $.ajax({
+                    url : "/provinces", // gửi ajax đến file result.php
+                    type : "post", // chọn phương thức gửi là get
+                    contentType: "application/json",
+                    success : function (result){
+                        provinces = result.provinces;
+                        provinces.forEach(p => {
+                            $('select[name="province"]').append('<option value="' + p.code + '">'+ p.name +'</option>')
+                        });
+                    }
+                });
+
+                $('select[name="province"]').on('change', function() {
+                    $('select[name="district"] option').each(function() {
+                        if ($(this).val() != '') {
+                            $(this).remove();
+                        }
+                    })
+                    $('select[name="ward"] option').each(function() {
+                        if ($(this).val() != '') {
+                            $(this).remove();
+                        }
+                    })
+                    var province_code = $(this).val();
+                    active_province  = province_code
+                    $.ajax({
+                        url : "/districts", // gửi ajax đến file result.php
+                        type : "post", // chọn phương thức gửi là get
+                        dataType : "json",
+                        data: JSON.stringify({province_code: province_code }),
+                        contentType: "application/json",
+                        success : function (result){
+                            districts = result.districts
+                            //Goi jax cap nhat lai obj district
+                            districts.forEach(d => {
+                                $('select[name="district"]').append('<option value="' + d.code + '">'+ d.name +'</option>')
+                            });
+                        }
+                    });
+
+                })
+
+                $('select[name="district"]').on('change', function() {
+                    $('select[name="ward"] option').each(function() {
+                        if ($(this).val() != '') {
+                            $(this).remove();
+                        }
+                    })
+                    var district_code = $(this).val();
+                    active_district =  $(this).val();
+                    $.ajax({
+                        url : "/wards", // gửi ajax đến file result.php
+                        type : "post", // chọn phương thức gửi là get
+                        contentType: "application/json",
+                        data: JSON.stringify({district_code: district_code }),
+                        success : function (result){
+                            wards = result.wards
+                            //Goi jax cap nhat province_codelai obj ward
+                            wards.forEach(w => {
+                                $('select[name="ward"]').append('<option value="' + w.code + '">'+ w.name +'</option>')
+                            });
+                        }
+                    });
+
+                })
+                $('select[name="ward"]').on('change', function() {
+                    active_ward =  $(this).val();
+                    var ward_code = $(this).val();
+                })
+            })
+
+        </script>

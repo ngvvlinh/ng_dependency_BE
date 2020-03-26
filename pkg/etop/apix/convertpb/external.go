@@ -151,6 +151,7 @@ func PbOrder(m *ordermodel.Order) *exttypes.Order {
 		FeeLines:                  convertpb.PbOrderFeeLines(m.GetFeeLines()),
 		TotalAmount:               cmapi.PbPtrInt(m.TotalAmount),
 		OrderNote:                 dot.String(m.OrderNote),
+		PreOrder:                  m.PreOrder,
 		Shipping:                  PbOrderShipping(m),
 	}
 	return res

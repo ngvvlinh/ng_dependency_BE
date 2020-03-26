@@ -125,7 +125,8 @@ type Order struct {
 	CustomerID dot.ID
 	CreatedBy  dot.ID
 
-	Rid dot.ID
+	Rid      dot.ID
+	PreOrder bool
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

@@ -129,6 +129,8 @@ type Order struct {
 	ReferenceURL    string
 	GhnNoteCode     ghn_note_code.GHNNoteCode
 	TryOn           try_on.TryOnCode
+
+	PreOrder bool
 }
 
 type OrderFeeLine struct {

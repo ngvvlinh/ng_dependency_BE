@@ -1,0 +1,450 @@
+
+ <!-- site__body -->
+  <div class="site__body">
+    <div class="page-header">
+      <div class="page-header__container container">
+        <div class="page-header__breadcrumb">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="/">Home</a>
+                <svg class="breadcrumb-arrow" width="6px" height="9px">
+                  <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>
+                </svg>
+              </li>
+              {{if .Product.Product.CategoryID}}
+              <li class="breadcrumb-item">
+                <a href="/category/{{.Category.Slug}}/1/12">{{.Category.Category.Name}}</a>
+                <svg class="breadcrumb-arrow" width="6px" height="9px">
+                  <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>
+                </svg>
+              </li>
+              {{end}}
+              <li class="breadcrumb-item active" aria-current="page">{{.Product.Product.Name}}</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+    {{$productID := .Product.ID}}
+    <div class="block">
+      <div class="container">
+        <div class="product product--layout--standard" data-layout="standard">
+          <div class="product__content">
+            <!-- .product__gallery -->
+            <div class="product__gallery">
+              <div class="product-gallery">
+                <div class="product-gallery__featured">
+                  <button class="product-gallery__zoom">
+                    <svg width="24px" height="24px">
+                      <use xlink:href="/images/sprite.svg#zoom-in-24"></use>
+                    </svg>
+                  </button>
+                  <div class="owl-carousel" id="product-image">
+                    <a href="javascript:;" target="_blank">
+                      <img src="{{ $length := len .Product.Product.ImageURLs }}{{ if eq $length 0 }}/images/placeholder_medium.png{{else}}{{index .Product.Product.ImageURLs 0}}{{end}}" alt="">
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- .product__gallery / end -->
+            <!-- .product__info -->
+            <div class="product__info">
+              <h1 class="product__name">{{.Product.Product.Name}}</h1>
+              <ul class="product__meta">
+{{/*                <li class="product__meta-availability">Tình trạng: <span class="text-success">Còn hàng</span></li>*/}}
+                {{if .Product.Product.Code}}<li>Code: {{.Product.Product.Code}}</li> {{end}}
+              </ul>
+            </div>
+            <!-- .product__info / end -->
+            <!-- .product__sidebar -->
+            <div class="product__sidebar">
+              <div class="product__availability">
+                Availability: <span class="text-success">In Stock</span>
+              </div>
+              <div class="product__prices">
+                <span class="product__new-price">{{(formatNumber (index .Product.Product.Variants 0).RetailPrice)}}đ</span>
+                <span class="product__old-price"></span>
+              </div>
+              <!-- .product__options -->
+              <div class="product__options">
+               {{$lenght := len .Product.Product.Variants }} {{if ne $lenght 1}}
+                  {{range $key, $value := .Attributes }}
+                    <div class="form-group product__option">
+                      <label class="product__option-label">{{$key}}</label>
+                      <div class="input-radio-label">
+                        <div class="input-radio-label__list">
+                          {{range $option := .Option}}
+                            <label>
+                              <input class="checkbox-variant-attribute" type="checkbox" name="{{$key}}" value="{{$option}}">
+                              <span>{{$option}}</span>
+                            </label>
+                          {{end}}
+                        </div>
+                      </div>
+                    </div>
+                  {{end}}
+                </div>
+                {{end}}
+                <div class="form-group product__option">
+                  <label class="product__option-label" for="product-quantity">Số lượng</label>
+                  <div class="product__actions">
+                    <div class="product__actions-item">
+                      <div class="input-number product__quantity">
+                        <input id="product-quantity" class="input-number__input form-control form-control-lg" type="number" min="1" value="1">
+                        <div class="input-number__add"></div>
+                        <div class="input-number__sub"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex mt-3">
+                    <div class="product__actions-item product__actions-item--addtocart">
+                      <button class="btn btn-primary btn-lg" style=" border-color: purple; background-color: #fff; color: purple;"><i class="fa fa-plus-square" aria-hidden="true" style=" padding-right: 10px;"></i>Thêm vào giỏ</button>
+                    </div>
+                    <div class="product__actions-item product__actions-item--checkout h-100">
+                      <button class="btn btn-primary btn-lg"><i class="fa fa-shopping-cart" aria-hidden="true" style="
+    font-size: 20px; width: auto; margin-right: .75rem;"></i>Mua ngay</button>
+                    </div>
+                  </div>
+
+                </div>
+              <!-- .product__options / end -->
+            </div>
+            <!-- .product__end -->
+          </div>
+        </div>
+        <div class="product-tabs ">
+          <div class="product-tabs__pane product-tabs__pane--active" id="tab-description">
+            <div class="typography" style="padding-bottom: 30px">
+              <div class="block-header m-0">
+                <h3 class="block-header__title m-0">Mô tả sản phẩm</h3>
+                <div class="block-header__divider"></div>
+              </div>
+              {{if .Product.DescHTML}}
+                {{.Product.DescHTML}}
+              {{else}}
+                <p >chưa có mô tả cho sản phẩm này</p>
+              {{end}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- .block-products-carousel -->
+    <div class="block block-products-carousel" data-layout="grid-5">
+      <div class="container">
+        <div class="block-header" style="margin-bottom: 0px">
+          <h3 class="block-header__title">Sản phẩm liên quan</h3>
+          <div class="block-header__divider"></div>
+          <div class="block-header__arrows-list">
+            <button class="block-header__arrow block-header__arrow--left" type="button">
+              <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="block-header__arrow block-header__arrow--right" type="button">
+              <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        {{if .Product.Product.CategoryID}}
+          {{$lengthSameProduct := len .Category.Products}}
+          {{if eq $lengthSameProduct 1}}
+            <p >Không có sản phẩm liên quan</p>
+          {{else}}
+            <div class="block-products-carousel__slider">
+              <div class="block-products-carousel__preloader"></div>
+              <div class="owl-carousel">
+                {{range .Category.Products}}
+                {{if ne $productID .Product.ProductID}}
+                  <div class="block-products-carousel__column">
+                    <div class="block-products-carousel__cell">
+                      <div class="product-card ">
+                        <div class="product-card__image">
+                          <a href="/product/{{if .Slug}}{{.Slug}}-{{end}}{{.ID}}"><img src="{{ $length := len .Product.ImageURLs }} {{ if eq $length 0 }}https://shop.d.etop.vn/assets/images/placeholder_medium.png{{else}}{{index .Product.ImageURLs 0}}{{end}}" alt=""></a>
+                        </div>
+                        <div class="product-card__info">
+                          <div class="product-card__name">
+                            <a href="/product/{{if .Slug}}{{.Slug}}-{{end}}{{.ID}}">{{.Product.Name}}</a>
+                          </div>
+                        </div>
+                        <div class="product-card__actions">
+                          <div class="product-card__availability">
+                            Availability: <span class="text-success">In Stock</span>
+                          </div>
+                          <div class="product-card__prices">
+                            {{$variant := index .Product.Variants 0}}
+                            {{formatNumber $variant.RetailPrice }}đ
+                          </div>
+                          <div class="product-card__buttons">
+                            <button class="btn btn-primary product-card__addtocart" type="button" onclick="AddOneProduct({{.Product.ProductID}})">Thêm vào giỏ</button>
+                            <button class="btn btn-secondary product-card__addtocart product-card__addtocart--list" type="button" onclick="AddOneProduct({{.Product.ProductID}})">Add To Cart</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {{end}}
+                {{end}}
+              </div>
+            </div>
+          {{end}}
+        {{else}}
+          <p >Không có sản phẩm liên quan</p>
+        {{end}}
+      </div>
+    </div>
+    <!-- .block-products-carousel / end -->
+  </div>
+  <!-- site__body / end -->
+    <script>
+      window.addEventListener( "pageshow", function ( event ) {
+        var historyTraversal = event.persisted ||
+          ( typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2 );
+        if ( historyTraversal ) {
+          // Handle page restore.
+          window.location.reload();
+        }
+      });
+
+      $(document).ready(function () {
+        var arrayAttribute = new Array()
+        $(".checkbox-variant-attribute").click( function(){
+          if( $(this).is(':checked') ) {
+            addAttribute(this.name, this.value)
+          }
+          else {
+            removeAttribute(this.name)
+          }
+          var listVariant = getVariantWithAttribute(arrayAttribute)
+          var listAttributeOpen = new Array()
+          for (let i = 0; i < listVariant.length; i++) {
+            for (let j = 0; j< listVariant[i].attributes.length; j++) {
+              var isExist = false;
+              for (let k = 0; k< listAttributeOpen.length; k++)  {
+                if( listAttributeOpen[k].name === listVariant[i].attributes[j].name
+                          && listAttributeOpen[k].value === listVariant[i].attributes[j].value){
+                  isExist = true;
+                    break
+                }
+              }
+
+              if (!isExist) {
+                listAttributeOpen[listAttributeOpen.length] = {
+                  name:listVariant[i].attributes[j].name,
+                  value: listVariant[i].attributes[j].value,
+                }
+              }
+            }
+          }
+          $(".checkbox-variant-attribute").each(function () {
+              var isDisable = true
+              for (var i = 0; i< listAttributeOpen.length; i++) {
+                if (this.name === listAttributeOpen[i].name && this.value === listAttributeOpen[i].value) {
+                  isDisable = false
+                }
+              }
+              if (isDisable) {
+               this.disabled = true
+              } else {
+                this.disabled = false
+              }
+          })
+          console.log(listVariant)
+          if (listVariant.length >= 1 ) {
+            console.log(listVariant[0].retail_price)
+            $(".product__new-price").html(listVariant[0].retail_price.toLocaleString().replace(",",".")+ "đ")
+          }
+        });
+        function removeAttribute(nameArg) {
+          for (let i= 0; i< arrayAttribute.length; i++) {
+            if (arrayAttribute[i].name === nameArg) {
+              arrayAttribute[i].value = "";
+              return
+            }
+          }
+        }
+        function addAttribute(nameArg, valueArg) {
+            for (let i= 0; i< arrayAttribute.length; i++) {
+              if (arrayAttribute[i].name === nameArg) {
+                arrayAttribute[i].value = valueArg;
+                return
+              }
+            }
+        }
+        const variants = [
+            {{$product_id  := .Product.ID}}
+            {{range .Product.Product.Variants}}
+          {
+            variant_id: {{.VariantID}},
+            product_id: {{.ProductID}},
+            name: {{.Name}},
+            retail_price: {{.RetailPrice}},
+            discount_price: 10101,
+            attributes: [
+                {{range .Attributes}}
+              {
+                value: {{.Value}},
+                name: {{.Name}},
+              },
+                {{end}}
+            ]
+          },
+            {{end}}
+        ];
+        function getVariantWithAttribute(arr) {
+          var result = new Array()
+          for ( let i= 0 ; i < variants.length; i++) {
+                if (checkContainAllAtribute(arr, variants[i])) {
+                  result[result.length] = variants[i]
+                }
+           }
+           return result
+        }
+        function checkContainAllAtribute(arr, variant) {
+          for (let i =0 ; i< arr.length ; i++) {
+            if (arr[i].value === "") {
+              continue
+            }
+            var isContain = false;
+            for (let j = 0; j < variant.attributes.length; j ++) {
+                if (arr[i].name === variant.attributes[j].name) {
+                    if (arr[i].value !== variant.attributes[j].value) {
+                      return false
+                    } else {
+                      isContain = true;
+                      break
+                    }
+                }
+            }
+            if (!isContain) {
+              return false
+            }
+          }
+          return true
+        }
+
+        for ( let i= 0 ; i < variants.length; i++) {
+            for ( let j = 0 ; j< variants[i].attributes.length; j ++) {
+                var isContain = false;
+                for (let k = 0; k < arrayAttribute.length; k++) {
+                    if (arrayAttribute[k].name  === variants[i].attributes[j].name) {
+                      isContain = true
+                    }
+                }
+                if (!isContain) {
+                    arrayAttribute[arrayAttribute.length] = {name: variants[i].attributes[j].name, value: ""}
+                }
+            }
+        }
+
+        var selectedVariant;
+        var listVariant = variants;
+        $(document).on('click', '.product__actions-item--addtocart', function() {
+          var quantity = $('#product-quantity').val();
+          if (listVariant.length > 1) {
+            $('.input-radio-label__list label input').each((index, elem) => {
+              if (elem.checked) {
+                listVariant = listVariant.filter(v =>
+                  v.attributes.map(attr => attr.value).indexOf(elem.value) > -1
+                );
+              }
+            })
+          }
+          if (listVariant.length == 1) {
+            selectedVariant = listVariant[0];
+            var formData = new FormData();
+            formData.append("variant_id", selectedVariant.variant_id);
+            formData.append("product_id", selectedVariant.product_id);
+            formData.append("count", quantity);
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+              var responseCart = this.response
+              if (this.readyState === 4 && this.status == 200) {
+                toastr.success("Đã thêm sản phẩm vào giỏ hàng", 'Thành công!');
+                var requestGetCount = new XMLHttpRequest();
+                requestGetCount.onreadystatechange = function () {
+                  $('.dropcart__body').html(responseCart)
+                  $('.indicator__value').text(this.response)
+                }
+                var formData = new FormData();
+                requestGetCount.open("POST", "/cart/total-count ");
+                requestGetCount.send(formData);
+              } else if (this.readyState === 4 && this.status != 200){
+                toastr.error("Không thể thêm sản phẩm",  'Lỗi!')
+              }
+            };
+            request.open("POST", "/cart");
+            request.send(formData);
+          } else {
+            listVariant = variants;
+            return alert("Vui lòng chọn phiên bản");
+          }
+        })
+
+        $(document).on('click', '.product__actions-item--checkout', function() {
+          var quantity = $('#product-quantity').val();
+          if (listVariant.length > 1) {
+            $('.input-radio-label__list label input').each((index, elem) => {
+              if (elem.checked) {
+                listVariant = listVariant.filter(v =>
+                  v.attributes.map(attr => attr.value).indexOf(elem.value) > -1
+                );
+              }
+            })
+          }
+          if (listVariant.length ==  1) {
+            selectedVariant = listVariant[0];
+            var formData = new FormData();
+            formData.append("variant_id", selectedVariant.variant_id);
+            formData.append("product_id", selectedVariant.product_id);
+            formData.append("count", quantity);
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+              if (this.readyState === 4 && this.status == 200) {
+                window.location.href = "/cart"
+              }
+            };
+            request.open("POST", "/cart");
+            request.send(formData);
+          } else {
+            listVariant = variants;
+            return alert("Vui lòng chọn phiên bản");
+          }
+          //thay alert bằng toast
+        })
+      });
+
+      function AddOneProduct(productID) {
+        var productName =  "";
+        for (let i = 0 ; i++; i< length(variants)) {
+          if (variant.product_id == productID ){
+            productName = variant.name;
+            break;
+          }
+        }
+        var formData = new FormData();
+        formData.append("product_id", productID);
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+          var responseCart = this.response
+          if (this.readyState === 4 && this.status === 200) {
+            // Display an error toast, with a title
+            toastr.success("Đã thêm sản phẩm vào giỏ hàng", 'Thành công!');
+            var requestGetCount = new XMLHttpRequest();
+            requestGetCount.onreadystatechange = function () {
+              $('.dropcart__body').html(responseCart)
+              $('.indicator__value').text(this.response)
+            }
+            var formData = new FormData();
+            requestGetCount.open("POST", "/cart/total-count ");
+            requestGetCount.send(formData);
+          } else if (this.readyState === 4 && this.status != 200) {
+            // Display an error toast, with a title
+            toastr.error("Không thể thêm sản phẩm",  'Lỗi!')
+          }
+        };
+        request.open("POST", "/cart/add-one-product");
+        request.send(formData);
+      }
+ </script>

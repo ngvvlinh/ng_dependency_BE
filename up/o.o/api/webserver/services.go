@@ -30,6 +30,8 @@ type QueryService interface {
 	GetWsProductByID(ctx context.Context, shopID dot.ID, ID dot.ID) (*WsProduct, error)
 	ListWsProductsByIDs(ctx context.Context, shopID dot.ID, IDs []dot.ID) ([]*WsProduct, error)
 	ListWsProducts(context.Context, ListWsProductsArgs) (*ListWsProductsResponse, error)
+	ListWsProductsByIDsWithPaging(ctx context.Context, shopID dot.ID, IDs []dot.ID, paging meta.Paging) (*ListWsProductsResponse, error)
+	SearchProductByName(ctx context.Context, shopID dot.ID, name string) (*ListWsProductsResponse, error)
 
 	GetWsPageByID(ctx context.Context, shopID dot.ID, ID dot.ID) (*WsPage, error)
 	ListWsPagesByIDs(ctx context.Context, shopID dot.ID, IDs []dot.ID) ([]*WsPage, error)
@@ -38,6 +40,7 @@ type QueryService interface {
 	GetWsWebsiteByID(ctx context.Context, shopID dot.ID, ID dot.ID) (*WsWebsite, error)
 	ListWsWebsitesByIDs(ctx context.Context, shopID dot.ID, IDs []dot.ID) ([]*WsWebsite, error)
 	ListWsWebsites(context.Context, ListWsWebsitesArgs) (*ListWsWebsitesResponse, error)
+	GetShopIDBySiteSubdomain(ctx context.Context, siteSubDoimain string) (dot.ID, error)
 }
 
 // +convert:create=WsWebsite
@@ -56,6 +59,7 @@ type CreateWsWebsiteArgs struct {
 	Description        string
 	LogoImage          string
 	FaviconImage       string
+	SiteSubdomain      string
 }
 
 // +convert:update=WsWebsite
@@ -75,6 +79,7 @@ type UpdateWsWebsiteArgs struct {
 	Description        dot.NullString
 	LogoImage          dot.NullString
 	FaviconImage       dot.NullString
+	SiteSubdomain      dot.NullString
 }
 
 type ListWsWebsitesArgs struct {

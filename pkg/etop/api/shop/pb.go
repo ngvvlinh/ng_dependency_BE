@@ -1,16 +1,13 @@
 package shop
 
 import (
-	"o.o/api/main/address"
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/purchaserefund"
 	"o.o/api/main/refund"
 	"o.o/api/main/stocktaking"
-	"o.o/api/top/int/etop"
 	"o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
-	"o.o/api/top/types/etc/address_type"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
@@ -32,6 +29,7 @@ func PbWsPage(arg *webserver.WsPage) *shop.WsPage {
 		ShopID:    arg.ShopID,
 		CreatedAt: arg.CreatedAt,
 		UpdatedAt: arg.UpdatedAt,
+		Name:      arg.Name,
 		ID:        arg.ID,
 		SEOConfig: PbWsSEOConfig(arg.SEOConfig),
 		Slug:      arg.Slug,
@@ -88,6 +86,7 @@ func PbWsProduct(arg *webserver.WsProduct) *shop.WsProduct {
 		ComparePrice: PbComparePrice(arg.ComparePrice),
 		DescHTML:     arg.DescHTML,
 		Product:      PbShopProductWithVariants(arg.Product),
+		Sale:         arg.IsSale,
 	}
 }
 
@@ -142,6 +141,7 @@ func PbWsWebsite(arg *webserver.WsWebsite) *shop.WsWebsite {
 		FaviconImage:       arg.FaviconImage,
 		UpdatedAt:          arg.UpdatedAt,
 		CreatedAt:          arg.CreatedAt,
+		SiteSubdomain:      arg.SiteSubdomain,
 	}
 }
 
@@ -149,27 +149,23 @@ func PbWsShopInfo(arg *webserver.ShopInfo) *shop.ShopInfo {
 	if arg == nil {
 		return nil
 	}
-	return &shop.ShopInfo{
-		Name:  arg.Name,
-		Phone: arg.Phone,
-		Address: &etop.Address{
-			Id:           arg.Address.ID,
-			FullName:     arg.Address.FullName,
-			Phone:        arg.Address.Phone,
-			Position:     arg.Address.Position,
-			Email:        arg.Address.Email,
-			Country:      arg.Address.Country,
+	var address *shop.AddressShopInfo
+	if arg.Address != nil {
+		address = &shop.AddressShopInfo{
 			Province:     arg.Address.Province,
 			District:     arg.Address.District,
 			Ward:         arg.Address.Ward,
-			Zip:          arg.Address.Zip,
 			DistrictCode: arg.Address.DistrictCode,
 			ProvinceCode: arg.Address.ProvinceCode,
 			WardCode:     arg.Address.WardCode,
-			Address1:     arg.Address.Address1,
-			Address2:     arg.Address.Address2,
-			Type:         address_type.ParseAddressTypeWithDefault(arg.Address.Type, address_type.Unknown),
-		},
+			Address:      arg.Address.Address,
+		}
+	}
+	return &shop.ShopInfo{
+		Email:           arg.Email,
+		Name:            arg.Name,
+		Phone:           arg.Phone,
+		Address:         address,
 		FacebookFanpage: arg.FacebookFanpage,
 	}
 }
@@ -205,6 +201,17 @@ func PbWsSpecialProduct(arg *webserver.SpecialProduct) *shop.SpecialProduct {
 	}
 }
 
+func PbWsBanners(arg []*webserver.Banner) []*shop.Banner {
+	if len(arg) == 0 {
+		return nil
+	}
+	var result []*shop.Banner
+	for _, v := range arg {
+		result = append(result, PbWsBanner(v))
+	}
+	return result
+}
+
 func PbWsBanner(arg *webserver.Banner) *shop.Banner {
 	if arg == nil {
 		return nil
@@ -237,24 +244,16 @@ func ConvertShopInfo(args *shop.ShopInfo) *webserver.ShopInfo {
 		shopInfo.Phone = args.Phone
 		shopInfo.FacebookFanpage = args.FacebookFanpage
 		shopInfo.Name = args.Name
+		shopInfo.Email = args.Email
 		if args.Address != nil {
-			shopInfo.Address = &address.Address{
-				ID:           args.Address.Id,
-				FullName:     args.Address.FullName,
-				Phone:        args.Address.Phone,
-				Position:     args.Address.Position,
-				Email:        args.Address.Email,
-				Country:      args.Address.Country,
+			shopInfo.Address = &webserver.AddressShopInfo{
 				Province:     args.Address.Province,
 				District:     args.Address.District,
 				Ward:         args.Address.Ward,
-				Zip:          args.Address.Zip,
 				DistrictCode: args.Address.DistrictCode,
 				ProvinceCode: args.Address.ProvinceCode,
 				WardCode:     args.Address.WardCode,
-				Address1:     args.Address.Address1,
-				Address2:     args.Address.Address2,
-				Type:         args.Address.Type.String(),
+				Address:      args.Address.Address,
 			}
 		}
 

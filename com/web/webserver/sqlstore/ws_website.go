@@ -63,6 +63,11 @@ func (s *WsWebsiteStore) ShopID(id dot.ID) *WsWebsiteStore {
 	return s
 }
 
+func (s *WsWebsiteStore) SiteSubdomain(site string) *WsWebsiteStore {
+	s.preds = append(s.preds, s.ft.BySiteSubdomain(site))
+	return s
+}
+
 func (s *WsWebsiteStore) GetWsWebsiteDB() (*model.WsWebsite, error) {
 	query := s.query().Where(s.preds)
 	var wsWebsite model.WsWebsite

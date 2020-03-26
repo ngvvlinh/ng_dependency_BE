@@ -145,7 +145,6 @@ func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQue
 	if err := x.Where("id = ?", user.ID).ShouldGet(userInternal); err != nil {
 		return err
 	}
-
 	query.Result.User = user
 	query.Result.UserInternal = userInternal
 	return nil

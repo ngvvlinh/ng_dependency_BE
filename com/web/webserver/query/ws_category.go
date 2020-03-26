@@ -97,12 +97,14 @@ func (w WebserverQueryService) getWsCategories(ctx context.Context, shopCategori
 			mapShopCategories[shopCategory.ID].Category = shopCategory
 			wsCategoriesResult = append(wsCategoriesResult, mapShopCategories[shopCategory.ID])
 			continue
+		} else {
+			wsCategoriesResult = append(wsCategoriesResult, &webserver.WsCategory{
+				ID:       shopCategory.ID,
+				ShopID:   shopCategory.ShopID,
+				Category: shopCategory,
+				Appear:   true,
+			})
 		}
-		wsCategoriesResult = append(wsCategoriesResult, &webserver.WsCategory{
-			ID:       shopCategory.ID,
-			ShopID:   shopCategory.ShopID,
-			Category: shopCategory,
-		})
 	}
 	return wsCategoriesResult, nil
 }

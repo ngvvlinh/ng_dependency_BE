@@ -1,0 +1,45 @@
+
+        <!-- site__body -->
+        <div class="site__body">
+            <div class="block about-us">
+                <div class="about-us__image"></div>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-xl-10">
+                            <div class="about-us__body">
+                                <h1 class="about-us__title">Liên hệ</h1>
+                                    <p>{{.Description}}</p>
+                                <br>
+                                <div class="card address-card address-card--featured">
+                                    <div class="address-card__body">
+                                        <div class="address-card__name">{{.ShopInfo.Name}}</div>
+                                        <div class="address-card__row">
+                                            {{if .ShopInfo.Address}}
+                                                {{$addressString := address .ShopInfo.Address}}
+                                                {{if $addressString}}
+                                                    <div class="address-card__row-content">{{$addressString}}</div>
+                                                {{end}}
+                                            </div>
+                                            {{end}}
+                                        <hr>
+                                        <div class="address-card__row">
+                                            <div class="address-card__row-title">Số điện thoại</div>
+                                            <div class="address-card__row-content">{{.ShopInfo.Phone}}</div>
+                                        </div>
+                                        <div class="address-card__row">
+                                            <div class="address-card__row-title">Email</div>
+                                            <div class="address-card__row-content">{{.ShopInfo.Email}}</div>
+                                        </div>
+                                        <div class="address-card__row">
+                                            <div class="address-card__row-title">Link Fanpage</div>
+                                            <div class="address-card__row-content">{{.ShopInfo.FacebookFanpage}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- site__body / end -->

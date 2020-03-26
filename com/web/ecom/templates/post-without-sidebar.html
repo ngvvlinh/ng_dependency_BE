@@ -1,0 +1,42 @@
+
+        <!-- site__body -->
+        <div class="site__body">
+            <div class="page-header">
+                <div class="page-header__container container">
+                    <div class="page-header__breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/">Home</a>
+                                    <svg class="breadcrumb-arrow" width="6px" height="9px">
+                                        <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>
+                                    </svg>
+                                </li>
+{{/*                                <li class="breadcrumb-item">*/}}
+{{/*                                    <a href="">Breadcrumb</a>*/}}
+{{/*                                    <svg class="breadcrumb-arrow" width="6px" height="9px">*/}}
+{{/*                                        <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>*/}}
+{{/*                                    </svg>*/}}
+{{/*                                </li>*/}}
+                                <li class="breadcrumb-item active" aria-current="page">{{.Page.Name}}</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-12 col-lg-12 col-xl-12">
+                        <div class="block post post--layout--full">
+                            <div class="post__header post-header post-header--layout--full">
+                                <h1 class="post-header__title">{{.Page.Name}}</h1>
+                            </div>
+                            <div class="post__content typography  typography--expanded ">
+                                {{.ContentPage }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- site__body / end -->

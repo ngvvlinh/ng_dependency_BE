@@ -8,19 +8,20 @@ import (
 	time "time"
 
 	webserver "o.o/api/webserver"
-	addressconvert "o.o/backend/com/main/address/convert"
 	webservermodel "o.o/backend/com/web/webserver/model"
 	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
 Custom conversions:
-    createOrUpdateWsCategory    // in use
-    createOrUpdateWsProduct     // in use
-    createWsPage                // in use
-    createWsWebsite             // in use
-    updateWsPage                // in use
-    updateWsWebsite             // in use
+    convertWsCategoryFromModel    // in use
+    convertWsProductFromModel     // in use
+    createOrUpdateWsCategory      // in use
+    createOrUpdateWsProduct       // in use
+    createWsPage                  // in use
+    createWsWebsite               // in use
+    updateWsPage                  // in use
+    updateWsWebsite               // in use
 
 Ignored functions: (none)
 */
@@ -30,6 +31,24 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*webservermodel.AddressShopInfo)(nil), (*webserver.AddressShopInfo)(nil), func(arg, out interface{}) error {
+		Convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(arg.(*webservermodel.AddressShopInfo), out.(*webserver.AddressShopInfo))
+		return nil
+	})
+	s.Register(([]*webservermodel.AddressShopInfo)(nil), (*[]*webserver.AddressShopInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_webservermodel_AddressShopInfoes_webserver_AddressShopInfoes(arg.([]*webservermodel.AddressShopInfo))
+		*out.(*[]*webserver.AddressShopInfo) = out0
+		return nil
+	})
+	s.Register((*webserver.AddressShopInfo)(nil), (*webservermodel.AddressShopInfo)(nil), func(arg, out interface{}) error {
+		Convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(arg.(*webserver.AddressShopInfo), out.(*webservermodel.AddressShopInfo))
+		return nil
+	})
+	s.Register(([]*webserver.AddressShopInfo)(nil), (*[]*webservermodel.AddressShopInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_webserver_AddressShopInfoes_webservermodel_AddressShopInfoes(arg.([]*webserver.AddressShopInfo))
+		*out.(*[]*webservermodel.AddressShopInfo) = out0
+		return nil
+	})
 	s.Register((*webservermodel.Banner)(nil), (*webserver.Banner)(nil), func(arg, out interface{}) error {
 		Convert_webservermodel_Banner_webserver_Banner(arg.(*webservermodel.Banner), out.(*webserver.Banner))
 		return nil
@@ -270,6 +289,74 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_webserver_UpdateWsWebsiteArgs_webserver_WsWebsite(arg.(*webserver.UpdateWsWebsiteArgs), out.(*webserver.WsWebsite))
 		return nil
 	})
+}
+
+//-- convert o.o/api/webserver.AddressShopInfo --//
+
+func Convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(arg *webservermodel.AddressShopInfo, out *webserver.AddressShopInfo) *webserver.AddressShopInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &webserver.AddressShopInfo{}
+	}
+	convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(arg, out)
+	return out
+}
+
+func convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(arg *webservermodel.AddressShopInfo, out *webserver.AddressShopInfo) {
+	out.ProvinceCode = arg.ProvinceCode // simple assign
+	out.DistrictCode = arg.DistrictCode // simple assign
+	out.WardCode = arg.WardCode         // simple assign
+	out.Province = arg.Province         // simple assign
+	out.District = arg.District         // simple assign
+	out.Ward = arg.Ward                 // simple assign
+	out.Address = arg.Address           // simple assign
+}
+
+func Convert_webservermodel_AddressShopInfoes_webserver_AddressShopInfoes(args []*webservermodel.AddressShopInfo) (outs []*webserver.AddressShopInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]webserver.AddressShopInfo, len(args))
+	outs = make([]*webserver.AddressShopInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(arg *webserver.AddressShopInfo, out *webservermodel.AddressShopInfo) *webservermodel.AddressShopInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &webservermodel.AddressShopInfo{}
+	}
+	convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(arg, out)
+	return out
+}
+
+func convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(arg *webserver.AddressShopInfo, out *webservermodel.AddressShopInfo) {
+	out.ProvinceCode = arg.ProvinceCode // simple assign
+	out.DistrictCode = arg.DistrictCode // simple assign
+	out.WardCode = arg.WardCode         // simple assign
+	out.Province = arg.Province         // simple assign
+	out.District = arg.District         // simple assign
+	out.Ward = arg.Ward                 // simple assign
+	out.Address = arg.Address           // simple assign
+}
+
+func Convert_webserver_AddressShopInfoes_webservermodel_AddressShopInfoes(args []*webserver.AddressShopInfo) (outs []*webservermodel.AddressShopInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]webservermodel.AddressShopInfo, len(args))
+	outs = make([]*webservermodel.AddressShopInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/webserver.Banner --//
@@ -521,8 +608,9 @@ func Convert_webservermodel_ShopInfo_webserver_ShopInfo(arg *webservermodel.Shop
 
 func convert_webservermodel_ShopInfo_webserver_ShopInfo(arg *webservermodel.ShopInfo, out *webserver.ShopInfo) {
 	out.Name = arg.Name   // simple assign
+	out.Email = arg.Email // simple assign
 	out.Phone = arg.Phone // simple assign
-	out.Address = addressconvert.Convert_addressmodel_Address_address_Address(arg.Address, nil)
+	out.Address = Convert_webservermodel_AddressShopInfo_webserver_AddressShopInfo(arg.Address, nil)
 	out.FacebookFanpage = arg.FacebookFanpage // simple assign
 }
 
@@ -550,9 +638,10 @@ func Convert_webserver_ShopInfo_webservermodel_ShopInfo(arg *webserver.ShopInfo,
 }
 
 func convert_webserver_ShopInfo_webservermodel_ShopInfo(arg *webserver.ShopInfo, out *webservermodel.ShopInfo) {
+	out.Email = arg.Email // simple assign
 	out.Name = arg.Name   // simple assign
 	out.Phone = arg.Phone // simple assign
-	out.Address = addressconvert.Convert_address_Address_addressmodel_Address(arg.Address, nil)
+	out.Address = Convert_webserver_AddressShopInfo_webservermodel_AddressShopInfo(arg.Address, nil)
 	out.FacebookFanpage = arg.FacebookFanpage // simple assign
 }
 
@@ -584,6 +673,7 @@ func Convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg *webserv
 func convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg *webservermodel.SpecialProduct, out *webserver.SpecialProduct) {
 	out.ProductIDs = arg.ProductIDs // simple assign
 	out.Style = arg.Style           // simple assign
+	out.Products = nil              // zero value
 }
 
 func Convert_webservermodel_SpecialProducts_webserver_SpecialProducts(args []*webservermodel.SpecialProduct) (outs []*webserver.SpecialProduct) {
@@ -629,14 +719,7 @@ func Convert_webserver_SpecialProducts_webservermodel_SpecialProducts(args []*we
 //-- convert o.o/api/webserver.WsCategory --//
 
 func Convert_webservermodel_WsCategory_webserver_WsCategory(arg *webservermodel.WsCategory, out *webserver.WsCategory) *webserver.WsCategory {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &webserver.WsCategory{}
-	}
-	convert_webservermodel_WsCategory_webserver_WsCategory(arg, out)
-	return out
+	return convertWsCategoryFromModel(arg, out)
 }
 
 func convert_webservermodel_WsCategory_webserver_WsCategory(arg *webservermodel.WsCategory, out *webserver.WsCategory) {
@@ -911,14 +994,7 @@ func apply_webserver_UpdateWsPageArgs_webserver_WsPage(arg *webserver.UpdateWsPa
 //-- convert o.o/api/webserver.WsProduct --//
 
 func Convert_webservermodel_WsProduct_webserver_WsProduct(arg *webservermodel.WsProduct, out *webserver.WsProduct) *webserver.WsProduct {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &webserver.WsProduct{}
-	}
-	convert_webservermodel_WsProduct_webserver_WsProduct(arg, out)
-	return out
+	return convertWsProductFromModel(arg, out)
 }
 
 func convert_webservermodel_WsProduct_webserver_WsProduct(arg *webservermodel.WsProduct, out *webserver.WsProduct) {
@@ -932,6 +1008,7 @@ func convert_webservermodel_WsProduct_webserver_WsProduct(arg *webservermodel.Ws
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.Product = nil             // zero value
+	out.IsSale = false            // zero value
 }
 
 func Convert_webservermodel_WsProducts_webserver_WsProducts(args []*webservermodel.WsProduct) (outs []*webserver.WsProduct) {
@@ -1003,6 +1080,7 @@ func apply_webserver_CreateOrUpdateWsProductArgs_webserver_WsProduct(arg *webser
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
 	out.Product = out.Product                       // no change
+	out.IsSale = out.IsSale                         // no change
 }
 
 //-- convert o.o/api/webserver.WsSEOConfig --//
@@ -1082,7 +1160,7 @@ func convert_webservermodel_WsWebsite_webserver_WsWebsite(arg *webservermodel.Ws
 	out.ShopID = arg.ShopID       // simple assign
 	out.ID = arg.ID               // simple assign
 	out.MainColor = arg.MainColor // simple assign
-	out.Banner = nil              // types do not match
+	out.Banner = Convert_webservermodel_Banner_webserver_Banner(arg.Banner, nil)
 	out.OutstandingProduct = Convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg.OutstandingProduct, nil)
 	out.NewProduct = Convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg.NewProduct, nil)
 	out.SEOConfig = Convert_webservermodel_WsGeneralSEO_webserver_WsGeneralSEO(arg.SEOConfig, nil)
@@ -1091,11 +1169,12 @@ func convert_webservermodel_WsWebsite_webserver_WsWebsite(arg *webservermodel.Ws
 	out.DomainName = arg.DomainName               // simple assign
 	out.OverStock = false                         // types do not match
 	out.ShopInfo = Convert_webservermodel_ShopInfo_webserver_ShopInfo(arg.ShopInfo, nil)
-	out.Description = arg.Description   // simple assign
-	out.LogoImage = arg.LogoImage       // simple assign
-	out.FaviconImage = arg.FaviconImage // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.Description = arg.Description     // simple assign
+	out.LogoImage = arg.LogoImage         // simple assign
+	out.FaviconImage = arg.FaviconImage   // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.SiteSubdomain = arg.SiteSubdomain // simple assign
 }
 
 func Convert_webservermodel_WsWebsites_webserver_WsWebsites(args []*webservermodel.WsWebsite) (outs []*webserver.WsWebsite) {
@@ -1125,7 +1204,7 @@ func convert_webserver_WsWebsite_webservermodel_WsWebsite(arg *webserver.WsWebsi
 	out.ShopID = arg.ShopID       // simple assign
 	out.ID = arg.ID               // simple assign
 	out.MainColor = arg.MainColor // simple assign
-	out.Banner = nil              // types do not match
+	out.Banner = Convert_webserver_Banner_webservermodel_Banner(arg.Banner, nil)
 	out.OutstandingProduct = Convert_webserver_SpecialProduct_webservermodel_SpecialProduct(arg.OutstandingProduct, nil)
 	out.NewProduct = Convert_webserver_SpecialProduct_webservermodel_SpecialProduct(arg.NewProduct, nil)
 	out.SEOConfig = Convert_webserver_WsGeneralSEO_webservermodel_WsGeneralSEO(arg.SEOConfig, nil)
@@ -1134,11 +1213,12 @@ func convert_webserver_WsWebsite_webservermodel_WsWebsite(arg *webserver.WsWebsi
 	out.DomainName = arg.DomainName               // simple assign
 	out.OverStock = 0                             // types do not match
 	out.ShopInfo = Convert_webserver_ShopInfo_webservermodel_ShopInfo(arg.ShopInfo, nil)
-	out.Description = arg.Description   // simple assign
-	out.LogoImage = arg.LogoImage       // simple assign
-	out.FaviconImage = arg.FaviconImage // simple assign
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.Description = arg.Description     // simple assign
+	out.LogoImage = arg.LogoImage         // simple assign
+	out.FaviconImage = arg.FaviconImage   // simple assign
+	out.SiteSubdomain = arg.SiteSubdomain // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
 }
 
 func Convert_webserver_WsWebsites_webservermodel_WsWebsites(args []*webserver.WsWebsite) (outs []*webservermodel.WsWebsite) {
@@ -1182,6 +1262,7 @@ func apply_webserver_CreateWsWebsiteArgs_webserver_WsWebsite(arg *webserver.Crea
 	out.FaviconImage = arg.FaviconImage             // simple assign
 	out.CreatedAt = time.Time{}                     // zero value
 	out.UpdatedAt = time.Time{}                     // zero value
+	out.SiteSubdomain = arg.SiteSubdomain           // simple assign
 }
 
 func Apply_webserver_UpdateWsWebsiteArgs_webserver_WsWebsite(arg *webserver.UpdateWsWebsiteArgs, out *webserver.WsWebsite) *webserver.WsWebsite {
@@ -1213,4 +1294,5 @@ func apply_webserver_UpdateWsWebsiteArgs_webserver_WsWebsite(arg *webserver.Upda
 	out.FaviconImage = arg.FaviconImage.Apply(out.FaviconImage)                // apply change
 	out.CreatedAt = out.CreatedAt                                              // no change
 	out.UpdatedAt = out.UpdatedAt                                              // no change
+	out.SiteSubdomain = arg.SiteSubdomain.Apply(out.SiteSubdomain)             // apply change
 }

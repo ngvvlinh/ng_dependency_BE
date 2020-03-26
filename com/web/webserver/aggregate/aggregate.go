@@ -2,12 +2,16 @@ package aggregate
 
 import (
 	"context"
+	"strings"
 
 	"o.o/api/main/catalog"
+	"o.o/api/main/location"
 	"o.o/api/webserver"
+	servicelocation "o.o/backend/com/main/location"
 	"o.o/backend/com/web/webserver/convert"
 	"o.o/backend/com/web/webserver/sqlstore"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -17,6 +21,7 @@ import (
 
 var _ webserver.Aggregate = &WebserverAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
+var locationBus location.QueryBus
 
 type WebserverAggregate struct {
 	db              *cmsql.Database
@@ -30,6 +35,7 @@ type WebserverAggregate struct {
 }
 
 func New(eventBus capi.EventBus, db *cmsql.Database, categoryQ catalog.QueryBus) *WebserverAggregate {
+	locationBus = servicelocation.New(db).MessageBus()
 	return &WebserverAggregate{
 		db:              db,
 		wsCategoryStore: sqlstore.NewWsCategoryStore(db),
@@ -64,7 +70,7 @@ func (w WebserverAggregate) CreateOrUpdateWsCategory(ctx context.Context, args *
 		if err != nil {
 			return nil, err
 		}
-		err = w.wsCategoryStore(ctx).UpdateWsCategoryAll(wsCategory)
+		err = w.wsCategoryStore(ctx).ID(args.ID).UpdateWsCategoryAll(wsCategory)
 		if err != nil {
 			return nil, err
 		}
@@ -102,9 +108,13 @@ func (w WebserverAggregate) CreateOrUpdateWsProduct(ctx context.Context, args *w
 	for _, variant := range query.Result.Variants {
 		mapVariant[variant.VariantID] = variant
 	}
+	isSale := false
 	for _, comparePrice := range args.ComparePrice {
 		if mapVariant[comparePrice.VariantID] == nil {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "variant_id in compare price doesnt exist in %v product.", query.Result.Code)
+		}
+		if mapVariant[comparePrice.VariantID].RetailPrice > comparePrice.ComparePrice {
+			isSale = true
 		}
 	}
 	wsProduct, err := w.wsProductStore(ctx).ShopID(args.ShopID).ID(args.ID).GetWsProduct()
@@ -133,6 +143,7 @@ func (w WebserverAggregate) CreateOrUpdateWsProduct(ctx context.Context, args *w
 		return nil, err
 	}
 	wsProduct.Product = query.Result
+	wsProduct.IsSale = isSale
 	return wsProduct, nil
 }
 
@@ -186,36 +197,42 @@ func (w WebserverAggregate) DeleteWsPage(ctx context.Context, shopID dot.ID, ID 
 	return deleted, nil
 }
 
-func (w WebserverAggregate) CreateOrUpdateWsWebsite(ctx context.Context, args *webserver.CreateWsPageArgs) (*webserver.WsWebsite, error) {
-	if args.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mising shop_id")
-	}
-	var wsWebsite = &webserver.WsWebsite{}
-	wsWebsite, err := w.wsWebsiteStore(ctx).ShopID(args.ShopID).GetWsWebsite()
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-		err = scheme.Convert(args, wsWebsite)
-		if err != nil {
-			return nil, err
-		}
-		err = w.wsWebsiteStore(ctx).UpdateWsWebsiteAll(wsWebsite)
-		if err != nil {
-			return nil, err
-		}
-	case cm.NotFound:
-		err := scheme.Convert(args, wsWebsite)
-		if err != nil {
-			return nil, err
-		}
-		err = w.wsWebsiteStore(ctx).Create(wsWebsite)
-		if err != nil {
-			return nil, err
-		}
-	default:
-		return nil, err
-	}
-	return wsWebsite, nil
-}
+// func (w WebserverAggregate) CreateOrUpdateWsWebsite(ctx context.Context, args *webserver.CreateWsPageArgs) (*webserver.WsWebsite, error) {
+// 	if args.ShopID == 0 {
+// 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mising shop_id")
+// 	}
+// 	var wsWebsite = &webserver.WsWebsite{}
+// 	wsWebsite, err := w.wsWebsiteStore(ctx).ShopID(args.ShopID).GetWsWebsite()
+// 	switch cm.ErrorCode(err) {
+// 	case cm.NoError:
+// 		err = scheme.Convert(args, wsWebsite)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		err = w.wsWebsiteStore(ctx).UpdateWsWebsiteAll(wsWebsite)
+// 		if err != nil {
+// 			if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
+// 				return nil, cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+// 			}
+// 			return nil, err
+// 		}
+// 	case cm.NotFound:
+// 		err = scheme.Convert(args, wsWebsite)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		err = w.wsWebsiteStore(ctx).Create(wsWebsite)
+// 		if err != nil {
+// 			if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
+// 				return nil, cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+// 			}
+// 			return nil, err
+// 		}
+// 	default:
+// 		return nil, err
+// 	}
+// 	return wsWebsite, nil
+// }
 
 func (w WebserverAggregate) CreateWsWebsite(ctx context.Context, args *webserver.CreateWsWebsiteArgs) (*webserver.WsWebsite, error) {
 	if args.ShopID == 0 {
@@ -237,8 +254,15 @@ func (w WebserverAggregate) CreateWsWebsite(ctx context.Context, args *webserver
 	if err != nil {
 		return nil, err
 	}
+	err = w.getAdressValue(ctx, args.ShopInfo.Address)
+	if err != nil {
+		return nil, err
+	}
 	err = w.wsWebsiteStore(ctx).Create(wsWebsite)
 	if err != nil {
+		if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+		}
 		return nil, err
 	}
 	return wsWebsite, nil
@@ -267,8 +291,15 @@ func (w WebserverAggregate) UpdateWsWebsite(ctx context.Context, args *webserver
 	if err != nil {
 		return nil, err
 	}
-	err = w.wsWebsiteStore(ctx).Create(wsWebsite)
+	err = w.getAdressValue(ctx, args.ShopInfo.Address)
 	if err != nil {
+		return nil, err
+	}
+	err = w.wsWebsiteStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateWsWebsiteAll(wsWebsite)
+	if err != nil {
+		if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+		}
 		return nil, err
 	}
 	return wsWebsite, nil
@@ -317,4 +348,30 @@ func makeUnduplicatedIDList(in []dot.ID, out []dot.ID) []dot.ID {
 		}
 	}
 	return in
+}
+
+func (w WebserverAggregate) getAdressValue(ctx context.Context, arg *webserver.AddressShopInfo) error {
+
+	if arg == nil {
+		return nil
+	}
+	if arg.Province == "" || arg.ProvinceCode == "" {
+		return cm.Error(cm.InvalidArgument, "Missing province information", nil)
+	}
+	if arg.District == "" || arg.DistrictCode == "" {
+		return cm.Error(cm.InvalidArgument, "Missing district information", nil)
+	}
+	query := &location.FindOrGetLocationQuery{
+		Province:     arg.Province,
+		District:     arg.District,
+		ProvinceCode: arg.ProvinceCode,
+		DistrictCode: arg.DistrictCode,
+	}
+	if arg.WardCode != "" {
+		query.WardCode = arg.WardCode
+	}
+	if err := locationBus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	return nil
 }

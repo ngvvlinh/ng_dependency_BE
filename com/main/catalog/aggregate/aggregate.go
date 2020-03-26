@@ -168,6 +168,15 @@ func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQu
 	if err != nil {
 		return 0, err
 	}
+	event := &catalog.ShopProductDeletedEvent{
+		ShopID:     args.ShopID,
+		ProductIDs: args.IDs,
+	}
+	err = a.eventBus.Publish(ctx, event)
+	if err != nil {
+		return deletedProduct, err
+	}
+
 	return deletedProduct, nil
 }
 

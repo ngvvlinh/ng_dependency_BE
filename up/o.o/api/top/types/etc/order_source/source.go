@@ -39,4 +39,7 @@ const (
 
 	// +enum=haravan
 	Haravan Source = 10
+
+	// +enum=ecomify
+	Ecomify Source = 11
 )

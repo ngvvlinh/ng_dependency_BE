@@ -158,6 +158,7 @@ type GetWsPageRequest struct {
 func (m *GetWsPageRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type WsPage struct {
+	Name      string       `json:"name"`
 	ShopID    dot.ID       `json:"shop_id"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
@@ -210,9 +211,10 @@ type WsProduct struct {
 	SEOConfig    *WsSEOConfig    `json:"seo_config"`
 	Slug         string          `json:"slug"`
 	Appear       bool            `json:"appear"`
-	ComparePrice []*ComparePrice `json:"compare_price"`
+	ComparePrice []*ComparePrice `json:"compare_prices"`
 	DescHTML     string          `json:"desc_html"`
 	Product      *ShopProduct    `json:"shop_product"`
+	Sale         bool            `json:"Sale"`
 }
 
 func (m *WsProduct) String() string { return jsonx.MustMarshalToString(m) }
@@ -292,6 +294,7 @@ type WsWebsite struct {
 	DeletedAt          time.Time       `json:"deleted_at"`
 	UpdatedAt          time.Time       `json:"updated_at"`
 	CreatedAt          time.Time       `json:"created_at"`
+	SiteSubdomain      string          `json:"site_subdomain"`
 }
 
 func (m *WsWebsite) String() string { return jsonx.MustMarshalToString(m) }
@@ -310,6 +313,7 @@ type CreateWsWebsiteRequest struct {
 	Description        string          `json:"description"`
 	LogoImage          string          `json:"logo_image"`
 	FaviconImage       string          `json:"favicon_image"`
+	SiteSubdomain      string          `json:"site_subdomain"`
 }
 
 func (m *CreateWsWebsiteRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -329,16 +333,30 @@ type UpdateWsWebsiteRequest struct {
 	Description        dot.NullString  `json:"description"`
 	LogoImage          dot.NullString  `json:"logo_image"`
 	FaviconImage       dot.NullString  `json:"favicon_image"`
+	SiteSubdomain      dot.NullString  `json:"site_subdomain"`
 }
 
 func (m *UpdateWsWebsiteRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopInfo struct {
-	Name            string        `json:"name"`
-	Phone           string        `json:"phone"`
-	Address         *etop.Address `json:"address"`
-	FacebookFanpage string        `json:"facebook_fanpage"`
+	Email           string           `json:"email"`
+	Name            string           `json:"name"`
+	Phone           string           `json:"phone"`
+	Address         *AddressShopInfo `json:"address"`
+	FacebookFanpage string           `json:"facebook_fanpage"`
 }
+
+type AddressShopInfo struct {
+	Province     string `json:"province"`
+	ProvinceCode string `json:"province_code"`
+	District     string `json:"district"`
+	DistrictCode string `json:"district_code"`
+	Ward         string `json:"ward"`
+	WardCode     string `json:"ward_code"`
+	Address      string `json:"address"`
+}
+
+func (m *AddressShopInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *ShopInfo) String() string { return jsonx.MustMarshalToString(m) }
 

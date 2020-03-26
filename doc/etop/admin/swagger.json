@@ -4550,6 +4550,9 @@
         "payment_status": {
           "$ref": "#/definitions/bmStatus"
         },
+        "pre_order": {
+          "type": "boolean"
+        },
         "processed_at": {
           "type": "string",
           "format": "date-time"
@@ -5901,7 +5904,8 @@
         "etop_cmx",
         "ts_app",
         "etop_app",
-        "haravan"
+        "haravan",
+        "ecomify"
       ]
     },
     "xuAvailableLocation": {

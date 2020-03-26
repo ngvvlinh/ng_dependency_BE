@@ -92,7 +92,7 @@ func (s *WsProductStore) CreateDB(WsProduct *model.WsProduct) error {
 
 func (s *WsProductStore) UpdateWsProductDB(args *model.WsProduct) error {
 	query := s.query().Where(s.preds)
-	return query.ShouldUpdate(args)
+	return query.UpdateAll().ShouldUpdate(args)
 }
 
 func (s *WsProductStore) UpdateWsProductAll(args *webserver.WsProduct) error {

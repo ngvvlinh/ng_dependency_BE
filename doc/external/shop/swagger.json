@@ -3129,6 +3129,9 @@
         "order_note": {
           "type": "string"
         },
+        "pre_order": {
+          "type": "boolean"
+        },
         "processed_at": {
           "type": "string",
           "format": "date-time"

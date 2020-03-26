@@ -111,6 +111,7 @@ type Order struct {
 	CustomerId     dot.ID         `json:"customer_id"`
 	PaymentStatus  status4.Status `json:"payment_status"`
 	CreatedBy      dot.ID         `json:"created_by"`
+	PreOrder       bool           `json:"pre_order"`
 }
 
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }
@@ -257,6 +258,7 @@ type CreateOrderRequest struct {
 	ExternalMeta map[string]string         `json:"external_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	ReferralMeta map[string]string         `json:"referral_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	CustomerId   dot.ID                    `json:"customer_id"`
+	PreOrder     bool                      `json:"pre_order"`
 }
 
 func (m *CreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }

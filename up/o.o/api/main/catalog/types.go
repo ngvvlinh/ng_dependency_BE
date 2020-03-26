@@ -13,116 +13,75 @@ import (
 // +gen:event:topic=event/catalog
 
 type ShopProduct struct {
-	ExternalID string
+	ExternalID         string `json:"external_id"`
+	ExternalCode       string `json:"external_code"`
+	ExternalBrandID    string `json:"external_brand_id"`
+	ExternalCategoryID string `json:"external_category_id"`
+	PartnerID          dot.ID `json:"partner_id"`
 
-	ExternalCode string
+	ShopID    dot.ID `json:"shop_id"`
+	ProductID dot.ID `json:"product_id"`
+	Code      string `json:"code"`
+	CodeNorm  int    `json:"code_norm"`
+	Name      string `json:"name"`
+	NameNorm  string `json:"name_norm"`
+	Unit      string `json:"unit"`
 
-	ExternalBrandID string
+	ImageURLs   []string `json:"image_urls"`
+	Note        string   `json:"note"`
+	ShortDesc   string   `json:"short_desc"`
+	Description string   `json:"description"`
+	DescHTML    string   `json:"desc_html"`
 
-	ExternalCategoryID string
+	CostPrice   int `json:"cost_price"`
+	ListPrice   int `json:"list_price"`
+	RetailPrice int `json:"retail_price"`
 
-	PartnerID dot.ID
+	CategoryID    dot.ID         `json:"category_id"`
+	CollectionIDs []dot.ID       `json:"collectionIDs"`
+	Tags          []string       `json:"tags"`
+	Status        status3.Status `json:"status"`
 
-	ShopID dot.ID
+	CreatedAt time.Time `json:"create_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
+	Deleted   bool      `json:"deleted"`
 
-	ProductID dot.ID
-
-	Code string
-
-	CodeNorm int
-
-	Name string
-
-	Unit string
-
-	ImageURLs []string
-
-	Note string
-
-	ShortDesc string
-
-	Description string
-
-	DescHTML string
-
-	CostPrice int
-
-	ListPrice int
-
-	RetailPrice int
-
-	CategoryID dot.ID
-
-	CollectionIDs []dot.ID
-
-	Tags []string
-
-	Status status3.Status
-
-	CreatedAt time.Time
-
-	UpdatedAt time.Time
-
-	DeletedAt time.Time
-
-	ProductType product_type.ProductType
-
-	MetaFields []*MetaField
-
-	BrandID dot.ID
-
-	Deleted bool
+	ProductType product_type.ProductType `json:"product_type"`
+	MetaFields  []*MetaField             `json:"metafeilds"`
+	BrandID     dot.ID                   `json:"brand_id"`
 }
 
 type ShopVariant struct {
-	ExternalID string
+	ExternalID        string `json:"external_id"`
+	ExternalCode      string `json:"external_code"`
+	ExternalProductID string `json:"external_product_id"`
+	PartnerID         dot.ID `json:"partner_id"`
 
-	ExternalCode string
-
-	ExternalProductID string
-
-	PartnerID dot.ID
-
-	ShopID dot.ID
-
-	ProductID dot.ID
-
-	VariantID dot.ID
-
+	ShopID    dot.ID `json:"shop_id"`
+	ProductID dot.ID `json:"product_id"`
+	VariantID dot.ID `json:"variant_id"`
 	// variant.code is also known as sku
-	Code string
+	Code string `json:"code"`
 
-	CodeNorm int
+	CodeNorm    int              `json:"code_norm"`
+	Name        string           `json:"name"`
+	ShortDesc   string           `json:"short_desc"`
+	Description string           `json:"description"`
+	DescHTML    string           `json:"descHTML"`
+	ImageURLs   []string         `json:"image_urls"`
+	Status      status3.Status   `json:"status"`
+	Attributes  types.Attributes `json:"attributes"`
 
-	Name string
+	CostPrice   int    `json:"cost_price"`
+	ListPrice   int    `json:"list_price"`
+	RetailPrice int    `json:"retail_price"`
+	Note        string `json:"note"` // only in ShopProduct and ShopVariant
 
-	ShortDesc string
-
-	Description string
-
-	DescHTML string
-
-	ImageURLs []string
-
-	Status status3.Status
-
-	Attributes types.Attributes
-
-	CostPrice int
-
-	ListPrice int
-
-	RetailPrice int
-
-	Note string // only in ShopProduct and ShopVariant
-
-	CreatedAt time.Time
-
-	UpdatedAt time.Time
-
-	DeletedAt time.Time
-
-	Deleted bool
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
+	Deleted   bool      `json:"deleted"`
 }
 
 type ShopCategory struct {
@@ -225,7 +184,7 @@ func (v ShopVariantWithProduct) ProductWithVariantName() string {
 
 type ShopProductWithVariants struct {
 	*ShopProduct
-	Variants []*ShopVariant
+	Variants []*ShopVariant `json:"variants"`
 }
 
 type ShopCategories struct {
@@ -248,8 +207,8 @@ type ShopProductCollection struct {
 }
 
 type MetaField struct {
-	Key   string
-	Value string
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type ShopVariantSupplier struct {
@@ -258,4 +217,9 @@ type ShopVariantSupplier struct {
 	VariantID  dot.ID
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+}
+
+type ShopProductDeletedEvent struct {
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 }

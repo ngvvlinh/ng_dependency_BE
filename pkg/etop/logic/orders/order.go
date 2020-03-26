@@ -977,6 +977,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 		ExternalMeta:               externalMeta,
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
+		PreOrder:                   m.PreOrder,
 	}
 	if err = convertpb.OrderShippingToModel(ctx, shipping, order); err != nil {
 		return nil, err

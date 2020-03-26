@@ -621,6 +621,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.Code = arg.Code                             // simple assign
 	out.CodeNorm = arg.CodeNorm                     // simple assign
 	out.Name = arg.Name                             // simple assign
+	out.NameNorm = arg.NameNorm                     // simple assign
 	out.Unit = arg.Unit                             // simple assign
 	out.ImageURLs = arg.ImageURLs                   // simple assign
 	out.Note = arg.Note                             // simple assign
@@ -637,10 +638,10 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DeletedAt = arg.DeletedAt                   // simple assign
+	out.Deleted = false                             // zero value
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = nil                            // types do not match
 	out.BrandID = arg.BrandID                       // simple assign
-	out.Deleted = false                             // zero value
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -694,7 +695,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DeletedAt = arg.DeletedAt                   // simple assign
-	out.NameNorm = ""                               // zero value
+	out.NameNorm = arg.NameNorm                     // simple assign
 	out.NameNormUa = ""                             // zero value
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = nil                            // types do not match
@@ -735,6 +736,7 @@ func apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg *catalog.Create
 	out.Code = arg.Code                 // simple assign
 	out.CodeNorm = 0                    // zero value
 	out.Name = arg.Name                 // simple assign
+	out.NameNorm = ""                   // zero value
 	out.Unit = arg.Unit                 // simple assign
 	out.ImageURLs = arg.ImageURLs       // simple assign
 	out.Note = arg.Note                 // simple assign
@@ -751,10 +753,10 @@ func apply_catalog_CreateShopProductArgs_catalog_ShopProduct(arg *catalog.Create
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
 	out.DeletedAt = time.Time{}         // zero value
+	out.Deleted = false                 // zero value
 	out.ProductType = arg.ProductType   // simple assign
 	out.MetaFields = arg.MetaFields     // simple assign
 	out.BrandID = arg.BrandID           // simple assign
-	out.Deleted = false                 // zero value
 }
 
 func Apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductCategoryArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -772,6 +774,7 @@ func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 	out.Code = out.Code                             // no change
 	out.CodeNorm = out.CodeNorm                     // no change
 	out.Name = out.Name                             // no change
+	out.NameNorm = out.NameNorm                     // no change
 	out.Unit = out.Unit                             // no change
 	out.ImageURLs = out.ImageURLs                   // no change
 	out.Note = out.Note                             // no change
@@ -788,10 +791,10 @@ func apply_catalog_UpdateShopProductCategoryArgs_catalog_ShopProduct(arg *catalo
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
 	out.DeletedAt = out.DeletedAt                   // no change
+	out.Deleted = out.Deleted                       // no change
 	out.ProductType = out.ProductType               // no change
 	out.MetaFields = out.MetaFields                 // no change
 	out.BrandID = out.BrandID                       // no change
-	out.Deleted = out.Deleted                       // no change
 }
 
 func Apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.UpdateShopProductInfoArgs, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -809,6 +812,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.Code = arg.Code.Apply(out.Code)                      // apply change
 	out.CodeNorm = out.CodeNorm                              // no change
 	out.Name = arg.Name.Apply(out.Name)                      // apply change
+	out.NameNorm = out.NameNorm                              // no change
 	out.Unit = arg.Unit.Apply(out.Unit)                      // apply change
 	out.ImageURLs = out.ImageURLs                            // no change
 	out.Note = arg.Note.Apply(out.Note)                      // apply change
@@ -825,10 +829,10 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 	out.DeletedAt = out.DeletedAt                            // no change
+	out.Deleted = out.Deleted                                // no change
 	out.ProductType = arg.ProductType.Apply(out.ProductType) // apply change
 	out.MetaFields = out.MetaFields                          // no change
 	out.BrandID = arg.BrandID.Apply(out.BrandID)             // apply change
-	out.Deleted = out.Deleted                                // no change
 }
 
 //-- convert o.o/api/main/catalog.ShopProductCollection --//

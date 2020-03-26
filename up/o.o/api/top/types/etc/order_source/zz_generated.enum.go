@@ -25,6 +25,7 @@ var enumSourceName = map[int]string{
 	8:  "ts_app",
 	9:  "etop_app",
 	10: "haravan",
+	11: "ecomify",
 }
 
 var enumSourceValue = map[string]int{
@@ -38,6 +39,7 @@ var enumSourceValue = map[string]int{
 	"ts_app":   8,
 	"etop_app": 9,
 	"haravan":  10,
+	"ecomify":  11,
 }
 
 func ParseSource(s string) (Source, bool) {

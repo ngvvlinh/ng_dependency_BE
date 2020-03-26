@@ -69,10 +69,8 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 			Shipment: ffm,
 		}
 	}
-
 	order := &types.Order{
-		ExportedFields: exportedOrder,
-
+		ExportedFields:            exportedOrder,
 		Id:                        m.ID,
 		ShopId:                    m.ShopID,
 		ShopName:                  "",
@@ -128,6 +126,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		FulfillmentType:           m.FulfillmentType.String(),
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
+		PreOrder:                  m.PreOrder,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping
@@ -194,6 +193,7 @@ func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accT
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
 		CreatedBy:                 m.CreatedBy,
+		PreOrder:                  m.PreOrder,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping

@@ -498,3 +498,52 @@ func (q *QueryService) ListShopProductsCollections(ctx context.Context, args *ca
 		Paging:              query.GetPaging(),
 	}, nil
 }
+
+func (s *QueryService) ListShopProductWithVariantByCategoriesIDs(ctx context.Context, args *catalog.ListShopProductWithVariantByCategoriesIDsRequest) (*catalog.ShopProductsWithVariantsResponse, error) {
+	q := s.shopProduct(ctx).CategoryIDs(args.CategoriesIds...).OptionalShopID(args.ShopID)
+	products, err := q.ListShopProductsWithVariants()
+	if err != nil {
+		return nil, err
+	}
+	paging := q.GetPaging()
+	return &catalog.ShopProductsWithVariantsResponse{
+		Products: products,
+		Paging:   paging,
+	}, nil
+}
+
+func (s *QueryService) ListShopProductWithVariantByIDsWithPaging(ctx context.Context, args *catalog.ListShopProductWithVariantByIDsWithPagingRequest) (*catalog.ListShopProductWithVariantByIDsWithPagingResponse, error) {
+	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID).WithPaging(args.Paging)
+	products, err := q.ListShopProductsWithVariants()
+	if err != nil {
+		return nil, err
+	}
+	paging := q.GetPaging()
+	count, err := q.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ListShopProductWithVariantByIDsWithPagingResponse{
+		Products: products,
+		Paging:   paging,
+		Total:    count,
+	}, nil
+}
+
+func (s *QueryService) SearchProductByName(ctx context.Context, args *catalog.SearchProductByNameArgs) (*catalog.ListShopProductWithVariantByIDsWithPagingResponse, error) {
+	q := s.shopProduct(ctx).OptionalShopID(args.ShopID)
+	products, err := q.SearchNameShopProduct(args.Name)
+	if err != nil {
+		return nil, err
+	}
+	paging := q.GetPaging()
+	count, err := q.CountSearName(args.Name)
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ListShopProductWithVariantByIDsWithPagingResponse{
+		Products: products,
+		Paging:   paging,
+		Total:    count,
+	}, nil
+}

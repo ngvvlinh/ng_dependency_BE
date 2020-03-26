@@ -120,6 +120,7 @@ type Order struct {
 	TotalAmount               dot.NullInt           `json:"total_amount"`
 	OrderNote                 dot.NullString        `json:"order_note"`
 	Shipping                  *OrderShipping        `json:"shipping"`
+	PreOrder                  bool                  `json:"pre_order"`
 }
 
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }

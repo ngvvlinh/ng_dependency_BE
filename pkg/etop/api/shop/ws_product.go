@@ -3,9 +3,11 @@ package shop
 import (
 	"context"
 
+	"o.o/api/main/catalog"
 	"o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 func (s *WebServerService) CreateOrUpdateWsProduct(ctx context.Context, r *CreateOrUpdateWsProductEndpoint) error {
@@ -37,7 +39,12 @@ func (s *WebServerService) GetWsProduct(ctx context.Context, r *GetWsProductEndp
 	if err != nil {
 		return err
 	}
+	result, err := getProductQuantity(ctx, shopID, query.Result.Product)
+	if err != nil {
+		return err
+	}
 	r.Result = PbWsProduct(query.Result)
+	r.Result.Product = result
 	return nil
 }
 
@@ -53,11 +60,38 @@ func (s *WebServerService) GetWsProducts(ctx context.Context, r *GetWsProductsEn
 	if err != nil {
 		return err
 	}
+	mapProductWithQuantity, err := mapListProductsWithQuantity(ctx, query.Result.WsProducts)
+	if err != nil {
+		return err
+	}
+	resultWsProducts := PbWsProducts(query.Result.WsProducts)
+	for k, v := range resultWsProducts {
+		resultWsProducts[k].Product = mapProductWithQuantity[v.ID]
+	}
 	r.Result = &shop.GetWsProductsResponse{
-		WsProducts: PbWsProducts(query.Result.WsProducts),
+		WsProducts: resultWsProducts,
 		Paging:     cmapi.PbPaging(query.Paging),
 	}
 	return nil
+}
+
+func mapListProductsWithQuantity(ctx context.Context, args []*webserver.WsProduct) (map[dot.ID]*shop.ShopProduct, error) {
+	if len(args) == 0 {
+		return nil, nil
+	}
+	var products []*catalog.ShopProductWithVariants
+	for _, v := range args {
+		products = append(products, v.Product)
+	}
+	var mapProduct = make(map[dot.ID]*shop.ShopProduct)
+	result, err := getProductsQuantity(ctx, args[0].ShopID, products)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range result {
+		mapProduct[v.Id] = v
+	}
+	return mapProduct, nil
 }
 
 func (s *WebServerService) GetWsProductsByIDs(ctx context.Context, r *GetWsProductsByIDsEndpoint) error {

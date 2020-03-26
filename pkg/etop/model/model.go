@@ -183,7 +183,7 @@ func VerifyPaymentMethod(s payment_method.PaymentMethod) bool {
 
 func VerifyOrderSource(s order_source.Source) bool {
 	switch s {
-	case order_source.EtopPOS, order_source.EtopPXS, order_source.EtopCMX, order_source.TSApp, order_source.API, order_source.Import, order_source.EtopApp:
+	case order_source.EtopPOS, order_source.EtopPXS, order_source.EtopCMX, order_source.TSApp, order_source.API, order_source.Import, order_source.EtopApp, order_source.Ecomify:
 		return true
 	}
 	return false

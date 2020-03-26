@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <title>{{.ShopInfo.Name}}</title>
+    <link rel="icon" type="image/png" href="{{if ne .FaviconImage ""}}{{.FaviconImage}}{{else}}/images/favicon.png{{end}}">
+    <!-- fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,500i,700,700i">
+    <!-- css -->
+    <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/libs/owl-carousel/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="/libs/photoswipe/photoswipe.css">
+    <link rel="stylesheet" href="/libs/photoswipe/default-skin/default-skin.css">
+    <link rel="stylesheet" href="/libs/select2/css/select2.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- font - fontawesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- font - stroyka -->
+    <link rel="stylesheet" href="/fonts/stroyka/stroyka.css">
+    <!-- js -->
+    <script src="/libs/jquery/jquery.min.js"></script>
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        function searchProduct() {
+            var nameProduct = $('input[name="search_product"]').val();
+            if (!nameProduct) {
+                return
+            }
+            window.location.href = "/search/"+ nameProduct + "/1/12"
+        }
+        function removerCart(variantID) {
+            var formData = new FormData();
+            formData.append("variant_id", variantID)
+
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                var responseCart = this.response
+                if (this.readyState === 4 && this.status == 200) {
+                    toastr.success("Đã xóa sản phẩm ra khỏi giỏ hàng", 'Thành công!')
+                    var requestGetCount = new XMLHttpRequest();
+                    requestGetCount.onreadystatechange = function () {
+                        $('.dropcart__body').html(responseCart)
+                        $('.indicator__value').text(this.response)
+                    }
+                    var formData = new FormData();
+                    requestGetCount.open("POST", "/cart/total-count ");
+                    requestGetCount.send(formData);
+                } else if (this.readyState === 4 && this.status != 200) {
+                    toastr.error("Không thể thêm sản phẩm",  'Lỗi!')
+                }
+            };
+            request.open("PUT", "/cart/remove");
+            request.send(formData);
+        }
+        $(document).on('keyup', 'input[name="search_product"]', ($e) => {
+            if ($e.key === "Enter") {
+                var nameProduct = $('input[name="search_product"]')[1].value
+                if (!nameProduct) {
+                    return
+                }
+                window.location.href = "/search/"+ nameProduct + "/1/12"
+            }
+        })
+
+    </script>
+</head>
+
+<body>
+<!-- site -->
+<div class="site">
+    <!-- mobile site__header -->
+    <header class="site__header d-md-none">
+        <!-- data-sticky-mode - one of [pullToShow, alwaysOnTop] -->
+        <div class="mobile-header mobile-header--sticky" data-sticky-mode="pullToShow">
+            <div class="mobile-header__panel">
+                <div class="container px-0 mx-0">
+                    <div class="mobile-header__body">
+                        <button class="mobile-header__menu-button">
+                            <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+                        </button>
+                        <a class="mobile-header__logo h-100" href="/">
+                            <img class="h-100 pb-2 pt-2" src="{{if ne .LogoImage "" }}{{.LogoImage}}{{else}}https://shop.d.etop.vn/assets/images/placeholder_medium.png{{end}}" alt="eStore logo">
+                        </a>
+                        <div class="search search--location--mobile-header mobile-header__search">
+                            <div class="search__body">
+                                <form class="search__form" action="/" onsubmit="searchProduct()">
+                                    <input class="search__input" name="search_product" placeholder="Tìm kiếm sản phẩm" aria-label="Site search" type="text" >
+                                    <div class="search__border"></div>
+                                </form>
+                                <div class="search__suggestions suggestions suggestions--location--mobile-header"></div>
+                            </div>
+                        </div>
+                        <div class="mobile-header__indicators">
+                            <div class="indicator indicator--mobile-search indicator--mobile d-md-none">
+                                <button class="indicator__button">
+                                        <span class="indicator__area">
+                                            <svg width="20px" height="20px">
+                                                <use xlink:href="/images/sprite.svg#search-20"></use>
+                                            </svg>
+                                        </span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="indicator indicator--mobile">
+                            <a href="javascript:;" class="indicator__button">
+                                    <span class="indicator__area">
+                                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                        <span class="indicator__value">3</span>
+                                    </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- mobile site__header / end -->
+    <!-- desktop site__header -->
+    <header class="site__header d-md-block d-none">
+        <div class="site-header">
+            <div class="site-header__middle container">
+                <div class="site-header__logo h-100">
+                    <a href="/" style=""  class="h-100 d-flex m-auto">
+                        <img src="{{if ne .LogoImage "" }}{{.LogoImage}}{{else}}https://shop.d.etop.vn/assets/images/placeholder_medium.png{{end}}" alt="eStore logo" style="height: 40px; width: auto; margin: auto">
+                    </a>
+                </div>
+                <div class="site-header__search">
+                    <div class="search search--location--header ">
+                        <div class="search__body">
+                            <div class="search__form" >
+                                <input class="search__input" name="search_product" placeholder="Tìm kiếm sản phẩm" type="text" value="{{.SearchKey}}">
+                                <div class="search__border"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="site-header__phone">
+                    <div class="site-header__phone-title">Hotline</div>
+                    <div class="site-header__phone-number">{{.ShopInfo.Phone}}</div>
+                </div>
+            </div>
+            <div class="site-header__nav-panel">
+                <!-- data-sticky-mode - one of [pullToShow, alwaysOnTop] -->
+                <div class="nav-panel nav-panel--sticky" data-sticky-mode="pullToShow" style="background: {{.MainColor}}">
+                    <div class="nav-panel__container container">
+                        <div class="nav-panel__row">
+                            <div class="nav-panel__departments">
+                                <!-- .departments -->
+                                <!-- .departments / end -->
+                            </div>
+                            <!-- .nav-links -->
+                            <div class="nav-panel__nav-links nav-links">
+                                <ul class="nav-links__list">
+                                    <li class="nav-links__item  nav-links__item--has-submenu ">
+                                        {{if ne (len .Categories) 0}}
+                                            <a class="nav-links__item-link" href="javascript:;">
+                                                <div class="nav-links__item-body">
+                                                    Danh mục sản phẩm
+                                                    <svg class="nav-links__item-arrow" width="9px" height="6px">
+                                                        <use xlink:href="/images/sprite.svg#arrow-rounded-down-9x6"></use>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                        {{end}}
+                                        <div class="nav-links__submenu nav-links__submenu--type--menu">
+                                            <!-- .menu -->
+                                            <div class="menu menu--layout--classic ">
+                                                <div class="menu__submenus-container"></div>
+                                                <ul class="menu__list">
+                                                    {{range .Categories}}
+                                                        <li class="menu__item">
+                                                            <!-- This is a synthetic element that allows to adjust the vertical offset of the submenu using CSS. -->
+                                                            <div class="menu__item-submenu-offset"></div>
+                                                            <a class="menu__item-link" href="/category/{{.Slug}}/1/12">
+                                                                {{.Category.Name}}
+                                                            </a>
+                                                        </li>
+                                                    {{end}}
+                                                </ul>
+                                            </div>
+                                            <!-- .ínhmenu / end -->
+                                        </div>
+                                    </li>
+                                    {{range .Pages}}
+                                    <li class="nav-links__item ">
+                                        <a class="nav-links__item-link" href="/page/{{if ne .Slug ""}}page-{{end}}{{.ID}}">
+                                            <div class="nav-links__item-body">
+                                                {{.Name}}
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {{end}}
+                                    <li class="nav-links__item ">
+                                        <a class="nav-links__item-link" href="/about-us">
+                                            <div class="nav-links__item-body">
+                                                Liên hệ
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- .nav-links / end -->
+                            <div class="nav-panel__indicators">
+                                <div class="indicator indicator--trigger--click">
+                                    <a href="" class="indicator__button">
+                                            <span class="indicator__area">
+                                                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                                    <span class="indicator__value">{{if .Cart}}{{.Cart.TotalCount}}{{else}}0{{end}} </span>
+                                            </span>
+                                    </a>
+                                    <div class="indicator__dropdown">
+                                        <!-- .dropcart -->
+                                        <div class="dropcart dropcart--style--dropdown">
+                                            <div class="dropcart__body">
+                                                {{if .Cart}}
+                                                    <div class="dropcart__products-list">
+                                                        {{range .Cart.Products}}
+                                                            <div class="dropcart__product">
+                                                                <div class="dropcart__product-image">
+                                                                    <a href="/product/product-{{.Product.ProductID}}"><img src="{{ $length := len .Product.ImageURLs }}
+                                                            {{ if eq $length 0 }}
+                                                                https://shop.d.etop.vn/assets/images/placeholder_medium.png
+                                                            {{else}}
+                                                                {{index .Product.ImageURLs 0}}
+                                                            {{end}}" alt=""> </a>
+                                                                </div>
+                                                                <div class="dropcart__product-info">
+                                                                    <div class="dropcart__product-name"><a href="/product/product-{{.Product.ProductID}}">{{.Product.Name}}</a></div>
+                                                                    {{if .Variant.Attributes }}
+                                                                        <ul class="dropcart__product-options">
+                                                                           {{range .Variant.Attributes}}
+                                                                            <li>{{.Name}}: {{.Value}}</li>
+                                                                            {{end}}
+                                                                        </ul>
+                                                                    {{end}}
+                                                                    <div class="dropcart__product-meta">
+                                                                        <span class="dropcart__product-quantity">{{.Count}}</span> ×
+                                                                        <span class="dropcart__product-price">{{formatNumber .Variant.RetailPrice}}đ</span>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" class="dropcart__product-remove btn btn-light btn-sm btn-svg-icon" onclick="removerCart({{.Variant.VariantID}})">
+                                                                    <i class="fa fa-times" aria-hidden="true" ></i>
+                                                                </button>
+                                                            </div>
+                                                        {{end}}
+                                                    </div>
+                                                {{end}}
+                                                <div class="dropcart__totals">
+                                                    <table>
+                                                        <tr>
+                                                            <th>Tổng cộng</th>
+                                                            {{if eq .Cart nil}}
+                                                                <td>0</td>
+                                                            {{else}}
+                                                                <td>{{formatNumber .Cart.TotalAmount}}đ</td>
+                                                            {{end}}
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div class="dropcart__buttons">
+                                                    <a class="btn btn-secondary px-0" href="/cart">Xem giỏ hàng</a>
+                                                    <a class="btn btn-primary" href="/checkout">Đặt hàng</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- .dropcart / end -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>

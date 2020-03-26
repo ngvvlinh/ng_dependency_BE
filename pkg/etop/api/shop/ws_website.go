@@ -28,6 +28,7 @@ func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *CreateWsWebsi
 		Description:        r.Description,
 		LogoImage:          r.LogoImage,
 		FaviconImage:       r.FaviconImage,
+		SiteSubdomain:      r.SiteSubdomain,
 	}
 	err := webserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
@@ -60,6 +61,7 @@ func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *UpdateWsWebsi
 		Description:        r.Description,
 		LogoImage:          r.LogoImage,
 		FaviconImage:       r.FaviconImage,
+		SiteSubdomain:      r.SiteSubdomain,
 	}
 	err := webserverAggr.Dispatch(ctx, cmd)
 	if err != nil {

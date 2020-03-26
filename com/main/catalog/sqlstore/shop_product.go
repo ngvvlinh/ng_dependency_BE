@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -80,6 +81,10 @@ func (s *ShopProductStore) CategoryID(id dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByCategoryID(id))
 	return s
 }
+func (s *ShopProductStore) CategoryIDs(ids ...dot.ID) *ShopProductStore {
+	s.preds = append(s.preds, sq.In("category_id", ids))
+	return s
+}
 
 func (s *ShopProductStore) IDs(ids ...dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
@@ -128,6 +133,12 @@ func (s *ShopProductStore) IncludeDeleted() *ShopProductStore {
 
 func (s *ShopProductStore) Count() (int, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
+	return query.Count((*model.ShopProduct)(nil))
+}
+
+func (s *ShopProductStore) CountSearName(name string) (int, error) {
+	query := s.query().Where(s.preds).Where().Where(`name_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(name))
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
 	return query.Count((*model.ShopProduct)(nil))
 }
@@ -380,4 +391,51 @@ func CheckProductExternalError(e error, externalID, externalCode string) error {
 		}
 	}
 	return e
+}
+
+func (s *ShopProductStore) SearchNameShopProduct(name string) ([]*catalog.ShopProductWithVariants, error) {
+	products, err := s.SearchNameShopProductDB(name)
+	if err != nil {
+		return nil, err
+	}
+	return convert.ShopProductsWithVariants(products), nil
+}
+
+func (s *ShopProductStore) SearchNameShopProductDB(name string) ([]*model.ShopProductWithVariants, error) {
+	query := s.query().Where(s.preds).Where(`name_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(name))
+
+	query = query.OrderBy("code_norm desc").Limit(1000)
+	var products model.ShopProducts
+	err := query.Find(&products)
+	if err != nil {
+		return nil, err
+	}
+	productIDs := make([]dot.ID, len(products))
+	for i, p := range products {
+		productIDs[i] = p.ProductID
+	}
+	var variants model.ShopVariants
+	{
+		q := s.shopVariant.ProductIDs(productIDs...)
+		variants, err = q.ListShopVariantsDB()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	mapProducts := make(map[dot.ID]*model.ShopProductWithVariants)
+	result := make([]*model.ShopProductWithVariants, len(products))
+	for i, p := range products {
+		result[i] = &model.ShopProductWithVariants{
+			ShopProduct: p,
+		}
+		mapProducts[p.ProductID] = result[i]
+	}
+	for _, v := range variants {
+		p := mapProducts[v.ProductID]
+		if p != nil {
+			p.Variants = append(p.Variants, v)
+		}
+	}
+	return result, nil
 }

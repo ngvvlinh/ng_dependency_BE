@@ -2,8 +2,10 @@ package query
 
 import (
 	"context"
+	"sort"
 
 	"o.o/api/main/catalog"
+	"o.o/api/meta"
 	"o.o/api/webserver"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
@@ -36,6 +38,17 @@ func (w WebserverQueryService) GetWsProductByID(ctx context.Context, shopID dot.
 	default:
 		return nil, err
 	}
+	var mapVariants = make(map[dot.ID]*catalog.ShopVariant)
+	for _, v := range queryProduct.Result.Variants {
+		mapVariants[v.VariantID] = v
+	}
+	for _, v := range result.ComparePrice {
+		if mapVariants[v.VariantID].RetailPrice > v.ComparePrice {
+			result.IsSale = true
+			break
+		}
+	}
+	result.Product = sortVariantByRetailPrice(result.Product)
 	return result, nil
 }
 
@@ -51,6 +64,29 @@ func (w WebserverQueryService) ListWsProductsByIDs(ctx context.Context, shopID d
 		return nil, err
 	}
 	return w.getWsProducts(ctx, queryProduct.Result.Products)
+}
+
+func (w WebserverQueryService) ListWsProductsByIDsWithPaging(ctx context.Context, shopID dot.ID, IDs []dot.ID, paging meta.Paging) (*webserver.ListWsProductsResponse, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mising shop_id")
+	}
+	queryProduct := &catalog.ListShopProductWithVariantByIDsWithPagingQuery{
+		ShopID: shopID,
+		IDs:    IDs,
+		Paging: paging,
+	}
+	if err := w.cataglogQuery.Dispatch(ctx, queryProduct); err != nil {
+		return nil, err
+	}
+	result, err := w.getWsProducts(ctx, queryProduct.Result.Products)
+	if err != nil {
+		return nil, err
+	}
+	return &webserver.ListWsProductsResponse{
+		ShopID:     shopID,
+		PageInfo:   queryProduct.Result.Paging,
+		WsProducts: result,
+	}, nil
 }
 
 func (w WebserverQueryService) ListWsProducts(ctx context.Context, args webserver.ListWsProductsArgs) (*webserver.ListWsProductsResponse, error) {
@@ -97,12 +133,57 @@ func (w WebserverQueryService) getWsProducts(ctx context.Context, shopProducts [
 			mapShopProducts[shopProduct.ProductID].Product = shopProduct
 			wsProductsResult = append(wsProductsResult, mapShopProducts[shopProduct.ProductID])
 			continue
+		} else {
+			wsProductsResult = append(wsProductsResult, &webserver.WsProduct{
+				ID:      shopProduct.ProductID,
+				ShopID:  shopProduct.ShopID,
+				Product: shopProduct,
+				Appear:  true,
+			})
 		}
-		wsProductsResult = append(wsProductsResult, &webserver.WsProduct{
-			ID:      shopProduct.ProductID,
-			ShopID:  shopProduct.ShopID,
-			Product: shopProduct,
-		})
+	}
+	for key, product := range wsProductsResult {
+		var mapVariants = make(map[dot.ID]*catalog.ShopVariant)
+		for _, variant := range product.Product.Variants {
+			mapVariants[variant.VariantID] = variant
+		}
+		for _, v := range product.ComparePrice {
+			if mapVariants[v.VariantID].RetailPrice > v.ComparePrice {
+				wsProductsResult[key].IsSale = true
+				break
+			}
+		}
+	}
+	for k, v := range wsProductsResult {
+		wsProductsResult[k].Product = sortVariantByRetailPrice(v.Product)
 	}
 	return wsProductsResult, nil
+}
+
+func (w WebserverQueryService) SearchProductByName(ctx context.Context, shopID dot.ID, name string) (*webserver.ListWsProductsResponse, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mising shop_id")
+	}
+	queryProduct := &catalog.SearchProductByNameQuery{
+		ShopID: shopID,
+		Name:   name,
+	}
+	if err := w.cataglogQuery.Dispatch(ctx, queryProduct); err != nil {
+		return nil, err
+	}
+	wsProducts, err := w.getWsProducts(ctx, queryProduct.Result.Products)
+	if err != nil {
+		return nil, err
+	}
+	return &webserver.ListWsProductsResponse{
+		PageInfo:   queryProduct.Result.Paging,
+		WsProducts: wsProducts,
+	}, nil
+}
+
+func sortVariantByRetailPrice(product *catalog.ShopProductWithVariants) *catalog.ShopProductWithVariants {
+	sort.Slice(product.Variants, func(i, j int) bool {
+		return product.Variants[i].RetailPrice < product.Variants[j].RetailPrice
+	})
+	return product
 }

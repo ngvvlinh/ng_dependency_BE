@@ -1175,8 +1175,8 @@ func (ms *WsProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type WsWebsites []*WsWebsite
 
 const __sqlWsWebsite_Table = "ws_website"
-const __sqlWsWebsite_ListCols = "\"shop_id\",\"id\",\"main_color\",\"banner\",\"outstanding_product\",\"new_product\",\"seo_config\",\"facebook\",\"google_analytics_id\",\"domain_name\",\"over_stock\",\"shop_info\",\"description\",\"logo_image\",\"favicon_image\",\"created_at\",\"updated_at\""
-const __sqlWsWebsite_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"id\" = EXCLUDED.\"id\",\"main_color\" = EXCLUDED.\"main_color\",\"banner\" = EXCLUDED.\"banner\",\"outstanding_product\" = EXCLUDED.\"outstanding_product\",\"new_product\" = EXCLUDED.\"new_product\",\"seo_config\" = EXCLUDED.\"seo_config\",\"facebook\" = EXCLUDED.\"facebook\",\"google_analytics_id\" = EXCLUDED.\"google_analytics_id\",\"domain_name\" = EXCLUDED.\"domain_name\",\"over_stock\" = EXCLUDED.\"over_stock\",\"shop_info\" = EXCLUDED.\"shop_info\",\"description\" = EXCLUDED.\"description\",\"logo_image\" = EXCLUDED.\"logo_image\",\"favicon_image\" = EXCLUDED.\"favicon_image\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlWsWebsite_ListCols = "\"shop_id\",\"id\",\"main_color\",\"banner\",\"outstanding_product\",\"new_product\",\"seo_config\",\"facebook\",\"google_analytics_id\",\"domain_name\",\"over_stock\",\"shop_info\",\"description\",\"logo_image\",\"favicon_image\",\"site_subdomain\",\"created_at\",\"updated_at\""
+const __sqlWsWebsite_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"id\" = EXCLUDED.\"id\",\"main_color\" = EXCLUDED.\"main_color\",\"banner\" = EXCLUDED.\"banner\",\"outstanding_product\" = EXCLUDED.\"outstanding_product\",\"new_product\" = EXCLUDED.\"new_product\",\"seo_config\" = EXCLUDED.\"seo_config\",\"facebook\" = EXCLUDED.\"facebook\",\"google_analytics_id\" = EXCLUDED.\"google_analytics_id\",\"domain_name\" = EXCLUDED.\"domain_name\",\"over_stock\" = EXCLUDED.\"over_stock\",\"shop_info\" = EXCLUDED.\"shop_info\",\"description\" = EXCLUDED.\"description\",\"logo_image\" = EXCLUDED.\"logo_image\",\"favicon_image\" = EXCLUDED.\"favicon_image\",\"site_subdomain\" = EXCLUDED.\"site_subdomain\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlWsWebsite_Insert = "INSERT INTO \"ws_website\" (" + __sqlWsWebsite_ListCols + ") VALUES"
 const __sqlWsWebsite_Select = "SELECT " + __sqlWsWebsite_ListCols + " FROM \"ws_website\""
 const __sqlWsWebsite_Select_history = "SELECT " + __sqlWsWebsite_ListCols + " FROM history.\"ws_website\""
@@ -1226,8 +1226,8 @@ func (m *WsWebsite) Migration(db *cmsql.Database) {
 		},
 		"banner": {
 			ColumnName:       "banner",
-			ColumnType:       "[]*Banner",
-			ColumnDBType:     "[]*struct",
+			ColumnType:       "*Banner",
+			ColumnDBType:     "*struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -1308,6 +1308,13 @@ func (m *WsWebsite) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"site_subdomain": {
+			ColumnName:       "site_subdomain",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"created_at": {
 			ColumnName:       "created_at",
 			ColumnType:       "time.Time",
@@ -1350,6 +1357,7 @@ func (m *WsWebsite) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Description),
 		core.String(m.LogoImage),
 		core.String(m.FaviconImage),
+		core.String(m.SiteSubdomain),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -1372,6 +1380,7 @@ func (m *WsWebsite) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Description),
 		(*core.String)(&m.LogoImage),
 		(*core.String)(&m.FaviconImage),
+		(*core.String)(&m.SiteSubdomain),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1411,7 +1420,7 @@ func (_ *WsWebsites) SQLSelect(w SQLWriter) error {
 func (m *WsWebsite) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlWsWebsite_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(17)
+	w.WriteMarkers(18)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1421,7 +1430,7 @@ func (ms WsWebsites) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlWsWebsite_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(17)
+		w.WriteMarkers(18)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1572,6 +1581,14 @@ func (m *WsWebsite) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.FaviconImage)
 	}
+	if m.SiteSubdomain != "" {
+		flag = true
+		w.WriteName("site_subdomain")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SiteSubdomain)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -1598,7 +1615,7 @@ func (m *WsWebsite) SQLUpdate(w SQLWriter) error {
 func (m *WsWebsite) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlWsWebsite_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(17)
+	w.WriteMarkers(18)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1633,25 +1650,26 @@ func (m WsWebsiteHistory) Facebook() core.Interface   { return core.Interface{m[
 func (m WsWebsiteHistory) GoogleAnalyticsID() core.Interface {
 	return core.Interface{m["google_analytics_id"]}
 }
-func (m WsWebsiteHistory) DomainName() core.Interface   { return core.Interface{m["domain_name"]} }
-func (m WsWebsiteHistory) OverStock() core.Interface    { return core.Interface{m["over_stock"]} }
-func (m WsWebsiteHistory) ShopInfo() core.Interface     { return core.Interface{m["shop_info"]} }
-func (m WsWebsiteHistory) Description() core.Interface  { return core.Interface{m["description"]} }
-func (m WsWebsiteHistory) LogoImage() core.Interface    { return core.Interface{m["logo_image"]} }
-func (m WsWebsiteHistory) FaviconImage() core.Interface { return core.Interface{m["favicon_image"]} }
-func (m WsWebsiteHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m WsWebsiteHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m WsWebsiteHistory) DomainName() core.Interface    { return core.Interface{m["domain_name"]} }
+func (m WsWebsiteHistory) OverStock() core.Interface     { return core.Interface{m["over_stock"]} }
+func (m WsWebsiteHistory) ShopInfo() core.Interface      { return core.Interface{m["shop_info"]} }
+func (m WsWebsiteHistory) Description() core.Interface   { return core.Interface{m["description"]} }
+func (m WsWebsiteHistory) LogoImage() core.Interface     { return core.Interface{m["logo_image"]} }
+func (m WsWebsiteHistory) FaviconImage() core.Interface  { return core.Interface{m["favicon_image"]} }
+func (m WsWebsiteHistory) SiteSubdomain() core.Interface { return core.Interface{m["site_subdomain"]} }
+func (m WsWebsiteHistory) CreatedAt() core.Interface     { return core.Interface{m["created_at"]} }
+func (m WsWebsiteHistory) UpdatedAt() core.Interface     { return core.Interface{m["updated_at"]} }
 
 func (m *WsWebsiteHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 17)
-	args := make([]interface{}, 17)
-	for i := 0; i < 17; i++ {
+	data := make([]interface{}, 18)
+	args := make([]interface{}, 18)
+	for i := 0; i < 18; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(WsWebsiteHistory, 17)
+	res := make(WsWebsiteHistory, 18)
 	res["shop_id"] = data[0]
 	res["id"] = data[1]
 	res["main_color"] = data[2]
@@ -1667,16 +1685,17 @@ func (m *WsWebsiteHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["description"] = data[12]
 	res["logo_image"] = data[13]
 	res["favicon_image"] = data[14]
-	res["created_at"] = data[15]
-	res["updated_at"] = data[16]
+	res["site_subdomain"] = data[15]
+	res["created_at"] = data[16]
+	res["updated_at"] = data[17]
 	*m = res
 	return nil
 }
 
 func (ms *WsWebsiteHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 17)
-	args := make([]interface{}, 17)
-	for i := 0; i < 17; i++ {
+	data := make([]interface{}, 18)
+	args := make([]interface{}, 18)
+	for i := 0; i < 18; i++ {
 		args[i] = &data[i]
 	}
 	res := make(WsWebsiteHistories, 0, 128)
@@ -1700,8 +1719,9 @@ func (ms *WsWebsiteHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["description"] = data[12]
 		m["logo_image"] = data[13]
 		m["favicon_image"] = data[14]
-		m["created_at"] = data[15]
-		m["updated_at"] = data[16]
+		m["site_subdomain"] = data[15]
+		m["created_at"] = data[16]
+		m["updated_at"] = data[17]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

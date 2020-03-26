@@ -6,6 +6,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 
 	"o.o/api/webserver"
+	"o.o/backend/com/web/webserver/model"
 	cm "o.o/backend/pkg/common"
 )
 
@@ -71,6 +72,9 @@ func createWsWebsite(in *webserver.CreateWsWebsiteArgs, out *webserver.WsWebsite
 		p := bluemonday.UGCPolicy()
 		out.Description = p.Sanitize(in.Description)
 	}
+	if in.SiteSubdomain == "" {
+		out.SiteSubdomain = in.ShopID.String()
+	}
 }
 
 func updateWsWebsite(in *webserver.UpdateWsWebsiteArgs, out *webserver.WsWebsite) {
@@ -93,11 +97,31 @@ func updateWsWebsite(in *webserver.UpdateWsWebsiteArgs, out *webserver.WsWebsite
 		in.ShopInfo = out.ShopInfo
 	}
 	apply_webserver_UpdateWsWebsiteArgs_webserver_WsWebsite(in, out)
-	out.ID = cm.NewID()
 	if in.Description.Valid == true {
 		p := bluemonday.UGCPolicy()
 		var description = p.Sanitize(in.Description.String)
 		out.Description = description
 	}
+}
 
+func convertWsCategoryFromModel(arg *model.WsCategory, out *webserver.WsCategory) *webserver.WsCategory {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &webserver.WsCategory{}
+	}
+	convert_webservermodel_WsCategory_webserver_WsCategory(arg, out)
+	return out
+}
+
+func convertWsProductFromModel(arg *model.WsProduct, out *webserver.WsProduct) *webserver.WsProduct {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &webserver.WsProduct{}
+	}
+	convert_webservermodel_WsProduct_webserver_WsProduct(arg, out)
+	return out
 }

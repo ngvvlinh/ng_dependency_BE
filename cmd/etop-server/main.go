@@ -93,6 +93,7 @@ import (
 	"o.o/backend/com/subscripting/subscriptionproduct"
 	summaryquery "o.o/backend/com/summary/query"
 	webserveraggregate "o.o/backend/com/web/webserver/aggregate"
+	webserverpm "o.o/backend/com/web/webserver/pm"
 	webserverquery "o.o/backend/com/web/webserver/query"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -484,6 +485,8 @@ func main() {
 	}
 	webServerAggregate := webserveraggregate.New(eventBus, dbWebServer, catalogQuery).MessageBus()
 	webServerQuery := webserverquery.New(eventBus, dbWebServer, catalogQuery).MessageBus()
+	webserverPm := webserverpm.New(eventBus, webServerAggregate, webServerQuery)
+	webserverPm.RegisterEventHandlers(eventBus)
 
 	moneyTxPM := moneytxpm.New(eventBus, moneyTxQuery, moneyTxAggr, shippingQuery)
 	moneyTxPM.RegisterEvenHandlers(eventBus)
@@ -646,7 +649,7 @@ func main() {
 	)
 	hooks = session.NewHook(acl.GetACL()).Build()
 
-	svrs := startServers(webServerQuery)
+	svrs := startServers(webServerQuery, catalogQuery, redisStore, locationBus)
 	if bot != nil {
 		bot.SendMessage(fmt.Sprintf("–––\n✨ Server started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 		defer bot.SendMessage("👻 Server stopped 👻\n–––")

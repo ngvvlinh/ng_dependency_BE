@@ -9,7 +9,9 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	"o.o/api/main/catalog"
 	"o.o/api/main/identity"
+	"o.o/api/main/location"
 	webserverinternal "o.o/api/webserver"
 	"o.o/backend/cmd/etop-server/config"
 	paymentlogaggregate "o.o/backend/com/etc/logging/payment/aggregate"
@@ -26,6 +28,7 @@ import (
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/projectpath"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sqltrace"
 	api "o.o/backend/pkg/etop/api"
 	admin "o.o/backend/pkg/etop/api/admin"
@@ -54,10 +57,10 @@ import (
 	"o.o/common/l"
 )
 
-func startServers(webServerQuery webserverinternal.QueryBus) []*http.Server {
+func startServers(webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) []*http.Server {
 	return []*http.Server{
 		startEtopServer(),
-		startWebServer(webServerQuery),
+		startWebServer(webServerQuery, catalogQuery, rd, locationQueryBus),
 		startGHNWebhookServer(),
 		startGHTKWebhookServer(),
 		startVTPostWebhookServer(),
@@ -244,13 +247,13 @@ func startEtopServer() *http.Server {
 	return svr
 }
 
-func startWebServer(webServerQuery webserverinternal.QueryBus) *http.Server {
+func startWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) *http.Server {
 	ecom := cfg.Ecom
 	c := webserver.Config{
 		MainSite: ecom.MainSite,
 		RootPath: projectpath.GetPath(),
 	}
-	handler, err := webserver.New(c, webServerQuery)
+	handler, err := webserver.New(c, webServerQuery, catalogQuery, rd, locationQueryBus)
 	if err != nil {
 		ll.S.Panicf("error starting web server: %v", err)
 	}

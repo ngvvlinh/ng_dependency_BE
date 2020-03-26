@@ -1,0 +1,224 @@
+
+       <!-- site__body -->
+        <div class="site__body">
+            <div class="page-header">
+                <div class="page-header__container container">
+                    <div class="page-header__breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/">Home</a>
+                                    <svg class="breadcrumb-arrow" width="6px" height="9px">
+                                        <use xlink:href="/images/sprite.svg#arrow-rounded-right-6x9"></use>
+                                    </svg>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="page-header__title">
+                        <h1>Giỏ hàng</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="cart block">
+                <div class="container">
+                    <table class="cart__table cart-table">
+                        <thead class="cart-table__head">
+                            <tr class="cart-table__row">
+                                <th class="cart-table__column cart-table__column--image">Ảnh</th>
+                                <th class="cart-table__column cart-table__column--product">Sản phẩm</th>
+                                <th class="cart-table__column cart-table__column--price">Giá</th>
+                                <th class="cart-table__column cart-table__column--quantity">Số lượng</th>
+                                <th class="cart-table__column cart-table__column--total">Tổng cộng</th>
+                                <th class="cart-table__column cart-table__column--remove"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="cart-table__body">
+                        {{if .Cart}}
+                            {{range .Cart.Products}}
+                                <tr class="cart-table__row" data-variant="{{.Variant.VariantID}}">
+                                    <td class="cart-table__column cart-table__column--image">
+                                        <a href="/product/{{.Product.ProductID}}"><img src="{{ $length := len .Product.ImageURLs }}
+                                                                {{ if eq $length 0 }}
+                                                                    https://shop.d.etop.vn/assets/images/placeholder_medium.png
+                                                                {{else}}
+                                                                    {{index .Product.ImageURLs 0}}
+                                                                {{end}}" alt=""></a>
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--product">
+                                        <a href="/product/{{.Product.ProductID}}" class="cart-table__product-name">{{.Product.Name}}</a>
+                                        <ul class="dropcart__product-options">
+                                            {{range .Variant.Attributes}}
+                                                <li>{{.Name}}: {{.Value}}</li>
+                                            {{end}}
+                                        </ul>
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--price" data-title="Price" data-price="{{.Variant.RetailPrice}}">{{formatNumber .Variant.RetailPrice}}đ</td>
+                                    <td class="cart-table__column cart-table__column--quantity" data-title="Quantity">
+                                        <div class="input-number">
+                                            <input class="form-control input-number__input" type="number" min="1" value="{{.Count}}">
+                                            <div class="input-number__add"></div>
+                                            <div class="input-number__sub"></div>
+                                        </div>
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--total" data-title="Total">{{formatNumber (mul .Variant.RetailPrice .Count)}}đ</td>
+                                    <td class="cart-table__column cart-table__column--remove">
+                                        <button type="button" class="btn btn-light btn-sm btn-svg-icon">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            {{end}}
+                        {{end}}
+                    </table>
+                    <div class="dropcart__products-list mobile-only ">
+                        {{if .Cart}}
+                            {{range .Cart.Products}}
+                                <div class="dropcart__product">
+                                    <div class="dropcart__product-image">
+                                        <a href="product.html"><img src="{{ $length := len .Product.ImageURLs }}
+                                            {{ if eq $length 0 }}
+                                                https://shop.d.etop.vn/assets/images/placeholder_medium.png
+                                            {{else}}
+                                                {{index .Product.ImageURLs 0}}
+                                            {{end}}" alt=""></a>
+                                    </div>
+                                    <div class="dropcart__product-info">
+                                        <div class="dropcart__product-name"><a href="">{{.Product.Name}}</a></div>
+                                        <ul class="dropcart__product-options">
+                                            {{range .Variant.Attributes}}
+                                                <li>{{.Name}}: {{.Value}}</li>
+                                            {{end}}
+                                        </ul>
+                                        <div class="dropcart__product-meta row">
+                                            <div class="col-6 dropcart__product-price-mobile-only">
+                                                {{mul .Variant.RetailPrice .Count}}đ
+                                            </div>
+                                            <div class="input-number-mobile-only col-6">
+                                                <input class="form-control text-center" type="number" min="1" value="{{.Count}}">
+                                                <div class="input-number__add" style="right: 10px"></div>
+                                                <div class="input-number__sub" style="left: 10px"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="dropcart__product-remove btn btn-light btn-sm btn-svg-icon">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            {{end}}
+                        {{end}}
+                    </div>
+                    <div class="cart__actions">
+                        <div class="cart__buttons">
+                        </div>
+                        <div class="cart__buttons">
+                            <a href="/" class="btn btn-light">Tiếp tục mua sắm</a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end pt-5">
+                        <div class="col-12 col-md-7 col-lg-6 col-xl-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="cart__totals">
+                                        <tfoot class="cart__totals-footer">
+                                            <tr>
+                                                <th>Tổng cộng</th>
+                                                {{if eq .Cart nil}}
+                                                    <td class="total__amount">0đ</td>
+                                                {{else}}
+                                                    <td class="total__amount">{{formatNumber .Cart.TotalAmount}}đ</td>
+                                                {{end}}
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <a class="btn btn-primary btn-xl btn-block cart__checkout-button" href="/checkout">Đặt hàng</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- site__body / end -->
+
+       <script>
+            $(document).ready(function () {
+                const carts = [];
+                //replace carts bang data get ve, nho do data cho giao dien mobile
+               $(document).on('click','.input-number div' , function() {
+                   var parent = $(this).closest('tr');
+                   var variant_id = $(parent).attr('data-variant');
+                   var quantity = $(parent).find('.input-number__input').val();
+                   var price = $(parent).find('.cart-table__column--price').data('price');
+                   //lay data carts ve thi price = carts.find(c => c.variant_id = variant_id)[0].price
+                   $(parent).closest('tr').find('.cart-table__column--total').text(quantity * price + 'd');
+               })
+                $(document).on('click', '.cart-table__column--remove button', function () {
+                    $(this).closest('tr').remove();
+                    var variant_id = $(this).attr('data-variant');
+                    //Toast xoa san pham thanh cong
+                    //TODO xu ly variant da bi remove khoi gio hang
+                    //remove xong get gio hang moi ve
+                    updateDateCart()
+                })
+                function updateDateCart() {
+                    //Cap nhat gio hang
+                    var cart = [];
+                    $('tbody .cart-table__row').each(function () {
+                        cart.push({variant_id: $(this).attr('data-variant'), quantity: $(this).find('.input-number__input').val()});
+                    })
+                    // push update
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("PUT", '/cart', true);
+                    xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+                    xhr.onload = function () {
+                        var responseCart = xhr.response
+                        if (this.readyState === 4 && this.status == 200) {
+                            toastr.success("Đã cập nhật giỏ hàng", 'Thành công!');
+                            var requestGetCount = new XMLHttpRequest();
+                            requestGetCount.onreadystatechange = function () {
+                                $('.dropcart__body').html(responseCart);
+                                $('.indicator__value').text(this.response)
+                            }
+                            var formData = new FormData();
+                            requestGetCount.open("POST", "/cart/total-count ");
+                            requestGetCount.send(formData);
+                        } else if (this.readyState === 4 && this.status != 200) {
+                            // Display an error toast, with a title
+                            toastr.error("Không thể cập nhật giỏ hàng",  'Lỗi!')
+                        }
+                    };
+                    xhr.send(JSON.stringify({cart : cart }));
+                    //cap nhat xong thi get carts moi ve
+                    updateTotalAmount()
+                }
+                $(document).on('click', '.cart__checkout-button', function () {
+                    var cart = [];
+                    $('tbody .cart-table__row').each(function () {
+                        cart.push({variant_id: $(this).attr('data-variant'), quantity: $(this).find('.input-number__input').val()});
+                    });
+                });
+                $(document).on('change', '.input-number__input', function () {
+                    var parent = $(this).closest('tr');
+                    var variant_id = $(parent).attr('data-variant');
+                    var quantity = $(parent).find('.input-number__input').val();
+                    var price = $(parent).find('.cart-table__column--price').data('price');
+                    //lay data carts ve thi price = carts.find(c => c.variant_id = variant_id)[0].price
+                    $(parent).closest('tr').find('.cart-table__column--total').text(quantity * price + 'd');
+                    updateDateCart()
+                })
+                var totalAmount;
+                function updateTotalAmount() {
+                    totalAmount = 0;
+                   $("tbody .cart-table__row").each(function() {
+                       var count = $(this).find('.input-number__input').val();
+                       var price = $(this).find('.cart-table__column--price').data('price');
+                       totalAmount += count * price;
+                   });
+                   $(".total__amount").html(totalAmount.toLocaleString()+'đ');
+                }
+           })
+
+       </script>

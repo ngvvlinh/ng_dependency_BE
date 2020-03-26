@@ -4,4 +4,5 @@
 
 package catalog
 
-func (e *ValidSupplierIDEvent) GetTopic() string { return "event/catalog" }
+func (e *ShopProductDeletedEvent) GetTopic() string { return "event/catalog" }
+func (e *ValidSupplierIDEvent) GetTopic() string    { return "event/catalog" }
