@@ -90,8 +90,18 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	// check have invitation that was sent to email
-	_, err = a.store(ctx).AccountID(args.AccountID).NotExpires().PhoneOrEmail(userIsInvited.Phone, userIsInvited.Email).
-		AcceptedAt(nil).RejectedAt(nil).GetInvitation()
+	query := a.store(ctx).AccountID(args.AccountID).NotExpires().AcceptedAt(nil).RejectedAt(nil)
+	if userIsInvited != nil {
+		query = query.PhoneOrEmail(userIsInvited.Phone, userIsInvited.Email)
+	} else {
+		if args.Phone != "" {
+			query = query.Phone(args.Phone)
+		}
+		if args.Email != "" {
+			query = query.Email(args.Email)
+		}
+	}
+	_, err = query.GetInvitation()
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
