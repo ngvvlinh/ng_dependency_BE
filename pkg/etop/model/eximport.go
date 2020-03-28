@@ -17,8 +17,7 @@ const (
 
 func (t ImportType) String() string { return string(t) }
 
-var _ = sqlgenImportAttempt(&ImportAttempt{})
-
+// +sqlgen
 type ImportAttempt struct {
 	ID           dot.ID
 	UserID       dot.ID
@@ -40,8 +39,7 @@ type CreateImportAttemptCommand struct {
 	ImportAttempt *ImportAttempt
 }
 
-var _ = sqlgenExportAttempt(&ExportAttempt{})
-
+// +sqlgen
 type ExportAttempt struct {
 	ID        string
 	UserID    dot.ID

@@ -7,10 +7,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenEtopCount(&EtopAcount{})
-
+// +sqlgen
 type EtopAcount struct {
 	ID            string
 	FullName      string
@@ -23,9 +20,9 @@ type EtopAcount struct {
 	VtigerAccount string
 }
 
-var _ = sqlgenVtigerContact(&VtigerContact{})
-
 // VtigerAccount table vtiger_acount
+//
+// +sqlgen
 type VtigerContact struct {
 	ID                   string
 	Firstname            string
@@ -62,8 +59,7 @@ func (p *VtigerContact) BeforeInsertOrUpdate() error {
 	return nil
 }
 
-var _ = sqlgenVtigerAccount(&VtigerAccount{})
-
+// +sqlgen
 type VtigerAccount struct {
 	ID             string
 	UserName       string

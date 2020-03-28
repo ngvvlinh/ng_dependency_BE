@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"go/types"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/dustin/go-humanize/english"
 
+	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/strs"
 )
@@ -120,11 +123,35 @@ type SQLWriter = core.SQLWriter
 	w(p, str)
 }
 
-func (g *genImpl) genQueryFor(typ types.Type) error {
+func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 	defer func() {
 		g.nGen++
 		if g.nGen == g.nAdd {
-			g.genFilter.Generate()
+			if g.genFilter == nil {
+				return
+			}
+			pkgSortPath := strings.TrimPrefix(g.genFilter.PkgPath, "etop.vn/backend/")
+			dir := filepath.Join(gen.ProjectPath(), pkgSortPath, "../sqlstore")
+			sqlstorePath, err := filepath.Abs(dir)
+			if err != nil {
+				panic(err)
+			}
+			fi, err := os.Stat(sqlstorePath)
+			if err != nil {
+				fmt.Printf("can not find package sqlstore: %v", err)
+				return
+			}
+			if !fi.IsDir() {
+				panic(fmt.Sprintf("%v is not a directory", sqlstorePath))
+			}
+			filePath := filepath.Join(sqlstorePath, "filters.gen.go")
+			p, err := g.ng.GenerateFile("sqlstore", filePath)
+			if err != nil {
+				_err = err
+				return
+			}
+			g.genFilter.Generate(p)
+			_err = p.Close()
 		}
 	}()
 

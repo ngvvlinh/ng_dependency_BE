@@ -17,10 +17,6 @@ import (
 	"etop.vn/common/xerrors"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenShipnowFulfillment(&ShipnowFulfillment{})
-
 type Carrier string
 
 const (
@@ -29,6 +25,7 @@ const (
 
 func (c Carrier) String() string { return string(c) }
 
+// +sqlgen
 type ShipnowFulfillment struct {
 	ID dot.ID
 

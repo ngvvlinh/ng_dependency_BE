@@ -1,16 +1,13 @@
 package filtergen
 
 import (
-	"bytes"
 	"fmt"
 	"go/types"
-	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"text/template"
 
-	"etop.vn/backend/tools/pkg/gen"
+	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/typedesc"
 )
 
@@ -40,7 +37,7 @@ type JoinTableDef struct {
 }
 
 type Gen struct {
-	pkgPath    string
+	PkgPath    string
 	tables     []*TableDef
 	joinTables []*JoinTableDef
 
@@ -49,7 +46,7 @@ type Gen struct {
 
 func NewGen(pkgPath string) *Gen {
 	return &Gen{
-		pkgPath: pkgPath,
+		PkgPath: pkgPath,
 	}
 }
 
@@ -180,50 +177,21 @@ func genIsZero(path string, desc *typedesc.TypeDesc, typ types.Type) string {
 
 var tpl = template.Must(template.New("tpl").Funcs(funcMap).Parse(tplStr))
 
-func (g *Gen) Generate() {
+func (g *Gen) Generate(p generator.Printer) {
 	if g == nil {
 		return
 	}
-	var b bytes.Buffer
 	vars := map[string]interface{}{
-		"Tables":      g.tables,
-		"JoinTables":  g.joinTables,
-		"Imports":     "",
-		"OrigPackage": "",
+		"Tables":     g.tables,
+		"JoinTables": g.joinTables,
 	}
-	fmt.Println("--", g.pkgPath)
-	if g.importOrigPkg {
-		vars["OrigPackage"] = `m "` + g.pkgPath + `"`
-	}
-	if g.pkgPath != "etop.vn/backend/pkg/etop/model" {
-		vars["Imports"] = `"etop.vn/backend/pkg/etop/model"`
-	}
+	p.Import("m", g.PkgPath)
+	p.Import("sq", "etop.vn/backend/pkg/common/sql/sq")
+	p.Import("etopmodel", "etop.vn/backend/pkg/etop/model")
+	p.Import("orderingtypes", "etop.vn/api/main/ordering/types") // TODO: remove this
 
-	err := tpl.Execute(&b, vars)
+	err := tpl.Execute(p, vars)
 	if err != nil {
 		panic(fmt.Sprintf("Unable to generate filters: %v", err))
-	}
-
-	pkgSortPath := strings.TrimPrefix(g.pkgPath, "etop.vn/backend/")
-	dir := filepath.Join(gen.ProjectPath(), pkgSortPath, "../sqlstore")
-	sqlstorePath, err := filepath.Abs(dir)
-	must(err)
-	fi, err := os.Stat(sqlstorePath)
-	if err != nil {
-		fmt.Printf("can not find package sqlstore: %v", err)
-		return
-	}
-	if !fi.IsDir() {
-		panic(fmt.Sprintf("%v is not a directory", sqlstorePath))
-	}
-
-	filePath := filepath.Join(sqlstorePath, "filters.gen.go")
-	gen.WriteFile(filePath, b.Bytes())
-	gen.FormatFiles(filePath)
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
 	}
 }

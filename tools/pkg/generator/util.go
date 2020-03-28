@@ -39,9 +39,21 @@ func (cmd CommandFilter) Filter(ng FilterEngine) error {
 	return nil
 }
 
+func (cmd CommandFilter) FilterAll(ng FilterEngine) error {
+	for _, p := range ng.ParsingPackages() {
+		if cmd.Include(p.Directives) {
+			p.Include()
+		} else if cmd.Include(p.InlineDirectives) {
+			p.Include()
+		}
+	}
+	return nil
+}
+
 func (cmd CommandFilter) Include(ds Directives) bool {
 	for _, d := range ds {
-		if d.Cmd == string(cmd) {
+		if d.Cmd == string(cmd) ||
+			strings.HasPrefix(d.Cmd, string(cmd)) && d.Cmd[len(cmd)] == ':' {
 			return true
 		}
 	}

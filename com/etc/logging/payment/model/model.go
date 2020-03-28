@@ -8,8 +8,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 type PaymentAction string
 
 var (
@@ -17,8 +15,7 @@ var (
 	PaymentActionResult   PaymentAction = "result"
 )
 
-var _ = sqlgenPayment(&Payment{})
-
+// +sqlgen
 type Payment struct {
 	ID   dot.ID
 	Data json.RawMessage

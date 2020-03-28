@@ -21,6 +21,7 @@ const sqlTag = "sq"
 var gt generator.Printer
 
 type genImpl struct {
+	ng generator.Engine
 	generator.Printer
 
 	init    bool

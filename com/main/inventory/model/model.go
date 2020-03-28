@@ -10,10 +10,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenInventoryVariant(&InventoryVariant{})
-
+// +sqlgen
 type InventoryVariant struct {
 	ShopID         dot.ID
 	VariantID      dot.ID
@@ -25,8 +22,7 @@ type InventoryVariant struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenInventoryVoucher(&InventoryVoucher{})
-
+// +sqlgen
 type InventoryVoucher struct {
 	ShopID       dot.ID
 	ID           dot.ID

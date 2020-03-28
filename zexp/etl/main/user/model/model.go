@@ -8,8 +8,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 type UserInner struct {
 	FullName  string
 	ShortName string
@@ -17,8 +15,7 @@ type UserInner struct {
 	Phone     string
 }
 
-var _ = sqlgenUser(&User{})
-
+// +sqlgen
 type User struct {
 	ID dot.ID
 

@@ -259,8 +259,7 @@ func (f FfmAction) ToShippingState() shipping.State {
 	}
 }
 
-var _ = sqlgenCode(&Code{})
-
+// +sqlgen
 type Code struct {
 	Code      string
 	Type      CodeType
@@ -281,8 +280,7 @@ type CreateCodeCommand struct {
 	Code *Code
 }
 
-var _ = sqlgenShippingSource(&ShippingSource{})
-
+// +sqlgen
 type ShippingSource struct {
 	ID        dot.ID
 	Name      string
@@ -292,8 +290,7 @@ type ShippingSource struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenShippingSourceInternal(&ShippingSourceInternal{})
-
+// +sqlgen
 type ShippingSourceInternal struct {
 	ID          dot.ID
 	CreatedAt   time.Time `sq:"create"`
@@ -341,8 +338,7 @@ func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {
 	service.ShippingFeeMain = feeMain
 }
 
-var _ = sqlgenWebhook(&Webhook{})
-
+// +sqlgen
 type Webhook struct {
 	ID        dot.ID
 	AccountID dot.ID
@@ -395,8 +391,7 @@ func (m *Webhook) BeforeInsert() error {
 	return nil
 }
 
-var _ = sqlgenChangesData(&Callback{})
-
+// +sqlgen
 type Callback struct {
 	ID        dot.ID
 	WebhookID dot.ID

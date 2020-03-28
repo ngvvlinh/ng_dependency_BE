@@ -11,10 +11,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenShop(&Shop{})
-
+// +sqlgen
 type Shop struct {
 	ID      dot.ID
 	Name    string

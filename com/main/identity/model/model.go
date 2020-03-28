@@ -20,8 +20,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-// +gen:sqlgen
-
 type (
 	SubjectType string
 )

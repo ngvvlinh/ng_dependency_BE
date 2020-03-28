@@ -7,10 +7,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenInvitation(&Invitation{})
-
+// +sqlgen
 type Invitation struct {
 	ID         dot.ID
 	AccountID  dot.ID

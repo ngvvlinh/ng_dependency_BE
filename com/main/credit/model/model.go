@@ -5,14 +5,10 @@ import (
 
 	"etop.vn/api/top/types/etc/status3"
 	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenCredit(&Credit{})
-
+// +sqlgen
 type Credit struct {
 	ID        dot.ID
 	Amount    int
@@ -24,11 +20,8 @@ type Credit struct {
 	PaidAt    time.Time
 }
 
-var _ = sqlgenCreditExtended(
-	&CreditExtended{}, &Credit{}, "c",
-	sq.LEFT_JOIN, &identitymodel.Shop{}, "s", "s.id = c.shop_id",
-)
-
+// +sqlgen:           Credit as c
+// +sqlgen:left-join: Shop   as s on s.id = c.shop_id
 type CreditExtended struct {
 	*Credit
 	Shop *identitymodel.Shop

@@ -8,10 +8,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenShippingProviderWebhook(&ShippingProviderWebhook{})
-
+// +sqlgen
 type ShippingProviderWebhook struct {
 	ID               dot.ID
 	ShippingProvider string

@@ -10,11 +10,6 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-//go:generate rm ../sqlstore/filters.gen.go
-
-var _ = sqlgenNotification(&Notification{})
-
 type NotiEntity = notifier_entity.NotifierEntity
 
 const (
@@ -24,6 +19,7 @@ const (
 	ExternalServiceOneSignalID = 101
 )
 
+// +sqlgen
 type Notification struct {
 	ID                dot.ID
 	Title             string
@@ -43,8 +39,7 @@ type Notification struct {
 	MetaData          json.RawMessage
 }
 
-var _ = sqlgenDevice(&Device{})
-
+// +sqlgen
 type Device struct {
 	ID dot.ID
 	// DeviceID: deprecated

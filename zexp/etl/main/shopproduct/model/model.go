@@ -8,10 +8,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenShopProduct(&ShopProduct{})
-
+// +sqlgen
 type ShopProduct struct {
 	ExternalID         string
 	ExternalCode       string

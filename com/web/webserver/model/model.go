@@ -9,10 +9,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenWsCategory(&WsCategory{})
-
+// +sqlgen
 type WsCategory struct {
 	ID        dot.ID
 	ShopID    dot.ID
@@ -30,8 +27,7 @@ type WsSEOConfig struct {
 	Description string `json:"description"`
 }
 
-var _ = sqlgenWsProduct(&WsProduct{})
-
+// +sqlgen
 type WsProduct struct {
 	ID           dot.ID
 	ShopID       dot.ID
@@ -44,8 +40,7 @@ type WsProduct struct {
 	UpdatedAt    time.Time `sq:"update"`
 }
 
-var _ = sqlgenWsPage(&WsPage{})
-
+// +sqlgen
 type WsPage struct {
 	ShopID    dot.ID
 	ID        dot.ID
@@ -60,8 +55,7 @@ type WsPage struct {
 	DeletedAt time.Time
 }
 
-var _ = sqlgenWsWebsite(&WsWebsite{})
-
+// +sqlgen
 type WsWebsite struct {
 	ShopID             dot.ID
 	ID                 dot.ID

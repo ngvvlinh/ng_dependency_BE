@@ -7,10 +7,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenCommissionSetting(&CommissionSetting{})
-
+// +sqlgen
 type CommissionSetting struct {
 	ProductID dot.ID
 	AccountID dot.ID
@@ -21,8 +18,7 @@ type CommissionSetting struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenProductPromotion(&ProductPromotion{})
-
+// +sqlgen
 type ProductPromotion struct {
 	ID          dot.ID
 	ProductID   dot.ID
@@ -38,8 +34,7 @@ type ProductPromotion struct {
 	UpdatedAt   time.Time `sq:"update"`
 }
 
-var _ = sqlgenSellerCommission(&SellerCommission{})
-
+// +sqlgen
 type SellerCommission struct {
 	ID           dot.ID
 	SellerID     dot.ID
@@ -60,8 +55,7 @@ type SellerCommission struct {
 	UpdatedAt    time.Time `sq:"update"`
 }
 
-var _ = sqlgenOrderCreatedNotify(&OrderCreatedNotify{})
-
+// +sqlgen
 type OrderCreatedNotify struct {
 	ID                       dot.ID
 	OrderID                  dot.ID
@@ -85,8 +79,7 @@ type OrderCreatedNotify struct {
 	UpdatedAt                time.Time `sq:"update"`
 }
 
-var _ = sqlgenAffiliateReferralCode(&AffiliateReferralCode{})
-
+// +sqlgen
 type AffiliateReferralCode struct {
 	ID          dot.ID
 	Code        string
@@ -96,8 +89,7 @@ type AffiliateReferralCode struct {
 	UpdatedAt   time.Time `sql:"update"`
 }
 
-var _ = sqlgenUserReferral(&UserReferral{})
-
+// +sqlgen
 type UserReferral struct {
 	UserID           dot.ID
 	ReferralID       dot.ID
@@ -110,8 +102,7 @@ type UserReferral struct {
 	UpdatedAt        time.Time `sq:"update"`
 }
 
-var _ = sqlgenSupplyCommissionSetting(&SupplyCommissionSetting{})
-
+// +sqlgen
 type SupplyCommissionSetting struct {
 	ShopID                   dot.ID
 	ProductID                dot.ID
@@ -136,8 +127,7 @@ type DurationJSON struct {
 	Type     string `json:"type"`
 }
 
-var _ = sqlgenOrderPromotion(&OrderPromotion{})
-
+// +sqlgen
 type OrderPromotion struct {
 	ID                   dot.ID
 	ProductID            dot.ID
@@ -154,8 +144,7 @@ type OrderPromotion struct {
 	UpdatedAt            time.Time `sq:"update"`
 }
 
-var _ = sqlgenOrderCommissionSetting(&OrderCommissionSetting{})
-
+// +sqlgen
 type OrderCommissionSetting struct {
 	OrderID                  dot.ID
 	SupplyID                 dot.ID
@@ -175,8 +164,7 @@ type OrderCommissionSetting struct {
 	UpdatedAt                time.Time `sq:"update"`
 }
 
-var _ = sqlgenShopCashback(&ShopCashback{})
-
+// +sqlgen
 type ShopCashback struct {
 	ID                   dot.ID
 	ShopID               dot.ID
@@ -190,8 +178,7 @@ type ShopCashback struct {
 	UpdatedAt            time.Time `sq:"update"`
 }
 
-var _ = sqlgenShopOrderProductHistory(&ShopOrderProductHistory{})
-
+// +sqlgen
 type ShopOrderProductHistory struct {
 	UserID                dot.ID
 	ShopID                dot.ID
@@ -204,8 +191,7 @@ type ShopOrderProductHistory struct {
 	UpdatedAt             time.Time `sq:"update"`
 }
 
-var _ = sqlgenCustomerPolicyGroup(&CustomerPolicyGroup{})
-
+// +sqlgen
 type CustomerPolicyGroup struct {
 	ID        dot.ID
 	SupplyID  dot.ID

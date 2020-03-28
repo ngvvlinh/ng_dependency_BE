@@ -818,13 +818,13 @@ func (m Map) SQLUpdateAll(w SQLWriter) error {
 
 func WriteCols(w SQLWriter, prefix string, cols string) {
 	idx := 0
-	w.WriteRawString(prefix)
+	w.WriteName(prefix)
 	w.WriteByte('.')
 	for i := 0; i < len(cols); i++ {
 		ch := cols[i]
 		if ch == ',' {
 			w.WriteQueryString(cols[idx : i+1])
-			w.WriteRawString(prefix)
+			w.WriteName(prefix)
 			w.WriteByte('.')
 			idx = i + 1
 		}

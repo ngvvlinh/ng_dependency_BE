@@ -9,33 +9,11 @@ import (
 	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenMoneyTransactionShippingExternal(&MoneyTransactionShippingExternal{})
-
-var _ = sqlgenMoneyTransactionShippingExternalLine(&MoneyTransactionShippingExternalLine{})
-
-var _ = sqlgenMoneyTransactionShippingExternalLineExtended(
-	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, "m",
-	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, "f", "f.id = m.etop_fulfillment_id",
-	sq.LEFT_JOIN, &identitymodel.Shop{}, "s", "s.id = f.shop_id",
-	sq.LEFT_JOIN, &ordermodel.Order{}, "o", "o.id = f.order_id",
-)
-
-var _ = sqlgenMoneyTransactionShipping(&MoneyTransactionShipping{})
-
-var _ = sqlgenMoneyTransactionShippingFtShop(
-	&MoneyTransactionShippingFtShop{}, &MoneyTransactionShipping{}, "m",
-	sq.LEFT_JOIN, &identitymodel.Shop{}, "s", "s.id = m.shop_id",
-)
-
-var _ = sqlgenMoneyTransactionShippingEtop(&MoneyTransactionShippingEtop{})
-
+// +sqlgen
 type MoneyTransactionShippingExternal struct {
 	ID             dot.ID
 	Code           string
@@ -51,6 +29,7 @@ type MoneyTransactionShippingExternal struct {
 	InvoiceNumber  string
 }
 
+// +sqlgen
 type MoneyTransactionShippingExternalLine struct {
 	ID                                 dot.ID
 	ExternalCode                       string
@@ -69,6 +48,10 @@ type MoneyTransactionShippingExternalLine struct {
 	ExternalTotalShippingFee           int
 }
 
+// +sqlgen: MoneyTransactionShippingExternalLine as m
+// +sqlgen:left-join: Fulfillment as f on f.id = m.etop_fulfillment_id
+// +sqlgen:left-join: Shop        as s on s.id = f.shop_id
+// +sqlgen:left-join: Order       as o on o.id = f.order_id
 type MoneyTransactionShippingExternalLineExtended struct {
 	*MoneyTransactionShippingExternalLine
 	Fulfillment *shipmodel.Fulfillment
@@ -81,6 +64,7 @@ type MoneyTransactionShippingExternalExtended struct {
 	Lines []*MoneyTransactionShippingExternalLineExtended
 }
 
+// +sqlgen
 type MoneyTransactionShipping struct {
 	ID                                 dot.ID
 	ShopID                             dot.ID
@@ -103,11 +87,14 @@ type MoneyTransactionShipping struct {
 	Type                               string
 }
 
+// +sqlgen:           MoneyTransactionShipping as m
+// +sqlgen:left-join: Shop as s on s.id = m.shop_id
 type MoneyTransactionShippingFtShop struct {
 	*MoneyTransactionShipping
 	Shop *identitymodel.Shop
 }
 
+// +sqlgen
 type MoneyTransactionShippingEtop struct {
 	ID                    dot.ID
 	Code                  string

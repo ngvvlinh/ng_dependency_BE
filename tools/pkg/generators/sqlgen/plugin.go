@@ -14,7 +14,6 @@ import (
 	"etop.vn/common/l"
 )
 
-const CmdGen = "gen:sqlgen"
 const CmdPrefix = "sqlgen"
 
 var ll = l.New()
@@ -34,7 +33,7 @@ func (p *plugin) Name() string { return "sqlgen" }
 
 func (p *plugin) Filter(ng generator.FilterEngine) error {
 	currentInfo = parse.NewInfo(ng)
-	return generator.FilterByCommand(CmdGen).Filter(ng)
+	return generator.FilterByCommand(CmdPrefix).FilterAll(ng)
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
@@ -43,8 +42,21 @@ func (p *plugin) Generate(ng generator.Engine) error {
 }
 
 func (p *plugin) generateEachPackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {
+	{
+		ds := ng.GetDirectivesByPackage(pkg).FilterBy("sqlgen")
+		if len(ds) != 0 {
+			var s strings.Builder
+			for i := 0; i < len(ds) && i < 10; i++ {
+				s.WriteString("\n\t")
+				s.WriteString(ds[i].Raw)
+			}
+			return generator.Errorf(nil, "package %v: found unbound directives%v", pkg.PkgPath, s.String())
+		}
+	}
+
 	gt = printer
 	g := &genImpl{
+		ng:      ng,
 		Printer: printer,
 		mapBase: make(map[string]bool),
 		mapType: make(map[string]*typeDef),
@@ -111,10 +123,22 @@ func parseDirectives(ng generator.Engine, pkg *packages.Package, obj types.Objec
 			}
 
 			// parse option: derived
-			baseNamedStruct := getNamedStruct(pkg, baseName)
-			if baseNamedStruct == nil {
-				return nil, generator.Errorf(nil, "%v: %v not found (%v)", obj.Name(), baseName, ds[0].Raw)
+			// heuristic:
+			// - when join, use field name
+			// - when not join, use scope name
+			var baseNamedStruct *types.Named
+			if !directivesContain(ds, "join") {
+				baseNamedStruct = getNamedStruct(pkg, baseName)
+			} else {
+				baseNamedStruct, err = getNamedStructFromField(named, baseName)
 			}
+			if err != nil {
+				return nil, generator.Errorf(err, "%v: %v (%v)", obj.Name(), err, d.Raw)
+			}
+			if baseNamedStruct == nil {
+				return nil, generator.Errorf(nil, "%v: %v not found (%v)", obj.Name(), baseName, d.Raw)
+			}
+
 			opts = append(opts, OptionDerived(named, baseNamedStruct))
 			baseType = baseNamedStruct
 
@@ -153,6 +177,15 @@ func parseDirectives(ng generator.Engine, pkg *packages.Package, obj types.Objec
 		}
 	}
 	return named, g.AddStruct(named, opts...)
+}
+
+func directivesContain(ds generator.Directives, substr string) bool {
+	for _, d := range ds {
+		if strings.Contains(d.Cmd, substr) {
+			return true
+		}
+	}
+	return false
 }
 
 func parseDirectiveFrom(d generator.Directive) (baseName string, alias string, _ error) {

@@ -8,10 +8,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenTransaction(&Transaction{})
-
+// +sqlgen
 type Transaction struct {
 	ID        dot.ID
 	Amount    int

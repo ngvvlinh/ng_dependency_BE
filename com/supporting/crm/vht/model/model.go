@@ -7,10 +7,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenVthCallHistory(&VhtCallHistory{})
-
+// +sqlgen
 type VhtCallHistory struct {
 	CdrID           string
 	CallID          string

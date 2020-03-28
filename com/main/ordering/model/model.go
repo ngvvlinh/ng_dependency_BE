@@ -32,9 +32,8 @@ const (
 	OrderFeeTax      = fee.Tax
 )
 
-var _ = sqlgenOrder(&Order{})
-
 // +convert:type=ordering.Order
+// +sqlgen
 type Order struct {
 	ID         dot.ID
 	ShopID     dot.ID
@@ -347,9 +346,8 @@ type MetaField struct {
 	Name  string `json:"name"`
 }
 
-var _ = sqlgenOrderLine(&OrderLine{})
-
 // +convert:type=ordering/types.ItemLine
+// +sqlgen
 type OrderLine struct {
 	OrderID     dot.ID `json:"order_id"`
 	VariantID   dot.ID `json:"variant_id"`

@@ -8,10 +8,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenAddress(&Address{})
-
+// +sqlgen
 type Address struct {
 	ID        dot.ID `json:"id"`
 	FullName  string `json:"full_name"`

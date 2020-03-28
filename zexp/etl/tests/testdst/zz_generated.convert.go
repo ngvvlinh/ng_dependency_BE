@@ -13,9 +13,7 @@ import (
 Custom conversions:
     ConvertAccount    // in use
 
-Ignored functions:
-    SQLVerifySchema    // not recognized
-    sqlgenAccount      // params are not pointer to named types
+Ignored functions: (none)
 */
 
 func RegisterConversions(s *conversion.Scheme) {

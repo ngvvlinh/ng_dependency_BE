@@ -9,10 +9,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenPurchaseOrder(&PurchaseOrder{})
-
+// +sqlgen
 type PurchaseOrder struct {
 	ID                   dot.ID
 	ShopID               dot.ID

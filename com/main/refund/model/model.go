@@ -9,10 +9,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenRefund(&Refund{})
-
+// +sqlgen
 type Refund struct {
 	ID              dot.ID
 	ShopID          dot.ID

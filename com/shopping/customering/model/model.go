@@ -10,20 +10,16 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenShopTrader(&ShopTrader{})
-
 // +convert:type=tradering.ShopTrader
+// +sqlgen
 type ShopTrader struct {
 	ID     dot.ID
 	ShopID dot.ID
 	Type   string
 }
 
-var _ = sqlgenShopCustomer(&ShopCustomer{})
-
 // +convert:type=customering.ShopCustomer
+// +sqlgen
 type ShopCustomer struct {
 	ExternalID   string
 	ExternalCode string
@@ -51,9 +47,8 @@ type ShopCustomer struct {
 	Rid dot.ID
 }
 
-var _ = sqlgenShopTraderAddress(&ShopTraderAddress{})
-
 // +convert:type=addressing.ShopTraderAddress
+// +sqlgen
 type ShopTraderAddress struct {
 	ID           dot.ID `paging:"id"`
 	PartnerID    dot.ID
@@ -78,9 +73,8 @@ type ShopTraderAddress struct {
 	Status status3.Status
 }
 
-var _ = sqlgenShopCustomerGroupCustomer(&ShopCustomerGroupCustomer{})
-
 // +convert:type=customering.ShopCustomerGroupCustomer
+// +sqlgen
 type ShopCustomerGroupCustomer struct {
 	GroupID    dot.ID
 	CustomerID dot.ID
@@ -89,9 +83,8 @@ type ShopCustomerGroupCustomer struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenShopCustomerGroup(&ShopCustomerGroup{})
-
 // +convert:type=customering.ShopCustomerGroup
+// +sqlgen
 type ShopCustomerGroup struct {
 	ID        dot.ID `paging:"id"`
 	PartnerID dot.ID

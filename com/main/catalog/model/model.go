@@ -7,7 +7,6 @@ import (
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/top/types/etc/product_type"
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/pkg/common/sql/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )
@@ -54,20 +53,15 @@ func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) 
 	return normAttrs, s
 }
 
-var _ = sqlgenShopVariantWithProduct(
-	&ShopVariantWithProduct{}, &ShopVariant{}, "sv",
-	sq.LEFT_JOIN, &ShopProduct{}, "sp",
-	"sp.product_id = sv.product_id",
-)
-
+// +sqlgen:           ShopVariant as sv
+// +sqlgen:left-join: ShopProduct as sp on sp.product_id = sv.product_id
 type ShopVariantWithProduct struct {
 	*ShopVariant
 	*ShopProduct
 }
 
-var _ = sqlgenShopVariant(&ShopVariant{})
-
 // +convert:type=catalog.ShopVariant
+// +sqlgen
 type ShopVariant struct {
 	ExternalID        string
 	ExternalCode      string
@@ -110,9 +104,8 @@ type MetaField struct {
 	Value string `json:"value"`
 }
 
-var _ = sqlgenShopProduct(&ShopProduct{})
-
 // +convert:type=catalog.ShopProduct
+// +sqlgen
 type ShopProduct struct {
 	ExternalID         string
 	ExternalCode       string
@@ -161,8 +154,7 @@ type ShopProductWithVariants struct {
 	Variants []*ShopVariant
 }
 
-var _ = sqlgenProductShopCollection(&ProductShopCollection{})
-
+// +sqlgen
 type ProductShopCollection struct {
 	CollectionID dot.ID
 	ProductID    dot.ID
@@ -224,9 +216,8 @@ type ProductAttribute struct {
 	Value string `json:"value"`
 }
 
-var _ = sqlgenShopCategory(&ShopCategory{})
-
 // +convert:type=catalog.ShopCategory
+// +sqlgen
 type ShopCategory struct {
 	ID        dot.ID
 	PartnerID dot.ID
@@ -245,9 +236,8 @@ type ShopCategory struct {
 	DeletedAt time.Time
 }
 
-var _ = sqlgenShopCollection(&ShopCollection{})
-
 // +convert:type=catalog.ShopCollection
+// +sqlgen
 type ShopCollection struct {
 	ID        dot.ID `paging:"id"`
 	ShopID    dot.ID
@@ -265,9 +255,8 @@ type ShopCollection struct {
 	DeletedAt time.Time
 }
 
-var _ = sqlgenShopProductCollection(&ShopProductCollection{})
-
 // +convert:type=catalog.ShopProductCollection
+// +sqlgen
 type ShopProductCollection struct {
 	PartnerID            dot.ID
 	ShopID               dot.ID
@@ -281,9 +270,8 @@ type ShopProductCollection struct {
 	UpdatedAt time.Time `sq:"update"`
 }
 
-var _ = sqlgenShopBrand(&ShopBrand{})
-
 // +convert:type=catalog.ShopBrand
+// +sqlgen
 type ShopBrand struct {
 	ID         dot.ID
 	ShopID     dot.ID
@@ -300,9 +288,8 @@ type ShopBrand struct {
 	Rid dot.ID
 }
 
-var _ = sqlgenShopSupplierVariant(&ShopVariantSupplier{})
-
 // +convert:type=catalog.ShopVariantSupplier
+// +sqlgen
 type ShopVariantSupplier struct {
 	ShopID     dot.ID
 	SupplierID dot.ID

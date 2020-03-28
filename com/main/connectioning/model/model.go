@@ -10,10 +10,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenConnection(&Connection{})
-
+// +sqlgen
 type Connection struct {
 	ID                   dot.ID
 	Name                 string
@@ -33,8 +30,7 @@ type Connection struct {
 	ImageURL             string
 }
 
-var _ = sqlgenShopConnection(&ShopConnection{})
-
+// +sqlgen
 type ShopConnection struct {
 	ShopID           dot.ID
 	ConnectionID     dot.ID

@@ -20,11 +20,8 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenFulfillment(&Fulfillment{})
-
 // +convert:type=shipping.Fulfillment
+// +sqlgen
 type Fulfillment struct {
 	ID        dot.ID `paging:"id"`
 	OrderID   dot.ID

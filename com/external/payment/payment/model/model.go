@@ -10,10 +10,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = sqlgenPayment(&Payment{})
-
+// +sqlgen
 type Payment struct {
 	ID              dot.ID
 	Amount          int

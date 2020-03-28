@@ -15,6 +15,7 @@ build() {
 
 # build
 go version
+time go install ./...
 
 build ./cmd/etop-server
 build ./cmd/etop-event-handler
