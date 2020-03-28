@@ -79,6 +79,7 @@ type ShippingService struct {
 	ServiceCode        String `json:"service_code"`
 	Name               String `json:"name"`
 	ServiceFee         Int    `json:"service_fee"`
+	ServiceFeeMain     Int    `json:"service_fee_main"`
 	ExpectedPickAt     Time   `json:"expected_pick_at"`
 	ExpectedDeliveryAt Time   `json:"expected_delivery_at"`
 }
@@ -150,6 +151,10 @@ func (s *ShippingService) validate() error {
 		errMsg = "Missing expected_pick_at"
 	case s.ExpectedDeliveryAt.IsZero():
 		errMsg = "Missing expected_delivery_at"
+	case s.ServiceFee == 0:
+		errMsg = "Missing service_fee"
+	case s.ServiceFeeMain == 0:
+		errMsg = "Missing service_fee_main"
 	}
 	if errMsg != "" {
 		return cm.Errorf(cm.InvalidArgument, nil, errMsg)

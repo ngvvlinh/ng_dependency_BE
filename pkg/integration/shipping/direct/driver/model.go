@@ -31,7 +31,7 @@ func toAvailableShippingService(s *directclient.ShippingService) *etopmodel.Avai
 	return &etopmodel.AvailableShippingService{
 		Name:               s.Name.String(),
 		ServiceFee:         s.ServiceFee.Int(),
-		ShippingFeeMain:    s.ServiceFee.Int(),
+		ShippingFeeMain:    s.ServiceFeeMain.Int(),
 		ProviderServiceID:  s.ServiceCode.String(),
 		ExpectedPickAt:     s.ExpectedPickAt.ToTime(),
 		ExpectedDeliveryAt: s.ExpectedDeliveryAt.ToTime(),
