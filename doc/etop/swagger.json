@@ -2367,6 +2367,9 @@
             "type": "string"
           }
         },
+        "phone": {
+          "type": "string"
+        },
         "position": {
           "type": "string"
         },

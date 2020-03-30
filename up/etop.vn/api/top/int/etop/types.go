@@ -141,6 +141,7 @@ type Relationship struct {
 	FullName    string   `json:"full_name"`
 	ShortName   string   `json:"short_name"`
 	Email       string   `json:"email"`
+	Phone       string   `json:"phone"`
 	Position    string   `json:"position"`
 	Deleted     bool     `json:"deleted"`
 }

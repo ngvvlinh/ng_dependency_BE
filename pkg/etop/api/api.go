@@ -520,6 +520,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *Ac
 		}
 
 		relationship.Email = mapUser[relationship.UserID].Email
+		relationship.Phone = mapUser[relationship.UserID].Phone
 	}
 
 	return nil
