@@ -24,8 +24,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 const (
 	OrderFeeOther    = fee.Other
 	OrderFeeShipping = fee.Shipping

@@ -12,6 +12,7 @@ import (
 	"github.com/dustin/go-humanize/english"
 
 	"etop.vn/backend/tools/pkg/gen"
+	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/strs"
 )
@@ -50,25 +51,25 @@ func fnQuote(v interface{}) string {
 }
 
 func fnTableForType(typ types.Type) string {
-	ts := gt.TypeString(typ)
+	ts := pr.TypeString(typ)
 	return fmt.Sprintf("(*%v)(nil).SQLTableName()", ts)
 }
 
 func fnListColsForType(typ types.Type) string {
-	ts := gt.TypeString(typ)
+	ts := pr.TypeString(typ)
 	return fmt.Sprintf("(*%v)(nil).SQLListCols()", ts)
 }
 
-func fnNonZero(col *colDef) string {
-	return genIfNotEqualToZero(col)
+func fnNonZero(p generator.Printer, col *colDef) string {
+	return genIfNotEqualToZero(p, col)
 }
 
-func fnUpdateArg(col *colDef) string {
-	return genUpdateArg(col)
+func fnUpdateArg(p generator.Printer, col *colDef) string {
+	return genUpdateArg(p, col)
 }
 
 func fnTypeName(typ types.Type) string {
-	name := gt.TypeString(typ)
+	name := pr.TypeString(typ)
 	if name[0] == '*' {
 		name = name
 	}
@@ -157,7 +158,7 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 
 	p := g.Printer
 	def := g.mapType[typ.String()]
-	pStr := gt.TypeString(typ)
+	pStr := pr.TypeString(typ)
 	Str := pStr
 	Strs := plural(Str)
 	tableName := def.tableName
@@ -171,7 +172,7 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 
 	extra := ""
 	if def.base != nil {
-		extra = ", _ " + gt.TypeString(def.base)
+		extra = ", _ " + pr.TypeString(def.base)
 	}
 	var joinTypes, joinAs, joinConds []string
 	if len(def.joins) != 0 {
@@ -194,6 +195,7 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 	}
 
 	vars := map[string]interface{}{
+		"p":         p,
 		"IsSimple":  len(def.joins) == 0,
 		"IsJoin":    len(def.joins) != 0,
 		"IsPreload": len(def.preloads) > 0,
@@ -213,11 +215,11 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 		"Cols":                     def.cols,
 		"ColsList":                 listColumns("", def.cols),
 		"ColsListUpdateOnConflict": listUpdateOnConflictColumns("", def.cols),
-		"QueryArgs":                listInsertArgs(def.cols),
+		"QueryArgs":                listInsertArgs(p, def.cols),
 		"NumCols":                  len(def.cols),
 		"NumJoins":                 len(def.joins),
 		"PtrElems":                 ptrElems,
-		"ScanArgs":                 listScanArgs(def.cols),
+		"ScanArgs":                 listScanArgs(p, def.cols),
 		"TimeLevel":                def.timeLevel,
 
 		"As":    def.alias,

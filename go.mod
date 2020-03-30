@@ -17,7 +17,6 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/Shopify/sarama v1.23.1
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
-	github.com/awalterschulze/goderive v0.0.0-20190728081913-2613afbe1240
 	github.com/casbin/casbin v1.9.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
@@ -32,7 +31,6 @@ require (
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/k0kubun/pp v3.0.1+incompatible
-	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lfittl/pg_query_go v1.0.0

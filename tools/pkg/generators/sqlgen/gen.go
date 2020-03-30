@@ -18,7 +18,7 @@ import (
 
 const sqlTag = "sq"
 
-var gt generator.Printer
+var pr generator.Printer
 
 type genImpl struct {
 	ng generator.Engine
@@ -129,7 +129,7 @@ type pathElem struct {
 func (p pathElems) append(field *types.Var) pathElems {
 	name := field.Name()
 	typ := field.Type()
-	pStr := gt.TypeString(typ)
+	pStr := pr.TypeString(typ)
 	ptr := pStr[0] == '*'
 	Str := pStr
 	if ptr {
@@ -211,7 +211,7 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 			if !ok && t != "" {
 				return nil, nil, generator.Errorf(nil,
 					"Invalid tag at `%v`.%v",
-					gt.TypeString(root), fieldPath)
+					pr.TypeString(root), fieldPath)
 			}
 			tag = t
 		}
@@ -221,7 +221,7 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 		}
 
 		columnName := toSnake(field.Name())
-		columnType := gt.TypeString(field.Type())
+		columnType := pr.TypeString(field.Type())
 		inline, create, update := false, false, false
 		var fkey string
 		if tag != "" {
@@ -257,20 +257,20 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 				default:
 					return nil, nil, generator.Errorf(nil,
 						"Unregconized keyword `%v` at `%v`.%v",
-						keyword, gt.TypeString(root), fieldPath)
+						keyword, pr.TypeString(root), fieldPath)
 				}
 				ntag = strings.Replace(ntag, keyword, "", -1)
 			}
 			if !reTagSpaces.MatchString(ntag) {
 				return nil, nil, generator.Errorf(nil,
 					"Invalid tag at `%v`.%v (Did you forget the single quote?)",
-					gt.TypeString(root), fieldPath)
+					pr.TypeString(root), fieldPath)
 			}
 		}
 
 		if countFlags(inline, create, update) > 1 {
 			return nil, nil, generator.Errorf(nil,
-				"`inline`, `create`, `update` flags can not be used together (at `%v`.%v)", gt.TypeString(root), fieldPath)
+				"`inline`, `create`, `update` flags can not be used together (at `%v`.%v)", pr.TypeString(root), fieldPath)
 		}
 		if inline {
 			typ := field.Type()
@@ -287,7 +287,7 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 				continue
 			}
 			return nil, nil, generator.Errorf(nil,
-				"`inline` can only be used with struct or *struct (at `%v`.%v)", gt.TypeString(root), fieldPath)
+				"`inline` can only be used with struct or *struct (at `%v`.%v)", pr.TypeString(root), fieldPath)
 		}
 
 	endparse:
@@ -369,18 +369,18 @@ func listUpdateOnConflictColumns(prefix string, cols []*colDef) string {
 	return string(b)
 }
 
-func listInsertArgs(cols []*colDef) []string {
+func listInsertArgs(p generator.Printer, cols []*colDef) []string {
 	res := make([]string, len(cols))
 	for i, col := range cols {
-		res[i] = genInsertArg(col)
+		res[i] = genInsertArg(p, col)
 	}
 	return res
 }
 
-func listScanArgs(cols []*colDef) []string {
+func listScanArgs(p generator.Printer, cols []*colDef) []string {
 	res := make([]string, len(cols))
 	for i, col := range cols {
-		res[i] = genScanArg(col)
+		res[i] = genScanArg(p, col)
 	}
 	return res
 }
@@ -426,28 +426,28 @@ func (g *genImpl) parseJoin(typs []types.Type) (joins []*joinDef, err error) {
 }
 
 func (g *genImpl) parseJoinLine(typs []types.Type) (*joinDef, error) {
-	if gt.TypeString(typs[0]) != "core.JoinType" {
-		return nil, generator.Errorf(nil, "Invalid JoinType: must be one of predefined constants (got %v)", gt.TypeString(typs[0]))
+	if pr.TypeString(typs[0]) != "core.JoinType" {
+		return nil, generator.Errorf(nil, "Invalid JoinType: must be one of predefined constants (got %v)", pr.TypeString(typs[0]))
 	}
 
 	base := typs[1]
 	if _, ok := pointerToStruct(base); !ok {
 		return nil, generator.Errorf(nil,
 			"Invalid base type for join: must be pointer to struct (got %v)",
-			gt.TypeString(base))
+			pr.TypeString(base))
 	}
 
 	as := typs[2]
-	if gt.TypeString(as) != "sq.AS" && gt.TypeString(as) != "string" {
+	if pr.TypeString(as) != "sq.AS" && pr.TypeString(as) != "string" {
 		return nil, generator.Errorf(nil,
 			"Invalid AS: must be sq.AS (got %v)", g.TypeString(as))
 	}
 
 	cond := typs[3]
-	if gt.TypeString(cond) != "string" {
+	if pr.TypeString(cond) != "string" {
 		return nil, generator.Errorf(nil,
 			"Invalid condition for join: must be string (got %v)",
-			gt.TypeString(cond))
+			pr.TypeString(cond))
 	}
 
 	return &joinDef{

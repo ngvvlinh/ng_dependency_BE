@@ -7,16 +7,6 @@ import (
 	"etop.vn/backend/pkg/common/sql/cmsql"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
-var _ = selModel(
-	&UserEvent{},
-	&ShopEvent{},
-	&ShopProductEvent{},
-	&OrderEvent{},
-	&FulfillmentEvent{},
-)
-
 // We must always use string for id, shop_id, order_id, etc.
 
 type IModel interface {
@@ -24,6 +14,7 @@ type IModel interface {
 	_meta() Meta
 }
 
+// +sqlsel
 type UserEvent struct {
 	Meta
 	Time      time.Time `json:"_time"      sel:"h._time"`
@@ -51,6 +42,7 @@ JOIN history."user" AS h
 	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)
 }
 
+// +sqlsel
 type FulfillmentEvent struct {
 	Meta
 	Time          time.Time `json:"_time"          sel:"h._time"`
@@ -74,6 +66,7 @@ JOIN "order" AS o
 	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)
 }
 
+// +sqlsel
 type ShopEvent struct {
 	Meta
 	Time      time.Time `json:"_time"      sel:"h._time"`
@@ -103,6 +96,7 @@ JOIN "user" AS u
 	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)
 }
 
+// +sqlsel
 type ShopProductEvent struct {
 	Meta
 	Time      time.Time `json:"_time"      sel:"h._time"`
@@ -123,6 +117,7 @@ JOIN history.shop_product AS h
 	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)
 }
 
+// +sqlsel
 type OrderEvent struct {
 	Meta
 	Time      time.Time `json:"_time"      sel:"h._time"`

@@ -5,6 +5,7 @@ import (
 	"go/types"
 	"reflect"
 
+	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/typedesc"
 )
 
@@ -35,7 +36,7 @@ var basicWrappers = []string{
 
 var typeMap = map[types.Type]*TypeDesc{}
 
-func GetTypeDesc(typ types.Type) *TypeDesc {
+func GetTypeDesc(p generator.Printer, typ types.Type) *TypeDesc {
 	desc := typeMap[typ]
 	if desc == nil {
 		kt, err := typedesc.NewKindTuple(typ)
@@ -43,8 +44,8 @@ func GetTypeDesc(typ types.Type) *TypeDesc {
 			panic(err)
 		}
 		desc = &TypeDesc{
-			TypeString: gt.TypeString(typ),
-			Underlying: gt.TypeString(typ.Underlying()),
+			TypeString: p.TypeString(typ),
+			Underlying: p.TypeString(typ.Underlying()),
 			KindTuple:  kt,
 		}
 		typeMap[typ] = desc
@@ -52,17 +53,17 @@ func GetTypeDesc(typ types.Type) *TypeDesc {
 	return desc
 }
 
-func GenScanArg(path string, typ types.Type) string {
-	return genScanArg2(path, typ)
+func GenScanArg(p generator.Printer, path string, typ types.Type) string {
+	return genScanArg2(p, path, typ)
 }
 
-func genScanArg(col *colDef) string {
+func genScanArg(p generator.Printer, col *colDef) string {
 	path := "m." + col.Path()
-	return genScanArg2(path, col.fieldType)
+	return genScanArg2(p, path, col.fieldType)
 }
 
-func genScanArg2(path string, typ types.Type) string {
-	desc := GetTypeDesc(typ)
+func genScanArg2(p generator.Printer, path string, typ types.Type) string {
+	desc := GetTypeDesc(p, typ)
 	switch {
 	case desc.IsPtrTime():
 		return "&" + path
@@ -79,7 +80,7 @@ func genScanArg2(path string, typ types.Type) string {
 	case desc.IsNullBasic(typ):
 		return "&" + path
 
-	case currentInfo.IsEnum(typ):
+	case CurrentInfo.IsEnum(typ):
 		return "&" + path
 
 	case desc.IsScanable(typ):
@@ -105,9 +106,9 @@ func genScanArg2(path string, typ types.Type) string {
 	panic("unsupported type: " + desc.TypeString)
 }
 
-func genInsertArg(col *colDef) string {
+func genInsertArg(p generator.Printer, col *colDef) string {
 	path := "m." + col.Path()
-	res := genInsertArg2(path, col.fieldType, col.timeLevel)
+	res := genInsertArg2(p, path, col.fieldType, col.timeLevel)
 
 	nonNilPath := col.GenNonNilPath()
 	if nonNilPath == "" {
@@ -116,8 +117,8 @@ func genInsertArg(col *colDef) string {
 	return "core.Ternary(" + nonNilPath + "," + res + ", nil)"
 }
 
-func genInsertArg2(path string, typ types.Type, timeLevel timeLevel) string {
-	desc := GetTypeDesc(typ)
+func genInsertArg2(p generator.Printer, path string, typ types.Type, timeLevel timeLevel) string {
+	desc := GetTypeDesc(p, typ)
 	switch {
 	case desc.IsPtrTime():
 		if timeLevel > 0 {
@@ -142,7 +143,7 @@ func genInsertArg2(path string, typ types.Type, timeLevel timeLevel) string {
 	case desc.IsNullBasic(typ):
 		return path
 
-	case currentInfo.IsEnum(typ):
+	case CurrentInfo.IsEnum(typ):
 		return path
 
 	case desc.IsScanable(typ):
@@ -181,13 +182,13 @@ func getTimeComp(timeLevel timeLevel) string {
 	panic("unexpected")
 }
 
-func genUpdateArg(col *colDef) string {
+func genUpdateArg(p generator.Printer, col *colDef) string {
 	path := "m." + col.Path()
-	return genUpdateArg2(path, col.fieldType, col.timeLevel)
+	return genUpdateArg2(p, path, col.fieldType, col.timeLevel)
 }
 
-func genUpdateArg2(path string, typ types.Type, timeLevel timeLevel) string {
-	desc := GetTypeDesc(typ)
+func genUpdateArg2(p generator.Printer, path string, typ types.Type, timeLevel timeLevel) string {
+	desc := GetTypeDesc(p, typ)
 	switch {
 	case desc.IsPtrTime():
 		if timeLevel == timeUpdate {
@@ -213,7 +214,7 @@ func genUpdateArg2(path string, typ types.Type, timeLevel timeLevel) string {
 	case desc.IsNullBasic(typ):
 		return path
 
-	case currentInfo.IsEnum(typ):
+	case CurrentInfo.IsEnum(typ):
 		return path
 
 	case desc.IsScanable(typ):
@@ -245,9 +246,9 @@ func genUpdateArg2(path string, typ types.Type, timeLevel timeLevel) string {
 	panic("unsupported type: " + desc.TypeString)
 }
 
-func genIfNotEqualToZero(col *colDef) string {
+func genIfNotEqualToZero(p generator.Printer, col *colDef) string {
 	path := "m." + col.pathElems.Path()
-	res := genNotEqualToZero(path, col.fieldType)
+	res := genNotEqualToZero(p, path, col.fieldType)
 
 	nonNilPath := col.GenNonNilPath()
 	if nonNilPath == "" {
@@ -256,8 +257,8 @@ func genIfNotEqualToZero(col *colDef) string {
 	return nonNilPath + " && " + res
 }
 
-func genNotEqualToZero(path string, typ types.Type) string {
-	desc := GetTypeDesc(typ)
+func genNotEqualToZero(p generator.Printer, path string, typ types.Type) string {
+	desc := GetTypeDesc(p, typ)
 	switch {
 	case desc.IsBareTime():
 		return "!" + path + ".IsZero()"
@@ -276,14 +277,14 @@ func genNotEqualToZero(path string, typ types.Type) string {
 	case desc.IsKind(reflect.Struct):
 		return "true"
 	case desc.Container == reflect.Array && typedesc.IsBasic(desc.Elem):
-		return fmt.Sprintf("(%v != %v{})", path, gt.TypeString(typ))
+		return fmt.Sprintf("(%v != %v{})", path, pr.TypeString(typ))
 	}
 
 	panic("unsupported type: " + desc.TypeString)
 }
 
-func genZeroValue(typ types.Type) string {
-	desc := GetTypeDesc(typ)
+func genZeroValue(p generator.Printer, typ types.Type) string {
+	desc := GetTypeDesc(p, typ)
 	switch {
 	case desc.IsBareTime():
 		return "time.Time{}"

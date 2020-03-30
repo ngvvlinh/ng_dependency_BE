@@ -21,8 +21,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 type (
 	FulfillmentEndpoint string
 	ShippingPriceSource string

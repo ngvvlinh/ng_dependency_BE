@@ -142,13 +142,13 @@ func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 	w.WriteName({{.TableName | go}})
 	w.WriteRawString(" SET ")
     {{range .Cols -}}
-		if {{nonzero .}} {
+		if {{nonzero $.p .}} {
 		flag = true
 		w.WriteName({{.ColumnName | go}})
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg({{updateArg .}})
+		w.WriteArg({{updateArg $.p .}})
 		}
     {{end -}}
 	if !flag {

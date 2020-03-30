@@ -11,8 +11,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 // Normalize attributes, do not sort them. Empty attributes is '_'.
 func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) {
 	if len(attrs) == 0 {

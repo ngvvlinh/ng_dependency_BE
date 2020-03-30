@@ -17,7 +17,7 @@ import (
 const CmdPrefix = "sqlgen"
 
 var ll = l.New()
-var currentInfo *parse.Info
+var CurrentInfo *parse.Info
 
 type plugin struct {
 	generator.Qualifier
@@ -29,32 +29,24 @@ func New() generator.Plugin {
 	}
 }
 
-func (p *plugin) Name() string { return "sqlgen" }
+func (p *plugin) Name() string { return CmdPrefix }
 
 func (p *plugin) Filter(ng generator.FilterEngine) error {
-	currentInfo = parse.NewInfo(ng)
+	CurrentInfo = parse.NewInfo(ng)
 	return generator.FilterByCommand(CmdPrefix).FilterAll(ng)
 }
 
 func (p *plugin) Generate(ng generator.Engine) error {
-	currentInfo.Init(ng)
+	CurrentInfo.Init(ng)
 	return ng.GenerateEachPackage(p.generateEachPackage)
 }
 
 func (p *plugin) generateEachPackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {
-	{
-		ds := ng.GetDirectivesByPackage(pkg).FilterBy("sqlgen")
-		if len(ds) != 0 {
-			var s strings.Builder
-			for i := 0; i < len(ds) && i < 10; i++ {
-				s.WriteString("\n\t")
-				s.WriteString(ds[i].Raw)
-			}
-			return generator.Errorf(nil, "package %v: found unbound directives%v", pkg.PkgPath, s.String())
-		}
+	if err := genutil.NoUnboundDirectives(ng, pkg, CmdPrefix); err != nil {
+		return err
 	}
 
-	gt = printer
+	pr = printer
 	g := &genImpl{
 		ng:      ng,
 		Printer: printer,

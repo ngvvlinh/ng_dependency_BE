@@ -9,9 +9,9 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var _ = selFoo(&Foo{})
-
 // Foo is used for testing only
+//
+// +sqlsel
 type Foo struct {
 	ID     dot.ID    `sel:" f.id"`
 	ShopID string    `sel:" f.shop_id"`

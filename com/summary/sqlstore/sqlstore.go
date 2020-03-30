@@ -15,8 +15,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-//go:generate $ETOPDIR/backend/scripts/derive.sh
-
 type SummaryStoreFactory func(context.Context) *SummaryStore
 
 func NewSummaryStoreFactory(db *cmsql.Database) SummaryStoreFactory {
@@ -27,8 +25,7 @@ func NewSummaryStoreFactory(db *cmsql.Database) SummaryStoreFactory {
 	}
 }
 
-var _ = selTotal(&Total{})
-
+// +sqlsel
 type Total struct {
 	TotalAmount  int     `sel:"SUM(total_amount)"`
 	TotalOrder   int     `sel:"COUNT(id)"`
@@ -44,8 +41,7 @@ func (s *SummaryStore) GetOrderSummary(shopID dot.ID, dateFrom time.Time, dateTo
 	return &total, err
 }
 
-var _ = selTotalPerDate(&TotalPerDate{})
-
+// +sqlsel
 type TotalPerDate struct {
 	Day         time.Time
 	TotalAmount int
@@ -109,8 +105,7 @@ func (s *SummaryStore) GetAmoumtPerDay(shopID dot.ID, dateFrom time.Time, dateTo
 	return totalPerDates, nil
 }
 
-var _ = selTopSellItem(&TopSellItem{})
-
+// +sqlsel
 type TopSellItem struct {
 	ProductCode string   `sel:"sp.code"`
 	ProductId   dot.ID   `sel:"ol.product_id"`
@@ -134,8 +129,7 @@ func (s *SummaryStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo 
 	return topItem, err
 }
 
-var _ = selStaffOrder(&StaffOrder{})
-
+// +sqlsel
 type StaffOrder struct {
 	UserName        string `sel:"u.full_name"`
 	UserID          dot.ID `sel:"u.id"`
@@ -160,8 +154,7 @@ func (s *SummaryStore) GetListStaffOrder(shopID dot.ID, dateFrom time.Time, date
 	return result, err
 }
 
-var _ = selFfmByArea(&FfmByArea{})
-
+// +sqlsel
 type FfmByArea struct {
 	Count        int    `sel:"count(id)"`
 	ProvinceCode string `sel:"address_to_province_code"`

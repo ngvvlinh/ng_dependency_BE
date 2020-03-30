@@ -1,13 +1,13 @@
 package sqlgen
 
 import (
-	"fmt"
 	"go/types"
 	"path/filepath"
 	"reflect"
 	"strings"
 
 	"etop.vn/backend/tools/pkg/gen"
+	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/generators/sqlgen/filtergen"
 )
 
@@ -54,7 +54,7 @@ func (g *genImpl) AddStruct(st *types.Named, opts ...Option) error {
 	for _, opt := range opts {
 		opt(g, def)
 	}
-	g.parseDef(def, st)
+	g.parseDef(g.Printer, def, st)
 	return nil
 }
 
@@ -67,16 +67,16 @@ func (g *genImpl) addStruct(st *types.Named) (*typeDef, error) {
 	preloads := make([]*preloadDef, len(excols))
 	for i, col := range excols {
 		typ := col.fieldType
-		desc := GetTypeDesc(typ)
+		desc := GetTypeDesc(g.Printer, typ)
 		if !desc.Ptr && desc.Container == reflect.Slice &&
 			desc.PtrElem && desc.Elem == reflect.Struct {
 			// continue
 		} else {
-			return nil, fmt.Errorf("Preload type must be slice of pointer to struct (got %v)", desc.TypeString)
+			return nil, generator.Errorf(nil, "Preload type must be slice of pointer to struct (got %v)", desc.TypeString)
 		}
 
 		if !strings.HasPrefix(desc.TypeString, "[]*") {
-			return nil, fmt.Errorf("Only support []* for preload type")
+			return nil, generator.Errorf(nil, "Only support []* for preload type")
 		}
 		bareTypeStr := desc.TypeString[3:]
 
@@ -107,11 +107,11 @@ func (g *genImpl) addStruct(st *types.Named) (*typeDef, error) {
 	return def, nil
 }
 
-func (g *genImpl) parseDef(def *typeDef, st *types.Named) {
+func (g *genImpl) parseDef(p generator.Printer, def *typeDef, st *types.Named) {
 	if def.base != nil {
-		def.tableName = tableNameFromType(gt.TypeString(def.base))
+		def.tableName = tableNameFromType(pr.TypeString(def.base))
 	} else {
-		def.tableName = tableNameFromType(gt.TypeString(st))
+		def.tableName = tableNameFromType(pr.TypeString(st))
 	}
 	g.mapType[st.String()] = def
 
@@ -151,21 +151,21 @@ func (g *genImpl) parseDef(def *typeDef, st *types.Named) {
 				ColumnName: col.ColumnName,
 				FieldName:  col.FieldName,
 				FieldType:  col.fieldType,
-				TypeDesc:   GetTypeDesc(col.fieldType),
+				TypeDesc:   GetTypeDesc(p, col.fieldType),
 			}
 		}
 		if g.genFilter != nil {
-			g.genFilter.AddTable(def.tableName, gt.TypeString(st), _cols)
+			g.genFilter.AddTable(def.tableName, pr.TypeString(st), _cols)
 		}
 
 	} else {
 		substructs := make([]string, 0, len(def.joins)+1)
-		substructs = append(substructs, gt.TypeString(def.base))
+		substructs = append(substructs, pr.TypeString(def.base))
 		for _, join := range def.joins {
-			substructs = append(substructs, gt.TypeString(join.JoinType))
+			substructs = append(substructs, pr.TypeString(join.JoinType))
 		}
 		if g.genFilter != nil {
-			g.genFilter.AddJoinTable(gt.TypeString(st), substructs)
+			g.genFilter.AddJoinTable(pr.TypeString(st), substructs)
 		}
 	}
 }
