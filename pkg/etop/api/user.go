@@ -1147,7 +1147,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
 	}
 
-	authStore.Revoke(auth.UsagePhoneVerification, tok.TokenStr)
+	authStore.Revoke(auth.UsageResetPassword, tok.TokenStr)
 	r.Result = &etop.VerifyPhoneResetPasswordUsingTokenResponse{ResetPasswordToken: recaptchaToken.TokenStr}
 	return r, nil
 }
