@@ -746,7 +746,9 @@ func (m *CustomerPolicyGroup) SQLUpdateAll(w SQLWriter) error {
 type CustomerPolicyGroupHistory map[string]interface{}
 type CustomerPolicyGroupHistories []map[string]interface{}
 
-func (m *CustomerPolicyGroupHistory) SQLTableName() string { return "history.\"customer_policy_group\"" }
+func (m *CustomerPolicyGroupHistory) SQLTableName() string {
+	return "history.\"customer_policy_group\""
+}
 func (m CustomerPolicyGroupHistories) SQLTableName() string {
 	return "history.\"customer_policy_group\""
 }
@@ -761,11 +763,15 @@ func (m CustomerPolicyGroupHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m CustomerPolicyGroupHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m CustomerPolicyGroupHistory) SupplyID() core.Interface  { return core.Interface{m["supply_id"]} }
-func (m CustomerPolicyGroupHistory) Name() core.Interface      { return core.Interface{m["name"]} }
-func (m CustomerPolicyGroupHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m CustomerPolicyGroupHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m CustomerPolicyGroupHistory) ID() core.Interface       { return core.Interface{m["id"]} }
+func (m CustomerPolicyGroupHistory) SupplyID() core.Interface { return core.Interface{m["supply_id"]} }
+func (m CustomerPolicyGroupHistory) Name() core.Interface     { return core.Interface{m["name"]} }
+func (m CustomerPolicyGroupHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m CustomerPolicyGroupHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
 
 func (m *CustomerPolicyGroupHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 5)
@@ -2313,18 +2319,20 @@ func (m ProductPromotionHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ProductPromotionHistory) ID() core.Interface          { return core.Interface{m["id"]} }
-func (m ProductPromotionHistory) ProductID() core.Interface   { return core.Interface{m["product_id"]} }
-func (m ProductPromotionHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
-func (m ProductPromotionHistory) Amount() core.Interface      { return core.Interface{m["amount"]} }
-func (m ProductPromotionHistory) Unit() core.Interface        { return core.Interface{m["unit"]} }
-func (m ProductPromotionHistory) Code() core.Interface        { return core.Interface{m["code"]} }
-func (m ProductPromotionHistory) Description() core.Interface { return core.Interface{m["description"]} }
-func (m ProductPromotionHistory) Note() core.Interface        { return core.Interface{m["note"]} }
-func (m ProductPromotionHistory) Type() core.Interface        { return core.Interface{m["type"]} }
-func (m ProductPromotionHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m ProductPromotionHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m ProductPromotionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ProductPromotionHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m ProductPromotionHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
+func (m ProductPromotionHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
+func (m ProductPromotionHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
+func (m ProductPromotionHistory) Unit() core.Interface      { return core.Interface{m["unit"]} }
+func (m ProductPromotionHistory) Code() core.Interface      { return core.Interface{m["code"]} }
+func (m ProductPromotionHistory) Description() core.Interface {
+	return core.Interface{m["description"]}
+}
+func (m ProductPromotionHistory) Note() core.Interface      { return core.Interface{m["note"]} }
+func (m ProductPromotionHistory) Type() core.Interface      { return core.Interface{m["type"]} }
+func (m ProductPromotionHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m ProductPromotionHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ProductPromotionHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *ProductPromotionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 12)
@@ -2704,20 +2712,24 @@ func (m SellerCommissionHistory) SellerID() core.Interface { return core.Interfa
 func (m SellerCommissionHistory) FromSellerID() core.Interface {
 	return core.Interface{m["from_seller_id"]}
 }
-func (m SellerCommissionHistory) ProductID() core.Interface   { return core.Interface{m["product_id"]} }
-func (m SellerCommissionHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
-func (m SellerCommissionHistory) SupplyID() core.Interface    { return core.Interface{m["supply_id"]} }
-func (m SellerCommissionHistory) OrderId() core.Interface     { return core.Interface{m["order_id"]} }
-func (m SellerCommissionHistory) Amount() core.Interface      { return core.Interface{m["amount"]} }
-func (m SellerCommissionHistory) Description() core.Interface { return core.Interface{m["description"]} }
-func (m SellerCommissionHistory) Note() core.Interface        { return core.Interface{m["note"]} }
-func (m SellerCommissionHistory) Type() core.Interface        { return core.Interface{m["type"]} }
-func (m SellerCommissionHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m SellerCommissionHistory) OValue() core.Interface      { return core.Interface{m["o_value"]} }
-func (m SellerCommissionHistory) OBaseValue() core.Interface  { return core.Interface{m["o_base_value"]} }
-func (m SellerCommissionHistory) ValidAt() core.Interface     { return core.Interface{m["valid_at"]} }
-func (m SellerCommissionHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m SellerCommissionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m SellerCommissionHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
+func (m SellerCommissionHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
+func (m SellerCommissionHistory) SupplyID() core.Interface  { return core.Interface{m["supply_id"]} }
+func (m SellerCommissionHistory) OrderId() core.Interface   { return core.Interface{m["order_id"]} }
+func (m SellerCommissionHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
+func (m SellerCommissionHistory) Description() core.Interface {
+	return core.Interface{m["description"]}
+}
+func (m SellerCommissionHistory) Note() core.Interface   { return core.Interface{m["note"]} }
+func (m SellerCommissionHistory) Type() core.Interface   { return core.Interface{m["type"]} }
+func (m SellerCommissionHistory) Status() core.Interface { return core.Interface{m["status"]} }
+func (m SellerCommissionHistory) OValue() core.Interface { return core.Interface{m["o_value"]} }
+func (m SellerCommissionHistory) OBaseValue() core.Interface {
+	return core.Interface{m["o_base_value"]}
+}
+func (m SellerCommissionHistory) ValidAt() core.Interface   { return core.Interface{m["valid_at"]} }
+func (m SellerCommissionHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m SellerCommissionHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *SellerCommissionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 17)
@@ -3338,9 +3350,11 @@ func (m ShopOrderProductHistoryHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ShopOrderProductHistoryHistory) UserID() core.Interface  { return core.Interface{m["user_id"]} }
-func (m ShopOrderProductHistoryHistory) ShopID() core.Interface  { return core.Interface{m["shop_id"]} }
-func (m ShopOrderProductHistoryHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m ShopOrderProductHistoryHistory) UserID() core.Interface { return core.Interface{m["user_id"]} }
+func (m ShopOrderProductHistoryHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m ShopOrderProductHistoryHistory) OrderID() core.Interface {
+	return core.Interface{m["order_id"]}
+}
 func (m ShopOrderProductHistoryHistory) SupplyID() core.Interface {
 	return core.Interface{m["supply_id"]}
 }

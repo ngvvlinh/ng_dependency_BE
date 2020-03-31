@@ -1209,17 +1209,21 @@ func (m FulfillmentHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FulfillmentHistory) ID() core.Interface            { return core.Interface{m["id"]} }
-func (m FulfillmentHistory) OrderID() core.Interface       { return core.Interface{m["order_id"]} }
-func (m FulfillmentHistory) ShopID() core.Interface        { return core.Interface{m["shop_id"]} }
-func (m FulfillmentHistory) PartnerID() core.Interface     { return core.Interface{m["partner_id"]} }
-func (m FulfillmentHistory) ShopConfirm() core.Interface   { return core.Interface{m["shop_confirm"]} }
-func (m FulfillmentHistory) ConfirmStatus() core.Interface { return core.Interface{m["confirm_status"]} }
-func (m FulfillmentHistory) TotalItems() core.Interface    { return core.Interface{m["total_items"]} }
-func (m FulfillmentHistory) TotalWeight() core.Interface   { return core.Interface{m["total_weight"]} }
-func (m FulfillmentHistory) BasketValue() core.Interface   { return core.Interface{m["basket_value"]} }
-func (m FulfillmentHistory) TotalDiscount() core.Interface { return core.Interface{m["total_discount"]} }
-func (m FulfillmentHistory) TotalAmount() core.Interface   { return core.Interface{m["total_amount"]} }
+func (m FulfillmentHistory) ID() core.Interface          { return core.Interface{m["id"]} }
+func (m FulfillmentHistory) OrderID() core.Interface     { return core.Interface{m["order_id"]} }
+func (m FulfillmentHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
+func (m FulfillmentHistory) PartnerID() core.Interface   { return core.Interface{m["partner_id"]} }
+func (m FulfillmentHistory) ShopConfirm() core.Interface { return core.Interface{m["shop_confirm"]} }
+func (m FulfillmentHistory) ConfirmStatus() core.Interface {
+	return core.Interface{m["confirm_status"]}
+}
+func (m FulfillmentHistory) TotalItems() core.Interface  { return core.Interface{m["total_items"]} }
+func (m FulfillmentHistory) TotalWeight() core.Interface { return core.Interface{m["total_weight"]} }
+func (m FulfillmentHistory) BasketValue() core.Interface { return core.Interface{m["basket_value"]} }
+func (m FulfillmentHistory) TotalDiscount() core.Interface {
+	return core.Interface{m["total_discount"]}
+}
+func (m FulfillmentHistory) TotalAmount() core.Interface { return core.Interface{m["total_amount"]} }
 func (m FulfillmentHistory) TotalCODAmount() core.Interface {
 	return core.Interface{m["total_cod_amount"]}
 }
@@ -1278,13 +1282,15 @@ func (m FulfillmentHistory) EtopAdjustedShippingFeeMain() core.Interface {
 func (m FulfillmentHistory) EtopPriceRule() core.Interface {
 	return core.Interface{m["etop_price_rule"]}
 }
-func (m FulfillmentHistory) VariantIDs() core.Interface    { return core.Interface{m["variant_ids"]} }
-func (m FulfillmentHistory) Lines() core.Interface         { return core.Interface{m["lines"]} }
-func (m FulfillmentHistory) TypeFrom() core.Interface      { return core.Interface{m["type_from"]} }
-func (m FulfillmentHistory) TypeTo() core.Interface        { return core.Interface{m["type_to"]} }
-func (m FulfillmentHistory) AddressFrom() core.Interface   { return core.Interface{m["address_from"]} }
-func (m FulfillmentHistory) AddressTo() core.Interface     { return core.Interface{m["address_to"]} }
-func (m FulfillmentHistory) AddressReturn() core.Interface { return core.Interface{m["address_return"]} }
+func (m FulfillmentHistory) VariantIDs() core.Interface  { return core.Interface{m["variant_ids"]} }
+func (m FulfillmentHistory) Lines() core.Interface       { return core.Interface{m["lines"]} }
+func (m FulfillmentHistory) TypeFrom() core.Interface    { return core.Interface{m["type_from"]} }
+func (m FulfillmentHistory) TypeTo() core.Interface      { return core.Interface{m["type_to"]} }
+func (m FulfillmentHistory) AddressFrom() core.Interface { return core.Interface{m["address_from"]} }
+func (m FulfillmentHistory) AddressTo() core.Interface   { return core.Interface{m["address_to"]} }
+func (m FulfillmentHistory) AddressReturn() core.Interface {
+	return core.Interface{m["address_return"]}
+}
 func (m FulfillmentHistory) AddressToProvinceCode() core.Interface {
 	return core.Interface{m["address_to_province_code"]}
 }
@@ -1408,7 +1414,9 @@ func (m FulfillmentHistory) ExternalShippingSubState() core.Interface {
 func (m FulfillmentHistory) ExternalShippingData() core.Interface {
 	return core.Interface{m["external_shipping_data"]}
 }
-func (m FulfillmentHistory) ShippingState() core.Interface { return core.Interface{m["shipping_state"]} }
+func (m FulfillmentHistory) ShippingState() core.Interface {
+	return core.Interface{m["shipping_state"]}
+}
 func (m FulfillmentHistory) ShippingStatus() core.Interface {
 	return core.Interface{m["shipping_status"]}
 }
@@ -1431,10 +1439,12 @@ func (m FulfillmentHistory) GrossWeight() core.Interface { return core.Interface
 func (m FulfillmentHistory) ChargeableWeight() core.Interface {
 	return core.Interface{m["chargeable_weight"]}
 }
-func (m FulfillmentHistory) Length() core.Interface        { return core.Interface{m["length"]} }
-func (m FulfillmentHistory) Width() core.Interface         { return core.Interface{m["width"]} }
-func (m FulfillmentHistory) Height() core.Interface        { return core.Interface{m["height"]} }
-func (m FulfillmentHistory) DeliveryRoute() core.Interface { return core.Interface{m["delivery_route"]} }
+func (m FulfillmentHistory) Length() core.Interface { return core.Interface{m["length"]} }
+func (m FulfillmentHistory) Width() core.Interface  { return core.Interface{m["width"]} }
+func (m FulfillmentHistory) Height() core.Interface { return core.Interface{m["height"]} }
+func (m FulfillmentHistory) DeliveryRoute() core.Interface {
+	return core.Interface{m["delivery_route"]}
+}
 func (m FulfillmentHistory) ExternalAffiliateID() core.Interface {
 	return core.Interface{m["external_affiliate_id"]}
 }

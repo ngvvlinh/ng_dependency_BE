@@ -42,7 +42,9 @@ const __sqlMoneyTransactionShipping_UpdateOnConflict = " ON CONFLICT ON CONSTRAI
 
 func (m *MoneyTransactionShipping) SQLTableName() string  { return "money_transaction_shipping" }
 func (m *MoneyTransactionShippings) SQLTableName() string { return "money_transaction_shipping" }
-func (m *MoneyTransactionShipping) SQLListCols() string   { return __sqlMoneyTransactionShipping_ListCols }
+func (m *MoneyTransactionShipping) SQLListCols() string {
+	return __sqlMoneyTransactionShipping_ListCols
+}
 
 func (m *MoneyTransactionShipping) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM \"money_transaction_shipping\" WHERE false"
@@ -497,7 +499,9 @@ const __sqlMoneyTransactionShippingEtop_Select_history = "SELECT " + __sqlMoneyT
 const __sqlMoneyTransactionShippingEtop_UpdateAll = "UPDATE \"money_transaction_shipping_etop\" SET (" + __sqlMoneyTransactionShippingEtop_ListCols + ")"
 const __sqlMoneyTransactionShippingEtop_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT money_transaction_shipping_etop_pkey DO UPDATE SET"
 
-func (m *MoneyTransactionShippingEtop) SQLTableName() string { return "money_transaction_shipping_etop" }
+func (m *MoneyTransactionShippingEtop) SQLTableName() string {
+	return "money_transaction_shipping_etop"
+}
 func (m *MoneyTransactionShippingEtops) SQLTableName() string {
 	return "money_transaction_shipping_etop"
 }

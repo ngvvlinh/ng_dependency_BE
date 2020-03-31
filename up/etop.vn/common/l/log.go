@@ -2,112 +2,34 @@ package l
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
-	"strings"
 
-	"github.com/k0kubun/pp"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-const prefix = "etop.vn/backend/"
-
-// ConsoleEncoderName ...
-const ConsoleEncoderName = "custom_console"
-
 var ll, xl Logger
 
-// Short-hand functions for logging.
-var (
-	Bool     = zap.Bool
-	Duration = zap.Duration
-	Float64  = zap.Float64
-	Int      = zap.Int
-	Int64    = zap.Int64
-	Skip     = zap.Skip
-	String   = zap.String
-	Stringer = zap.Stringer
-	Time     = zap.Time
-	Uint     = zap.Uint
-	Uint64   = zap.Uint64
-	Uintptr  = zap.Uintptr
-)
+func init() {
+	ll = New()
+	xl = New(zap.AddCallerSkip(1))
 
-func ID(key string, v interface{ Int64() int64 }) zap.Field {
-	return zap.Int64(key, v.Int64())
-}
-
-// DefaultConsoleEncoderConfig ...
-var DefaultConsoleEncoderConfig = zapcore.EncoderConfig{
-	TimeKey:        "time",
-	LevelKey:       "level",
-	NameKey:        "logger",
-	CallerKey:      "caller",
-	MessageKey:     "msg",
-	StacktraceKey:  "stacktrace",
-	LineEnding:     zapcore.DefaultLineEnding,
-	EncodeLevel:    CapitalColorLevelEncoder,
-	EncodeTime:     zapcore.ISO8601TimeEncoder,
-	EncodeDuration: zapcore.StringDurationEncoder,
-	EncodeCaller:   ShortColorCallerEncoder,
-}
-
-// DefaultTextEncoderConfig ...
-var DefaultTextEncoderConfig = zapcore.EncoderConfig{
-	TimeKey:        "time",
-	LevelKey:       "level",
-	NameKey:        "logger",
-	CallerKey:      "caller",
-	MessageKey:     "msg",
-	StacktraceKey:  "stacktrace",
-	LineEnding:     zapcore.DefaultLineEnding,
-	EncodeLevel:    CapitalLevelEncoder,
-	EncodeTime:     zapcore.ISO8601TimeEncoder,
-	EncodeDuration: zapcore.StringDurationEncoder,
-	EncodeCaller:   zapcore.ShortCallerEncoder,
-}
-
-// Error wraps error for zap.Error.
-func Error(err error) zapcore.Field {
-	if err == nil {
-		return Skip()
+	envLog := os.Getenv(EnvKey)
+	if envLog == "" {
+		envLog = os.Getenv(deprecatedEnvKey)
 	}
-	return String("error", err.Error())
-}
+	if envLog == "" {
+		return
+	}
 
-// Any ...
-func Any(key string, val interface{}) zapcore.Field {
-	return zap.Any(key, val)
-}
-
-// Stack ...
-func Stack() zapcore.Field {
-	return zap.Stack("stack")
-}
-
-// Int32 ...
-func Int32(key string, val int32) zapcore.Field {
-	return zap.Int(key, int(val))
-}
-
-// Object ...
-func Object(key string, val interface{}) zapcore.Field {
-	return zap.Stringer(key, Dump(val))
-}
-
-type dd struct {
-	v interface{}
-}
-
-func (d dd) String() string {
-	return pp.Sprint(d.v)
-}
-
-// Dump renders object for debugging
-func Dump(v interface{}) fmt.Stringer {
-	return dd{v}
+	_envPatterns, errPattern, err := parseWildcardPatterns(envLog)
+	if err != nil {
+		ll.Fatal(fmt.Sprintf("unable to parse `%v`", EnvKey), String("invalid", errPattern), Error(err))
+	}
+	envPatterns = _envPatterns
+	ll.Debug("enable debug log", String(EnvKey, envLog))
 }
 
 // Logger wraps zap.Logger
@@ -136,7 +58,7 @@ func New(opts ...zap.Option) Logger {
 	loggerConfig := zap.Config{
 		Level:            enabler.AtomicLevel,
 		Development:      false,
-		Encoding:         ConsoleEncoderName,
+		Encoding:         "console",
 		EncoderConfig:    DefaultConsoleEncoderConfig,
 		OutputPaths:      []string{"stderr"},
 		ErrorOutputPaths: []string{"stderr"},
@@ -177,24 +99,4 @@ func (l Logger) Watch(fn LevelWatcher) (unwatch func()) {
 
 func (l Logger) Sync() {
 	_ = l.Logger.Sync()
-}
-
-func trimPath(c zapcore.EntryCaller) string {
-	index := strings.Index(c.File, prefix)
-	if index < 0 {
-		return c.TrimmedPath()
-	}
-	return c.File[index+len(prefix):]
-}
-
-// ShortColorCallerEncoder encodes caller information with sort path filename and enable color.
-func ShortColorCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-	const gray, resetColor = "\x1b[90m", "\x1b[0m"
-	callerStr := gray + "→ " + trimPath(caller) + ":" + strconv.Itoa(caller.Line) + resetColor
-	enc.AppendString(callerStr)
-}
-
-func truncFilename(filename string) string {
-	index := strings.Index(filename, prefix)
-	return filename[index+len(prefix):]
 }

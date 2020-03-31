@@ -1085,9 +1085,11 @@ func (m AccountUserHistory) InvitationAcceptedAt() core.Interface {
 func (m AccountUserHistory) InvitationRejectedAt() core.Interface {
 	return core.Interface{m["invitation_rejected_at"]}
 }
-func (m AccountUserHistory) DisabledAt() core.Interface    { return core.Interface{m["disabled_at"]} }
-func (m AccountUserHistory) DisabledBy() core.Interface    { return core.Interface{m["disabled_by"]} }
-func (m AccountUserHistory) DisableReason() core.Interface { return core.Interface{m["disable_reason"]} }
+func (m AccountUserHistory) DisabledAt() core.Interface { return core.Interface{m["disabled_at"]} }
+func (m AccountUserHistory) DisabledBy() core.Interface { return core.Interface{m["disabled_by"]} }
+func (m AccountUserHistory) DisableReason() core.Interface {
+	return core.Interface{m["disable_reason"]}
+}
 
 func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 19)
@@ -2583,19 +2585,21 @@ func (m PartnerHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m PartnerHistory) ID() core.Interface              { return core.Interface{m["id"]} }
-func (m PartnerHistory) OwnerID() core.Interface         { return core.Interface{m["owner_id"]} }
-func (m PartnerHistory) Status() core.Interface          { return core.Interface{m["status"]} }
-func (m PartnerHistory) IsTest() core.Interface          { return core.Interface{m["is_test"]} }
-func (m PartnerHistory) Name() core.Interface            { return core.Interface{m["name"]} }
-func (m PartnerHistory) PublicName() core.Interface      { return core.Interface{m["public_name"]} }
-func (m PartnerHistory) Phone() core.Interface           { return core.Interface{m["phone"]} }
-func (m PartnerHistory) Email() core.Interface           { return core.Interface{m["email"]} }
-func (m PartnerHistory) ImageURL() core.Interface        { return core.Interface{m["image_url"]} }
-func (m PartnerHistory) WebsiteURL() core.Interface      { return core.Interface{m["website_url"]} }
-func (m PartnerHistory) ContactPersons() core.Interface  { return core.Interface{m["contact_persons"]} }
-func (m PartnerHistory) RecognizedHosts() core.Interface { return core.Interface{m["recognized_hosts"]} }
-func (m PartnerHistory) RedirectURLs() core.Interface    { return core.Interface{m["redirect_urls"]} }
+func (m PartnerHistory) ID() core.Interface             { return core.Interface{m["id"]} }
+func (m PartnerHistory) OwnerID() core.Interface        { return core.Interface{m["owner_id"]} }
+func (m PartnerHistory) Status() core.Interface         { return core.Interface{m["status"]} }
+func (m PartnerHistory) IsTest() core.Interface         { return core.Interface{m["is_test"]} }
+func (m PartnerHistory) Name() core.Interface           { return core.Interface{m["name"]} }
+func (m PartnerHistory) PublicName() core.Interface     { return core.Interface{m["public_name"]} }
+func (m PartnerHistory) Phone() core.Interface          { return core.Interface{m["phone"]} }
+func (m PartnerHistory) Email() core.Interface          { return core.Interface{m["email"]} }
+func (m PartnerHistory) ImageURL() core.Interface       { return core.Interface{m["image_url"]} }
+func (m PartnerHistory) WebsiteURL() core.Interface     { return core.Interface{m["website_url"]} }
+func (m PartnerHistory) ContactPersons() core.Interface { return core.Interface{m["contact_persons"]} }
+func (m PartnerHistory) RecognizedHosts() core.Interface {
+	return core.Interface{m["recognized_hosts"]}
+}
+func (m PartnerHistory) RedirectURLs() core.Interface { return core.Interface{m["redirect_urls"]} }
 func (m PartnerHistory) AvailableFromEtop() core.Interface {
 	return core.Interface{m["available_from_etop"]}
 }
@@ -2944,10 +2948,12 @@ func (m PartnerRelationHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m PartnerRelationHistory) AuthKey() core.Interface     { return core.Interface{m["auth_key"]} }
-func (m PartnerRelationHistory) PartnerID() core.Interface   { return core.Interface{m["partner_id"]} }
-func (m PartnerRelationHistory) SubjectID() core.Interface   { return core.Interface{m["subject_id"]} }
-func (m PartnerRelationHistory) SubjectType() core.Interface { return core.Interface{m["subject_type"]} }
+func (m PartnerRelationHistory) AuthKey() core.Interface   { return core.Interface{m["auth_key"]} }
+func (m PartnerRelationHistory) PartnerID() core.Interface { return core.Interface{m["partner_id"]} }
+func (m PartnerRelationHistory) SubjectID() core.Interface { return core.Interface{m["subject_id"]} }
+func (m PartnerRelationHistory) SubjectType() core.Interface {
+	return core.Interface{m["subject_type"]}
+}
 func (m PartnerRelationHistory) ExternalSubjectID() core.Interface {
 	return core.Interface{m["external_subject_id"]}
 }

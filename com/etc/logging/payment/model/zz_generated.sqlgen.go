@@ -240,13 +240,15 @@ func (m PaymentHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m PaymentHistory) ID() core.Interface              { return core.Interface{m["id"]} }
-func (m PaymentHistory) Data() core.Interface            { return core.Interface{m["data"]} }
-func (m PaymentHistory) OrderID() core.Interface         { return core.Interface{m["order_id"]} }
-func (m PaymentHistory) PaymentProvider() core.Interface { return core.Interface{m["payment_provider"]} }
-func (m PaymentHistory) Action() core.Interface          { return core.Interface{m["action"]} }
-func (m PaymentHistory) CreatedAt() core.Interface       { return core.Interface{m["created_at"]} }
-func (m PaymentHistory) UpdatedAt() core.Interface       { return core.Interface{m["updated_at"]} }
+func (m PaymentHistory) ID() core.Interface      { return core.Interface{m["id"]} }
+func (m PaymentHistory) Data() core.Interface    { return core.Interface{m["data"]} }
+func (m PaymentHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m PaymentHistory) PaymentProvider() core.Interface {
+	return core.Interface{m["payment_provider"]}
+}
+func (m PaymentHistory) Action() core.Interface    { return core.Interface{m["action"]} }
+func (m PaymentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m PaymentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *PaymentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 7)

@@ -847,26 +847,28 @@ func (m ExportAttemptHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ExportAttemptHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m ExportAttemptHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
-func (m ExportAttemptHistory) AccountID() core.Interface    { return core.Interface{m["account_id"]} }
-func (m ExportAttemptHistory) ExportType() core.Interface   { return core.Interface{m["export_type"]} }
-func (m ExportAttemptHistory) FileName() core.Interface     { return core.Interface{m["filename"]} }
-func (m ExportAttemptHistory) StoredFile() core.Interface   { return core.Interface{m["stored_file"]} }
-func (m ExportAttemptHistory) DownloadURL() core.Interface  { return core.Interface{m["download_url"]} }
-func (m ExportAttemptHistory) RequestQuery() core.Interface { return core.Interface{m["request_query"]} }
-func (m ExportAttemptHistory) MimeType() core.Interface     { return core.Interface{m["mime_type"]} }
-func (m ExportAttemptHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m ExportAttemptHistory) Errors() core.Interface       { return core.Interface{m["errors"]} }
-func (m ExportAttemptHistory) Error() core.Interface        { return core.Interface{m["error"]} }
-func (m ExportAttemptHistory) NTotal() core.Interface       { return core.Interface{m["n_total"]} }
-func (m ExportAttemptHistory) NExported() core.Interface    { return core.Interface{m["n_exported"]} }
-func (m ExportAttemptHistory) NError() core.Interface       { return core.Interface{m["n_error"]} }
-func (m ExportAttemptHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ExportAttemptHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
-func (m ExportAttemptHistory) StartedAt() core.Interface    { return core.Interface{m["started_at"]} }
-func (m ExportAttemptHistory) DoneAt() core.Interface       { return core.Interface{m["done_at"]} }
-func (m ExportAttemptHistory) ExpiresAt() core.Interface    { return core.Interface{m["expires_at"]} }
+func (m ExportAttemptHistory) ID() core.Interface          { return core.Interface{m["id"]} }
+func (m ExportAttemptHistory) UserID() core.Interface      { return core.Interface{m["user_id"]} }
+func (m ExportAttemptHistory) AccountID() core.Interface   { return core.Interface{m["account_id"]} }
+func (m ExportAttemptHistory) ExportType() core.Interface  { return core.Interface{m["export_type"]} }
+func (m ExportAttemptHistory) FileName() core.Interface    { return core.Interface{m["filename"]} }
+func (m ExportAttemptHistory) StoredFile() core.Interface  { return core.Interface{m["stored_file"]} }
+func (m ExportAttemptHistory) DownloadURL() core.Interface { return core.Interface{m["download_url"]} }
+func (m ExportAttemptHistory) RequestQuery() core.Interface {
+	return core.Interface{m["request_query"]}
+}
+func (m ExportAttemptHistory) MimeType() core.Interface  { return core.Interface{m["mime_type"]} }
+func (m ExportAttemptHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m ExportAttemptHistory) Errors() core.Interface    { return core.Interface{m["errors"]} }
+func (m ExportAttemptHistory) Error() core.Interface     { return core.Interface{m["error"]} }
+func (m ExportAttemptHistory) NTotal() core.Interface    { return core.Interface{m["n_total"]} }
+func (m ExportAttemptHistory) NExported() core.Interface { return core.Interface{m["n_exported"]} }
+func (m ExportAttemptHistory) NError() core.Interface    { return core.Interface{m["n_error"]} }
+func (m ExportAttemptHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ExportAttemptHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ExportAttemptHistory) StartedAt() core.Interface { return core.Interface{m["started_at"]} }
+func (m ExportAttemptHistory) DoneAt() core.Interface    { return core.Interface{m["done_at"]} }
+func (m ExportAttemptHistory) ExpiresAt() core.Interface { return core.Interface{m["expires_at"]} }
 
 func (m *ExportAttemptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 20)
@@ -1227,20 +1229,22 @@ func (m ImportAttemptHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ImportAttemptHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m ImportAttemptHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
-func (m ImportAttemptHistory) AccountID() core.Interface    { return core.Interface{m["account_id"]} }
-func (m ImportAttemptHistory) OriginalFile() core.Interface { return core.Interface{m["original_file"]} }
-func (m ImportAttemptHistory) StoredFile() core.Interface   { return core.Interface{m["stored_file"]} }
-func (m ImportAttemptHistory) Type() core.Interface         { return core.Interface{m["type"]} }
-func (m ImportAttemptHistory) NCreated() core.Interface     { return core.Interface{m["n_created"]} }
-func (m ImportAttemptHistory) NUpdated() core.Interface     { return core.Interface{m["n_updated"]} }
-func (m ImportAttemptHistory) NError() core.Interface       { return core.Interface{m["n_error"]} }
-func (m ImportAttemptHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m ImportAttemptHistory) ErrorType() core.Interface    { return core.Interface{m["error_type"]} }
-func (m ImportAttemptHistory) Errors() core.Interface       { return core.Interface{m["errors"]} }
-func (m ImportAttemptHistory) DurationMs() core.Interface   { return core.Interface{m["duration_ms"]} }
-func (m ImportAttemptHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m ImportAttemptHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m ImportAttemptHistory) UserID() core.Interface    { return core.Interface{m["user_id"]} }
+func (m ImportAttemptHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
+func (m ImportAttemptHistory) OriginalFile() core.Interface {
+	return core.Interface{m["original_file"]}
+}
+func (m ImportAttemptHistory) StoredFile() core.Interface { return core.Interface{m["stored_file"]} }
+func (m ImportAttemptHistory) Type() core.Interface       { return core.Interface{m["type"]} }
+func (m ImportAttemptHistory) NCreated() core.Interface   { return core.Interface{m["n_created"]} }
+func (m ImportAttemptHistory) NUpdated() core.Interface   { return core.Interface{m["n_updated"]} }
+func (m ImportAttemptHistory) NError() core.Interface     { return core.Interface{m["n_error"]} }
+func (m ImportAttemptHistory) Status() core.Interface     { return core.Interface{m["status"]} }
+func (m ImportAttemptHistory) ErrorType() core.Interface  { return core.Interface{m["error_type"]} }
+func (m ImportAttemptHistory) Errors() core.Interface     { return core.Interface{m["errors"]} }
+func (m ImportAttemptHistory) DurationMs() core.Interface { return core.Interface{m["duration_ms"]} }
+func (m ImportAttemptHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
 
 func (m *ImportAttemptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 14)

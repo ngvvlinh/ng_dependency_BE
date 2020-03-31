@@ -2844,7 +2844,9 @@ func (m *ShopVariantSupplier) SQLUpdateAll(w SQLWriter) error {
 type ShopVariantSupplierHistory map[string]interface{}
 type ShopVariantSupplierHistories []map[string]interface{}
 
-func (m *ShopVariantSupplierHistory) SQLTableName() string { return "history.\"shop_variant_supplier\"" }
+func (m *ShopVariantSupplierHistory) SQLTableName() string {
+	return "history.\"shop_variant_supplier\""
+}
 func (m ShopVariantSupplierHistories) SQLTableName() string {
 	return "history.\"shop_variant_supplier\""
 }
@@ -2863,9 +2865,15 @@ func (m ShopVariantSupplierHistory) ShopID() core.Interface { return core.Interf
 func (m ShopVariantSupplierHistory) SupplierID() core.Interface {
 	return core.Interface{m["supplier_id"]}
 }
-func (m ShopVariantSupplierHistory) VariantID() core.Interface { return core.Interface{m["variant_id"]} }
-func (m ShopVariantSupplierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m ShopVariantSupplierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m ShopVariantSupplierHistory) VariantID() core.Interface {
+	return core.Interface{m["variant_id"]}
+}
+func (m ShopVariantSupplierHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m ShopVariantSupplierHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
 
 func (m *ShopVariantSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 5)

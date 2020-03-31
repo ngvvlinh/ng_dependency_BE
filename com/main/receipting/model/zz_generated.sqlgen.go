@@ -454,23 +454,25 @@ func (m ReceiptHistory) TraderFullNameNorm() core.Interface {
 func (m ReceiptHistory) TraderPhoneNorm() core.Interface {
 	return core.Interface{m["trader_phone_norm"]}
 }
-func (m ReceiptHistory) TraderType() core.Interface      { return core.Interface{m["trader_type"]} }
-func (m ReceiptHistory) Amount() core.Interface          { return core.Interface{m["amount"]} }
-func (m ReceiptHistory) Status() core.Interface          { return core.Interface{m["status"]} }
-func (m ReceiptHistory) RefIDs() core.Interface          { return core.Interface{m["ref_ids"]} }
-func (m ReceiptHistory) RefType() core.Interface         { return core.Interface{m["ref_type"]} }
-func (m ReceiptHistory) Lines() core.Interface           { return core.Interface{m["lines"]} }
-func (m ReceiptHistory) LedgerID() core.Interface        { return core.Interface{m["ledger_id"]} }
-func (m ReceiptHistory) Trader() core.Interface          { return core.Interface{m["trader"]} }
-func (m ReceiptHistory) CancelledReason() core.Interface { return core.Interface{m["cancelled_reason"]} }
-func (m ReceiptHistory) CreatedType() core.Interface     { return core.Interface{m["created_type"]} }
-func (m ReceiptHistory) CreatedBy() core.Interface       { return core.Interface{m["created_by"]} }
-func (m ReceiptHistory) PaidAt() core.Interface          { return core.Interface{m["paid_at"]} }
-func (m ReceiptHistory) ConfirmedAt() core.Interface     { return core.Interface{m["confirmed_at"]} }
-func (m ReceiptHistory) CancelledAt() core.Interface     { return core.Interface{m["cancelled_at"]} }
-func (m ReceiptHistory) CreatedAt() core.Interface       { return core.Interface{m["created_at"]} }
-func (m ReceiptHistory) UpdatedAt() core.Interface       { return core.Interface{m["updated_at"]} }
-func (m ReceiptHistory) DeletedAt() core.Interface       { return core.Interface{m["deleted_at"]} }
+func (m ReceiptHistory) TraderType() core.Interface { return core.Interface{m["trader_type"]} }
+func (m ReceiptHistory) Amount() core.Interface     { return core.Interface{m["amount"]} }
+func (m ReceiptHistory) Status() core.Interface     { return core.Interface{m["status"]} }
+func (m ReceiptHistory) RefIDs() core.Interface     { return core.Interface{m["ref_ids"]} }
+func (m ReceiptHistory) RefType() core.Interface    { return core.Interface{m["ref_type"]} }
+func (m ReceiptHistory) Lines() core.Interface      { return core.Interface{m["lines"]} }
+func (m ReceiptHistory) LedgerID() core.Interface   { return core.Interface{m["ledger_id"]} }
+func (m ReceiptHistory) Trader() core.Interface     { return core.Interface{m["trader"]} }
+func (m ReceiptHistory) CancelledReason() core.Interface {
+	return core.Interface{m["cancelled_reason"]}
+}
+func (m ReceiptHistory) CreatedType() core.Interface { return core.Interface{m["created_type"]} }
+func (m ReceiptHistory) CreatedBy() core.Interface   { return core.Interface{m["created_by"]} }
+func (m ReceiptHistory) PaidAt() core.Interface      { return core.Interface{m["paid_at"]} }
+func (m ReceiptHistory) ConfirmedAt() core.Interface { return core.Interface{m["confirmed_at"]} }
+func (m ReceiptHistory) CancelledAt() core.Interface { return core.Interface{m["cancelled_at"]} }
+func (m ReceiptHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ReceiptHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ReceiptHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 
 func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 27)

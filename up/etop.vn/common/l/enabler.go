@@ -5,20 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-const DefaultRoute = "/==/logging"
-const MaxVerbosity = 9
-const EnvKey = "ETOP_LOG"
-const deprecatedEnvKey = "ETOP_LOG_DEBUG"
 
 // verbosity from 0 to 9
 type WildcardPatterns [MaxVerbosity + 1][]*regexp.Regexp
@@ -123,34 +116,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Error: "only GET and POST are supported",
 		})
 	}
-}
-
-func init() {
-	err := zap.RegisterEncoder(ConsoleEncoderName,
-		func(cfg zapcore.EncoderConfig) (zapcore.Encoder, error) {
-			return NewConsoleEncoder(cfg), nil
-		})
-	if err != nil {
-		panic(err)
-	}
-
-	ll = New()
-	xl = New(zap.AddCallerSkip(1))
-
-	envLog := os.Getenv(EnvKey)
-	if envLog == "" {
-		envLog = os.Getenv(deprecatedEnvKey)
-	}
-	if envLog == "" {
-		return
-	}
-
-	var errPattern string
-	envPatterns, errPattern, err = parseWildcardPatterns(envLog)
-	if err != nil {
-		ll.Fatal(fmt.Sprintf("Unable to parse %v", EnvKey), String("invalid", errPattern), Error(err))
-	}
-	ll.Debug("Enable debug log", String(EnvKey, envLog))
 }
 
 func parseWildcardPatterns(input string) (result WildcardPatterns, errPattern string, err error) {

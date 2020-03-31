@@ -260,11 +260,13 @@ func (m PaymentHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m PaymentHistory) ID() core.Interface              { return core.Interface{m["id"]} }
-func (m PaymentHistory) Amount() core.Interface          { return core.Interface{m["amount"]} }
-func (m PaymentHistory) Status() core.Interface          { return core.Interface{m["status"]} }
-func (m PaymentHistory) State() core.Interface           { return core.Interface{m["state"]} }
-func (m PaymentHistory) PaymentProvider() core.Interface { return core.Interface{m["payment_provider"]} }
+func (m PaymentHistory) ID() core.Interface     { return core.Interface{m["id"]} }
+func (m PaymentHistory) Amount() core.Interface { return core.Interface{m["amount"]} }
+func (m PaymentHistory) Status() core.Interface { return core.Interface{m["status"]} }
+func (m PaymentHistory) State() core.Interface  { return core.Interface{m["state"]} }
+func (m PaymentHistory) PaymentProvider() core.Interface {
+	return core.Interface{m["payment_provider"]}
+}
 func (m PaymentHistory) ExternalTransID() core.Interface {
 	return core.Interface{m["external_trans_id"]}
 }

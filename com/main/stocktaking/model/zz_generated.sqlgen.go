@@ -345,20 +345,22 @@ func (m ShopStocktakeHistory) ShopID() core.Interface { return core.Interface{m[
 func (m ShopStocktakeHistory) TotalQuantity() core.Interface {
 	return core.Interface{m["total_quantity"]}
 }
-func (m ShopStocktakeHistory) CreatedBy() core.Interface    { return core.Interface{m["created_by"]} }
-func (m ShopStocktakeHistory) UpdatedBy() core.Interface    { return core.Interface{m["updated_by"]} }
-func (m ShopStocktakeHistory) CancelReason() core.Interface { return core.Interface{m["cancel_reason"]} }
-func (m ShopStocktakeHistory) Type() core.Interface         { return core.Interface{m["type"]} }
-func (m ShopStocktakeHistory) Code() core.Interface         { return core.Interface{m["code"]} }
-func (m ShopStocktakeHistory) CodeNorm() core.Interface     { return core.Interface{m["code_norm"]} }
-func (m ShopStocktakeHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m ShopStocktakeHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ShopStocktakeHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m ShopStocktakeHistory) ConfirmedAt() core.Interface  { return core.Interface{m["confirmed_at"]} }
-func (m ShopStocktakeHistory) CancelledAt() core.Interface  { return core.Interface{m["cancelled_at"]} }
-func (m ShopStocktakeHistory) Lines() core.Interface        { return core.Interface{m["lines"]} }
-func (m ShopStocktakeHistory) Note() core.Interface         { return core.Interface{m["note"]} }
-func (m ShopStocktakeHistory) ProductIDs() core.Interface   { return core.Interface{m["product_ids"]} }
+func (m ShopStocktakeHistory) CreatedBy() core.Interface { return core.Interface{m["created_by"]} }
+func (m ShopStocktakeHistory) UpdatedBy() core.Interface { return core.Interface{m["updated_by"]} }
+func (m ShopStocktakeHistory) CancelReason() core.Interface {
+	return core.Interface{m["cancel_reason"]}
+}
+func (m ShopStocktakeHistory) Type() core.Interface        { return core.Interface{m["type"]} }
+func (m ShopStocktakeHistory) Code() core.Interface        { return core.Interface{m["code"]} }
+func (m ShopStocktakeHistory) CodeNorm() core.Interface    { return core.Interface{m["code_norm"]} }
+func (m ShopStocktakeHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m ShopStocktakeHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ShopStocktakeHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ShopStocktakeHistory) ConfirmedAt() core.Interface { return core.Interface{m["confirmed_at"]} }
+func (m ShopStocktakeHistory) CancelledAt() core.Interface { return core.Interface{m["cancelled_at"]} }
+func (m ShopStocktakeHistory) Lines() core.Interface       { return core.Interface{m["lines"]} }
+func (m ShopStocktakeHistory) Note() core.Interface        { return core.Interface{m["note"]} }
+func (m ShopStocktakeHistory) ProductIDs() core.Interface  { return core.Interface{m["product_ids"]} }
 
 func (m *ShopStocktakeHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 17)

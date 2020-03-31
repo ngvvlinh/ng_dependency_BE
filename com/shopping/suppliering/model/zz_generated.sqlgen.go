@@ -365,13 +365,15 @@ func (m ShopSupplierHistory) TaxNumber() core.Interface { return core.Interface{
 func (m ShopSupplierHistory) HeadquaterAddress() core.Interface {
 	return core.Interface{m["headquater_address"]}
 }
-func (m ShopSupplierHistory) Note() core.Interface         { return core.Interface{m["note"]} }
-func (m ShopSupplierHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
-func (m ShopSupplierHistory) PhoneNorm() core.Interface    { return core.Interface{m["phone_norm"]} }
-func (m ShopSupplierHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m ShopSupplierHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ShopSupplierHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m ShopSupplierHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m ShopSupplierHistory) Note() core.Interface { return core.Interface{m["note"]} }
+func (m ShopSupplierHistory) FullNameNorm() core.Interface {
+	return core.Interface{m["full_name_norm"]}
+}
+func (m ShopSupplierHistory) PhoneNorm() core.Interface { return core.Interface{m["phone_norm"]} }
+func (m ShopSupplierHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m ShopSupplierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShopSupplierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m ShopSupplierHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 
 func (m *ShopSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 18)
