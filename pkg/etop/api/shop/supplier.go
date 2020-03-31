@@ -120,6 +120,7 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierE
 		CompanyName:       r.CompanyName,
 		TaxNumber:         r.TaxNumber,
 		HeadquaterAddress: r.HeadquaterAddress,
+		Note:              r.Note,
 	}
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
