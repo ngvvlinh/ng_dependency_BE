@@ -13,6 +13,13 @@ import (
 var ll, xl Logger
 
 func init() {
+	if err := zap.RegisterEncoder(ConsoleEncoderName,
+		func(cfg zapcore.EncoderConfig) (zapcore.Encoder, error) {
+			return NewConsoleEncoder(cfg), nil
+		}); err != nil {
+		panic(err)
+	}
+
 	ll = New()
 	xl = New(zap.AddCallerSkip(1))
 
@@ -58,7 +65,7 @@ func New(opts ...zap.Option) Logger {
 	loggerConfig := zap.Config{
 		Level:            enabler.AtomicLevel,
 		Development:      false,
-		Encoding:         "console",
+		Encoding:         ConsoleEncoderName,
 		EncoderConfig:    DefaultConsoleEncoderConfig,
 		OutputPaths:      []string{"stderr"},
 		ErrorOutputPaths: []string{"stderr"},
