@@ -1,6 +1,6 @@
 module etop.vn/capi
 
-go 1.13
+go 1.14
 
 replace etop.vn/common => ../common
 

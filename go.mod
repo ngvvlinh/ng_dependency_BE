@@ -1,6 +1,6 @@
 module etop.vn/backend
 
-go 1.13
+go 1.14
 
 replace (
 	etop.vn/api => ./up/etop.vn/api

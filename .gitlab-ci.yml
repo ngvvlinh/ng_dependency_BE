@@ -30,6 +30,7 @@ build:
   - postgres:9.6-alpine
   - redis:alpine
   script:
+  - go version
   - time scripts/verify-imports.sh
   - time scripts/ci/verify-lint.sh
   - time scripts/ci/verify-generate.sh
