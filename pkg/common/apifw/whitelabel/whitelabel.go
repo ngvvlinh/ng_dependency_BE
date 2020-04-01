@@ -118,12 +118,24 @@ func (w *WhiteLabel) fromContext(ctx context.Context, partnerID dot.ID) *WL {
 func (w *WhiteLabel) fromHost(host string) *WL {
 	parts := strings.SplitN(host, ".", 2)
 	for _, p := range w.partners {
-		if p.Key == parts[0] {
+		// itopx.vn
+		if p.Host == host {
 			return p
 		}
-		if p.Host == host {
+		if isWhitelabelKey(p.Key, parts[0]) {
 			return p
 		}
 	}
 	return w.etop
+}
+
+func isWhitelabelKey(key, subdomain string) bool {
+	// itopx.d.etop.vn
+	if subdomain == key {
+		return true
+	}
+	// itopx-next.etop.vn
+	return len(subdomain) > len(key) &&
+		subdomain[0:len(key)] == key &&
+		subdomain[len(key)] == '-'
 }
