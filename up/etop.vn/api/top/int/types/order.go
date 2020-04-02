@@ -150,7 +150,7 @@ type OrderFeeLine struct {
 	Code string `json:"code"`
 	Desc string `json:"desc"`
 	// @required
-	Amount int `json:"amount"`
+	Amount Int `json:"amount"`
 }
 
 func (m *OrderFeeLine) String() string { return jsonx.MustMarshalToString(m) }

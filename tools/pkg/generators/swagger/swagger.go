@@ -293,28 +293,7 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		return simpleType("string", "int64")
 
 	case currentInfo.IsBasic(typ, &inner) || currentInfo.IsNullBasic(typ, &inner):
-		switch inner.(*types.Basic).Kind() {
-		case types.Bool:
-			return simpleType("boolean", "")
-
-		case types.Int:
-			return simpleType("integer", "")
-
-		case types.Int32:
-			return simpleType("integer", "int32")
-
-		case types.Int64:
-			return simpleType("string", "int64")
-
-		case types.Float32:
-			return simpleType("integer", "float32")
-
-		case types.Float64:
-			return simpleType("integer", "float32")
-
-		case types.String:
-			return simpleType("string", "")
-		}
+		return parseBasicSchema(inner)
 
 	case currentInfo.IsID(typ):
 		return simpleType("string", "int64")
@@ -364,6 +343,9 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 		}
 
 		switch {
+		case currentInfo.IsNamedBasic(typ, &inner):
+			return parseBasicSchema(inner)
+
 		case currentInfo.IsNamedStruct(typ, &inner):
 			// placeholder to prevent infinite recursion
 			definitions[id] = spec.Schema{}
@@ -437,6 +419,33 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 	}
 
 	panic(fmt.Sprintf("unsupported %v (%v)", typ, path))
+}
+
+func parseBasicSchema(inner types.Type) spec.Schema {
+	switch inner.(*types.Basic).Kind() {
+	case types.Bool:
+		return simpleType("boolean", "")
+
+	case types.Int:
+		return simpleType("integer", "")
+
+	case types.Int32:
+		return simpleType("integer", "int32")
+
+	case types.Int64:
+		return simpleType("string", "int64")
+
+	case types.Float32:
+		return simpleType("integer", "float32")
+
+	case types.Float64:
+		return simpleType("integer", "float32")
+
+	case types.String:
+		return simpleType("string", "")
+	}
+
+	panic(fmt.Sprintf("not basic type %v", inner))
 }
 
 func simpleType(typ, format string) spec.Schema {

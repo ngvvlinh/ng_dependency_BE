@@ -555,7 +555,7 @@ func PbOrderFeeLinesToModel(items []*types.OrderFeeLine) []ordermodel.OrderFeeLi
 			continue
 		}
 		res = append(res, ordermodel.OrderFeeLine{
-			Amount: item.Amount,
+			Amount: item.Amount.Int(),
 			Desc:   item.Desc,
 			Code:   item.Code,
 			Name:   item.Name,
@@ -573,7 +573,7 @@ func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*types.OrderFeeLine {
 			Name:   item.Name,
 			Code:   item.Code,
 			Desc:   item.Desc,
-			Amount: item.Amount,
+			Amount: types.Int(item.Amount),
 		}
 	}
 	return res
@@ -1410,7 +1410,7 @@ func Convert_core_OrderFeeLine_To_api_OrderFeeLine(in ordering.OrderFeeLine) *ty
 		Name:   in.Name,
 		Code:   in.Code,
 		Desc:   in.Desc,
-		Amount: in.Amount,
+		Amount: types.Int(in.Amount),
 	}
 }
 

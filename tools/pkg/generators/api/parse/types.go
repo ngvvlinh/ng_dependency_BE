@@ -134,6 +134,17 @@ func (inf *Info) IsNamedStruct(typ types.Type, inner *types.Type) bool {
 	return ok
 }
 
+func (inf *Info) IsNamedBasic(typ types.Type, inner *types.Type) bool {
+	typ = SkipPointer(typ)
+	named, ok := typ.(*types.Named)
+	if !ok {
+		return false
+	}
+	basic, ok := named.Underlying().(*types.Basic)
+	*inner = basic
+	return ok
+}
+
 func (inf *Info) IsArray(typ types.Type, inner *types.Type) bool {
 	slice, ok := typ.(*types.Slice)
 	if ok {
