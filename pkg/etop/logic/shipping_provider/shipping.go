@@ -122,7 +122,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 		}
 		res = append(res, services...)
 	case pbsp.All, pbsp.Unknown:
-		ch := make(chan []*model.AvailableShippingService, 3)
+		ch := make(chan []*model.AvailableShippingService, 2)
 		go func() {
 			defer catchAndRecover()
 
@@ -139,19 +139,19 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			defer func() { sendServices(ch, services, err) }()
 			services, err = ctrl.GHTK.GetAllShippingServices(ctx, args)
 		}()
-		go func() {
-			var services []*model.AvailableShippingService
-
-			if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
-				sendServices(ch, nil, nil)
-				return
-			}
-
-			var err error
-			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.VTPost.GetAllShippingServices(ctx, args)
-		}()
-		for i := 0; i < 3; i++ {
+		// go func() {
+		// 	var services []*model.AvailableShippingService
+		//
+		// 	if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
+		// 		sendServices(ch, nil, nil)
+		// 		return
+		// 	}
+		//
+		// 	var err error
+		// 	defer func() { sendServices(ch, services, err) }()
+		// 	services, err = ctrl.VTPost.GetAllShippingServices(ctx, args)
+		// }()
+		for i := 0; i < 2; i++ {
 			res = append(res, <-ch...)
 		}
 	default:
