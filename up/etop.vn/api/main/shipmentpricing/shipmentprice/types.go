@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/top/types/etc/route_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 
@@ -23,6 +24,7 @@ type ShipmentPrice struct {
 	UpdatedAt           time.Time                          `json:"-"`
 	DeletedAt           time.Time                          `json:"-"`
 	WLPartnerID         dot.ID                             `json:"-"`
+	Status              status3.Status                     `json:"status"`
 }
 
 type PricingDetail struct {

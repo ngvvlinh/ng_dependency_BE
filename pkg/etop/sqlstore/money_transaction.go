@@ -714,7 +714,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 						"Provider": strconv.Itoa(line.ExternalTotalShippingFee),
 					},
 				}
-			} else if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+			} else if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 				if ffm.ShippingType == 0 {
 					// backward compatible
 					// remove later
@@ -1116,7 +1116,7 @@ func FilterCombineExtraFfms(ffms []*shipmodel.Fulfillment) []*shipmodel.Fulfillm
 		}
 		// -- end backward compatible
 
-		if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+		if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 			continue
 		}
 		res = append(res, ffm)
@@ -1240,7 +1240,7 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	}
 	// -- end backward compatible
 
-	if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+	if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Fulfillment #%v can not be paid by Etop", ffm.ShippingCode)
 	}
 	return nil

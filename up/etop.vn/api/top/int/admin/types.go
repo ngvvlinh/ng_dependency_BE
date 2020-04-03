@@ -7,6 +7,8 @@ import (
 	"etop.vn/api/top/int/types"
 	common "etop.vn/api/top/types/common"
 	credit_type "etop.vn/api/top/types/etc/credit_type"
+	"etop.vn/api/top/types/etc/filter_type"
+	"etop.vn/api/top/types/etc/location_type"
 	notifier_entity "etop.vn/api/top/types/etc/notifier_entity"
 	"etop.vn/api/top/types/etc/route_type"
 	shipping "etop.vn/api/top/types/etc/shipping"
@@ -213,7 +215,9 @@ type GetMoneyTransactionShippingEtopsRequest struct {
 func (m *GetMoneyTransactionShippingEtopsRequest) Reset() {
 	*m = GetMoneyTransactionShippingEtopsRequest{}
 }
-func (m *GetMoneyTransactionShippingEtopsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetMoneyTransactionShippingEtopsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type ConfirmMoneyTransactionShippingEtopRequest struct {
 	Id          dot.ID `json:"id"`
@@ -302,6 +306,7 @@ type ShipmentPrice struct {
 	Details             []*PricingDetail                   `json:"details"`
 	CreatedAt           time.Time                          `json:"created_at"`
 	UpdatedAt           time.Time                          `json:"updated_at"`
+	Status              status3.Status                     `json:"status"`
 }
 
 func (m *ShipmentPrice) String() string { return jsonx.MustMarshalToString(m) }
@@ -356,6 +361,7 @@ type UpdateShipmentPriceRequest struct {
 	UrbanTypes          []route_type.UrbanType             `json:"urban_types"`
 	PriorityPoint       int                                `json:"priority_point"`
 	Details             []*PricingDetail                   `json:"details"`
+	Status              status3.Status                     `json:"status"`
 }
 
 func (m *UpdateShipmentPriceRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -380,7 +386,9 @@ type UpdateShipmentPricePriorityPointRequest struct {
 	PriorityPoint int    `json:"priority_point"`
 }
 
-func (m *UpdateShipmentPricePriorityPointRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *UpdateShipmentPricePriorityPointRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type CustomRegion struct {
 	ID            dot.ID    `json:"id"`
@@ -417,16 +425,46 @@ type GetCustomRegionsResponse struct {
 func (m *GetCustomRegionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipmentService struct {
-	ID           dot.ID         `json:"id"`
-	ConnectionID dot.ID         `json:"connection_id"`
-	Name         string         `json:"name"`
-	EdCode       string         `json:"ed_code"`
-	ServiceIDs   []string       `json:"service_ids"`
-	Description  string         `json:"description"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	Status       status3.Status `json:"status"`
-	ImageURL     string         `json:"image_url"`
+	ID                 dot.ID               `json:"id"`
+	ConnectionID       dot.ID               `json:"connection_id"`
+	Name               string               `json:"name"`
+	EdCode             string               `json:"ed_code"`
+	ServiceIDs         []string             `json:"service_ids"`
+	Description        string               `json:"description"`
+	CreatedAt          time.Time            `json:"created_at"`
+	UpdatedAt          time.Time            `json:"updated_at"`
+	Status             status3.Status       `json:"status"`
+	ImageURL           string               `json:"image_url"`
+	AvailableLocations []*AvailableLocation `json:"available_locations"`
+	BlacklistLocations []*BlacklistLocation `json:"blacklist_locations"`
+	OtherCondition     *OtherCondition      `json:"other_condition"`
+}
+
+func (m *OtherCondition) String() string { return jsonx.MustMarshalToString(m) }
+
+type AvailableLocation struct {
+	FilterType           filter_type.FilterType             `json:"filter_type"`
+	ShippingLocationType location_type.ShippingLocationType `json:"shipping_location_type"`
+	RegionTypes          []location_type.RegionType         `json:"regions"`
+	CustomRegionIDs      []dot.ID                           `json:"custom_region_ids"`
+	ProvinceCodes        []string                           `json:"province_codes"`
+}
+
+func (m *AvailableLocation) String() string { return jsonx.MustMarshalToString(m) }
+
+type BlacklistLocation struct {
+	ShippingLocationType location_type.ShippingLocationType `json:"shipping_location_type"`
+	ProvinceCodes        []string                           `json:"province_codes"`
+	DistrictCodes        []string                           `json:"district_codes"`
+	WardCodes            []string                           `json:"ward_codes"`
+	Reason               string                             `json:"reason"`
+}
+
+func (m *BlacklistLocation) String() string { return jsonx.MustMarshalToString(m) }
+
+type OtherCondition struct {
+	MinWeight int `json:"min_weight"`
+	MaxWeight int `json:"max_weight"`
 }
 
 func (m *ShipmentService) String() string { return jsonx.MustMarshalToString(m) }
@@ -438,28 +476,50 @@ type GetShipmentServicesResponse struct {
 func (m *GetShipmentServicesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateShipmentServiceRequest struct {
-	ConnectionID dot.ID   `json:"connection_id"`
-	Name         string   `json:"name"`
-	EdCode       string   `json:"ed_code"`
-	ServiceIDs   []string `json:"service_ids"`
-	Description  string   `json:"description"`
-	ImageURL     string   `json:"image_url"`
+	ConnectionID       dot.ID               `json:"connection_id"`
+	Name               string               `json:"name"`
+	EdCode             string               `json:"ed_code"`
+	ServiceIDs         []string             `json:"service_ids"`
+	Description        string               `json:"description"`
+	ImageURL           string               `json:"image_url"`
+	OtherCondition     *OtherCondition      `json:"other_condition"`
+	AvailableLocations []*AvailableLocation `json:"available_locations"`
+	BlacklistLocations []*BlacklistLocation `json:"blacklist_locations"`
 }
 
 func (m *CreateShipmentServiceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShipmentServiceRequest struct {
-	ID           dot.ID             `json:"id"`
-	ConnectionID dot.ID             `json:"connection_id"`
-	Name         string             `json:"name"`
-	EdCode       string             `json:"ed_code"`
-	ServiceIDs   []string           `json:"service_ids"`
-	Description  string             `json:"description"`
-	ImageURL     string             `json:"image_url"`
-	Status       status3.NullStatus `json:"status"`
+	ID             dot.ID             `json:"id"`
+	ConnectionID   dot.ID             `json:"connection_id"`
+	Name           string             `json:"name"`
+	EdCode         string             `json:"ed_code"`
+	ServiceIDs     []string           `json:"service_ids"`
+	Description    string             `json:"description"`
+	ImageURL       string             `json:"image_url"`
+	Status         status3.NullStatus `json:"status"`
+	OtherCondition *OtherCondition    `json:"other_condition"`
 }
 
 func (m *UpdateShipmentServiceRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateShipmentServicesAvailableLocationsRequest struct {
+	IDs                []dot.ID             `json:"ids"`
+	AvailableLocations []*AvailableLocation `json:"available_locations"`
+}
+
+func (m *UpdateShipmentServicesAvailableLocationsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type UpdateShipmentServicesBlacklistLocationsRequest struct {
+	IDs                []dot.ID             `json:"ids"`
+	BlacklistLocations []*BlacklistLocation `json:"blacklist_locations"`
+}
+
+func (m *UpdateShipmentServicesBlacklistLocationsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type ShipmentPriceList struct {
 	ID          dot.ID    `json:"id"`
@@ -493,3 +553,20 @@ type UpdateShipmentPriceListRequest struct {
 }
 
 func (m *UpdateShipmentPriceListRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+// Use to test shipment prices
+type GetShippingServicesRequest struct {
+	ShipmentPriceListID dot.ID `json:"shipment_price_list_id"`
+
+	ConnectionIDs    []dot.ID     `json:"connection_ids"`
+	FromProvinceCode string       `json:"from_province_code"`
+	FromDistrictCode string       `json:"from_district_code"`
+	ToProvinceCode   string       `json:"to_province_code"`
+	ToDistrictCode   string       `json:"to_district_code"`
+	GrossWeight      int          `json:"gross_weight"`
+	TotalCodAmount   int          `json:"total_cod_amount"`
+	BasketValue      int          `json:"basket_value"`
+	IncludeInsurance dot.NullBool `json:"include_insurance"`
+}
+
+func (m *GetShippingServicesRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -121,14 +121,15 @@ func (h QueryServiceHandler) HandleGetCustomRegion(ctx context.Context, msg *Get
 	return err
 }
 
-type GetCustomRegionByProvinceCodeQuery struct {
+type GetCustomRegionByCodeQuery struct {
 	ProvinceCode string
+	DistrictCode string
 
 	Result *CustomRegion `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetCustomRegionByProvinceCode(ctx context.Context, msg *GetCustomRegionByProvinceCodeQuery) (err error) {
-	msg.Result, err = h.inner.GetCustomRegionByProvinceCode(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetCustomRegionByCode(ctx context.Context, msg *GetCustomRegionByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomRegionByCode(msg.GetArgs(ctx))
 	return err
 }
 
@@ -161,13 +162,13 @@ func (q *CreateCustomRegionCommand) command() {}
 func (q *DeleteCustomRegionCommand) command() {}
 func (q *UpdateCustomRegionCommand) command() {}
 
-func (q *FindLocationQuery) query()                  {}
-func (q *FindOrGetLocationQuery) query()             {}
-func (q *GetAllLocationsQuery) query()               {}
-func (q *GetCustomRegionQuery) query()               {}
-func (q *GetCustomRegionByProvinceCodeQuery) query() {}
-func (q *GetLocationQuery) query()                   {}
-func (q *ListCustomRegionsQuery) query()             {}
+func (q *FindLocationQuery) query()          {}
+func (q *FindOrGetLocationQuery) query()     {}
+func (q *GetAllLocationsQuery) query()       {}
+func (q *GetCustomRegionQuery) query()       {}
+func (q *GetCustomRegionByCodeQuery) query() {}
+func (q *GetLocationQuery) query()           {}
+func (q *ListCustomRegionsQuery) query()     {}
 
 // implement conversion
 
@@ -272,9 +273,10 @@ func (q *GetCustomRegionQuery) GetArgs(ctx context.Context) (_ context.Context, 
 		q.ID
 }
 
-func (q *GetCustomRegionByProvinceCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ProvinceCode string) {
+func (q *GetCustomRegionByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ProvinceCode string, DistrictCode string) {
 	return ctx,
-		q.ProvinceCode
+		q.ProvinceCode,
+		q.DistrictCode
 }
 
 func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetLocationQueryArgs) {
@@ -336,7 +338,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleFindOrGetLocation)
 	b.AddHandler(h.HandleGetAllLocations)
 	b.AddHandler(h.HandleGetCustomRegion)
-	b.AddHandler(h.HandleGetCustomRegionByProvinceCode)
+	b.AddHandler(h.HandleGetCustomRegionByCode)
 	b.AddHandler(h.HandleGetLocation)
 	b.AddHandler(h.HandleListCustomRegions)
 	return QueryBus{b}

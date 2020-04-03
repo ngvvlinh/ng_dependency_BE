@@ -100,6 +100,7 @@ type Config struct {
 
 	FlagEnablePermission        string `yaml:"flag_enable_permission"`
 	FlagEnableNewLinkInvitation bool   `yaml:"flag_enable_new_link_invitation"`
+	FlagApplyShipmentPrice      bool   `yaml:"flag_apply_shipment_price"`
 }
 
 // Default ...

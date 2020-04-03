@@ -13,7 +13,8 @@ import (
 )
 
 /*
-Custom conversions: (none)
+Custom conversions:
+    updateShipmentService    // in use
 
 Ignored functions: (none)
 */
@@ -23,6 +24,60 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*shipmentservicemodel.AvailableLocation)(nil), (*shipmentservice.AvailableLocation)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(arg.(*shipmentservicemodel.AvailableLocation), out.(*shipmentservice.AvailableLocation))
+		return nil
+	})
+	s.Register(([]*shipmentservicemodel.AvailableLocation)(nil), (*[]*shipmentservice.AvailableLocation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservicemodel_AvailableLocations_shipmentservice_AvailableLocations(arg.([]*shipmentservicemodel.AvailableLocation))
+		*out.(*[]*shipmentservice.AvailableLocation) = out0
+		return nil
+	})
+	s.Register((*shipmentservice.AvailableLocation)(nil), (*shipmentservicemodel.AvailableLocation)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservice_AvailableLocation_shipmentservicemodel_AvailableLocation(arg.(*shipmentservice.AvailableLocation), out.(*shipmentservicemodel.AvailableLocation))
+		return nil
+	})
+	s.Register(([]*shipmentservice.AvailableLocation)(nil), (*[]*shipmentservicemodel.AvailableLocation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservice_AvailableLocations_shipmentservicemodel_AvailableLocations(arg.([]*shipmentservice.AvailableLocation))
+		*out.(*[]*shipmentservicemodel.AvailableLocation) = out0
+		return nil
+	})
+	s.Register((*shipmentservicemodel.BlacklistLocation)(nil), (*shipmentservice.BlacklistLocation)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(arg.(*shipmentservicemodel.BlacklistLocation), out.(*shipmentservice.BlacklistLocation))
+		return nil
+	})
+	s.Register(([]*shipmentservicemodel.BlacklistLocation)(nil), (*[]*shipmentservice.BlacklistLocation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservicemodel_BlacklistLocations_shipmentservice_BlacklistLocations(arg.([]*shipmentservicemodel.BlacklistLocation))
+		*out.(*[]*shipmentservice.BlacklistLocation) = out0
+		return nil
+	})
+	s.Register((*shipmentservice.BlacklistLocation)(nil), (*shipmentservicemodel.BlacklistLocation)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservice_BlacklistLocation_shipmentservicemodel_BlacklistLocation(arg.(*shipmentservice.BlacklistLocation), out.(*shipmentservicemodel.BlacklistLocation))
+		return nil
+	})
+	s.Register(([]*shipmentservice.BlacklistLocation)(nil), (*[]*shipmentservicemodel.BlacklistLocation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservice_BlacklistLocations_shipmentservicemodel_BlacklistLocations(arg.([]*shipmentservice.BlacklistLocation))
+		*out.(*[]*shipmentservicemodel.BlacklistLocation) = out0
+		return nil
+	})
+	s.Register((*shipmentservicemodel.OtherCondition)(nil), (*shipmentservice.OtherCondition)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg.(*shipmentservicemodel.OtherCondition), out.(*shipmentservice.OtherCondition))
+		return nil
+	})
+	s.Register(([]*shipmentservicemodel.OtherCondition)(nil), (*[]*shipmentservice.OtherCondition)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservicemodel_OtherConditions_shipmentservice_OtherConditions(arg.([]*shipmentservicemodel.OtherCondition))
+		*out.(*[]*shipmentservice.OtherCondition) = out0
+		return nil
+	})
+	s.Register((*shipmentservice.OtherCondition)(nil), (*shipmentservicemodel.OtherCondition)(nil), func(arg, out interface{}) error {
+		Convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(arg.(*shipmentservice.OtherCondition), out.(*shipmentservicemodel.OtherCondition))
+		return nil
+	})
+	s.Register(([]*shipmentservice.OtherCondition)(nil), (*[]*shipmentservicemodel.OtherCondition)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentservice_OtherConditions_shipmentservicemodel_OtherConditions(arg.([]*shipmentservice.OtherCondition))
+		*out.(*[]*shipmentservicemodel.OtherCondition) = out0
+		return nil
+	})
 	s.Register((*shipmentservicemodel.ShipmentService)(nil), (*shipmentservice.ShipmentService)(nil), func(arg, out interface{}) error {
 		Convert_shipmentservicemodel_ShipmentService_shipmentservice_ShipmentService(arg.(*shipmentservicemodel.ShipmentService), out.(*shipmentservice.ShipmentService))
 		return nil
@@ -51,6 +106,192 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
+//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.AvailableLocation --//
+
+func Convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(arg *shipmentservicemodel.AvailableLocation, out *shipmentservice.AvailableLocation) *shipmentservice.AvailableLocation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservice.AvailableLocation{}
+	}
+	convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(arg, out)
+	return out
+}
+
+func convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(arg *shipmentservicemodel.AvailableLocation, out *shipmentservice.AvailableLocation) {
+	out.FilterType = arg.FilterType                     // simple assign
+	out.ShippingLocationType = arg.ShippingLocationType // simple assign
+	out.RegionTypes = arg.RegionTypes                   // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs           // simple assign
+	out.ProvinceCodes = arg.ProvinceCodes               // simple assign
+}
+
+func Convert_shipmentservicemodel_AvailableLocations_shipmentservice_AvailableLocations(args []*shipmentservicemodel.AvailableLocation) (outs []*shipmentservice.AvailableLocation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservice.AvailableLocation, len(args))
+	outs = make([]*shipmentservice.AvailableLocation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipmentservice_AvailableLocation_shipmentservicemodel_AvailableLocation(arg *shipmentservice.AvailableLocation, out *shipmentservicemodel.AvailableLocation) *shipmentservicemodel.AvailableLocation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservicemodel.AvailableLocation{}
+	}
+	convert_shipmentservice_AvailableLocation_shipmentservicemodel_AvailableLocation(arg, out)
+	return out
+}
+
+func convert_shipmentservice_AvailableLocation_shipmentservicemodel_AvailableLocation(arg *shipmentservice.AvailableLocation, out *shipmentservicemodel.AvailableLocation) {
+	out.FilterType = arg.FilterType                     // simple assign
+	out.ShippingLocationType = arg.ShippingLocationType // simple assign
+	out.RegionTypes = arg.RegionTypes                   // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs           // simple assign
+	out.ProvinceCodes = arg.ProvinceCodes               // simple assign
+}
+
+func Convert_shipmentservice_AvailableLocations_shipmentservicemodel_AvailableLocations(args []*shipmentservice.AvailableLocation) (outs []*shipmentservicemodel.AvailableLocation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservicemodel.AvailableLocation, len(args))
+	outs = make([]*shipmentservicemodel.AvailableLocation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservice_AvailableLocation_shipmentservicemodel_AvailableLocation(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.BlacklistLocation --//
+
+func Convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(arg *shipmentservicemodel.BlacklistLocation, out *shipmentservice.BlacklistLocation) *shipmentservice.BlacklistLocation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservice.BlacklistLocation{}
+	}
+	convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(arg, out)
+	return out
+}
+
+func convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(arg *shipmentservicemodel.BlacklistLocation, out *shipmentservice.BlacklistLocation) {
+	out.ShippingLocationType = arg.ShippingLocationType // simple assign
+	out.ProvinceCodes = arg.ProvinceCodes               // simple assign
+	out.DistrictCodes = arg.DistrictCodes               // simple assign
+	out.WardCodes = arg.WardCodes                       // simple assign
+	out.Reason = arg.Reason                             // simple assign
+}
+
+func Convert_shipmentservicemodel_BlacklistLocations_shipmentservice_BlacklistLocations(args []*shipmentservicemodel.BlacklistLocation) (outs []*shipmentservice.BlacklistLocation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservice.BlacklistLocation, len(args))
+	outs = make([]*shipmentservice.BlacklistLocation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipmentservice_BlacklistLocation_shipmentservicemodel_BlacklistLocation(arg *shipmentservice.BlacklistLocation, out *shipmentservicemodel.BlacklistLocation) *shipmentservicemodel.BlacklistLocation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservicemodel.BlacklistLocation{}
+	}
+	convert_shipmentservice_BlacklistLocation_shipmentservicemodel_BlacklistLocation(arg, out)
+	return out
+}
+
+func convert_shipmentservice_BlacklistLocation_shipmentservicemodel_BlacklistLocation(arg *shipmentservice.BlacklistLocation, out *shipmentservicemodel.BlacklistLocation) {
+	out.ShippingLocationType = arg.ShippingLocationType // simple assign
+	out.ProvinceCodes = arg.ProvinceCodes               // simple assign
+	out.DistrictCodes = arg.DistrictCodes               // simple assign
+	out.WardCodes = arg.WardCodes                       // simple assign
+	out.Reason = arg.Reason                             // simple assign
+}
+
+func Convert_shipmentservice_BlacklistLocations_shipmentservicemodel_BlacklistLocations(args []*shipmentservice.BlacklistLocation) (outs []*shipmentservicemodel.BlacklistLocation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservicemodel.BlacklistLocation, len(args))
+	outs = make([]*shipmentservicemodel.BlacklistLocation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservice_BlacklistLocation_shipmentservicemodel_BlacklistLocation(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.OtherCondition --//
+
+func Convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg *shipmentservicemodel.OtherCondition, out *shipmentservice.OtherCondition) *shipmentservice.OtherCondition {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservice.OtherCondition{}
+	}
+	convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg, out)
+	return out
+}
+
+func convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg *shipmentservicemodel.OtherCondition, out *shipmentservice.OtherCondition) {
+	out.MinWeight = arg.MinWeight // simple assign
+	out.MaxWeight = arg.MaxWeight // simple assign
+}
+
+func Convert_shipmentservicemodel_OtherConditions_shipmentservice_OtherConditions(args []*shipmentservicemodel.OtherCondition) (outs []*shipmentservice.OtherCondition) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservice.OtherCondition, len(args))
+	outs = make([]*shipmentservice.OtherCondition, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(arg *shipmentservice.OtherCondition, out *shipmentservicemodel.OtherCondition) *shipmentservicemodel.OtherCondition {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentservicemodel.OtherCondition{}
+	}
+	convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(arg, out)
+	return out
+}
+
+func convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(arg *shipmentservice.OtherCondition, out *shipmentservicemodel.OtherCondition) {
+	out.MinWeight = arg.MinWeight // simple assign
+	out.MaxWeight = arg.MaxWeight // simple assign
+}
+
+func Convert_shipmentservice_OtherConditions_shipmentservicemodel_OtherConditions(args []*shipmentservice.OtherCondition) (outs []*shipmentservicemodel.OtherCondition) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentservicemodel.OtherCondition, len(args))
+	outs = make([]*shipmentservicemodel.OtherCondition, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert etop.vn/api/main/shipmentpricing/shipmentservice.ShipmentService --//
 
 func Convert_shipmentservicemodel_ShipmentService_shipmentservice_ShipmentService(arg *shipmentservicemodel.ShipmentService, out *shipmentservice.ShipmentService) *shipmentservice.ShipmentService {
@@ -77,6 +318,9 @@ func convert_shipmentservicemodel_ShipmentService_shipmentservice_ShipmentServic
 	out.WLPartnerID = arg.WLPartnerID   // simple assign
 	out.ImageURL = arg.ImageURL         // simple assign
 	out.Status = arg.Status             // simple assign
+	out.AvailableLocations = Convert_shipmentservicemodel_AvailableLocations_shipmentservice_AvailableLocations(arg.AvailableLocations)
+	out.BlacklistLocations = Convert_shipmentservicemodel_BlacklistLocations_shipmentservice_BlacklistLocations(arg.BlacklistLocations)
+	out.OtherCondition = Convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg.OtherCondition, nil)
 }
 
 func Convert_shipmentservicemodel_ShipmentServices_shipmentservice_ShipmentServices(args []*shipmentservicemodel.ShipmentService) (outs []*shipmentservice.ShipmentService) {
@@ -115,6 +359,9 @@ func convert_shipmentservice_ShipmentService_shipmentservicemodel_ShipmentServic
 	out.WLPartnerID = arg.WLPartnerID   // simple assign
 	out.ImageURL = arg.ImageURL         // simple assign
 	out.Status = arg.Status             // simple assign
+	out.AvailableLocations = Convert_shipmentservice_AvailableLocations_shipmentservicemodel_AvailableLocations(arg.AvailableLocations)
+	out.BlacklistLocations = Convert_shipmentservice_BlacklistLocations_shipmentservicemodel_BlacklistLocations(arg.BlacklistLocations)
+	out.OtherCondition = Convert_shipmentservice_OtherCondition_shipmentservicemodel_OtherCondition(arg.OtherCondition, nil)
 }
 
 func Convert_shipmentservice_ShipmentServices_shipmentservicemodel_ShipmentServices(args []*shipmentservice.ShipmentService) (outs []*shipmentservicemodel.ShipmentService) {
@@ -141,18 +388,21 @@ func Apply_shipmentservice_CreateShipmentServiceArgs_shipmentservice_ShipmentSer
 }
 
 func apply_shipmentservice_CreateShipmentServiceArgs_shipmentservice_ShipmentService(arg *shipmentservice.CreateShipmentServiceArgs, out *shipmentservice.ShipmentService) {
-	out.ID = 0                          // zero value
-	out.ConnectionID = arg.ConnectionID // simple assign
-	out.Name = arg.Name                 // simple assign
-	out.EdCode = arg.EdCode             // simple assign
-	out.ServiceIDs = arg.ServiceIDs     // simple assign
-	out.Description = arg.Description   // simple assign
-	out.CreatedAt = time.Time{}         // zero value
-	out.UpdatedAt = time.Time{}         // zero value
-	out.DeletedAt = time.Time{}         // zero value
-	out.WLPartnerID = 0                 // zero value
-	out.ImageURL = arg.ImageURL         // simple assign
-	out.Status = 0                      // zero value
+	out.ID = 0                                      // zero value
+	out.ConnectionID = arg.ConnectionID             // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.EdCode = arg.EdCode                         // simple assign
+	out.ServiceIDs = arg.ServiceIDs                 // simple assign
+	out.Description = arg.Description               // simple assign
+	out.CreatedAt = time.Time{}                     // zero value
+	out.UpdatedAt = time.Time{}                     // zero value
+	out.DeletedAt = time.Time{}                     // zero value
+	out.WLPartnerID = 0                             // zero value
+	out.ImageURL = arg.ImageURL                     // simple assign
+	out.Status = 0                                  // zero value
+	out.AvailableLocations = arg.AvailableLocations // simple assign
+	out.BlacklistLocations = arg.BlacklistLocations // simple assign
+	out.OtherCondition = arg.OtherCondition         // simple assign
 }
 
 func Apply_shipmentservice_UpdateShipmentServiceArgs_shipmentservice_ShipmentService(arg *shipmentservice.UpdateShipmentServiceArgs, out *shipmentservice.ShipmentService) *shipmentservice.ShipmentService {
@@ -162,21 +412,24 @@ func Apply_shipmentservice_UpdateShipmentServiceArgs_shipmentservice_ShipmentSer
 	if out == nil {
 		out = &shipmentservice.ShipmentService{}
 	}
-	apply_shipmentservice_UpdateShipmentServiceArgs_shipmentservice_ShipmentService(arg, out)
+	updateShipmentService(arg, out)
 	return out
 }
 
 func apply_shipmentservice_UpdateShipmentServiceArgs_shipmentservice_ShipmentService(arg *shipmentservice.UpdateShipmentServiceArgs, out *shipmentservice.ShipmentService) {
-	out.ID = arg.ID                           // simple assign
-	out.ConnectionID = arg.ConnectionID       // simple assign
-	out.Name = arg.Name                       // simple assign
-	out.EdCode = arg.EdCode                   // simple assign
-	out.ServiceIDs = arg.ServiceIDs           // simple assign
-	out.Description = arg.Description         // simple assign
-	out.CreatedAt = out.CreatedAt             // no change
-	out.UpdatedAt = out.UpdatedAt             // no change
-	out.DeletedAt = out.DeletedAt             // no change
-	out.WLPartnerID = out.WLPartnerID         // no change
-	out.ImageURL = arg.ImageURL               // simple assign
-	out.Status = arg.Status.Apply(out.Status) // apply change
+	out.ID = arg.ID                                 // simple assign
+	out.ConnectionID = arg.ConnectionID             // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.EdCode = arg.EdCode                         // simple assign
+	out.ServiceIDs = arg.ServiceIDs                 // simple assign
+	out.Description = arg.Description               // simple assign
+	out.CreatedAt = out.CreatedAt                   // no change
+	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.DeletedAt = out.DeletedAt                   // no change
+	out.WLPartnerID = out.WLPartnerID               // no change
+	out.ImageURL = arg.ImageURL                     // simple assign
+	out.Status = arg.Status.Apply(out.Status)       // apply change
+	out.AvailableLocations = out.AvailableLocations // no change
+	out.BlacklistLocations = out.BlacklistLocations // no change
+	out.OtherCondition = arg.OtherCondition         // simple assign
 }

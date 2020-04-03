@@ -107,8 +107,8 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ nhận không hợp lệ: %v", err)
 	}
 
-	fromDistrict, _ := fromQuery.Result.District, fromQuery.Result.Province
-	topDistrict, _ := toQuery.Result.District, toQuery.Result.Province
+	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
+	topDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
 	if fromDistrict == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi không hợp lệ")
 	}
@@ -129,7 +129,9 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 	return &GetShippingServicesArgs{
 		ConnectionIDs:    q.ConnectionIDs,
 		FromDistrictCode: fromDistrict.Code,
+		FromProvinceCode: fromProvince.Code,
 		ToDistrictCode:   topDistrict.Code,
+		ToProvinceCode:   toProvince.Code,
 		ChargeableWeight: chargeableWeight,
 		Length:           length,
 		Width:            width,

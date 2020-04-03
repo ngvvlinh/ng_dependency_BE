@@ -42,9 +42,14 @@ type ShopConnectionSignUpArgs struct {
 }
 
 type GetShippingServicesArgs struct {
-	ConnectionIDs    []dot.ID
-	FromDistrictCode string
-	ToDistrictCode   string
+	ShipmentPriceListID dot.ID
+	ConnectionIDs       []dot.ID
+	FromDistrictCode    string
+	FromProvinceCode    string
+	FromWardCode        string
+	ToDistrictCode      string
+	ToProvinceCode      string
+	ToWardCode          string
 
 	ChargeableWeight int
 	Length           int

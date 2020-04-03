@@ -26,7 +26,7 @@ type Aggregate interface {
 
 	DeleteConnection(context.Context, *DeleteConnectionArgs) (deleted int, _ error)
 
-	CreateTopshipConnection(context.Context, *CreateTopshipConnectionArgs) (*Connection, error)
+	CreateBuiltinConnection(context.Context, *CreateBuiltinConnectionArgs) (*Connection, error)
 
 	// -- Shop Connection -- //
 	CreateShopConnection(context.Context, *CreateShopConnectionArgs) (*ShopConnection, error)
@@ -88,8 +88,9 @@ type DeleteConnectionArgs struct {
 	PartnerID dot.ID
 }
 
-type CreateTopshipConnectionArgs struct {
+type CreateBuiltinConnectionArgs struct {
 	ID           dot.ID
+	Name         string
 	Token        string
 	ExternalData *ShopConnectionExternalData
 }

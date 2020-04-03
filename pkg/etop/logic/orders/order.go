@@ -25,12 +25,10 @@ import (
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
@@ -982,23 +980,6 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 	}
 	if err = convertpb.OrderShippingToModel(ctx, shipping, order); err != nil {
 		return nil, err
-	}
-
-	if order.ShopShipping != nil {
-		shippingServiceCode := order.ShopShipping.GetShippingServiceCode()
-		carrier := order.ShopShipping.GetShippingProvider()
-
-		// handle etop custom service code here
-		// TODO: refactor, move to shipping_provider
-		// check ETOP service
-		shippingServiceName, ok := etop_shipping_price.ParseEtopServiceCode(shippingServiceCode)
-		if !ok {
-			shippingServiceName, ok = ctrl.ParseServiceCode(carrier, shippingServiceCode)
-		}
-		if carrier != 0 && !ok {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ %v", wl.X(ctx).CSEmail)
-		}
-		order.ShopShipping.ExternalServiceName = shippingServiceName
 	}
 
 	return order, nil

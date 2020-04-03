@@ -503,17 +503,21 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"admin.Notification/CreateNotifications": {Type: EtopAdmin},
 
-	"admin.Connection/GetConnections":          {Type: EtopAdmin},
-	"admin.Connection/ConfirmConnection":       {Type: EtopAdmin},
-	"admin.Connection/DisableConnection":       {Type: EtopAdmin},
-	"admin.Connection/CreateTopshipConnection": {Type: EtopAdmin},
-	"admin.Connection/GetConnectionServices":   {Type: EtopAdmin},
+	"admin.Connection/GetConnections":              {Type: EtopAdmin},
+	"admin.Connection/ConfirmConnection":           {Type: EtopAdmin},
+	"admin.Connection/DisableConnection":           {Type: EtopAdmin},
+	"admin.Connection/CreateBuiltinConnection":     {Type: EtopAdmin},
+	"admin.Connection/GetBuiltinShopConnections":   {Type: EtopAdmin},
+	"admin.Connection/UpdateBuiltinShopConnection": {Type: EtopAdmin},
+	"admin.Connection/GetConnectionServices":       {Type: EtopAdmin},
 
-	"admin.ShipmentPrice/GetShipmentServices":   {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShipmentService":    {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShipmentService": {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentService": {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShipmentService": {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentServices":                      {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentService":                       {Type: EtopAdmin},
+	"admin.ShipmentPrice/CreateShipmentService":                    {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentService":                    {Type: EtopAdmin},
+	"admin.ShipmentPrice/DeleteShipmentService":                    {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations": {Type: EtopAdmin},
+	"admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations": {Type: EtopAdmin},
 
 	"admin.ShipmentPrice/GetShipmentPriceLists":     {Type: EtopAdmin},
 	"admin.ShipmentPrice/GetShipmentPriceList":      {Type: EtopAdmin},
@@ -528,6 +532,8 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.ShipmentPrice/UpdateShipmentPrice":               {Type: EtopAdmin},
 	"admin.ShipmentPrice/DeleteShipmentPrice":               {Type: EtopAdmin},
 	"admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {Type: EtopAdmin},
+
+	"admin.ShipmentPrice/GetShippingServices": {Type: EtopAdmin},
 
 	"admin.Location/GetCustomRegion":    {Type: EtopAdmin},
 	"admin.Location/GetCustomRegions":   {Type: EtopAdmin},

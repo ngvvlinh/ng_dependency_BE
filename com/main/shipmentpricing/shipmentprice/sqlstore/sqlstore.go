@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/convert"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/model"
 	cm "etop.vn/backend/pkg/common"
@@ -42,6 +43,11 @@ func NewShipmentPriceStore(db *cmsql.Database) ShipmentPriceStoreFactory {
 
 func (s *ShipmentPriceStore) ID(id dot.ID) *ShipmentPriceStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *ShipmentPriceStore) Status(status status3.Status) *ShipmentPriceStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
 
@@ -87,7 +93,7 @@ func (s *ShipmentPriceStore) GetShipmentPrice() (*shipmentprice.ShipmentPrice, e
 }
 
 func (s *ShipmentPriceStore) ListShipmentPriceDBs() (res []*model.ShipmentPrice, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	err = query.Find((*model.ShipmentPrices)(&res))

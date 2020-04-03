@@ -43,5 +43,12 @@ func CheckShippingService(ffm *shipmodel.Fulfillment, services []*model.Availabl
 			"Số tiền phí giao hàng không hợp lệ cho dịch vụ %v: Phí trên đơn hàng %v, phí từ dịch vụ giao hàng: %v",
 			service.Name, ffm.ShippingServiceFee, service.ServiceFee)
 	}
+
+	if service.ShipmentServiceInfo != nil {
+		if !service.ShipmentServiceInfo.IsAvailable {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, service.ShipmentServiceInfo.ErrorMessage)
+		}
+	}
+
 	return service, nil
 }

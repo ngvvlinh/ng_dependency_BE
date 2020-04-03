@@ -18,6 +18,7 @@ import (
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	identitymodelx "etop.vn/backend/com/main/identity/modelx"
 	"etop.vn/backend/com/main/moneytx/modelx"
+	shippingcarrier "etop.vn/backend/com/main/shipping/carrier"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
@@ -47,6 +48,7 @@ var (
 	shipmentPriceListQuery pricelist.QueryBus
 	locationAggr           location.CommandBus
 	locationQuery          location.QueryBus
+	shipmentManager        *shippingcarrier.ShipmentManager
 )
 
 func Init(
@@ -62,6 +64,7 @@ func Init(
 	shipmentPriceListQ pricelist.QueryBus,
 	locationA location.CommandBus,
 	locationQ location.QueryBus,
+	shipmentM *shippingcarrier.ShipmentManager,
 ) {
 	eventBus = eventB
 	moneyTxQuery = moneyTxQ
@@ -75,6 +78,7 @@ func Init(
 	shipmentPriceListQuery = shipmentPriceListQ
 	locationAggr = locationA
 	locationQuery = locationQ
+	shipmentManager = shipmentM
 }
 
 func init() {

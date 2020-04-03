@@ -28,7 +28,7 @@ import (
 var _ carriertypes.ShipmentCarrier = &VTPostDriver{}
 
 var defaultDrivers = []string{
-	"shipping/shipment/topship/vtpost",
+	"shipping/shipment/builtin/vtpost",
 	"shipping/shipment/direct/vtpost",
 }
 

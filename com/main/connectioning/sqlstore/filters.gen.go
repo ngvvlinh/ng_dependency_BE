@@ -293,6 +293,25 @@ func (ft *ConnectionFilters) ByImageURLPtr(ImageURL *string) *sq.ColumnFilterPtr
 	}
 }
 
+func (ft *ConnectionFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *ConnectionFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
 type ShopConnectionFilters struct{ prefix string }
 
 func NewShopConnectionFilters(prefix string) ShopConnectionFilters {

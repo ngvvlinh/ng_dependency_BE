@@ -7,7 +7,10 @@ import (
 	"etop.vn/api/main/shipmentpricing/shipmentprice"
 	"etop.vn/api/main/shipmentpricing/shipmentservice"
 	"etop.vn/api/top/int/admin"
+	"etop.vn/api/top/int/types"
 	pbcm "etop.vn/api/top/types/common"
+	"etop.vn/backend/com/main/shipping/carrier"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 )
 
@@ -37,12 +40,15 @@ func (s *ShipmentPriceService) GetShipmentServices(ctx context.Context, r *GetSh
 
 func (s *ShipmentPriceService) CreateShipmentService(ctx context.Context, r *CreateShipmentServiceEndpoint) error {
 	cmd := &shipmentservice.CreateShipmentServiceCommand{
-		ConnectionID: r.ConnectionID,
-		Name:         r.Name,
-		EdCode:       r.EdCode,
-		ServiceIDs:   r.ServiceIDs,
-		Description:  r.Description,
-		ImageURL:     r.ImageURL,
+		ConnectionID:       r.ConnectionID,
+		Name:               r.Name,
+		EdCode:             r.EdCode,
+		ServiceIDs:         r.ServiceIDs,
+		Description:        r.Description,
+		ImageURL:           r.ImageURL,
+		AvailableLocations: convertpb.AvailableLocations(r.AvailableLocations),
+		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
+		OtherCondition:     convertpb.OtherCondition(r.OtherCondition),
 	}
 	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -53,14 +59,15 @@ func (s *ShipmentPriceService) CreateShipmentService(ctx context.Context, r *Cre
 
 func (s *ShipmentPriceService) UpdateShipmentService(ctx context.Context, r *UpdateShipmentServiceEndpoint) error {
 	cmd := &shipmentservice.UpdateShipmentServiceCommand{
-		ID:           r.ID,
-		ConnectionID: r.ConnectionID,
-		Name:         r.Name,
-		EdCode:       r.EdCode,
-		ServiceIDs:   r.ServiceIDs,
-		Description:  r.Description,
-		ImageURL:     r.ImageURL,
-		Status:       r.Status,
+		ID:             r.ID,
+		ConnectionID:   r.ConnectionID,
+		Name:           r.Name,
+		EdCode:         r.EdCode,
+		ServiceIDs:     r.ServiceIDs,
+		Description:    r.Description,
+		ImageURL:       r.ImageURL,
+		Status:         r.Status,
+		OtherCondition: convertpb.OtherCondition(r.OtherCondition),
 	}
 	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -77,6 +84,30 @@ func (s *ShipmentPriceService) DeleteShipmentService(ctx context.Context, r *Del
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
+	return nil
+}
+
+func (s *ShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx context.Context, r *UpdateShipmentServicesAvailableLocationsEndpoint) error {
+	cmd := &shipmentservice.UpdateShipmentServicesLocationConfigCommand{
+		IDs:                r.IDs,
+		AvailableLocations: convertpb.AvailableLocations(r.AvailableLocations),
+	}
+	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return nil
+}
+
+func (s *ShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx context.Context, r *UpdateShipmentServicesBlacklistLocationsEndpoint) error {
+	cmd := &shipmentservice.UpdateShipmentServicesLocationConfigCommand{
+		IDs:                r.IDs,
+		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
+	}
+	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
 }
 
@@ -156,6 +187,8 @@ func (s *ShipmentPriceService) DeleteShipmentPriceList(ctx context.Context, r *D
 
 //-- End ShipmentPriceList --//
 
+//-- ShipmentPrice --//
+
 func (s *ShipmentPriceService) GetShipmentPrice(ctx context.Context, r *GetShipmentPriceEndpoint) error {
 	query := &shipmentprice.GetShipmentPriceQuery{
 		ID: r.Id,
@@ -214,6 +247,7 @@ func (s *ShipmentPriceService) UpdateShipmentPrice(ctx context.Context, r *Updat
 		UrbanTypes:          r.UrbanTypes,
 		PriorityPoint:       r.PriorityPoint,
 		Details:             convertpb.PricingDetails(r.Details),
+		Status:              r.Status,
 	}
 	if err := shipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -248,5 +282,33 @@ func (s *ShipmentPriceService) UpdateShipmentPricesPriorityPoint(ctx context.Con
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return nil
+}
+
+//-- End ShipmentPrice --//
+
+func (s *ShipmentPriceService) GetShippingServices(ctx context.Context, r *GetShippingServicesEndpoint) error {
+	if r.ShipmentPriceListID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn bảng giá áp dụng")
+	}
+	args := &carrier.GetShippingServicesArgs{
+		ShipmentPriceListID: r.ShipmentPriceListID,
+		ConnectionIDs:       r.ConnectionIDs,
+		FromDistrictCode:    r.FromDistrictCode,
+		FromProvinceCode:    r.FromProvinceCode,
+		ToDistrictCode:      r.ToDistrictCode,
+		ToProvinceCode:      r.ToProvinceCode,
+		ChargeableWeight:    r.GrossWeight,
+		IncludeInsurance:    r.IncludeInsurance.Apply(false),
+		BasketValue:         r.BasketValue,
+		CODAmount:           r.TotalCodAmount,
+	}
+	resp, err := shipmentManager.GetShippingServices(ctx, 0, args)
+	if err != nil {
+		return err
+	}
+	r.Result = &types.GetShippingServicesResponse{
+		Services: convertpb.PbAvailableShippingServices(resp),
+	}
 	return nil
 }

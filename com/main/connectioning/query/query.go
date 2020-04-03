@@ -80,7 +80,7 @@ func (q *ConnectionQuery) GetShopConnectionByID(ctx context.Context, ShopID dot.
 
 func (q *ConnectionQuery) ListShopConnections(ctx context.Context, args *connectioning.ListShopConnectionsArgs) ([]*connectioning.ShopConnection, error) {
 	query := q.shopConnectionStore(ctx)
-	if args.ShopID == 0 {
+	if args.ShopID == 0 && !args.IncludeGlobal {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ListShopConnections failed. Invalid ShopID")
 	}
 	if len(args.ConnectionIDs) > 0 {
@@ -88,7 +88,7 @@ func (q *ConnectionQuery) ListShopConnections(ctx context.Context, args *connect
 	}
 
 	var res []*connectioning.ShopConnection
-	{
+	if args.ShopID != 0 {
 		query1 := query.Clone()
 		res1, err := query1.ShopID(args.ShopID).ListShopConnections()
 		if err != nil {

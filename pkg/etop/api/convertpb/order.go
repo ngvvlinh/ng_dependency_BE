@@ -13,7 +13,6 @@ import (
 	etop "etop.vn/api/top/int/etop"
 	"etop.vn/api/top/int/types"
 	"etop.vn/api/top/types/etc/gender"
-	"etop.vn/api/top/types/etc/shipping_provider"
 	addressmodel "etop.vn/backend/com/main/address/model"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -27,7 +26,6 @@ import (
 	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi/dot"
 )
@@ -474,21 +472,12 @@ func OrderShippingToModel(ctx context.Context, m *types.OrderShipping, mo *order
 
 	shippingServiceCode := cm.Coalesce(m.ShippingServiceCode, m.XServiceId)
 
-	// check ETOP service
-	shippingServiceName, ok := model.GetShippingServiceRegistry().GetName(shipping_provider.Etop, shippingServiceCode)
-	if !ok {
-		shippingServiceName, ok = model.GetShippingServiceRegistry().GetName(carrier, shippingServiceCode)
-	}
-	if carrier != 0 && !ok {
-		return cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ %v", wl.X(ctx).CSEmail)
-	}
-
 	orderShipping := &ordermodel.OrderShipping{
 		ShopAddress:         modelPickupAddress,
 		ReturnAddress:       modelReturnAddress,
 		ExternalServiceID:   shippingServiceCode,
 		ExternalShippingFee: cm.CoalesceInt(m.ShippingServiceFee, m.XShippingFee),
-		ExternalServiceName: shippingServiceName,
+		ExternalServiceName: m.ShippingServiceName,
 		ShippingProvider:    carrier,
 		ProviderServiceID:   cm.Coalesce(shippingServiceCode, m.XServiceId),
 		IncludeInsurance:    m.IncludeInsurance,
@@ -891,9 +880,11 @@ func PbShipmentServiceInfo(item *model.ShipmentServiceInfo) *types.ShipmentServi
 		return nil
 	}
 	return &types.ShipmentServiceInfo{
-		ID:   item.ID,
-		Code: item.Code,
-		Name: item.Name,
+		ID:           item.ID,
+		Code:         item.Code,
+		Name:         item.Name,
+		IsAvailable:  item.IsAvailable,
+		ErrorMessage: item.ErrorMessage,
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/top/types/etc/route_type"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/capi/dot"
 )
 
@@ -49,6 +50,7 @@ type UpdateShipmentPriceArgs struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	Status              status3.Status
 }
 
 type ListShipmentPricesArgs struct {
@@ -57,16 +59,17 @@ type ListShipmentPricesArgs struct {
 }
 
 type CalculatePriceArgs struct {
-	FromProvince      string
-	FromProvinceCode  string
-	FromDistrict      string
-	FromDistrictCode  string
-	ToProvince        string
-	ToProvinceCode    string
-	ToDistrict        string
-	ToDistrictCode    string
-	ShipmentServiceID dot.ID
-	Weight            int
+	ShipmentPriceListID dot.ID
+	FromProvince        string
+	FromProvinceCode    string
+	FromDistrict        string
+	FromDistrictCode    string
+	ToProvince          string
+	ToProvinceCode      string
+	ToDistrict          string
+	ToDistrictCode      string
+	ShipmentServiceID   dot.ID
+	Weight              int
 }
 
 type CalculatePriceResult struct {

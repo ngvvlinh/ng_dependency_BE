@@ -16,6 +16,8 @@ type Aggregate interface {
 	UpdateShipmentService(context.Context, *UpdateShipmentServiceArgs) error
 
 	DeleteShipmentService(ctx context.Context, ID dot.ID) error
+
+	UpdateShipmentServicesLocationConfig(context.Context, *UpdateShipmentServicesLocationConfigArgs) (updated int, _ error)
 }
 
 type QueryService interface {
@@ -28,22 +30,32 @@ type QueryService interface {
 
 // +convert:create=ShipmentService
 type CreateShipmentServiceArgs struct {
-	ConnectionID dot.ID
-	Name         string
-	EdCode       string
-	ServiceIDs   []string
-	Description  string
-	ImageURL     string
+	ConnectionID       dot.ID
+	Name               string
+	EdCode             string
+	ServiceIDs         []string
+	Description        string
+	ImageURL           string
+	AvailableLocations []*AvailableLocation
+	BlacklistLocations []*BlacklistLocation
+	OtherCondition     *OtherCondition
 }
 
 // +convert:update=ShipmentService
 type UpdateShipmentServiceArgs struct {
-	ID           dot.ID
-	ConnectionID dot.ID
-	Name         string
-	EdCode       string
-	ServiceIDs   []string
-	Description  string
-	ImageURL     string
-	Status       status3.NullStatus
+	ID             dot.ID
+	ConnectionID   dot.ID
+	Name           string
+	EdCode         string
+	ServiceIDs     []string
+	Description    string
+	ImageURL       string
+	Status         status3.NullStatus
+	OtherCondition *OtherCondition
+}
+
+type UpdateShipmentServicesLocationConfigArgs struct {
+	IDs                []dot.ID
+	AvailableLocations []*AvailableLocation
+	BlacklistLocations []*BlacklistLocation
 }

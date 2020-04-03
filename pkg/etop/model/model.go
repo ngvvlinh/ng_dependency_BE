@@ -336,9 +336,11 @@ type ConnectionInfo struct {
 }
 
 type ShipmentServiceInfo struct {
-	ID   dot.ID
-	Code string
-	Name string
+	ID           dot.ID
+	Code         string
+	Name         string
+	IsAvailable  bool
+	ErrorMessage string
 }
 
 type ShipmentPriceInfo struct {

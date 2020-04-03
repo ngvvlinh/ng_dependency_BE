@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/main/shipmentpricing/shipmentservice"
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentservice/convert"
+	"etop.vn/backend/com/main/shipmentpricing/shipmentservice/model"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentservice/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -45,8 +46,12 @@ func (a *Aggregate) CreateShipmentService(ctx context.Context, args *shipmentser
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing name")
 	}
 	if len(args.ServiceIDs) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing service_ids")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "service_ids không được để trống")
 	}
+	if err := checkValidOtherCondition(args.OtherCondition); err != nil {
+		return nil, err
+	}
+
 	var service shipmentservice.ShipmentService
 	if err := scheme.Convert(args, &service); err != nil {
 		return nil, err
@@ -70,6 +75,10 @@ func (a *Aggregate) UpdateShipmentService(ctx context.Context, args *shipmentser
 	if args.ID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
+	if err := checkValidOtherCondition(args.OtherCondition); err != nil {
+		return err
+	}
+
 	service, err := a.shipmentServiceStore(ctx).ID(args.ID).GetShipmentService()
 	if err != nil {
 		return err
@@ -78,7 +87,6 @@ func (a *Aggregate) UpdateShipmentService(ctx context.Context, args *shipmentser
 	if err := scheme.Convert(args, &newService); err != nil {
 		return err
 	}
-
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		err := a.shipmentServiceStore(ctx).UpdateShipmentService(&newService)
 		if err != nil {
@@ -89,6 +97,19 @@ func (a *Aggregate) UpdateShipmentService(ctx context.Context, args *shipmentser
 		serviceIDs = append(serviceIDs, service.ServiceIDs...)
 		return DeleteRedisCache(ctx, a.redisStore, service.ConnectionID, serviceIDs)
 	})
+}
+
+func checkValidOtherCondition(cond *shipmentservice.OtherCondition) error {
+	// Require min_weight, max_weight
+	// max_weight = -1 -> unlimited
+	if cond != nil {
+		minWeight := cond.MinWeight
+		maxWeight := cond.MaxWeight
+		if minWeight < 0 || (maxWeight != -1 && maxWeight < 0) {
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình khối lượng không hợp lệ")
+		}
+	}
+	return nil
 }
 
 func (a *Aggregate) DeleteShipmentService(ctx context.Context, id dot.ID) error {
@@ -104,4 +125,65 @@ func (a *Aggregate) DeleteShipmentService(ctx context.Context, id dot.ID) error 
 		return DeleteRedisCache(ctx, a.redisStore, service.ConnectionID, service.ServiceIDs)
 	})
 	return nil
+}
+
+func (a *Aggregate) UpdateShipmentServicesLocationConfig(ctx context.Context, args *shipmentservice.UpdateShipmentServicesLocationConfigArgs) (updated int, _ error) {
+	if len(args.IDs) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing IDs")
+	}
+	services, err := a.shipmentServiceStore(ctx).IDs(args.IDs...).ListShipmentServices()
+	if err != nil {
+		return 0, err
+	}
+	mapServices := make(map[dot.ID]*shipmentservice.ShipmentService, len(services))
+	for _, s := range services {
+		mapServices[s.ID] = s
+	}
+	for _, id := range args.IDs {
+		if _, ok := mapServices[id]; !ok {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "ShipmentService not found (ID = %v)", id)
+		}
+	}
+
+	for _, bl := range args.BlacklistLocations {
+		if bl.ShippingLocationType == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn loại địa chỉ: lấy hàng (pick) hoặc giao hàng (deliver)")
+		}
+		if bl.Reason == "" {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng điền nguyên nhận chặn các địa điểm trong blacklist")
+		}
+	}
+
+	for _, al := range args.AvailableLocations {
+		if al.ShippingLocationType == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn loại địa chỉ: lấy hàng (pick) hoặc giao hàng (deliver)")
+		}
+		if al.FilterType == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn phương thức: bao gồm (include) hoặc loại trừ (exclude)")
+		}
+	}
+
+	_service := &shipmentservice.ShipmentService{
+		AvailableLocations: args.AvailableLocations,
+		BlacklistLocations: args.BlacklistLocations,
+	}
+	var serviceUpdate model.ShipmentService
+	if err := scheme.Convert(_service, &serviceUpdate); err != nil {
+		return 0, err
+	}
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updated, err = a.shipmentServiceStore(ctx).IDs(args.IDs...).UpdateShipmentServiceDB(&serviceUpdate)
+		if err != nil {
+			return err
+		}
+
+		for _, id := range args.IDs {
+			s := mapServices[id]
+			if err := DeleteRedisCache(ctx, a.redisStore, s.ConnectionID, s.ServiceIDs); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return
 }

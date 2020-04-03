@@ -511,7 +511,7 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 			ColumnType:       "connection_type.ConnectionMethod",
 			ColumnDBType:     "enum",
 			ColumnTag:        "text",
-			ColumnEnumValues: []string{"unknown", "topship", "direct"},
+			ColumnEnumValues: []string{"unknown", "builtin", "topship", "direct"},
 		},
 		"shipping_service_name": {
 			ColumnName:       "shipping_service_name",

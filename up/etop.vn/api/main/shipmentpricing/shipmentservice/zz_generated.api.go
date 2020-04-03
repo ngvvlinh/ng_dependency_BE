@@ -27,12 +27,15 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CreateShipmentServiceCommand struct {
-	ConnectionID dot.ID
-	Name         string
-	EdCode       string
-	ServiceIDs   []string
-	Description  string
-	ImageURL     string
+	ConnectionID       dot.ID
+	Name               string
+	EdCode             string
+	ServiceIDs         []string
+	Description        string
+	ImageURL           string
+	AvailableLocations []*AvailableLocation
+	BlacklistLocations []*BlacklistLocation
+	OtherCondition     *OtherCondition
 
 	Result *ShipmentService `json:"-"`
 }
@@ -54,14 +57,15 @@ func (h AggregateHandler) HandleDeleteShipmentService(ctx context.Context, msg *
 }
 
 type UpdateShipmentServiceCommand struct {
-	ID           dot.ID
-	ConnectionID dot.ID
-	Name         string
-	EdCode       string
-	ServiceIDs   []string
-	Description  string
-	ImageURL     string
-	Status       status3.NullStatus
+	ID             dot.ID
+	ConnectionID   dot.ID
+	Name           string
+	EdCode         string
+	ServiceIDs     []string
+	Description    string
+	ImageURL       string
+	Status         status3.NullStatus
+	OtherCondition *OtherCondition
 
 	Result struct {
 	} `json:"-"`
@@ -69,6 +73,19 @@ type UpdateShipmentServiceCommand struct {
 
 func (h AggregateHandler) HandleUpdateShipmentService(ctx context.Context, msg *UpdateShipmentServiceCommand) (err error) {
 	return h.inner.UpdateShipmentService(msg.GetArgs(ctx))
+}
+
+type UpdateShipmentServicesLocationConfigCommand struct {
+	IDs                []dot.ID
+	AvailableLocations []*AvailableLocation
+	BlacklistLocations []*BlacklistLocation
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShipmentServicesLocationConfig(ctx context.Context, msg *UpdateShipmentServicesLocationConfigCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShipmentServicesLocationConfig(msg.GetArgs(ctx))
+	return err
 }
 
 type GetShipmentServiceQuery struct {
@@ -105,9 +122,10 @@ func (h QueryServiceHandler) HandleListShipmentServices(ctx context.Context, msg
 
 // implement interfaces
 
-func (q *CreateShipmentServiceCommand) command() {}
-func (q *DeleteShipmentServiceCommand) command() {}
-func (q *UpdateShipmentServiceCommand) command() {}
+func (q *CreateShipmentServiceCommand) command()                {}
+func (q *DeleteShipmentServiceCommand) command()                {}
+func (q *UpdateShipmentServiceCommand) command()                {}
+func (q *UpdateShipmentServicesLocationConfigCommand) command() {}
 
 func (q *GetShipmentServiceQuery) query()            {}
 func (q *GetShipmentServiceByServiceIDQuery) query() {}
@@ -118,12 +136,15 @@ func (q *ListShipmentServicesQuery) query()          {}
 func (q *CreateShipmentServiceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipmentServiceArgs) {
 	return ctx,
 		&CreateShipmentServiceArgs{
-			ConnectionID: q.ConnectionID,
-			Name:         q.Name,
-			EdCode:       q.EdCode,
-			ServiceIDs:   q.ServiceIDs,
-			Description:  q.Description,
-			ImageURL:     q.ImageURL,
+			ConnectionID:       q.ConnectionID,
+			Name:               q.Name,
+			EdCode:             q.EdCode,
+			ServiceIDs:         q.ServiceIDs,
+			Description:        q.Description,
+			ImageURL:           q.ImageURL,
+			AvailableLocations: q.AvailableLocations,
+			BlacklistLocations: q.BlacklistLocations,
+			OtherCondition:     q.OtherCondition,
 		}
 }
 
@@ -134,6 +155,9 @@ func (q *CreateShipmentServiceCommand) SetCreateShipmentServiceArgs(args *Create
 	q.ServiceIDs = args.ServiceIDs
 	q.Description = args.Description
 	q.ImageURL = args.ImageURL
+	q.AvailableLocations = args.AvailableLocations
+	q.BlacklistLocations = args.BlacklistLocations
+	q.OtherCondition = args.OtherCondition
 }
 
 func (q *DeleteShipmentServiceCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -144,14 +168,15 @@ func (q *DeleteShipmentServiceCommand) GetArgs(ctx context.Context) (_ context.C
 func (q *UpdateShipmentServiceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentServiceArgs) {
 	return ctx,
 		&UpdateShipmentServiceArgs{
-			ID:           q.ID,
-			ConnectionID: q.ConnectionID,
-			Name:         q.Name,
-			EdCode:       q.EdCode,
-			ServiceIDs:   q.ServiceIDs,
-			Description:  q.Description,
-			ImageURL:     q.ImageURL,
-			Status:       q.Status,
+			ID:             q.ID,
+			ConnectionID:   q.ConnectionID,
+			Name:           q.Name,
+			EdCode:         q.EdCode,
+			ServiceIDs:     q.ServiceIDs,
+			Description:    q.Description,
+			ImageURL:       q.ImageURL,
+			Status:         q.Status,
+			OtherCondition: q.OtherCondition,
 		}
 }
 
@@ -164,6 +189,22 @@ func (q *UpdateShipmentServiceCommand) SetUpdateShipmentServiceArgs(args *Update
 	q.Description = args.Description
 	q.ImageURL = args.ImageURL
 	q.Status = args.Status
+	q.OtherCondition = args.OtherCondition
+}
+
+func (q *UpdateShipmentServicesLocationConfigCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentServicesLocationConfigArgs) {
+	return ctx,
+		&UpdateShipmentServicesLocationConfigArgs{
+			IDs:                q.IDs,
+			AvailableLocations: q.AvailableLocations,
+			BlacklistLocations: q.BlacklistLocations,
+		}
+}
+
+func (q *UpdateShipmentServicesLocationConfigCommand) SetUpdateShipmentServicesLocationConfigArgs(args *UpdateShipmentServicesLocationConfigArgs) {
+	q.IDs = args.IDs
+	q.AvailableLocations = args.AvailableLocations
+	q.BlacklistLocations = args.BlacklistLocations
 }
 
 func (q *GetShipmentServiceQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -200,6 +241,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateShipmentService)
 	b.AddHandler(h.HandleDeleteShipmentService)
 	b.AddHandler(h.HandleUpdateShipmentService)
+	b.AddHandler(h.HandleUpdateShipmentServicesLocationConfig)
 	return CommandBus{b}
 }
 

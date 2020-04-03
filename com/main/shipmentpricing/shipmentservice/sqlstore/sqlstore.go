@@ -56,6 +56,11 @@ func (s *ShipmentServiceStore) ID(id dot.ID) *ShipmentServiceStore {
 	return s
 }
 
+func (s *ShipmentServiceStore) IDs(ids ...dot.ID) *ShipmentServiceStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *ShipmentServiceStore) Status(status status3.Status) *ShipmentServiceStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
@@ -96,7 +101,7 @@ func (s *ShipmentServiceStore) GetShipmentService() (*shipmentservice.ShipmentSe
 }
 
 func (s *ShipmentServiceStore) ListShipmentServiceDBs() (res []*model.ShipmentService, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	err = query.Find((*model.ShipmentServices)(&res))
@@ -130,15 +135,22 @@ func (s *ShipmentServiceStore) CreateShipmentService(service *shipmentservice.Sh
 	return s.ID(service.ID).GetShipmentService()
 }
 
+func (s *ShipmentServiceStore) UpdateShipmentServiceDB(service *model.ShipmentService) (updated int, err error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	updated, err = query.Update(service)
+	return
+}
+
 func (s *ShipmentServiceStore) UpdateShipmentService(service *shipmentservice.ShipmentService) error {
 	sqlstore.MustNoPreds(s.preds)
 	var serviceDB model.ShipmentService
 	if err := scheme.Convert(service, &serviceDB); err != nil {
 		return err
 	}
-	query := s.query().Where(s.ft.ByID(service.ID))
-	query = s.ByWhiteLabelPartner(s.ctx, query)
-	return query.ShouldUpdate(&serviceDB)
+	_, err := s.ID(service.ID).UpdateShipmentServiceDB(&serviceDB)
+	return err
 }
 
 func (s *ShipmentServiceStore) SoftDelete() (int, error) {

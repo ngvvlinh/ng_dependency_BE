@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/top/int/types"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -100,9 +101,9 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 }
 
 func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *UpdateFulfillmentShippingStateEndpoint) error {
-	return nil
+	return cm.ErrTODO
 }
 
 func (s *FulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context, r *UpdateFulfillmentShippingFeeEndpoint) error {
-	return nil
+	return cm.ErrTODO
 }

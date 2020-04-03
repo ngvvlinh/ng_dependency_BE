@@ -29,6 +29,7 @@ type Connection struct {
 	Code                 string
 	ImageURL             string
 	Services             []*ConnectionService
+	WLPartnerID          dot.ID
 }
 
 // +sqlgen

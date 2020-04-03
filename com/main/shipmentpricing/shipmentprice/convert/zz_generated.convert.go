@@ -238,6 +238,7 @@ func convert_shipmentpricemodel_ShipmentPrice_shipmentprice_ShipmentPrice(arg *s
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
 	out.DeletedAt = arg.DeletedAt         // simple assign
 	out.WLPartnerID = arg.WLPartnerID     // simple assign
+	out.Status = arg.Status               // simple assign
 }
 
 func Convert_shipmentpricemodel_ShipmentPrices_shipmentprice_ShipmentPrices(args []*shipmentpricemodel.ShipmentPrice) (outs []*shipmentprice.ShipmentPrice) {
@@ -279,6 +280,7 @@ func convert_shipmentprice_ShipmentPrice_shipmentpricemodel_ShipmentPrice(arg *s
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
 	out.DeletedAt = arg.DeletedAt         // simple assign
 	out.WLPartnerID = arg.WLPartnerID     // simple assign
+	out.Status = arg.Status               // simple assign
 }
 
 func Convert_shipmentprice_ShipmentPrices_shipmentpricemodel_ShipmentPrices(args []*shipmentprice.ShipmentPrice) (outs []*shipmentpricemodel.ShipmentPrice) {
@@ -320,6 +322,7 @@ func apply_shipmentprice_CreateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 	out.UpdatedAt = time.Time{}                       // zero value
 	out.DeletedAt = time.Time{}                       // zero value
 	out.WLPartnerID = 0                               // zero value
+	out.Status = 0                                    // zero value
 }
 
 func Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg *shipmentprice.UpdateShipmentPriceArgs, out *shipmentprice.ShipmentPrice) *shipmentprice.ShipmentPrice {
@@ -349,4 +352,5 @@ func apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 	out.UpdatedAt = out.UpdatedAt                     // no change
 	out.DeletedAt = out.DeletedAt                     // no change
 	out.WLPartnerID = out.WLPartnerID                 // no change
+	out.Status = arg.Status                           // simple assign
 }

@@ -119,12 +119,6 @@ func (s *ShopConnectionStore) ListShopConnections() (res []*connectioning.ShopCo
 
 func (s *ShopConnectionStore) CreateShopConnection(shopConn *connectioning.ShopConnection) (*connectioning.ShopConnection, error) {
 	sqlstore.MustNoPreds(s.preds)
-	if shopConn.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
-	}
-	if shopConn.ConnectionID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
-	}
 	var shopConnDB model.ShopConnection
 	if err := scheme.Convert(shopConn, &shopConnDB); err != nil {
 		return nil, err
@@ -132,7 +126,7 @@ func (s *ShopConnectionStore) CreateShopConnection(shopConn *connectioning.ShopC
 	if err := s.query().ShouldInsert(&shopConnDB); err != nil {
 		return nil, err
 	}
-	return s.ShopID(shopConn.ShopID).ConnectionID(shopConn.ConnectionID).GetShopConnection()
+	return s.OptionalShopID(shopConn.ShopID).ConnectionID(shopConn.ConnectionID).GetShopConnection()
 }
 
 func (s *ShopConnectionStore) CreateShopConnectionDB(shopConn *model.ShopConnection) error {
@@ -155,10 +149,16 @@ func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.Upda
 		TokenExpiresAt: args.TokenExpiresAt,
 		ExternalData:   &externalData,
 	}
-	if err := s.query().Where(s.ft.ByShopID(args.ShopID)).Where(s.ft.ByConnectionID(args.ConnectionID)).ShouldUpdate(update); err != nil {
+	query := s.query().Where(s.ft.ByConnectionID(args.ConnectionID))
+	if args.ShopID != 0 {
+		query = query.Where(s.ft.ByShopID(args.ShopID))
+	} else {
+		query = query.Where(s.ft.ByIsGlobal(true))
+	}
+	if err := query.ShouldUpdate(update); err != nil {
 		return nil, err
 	}
-	return s.ShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
+	return s.OptionalShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
 }
 
 func (s *ShopConnectionStore) ConfirmShopConnection(shopID dot.ID, connID dot.ID) (updated int, err error) {

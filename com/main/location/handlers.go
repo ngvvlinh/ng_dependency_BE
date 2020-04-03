@@ -185,7 +185,14 @@ func (im *Impl) GetCustomRegion(ctx context.Context, id dot.ID) (*location.Custo
 	return im.customRegionStore(ctx).ID(id).GetCustomRegion()
 }
 
-func (im *Impl) GetCustomRegionByProvinceCode(ctx context.Context, provinceCode string) (*location.CustomRegion, error) {
+func (im *Impl) GetCustomRegionByCode(ctx context.Context, provinceCode string, districtCode string) (*location.CustomRegion, error) {
+	if provinceCode == "" && districtCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
+	}
+	if provinceCode == "" {
+		district := GetDistrictByCode(districtCode, location.LocCodeTypeInternal)
+		provinceCode = district.ProvinceCode
+	}
 	return im.customRegionStore(ctx).ProvinceCode(provinceCode).GetCustomRegion()
 }
 

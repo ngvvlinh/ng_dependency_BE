@@ -51,6 +51,20 @@ func (h AggregateHandler) HandleConfirmShopConnection(ctx context.Context, msg *
 	return err
 }
 
+type CreateBuiltinConnectionCommand struct {
+	ID           dot.ID
+	Name         string
+	Token        string
+	ExternalData *ShopConnectionExternalData
+
+	Result *Connection `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateBuiltinConnection(ctx context.Context, msg *CreateBuiltinConnectionCommand) (err error) {
+	msg.Result, err = h.inner.CreateBuiltinConnection(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateConnectionCommand struct {
 	Name               string
 	PartnerID          dot.ID
@@ -96,19 +110,6 @@ type CreateShopConnectionCommand struct {
 
 func (h AggregateHandler) HandleCreateShopConnection(ctx context.Context, msg *CreateShopConnectionCommand) (err error) {
 	msg.Result, err = h.inner.CreateShopConnection(msg.GetArgs(ctx))
-	return err
-}
-
-type CreateTopshipConnectionCommand struct {
-	ID           dot.ID
-	Token        string
-	ExternalData *ShopConnectionExternalData
-
-	Result *Connection `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateTopshipConnection(ctx context.Context, msg *CreateTopshipConnectionCommand) (err error) {
-	msg.Result, err = h.inner.CreateTopshipConnection(msg.GetArgs(ctx))
 	return err
 }
 
@@ -297,10 +298,10 @@ func (h QueryServiceHandler) HandleListShopConnectionsByShopID(ctx context.Conte
 
 func (q *ConfirmConnectionCommand) command()                {}
 func (q *ConfirmShopConnectionCommand) command()            {}
+func (q *CreateBuiltinConnectionCommand) command()          {}
 func (q *CreateConnectionCommand) command()                 {}
 func (q *CreateOrUpdateShopConnectionCommand) command()     {}
 func (q *CreateShopConnectionCommand) command()             {}
-func (q *CreateTopshipConnectionCommand) command()          {}
 func (q *DeleteConnectionCommand) command()                 {}
 func (q *DeleteShopConnectionCommand) command()             {}
 func (q *DisableConnectionCommand) command()                {}
@@ -329,6 +330,23 @@ func (q *ConfirmShopConnectionCommand) GetArgs(ctx context.Context) (_ context.C
 	return ctx,
 		q.ShopID,
 		q.ConnectionID
+}
+
+func (q *CreateBuiltinConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateBuiltinConnectionArgs) {
+	return ctx,
+		&CreateBuiltinConnectionArgs{
+			ID:           q.ID,
+			Name:         q.Name,
+			Token:        q.Token,
+			ExternalData: q.ExternalData,
+		}
+}
+
+func (q *CreateBuiltinConnectionCommand) SetCreateBuiltinConnectionArgs(args *CreateBuiltinConnectionArgs) {
+	q.ID = args.ID
+	q.Name = args.Name
+	q.Token = args.Token
+	q.ExternalData = args.ExternalData
 }
 
 func (q *CreateConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateConnectionArgs) {
@@ -391,21 +409,6 @@ func (q *CreateShopConnectionCommand) SetCreateShopConnectionArgs(args *CreateSh
 	q.ConnectionID = args.ConnectionID
 	q.Token = args.Token
 	q.TokenExpiresAt = args.TokenExpiresAt
-	q.ExternalData = args.ExternalData
-}
-
-func (q *CreateTopshipConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTopshipConnectionArgs) {
-	return ctx,
-		&CreateTopshipConnectionArgs{
-			ID:           q.ID,
-			Token:        q.Token,
-			ExternalData: q.ExternalData,
-		}
-}
-
-func (q *CreateTopshipConnectionCommand) SetCreateTopshipConnectionArgs(args *CreateTopshipConnectionArgs) {
-	q.ID = args.ID
-	q.Token = args.Token
 	q.ExternalData = args.ExternalData
 }
 
@@ -571,10 +574,10 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleConfirmConnection)
 	b.AddHandler(h.HandleConfirmShopConnection)
+	b.AddHandler(h.HandleCreateBuiltinConnection)
 	b.AddHandler(h.HandleCreateConnection)
 	b.AddHandler(h.HandleCreateOrUpdateShopConnection)
 	b.AddHandler(h.HandleCreateShopConnection)
-	b.AddHandler(h.HandleCreateTopshipConnection)
 	b.AddHandler(h.HandleDeleteConnection)
 	b.AddHandler(h.HandleDeleteShopConnection)
 	b.AddHandler(h.HandleDisableConnection)

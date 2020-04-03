@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/connectioning/convert"
 	"etop.vn/backend/com/main/connectioning/model"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/common/sql/sqlstore"
@@ -19,6 +20,7 @@ type ConnectionStore struct {
 	ft    ConnectionFilters
 	query func() cmsql.QueryInterface
 	preds []interface{}
+	ctx   context.Context
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -33,6 +35,7 @@ func NewConnectionStore(db *cmsql.Database) ConnectionStoreFactory {
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
+			ctx: ctx,
 		}
 	}
 }
@@ -80,6 +83,7 @@ func (s *ConnectionStore) Status(status status3.Status) *ConnectionStore {
 func (s *ConnectionStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	_deleted, err := query.Table("connection").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
@@ -89,6 +93,7 @@ func (s *ConnectionStore) SoftDelete() (int, error) {
 func (s *ConnectionStore) GetConnectionDB() (*model.Connection, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var conn model.Connection
 	err := query.ShouldGet(&conn)
 	return &conn, err
@@ -109,6 +114,7 @@ func (s *ConnectionStore) GetConnection() (*connectioning.Connection, error) {
 func (s *ConnectionStore) ListConnectionsDB() (res []*model.Connection, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 
 	err = query.Find((*model.Connections)(&res))
 	return
@@ -134,6 +140,7 @@ func (s *ConnectionStore) CreateConnection(conn *connectioning.Connection) (*con
 	if err := scheme.Convert(conn, &connDB); err != nil {
 		return nil, err
 	}
+	connDB.WLPartnerID = wl.GetWLPartnerID(s.ctx)
 	if err := s.query().ShouldInsert(&connDB); err != nil {
 		return nil, err
 	}
@@ -146,14 +153,18 @@ func (s *ConnectionStore) UpdateConnection(conn *connectioning.Connection) (*con
 	if err := scheme.Convert(conn, &connDB); err != nil {
 		return nil, err
 	}
-	if err := s.query().Where(s.ft.ByID(conn.ID)).ShouldUpdate(&connDB); err != nil {
+	query := s.query().Where(s.ft.ByID(conn.ID))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if err := query.ShouldUpdate(&connDB); err != nil {
 		return nil, err
 	}
 	return s.ID(conn.ID).GetConnection()
 }
 
 func (s *ConnectionStore) ConfirmConnection(connID dot.ID) (updated int, err error) {
-	if err := s.query().Table("connection").Where(s.ft.ByID(connID)).ShouldUpdateMap(map[string]interface{}{
+	query := s.query().Table("connection").Where(s.ft.ByID(connID))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if err := query.ShouldUpdateMap(map[string]interface{}{
 		"status": status3.P,
 	}); err != nil {
 		return 0, err
@@ -162,10 +173,20 @@ func (s *ConnectionStore) ConfirmConnection(connID dot.ID) (updated int, err err
 }
 
 func (s *ConnectionStore) DisableConnection(connID dot.ID) (updated int, err error) {
-	if err := s.query().Table("connection").Where(s.ft.ByID(connID)).ShouldUpdateMap(map[string]interface{}{
+	query := s.query().Table("connection").Where(s.ft.ByID(connID))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if err := query.ShouldUpdateMap(map[string]interface{}{
 		"status": status3.Z,
 	}); err != nil {
 		return 0, err
 	}
 	return 1, nil
+}
+
+func (s *ConnectionStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }

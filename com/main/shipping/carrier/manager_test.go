@@ -37,10 +37,10 @@ func TestShipmentManager(t *testing.T) {
 			ID:                 connID,
 			Name:               "topship-ghn",
 			Status:             1,
-			Driver:             "shipping/shipment/topship/ghn",
+			Driver:             "shipping/shipment/builtin/ghn",
 			ConnectionType:     connection_type.Shipping,
 			ConnectionSubtype:  connection_type.ConnectionSubtypeShipment,
-			ConnectionMethod:   connection_type.ConnectionMethodTopship,
+			ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
 			ConnectionProvider: connection_type.ConnectionProviderGHN,
 		}
 		return nil
@@ -62,7 +62,7 @@ func TestShipmentManager(t *testing.T) {
 	connectionAggr := connectioning.NewCommandBus(mockBus)
 	shipmentServiceQS := shipmentservice.NewQueryBus(mockBus)
 	shipmentPriceQS := shipmentprice.NewQueryBus(mockBus)
-	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS)
+	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS, false)
 	Convey("Get Shipment driver", t, func() {
 		shipmentType, err := shipmentManager.getShipmentDriver(ctx, connID, 0)
 		So(err, ShouldBeNil)

@@ -29,7 +29,7 @@ type QueryService interface {
 	// --- CustomRegion --- //
 	GetCustomRegion(ctx context.Context, ID dot.ID) (*CustomRegion, error)
 
-	GetCustomRegionByProvinceCode(ctx context.Context, ProvinceCode string) (*CustomRegion, error)
+	GetCustomRegionByCode(ctx context.Context, ProvinceCode string, DistrictCode string) (*CustomRegion, error)
 
 	ListCustomRegions(context.Context, *meta.Empty) ([]*CustomRegion, error)
 }

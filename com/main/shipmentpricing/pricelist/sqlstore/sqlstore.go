@@ -81,7 +81,7 @@ func (s *ShipmentPriceListStore) GetShipmentPriceList() (*pricelist.ShipmentPric
 }
 
 func (s *ShipmentPriceListStore) ListShipmentPriceListDBs() (res []*model.ShipmentPriceList, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	err = query.Find((*model.ShipmentPriceLists)(&res))

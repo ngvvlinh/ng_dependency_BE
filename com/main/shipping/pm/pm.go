@@ -30,6 +30,7 @@ func New(eventBus capi.EventBus, shippingAggregate shipping.CommandBus, redisS r
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTxShippingExternalCreated)
 	eventBus.AddEventListener(m.ConnectionUpdated)
+	eventBus.AddEventListener(m.ShopConnectionUpdated)
 }
 
 func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, event *moneytx.MoneyTransactionShippingExternalCreatedEvent) error {
@@ -51,9 +52,18 @@ func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, eve
 
 func (m *ProcessManager) ConnectionUpdated(ctx context.Context, event *connectioning.ConnectionUpdatedEvent) error {
 	if event.ConnectionID == 0 {
-		return nil
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID").WithMetap("event", "ConnectionUpdatedEvent")
 	}
 	// Delete cache connection in carrier manager
 	key := carrier.GetRedisConnectionKeyByID(event.ConnectionID)
+	return m.redisStore.Del(key)
+}
+
+func (m *ProcessManager) ShopConnectionUpdated(ctx context.Context, event *connectioning.ShopConnectionUpdatedEvent) error {
+	if event.ConnectionID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID").WithMetap("event", "ShopConnectionUpdatedEvent")
+	}
+	// Delete cache connection in carrier manager
+	key := carrier.GetRedisShopConnectionKey(event.ConnectionID, event.ShopID)
 	return m.redisStore.Del(key)
 }

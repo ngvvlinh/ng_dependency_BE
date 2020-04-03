@@ -16,12 +16,13 @@ var __jsonNull = []byte("null")
 
 var enumConnectionMethodName = map[int]string{
 	0: "unknown",
-	1: "topship",
+	1: "builtin",
 	2: "direct",
 }
 
 var enumConnectionMethodValue = map[string]int{
 	"unknown": 0,
+	"builtin": 1,
 	"topship": 1,
 	"direct":  2,
 }

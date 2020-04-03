@@ -93,21 +93,27 @@ type NotificationService interface {
 
 // +apix:path=/admin.Connection
 type ConnectionService interface {
-	GetConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
+	GetConnections(context.Context, *types.GetConnectionsRequest) (*types.GetConnectionsResponse, error)
 	ConfirmConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	DisableConnection(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
 	GetConnectionServices(context.Context, *cm.IDRequest) (*types.GetConnectionServicesResponse, error)
 
-	CreateTopshipConnection(context.Context, *types.CreateTopshipConnectionRequest) (*types.Connection, error)
+	CreateBuiltinConnection(context.Context, *types.CreateBuiltinConnectionRequest) (*types.Connection, error)
+	GetBuiltinShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
+	UpdateBuiltinShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/admin.ShipmentPrice
 type ShipmentPriceService interface {
+	GetShippingServices(context.Context, *GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
+
 	GetShipmentServices(context.Context, *cm.Empty) (*GetShipmentServicesResponse, error)
 	GetShipmentService(context.Context, *cm.IDRequest) (*ShipmentService, error)
 	CreateShipmentService(context.Context, *CreateShipmentServiceRequest) (*ShipmentService, error)
 	UpdateShipmentService(context.Context, *UpdateShipmentServiceRequest) (*cm.UpdatedResponse, error)
 	DeleteShipmentService(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+	UpdateShipmentServicesAvailableLocations(context.Context, *UpdateShipmentServicesAvailableLocationsRequest) (*cm.UpdatedResponse, error)
+	UpdateShipmentServicesBlacklistLocations(context.Context, *UpdateShipmentServicesBlacklistLocationsRequest) (*cm.UpdatedResponse, error)
 
 	GetShipmentPriceLists(context.Context, *cm.Empty) (*GetShipmentPriceListsResponse, error)
 	GetShipmentPriceList(context.Context, *cm.IDRequest) (*ShipmentPriceList, error)

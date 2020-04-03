@@ -77,6 +77,12 @@ func (m *ShopConnectionExternalData) Reset() {
 }
 func (m *ShopConnectionExternalData) String() string { return jsonx.MustMarshalToString(m) }
 
+type GetConnectionsRequest struct {
+	ConnectionMethod connection_type.ConnectionMethod `json:"connection_method"`
+}
+
+func (m *GetConnectionsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetConnectionsResponse struct {
 	Connections []*Connection `json:"connections"`
 }
@@ -137,12 +143,13 @@ func (m *UpdateShopConnectionRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
-type CreateTopshipConnectionRequest struct {
+type CreateBuiltinConnectionRequest struct {
 	ConnectionID dot.ID                      `json:"connection_id"`
+	Name         string                      `json:"name"`
 	Token        string                      `json:"token"`
 	ExternalData *ShopConnectionExternalData `json:"external_data"`
 }
 
-func (m *CreateTopshipConnectionRequest) String() string {
+func (m *CreateBuiltinConnectionRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }

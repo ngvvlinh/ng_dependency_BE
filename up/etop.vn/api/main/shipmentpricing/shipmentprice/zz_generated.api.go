@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	route_type "etop.vn/api/top/types/etc/route_type"
+	status3 "etop.vn/api/top/types/etc/status3"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -68,6 +69,7 @@ type UpdateShipmentPriceCommand struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	Status              status3.Status
 
 	Result *ShipmentPrice `json:"-"`
 }
@@ -89,16 +91,17 @@ func (h AggregateHandler) HandleUpdateShipmentPricesPriorityPoint(ctx context.Co
 }
 
 type CalculatePriceQuery struct {
-	FromProvince      string
-	FromProvinceCode  string
-	FromDistrict      string
-	FromDistrictCode  string
-	ToProvince        string
-	ToProvinceCode    string
-	ToDistrict        string
-	ToDistrictCode    string
-	ShipmentServiceID dot.ID
-	Weight            int
+	ShipmentPriceListID dot.ID
+	FromProvince        string
+	FromProvinceCode    string
+	FromDistrict        string
+	FromDistrictCode    string
+	ToProvince          string
+	ToProvinceCode      string
+	ToDistrict          string
+	ToDistrictCode      string
+	ShipmentServiceID   dot.ID
+	Weight              int
 
 	Result *CalculatePriceResult `json:"-"`
 }
@@ -192,6 +195,7 @@ func (q *UpdateShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Con
 			UrbanTypes:          q.UrbanTypes,
 			PriorityPoint:       q.PriorityPoint,
 			Details:             q.Details,
+			Status:              q.Status,
 		}
 }
 
@@ -207,6 +211,7 @@ func (q *UpdateShipmentPriceCommand) SetUpdateShipmentPriceArgs(args *UpdateShip
 	q.UrbanTypes = args.UrbanTypes
 	q.PriorityPoint = args.PriorityPoint
 	q.Details = args.Details
+	q.Status = args.Status
 }
 
 func (q *UpdateShipmentPricesPriorityPointCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentPricesPriorityPointArgs) {
@@ -223,20 +228,22 @@ func (q *UpdateShipmentPricesPriorityPointCommand) SetUpdateShipmentPricesPriori
 func (q *CalculatePriceQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculatePriceArgs) {
 	return ctx,
 		&CalculatePriceArgs{
-			FromProvince:      q.FromProvince,
-			FromProvinceCode:  q.FromProvinceCode,
-			FromDistrict:      q.FromDistrict,
-			FromDistrictCode:  q.FromDistrictCode,
-			ToProvince:        q.ToProvince,
-			ToProvinceCode:    q.ToProvinceCode,
-			ToDistrict:        q.ToDistrict,
-			ToDistrictCode:    q.ToDistrictCode,
-			ShipmentServiceID: q.ShipmentServiceID,
-			Weight:            q.Weight,
+			ShipmentPriceListID: q.ShipmentPriceListID,
+			FromProvince:        q.FromProvince,
+			FromProvinceCode:    q.FromProvinceCode,
+			FromDistrict:        q.FromDistrict,
+			FromDistrictCode:    q.FromDistrictCode,
+			ToProvince:          q.ToProvince,
+			ToProvinceCode:      q.ToProvinceCode,
+			ToDistrict:          q.ToDistrict,
+			ToDistrictCode:      q.ToDistrictCode,
+			ShipmentServiceID:   q.ShipmentServiceID,
+			Weight:              q.Weight,
 		}
 }
 
 func (q *CalculatePriceQuery) SetCalculatePriceArgs(args *CalculatePriceArgs) {
+	q.ShipmentPriceListID = args.ShipmentPriceListID
 	q.FromProvince = args.FromProvince
 	q.FromProvinceCode = args.FromProvinceCode
 	q.FromDistrict = args.FromDistrict

@@ -96,20 +96,20 @@
         }
       }
     },
-    "/api/admin.Connection/CreateTopshipConnection": {
+    "/api/admin.Connection/CreateBuiltinConnection": {
       "post": {
         "tags": [
           "Connection"
         ],
-        "summary": "CreateTopshipConnection",
-        "operationId": "admin.Connection-CreateTopshipConnection",
+        "summary": "CreateBuiltinConnection",
+        "operationId": "admin.Connection-CreateBuiltinConnection",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/qdCreateTopshipConnectionRequest"
+              "$ref": "#/definitions/qdCreateBuiltinConnectionRequest"
             }
           }
         ],
@@ -145,6 +145,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Connection/GetBuiltinShopConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetBuiltinShopConnections",
+        "operationId": "admin.Connection-GetBuiltinShopConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetShopConnectionsResponse"
             }
           }
         }
@@ -190,7 +217,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/qdGetConnectionsRequest"
             }
           }
         ],
@@ -199,6 +226,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/qdGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Connection/UpdateBuiltinShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "UpdateBuiltinShopConnection",
+        "operationId": "admin.Connection-UpdateBuiltinShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -1609,6 +1663,33 @@
         }
       }
     },
+    "/api/admin.ShipmentPrice/GetShippingServices": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShippingServices",
+        "operationId": "admin.ShipmentPrice-GetShippingServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShippingServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetShippingServicesResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.ShipmentPrice/UpdateShipmentPrice": {
       "post": {
         "tags": [
@@ -1704,6 +1785,60 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/xuUpdateShipmentServiceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentServicesAvailableLocations",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentServicesAvailableLocations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentServicesAvailableLocationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentServicesBlacklistLocations",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentServicesBlacklistLocations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentServicesBlacklistLocationsRequest"
             }
           }
         ],
@@ -2554,6 +2689,13 @@
         }
       }
     },
+    "fdFilterType": {
+      "type": "string",
+      "enum": [
+        "include",
+        "exclude"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -2705,10 +2847,11 @@
       }
     },
     "ljConnectionMethod": {
+      "description": "Deprecated values: \"topship\"",
       "type": "string",
       "enum": [
         "unknown",
-        "topship",
+        "builtin",
         "direct"
       ]
     },
@@ -2798,6 +2941,21 @@
         }
       }
     },
+    "qdConnectionInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "qdConnectionService": {
       "type": "object",
       "properties": {
@@ -2809,7 +2967,7 @@
         }
       }
     },
-    "qdCreateTopshipConnectionRequest": {
+    "qdCreateBuiltinConnectionRequest": {
       "type": "object",
       "properties": {
         "connection_id": {
@@ -2818,6 +2976,9 @@
         },
         "external_data": {
           "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "name": {
+          "type": "string"
         },
         "token": {
           "type": "string"
@@ -2865,6 +3026,69 @@
         },
         "time": {
           "type": "string"
+        }
+      }
+    },
+    "qdExternalShippingService": {
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "description": "**Deprecated:** use connection instead\n",
+          "$ref": "#/definitions/bwShippingProvider"
+        },
+        "code": {
+          "type": "string"
+        },
+        "connection_info": {
+          "$ref": "#/definitions/qdConnectionInfo"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_id": {
+          "description": "**Deprecated:** use code\n",
+          "type": "string"
+        },
+        "fee": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "description": "**Deprecated:** use carier\n",
+          "$ref": "#/definitions/bwShippingProvider"
+        },
+        "service_fee": {
+          "description": "**Deprecated:** use fee\n",
+          "type": "integer"
+        },
+        "shipment_price_info": {
+          "$ref": "#/definitions/qdShipmentPriceInfo"
+        },
+        "shipment_service_info": {
+          "$ref": "#/definitions/qdShipmentServiceInfo"
         }
       }
     },
@@ -3175,6 +3399,14 @@
         }
       }
     },
+    "qdGetConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/ljConnectionMethod"
+        }
+      }
+    },
     "qdGetConnectionsResponse": {
       "type": "object",
       "properties": {
@@ -3182,6 +3414,28 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/qdConnection"
+          }
+        }
+      }
+    },
+    "qdGetShippingServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdExternalShippingService"
+          }
+        }
+      }
+    },
+    "qdGetShopConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "shop_connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShopConnection"
           }
         }
       }
@@ -3996,6 +4250,45 @@
         }
       }
     },
+    "qdShipmentPriceInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "makeup_main_fee": {
+          "type": "integer"
+        },
+        "origin_fee": {
+          "type": "integer"
+        },
+        "origin_main_fee": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdShipmentServiceInfo": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "qdShipnowFulfillment": {
       "type": "object",
       "properties": {
@@ -4150,6 +4443,40 @@
         }
       }
     },
+    "qdShopConnection": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "is_global": {
+          "type": "boolean"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "qdShopConnectionExternalData": {
       "type": "object",
       "properties": {
@@ -4157,6 +4484,21 @@
           "type": "string"
         },
         "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "qdUpdateShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "token": {
           "type": "string"
         }
       }
@@ -4498,6 +4840,21 @@
         "anonymous"
       ]
     },
+    "ujRegionType": {
+      "type": "string",
+      "enum": [
+        "north",
+        "middle",
+        "south"
+      ]
+    },
+    "ujShippingLocationType": {
+      "type": "string",
+      "enum": [
+        "pick",
+        "deliver"
+      ]
+    },
     "wdNotifierEntity": {
       "type": "string",
       "enum": [
@@ -4520,6 +4877,65 @@
         "etop_app",
         "haravan"
       ]
+    },
+    "xuAvailableLocation": {
+      "type": "object",
+      "properties": {
+        "custom_region_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "filter_type": {
+          "$ref": "#/definitions/fdFilterType"
+        },
+        "province_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ujRegionType"
+          }
+        },
+        "shipping_location_type": {
+          "$ref": "#/definitions/ujShippingLocationType"
+        }
+      }
+    },
+    "xuBlacklistLocation": {
+      "type": "object",
+      "properties": {
+        "district_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "province_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        },
+        "shipping_location_type": {
+          "$ref": "#/definitions/ujShippingLocationType"
+        },
+        "ward_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "xuConfirmCreditRequest": {
       "type": "object",
@@ -4731,6 +5147,18 @@
     "xuCreateShipmentServiceRequest": {
       "type": "object",
       "properties": {
+        "available_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAvailableLocation"
+          }
+        },
+        "blacklist_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuBlacklistLocation"
+          }
+        },
         "connection_id": {
           "type": "string",
           "format": "int64"
@@ -4746,6 +5174,9 @@
         },
         "name": {
           "type": "string"
+        },
+        "other_condition": {
+          "$ref": "#/definitions/xuOtherCondition"
         },
         "service_ids": {
           "type": "array",
@@ -5000,6 +5431,46 @@
         }
       }
     },
+    "xuGetShippingServicesRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "from_district_code": {
+          "type": "string"
+        },
+        "from_province_code": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "to_district_code": {
+          "type": "string"
+        },
+        "to_province_code": {
+          "type": "string"
+        },
+        "total_cod_amount": {
+          "type": "integer"
+        }
+      }
+    },
     "xuGetShopsRequest": {
       "type": "object",
       "properties": {
@@ -5036,6 +5507,17 @@
         "user_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "xuOtherCondition": {
+      "type": "object",
+      "properties": {
+        "max_weight": {
+          "type": "integer"
+        },
+        "min_weight": {
+          "type": "integer"
         }
       }
     },
@@ -5145,6 +5627,9 @@
           "type": "string",
           "format": "int64"
         },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"
@@ -5186,6 +5671,18 @@
     "xuShipmentService": {
       "type": "object",
       "properties": {
+        "available_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAvailableLocation"
+          }
+        },
+        "blacklist_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuBlacklistLocation"
+          }
+        },
         "connection_id": {
           "type": "string",
           "format": "int64"
@@ -5209,6 +5706,9 @@
         },
         "name": {
           "type": "string"
+        },
+        "other_condition": {
+          "$ref": "#/definitions/xuOtherCondition"
         },
         "service_ids": {
           "type": "array",
@@ -5468,6 +5968,9 @@
           "type": "string",
           "format": "int64"
         },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
         "urban_types": {
           "type": "array",
           "items": {
@@ -5510,6 +6013,9 @@
         "name": {
           "type": "string"
         },
+        "other_condition": {
+          "$ref": "#/definitions/xuOtherCondition"
+        },
         "service_ids": {
           "type": "array",
           "items": {
@@ -5518,6 +6024,42 @@
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "xuUpdateShipmentServicesAvailableLocationsRequest": {
+      "type": "object",
+      "properties": {
+        "available_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAvailableLocation"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "xuUpdateShipmentServicesBlacklistLocationsRequest": {
+      "type": "object",
+      "properties": {
+        "blacklist_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuBlacklistLocation"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },

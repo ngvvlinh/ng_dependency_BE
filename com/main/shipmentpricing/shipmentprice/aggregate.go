@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"etop.vn/api/top/types/etc/status3"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/convert"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/model"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/sqlstore"
@@ -41,19 +42,22 @@ func (a *Aggregate) CreateShipmentPrice(ctx context.Context, args *shipmentprice
 	if args.ShipmentServiceID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói vận chuyển")
 	}
+	if args.ShipmentPriceListID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn bảng giá")
+	}
 
 	var pricing shipmentprice.ShipmentPrice
 	if err := scheme.Convert(args, &pricing); err != nil {
 		return nil, err
 	}
 	pricing.ID = cm.NewID()
-	_pricing, err := validateShipmentPrice(&pricing)
-	if err != nil {
+	if err := validateShipmentPrice(&pricing); err != nil {
 		return nil, err
 	}
+	pricing.Status = status3.P
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		res, err = a.shipmentPriceStore(ctx).CreateShipmentPrice(_pricing)
+		res, err = a.shipmentPriceStore(ctx).CreateShipmentPrice(&pricing)
 		if err != nil {
 			return err
 		}
@@ -68,17 +72,13 @@ func (a *Aggregate) UpdateShipmentPrice(ctx context.Context, args *shipmentprice
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id")
 	}
-	var pricing shipmentprice.ShipmentPrice
-	if err := scheme.Convert(args, &pricing); err != nil {
-		return nil, err
-	}
-	_pricing, err := validateShipmentPrice(&pricing)
+	sp, err := a.shipmentPriceStore(ctx).ID(args.ID).GetShipmentPrice()
 	if err != nil {
 		return nil, err
 	}
-
+	pricing := convert.Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(args, sp)
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		res, err = a.shipmentPriceStore(ctx).UpdateShipmentPrice(_pricing)
+		res, err = a.shipmentPriceStore(ctx).UpdateShipmentPrice(pricing)
 		if err != nil {
 			return err
 		}
@@ -99,17 +99,17 @@ func (a *Aggregate) DeleteShipmentPrice(ctx context.Context, id dot.ID) error {
 	})
 }
 
-func validateShipmentPrice(pricing *shipmentprice.ShipmentPrice) (*shipmentprice.ShipmentPrice, error) {
-	if len(pricing.RegionTypes) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn tuyến vận chuyển: nội tỉnh, nội miền hoặc liên miền").WithMeta("field", "region_types")
-	}
-	if len(pricing.UrbanTypes) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn khu vực: nội thành, ngoại thành 1 hoặc ngoại thành 2").WithMeta("field", "urban_types")
+func validateShipmentPrice(pricing *shipmentprice.ShipmentPrice) error {
+	if len(pricing.RegionTypes) == 0 &&
+		len(pricing.CustomRegionIDs) == 0 &&
+		len(pricing.ProvinceTypes) == 0 &&
+		len(pricing.UrbanTypes) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình địa điểm áp dụng gói.").WithMeta("field", "region_types")
 	}
 	if len(pricing.Details) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình giá").WithMeta("field", "details")
+		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình giá").WithMeta("field", "details")
 	}
-	return pricing, nil
+	return nil
 }
 
 func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args *shipmentprice.UpdateShipmentPricesPriorityPointArgs) (updated int, err error) {

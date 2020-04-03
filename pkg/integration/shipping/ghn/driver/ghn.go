@@ -32,7 +32,7 @@ var _ carriertypes.ShipmentCarrier = &GHNDriver{}
 
 var (
 	defaultDrivers = []string{
-		"shipping/shipment/topship/ghn",
+		"shipping/shipment/builtin/ghn",
 		"shipping/shipment/direct/ghn",
 	}
 )

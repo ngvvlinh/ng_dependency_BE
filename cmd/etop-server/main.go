@@ -455,7 +455,7 @@ func main() {
 	shipmentPriceListPM := pricelistpm.New(redisStore)
 	shipmentPriceListPM.RegisterEventHandlers(eventBus)
 
-	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery)
+	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
 	shippingPM := shippingpm.New(eventBus, shippingAggr, redisStore)
@@ -591,7 +591,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus)
+	admin.Init(eventBus, moneyTxQuery, connectionAggregate, connectionQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus, shipmentManager)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

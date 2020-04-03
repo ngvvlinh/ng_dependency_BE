@@ -63,3 +63,12 @@ ALTER TABLE shipment_price
 ALTER TABLE shipment_service
     ADD COLUMN status INT2
     , ADD COLUMN image_url TEXT;
+
+ALTER TABLE connection
+    ADD COLUMN wl_partner_id INT8 REFERENCES partner(id);
+
+ALTER TABLE history.connection
+    ADD COLUMN wl_partner_id INT8 REFERENCES partner(id);
+
+ALTER TABLE shipment_price
+    ADD COLUMN status INT2;

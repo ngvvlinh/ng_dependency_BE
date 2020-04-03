@@ -10,7 +10,10 @@ import (
 	"etop.vn/api/top/types/etc/connection_type"
 	"etop.vn/backend/com/main/connectioning/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	. "etop.vn/backend/pkg/common/testing"
@@ -24,6 +27,7 @@ var (
 	db     *cmsql.Database
 	connID = dot.ID(123)
 	shopID = dot.ID(123456)
+	ctx    context.Context
 )
 
 func init() {
@@ -50,6 +54,7 @@ func init() {
 			, code TEXT
 			, image_url TEXT
 			, services JSON
+			, wl_partner_id INT8
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8
@@ -65,6 +70,10 @@ func init() {
 			, external_data JSONB
 		);
 	`)
+
+	wl.Init(cmenv.EnvDev)
+	ctx = wl.WrapContext(bus.Ctx(), drivers.ITopXID)
+	ctx = bus.NewRootContext(ctx)
 }
 
 func TestConnectionAggregate(t *testing.T) {
@@ -74,12 +83,11 @@ func TestConnectionAggregate(t *testing.T) {
 		})
 
 		_conn := &model.Connection{
-			ID:     connID,
-			Name:   "Connection",
-			Status: 0,
+			ID:          connID,
+			Name:        "Connection",
+			Status:      0,
+			WLPartnerID: drivers.ITopXID,
 		}
-
-		ctx := bus.Ctx()
 		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
 		_, err := db.Insert(_conn)
 		So(err, ShouldBeNil)
@@ -87,10 +95,10 @@ func TestConnectionAggregate(t *testing.T) {
 		Convey("Create Connection Success", func() {
 			cmd := &connectioning.CreateConnectionCommand{
 				Name:               "test create",
-				Driver:             "shipping/shipment/topship/ghn",
+				Driver:             "shipping/shipment/builtin/ghn",
 				ConnectionType:     connection_type.Shipping,
 				ConnectionSubtype:  connection_type.ConnectionSubtypeShipment,
-				ConnectionMethod:   connection_type.ConnectionMethodTopship,
+				ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
 				ConnectionProvider: connection_type.ConnectionProviderGHN,
 			}
 			err := Aggr.Dispatch(ctx, cmd)
@@ -151,11 +159,17 @@ func TestConnectionAggregate(t *testing.T) {
 }
 
 func TestShopConnectionAggregate(t *testing.T) {
-	Convey("Connection Aggregate", t, func() {
+	Convey("Shop Connection Aggregate", t, func() {
 		Reset(func() {
 			db.MustExec("truncate connection, shop_connection CASCADE")
 		})
 
+		_conn := &model.Connection{
+			ID:          connID,
+			Name:        "Connection",
+			Status:      0,
+			WLPartnerID: drivers.ITopXID,
+		}
 		_shopConn := &model.ShopConnection{
 			ShopID:       shopID,
 			ConnectionID: connID,
@@ -163,15 +177,14 @@ func TestShopConnectionAggregate(t *testing.T) {
 			Status:       0,
 		}
 
-		ctx := context.Background()
 		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
-		_, err := db.Insert(_shopConn)
+		_, err := db.Insert(_conn, _shopConn)
 		So(err, ShouldBeNil)
 
 		Convey("Create Success", func() {
 			cmd := &connectioning.CreateShopConnectionCommand{
 				ShopID:       shopID,
-				ConnectionID: dot.ID(124),
+				ConnectionID: _conn.ID,
 				Token:        "token",
 			}
 

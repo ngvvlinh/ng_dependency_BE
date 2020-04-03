@@ -8,6 +8,10 @@ import (
 
 	"etop.vn/api/main/connectioning"
 	"etop.vn/backend/com/main/connectioning/model"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/capi/dot"
@@ -44,6 +48,7 @@ func init() {
 			, code TEXT
 			, image_url TEXT
 			, services JSON
+			, wl_partner_id INT8
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8
@@ -60,9 +65,10 @@ func init() {
 		);
 	`)
 	_conn := &model.Connection{
-		ID:     connID,
-		Name:   "Connection",
-		Status: 1,
+		ID:          connID,
+		Name:        "Connection",
+		Status:      1,
+		WLPartnerID: drivers.ITopXID,
 	}
 	_shopConn := &model.ShopConnection{
 		ShopID:       shopID,
@@ -70,10 +76,11 @@ func init() {
 		Token:        "token",
 		Status:       1,
 	}
-
+	wl.Init(cmenv.EnvDev)
+	ctx = wl.WrapContext(bus.Ctx(), drivers.ITopXID)
+	ctx = bus.NewRootContext(ctx)
 	QS = NewConnectionQuery(db).MessageBus()
 
-	ctx = context.Background()
 	db.Insert(_conn, _shopConn)
 }
 

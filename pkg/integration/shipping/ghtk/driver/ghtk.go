@@ -31,7 +31,7 @@ var _ carriertypes.ShipmentCarrier = &GHTKDriver{}
 
 var (
 	defaultDrivers = []string{
-		"shipping/shipment/topship/ghtk",
+		"shipping/shipment/builtin/ghtk",
 		"shipping/shipment/direct/ghtk",
 	}
 )

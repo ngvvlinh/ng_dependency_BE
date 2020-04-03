@@ -7,6 +7,7 @@ package sqlstore
 import (
 	time "time"
 
+	status3 "etop.vn/api/top/types/etc/status3"
 	sq "etop.vn/backend/pkg/common/sql/sq"
 	dot "etop.vn/capi/dot"
 )
@@ -193,5 +194,24 @@ func (ft *ShipmentPriceFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.Column
 		Value:  WLPartnerID,
 		IsNil:  WLPartnerID == nil,
 		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
+func (ft *ShipmentPriceFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *ShipmentPriceFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
 	}
 }

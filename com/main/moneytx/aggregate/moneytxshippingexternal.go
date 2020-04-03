@@ -167,7 +167,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 						"Provider": strconv.Itoa(line.ExternalTotalShippingFee),
 					},
 				}
-			} else if ffm.ConnectionMethod != connection_type.ConnectionMethodTopship {
+			} else if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 				if ffm.ShippingType == 0 {
 					// backward compatible
 					// remove later

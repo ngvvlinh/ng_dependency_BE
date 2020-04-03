@@ -4,4 +4,5 @@
 
 package connectioning
 
-func (e *ConnectionUpdatedEvent) GetTopic() string { return "event/connection" }
+func (e *ConnectionUpdatedEvent) GetTopic() string     { return "event/connection" }
+func (e *ShopConnectionUpdatedEvent) GetTopic() string { return "event/connection" }

@@ -7042,11 +7042,20 @@
         }
       }
     },
-    "ljConnectionMethod": {
+    "ldLedgerType": {
       "type": "string",
       "enum": [
         "unknown",
-        "topship",
+        "cash",
+        "bank"
+      ]
+    },
+    "ljConnectionMethod": {
+      "description": "Deprecated values: \"topship\"",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "builtin",
         "direct"
       ]
     },
@@ -9198,7 +9207,7 @@
           "$ref": "#/definitions/ktPaging"
         },
         "type": {
-          "$ref": "#/definitions/ujLedgerType"
+          "$ref": "#/definitions/ldLedgerType"
         }
       }
     },
@@ -9821,7 +9830,7 @@
         },
         "type": {
           "description": "enum: cash, bank\n",
-          "$ref": "#/definitions/ujLedgerType"
+          "$ref": "#/definitions/ldLedgerType"
         },
         "updated_at": {
           "type": "string",
@@ -14295,9 +14304,15 @@
         "code": {
           "type": "string"
         },
+        "error_message": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_available": {
+          "type": "boolean"
         },
         "name": {
           "type": "string"
@@ -15137,14 +15152,6 @@
         "second",
         "third",
         "fourth"
-      ]
-    },
-    "ujLedgerType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "cash",
-        "bank"
       ]
     },
     "umReceiptMode": {

@@ -12,16 +12,123 @@ func PbShipmentService(in *shipmentservice.ShipmentService) *admin.ShipmentServi
 		return nil
 	}
 	return &admin.ShipmentService{
-		ID:           in.ID,
-		ConnectionID: in.ConnectionID,
-		Name:         in.Name,
-		EdCode:       in.EdCode,
-		ServiceIDs:   in.ServiceIDs,
-		Description:  in.Description,
-		CreatedAt:    in.CreatedAt,
-		UpdatedAt:    in.UpdatedAt,
-		Status:       in.Status,
-		ImageURL:     in.ImageURL,
+		ID:                 in.ID,
+		ConnectionID:       in.ConnectionID,
+		Name:               in.Name,
+		EdCode:             in.EdCode,
+		ServiceIDs:         in.ServiceIDs,
+		Description:        in.Description,
+		CreatedAt:          in.CreatedAt,
+		UpdatedAt:          in.UpdatedAt,
+		Status:             in.Status,
+		ImageURL:           in.ImageURL,
+		AvailableLocations: PbAvailableLocations(in.AvailableLocations),
+		BlacklistLocations: PbBlacklistLocations(in.BlacklistLocations),
+		OtherCondition:     PbOtherCondition(in.OtherCondition),
+	}
+}
+
+func PbAvailableLocation(in *shipmentservice.AvailableLocation) *admin.AvailableLocation {
+	if in == nil {
+		return nil
+	}
+	return &admin.AvailableLocation{
+		FilterType:           in.FilterType,
+		ShippingLocationType: in.ShippingLocationType,
+		RegionTypes:          in.RegionTypes,
+		CustomRegionIDs:      in.CustomRegionIDs,
+		ProvinceCodes:        in.ProvinceCodes,
+	}
+}
+
+func PbAvailableLocations(items []*shipmentservice.AvailableLocation) []*admin.AvailableLocation {
+	result := make([]*admin.AvailableLocation, len(items))
+	for i, item := range items {
+		result[i] = PbAvailableLocation(item)
+	}
+	return result
+}
+
+func AvailableLocation(in *admin.AvailableLocation) *shipmentservice.AvailableLocation {
+	if in == nil {
+		return nil
+	}
+	return &shipmentservice.AvailableLocation{
+		FilterType:           in.FilterType,
+		ShippingLocationType: in.ShippingLocationType,
+		RegionTypes:          in.RegionTypes,
+		CustomRegionIDs:      in.CustomRegionIDs,
+		ProvinceCodes:        in.ProvinceCodes,
+	}
+}
+
+func AvailableLocations(items []*admin.AvailableLocation) []*shipmentservice.AvailableLocation {
+	result := make([]*shipmentservice.AvailableLocation, len(items))
+	for i, item := range items {
+		result[i] = AvailableLocation(item)
+	}
+	return result
+}
+
+func PbBlacklistLocation(in *shipmentservice.BlacklistLocation) *admin.BlacklistLocation {
+	if in == nil {
+		return nil
+	}
+	return &admin.BlacklistLocation{
+		ShippingLocationType: in.ShippingLocationType,
+		ProvinceCodes:        in.ProvinceCodes,
+		DistrictCodes:        in.DistrictCodes,
+		WardCodes:            in.WardCodes,
+		Reason:               in.Reason,
+	}
+}
+
+func PbBlacklistLocations(items []*shipmentservice.BlacklistLocation) []*admin.BlacklistLocation {
+	result := make([]*admin.BlacklistLocation, len(items))
+	for i, item := range items {
+		result[i] = PbBlacklistLocation(item)
+	}
+	return result
+}
+
+func BlacklistLocation(in *admin.BlacklistLocation) *shipmentservice.BlacklistLocation {
+	if in == nil {
+		return nil
+	}
+	return &shipmentservice.BlacklistLocation{
+		ShippingLocationType: in.ShippingLocationType,
+		ProvinceCodes:        in.ProvinceCodes,
+		DistrictCodes:        in.DistrictCodes,
+		WardCodes:            in.WardCodes,
+		Reason:               in.Reason,
+	}
+}
+
+func BlacklistLocations(items []*admin.BlacklistLocation) []*shipmentservice.BlacklistLocation {
+	result := make([]*shipmentservice.BlacklistLocation, len(items))
+	for i, item := range items {
+		result[i] = BlacklistLocation(item)
+	}
+	return result
+}
+
+func PbOtherCondition(in *shipmentservice.OtherCondition) *admin.OtherCondition {
+	if in == nil {
+		return nil
+	}
+	return &admin.OtherCondition{
+		MinWeight: in.MinWeight,
+		MaxWeight: in.MaxWeight,
+	}
+}
+
+func OtherCondition(in *admin.OtherCondition) *shipmentservice.OtherCondition {
+	if in == nil {
+		return nil
+	}
+	return &shipmentservice.OtherCondition{
+		MinWeight: in.MinWeight,
+		MaxWeight: in.MaxWeight,
 	}
 }
 
@@ -73,6 +180,7 @@ func PbShipmentPrice(in *shipmentprice.ShipmentPrice) *admin.ShipmentPrice {
 		Details:             PbPricingDetails(in.Details),
 		CreatedAt:           in.CreatedAt,
 		UpdatedAt:           in.UpdatedAt,
+		Status:              in.Status,
 	}
 }
 
@@ -115,27 +223,25 @@ func PbShipmentPrices(items []*shipmentprice.ShipmentPrice) []*admin.ShipmentPri
 	return result
 }
 
-func PricingDetails(ins []*admin.PricingDetail) []*shipmentprice.PricingDetail {
-	result := make([]*shipmentprice.PricingDetail, len(ins))
-	for i, in := range ins {
-		result[i] = &shipmentprice.PricingDetail{
+func PricingDetails(ins []*admin.PricingDetail) (res []*shipmentprice.PricingDetail) {
+	for _, in := range ins {
+		res = append(res, &shipmentprice.PricingDetail{
 			Weight:     in.Weight,
 			Price:      in.Price,
 			Overweight: PricingDetailOverweights(in.Overweight),
-		}
+		})
 	}
-	return result
+	return
 }
 
-func PricingDetailOverweights(items []*admin.PricingDetailOverweight) []*shipmentprice.PricingDetailOverweight {
-	result := make([]*shipmentprice.PricingDetailOverweight, len(items))
-	for i, item := range items {
-		result[i] = &shipmentprice.PricingDetailOverweight{
+func PricingDetailOverweights(items []*admin.PricingDetailOverweight) (res []*shipmentprice.PricingDetailOverweight) {
+	for _, item := range items {
+		res = append(res, &shipmentprice.PricingDetailOverweight{
 			MinWeight:  item.MinWeight,
 			MaxWeight:  item.MaxWeight,
 			WeightStep: item.WeightStep,
 			PriceStep:  item.PriceStep,
-		}
+		})
 	}
-	return result
+	return
 }

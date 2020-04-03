@@ -110,16 +110,22 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 			return s.inner.ConfirmConnection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/admin.Connection/CreateTopshipConnection":
-		msg := &inttypes.CreateTopshipConnectionRequest{}
+	case "/admin.Connection/CreateBuiltinConnection":
+		msg := &inttypes.CreateBuiltinConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateTopshipConnection(ctx, msg)
+			return s.inner.CreateBuiltinConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/DisableConnection":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DisableConnection(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Connection/GetBuiltinShopConnections":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetBuiltinShopConnections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnectionServices":
@@ -129,9 +135,15 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnections":
-		msg := &common.Empty{}
+		msg := &inttypes.GetConnectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetConnections(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Connection/UpdateBuiltinShopConnection":
+		msg := &inttypes.UpdateShopConnectionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateBuiltinShopConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -758,6 +770,12 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Messag
 			return s.inner.GetShipmentServices(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShippingServices":
+		msg := &GetShippingServicesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetShippingServices(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPrice":
 		msg := &UpdateShipmentPriceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -780,6 +798,18 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Messag
 		msg := &UpdateShipmentServiceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateShipmentService(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations":
+		msg := &UpdateShipmentServicesAvailableLocationsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentServicesAvailableLocations(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations":
+		msg := &UpdateShipmentServicesBlacklistLocationsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

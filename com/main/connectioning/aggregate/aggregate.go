@@ -111,47 +111,49 @@ func (a *ConnectionAggregate) UpdateConnection(ctx context.Context, args *connec
 			return nil, err
 		}
 	}
-	var update connectioning.Connection
-	if err := scheme.Convert(args, &update); err != nil {
-		return nil, err
-	}
-	res, err := a.connectionStore(ctx).UpdateConnection(&update)
-	if err != nil {
-		return nil, err
-	}
 
-	// raise event & ignore error
-	event := &connectioning.ConnectionUpdatedEvent{
-		EventMeta:    meta.NewEvent(),
-		ConnectionID: args.ID,
-	}
-	_ = a.eventBus.Publish(ctx, event)
-	return res, nil
+	var res *connectioning.Connection
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var update connectioning.Connection
+		if err := scheme.Convert(args, &update); err != nil {
+			return err
+		}
+		res, err = a.connectionStore(ctx).UpdateConnection(&update)
+		if err != nil {
+			return err
+		}
+		return a.raiseConnectionUpdatedEvent(ctx, args.ID)
+	})
+	return res, err
 }
 
-func (a *ConnectionAggregate) ConfirmConnection(ctx context.Context, ID dot.ID) (updated int, err error) {
-	conn, err := a.connectionStore(ctx).ID(ID).GetConnection()
+func (a *ConnectionAggregate) ConfirmConnection(ctx context.Context, id dot.ID) (updated int, err error) {
+	conn, err := a.connectionStore(ctx).ID(id).GetConnection()
 	if err != nil {
 		return 0, err
 	}
 	if conn.Status != status3.Z {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Connection")
 	}
-	res, err := a.connectionStore(ctx).ConfirmConnection(ID)
-	if err != nil {
-		return 0, err
-	}
-	// raise event & ignore error
-	event := &connectioning.ConnectionUpdatedEvent{
-		EventMeta:    meta.NewEvent(),
-		ConnectionID: ID,
-	}
-	_ = a.eventBus.Publish(ctx, event)
-	return res, nil
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updated, err = a.connectionStore(ctx).ConfirmConnection(id)
+		if err != nil {
+			return err
+		}
+		return a.raiseConnectionUpdatedEvent(ctx, id)
+	})
+	return
 }
 
 func (a *ConnectionAggregate) DeleteConnection(ctx context.Context, args *connectioning.DeleteConnectionArgs) (deleted int, err error) {
-	return a.connectionStore(ctx).ID(args.ID).OptionalPartnerID(args.PartnerID).SoftDelete()
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		deleted, err = a.connectionStore(ctx).ID(args.ID).OptionalPartnerID(args.PartnerID).SoftDelete()
+		if err != nil {
+			return err
+		}
+		return a.raiseConnectionUpdatedEvent(ctx, args.ID)
+	})
+	return
 }
 
 func (a *ConnectionAggregate) UpdateConnectionAffiliateAccount(ctx context.Context, args *connectioning.UpdateConnectionAffiliateAccountArgs) (updated int, err error) {
@@ -171,43 +173,58 @@ func (a *ConnectionAggregate) UpdateConnectionAffiliateAccount(ctx context.Conte
 	if args.EtopAffiliateAccount.UserID == "" {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing userID affiliate account.")
 	}
-	var update connectioning.Connection
-	if err := scheme.Convert(args, &update); err != nil {
-		return 0, err
-	}
-	if _, err := a.connectionStore(ctx).UpdateConnection(&update); err != nil {
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var update connectioning.Connection
+		if err := scheme.Convert(args, &update); err != nil {
+			return err
+		}
+		if _, err := a.connectionStore(ctx).UpdateConnection(&update); err != nil {
+			return err
+		}
+		return a.raiseConnectionUpdatedEvent(ctx, args.ID)
+	})
+	if err != nil {
 		return 0, err
 	}
 	return 1, nil
 }
 
 func (a *ConnectionAggregate) DisableConnection(ctx context.Context, id dot.ID) (updated int, err error) {
-	res, err := a.connectionStore(ctx).DisableConnection(id)
-	if err != nil {
-		return 0, err
-	}
-	// raise event & ignore error
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updated, err = a.connectionStore(ctx).DisableConnection(id)
+		if err != nil {
+			return err
+		}
+		return a.raiseConnectionUpdatedEvent(ctx, id)
+	})
+	return
+}
+
+func (a *ConnectionAggregate) raiseConnectionUpdatedEvent(ctx context.Context, connectionID dot.ID) error {
 	event := &connectioning.ConnectionUpdatedEvent{
 		EventMeta:    meta.NewEvent(),
-		ConnectionID: id,
+		ConnectionID: connectionID,
 	}
-	_ = a.eventBus.Publish(ctx, event)
-	return res, nil
+	return a.eventBus.Publish(ctx, event)
 }
 
 /*
 	CreateTopshipConnection
 
-	Xác nhận 1 direct connection thành topship connection
+	Xác nhận 1 direct connection thành builtin connection
 	Cần cung cấp thêm thông tin tài khoản của topship đối với connection (token, externalData) đó để tạo shop_connection global tương ứng
 */
-func (a *ConnectionAggregate) CreateTopshipConnection(ctx context.Context, args *connectioning.CreateTopshipConnectionArgs) (*connectioning.Connection, error) {
+func (a *ConnectionAggregate) CreateBuiltinConnection(ctx context.Context, args *connectioning.CreateBuiltinConnectionArgs) (*connectioning.Connection, error) {
 	conn, err := a.connectionStore(ctx).ID(args.ID).GetConnection()
 	if err != nil {
 		return nil, err
 	}
 	if conn.ConnectionMethod != connection_type.ConnectionMethodDirect {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid")
+	}
+	if args.Name == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing name")
 	}
 	if args.Token == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing token")
@@ -219,10 +236,10 @@ func (a *ConnectionAggregate) CreateTopshipConnection(ctx context.Context, args 
 	var result *connectioning.Connection
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		cmd := &connectioning.CreateConnectionArgs{
-			Name:               "Topship - " + conn.Name,
+			Name:               args.Name,
 			ConnectionType:     connection_type.Shipping,
 			ConnectionSubtype:  connection_type.ConnectionSubtypeShipment,
-			ConnectionMethod:   connection_type.ConnectionMethodTopship,
+			ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
 			ConnectionProvider: connection_type.ConnectionProviderPartner,
 			DriverConfig:       conn.DriverConfig,
 			PartnerID:          conn.PartnerID,
@@ -257,25 +274,32 @@ func (a *ConnectionAggregate) CreateTopshipConnection(ctx context.Context, args 
 }
 
 func (a *ConnectionAggregate) CreateShopConnection(ctx context.Context, args *connectioning.CreateShopConnectionArgs) (*connectioning.ShopConnection, error) {
-	if args.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
-	}
 	if args.ConnectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}
+	conn, err := a.connectionStore(ctx).ID(args.ConnectionID).GetConnection()
+	if err != nil {
+		return nil, err
+	}
+
 	var shopConn connectioning.ShopConnection
 	if err := scheme.Convert(args, &shopConn); err != nil {
 		return nil, err
 	}
+	if conn.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
+		shopConn.IsGlobal = true
+	} else {
+		if args.ShopID == 0 || shopConn.ShopID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		}
+	}
+
 	// always set status = 1
 	shopConn.Status = 1
 	return a.shopConnectionStore(ctx).CreateShopConnection(&shopConn)
 }
 
 func (a *ConnectionAggregate) UpdateShopConnectionToken(ctx context.Context, args *connectioning.UpdateShopConnectionExternalDataArgs) (*connectioning.ShopConnection, error) {
-	if args.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
-	}
 	if args.ConnectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}
@@ -291,28 +315,41 @@ func (a *ConnectionAggregate) UpdateShopConnectionToken(ctx context.Context, arg
 	return a.CreateOrUpdateShopConnection(ctx, cmd)
 }
 
-func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, args *connectioning.CreateShopConnectionArgs) (*connectioning.ShopConnection, error) {
-	if args.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
-	}
+func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, args *connectioning.CreateShopConnectionArgs) (res *connectioning.ShopConnection, err error) {
 	if args.ConnectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}
 	if args.Token == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Token")
 	}
+	conn, err := a.connectionStore(ctx).ID(args.ConnectionID).GetConnection()
+	if err != nil {
+		return nil, err
+	}
+	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		if args.ShopID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		}
+	}
 
-	conn, err := a.shopConnectionStore(ctx).ShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
+	shopConn, err := a.shopConnectionStore(ctx).OptionalShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
 	if err == nil {
 		// Update
-		update := &connectioning.UpdateShopConnectionExternalDataArgs{
-			ShopID:         conn.ShopID,
-			ConnectionID:   conn.ConnectionID,
-			Token:          args.Token,
-			TokenExpiresAt: args.TokenExpiresAt,
-			ExternalData:   args.ExternalData,
-		}
-		return a.shopConnectionStore(ctx).UpdateShopConnectionToken(update)
+		err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+			update := &connectioning.UpdateShopConnectionExternalDataArgs{
+				ShopID:         shopConn.ShopID,
+				ConnectionID:   shopConn.ConnectionID,
+				Token:          args.Token,
+				TokenExpiresAt: args.TokenExpiresAt,
+				ExternalData:   args.ExternalData,
+			}
+			res, err = a.shopConnectionStore(ctx).UpdateShopConnectionToken(update)
+			if err != nil {
+				return err
+			}
+			return a.raiseShopConnectionUpdatedEvent(ctx, shopConn.ShopID, shopConn.ConnectionID)
+		})
+		return
 	}
 
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
@@ -338,9 +375,32 @@ func (a *ConnectionAggregate) ConfirmShopConnection(ctx context.Context, shopID 
 	if conn.Status != status3.Z {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Connection")
 	}
-	return a.shopConnectionStore(ctx).ConfirmShopConnection(shopID, connectionID)
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updated, err = a.shopConnectionStore(ctx).ConfirmShopConnection(shopID, connectionID)
+		if err != nil {
+			return err
+		}
+		return a.raiseShopConnectionUpdatedEvent(ctx, shopID, connectionID)
+	})
+	return
 }
 
 func (a *ConnectionAggregate) DeleteShopConnection(ctx context.Context, shopID dot.ID, connectionID dot.ID) (deleted int, err error) {
-	return a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).SoftDelete()
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		deleted, err = a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).SoftDelete()
+		if err != nil {
+			return err
+		}
+		return a.raiseShopConnectionUpdatedEvent(ctx, shopID, connectionID)
+	})
+	return
+}
+
+func (a *ConnectionAggregate) raiseShopConnectionUpdatedEvent(ctx context.Context, shopID, connectionID dot.ID) error {
+	event := &connectioning.ShopConnectionUpdatedEvent{
+		EventMeta:    meta.NewEvent(),
+		ShopID:       shopID,
+		ConnectionID: connectionID,
+	}
+	return a.eventBus.Publish(ctx, event)
 }

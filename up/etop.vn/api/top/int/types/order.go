@@ -528,9 +528,11 @@ type ConnectionInfo struct {
 func (m *ConnectionInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipmentServiceInfo struct {
-	ID   dot.ID `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID           dot.ID `json:"id"`
+	Code         string `json:"code"`
+	Name         string `json:"name"`
+	IsAvailable  bool   `json:"is_available"`
+	ErrorMessage string `json:"error_message"`
 }
 
 func (m *ShipmentServiceInfo) String() string { return jsonx.MustMarshalToString(m) }

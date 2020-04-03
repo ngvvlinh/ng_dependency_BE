@@ -19,6 +19,12 @@ func PbShopConnection(c *connectioning.ShopConnection) *types.ShopConnection {
 		DeletedAt:    cmapi.PbTime(c.DeletedAt),
 		IsGlobal:     c.IsGlobal,
 	}
+	if c.ExternalData != nil {
+		res.ExternalData = &types.ShopConnectionExternalData{
+			Email:  c.ExternalData.Email,
+			UserID: c.ExternalData.UserID,
+		}
+	}
 	return res
 }
 

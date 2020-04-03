@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipmentServices []*ShipmentService
 
 const __sqlShipmentService_Table = "shipment_service"
-const __sqlShipmentService_ListCols = "\"id\",\"connection_id\",\"name\",\"ed_code\",\"service_ids\",\"description\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"image_url\",\"status\""
-const __sqlShipmentService_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"name\" = EXCLUDED.\"name\",\"ed_code\" = EXCLUDED.\"ed_code\",\"service_ids\" = EXCLUDED.\"service_ids\",\"description\" = EXCLUDED.\"description\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"image_url\" = EXCLUDED.\"image_url\",\"status\" = EXCLUDED.\"status\""
+const __sqlShipmentService_ListCols = "\"id\",\"connection_id\",\"name\",\"ed_code\",\"service_ids\",\"description\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"image_url\",\"status\",\"available_locations\",\"blacklist_locations\",\"other_condition\""
+const __sqlShipmentService_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"name\" = EXCLUDED.\"name\",\"ed_code\" = EXCLUDED.\"ed_code\",\"service_ids\" = EXCLUDED.\"service_ids\",\"description\" = EXCLUDED.\"description\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"image_url\" = EXCLUDED.\"image_url\",\"status\" = EXCLUDED.\"status\",\"available_locations\" = EXCLUDED.\"available_locations\",\"blacklist_locations\" = EXCLUDED.\"blacklist_locations\",\"other_condition\" = EXCLUDED.\"other_condition\""
 const __sqlShipmentService_Insert = "INSERT INTO \"shipment_service\" (" + __sqlShipmentService_ListCols + ") VALUES"
 const __sqlShipmentService_Select = "SELECT " + __sqlShipmentService_ListCols + " FROM \"shipment_service\""
 const __sqlShipmentService_Select_history = "SELECT " + __sqlShipmentService_ListCols + " FROM history.\"shipment_service\""
@@ -142,6 +142,27 @@ func (m *ShipmentService) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{"Z", "P", "N"},
 		},
+		"available_locations": {
+			ColumnName:       "available_locations",
+			ColumnType:       "[]*AvailableLocation",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"blacklist_locations": {
+			ColumnName:       "blacklist_locations",
+			ColumnType:       "[]*BlacklistLocation",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"other_condition": {
+			ColumnName:       "other_condition",
+			ColumnType:       "*OtherCondition",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "shipment_service", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -167,6 +188,9 @@ func (m *ShipmentService) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.WLPartnerID,
 		core.String(m.ImageURL),
 		m.Status,
+		core.JSON{m.AvailableLocations},
+		core.JSON{m.BlacklistLocations},
+		core.JSON{m.OtherCondition},
 	}
 }
 
@@ -184,6 +208,9 @@ func (m *ShipmentService) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.WLPartnerID,
 		(*core.String)(&m.ImageURL),
 		&m.Status,
+		core.JSON{&m.AvailableLocations},
+		core.JSON{&m.BlacklistLocations},
+		core.JSON{&m.OtherCondition},
 	}
 }
 
@@ -221,7 +248,7 @@ func (_ *ShipmentServices) SQLSelect(w SQLWriter) error {
 func (m *ShipmentService) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentService_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -231,7 +258,7 @@ func (ms ShipmentServices) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentService_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(12)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -358,6 +385,30 @@ func (m *ShipmentService) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Status)
 	}
+	if m.AvailableLocations != nil {
+		flag = true
+		w.WriteName("available_locations")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.AvailableLocations})
+	}
+	if m.BlacklistLocations != nil {
+		flag = true
+		w.WriteName("blacklist_locations")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.BlacklistLocations})
+	}
+	if m.OtherCondition != nil {
+		flag = true
+		w.WriteName("other_condition")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.OtherCondition})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -368,7 +419,7 @@ func (m *ShipmentService) SQLUpdate(w SQLWriter) error {
 func (m *ShipmentService) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentService_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -406,17 +457,26 @@ func (m ShipmentServiceHistory) WLPartnerID() core.Interface {
 }
 func (m ShipmentServiceHistory) ImageURL() core.Interface { return core.Interface{m["image_url"]} }
 func (m ShipmentServiceHistory) Status() core.Interface   { return core.Interface{m["status"]} }
+func (m ShipmentServiceHistory) AvailableLocations() core.Interface {
+	return core.Interface{m["available_locations"]}
+}
+func (m ShipmentServiceHistory) BlacklistLocations() core.Interface {
+	return core.Interface{m["blacklist_locations"]}
+}
+func (m ShipmentServiceHistory) OtherCondition() core.Interface {
+	return core.Interface{m["other_condition"]}
+}
 
 func (m *ShipmentServiceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipmentServiceHistory, 12)
+	res := make(ShipmentServiceHistory, 15)
 	res["id"] = data[0]
 	res["connection_id"] = data[1]
 	res["name"] = data[2]
@@ -429,14 +489,17 @@ func (m *ShipmentServiceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["wl_partner_id"] = data[9]
 	res["image_url"] = data[10]
 	res["status"] = data[11]
+	res["available_locations"] = data[12]
+	res["blacklist_locations"] = data[13]
+	res["other_condition"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *ShipmentServiceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipmentServiceHistories, 0, 128)
@@ -457,6 +520,9 @@ func (ms *ShipmentServiceHistories) SQLScan(opts core.Opts, rows *sql.Rows) erro
 		m["wl_partner_id"] = data[9]
 		m["image_url"] = data[10]
 		m["status"] = data[11]
+		m["available_locations"] = data[12]
+		m["blacklist_locations"] = data[13]
+		m["other_condition"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

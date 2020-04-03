@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/shipmentpricing/pricelist"
 	"etop.vn/api/main/shipmentpricing/shipmentprice"
 	"etop.vn/api/top/types/etc/route_type"
+	"etop.vn/api/top/types/etc/status3"
 	locationutil "etop.vn/backend/com/main/location/util"
 	"etop.vn/backend/com/main/shipmentpricing"
 	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/sqlstore"
@@ -50,16 +51,33 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 	return q.shipmentPriceStore(ctx).ID(ID).GetShipmentPrice()
 }
 
-func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, shipmentServiceID dot.ID) ([]*shipmentprice.ShipmentPrice, error) {
+/*
+	func: GetActiveShipmentPrices
+
+	- shipmentPriceListID: dùng để tính giá cho một bảng giá cụ thể (sử dụng trong trường hợp admin kiểm tra giá trước khi public bảng giá)
+	- Khi shop sử dụng, shipmentPriceListID = 0 vì bảng giá sử dụng để tính toán mặc định lấy từ database ra (GetActiveShipmentPriceListQuery)
+*/
+
+func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, shipmentServiceID, shipmentPriceListID dot.ID) ([]*shipmentprice.ShipmentPrice, error) {
 	var res []*shipmentprice.ShipmentPrice
 	key := getActiveShipmentPricesRedisKey(ctx)
+
+	if shipmentPriceListID != 0 {
+		// no cache in here
+		res, err := q.shipmentPriceStore(ctx).ShipmentPriceListID(shipmentPriceListID).Status(status3.P).ListShipmentPrices()
+		if err != nil {
+			return nil, err
+		}
+		return filterShipmentPricesByShipmentServiceID(res, shipmentServiceID), nil
+	}
+
 	err := q.redisStore.Get(key, &res)
 	if err != nil {
 		query := &pricelist.GetActiveShipmentPriceListQuery{}
 		if err := q.priceListQS.Dispatch(ctx, query); err != nil {
 			return nil, err
 		}
-		res, err = q.shipmentPriceStore(ctx).ShipmentPriceListID(query.Result.ID).ListShipmentPrices()
+		res, err = q.shipmentPriceStore(ctx).ShipmentPriceListID(query.Result.ID).Status(status3.P).ListShipmentPrices()
 		if err == nil {
 			_ = q.redisStore.SetWithTTL(key, res, shipmentpricing.DefaultTTL)
 		}
@@ -99,7 +117,7 @@ func (q *QueryService) CalculatePrice(ctx context.Context, args *shipmentprice.C
 	}
 	from, to := fromQuery.Result, toQuery.Result
 
-	pricings, err := q.GetActiveShipmentPrices(ctx, args.ShipmentServiceID)
+	pricings, err := q.GetActiveShipmentPrices(ctx, args.ShipmentServiceID, args.ShipmentPriceListID)
 	if err != nil {
 		return nil, err
 	}
@@ -124,10 +142,10 @@ func (q *QueryService) CalculatePrice(ctx context.Context, args *shipmentprice.C
 }
 
 func (q *QueryService) GetMatchingPricings(ctx context.Context, pricings []*shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District) (res []*shipmentprice.ShipmentPrice, err error) {
-	queryFrom := &location.GetCustomRegionByProvinceCodeQuery{
+	queryFrom := &location.GetCustomRegionByCodeQuery{
 		ProvinceCode: fromProvince.Code,
 	}
-	queryTo := &location.GetCustomRegionByProvinceCodeQuery{
+	queryTo := &location.GetCustomRegionByCodeQuery{
 		ProvinceCode: toProvince.Code,
 	}
 	if err := q.locationQS.DispatchAll(ctx, queryFrom, queryTo); err != nil && cm.ErrorCode(err) != cm.NotFound {
@@ -150,6 +168,9 @@ func (q *QueryService) GetMatchingPricings(ctx context.Context, pricings []*ship
 }
 
 func checkMatchingPricing(pricing *shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District, fromCustomRegion, toCustomRegion dot.ID) bool {
+	if pricing.Status != status3.P {
+		return false
+	}
 	// check CustomRegionRouteType
 	if len(pricing.CustomRegionTypes) > 0 {
 		customRegionRouteType := locationutil.GetCustomRegionRouteType(fromCustomRegion, toCustomRegion)

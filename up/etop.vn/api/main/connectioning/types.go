@@ -35,6 +35,7 @@ type Connection struct {
 	Code                 string
 	ImageURL             string
 	Services             []*ConnectionService
+	WLPartnerID          dot.ID
 }
 
 type ConnectionDriverConfig struct {
@@ -72,6 +73,12 @@ type ShopConnectionExternalData struct {
 
 type ConnectionUpdatedEvent struct {
 	meta.EventMeta
+	ConnectionID dot.ID
+}
+
+type ShopConnectionUpdatedEvent struct {
+	meta.EventMeta
+	ShopID       dot.ID
 	ConnectionID dot.ID
 }
 

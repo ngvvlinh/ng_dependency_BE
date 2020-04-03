@@ -173,17 +173,17 @@ func (s wrapConnectionService) ConfirmConnection(ctx context.Context, req *cm.ID
 	return resp, nil
 }
 
-type CreateTopshipConnectionEndpoint struct {
-	*inttypes.CreateTopshipConnectionRequest
+type CreateBuiltinConnectionEndpoint struct {
+	*inttypes.CreateBuiltinConnectionRequest
 	Result  *inttypes.Connection
 	Context claims.AdminClaim
 }
 
-func (s wrapConnectionService) CreateTopshipConnection(ctx context.Context, req *inttypes.CreateTopshipConnectionRequest) (resp *inttypes.Connection, err error) {
+func (s wrapConnectionService) CreateBuiltinConnection(ctx context.Context, req *inttypes.CreateBuiltinConnectionRequest) (resp *inttypes.Connection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "admin.Connection/CreateTopshipConnection"
+	const rpcName = "admin.Connection/CreateBuiltinConnection"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -198,7 +198,7 @@ func (s wrapConnectionService) CreateTopshipConnection(ctx context.Context, req 
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateTopshipConnectionEndpoint{CreateTopshipConnectionRequest: req}
+	query := &CreateBuiltinConnectionEndpoint{CreateBuiltinConnectionRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -207,7 +207,7 @@ func (s wrapConnectionService) CreateTopshipConnection(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateTopshipConnection(ctx, query)
+	err = s.s.CreateBuiltinConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -254,6 +254,52 @@ func (s wrapConnectionService) DisableConnection(ctx context.Context, req *cm.ID
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DisableConnection(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetBuiltinShopConnectionsEndpoint struct {
+	*cm.Empty
+	Result  *inttypes.GetShopConnectionsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) GetBuiltinShopConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetShopConnectionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/GetBuiltinShopConnections"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetBuiltinShopConnectionsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetBuiltinShopConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -312,12 +358,12 @@ func (s wrapConnectionService) GetConnectionServices(ctx context.Context, req *c
 }
 
 type GetConnectionsEndpoint struct {
-	*cm.Empty
+	*inttypes.GetConnectionsRequest
 	Result  *inttypes.GetConnectionsResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty) (resp *inttypes.GetConnectionsResponse, err error) {
+func (s wrapConnectionService) GetConnections(ctx context.Context, req *inttypes.GetConnectionsRequest) (resp *inttypes.GetConnectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -336,7 +382,7 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetConnectionsEndpoint{Empty: req}
+	query := &GetConnectionsEndpoint{GetConnectionsRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -346,6 +392,52 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetConnections(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateBuiltinShopConnectionEndpoint struct {
+	*inttypes.UpdateShopConnectionRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapConnectionService) UpdateBuiltinShopConnection(ctx context.Context, req *inttypes.UpdateShopConnectionRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Connection/UpdateBuiltinShopConnection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateBuiltinShopConnectionEndpoint{UpdateShopConnectionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateBuiltinShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2809,6 +2901,52 @@ func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *
 	return resp, nil
 }
 
+type GetShippingServicesEndpoint struct {
+	*api.GetShippingServicesRequest
+	Result  *inttypes.GetShippingServicesResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) GetShippingServices(ctx context.Context, req *api.GetShippingServicesRequest) (resp *inttypes.GetShippingServicesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/GetShippingServices"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShippingServicesEndpoint{GetShippingServicesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetShippingServices(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpdateShipmentPriceEndpoint struct {
 	*api.UpdateShipmentPriceRequest
 	Result  *api.ShipmentPrice
@@ -2982,6 +3120,98 @@ func (s wrapShipmentPriceService) UpdateShipmentService(ctx context.Context, req
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateShipmentService(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateShipmentServicesAvailableLocationsEndpoint struct {
+	*api.UpdateShipmentServicesAvailableLocationsRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx context.Context, req *api.UpdateShipmentServicesAvailableLocationsRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShipmentServicesAvailableLocationsEndpoint{UpdateShipmentServicesAvailableLocationsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateShipmentServicesAvailableLocations(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateShipmentServicesBlacklistLocationsEndpoint struct {
+	*api.UpdateShipmentServicesBlacklistLocationsRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx context.Context, req *api.UpdateShipmentServicesBlacklistLocationsRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShipmentServicesBlacklistLocationsEndpoint{UpdateShipmentServicesBlacklistLocationsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateShipmentServicesBlacklistLocations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

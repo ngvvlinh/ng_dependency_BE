@@ -13,7 +13,8 @@ import (
 
 func (s *ConnectionService) GetConnections(ctx context.Context, r *GetConnectionsEndpoint) error {
 	query := &connectioning.ListConnectionsQuery{
-		ConnectionType: connection_type.Shipping,
+		ConnectionType:   connection_type.Shipping,
+		ConnectionMethod: r.ConnectionMethod,
 	}
 	if err := connectionQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -46,12 +47,13 @@ func (s *ConnectionService) DisableConnection(ctx context.Context, r *DisableCon
 	return nil
 }
 
-func (s *ConnectionService) CreateTopshipConnection(ctx context.Context, r *CreateTopshipConnectionEndpoint) error {
+func (s *ConnectionService) CreateBuiltinConnection(ctx context.Context, r *CreateBuiltinConnectionEndpoint) error {
 	if r.ExternalData == nil || r.ExternalData.UserID == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
 	}
-	cmd := &connectioning.CreateTopshipConnectionCommand{
+	cmd := &connectioning.CreateBuiltinConnectionCommand{
 		ID:    r.ConnectionID,
+		Name:  r.Name,
 		Token: r.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
 			UserID: r.ExternalData.UserID,
@@ -62,6 +64,47 @@ func (s *ConnectionService) CreateTopshipConnection(ctx context.Context, r *Crea
 		return err
 	}
 	r.Result = convertpb.PbConnection(cmd.Result)
+	return nil
+}
+
+func (s *ConnectionService) GetBuiltinShopConnections(ctx context.Context, r *GetBuiltinShopConnectionsEndpoint) error {
+	query := &connectioning.ListGlobalShopConnectionsQuery{}
+	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = &types.GetShopConnectionsResponse{
+		ShopConnections: convertpb.PbShopConnections(query.Result),
+	}
+	return nil
+}
+
+func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *UpdateBuiltinShopConnectionEndpoint) error {
+	if r.ExternalData == nil || r.ExternalData.UserID == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
+	}
+	query := &connectioning.GetConnectionByIDQuery{
+		ID: r.ConnectionID,
+	}
+	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	conn := query.Result
+	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Connection không hợp lệ")
+	}
+
+	cmd := &connectioning.UpdateShopConnectionTokenCommand{
+		ConnectionID: r.ConnectionID,
+		Token:        r.Token,
+		ExternalData: &connectioning.ShopConnectionExternalData{
+			UserID: r.ExternalData.UserID,
+			Email:  r.ExternalData.Email,
+		},
+	}
+	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: 1}
 	return nil
 }
 

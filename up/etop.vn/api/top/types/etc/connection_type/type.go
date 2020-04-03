@@ -50,9 +50,12 @@ const (
 	// +enum=unknown
 	ConnectionMethodUnknown ConnectionMethod = 0
 
-	// +enum=topship
-	ConnectionMethodTopship ConnectionMethod = 1
+	// built-in: dùng tài khoản có sẵn để tạo đơn (tức tạo đơn từ tài khoản của TopShip hoặc tài khoản whitelabel nào đó)
+	// topship: backward-compatible (remove later)
+	// +enum=builtin,topship
+	ConnectionMethodBuiltin ConnectionMethod = 1
 
+	// direct: dùng trực tiếp tài khoản từ NVC để tạo đơn
 	// +enum=direct
 	ConnectionMethodDirect ConnectionMethod = 2
 )
