@@ -665,25 +665,38 @@ func (s *UserService) register(
 	}
 	{
 		now := time.Now()
+
+		// auto verify email when accept invitation by email
+		if invitationTemp != nil && invitationTemp.Email != "" && user.EmailVerifiedAt.IsZero() {
+			updateCmd := &identitymodelx.UpdateUserVerificationCommand{
+				UserID: user.ID,
+			}
+			updateCmd.EmailVerifiedAt = now
+			if err := bus.Dispatch(ctx, updateCmd); err != nil {
+				return nil, err
+			}
+		}
+
 		shouldUpdate := false
-		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
-			UserID: user.ID,
-		}
-		// auto verify email when accept invitation from email
-		if invitationTemp != nil {
-			if invitationTemp.Email != "" && user.EmailVerifiedAt.IsZero() {
-				updateCmd.EmailVerifiedAt = now
-				shouldUpdate = true
+
+		if user.PhoneVerifiedAt.IsZero() {
+			if usingToken {
+				if invitationTemp == nil ||
+					(invitationTemp.Phone == "" || invitationTemp.Phone == claim.Extra[keyRequestVerifyPhone]) {
+					shouldUpdate = true
+				}
+			} else {
+				if invitationTemp != nil && invitationTemp.Phone != "" {
+					shouldUpdate = true
+				}
 			}
 		}
-		// auto verify phone when register using token
-		if usingToken {
-			if user.PhoneVerificationSentAt.IsZero() {
-				updateCmd.PhoneVerifiedAt = now
-				shouldUpdate = true
-			}
-		}
+
 		if shouldUpdate {
+			updateCmd := &identitymodelx.UpdateUserVerificationCommand{
+				UserID: user.ID,
+			}
+			updateCmd.PhoneVerifiedAt = now
 			if err := bus.Dispatch(ctx, updateCmd); err != nil {
 				return nil, err
 			}
@@ -775,9 +788,13 @@ func getInvitation(ctx context.Context, r *etop.CreateUserRequest) (*invitation.
 			Throw()
 	}
 	invitationTemp := getInvitationByToken.Result
-	if r.Email != invitationTemp.Email {
+	if invitationTemp.Email != "" && r.Email != invitationTemp.Email {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email gửi lên và email trong token không khớp nhau")
 	}
+	if invitationTemp.Phone != "" && r.Phone != invitationTemp.Phone {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phone gửi lên và phone trong token không khớp nhau")
+	}
+
 	return invitationTemp, nil
 }
 
