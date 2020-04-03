@@ -16,7 +16,7 @@ func Float64(key string, val float64) zapcore.Field        { return zap.Float64(
 func Int(key string, val int) zapcore.Field                { return zap.Int(key, val) }
 func Int32(key string, val int32) zapcore.Field            { return zap.Int(key, int(val)) }
 func Int64(key string, val int64) zapcore.Field            { return zap.Int64(key, val) }
-func Object(key string, val interface{}) zapcore.Field     { return zap.Stringer(key, dump(val)) }
+func Object(key string, val interface{}) zapcore.Field     { return zap.Stringer(key, Dump(val)) }
 func Skip() zapcore.Field                                  { return zap.Skip() }
 func Stack() zapcore.Field                                 { return zap.Stack("stack") }
 func String(key string, val string) zapcore.Field          { return zap.String(key, val) }
@@ -47,6 +47,6 @@ func (d dd) String() string {
 }
 
 // Dump renders object for debugging
-func dump(v interface{}) fmt.Stringer {
+func Dump(v interface{}) fmt.Stringer {
 	return dd{v}
 }
