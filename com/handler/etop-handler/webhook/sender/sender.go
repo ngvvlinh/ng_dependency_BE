@@ -181,43 +181,36 @@ func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot
 		mapAccountIDs[accountID] = true
 	}
 	var partnerIDs []dot.ID
-	var loadPartnerIDs bool
 	value, err := redisStore.GetString(PrefixGetPartnerIDs + "-" + shopID.String())
-	switch err {
-	case nil:
-		stringIDs := strings.Split(value, ",")
-		if len(stringIDs) == 0 {
-			loadPartnerIDs = true
-		} else {
-			for _, stringID := range stringIDs {
-				id, _err := dot.ParseID(stringID)
-				if _err != nil {
-					panic("parse ID unexpected")
-				}
-				partnerIDs = append(partnerIDs, id)
-			}
-		}
-	case redis.ErrNil:
-		loadPartnerIDs = true
-	default:
+	if err != nil && err != redis.ErrNil {
 		return err
 	}
-
-	if loadPartnerIDs {
+	if value != "" { // use cache
+		stringIDs := strings.Split(value, ",")
+		for _, stringID := range stringIDs {
+			id, _err := dot.ParseID(stringID)
+			if _err != nil {
+				panic("parse ID unexpected")
+			}
+			partnerIDs = append(partnerIDs, id)
+		}
+	} else { // reload from database
 		query := &identitymodelx.GetPartnersFromRelationQuery{
 			AccountIDs: []dot.ID{shopID},
 		}
-		if err := bus.Dispatch(ctx, query); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		if err := bus.Dispatch(ctx, query); err != nil {
 			return err
 		}
 
-		for _, partner := range query.Result.Partners {
-			partnerIDs = append(partnerIDs, partner.ID)
-		}
-		value := dot.JoinIDs(partnerIDs)
+		if len(query.Result.Partners) > 0 {
+			for _, partner := range query.Result.Partners {
+				partnerIDs = append(partnerIDs, partner.ID)
+			}
+			value := dot.JoinIDs(partnerIDs)
 
-		if err := redisStore.SetStringWithTTL(PrefixGetPartnerIDs+"-"+shopID.String(), value, TTL); err != nil {
-			return err
+			if err := redisStore.SetStringWithTTL(PrefixGetPartnerIDs+"-"+shopID.String(), value, TTL); err != nil {
+				return err
+			}
 		}
 	}
 
