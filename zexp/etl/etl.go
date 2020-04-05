@@ -73,7 +73,7 @@ func (ng *ETLEngine) Run() {
 
 	var wg sync.WaitGroup
 
-	for i, etlModelPair := range ng.etlModelPairs {
+	for modelPairIndex, etlModelPair := range ng.etlModelPairs {
 		go func(index int, modelPair *types.ModelPair) {
 			wg.Add(1)
 			defer wg.Done()
@@ -113,14 +113,14 @@ func (ng *ETLEngine) Run() {
 				}
 
 				// Compare two results (above), then choose the RIDs that appear in Source Database but not in Destination Database
-				for i = len(latestSrcRIDs) - 1; i >= 0; i-- {
+				for i := len(latestSrcRIDs) - 1; i >= 0; i-- {
 					if !mapDstRIDs[latestSrcRIDs[i]] {
 						rid = latestSrcRIDs[i]
 						break
 					}
 				}
 
-				for i = len(latestDstRIDs) - 1; i >= 0; i-- {
+				for i := len(latestDstRIDs) - 1; i >= 0; i-- {
 					if mapSrcRIDs[latestDstRIDs[i]] {
 						excludedRIDs = append(excludedRIDs, latestDstRIDs[i])
 					}
@@ -154,7 +154,7 @@ func (ng *ETLEngine) Run() {
 			}
 
 			return
-		}(i, etlModelPair)
+		}(modelPairIndex, etlModelPair)
 	}
 
 	wg.Wait()
@@ -165,7 +165,7 @@ func (ng *ETLEngine) RunEveryDay() {
 
 	var wg sync.WaitGroup
 
-	for i, etlModelPair := range ng.etlModelPairs {
+	for modelPairIndex, etlModelPair := range ng.etlModelPairs {
 		go func(index int, modelPair *types.ModelPair) {
 			wg.Add(1)
 			defer wg.Done()
@@ -252,7 +252,7 @@ func (ng *ETLEngine) RunEveryDay() {
 				err = ng.loadModels(modelPair.Target.DB, plistDst.Interface())
 				must(err)
 			}
-		}(i, etlModelPair)
+		}(modelPairIndex, etlModelPair)
 	}
 
 	wg.Wait()
