@@ -3192,8 +3192,8 @@ func (m *PartnerRelationFtUser) SQLScanArgs(opts core.Opts) []interface{} {
 type Shops []*Shop
 
 const __sqlShop_Table = "shop"
-const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\",\"rid\""
-const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\",\"wl_partner_id\",\"rid\""
+const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
@@ -3245,6 +3245,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.SurveyInfo},
 		core.JSON{m.ShippingServiceSelectStrategy},
 		m.InventoryOverstock,
+		m.WLPartnerID,
 		m.Rid,
 	}
 }
@@ -3278,6 +3279,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.SurveyInfo},
 		core.JSON{&m.ShippingServiceSelectStrategy},
 		&m.InventoryOverstock,
+		&m.WLPartnerID,
 		&m.Rid,
 	}
 }
@@ -3316,7 +3318,7 @@ func (_ *Shops) SQLSelect(w SQLWriter) error {
 func (m *Shop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(28)
+	w.WriteMarkers(29)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3326,7 +3328,7 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(28)
+		w.WriteMarkers(29)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3573,6 +3575,14 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.InventoryOverstock)
 	}
+	if m.WLPartnerID != 0 {
+		flag = true
+		w.WriteName("wl_partner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WLPartnerID)
+	}
 	if m.Rid != 0 {
 		flag = true
 		w.WriteName("rid")
@@ -3591,7 +3601,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 func (m *Shop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(28)
+	w.WriteMarkers(29)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3648,18 +3658,19 @@ func (m ShopHistory) ShippingServiceSelectStrategy() core.Interface {
 func (m ShopHistory) InventoryOverstock() core.Interface {
 	return core.Interface{m["inventory_overstock"]}
 }
-func (m ShopHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
+func (m ShopHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
+func (m ShopHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 28)
-	args := make([]interface{}, 28)
-	for i := 0; i < 28; i++ {
+	data := make([]interface{}, 29)
+	args := make([]interface{}, 29)
+	for i := 0; i < 29; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopHistory, 28)
+	res := make(ShopHistory, 29)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["owner_id"] = data[2]
@@ -3687,15 +3698,16 @@ func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["survey_info"] = data[24]
 	res["shipping_service_select_strategy"] = data[25]
 	res["inventory_overstock"] = data[26]
-	res["rid"] = data[27]
+	res["wl_partner_id"] = data[27]
+	res["rid"] = data[28]
 	*m = res
 	return nil
 }
 
 func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 28)
-	args := make([]interface{}, 28)
-	for i := 0; i < 28; i++ {
+	data := make([]interface{}, 29)
+	args := make([]interface{}, 29)
+	for i := 0; i < 29; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopHistories, 0, 128)
@@ -3731,7 +3743,8 @@ func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["survey_info"] = data[24]
 		m["shipping_service_select_strategy"] = data[25]
 		m["inventory_overstock"] = data[26]
-		m["rid"] = data[27]
+		m["wl_partner_id"] = data[27]
+		m["rid"] = data[28]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

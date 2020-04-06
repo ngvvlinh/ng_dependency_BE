@@ -2157,6 +2157,25 @@ func (ft *ShopFilters) ByMoneyTransactionRRulePtr(MoneyTransactionRRule *string)
 	}
 }
 
+func (ft *ShopFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *ShopFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
 func (ft *ShopFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

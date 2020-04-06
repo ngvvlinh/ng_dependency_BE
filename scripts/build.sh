@@ -36,7 +36,7 @@ build_docker() {
     fi
 
     if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
-    docker exec -it -e COMMIT="$COMMIT" "$_env_file" \
+    docker exec -it -e COMMIT="$COMMIT" $_env_file \
         etop_golang scripts/build-inner.sh
 }
 

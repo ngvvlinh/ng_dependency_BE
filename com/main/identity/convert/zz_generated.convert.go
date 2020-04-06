@@ -553,6 +553,7 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.SurveyInfo = nil                    // zero value
 	out.ShippingServiceSelectStrategy = nil // zero value
 	out.InventoryOverstock = dot.NullBool{} // zero value
+	out.WLPartnerID = 0                     // zero value
 	out.Rid = 0                             // zero value
 }
 

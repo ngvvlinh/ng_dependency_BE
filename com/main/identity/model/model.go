@@ -163,7 +163,8 @@ type Shop struct {
 
 	InventoryOverstock dot.NullBool
 
-	Rid dot.ID
+	WLPartnerID dot.ID
+	Rid         dot.ID
 }
 
 type ShippingServiceSelectStrategyItem struct {

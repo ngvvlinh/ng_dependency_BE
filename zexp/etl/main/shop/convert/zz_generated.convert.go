@@ -174,6 +174,7 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.SurveyInfo = Convert_shopmodel_SurveyInfoes_identitymodel_SurveyInfoes(arg.SurveyInfo)
 	out.ShippingServiceSelectStrategy = nil // zero value
 	out.InventoryOverstock = dot.NullBool{} // zero value
+	out.WLPartnerID = 0                     // zero value
 	out.Rid = arg.Rid                       // simple assign
 }
 

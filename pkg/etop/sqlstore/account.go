@@ -53,6 +53,11 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		return cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
 
+	ownerQuery := &identity.GetUserByIDQuery{UserID: cmd.OwnerID}
+	if err := bus.Dispatch(ctx, ownerQuery); err != nil {
+		return cm.Error(cm.Internal, "invalid owner_id", nil)
+	}
+
 	id := model.NewShopID()
 	return x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
 		account := &identitymodel.Account{
@@ -93,6 +98,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			ID:                            id,
 			Name:                          cmd.Name,
 			OwnerID:                       cmd.OwnerID,
+			WLPartnerID:                   ownerQuery.Result.WLPartnerID,
 			Status:                        status3.P,
 			AddressID:                     cmd.AddressID,
 			Phone:                         phoneNorm.String(),

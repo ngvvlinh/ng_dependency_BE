@@ -36,7 +36,11 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 
 func (a *QueryService) MessageBus() identity.QueryBus {
 	b := bus.New()
-	return identity.NewQueryServiceHandler(a).RegisterHandlers(b)
+	h := identity.NewQueryServiceHandler(a)
+
+	// TODO: refactor pkg/etop/sqlstore.CreateShop
+	bus.AddHandler("sql", h.HandleGetUserByID)
+	return h.RegisterHandlers(b)
 }
 
 func (a *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Shop, error) {
