@@ -24,19 +24,20 @@ preprocess() {
 }
 
 build_docker() {
-    if docker ps -a | grep etop_golang_alpine | grep Exited ; then
-        docker start etop_golang_alpine
+    if docker ps -a | grep 'etop_golang$' | grep Exited ; then
+        docker start etop_golang
     fi
-    if ! docker ps | grep etop_golang_alpine ; then
-        docker run -d --name etop_golang_alpine \
+    if ! docker ps | grep 'etop_golang$' ; then
+        docker run -d --name etop_golang \
             -e 'ETOPDIR=/etop.vn' \
             -v "$PWD":/etop.vn/backend \
-            -w /etop.vn/backend olvrng/golang-alpine-toolbox \
+            -w /etop.vn/backend olvrng/golang-toolbox \
             sleep 3600
     fi
 
-    docker exec -it -e COMMIT="$COMMIT" \
-        etop_golang_alpine scripts/build-inner.sh
+    if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
+    docker exec -it -e COMMIT="$COMMIT" "$_env_file" \
+        etop_golang scripts/build-inner.sh
 }
 
 case "$1" in
