@@ -11,3 +11,5 @@ select init_history('shipnow_fulfillment', '{id, shop_id}');
 select init_history('shop_stocktake', '{id, shop_id}');
 
 select init_history('shop_variant_supplier', '{variant_id, supplier_id}');
+
+select init_history('shop_product_collection', '{shop_id, product_id, collection_id}');
