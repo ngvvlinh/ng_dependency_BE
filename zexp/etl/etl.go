@@ -74,8 +74,8 @@ func (ng *ETLEngine) Run() {
 	var wg sync.WaitGroup
 
 	for modelPairIndex, etlModelPair := range ng.etlModelPairs {
+		wg.Add(1)
 		go func(index int, modelPair *types.ModelPair) {
-			wg.Add(1)
 			defer wg.Done()
 
 			for {

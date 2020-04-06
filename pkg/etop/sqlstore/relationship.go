@@ -216,14 +216,12 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 		return cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
 	}
 	var res []*identitymodel.AccountUser
-	guard := make(chan int, 8)
+	var wg sync.WaitGroup
 	var m sync.Mutex
-	for i, userID := range query.UserIDs {
-		guard <- i
+	for _, userID := range query.UserIDs {
+		wg.Add(1)
 		go func(uID dot.ID) {
-			defer func() {
-				<-guard
-			}()
+			defer wg.Done()
 			var _res []*identitymodel.AccountUser
 			s := x.Table("account_user").
 				Where("user_id = ? AND deleted_at is NULL", uID)
@@ -237,9 +235,7 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 			}
 		}(userID)
 	}
-
-	for len(guard) > 0 {
-	}
+	wg.Wait()
 
 	query.Result = res
 	return nil

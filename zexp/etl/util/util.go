@@ -163,25 +163,25 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 }
 
 func (s *ETLUtil) runEvery5Minutes(ctx context.Context, ch *chan bool) {
-	go func(ctx context.Context, ch *chan bool) {
-		if len(*ch) != 0 {
+	go func(_ctx context.Context, _ch *chan bool) {
+		if len(*_ch) != 0 {
 			return
 		}
 
-		defer func() { <-*ch }()
-		*ch <- true
-		ng := s.reloadETLEngine(ctx)
+		defer func() { <-*_ch }()
+		*_ch <- true
+		ng := s.reloadETLEngine(_ctx)
 		ng.Run()
 	}(ctx, ch)
 }
 
 func (s *ETLUtil) runEveryNight(ctx context.Context, ch *chan bool) {
-	go func(_ctx context.Context, ch *chan bool) {
-		if len(*ch) != 0 {
+	go func(_ctx context.Context, _ch *chan bool) {
+		if len(*_ch) != 0 {
 			return
 		}
-		defer func() { <-*ch }()
-		*ch <- true
+		defer func() { <-*_ch }()
+		*_ch <- true
 		ng := s.reloadETLEngine(_ctx)
 		ng.RunEveryDay()
 	}(ctx, ch)
