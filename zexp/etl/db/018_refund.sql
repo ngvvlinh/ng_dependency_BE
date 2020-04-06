@@ -21,3 +21,7 @@ create table if not exists refund (
 	status int,
 	rid int8
 );
+
+alter table purchase_refund
+    drop column if exists adjustment_lines,
+    drop column if exists total_adjustment;

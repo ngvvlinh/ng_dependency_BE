@@ -29,8 +29,8 @@ type SQLWriter = core.SQLWriter
 type ShopCategories []*ShopCategory
 
 const __sqlShopCategory_Table = "shop_category"
-const __sqlShopCategory_ListCols = "\"id\",\"partner_id\",\"shop_id\",\"parent_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"rid\""
-const __sqlShopCategory_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"parent_id\" = EXCLUDED.\"parent_id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlShopCategory_ListCols = "\"id\",\"shop_id\",\"parent_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"rid\""
+const __sqlShopCategory_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"parent_id\" = EXCLUDED.\"parent_id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShopCategory_Insert = "INSERT INTO \"shop_category\" (" + __sqlShopCategory_ListCols + ") VALUES"
 const __sqlShopCategory_Select = "SELECT " + __sqlShopCategory_ListCols + " FROM \"shop_category\""
 const __sqlShopCategory_Select_history = "SELECT " + __sqlShopCategory_ListCols + " FROM history.\"shop_category\""
@@ -55,7 +55,6 @@ func init() {
 func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		m.ID,
-		m.PartnerID,
 		m.ShopID,
 		m.ParentID,
 		core.String(m.Name),
@@ -69,7 +68,6 @@ func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *ShopCategory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
-		&m.PartnerID,
 		&m.ShopID,
 		&m.ParentID,
 		(*core.String)(&m.Name),
@@ -114,7 +112,7 @@ func (_ *ShopCategories) SQLSelect(w SQLWriter) error {
 func (m *ShopCategory) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCategory_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -124,7 +122,7 @@ func (ms ShopCategories) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCategory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -162,14 +160,6 @@ func (m *ShopCategory) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
-	}
-	if m.PartnerID != 0 {
-		flag = true
-		w.WriteName("partner_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.PartnerID)
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -237,7 +227,7 @@ func (m *ShopCategory) SQLUpdate(w SQLWriter) error {
 func (m *ShopCategory) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCategory_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -260,7 +250,6 @@ func (m ShopCategoryHistories) SQLSelect(w SQLWriter) error {
 }
 
 func (m ShopCategoryHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m ShopCategoryHistory) PartnerID() core.Interface { return core.Interface{m["partner_id"]} }
 func (m ShopCategoryHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
 func (m ShopCategoryHistory) ParentID() core.Interface  { return core.Interface{m["parent_id"]} }
 func (m ShopCategoryHistory) Name() core.Interface      { return core.Interface{m["name"]} }
@@ -270,32 +259,31 @@ func (m ShopCategoryHistory) UpdatedAt() core.Interface { return core.Interface{
 func (m ShopCategoryHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *ShopCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCategoryHistory, 9)
+	res := make(ShopCategoryHistory, 8)
 	res["id"] = data[0]
-	res["partner_id"] = data[1]
-	res["shop_id"] = data[2]
-	res["parent_id"] = data[3]
-	res["name"] = data[4]
-	res["status"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
-	res["rid"] = data[8]
+	res["shop_id"] = data[1]
+	res["parent_id"] = data[2]
+	res["name"] = data[3]
+	res["status"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	res["rid"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCategoryHistories, 0, 128)
@@ -305,14 +293,13 @@ func (ms *ShopCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		}
 		m := make(ShopCategoryHistory)
 		m["id"] = data[0]
-		m["partner_id"] = data[1]
-		m["shop_id"] = data[2]
-		m["parent_id"] = data[3]
-		m["name"] = data[4]
-		m["status"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
-		m["rid"] = data[8]
+		m["shop_id"] = data[1]
+		m["parent_id"] = data[2]
+		m["name"] = data[3]
+		m["status"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
+		m["rid"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

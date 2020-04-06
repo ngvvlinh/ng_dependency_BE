@@ -9,3 +9,6 @@ CREATE TABLE if not exists shop_category (
     updated_at timestamp with time zone,
     rid int8
 );
+
+alter table shop_category
+    drop column if exists supplier_id;

@@ -58,7 +58,7 @@ func Convert_shopcategorymodel_ShopCategory_catalogmodel_ShopCategory(arg *shopc
 
 func convert_shopcategorymodel_ShopCategory_catalogmodel_ShopCategory(arg *shopcategorymodel.ShopCategory, out *catalogmodel.ShopCategory) {
 	out.ID = arg.ID               // simple assign
-	out.PartnerID = arg.PartnerID // simple assign
+	out.PartnerID = 0             // zero value
 	out.ShopID = arg.ShopID       // simple assign
 	out.ExternalID = ""           // zero value
 	out.ExternalParentID = ""     // zero value
@@ -93,7 +93,6 @@ func Convert_catalogmodel_ShopCategory_shopcategorymodel_ShopCategory(arg *catal
 
 func convert_catalogmodel_ShopCategory_shopcategorymodel_ShopCategory(arg *catalogmodel.ShopCategory, out *shopcategorymodel.ShopCategory) {
 	out.ID = arg.ID               // simple assign
-	out.PartnerID = arg.PartnerID // simple assign
 	out.ShopID = arg.ShopID       // simple assign
 	out.ParentID = arg.ParentID   // simple assign
 	out.Name = arg.Name           // simple assign

@@ -45,7 +45,7 @@ BEGIN
 END
 $$;
 
-CREATE TABLE receipt (
+CREATE TABLE if not exists receipt (
     id INT8 PRIMARY KEY,
     shop_id INT8,
     trader_id INT8,
