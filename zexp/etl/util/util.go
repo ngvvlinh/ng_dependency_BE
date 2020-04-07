@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lib/pq"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-etl/config"
 	"etop.vn/backend/cmd/etop-etl/register"
@@ -40,17 +42,33 @@ type ETLUtil struct {
 	resetDB       bool
 }
 
+type accountUser struct {
+	mUserIDs         map[dot.ID]bool
+	mAccountIDs      map[dot.ID]bool
+	latestUserRID    dot.ID
+	latestAccountRID dot.ID
+}
+
+var mAccountUser map[string]*accountUser
+
 func initDBs(mapDBCfgs map[string]config.Database) map[string]*cmsql.Database {
 	mapDBs := make(map[string]*cmsql.Database)
+	mAccountUser = make(map[string]*accountUser)
 	for wlName, dbCfg := range mapDBCfgs {
+
 		db, err := cmsql.Connect(dbCfg.Postgres)
 		if err != nil {
 			ll.Fatal("Unable to connect to Postgres", l.Error(err))
 		}
 		if wlName == drivers.ETop(cmenv.Env()).Key {
 			sqlstore.Init(db)
-
+		} else {
+			mAccountUser[wlName] = &accountUser{
+				mUserIDs:    make(map[dot.ID]bool),
+				mAccountIDs: make(map[dot.ID]bool),
+			}
 		}
+
 		mapDBs[wlName] = db
 	}
 	return mapDBs
@@ -139,10 +157,34 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 		}
 
 		// GET userID and accountIDs by WlPartnerID
-		userIDs, accountIDs, err := s.getUserIDsAndAccountIDs(ctx, driver.ID)
+		var userIDs, accountIDs []dot.ID
+		newUserIDs, latestUserRID, err := scanUser(srcDB, mAccountUser[driver.Key].latestUserRID, driver.ID)
 		if err != nil {
 			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
 			continue
+		}
+		mAccountUser[driver.Key].latestUserRID = latestUserRID
+		for _, userID := range newUserIDs {
+			mAccountUser[driver.Key].mUserIDs[userID] = true
+		}
+		for userID := range mAccountUser[driver.Key].mUserIDs {
+			userIDs = append(userIDs, userID)
+		}
+
+		newAccountIDs, deletedAccountIDs, latestAccountRID, err := scanShop(srcDB, mAccountUser[driver.Key].latestAccountRID, driver.ID)
+		if err != nil {
+			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
+			continue
+		}
+		mAccountUser[driver.Key].latestAccountRID = latestAccountRID
+		for _, accountID := range newAccountIDs {
+			mAccountUser[driver.Key].mAccountIDs[accountID] = true
+		}
+		for _, accountID := range deletedAccountIDs {
+			delete(mAccountUser[driver.Key].mAccountIDs, accountID)
+		}
+		for accountID := range mAccountUser[driver.Key].mAccountIDs {
+			accountIDs = append(accountIDs, accountID)
 		}
 
 		dstDB := s.mapDBs[driver.Key]
@@ -187,12 +229,83 @@ func (s *ETLUtil) runEveryNight(ctx context.Context, ch *chan bool) {
 	}(ctx, ch)
 }
 
-func checkDBExists(db *cmsql.Database, databaseName string) (exists bool, err error) {
-	statement := fmt.Sprintf(`SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '%s');`, databaseName)
+func scanUser(db *cmsql.Database, fromRID, wlPartnerID dot.ID) (ids []dot.ID, latestRID dot.ID, err error) {
+	for {
+		rows, err := db.Table("user").
+			Select("id, rid").
+			Where("rid > ?", fromRID.Int64()).
+			Where("wl_partner_id = ?", wlPartnerID).
+			Limit(1000).
+			OrderBy("rid ASC").
+			Query()
+		if err != nil {
+			return nil, 0, err
+		}
 
-	row := db.QueryRow(statement)
-	err = row.Scan(&exists)
-	return
+		var id, rid dot.ID
+		count := 0
+		for rows.Next() {
+			err := rows.Scan(&id, &rid)
+			if err != nil {
+				return nil, 0, err
+			}
+			ids = append(ids, id)
+			count += 1
+			fromRID = rid
+		}
+
+		err = rows.Err()
+		if err != nil {
+			return nil, 0, err
+		}
+
+		if count == 0 {
+			break
+		}
+	}
+	return ids, fromRID, err
+}
+
+func scanShop(db *cmsql.Database, fromRID, wlPartnerID dot.ID) (ids, deletedIDs []dot.ID, latestRID dot.ID, err error) {
+	for {
+		rows, err := db.Table("shop").
+			Select("id, rid, deleted_at").
+			Where("rid > ?", fromRID.Int64()).
+			Where("wl_partner_id = ?", wlPartnerID).
+			OrderBy("rid ASC").
+			Limit(1000).
+			Query()
+		if err != nil {
+			return nil, nil, 0, err
+		}
+
+		var id, rid dot.ID
+		var deletedAt pq.NullTime
+		count := 0
+		for rows.Next() {
+			err := rows.Scan(&id, &rid, &deletedAt)
+			if err != nil {
+				return nil, nil, 0, err
+			}
+			if !deletedAt.Valid {
+				ids = append(ids, id)
+			} else {
+				deletedIDs = append(deletedIDs, id)
+			}
+			count += 1
+			fromRID = rid
+		}
+
+		err = rows.Err()
+		if err != nil {
+			return nil, nil, 0, err
+		}
+
+		if count == 0 {
+			break
+		}
+	}
+	return ids, deletedIDs, fromRID, err
 }
 
 func (s *ETLUtil) getUserIDsAndAccountIDs(ctx context.Context, partnerID dot.ID) (userIDs []dot.ID, accountIDs []dot.ID, err error) {
