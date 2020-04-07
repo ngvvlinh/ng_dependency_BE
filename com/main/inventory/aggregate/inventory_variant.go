@@ -269,9 +269,17 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 		return nil, err
 	}
 	POExists := false
+	var purchaseOrderID dot.ID
 	for _, value := range inventoryVouchers {
 		if value.Status == status3.P {
 			POExists = true
+			purchaseOrderID = value.RefID
+			break
+		}
+	}
+	for _, value := range inventoryVouchers {
+		if value.Status == status3.P && value.RefID == purchaseOrderID && value.Type == inventory_type.Out {
+			POExists = false
 			break
 		}
 	}

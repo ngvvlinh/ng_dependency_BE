@@ -9955,12 +9955,12 @@
         "basket_value": {
           "type": "integer"
         },
+        "cancel_reason": {
+          "type": "string"
+        },
         "cancelled_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "cancelled_reason": {
-          "type": "string"
         },
         "code": {
           "type": "string"

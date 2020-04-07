@@ -150,22 +150,6 @@ func (a *CustomerAggregate) UpdateCustomer(
 		args.Email.String = email.String()
 	}
 
-	// Check phone
-	if args.Phone.Valid && customer.Phone != args.Phone.String {
-		ct, err := a.store(ctx).ShopID(args.ShopID).Phone(args.Phone.String).GetCustomerDB()
-		if err == nil {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Số điện thoại %v đã tồn tại", ct.Phone)
-		}
-	}
-
-	// Check email
-	if args.Email.Valid && customer.Email != args.Email.String {
-		ct, err := a.store(ctx).ShopID(args.ShopID).Email(args.Email.String).GetCustomerDB()
-		if err == nil {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Khách hàng với email: %v đã tồn tại", ct.Email)
-		}
-	}
-
 	customer = convert.Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(args, customer)
 	customerModel := &model.ShopCustomer{}
 	customerModel = convert.Convert_customering_ShopCustomer_customeringmodel_ShopCustomer(customer, customerModel)
@@ -234,10 +218,10 @@ func (a *CustomerAggregate) BatchSetCustomersStatus(
 
 func (a *CustomerAggregate) CreateCustomerGroup(ctx context.Context, args *customering.CreateCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {
 	customerGroup := &customering.ShopCustomerGroup{
-		ID:     cm.NewID(),
-		PartnerID:args.PartnerID,
-		ShopID: args.ShopID,
-		Name:   args.Name,
+		ID:        cm.NewID(),
+		PartnerID: args.PartnerID,
+		ShopID:    args.ShopID,
+		Name:      args.Name,
 	}
 	if err := a.customerGroupStore(ctx).CreateShopCustomerGroup(customerGroup); err != nil {
 		return nil, err

@@ -398,7 +398,7 @@ type PurchaseOrder struct {
 	Status                  status3.Status          `json:"status"`
 	Lines                   []*PurchaseOrderLine    `json:"lines"`
 	CreatedBy               dot.ID                  `json:"created_by"`
-	CancelledReason         string                  `json:"cancelled_reason"`
+	CancelReason            string                  `json:"cancel_reason"`
 	ConfirmedAt             dot.Time                `json:"confirmed_at"`
 	CancelledAt             dot.Time                `json:"cancelled_at"`
 	CreatedAt               dot.Time                `json:"created_at"`
@@ -2065,7 +2065,9 @@ type GetInventoryVariantsByVariantIDsRequest struct {
 func (m *GetInventoryVariantsByVariantIDsRequest) Reset() {
 	*m = GetInventoryVariantsByVariantIDsRequest{}
 }
-func (m *GetInventoryVariantsByVariantIDsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetInventoryVariantsByVariantIDsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type InventoryVariant struct {
 	ShopId         dot.ID   `json:"shop_id"`
@@ -2250,7 +2252,9 @@ type GetInventoryVouchersByReferenceResponse struct {
 func (m *GetInventoryVouchersByReferenceResponse) Reset() {
 	*m = GetInventoryVouchersByReferenceResponse{}
 }
-func (m *GetInventoryVouchersByReferenceResponse) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetInventoryVouchersByReferenceResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type UpdateOrderShippingInfoRequest struct {
 	OrderId         dot.ID               `json:"order_id"`
@@ -2577,7 +2581,9 @@ type UpdateInventoryVariantCostPriceResponse struct {
 func (m *UpdateInventoryVariantCostPriceResponse) Reset() {
 	*m = UpdateInventoryVariantCostPriceResponse{}
 }
-func (m *UpdateInventoryVariantCostPriceResponse) String() string { return jsonx.MustMarshalToString(m) }
+func (m *UpdateInventoryVariantCostPriceResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type UpdateInventoryVariantCostPriceRequest struct {
 	VariantId dot.ID `json:"variant_id"`

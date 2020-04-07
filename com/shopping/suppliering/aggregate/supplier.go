@@ -98,26 +98,16 @@ func (a *SupplierAggregate) UpdateSupplier(
 		if args.Phone.String == "" {
 			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể để trống", nil)
 		} else {
-			phone, isPhone := validate.NormalizePhone(args.Phone.String)
+			_, isPhone := validate.NormalizePhone(args.Phone.String)
 			if isPhone != true {
 				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
-			}
-			args.Phone.String = phone.String()
-			supplierByPhone, err := a.store(ctx).Phone(args.Phone.String).ShopID(args.ShopID).GetSupplier()
-			if err == nil && args.ID != supplierByPhone.ID {
-				return nil, cm.Errorf(cm.InvalidArgument, nil, "số điện thoại %v đã tồn tại", supplierByPhone.Phone)
 			}
 		}
 	}
 	if args.Email.Valid && args.Email.String != "" {
-		email, isEmail := validate.NormalizeEmail(args.Email.String)
+		_, isEmail := validate.NormalizeEmail(args.Email.String)
 		if isEmail != true {
 			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
-		}
-		args.Email.String = email.String()
-		supplierByEmail, err := a.store(ctx).Email(args.Email.String).ShopID(args.ShopID).GetSupplier()
-		if err == nil && args.ID != supplierByEmail.ID {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Nhà cung cấp với email: %v đã tồn tại", supplierByEmail.Email)
 		}
 	}
 	if err = scheme.Convert(args, supplier); err != nil {
