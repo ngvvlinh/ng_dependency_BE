@@ -5,12 +5,12 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/payment_provider"
-	m "etop.vn/backend/com/etc/logging/payment/model"
+	payment_provider "etop.vn/api/top/types/etc/payment_provider"
+	paymentmodel "etop.vn/backend/com/etc/logging/payment/model"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type PaymentFilters struct{ prefix string }
@@ -84,7 +84,7 @@ func (ft *PaymentFilters) ByPaymentProviderPtr(PaymentProvider *payment_provider
 	}
 }
 
-func (ft *PaymentFilters) ByAction(Action m.PaymentAction) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByAction(Action paymentmodel.PaymentAction) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "action",
@@ -93,7 +93,7 @@ func (ft *PaymentFilters) ByAction(Action m.PaymentAction) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PaymentFilters) ByActionPtr(Action *m.PaymentAction) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByActionPtr(Action *paymentmodel.PaymentAction) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "action",

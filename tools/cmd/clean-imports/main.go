@@ -12,15 +12,29 @@ import (
 	"strings"
 )
 
+var flV = flag.Bool("v", false, "verbose")
+
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage: clean-imports DIR ...\n")
 		flag.PrintDefaults()
 	}
+	flRegexp := flag.String("name", "", "regular expression to filter file name")
+	flCheckAlias := flag.Bool("check-alias", false, "also check that all imports from non-stdlib have alias")
 	flag.Parse()
 	if len(flag.Args()) == 0 {
 		flag.Usage()
 		os.Exit(2)
+	}
+
+	var reFilter *regexp.Regexp
+	if *flRegexp != "" {
+		re, err := regexp.Compile(*flRegexp)
+		if err != nil {
+			fmt.Fprintf(flag.CommandLine.Output(), "invalid regexp (%v)", *flRegexp)
+			os.Exit(1)
+		}
+		reFilter = re
 	}
 
 	args := flag.Args()
@@ -38,7 +52,7 @@ func main() {
 	}
 	var files []string
 	for _, arg := range args {
-		files = append(files, walk(arg)...)
+		files = append(files, walk(arg, reFilter, *flCheckAlias)...)
 	}
 	if len(files) == 0 {
 		return
@@ -70,8 +84,14 @@ func panicf(msg string, args ...interface{}) {
 	panic(fmt.Sprintf(msg, args...))
 }
 
-func walk(dir string) (files []string) {
-	fmt.Println("Clean imports:", dir)
+func walk(dir string, filter *regexp.Regexp, requireAlias bool) (files []string) {
+	msgAlias := ""
+	if requireAlias {
+		msgAlias = " (with alias checking)"
+	}
+	fmt.Printf("Clean imports%v: %v\n", msgAlias, dir)
+
+	ok := true
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("process %v: %v", path, err)
@@ -79,11 +99,20 @@ func walk(dir string) (files []string) {
 		if info.IsDir() {
 			return nil
 		}
-		if !strings.HasSuffix(info.Name(), ".go") {
+		if !includeFile(filter, info.Name()) {
 			return nil
+		}
+		if *flV {
+			fmt.Printf("[DEBUG] %v\n", path)
 		}
 		body, err := ioutil.ReadFile(path)
 		must(err, "")
+		if requireAlias {
+			if err := checkAlias(body); err != nil {
+				fmt.Fprintf(os.Stdout, "%v: %v\n", path, err)
+				ok = false
+			}
+		}
 		changedBody := cleanImport(body)
 		if len(changedBody) == 0 {
 			return nil
@@ -100,22 +129,37 @@ func walk(dir string) (files []string) {
 		return nil
 	})
 	must(err, "can not process %v", dir)
+	if !ok {
+		os.Exit(1)
+	}
 	return
 }
 
+func includeFile(filter *regexp.Regexp, name string) bool {
+	if filter == nil {
+		return strings.HasSuffix(name, ".go")
+	}
+	return filter.MatchString(name)
+}
+
 var reImport = regexp.MustCompile(`import \(\n(\t"[^)]+")\n\)\n`)
+var reAliasLine = regexp.MustCompile(`^\t([A-z0-9_]+)|\. "`)
 var reNewline = regexp.MustCompile(`\n\n+`)
 var newline = []byte("\n")
 var quote = []byte(`"`)
 var etopvn = []byte("etop.vn/")
 var dot = []byte(".")
 
-func cleanImport(data []byte) [][]byte {
+func extractImportGroup(data []byte) ([]int, []byte) {
 	idx := reImport.FindSubmatchIndex(data)
 	if len(idx) == 0 {
-		return nil
+		return nil, nil
 	}
-	importBytes := data[idx[2]:idx[3]]
+	return idx, data[idx[2]:idx[3]]
+}
+
+func cleanImport(data []byte) [][]byte {
+	idx, importBytes := extractImportGroup(data)
 	lines := bytes.Split(importBytes, newline)
 	mode, space := 0, false
 	for _, line := range lines {
@@ -127,6 +171,18 @@ func cleanImport(data []byte) [][]byte {
 			mode = m
 		}
 		space = m == 0
+	}
+	return nil
+}
+
+func checkAlias(data []byte) error {
+	_, importBytes := extractImportGroup(data)
+	lines := bytes.Split(importBytes, newline)
+	for _, line := range lines {
+		m := getMode(line)
+		if m > 1 && !reAliasLine.Match(line) {
+			return fmt.Errorf("import should have alias (%s)", bytes.TrimSpace(line))
+		}
 	}
 	return nil
 }

@@ -5,13 +5,13 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/top/types/etc/gender"
-	"etop.vn/api/top/types/etc/status3"
+	customer_type "etop.vn/api/shopping/customering/customer_type"
+	gender "etop.vn/api/top/types/etc/gender"
+	status3 "etop.vn/api/top/types/etc/status3"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type ShopCustomerFilters struct{ prefix string }

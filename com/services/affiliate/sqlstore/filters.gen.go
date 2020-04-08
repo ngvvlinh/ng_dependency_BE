@@ -5,11 +5,11 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/status4"
+	status4 "etop.vn/api/top/types/etc/status4"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type AffiliateReferralCodeFilters struct{ prefix string }

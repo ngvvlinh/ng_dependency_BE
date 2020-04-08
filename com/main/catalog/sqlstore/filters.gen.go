@@ -5,12 +5,12 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/product_type"
-	"etop.vn/api/top/types/etc/status3"
+	product_type "etop.vn/api/top/types/etc/product_type"
+	status3 "etop.vn/api/top/types/etc/status3"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type ProductShopCollectionFilters struct{ prefix string }

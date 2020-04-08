@@ -5,12 +5,12 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/status4"
+	status4 "etop.vn/api/top/types/etc/status4"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	m "etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	etopmodel "etop.vn/backend/pkg/etop/model"
+	dot "etop.vn/capi/dot"
 )
 
 type CallbackFilters struct{ prefix string }
@@ -136,7 +136,7 @@ func (ft *CodeFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *CodeFilters) ByType(Type m.CodeType) *sq.ColumnFilter {
+func (ft *CodeFilters) ByType(Type etopmodel.CodeType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -145,7 +145,7 @@ func (ft *CodeFilters) ByType(Type m.CodeType) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CodeFilters) ByTypePtr(Type *m.CodeType) *sq.ColumnFilterPtr {
+func (ft *CodeFilters) ByTypePtr(Type *etopmodel.CodeType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -639,7 +639,7 @@ func (ft *ImportAttemptFilters) ByStoredFilePtr(StoredFile *string) *sq.ColumnFi
 	}
 }
 
-func (ft *ImportAttemptFilters) ByType(Type m.ImportType) *sq.ColumnFilter {
+func (ft *ImportAttemptFilters) ByType(Type etopmodel.ImportType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -648,7 +648,7 @@ func (ft *ImportAttemptFilters) ByType(Type m.ImportType) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByTypePtr(Type *m.ImportType) *sq.ColumnFilterPtr {
+func (ft *ImportAttemptFilters) ByTypePtr(Type *etopmodel.ImportType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",

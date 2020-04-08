@@ -5,14 +5,14 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/receipt_mode"
-	"etop.vn/api/top/types/etc/receipt_ref"
-	"etop.vn/api/top/types/etc/receipt_type"
-	"etop.vn/api/top/types/etc/status3"
+	receipt_mode "etop.vn/api/top/types/etc/receipt_mode"
+	receipt_ref "etop.vn/api/top/types/etc/receipt_ref"
+	receipt_type "etop.vn/api/top/types/etc/receipt_type"
+	status3 "etop.vn/api/top/types/etc/status3"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type ReceiptFilters struct{ prefix string }

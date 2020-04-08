@@ -79,6 +79,7 @@ func (g *Gen) AddJoinTable(structName string, substructs []string) {
 	// })
 }
 
+var printer generator.Printer
 var funcMap = template.FuncMap{
 	"baseName":   fnBaseName,
 	"filterType": fnFilterType,
@@ -99,32 +100,16 @@ func fnGenerate(col *ColumnDef) bool {
 }
 
 func fnType(col *ColumnDef) string {
-	s := col.TypeDesc.TypeString
-	if strings.HasPrefix(s, "etop_vn_backend_pkg_etop_model") {
-		s = strings.TrimPrefix(s, "etop_vn_backend_pkg_etop_")
-	}
-	if col.origPkg {
-		s = addPrefix(s, "m.")
-	}
+	s := printer.TypeString(col.FieldType)
 	return s
 }
 
 func fnPtrType(col *ColumnDef) string {
-	s := col.TypeDesc.TypeString
-	if col.origPkg {
-		s = addPrefix(s, "m.")
-	}
+	s := printer.TypeString(col.FieldType)
 	if col.TypeDesc.Ptr {
 		return s
 	}
 	return "*" + s
-}
-
-func addPrefix(s string, prefix string) string {
-	if s[0] == '*' {
-		return "*" + prefix + s[1:]
-	}
-	return "m." + s
 }
 
 func fnFilterType(col *ColumnDef) string {
@@ -185,11 +170,11 @@ func (g *Gen) Generate(p generator.Printer) {
 		"Tables":     g.tables,
 		"JoinTables": g.joinTables,
 	}
-	p.Import("m", g.PkgPath)
 	p.Import("sq", "etop.vn/backend/pkg/common/sql/sq")
 	p.Import("etopmodel", "etop.vn/backend/pkg/etop/model")
 	p.Import("orderingtypes", "etop.vn/api/main/ordering/types") // TODO: remove this
 
+	printer = p
 	err := tpl.Execute(p, vars)
 	if err != nil {
 		panic(fmt.Sprintf("Unable to generate filters: %v", err))

@@ -5,13 +5,13 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/payment_provider"
-	"etop.vn/api/top/types/etc/payment_state"
-	"etop.vn/api/top/types/etc/status4"
+	payment_provider "etop.vn/api/top/types/etc/payment_provider"
+	payment_state "etop.vn/api/top/types/etc/payment_state"
+	status4 "etop.vn/api/top/types/etc/status4"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type PaymentFilters struct{ prefix string }

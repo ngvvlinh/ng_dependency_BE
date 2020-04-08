@@ -5,12 +5,12 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/status3"
+	connection_type "etop.vn/api/top/types/etc/connection_type"
+	status3 "etop.vn/api/top/types/etc/status3"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type ConnectionFilters struct{ prefix string }

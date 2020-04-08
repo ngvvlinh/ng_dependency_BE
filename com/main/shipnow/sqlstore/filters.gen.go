@@ -5,15 +5,15 @@
 package sqlstore
 
 import (
-	"time"
+	time "time"
 
-	"etop.vn/api/top/types/etc/shipnow_state"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
-	m "etop.vn/backend/com/main/shipnow/model"
+	shipnow_state "etop.vn/api/top/types/etc/shipnow_state"
+	status3 "etop.vn/api/top/types/etc/status3"
+	status4 "etop.vn/api/top/types/etc/status4"
+	status5 "etop.vn/api/top/types/etc/status5"
+	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	sq "etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 type ShipnowFulfillmentFilters struct{ prefix string }
@@ -87,7 +87,7 @@ func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.Colum
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier shipnowmodel.Carrier) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "carrier",
@@ -96,7 +96,7 @@ func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *m.Carrier) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *shipnowmodel.Carrier) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "carrier",
