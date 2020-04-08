@@ -83,7 +83,8 @@ func (m *OrderExtended) __sqlSelect(w SQLWriter) {
 func (m *OrderExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("order")
-	w.WriteRawString(" AS order")
+	w.WriteRawString(" AS ")
+	w.WriteName("order")
 	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*shippingmodel.Fulfillment)(nil).SQLTableName())
 	w.WriteRawString(" AS f ON")

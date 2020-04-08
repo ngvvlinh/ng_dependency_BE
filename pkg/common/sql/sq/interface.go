@@ -83,8 +83,8 @@ func (db *Database) Count(obj core.ITableName, preds ...interface{}) (int, error
 }
 
 // Table ...
-func (db *Database) Table(sql string) Query {
-	return db.NewQuery().Table(sql)
+func (db *Database) Table(sql string, alias ...string) Query {
+	return db.NewQuery().Table(sql, alias...)
 }
 
 // Prefix adds an expression to the start of the query
@@ -350,8 +350,8 @@ func (tx *tx) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 }
 
 // Table ...
-func (tx *tx) Table(sql string) Query {
-	return tx.NewQuery().Table(sql)
+func (tx *tx) Table(sql string, alias ...string) Query {
+	return tx.NewQuery().Table(sql, alias...)
 }
 
 // Prefix adds an expression to the start of the query

@@ -367,7 +367,8 @@ func (m *CreditExtended) __sqlSelect(w SQLWriter) {
 func (m *CreditExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("credit")
-	w.WriteRawString(" AS c")
+	w.WriteRawString(" AS ")
+	w.WriteName("c")
 	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*identitymodel.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS s ON")

@@ -22,6 +22,7 @@ type queryImpl struct {
 	withTable bool
 
 	table  string
+	alias  string
 	limit  string
 	offset string
 
@@ -101,6 +102,7 @@ func (q *queryImpl) cloneWithPreds(preds []interface{}) *queryImpl {
 		updateAll:  q.updateAll,
 		withTable:  q.withTable,
 		table:      q.table,
+		alias:      q.alias,
 		limit:      q.limit,
 		offset:     q.offset,
 		errors:     make([]error, len(q.errors)),
@@ -171,6 +173,10 @@ func (q *queryImpl) build(typ string, def interface{}, fn builderFunc) (_ string
 		} else if q.table != "" {
 			w.WriteRawString(` FROM `)
 			w.WriteQueryName(q.table)
+			if q.alias != "" {
+				w.WriteRawString(` AS `)
+				w.WriteQueryName(q.alias)
+			}
 		}
 		w.WriteByte(' ')
 
@@ -311,7 +317,7 @@ func (q *queryImpl) BuildDelete(obj core.ITableName) (string, []interface{}, err
 // BuildCount ...
 func (q *queryImpl) BuildCount(obj core.ITableName, preds ...interface{}) (string, []interface{}, error) {
 	q.assertTable(obj)
-	q.Select(`COUNT(*)`).Table(obj.SQLTableName())
+	q.Select(`COUNT(*)`).Table(coalesce(q.table, obj.SQLTableName()), q.alias)
 	return q.withPreds(preds).build("SELECT", obj, nil)
 }
 
@@ -561,8 +567,16 @@ func (q *queryImpl) Count(obj core.ITableName, preds ...interface{}) (n int, err
 }
 
 // Table ...
-func (q *queryImpl) Table(name string) Query {
+func (q *queryImpl) Table(name string, alias ...string) Query {
 	q.table = name
+	switch len(alias) {
+	case 0:
+		q.alias = ""
+	case 1:
+		q.alias = alias[0]
+	default:
+		panic("invalid alias argument")
+	}
 	return q
 }
 
@@ -675,4 +689,13 @@ func execBeforeInsert(obj interface{}) error {
 
 func (q *queryImpl) AddError(err error) {
 	q.errors = append(q.errors, err)
+}
+
+func coalesce(ss ...string) string {
+	for _, s := range ss {
+		if s != "" {
+			return s
+		}
+	}
+	return ""
 }

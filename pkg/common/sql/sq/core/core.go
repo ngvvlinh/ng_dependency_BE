@@ -41,7 +41,7 @@ type CommonQuery interface {
 	Count(obj ITableName, preds ...interface{}) (int, error)
 	FindRows(objs IFind, preds ...interface{}) (Opts, *sql.Rows, error)
 
-	Table(name string) Query
+	Table(name string, alias ...string) Query
 	Prefix(sql string, args ...interface{}) Query
 	Select(cols ...string) Query
 	From(table string) Query

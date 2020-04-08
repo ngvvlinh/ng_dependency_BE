@@ -3054,7 +3054,8 @@ func (m *ShopVariantWithProduct) __sqlSelect(w SQLWriter) {
 func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("shop_variant")
-	w.WriteRawString(" AS sv")
+	w.WriteRawString(" AS ")
+	w.WriteName("sv")
 	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*ShopProduct)(nil).SQLTableName())
 	w.WriteRawString(" AS sp ON")

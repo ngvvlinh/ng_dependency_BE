@@ -89,7 +89,8 @@ func (m *FulfillmentExtended) __sqlSelect(w SQLWriter) {
 func (m *FulfillmentExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("fulfillment")
-	w.WriteRawString(" AS f")
+	w.WriteRawString(" AS ")
+	w.WriteName("f")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*identitymodel.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS s ON")

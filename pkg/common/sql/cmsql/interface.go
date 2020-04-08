@@ -27,7 +27,7 @@ type QueryInterface interface {
 	ShouldUpdateMap(m map[string]interface{}) error
 	ShouldDelete(obj core.ITableName) error
 
-	Table(name string) Query
+	Table(name string, alias ...string) Query
 	Prefix(sql string, args ...interface{}) Query
 	Select(cols ...string) Query
 	From(table string) Query
@@ -118,8 +118,8 @@ func (q Query) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 }
 
 // Table ...
-func (q Query) Table(name string) Query {
-	return Query{q.query.Table(name)}
+func (q Query) Table(name string, alias ...string) Query {
+	return Query{q.query.Table(name, alias...)}
 }
 
 // Prefix ...
@@ -253,8 +253,8 @@ func (db Database) Count(obj core.ITableName, preds ...interface{}) (int, error)
 }
 
 // Table ...
-func (db Database) Table(name string) Query {
-	return Query{db.db.Table(name)}
+func (db Database) Table(name string, alias ...string) Query {
+	return Query{db.db.Table(name, alias...)}
 }
 
 // Prefix ...
@@ -392,8 +392,8 @@ func (tx tx) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 }
 
 // Table ...
-func (tx tx) Table(name string) Query {
-	return Query{tx.tx.Table(name)}
+func (tx tx) Table(name string, alias ...string) Query {
+	return Query{tx.tx.Table(name, alias...)}
 }
 
 // Prefix ...

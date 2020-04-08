@@ -201,7 +201,8 @@ func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 	func (m *{{.TypeName}}) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName({{.TableName | go}})
-	w.WriteRawString({{concat " AS " .As | go}})
+	w.WriteRawString(" AS ")
+	w.WriteName({{.As | go}})
     {{range $i, $join := .Joins -}}
 		w.WriteRawString({{concat " " .JoinKeyword " " | go}})
 		w.WriteName({{$join.JoinType | tableForType}})

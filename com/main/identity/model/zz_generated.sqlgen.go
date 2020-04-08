@@ -637,7 +637,8 @@ func (m *AccountAuthFtPartner) __sqlSelect(w SQLWriter) {
 func (m *AccountAuthFtPartner) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("account_auth")
-	w.WriteRawString(" AS aa")
+	w.WriteRawString(" AS ")
+	w.WriteName("aa")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*Partner)(nil).SQLTableName())
 	w.WriteRawString(" AS p ON")
@@ -709,7 +710,8 @@ func (m *AccountAuthFtShop) __sqlSelect(w SQLWriter) {
 func (m *AccountAuthFtShop) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("account_auth")
-	w.WriteRawString(" AS aa")
+	w.WriteRawString(" AS ")
+	w.WriteName("aa")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS s ON")
@@ -1428,7 +1430,8 @@ func (m *AccountUserExtended) __sqlSelect(w SQLWriter) {
 func (m *AccountUserExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("account_user")
-	w.WriteRawString(" AS au")
+	w.WriteRawString(" AS ")
+	w.WriteName("au")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*Account)(nil).SQLTableName())
 	w.WriteRawString(" AS a ON")
@@ -3095,7 +3098,8 @@ func (m *PartnerRelationFtShop) __sqlSelect(w SQLWriter) {
 func (m *PartnerRelationFtShop) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("partner_relation")
-	w.WriteRawString(" AS pr")
+	w.WriteRawString(" AS ")
+	w.WriteName("pr")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS s ON")
@@ -3173,7 +3177,8 @@ func (m *PartnerRelationFtUser) __sqlSelect(w SQLWriter) {
 func (m *PartnerRelationFtUser) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("partner_relation")
-	w.WriteRawString(" AS pr")
+	w.WriteRawString(" AS ")
+	w.WriteName("pr")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*User)(nil).SQLTableName())
 	w.WriteRawString(" AS u ON")
@@ -4005,7 +4010,8 @@ func (m *ShopExtended) __sqlSelect(w SQLWriter) {
 func (m *ShopExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("shop")
-	w.WriteRawString(" AS s")
+	w.WriteRawString(" AS ")
+	w.WriteName("s")
 	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*addressmodel.Address)(nil).SQLTableName())
 	w.WriteRawString(" AS a ON")

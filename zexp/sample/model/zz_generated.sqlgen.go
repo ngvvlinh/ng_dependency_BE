@@ -545,7 +545,8 @@ func (m *FooWithAccount) __sqlSelect(w SQLWriter) {
 func (m *FooWithAccount) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("foo")
-	w.WriteRawString(" AS foo")
+	w.WriteRawString(" AS ")
+	w.WriteName("foo")
 	w.WriteRawString(" JOIN ")
 	w.WriteName((*Account)(nil).SQLTableName())
 	w.WriteRawString(" AS a ON")
