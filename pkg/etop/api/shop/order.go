@@ -384,7 +384,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 }
 
 func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
-	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.User.ID, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
+	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.UserID, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
 	if err != nil {
 		return q, err
 	}
