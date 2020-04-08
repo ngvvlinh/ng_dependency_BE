@@ -62,6 +62,9 @@ func convert_etopmodel_Error_meta_Error(arg *etopmodel.Error, out *meta.Error) {
 }
 
 func Convert_etopmodel_Errors_meta_Errors(args []*etopmodel.Error) (outs []*meta.Error) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]meta.Error, len(args))
 	outs = make([]*meta.Error, len(args))
 	for i := range tmps {
@@ -81,6 +84,9 @@ func convert_meta_Error_etopmodel_Error(arg *meta.Error, out *etopmodel.Error) {
 }
 
 func Convert_meta_Errors_etopmodel_Errors(args []*meta.Error) (outs []*etopmodel.Error) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]etopmodel.Error, len(args))
 	outs = make([]*etopmodel.Error, len(args))
 	for i := range tmps {

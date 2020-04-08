@@ -122,6 +122,9 @@ func convert_purchaseordermodel1_PurchaseOrder_purchaseordermodel_PurchaseOrder(
 }
 
 func Convert_purchaseordermodel1_PurchaseOrders_purchaseordermodel_PurchaseOrders(args []*purchaseordermodel1.PurchaseOrder) (outs []*purchaseordermodel.PurchaseOrder) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel.PurchaseOrder, len(args))
 	outs = make([]*purchaseordermodel.PurchaseOrder, len(args))
 	for i := range tmps {
@@ -166,6 +169,9 @@ func convert_purchaseordermodel_PurchaseOrder_purchaseordermodel1_PurchaseOrder(
 }
 
 func Convert_purchaseordermodel_PurchaseOrders_purchaseordermodel1_PurchaseOrders(args []*purchaseordermodel.PurchaseOrder) (outs []*purchaseordermodel1.PurchaseOrder) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel1.PurchaseOrder, len(args))
 	outs = make([]*purchaseordermodel1.PurchaseOrder, len(args))
 	for i := range tmps {
@@ -199,6 +205,9 @@ func convert_purchaseordermodel1_PurchaseOrderLine_purchaseordermodel_PurchaseOr
 }
 
 func Convert_purchaseordermodel1_PurchaseOrderLines_purchaseordermodel_PurchaseOrderLines(args []*purchaseordermodel1.PurchaseOrderLine) (outs []*purchaseordermodel.PurchaseOrderLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel.PurchaseOrderLine, len(args))
 	outs = make([]*purchaseordermodel.PurchaseOrderLine, len(args))
 	for i := range tmps {
@@ -230,6 +239,9 @@ func convert_purchaseordermodel_PurchaseOrderLine_purchaseordermodel1_PurchaseOr
 }
 
 func Convert_purchaseordermodel_PurchaseOrderLines_purchaseordermodel1_PurchaseOrderLines(args []*purchaseordermodel.PurchaseOrderLine) (outs []*purchaseordermodel1.PurchaseOrderLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel1.PurchaseOrderLine, len(args))
 	outs = make([]*purchaseordermodel1.PurchaseOrderLine, len(args))
 	for i := range tmps {
@@ -261,6 +273,9 @@ func convert_purchaseordermodel1_PurchaseOrderSupplier_purchaseordermodel_Purcha
 }
 
 func Convert_purchaseordermodel1_PurchaseOrderSuppliers_purchaseordermodel_PurchaseOrderSuppliers(args []*purchaseordermodel1.PurchaseOrderSupplier) (outs []*purchaseordermodel.PurchaseOrderSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel.PurchaseOrderSupplier, len(args))
 	outs = make([]*purchaseordermodel.PurchaseOrderSupplier, len(args))
 	for i := range tmps {
@@ -290,6 +305,9 @@ func convert_purchaseordermodel_PurchaseOrderSupplier_purchaseordermodel1_Purcha
 }
 
 func Convert_purchaseordermodel_PurchaseOrderSuppliers_purchaseordermodel1_PurchaseOrderSuppliers(args []*purchaseordermodel.PurchaseOrderSupplier) (outs []*purchaseordermodel1.PurchaseOrderSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaseordermodel1.PurchaseOrderSupplier, len(args))
 	outs = make([]*purchaseordermodel1.PurchaseOrderSupplier, len(args))
 	for i := range tmps {

@@ -69,6 +69,9 @@ func convert_shopcarriermodel_ShopCarrier_carryingmodel_ShopCarrier(arg *shopcar
 }
 
 func Convert_shopcarriermodel_ShopCarriers_carryingmodel_ShopCarriers(args []*shopcarriermodel.ShopCarrier) (outs []*carryingmodel.ShopCarrier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]carryingmodel.ShopCarrier, len(args))
 	outs = make([]*carryingmodel.ShopCarrier, len(args))
 	for i := range tmps {
@@ -100,6 +103,9 @@ func convert_carryingmodel_ShopCarrier_shopcarriermodel_ShopCarrier(arg *carryin
 }
 
 func Convert_carryingmodel_ShopCarriers_shopcarriermodel_ShopCarriers(args []*carryingmodel.ShopCarrier) (outs []*shopcarriermodel.ShopCarrier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopcarriermodel.ShopCarrier, len(args))
 	outs = make([]*shopcarriermodel.ShopCarrier, len(args))
 	for i := range tmps {

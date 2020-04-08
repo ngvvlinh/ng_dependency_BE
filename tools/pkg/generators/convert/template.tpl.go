@@ -59,6 +59,9 @@ func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
 }
 
 func {{.Actions}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(outs []*{{.OutType}}) {
+  if args == nil {
+    return nil
+  }
   tmps := make([]{{.OutType}}, len(args))
   outs = make([]*{{.OutType}}, len(args))
 	for i := range tmps {

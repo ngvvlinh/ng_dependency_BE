@@ -72,6 +72,9 @@ func convert_shopcategorymodel_ShopCategory_catalogmodel_ShopCategory(arg *shopc
 }
 
 func Convert_shopcategorymodel_ShopCategories_catalogmodel_ShopCategories(args []*shopcategorymodel.ShopCategory) (outs []*catalogmodel.ShopCategory) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ShopCategory, len(args))
 	outs = make([]*catalogmodel.ShopCategory, len(args))
 	for i := range tmps {
@@ -103,6 +106,9 @@ func convert_catalogmodel_ShopCategory_shopcategorymodel_ShopCategory(arg *catal
 }
 
 func Convert_catalogmodel_ShopCategories_shopcategorymodel_ShopCategories(args []*catalogmodel.ShopCategory) (outs []*shopcategorymodel.ShopCategory) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopcategorymodel.ShopCategory, len(args))
 	outs = make([]*shopcategorymodel.ShopCategory, len(args))
 	for i := range tmps {

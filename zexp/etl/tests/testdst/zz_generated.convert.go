@@ -62,6 +62,9 @@ func convert_Account_testsrc_Account(arg *Account, out *testsrc.Account) {
 }
 
 func Convert_Accounts_testsrc_Accounts(args []*Account) (outs []*testsrc.Account) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]testsrc.Account, len(args))
 	outs = make([]*testsrc.Account, len(args))
 	for i := range tmps {
@@ -90,6 +93,9 @@ func convert_testsrc_Account_Account(arg *testsrc.Account, out *Account) {
 }
 
 func Convert_testsrc_Accounts_Accounts(args []*testsrc.Account) (outs []*Account) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]Account, len(args))
 	outs = make([]*Account, len(args))
 	for i := range tmps {

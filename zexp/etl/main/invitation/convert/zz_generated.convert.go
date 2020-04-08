@@ -77,6 +77,9 @@ func convert_invitationmodel1_Invitation_invitationmodel_Invitation(arg *invitat
 }
 
 func Convert_invitationmodel1_Invitations_invitationmodel_Invitations(args []*invitationmodel1.Invitation) (outs []*invitationmodel.Invitation) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]invitationmodel.Invitation, len(args))
 	outs = make([]*invitationmodel.Invitation, len(args))
 	for i := range tmps {
@@ -116,6 +119,9 @@ func convert_invitationmodel_Invitation_invitationmodel1_Invitation(arg *invitat
 }
 
 func Convert_invitationmodel_Invitations_invitationmodel1_Invitations(args []*invitationmodel.Invitation) (outs []*invitationmodel1.Invitation) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]invitationmodel1.Invitation, len(args))
 	outs = make([]*invitationmodel1.Invitation, len(args))
 	for i := range tmps {

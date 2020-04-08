@@ -131,6 +131,9 @@ func convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg *inv
 }
 
 func Convert_inventorymodel_InventoryVariants_inventory_InventoryVariants(args []*inventorymodel.InventoryVariant) (outs []*inventory.InventoryVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventory.InventoryVariant, len(args))
 	outs = make([]*inventory.InventoryVariant, len(args))
 	for i := range tmps {
@@ -155,6 +158,9 @@ func convert_inventory_InventoryVariant_inventorymodel_InventoryVariant(arg *inv
 }
 
 func Convert_inventory_InventoryVariants_inventorymodel_InventoryVariants(args []*inventory.InventoryVariant) (outs []*inventorymodel.InventoryVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventorymodel.InventoryVariant, len(args))
 	outs = make([]*inventorymodel.InventoryVariant, len(args))
 	for i := range tmps {
@@ -197,6 +203,9 @@ func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 }
 
 func Convert_inventorymodel_InventoryVouchers_inventory_InventoryVouchers(args []*inventorymodel.InventoryVoucher) (outs []*inventory.InventoryVoucher) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventory.InventoryVoucher, len(args))
 	outs = make([]*inventory.InventoryVoucher, len(args))
 	for i := range tmps {
@@ -237,6 +246,9 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 }
 
 func Convert_inventory_InventoryVouchers_inventorymodel_InventoryVouchers(args []*inventory.InventoryVoucher) (outs []*inventorymodel.InventoryVoucher) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventorymodel.InventoryVoucher, len(args))
 	outs = make([]*inventorymodel.InventoryVoucher, len(args))
 	for i := range tmps {
@@ -340,6 +352,9 @@ func convert_inventorymodel_InventoryVoucherItem_inventory_InventoryVoucherItem(
 }
 
 func Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(args []*inventorymodel.InventoryVoucherItem) (outs []*inventory.InventoryVoucherItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventory.InventoryVoucherItem, len(args))
 	outs = make([]*inventory.InventoryVoucherItem, len(args))
 	for i := range tmps {
@@ -372,6 +387,9 @@ func convert_inventory_InventoryVoucherItem_inventorymodel_InventoryVoucherItem(
 }
 
 func Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(args []*inventory.InventoryVoucherItem) (outs []*inventorymodel.InventoryVoucherItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventorymodel.InventoryVoucherItem, len(args))
 	outs = make([]*inventorymodel.InventoryVoucherItem, len(args))
 	for i := range tmps {
@@ -401,6 +419,9 @@ func convert_inventorymodel_Trader_inventory_Trader(arg *inventorymodel.Trader, 
 }
 
 func Convert_inventorymodel_Traders_inventory_Traders(args []*inventorymodel.Trader) (outs []*inventory.Trader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventory.Trader, len(args))
 	outs = make([]*inventory.Trader, len(args))
 	for i := range tmps {
@@ -428,6 +449,9 @@ func convert_inventory_Trader_inventorymodel_Trader(arg *inventory.Trader, out *
 }
 
 func Convert_inventory_Traders_inventorymodel_Traders(args []*inventory.Trader) (outs []*inventorymodel.Trader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventorymodel.Trader, len(args))
 	outs = make([]*inventorymodel.Trader, len(args))
 	for i := range tmps {

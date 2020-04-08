@@ -80,6 +80,9 @@ func convert_shopvariantmodel_ProductAttribute_catalogmodel_ProductAttribute(arg
 }
 
 func Convert_shopvariantmodel_ProductAttributes_catalogmodel_ProductAttributes(args []*shopvariantmodel.ProductAttribute) (outs []*catalogmodel.ProductAttribute) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ProductAttribute, len(args))
 	outs = make([]*catalogmodel.ProductAttribute, len(args))
 	for i := range tmps {
@@ -105,6 +108,9 @@ func convert_catalogmodel_ProductAttribute_shopvariantmodel_ProductAttribute(arg
 }
 
 func Convert_catalogmodel_ProductAttributes_shopvariantmodel_ProductAttributes(args []*catalogmodel.ProductAttribute) (outs []*shopvariantmodel.ProductAttribute) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopvariantmodel.ProductAttribute, len(args))
 	outs = make([]*shopvariantmodel.ProductAttribute, len(args))
 	for i := range tmps {
@@ -157,6 +163,9 @@ func convert_shopvariantmodel_ShopVariant_catalogmodel_ShopVariant(arg *shopvari
 }
 
 func Convert_shopvariantmodel_ShopVariants_catalogmodel_ShopVariants(args []*shopvariantmodel.ShopVariant) (outs []*catalogmodel.ShopVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ShopVariant, len(args))
 	outs = make([]*catalogmodel.ShopVariant, len(args))
 	for i := range tmps {
@@ -199,6 +208,9 @@ func convert_catalogmodel_ShopVariant_shopvariantmodel_ShopVariant(arg *catalogm
 }
 
 func Convert_catalogmodel_ShopVariants_shopvariantmodel_ShopVariants(args []*catalogmodel.ShopVariant) (outs []*shopvariantmodel.ShopVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopvariantmodel.ShopVariant, len(args))
 	outs = make([]*shopvariantmodel.ShopVariant, len(args))
 	for i := range tmps {

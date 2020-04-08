@@ -143,6 +143,9 @@ func convert_B_A(arg *B, out *A) {
 }
 
 func Convert_Bs_As(args []*B) (outs []*A) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]A, len(args))
 	outs = make([]*A, len(args))
 	for i := range tmps {
@@ -178,6 +181,9 @@ func convert_A_B(arg *A, out *B) {
 }
 
 func Convert_As_Bs(args []*A) (outs []*B) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]B, len(args))
 	outs = make([]*B, len(args))
 	for i := range tmps {
@@ -197,6 +203,9 @@ func convert_C1_C0(arg *C1, out *C0) {
 }
 
 func Convert_C1s_C0s(args []*C1) (outs []*C0) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C0, len(args))
 	outs = make([]*C0, len(args))
 	for i := range tmps {
@@ -214,6 +223,9 @@ func convert_C0_C1(arg *C0, out *C1) {
 }
 
 func Convert_C0s_C1s(args []*C0) (outs []*C1) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C1, len(args))
 	outs = make([]*C1, len(args))
 	for i := range tmps {
@@ -238,6 +250,9 @@ func convert_C2_C0(arg *C2, out *C0) {
 }
 
 func Convert_C2s_C0s(args []*C2) (outs []*C0) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C0, len(args))
 	outs = make([]*C0, len(args))
 	for i := range tmps {
@@ -265,6 +280,9 @@ func convert_C0_C2(arg *C0, out *C2) {
 }
 
 func Convert_C0s_C2s(args []*C0) (outs []*C2) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C2, len(args))
 	outs = make([]*C2, len(args))
 	for i := range tmps {
@@ -289,6 +307,9 @@ func convert_C3_C0(arg *C3, out *C0) {
 }
 
 func Convert_C3s_C0s(args []*C3) (outs []*C0) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C0, len(args))
 	outs = make([]*C0, len(args))
 	for i := range tmps {
@@ -317,6 +338,9 @@ func convert_C0_C3(arg *C0, out *C3) {
 }
 
 func Convert_C0s_C3s(args []*C0) (outs []*C3) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]C3, len(args))
 	outs = make([]*C3, len(args))
 	for i := range tmps {
@@ -343,6 +367,9 @@ func convert_D1_D0(arg *D1, out *D0) {
 }
 
 func Convert_D1s_D0s(args []*D1) (outs []*D0) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]D0, len(args))
 	outs = make([]*D0, len(args))
 	for i := range tmps {
@@ -367,6 +394,9 @@ func convert_D0_D1(arg *D0, out *D1) {
 }
 
 func Convert_D0s_D1s(args []*D0) (outs []*D1) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]D1, len(args))
 	outs = make([]*D1, len(args))
 	for i := range tmps {

@@ -120,6 +120,9 @@ func convert_addressmodel_Address_address_Address(arg *addressmodel.Address, out
 }
 
 func Convert_addressmodel_Addresses_address_Addresses(args []*addressmodel.Address) (outs []*address.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]address.Address, len(args))
 	outs = make([]*address.Address, len(args))
 	for i := range tmps {
@@ -162,6 +165,9 @@ func convert_address_Address_addressmodel_Address(arg *address.Address, out *add
 }
 
 func Convert_address_Addresses_addressmodel_Addresses(args []*address.Address) (outs []*addressmodel.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.Address, len(args))
 	outs = make([]*addressmodel.Address, len(args))
 	for i := range tmps {
@@ -187,6 +193,9 @@ func convert_addressmodel_Address_orderingtypes_Address(arg *addressmodel.Addres
 }
 
 func Convert_addressmodel_Addresses_orderingtypes_Addresses(args []*addressmodel.Address) (outs []*orderingtypes.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingtypes.Address, len(args))
 	outs = make([]*orderingtypes.Address, len(args))
 	for i := range tmps {
@@ -229,6 +238,9 @@ func convert_orderingtypes_Address_addressmodel_Address(arg *orderingtypes.Addre
 }
 
 func Convert_orderingtypes_Addresses_addressmodel_Addresses(args []*orderingtypes.Address) (outs []*addressmodel.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.Address, len(args))
 	outs = make([]*addressmodel.Address, len(args))
 	for i := range tmps {
@@ -249,6 +261,9 @@ func convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg *addressmode
 }
 
 func Convert_addressmodel_Coordinateses_orderingtypes_Coordinateses(args []*addressmodel.Coordinates) (outs []*orderingtypes.Coordinates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingtypes.Coordinates, len(args))
 	outs = make([]*orderingtypes.Coordinates, len(args))
 	for i := range tmps {
@@ -267,6 +282,9 @@ func convert_orderingtypes_Coordinates_addressmodel_Coordinates(arg *orderingtyp
 }
 
 func Convert_orderingtypes_Coordinateses_addressmodel_Coordinateses(args []*orderingtypes.Coordinates) (outs []*addressmodel.Coordinates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.Coordinates, len(args))
 	outs = make([]*addressmodel.Coordinates, len(args))
 	for i := range tmps {

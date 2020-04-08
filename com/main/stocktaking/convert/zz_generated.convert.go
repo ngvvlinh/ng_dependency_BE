@@ -106,6 +106,9 @@ func convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg *stock
 }
 
 func Convert_stocktakingmodel_ShopStocktakes_stocktaking_ShopStocktakes(args []*stocktakingmodel.ShopStocktake) (outs []*stocktaking.ShopStocktake) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]stocktaking.ShopStocktake, len(args))
 	outs = make([]*stocktaking.ShopStocktake, len(args))
 	for i := range tmps {
@@ -147,6 +150,9 @@ func convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stock
 }
 
 func Convert_stocktaking_ShopStocktakes_stocktakingmodel_ShopStocktakes(args []*stocktaking.ShopStocktake) (outs []*stocktakingmodel.ShopStocktake) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]stocktakingmodel.ShopStocktake, len(args))
 	outs = make([]*stocktakingmodel.ShopStocktake, len(args))
 	for i := range tmps {
@@ -228,6 +234,9 @@ func convert_stocktakingmodel_StocktakeLine_stocktaking_StocktakeLine(arg *stock
 }
 
 func Convert_stocktakingmodel_StocktakeLines_stocktaking_StocktakeLines(args []*stocktakingmodel.StocktakeLine) (outs []*stocktaking.StocktakeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]stocktaking.StocktakeLine, len(args))
 	outs = make([]*stocktaking.StocktakeLine, len(args))
 	for i := range tmps {
@@ -262,6 +271,9 @@ func convert_stocktaking_StocktakeLine_stocktakingmodel_StocktakeLine(arg *stock
 }
 
 func Convert_stocktaking_StocktakeLines_stocktakingmodel_StocktakeLines(args []*stocktaking.StocktakeLine) (outs []*stocktakingmodel.StocktakeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]stocktakingmodel.StocktakeLine, len(args))
 	outs = make([]*stocktakingmodel.StocktakeLine, len(args))
 	for i := range tmps {

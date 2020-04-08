@@ -99,6 +99,9 @@ func convert_shopmodel_ShippingServiceSelectStrategyItem_identitymodel_ShippingS
 }
 
 func Convert_shopmodel_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(args []*shopmodel.ShippingServiceSelectStrategyItem) (outs []*identitymodel.ShippingServiceSelectStrategyItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.ShippingServiceSelectStrategyItem, len(args))
 	outs = make([]*identitymodel.ShippingServiceSelectStrategyItem, len(args))
 	for i := range tmps {
@@ -124,6 +127,9 @@ func convert_identitymodel_ShippingServiceSelectStrategyItem_shopmodel_ShippingS
 }
 
 func Convert_identitymodel_ShippingServiceSelectStrategyItems_shopmodel_ShippingServiceSelectStrategyItems(args []*identitymodel.ShippingServiceSelectStrategyItem) (outs []*shopmodel.ShippingServiceSelectStrategyItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopmodel.ShippingServiceSelectStrategyItem, len(args))
 	outs = make([]*shopmodel.ShippingServiceSelectStrategyItem, len(args))
 	for i := range tmps {
@@ -179,6 +185,9 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 }
 
 func Convert_shopmodel_Shops_identitymodel_Shops(args []*shopmodel.Shop) (outs []*identitymodel.Shop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Shop, len(args))
 	outs = make([]*identitymodel.Shop, len(args))
 	for i := range tmps {
@@ -226,6 +235,9 @@ func convert_identitymodel_Shop_shopmodel_Shop(arg *identitymodel.Shop, out *sho
 }
 
 func Convert_identitymodel_Shops_shopmodel_Shops(args []*identitymodel.Shop) (outs []*shopmodel.Shop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopmodel.Shop, len(args))
 	outs = make([]*shopmodel.Shop, len(args))
 	for i := range tmps {
@@ -254,6 +266,9 @@ func convert_shopmodel_SurveyInfo_identitymodel_SurveyInfo(arg *shopmodel.Survey
 }
 
 func Convert_shopmodel_SurveyInfoes_identitymodel_SurveyInfoes(args []*shopmodel.SurveyInfo) (outs []*identitymodel.SurveyInfo) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.SurveyInfo, len(args))
 	outs = make([]*identitymodel.SurveyInfo, len(args))
 	for i := range tmps {
@@ -280,6 +295,9 @@ func convert_identitymodel_SurveyInfo_shopmodel_SurveyInfo(arg *identitymodel.Su
 }
 
 func Convert_identitymodel_SurveyInfoes_shopmodel_SurveyInfoes(args []*identitymodel.SurveyInfo) (outs []*shopmodel.SurveyInfo) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopmodel.SurveyInfo, len(args))
 	outs = make([]*shopmodel.SurveyInfo, len(args))
 	for i := range tmps {

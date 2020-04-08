@@ -65,6 +65,9 @@ func convert_traderingmodel_ShopTrader_tradering_ShopTrader(arg *traderingmodel.
 }
 
 func Convert_traderingmodel_ShopTraders_tradering_ShopTraders(args []*traderingmodel.ShopTrader) (outs []*tradering.ShopTrader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]tradering.ShopTrader, len(args))
 	outs = make([]*tradering.ShopTrader, len(args))
 	for i := range tmps {
@@ -93,6 +96,9 @@ func convert_tradering_ShopTrader_traderingmodel_ShopTrader(arg *tradering.ShopT
 }
 
 func Convert_tradering_ShopTraders_traderingmodel_ShopTraders(args []*tradering.ShopTrader) (outs []*traderingmodel.ShopTrader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]traderingmodel.ShopTrader, len(args))
 	outs = make([]*traderingmodel.ShopTrader, len(args))
 	for i := range tmps {

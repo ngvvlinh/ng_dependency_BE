@@ -79,6 +79,9 @@ func convert_shopsuppliermodel_ShopSupplier_supplieringmodel_ShopSupplier(arg *s
 }
 
 func Convert_shopsuppliermodel_ShopSuppliers_supplieringmodel_ShopSuppliers(args []*shopsuppliermodel.ShopSupplier) (outs []*supplieringmodel.ShopSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]supplieringmodel.ShopSupplier, len(args))
 	outs = make([]*supplieringmodel.ShopSupplier, len(args))
 	for i := range tmps {
@@ -116,6 +119,9 @@ func convert_supplieringmodel_ShopSupplier_shopsuppliermodel_ShopSupplier(arg *s
 }
 
 func Convert_supplieringmodel_ShopSuppliers_shopsuppliermodel_ShopSuppliers(args []*supplieringmodel.ShopSupplier) (outs []*shopsuppliermodel.ShopSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopsuppliermodel.ShopSupplier, len(args))
 	outs = make([]*shopsuppliermodel.ShopSupplier, len(args))
 	for i := range tmps {

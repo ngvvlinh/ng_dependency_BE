@@ -80,6 +80,9 @@ func convert_shopproductmodel_MetaField_catalogmodel_MetaField(arg *shopproductm
 }
 
 func Convert_shopproductmodel_MetaFields_catalogmodel_MetaFields(args []*shopproductmodel.MetaField) (outs []*catalogmodel.MetaField) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.MetaField, len(args))
 	outs = make([]*catalogmodel.MetaField, len(args))
 	for i := range tmps {
@@ -105,6 +108,9 @@ func convert_catalogmodel_MetaField_shopproductmodel_MetaField(arg *catalogmodel
 }
 
 func Convert_catalogmodel_MetaFields_shopproductmodel_MetaFields(args []*catalogmodel.MetaField) (outs []*shopproductmodel.MetaField) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopproductmodel.MetaField, len(args))
 	outs = make([]*shopproductmodel.MetaField, len(args))
 	for i := range tmps {
@@ -162,6 +168,9 @@ func convert_shopproductmodel_ShopProduct_catalogmodel_ShopProduct(arg *shopprod
 }
 
 func Convert_shopproductmodel_ShopProducts_catalogmodel_ShopProducts(args []*shopproductmodel.ShopProduct) (outs []*catalogmodel.ShopProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ShopProduct, len(args))
 	outs = make([]*catalogmodel.ShopProduct, len(args))
 	for i := range tmps {
@@ -213,6 +222,9 @@ func convert_catalogmodel_ShopProduct_shopproductmodel_ShopProduct(arg *catalogm
 }
 
 func Convert_catalogmodel_ShopProducts_shopproductmodel_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*shopproductmodel.ShopProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopproductmodel.ShopProduct, len(args))
 	outs = make([]*shopproductmodel.ShopProduct, len(args))
 	for i := range tmps {

@@ -98,6 +98,9 @@ func convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *account
 }
 
 func Convert_accountusermodel_AccountUsers_identitymodel_AccountUsers(args []*accountusermodel.AccountUser) (outs []*identitymodel.AccountUser) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.AccountUser, len(args))
 	outs = make([]*identitymodel.AccountUser, len(args))
 	for i := range tmps {
@@ -139,6 +142,9 @@ func convert_identitymodel_AccountUser_accountusermodel_AccountUser(arg *identit
 }
 
 func Convert_identitymodel_AccountUsers_accountusermodel_AccountUsers(args []*identitymodel.AccountUser) (outs []*accountusermodel.AccountUser) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]accountusermodel.AccountUser, len(args))
 	outs = make([]*accountusermodel.AccountUser, len(args))
 	for i := range tmps {
@@ -166,6 +172,9 @@ func convert_accountusermodel_Permission_identitymodel_Permission(arg *accountus
 }
 
 func Convert_accountusermodel_Permissions_identitymodel_Permissions(args []*accountusermodel.Permission) (outs []*identitymodel.Permission) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Permission, len(args))
 	outs = make([]*identitymodel.Permission, len(args))
 	for i := range tmps {
@@ -191,6 +200,9 @@ func convert_identitymodel_Permission_accountusermodel_Permission(arg *identitym
 }
 
 func Convert_identitymodel_Permissions_accountusermodel_Permissions(args []*identitymodel.Permission) (outs []*accountusermodel.Permission) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]accountusermodel.Permission, len(args))
 	outs = make([]*accountusermodel.Permission, len(args))
 	for i := range tmps {

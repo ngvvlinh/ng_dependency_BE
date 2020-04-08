@@ -110,6 +110,9 @@ func convert_refundmodel_Refund_refund_Refund(arg *refundmodel.Refund, out *refu
 }
 
 func Convert_refundmodel_Refunds_refund_Refunds(args []*refundmodel.Refund) (outs []*refund.Refund) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]refund.Refund, len(args))
 	outs = make([]*refund.Refund, len(args))
 	for i := range tmps {
@@ -154,6 +157,9 @@ func convert_refund_Refund_refundmodel_Refund(arg *refund.Refund, out *refundmod
 }
 
 func Convert_refund_Refunds_refundmodel_Refunds(args []*refund.Refund) (outs []*refundmodel.Refund) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]refundmodel.Refund, len(args))
 	outs = make([]*refundmodel.Refund, len(args))
 	for i := range tmps {
@@ -249,6 +255,9 @@ func convert_refundmodel_RefundLine_refund_RefundLine(arg *refundmodel.RefundLin
 }
 
 func Convert_refundmodel_RefundLines_refund_RefundLines(args []*refundmodel.RefundLine) (outs []*refund.RefundLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]refund.RefundLine, len(args))
 	outs = make([]*refund.RefundLine, len(args))
 	for i := range tmps {
@@ -281,6 +290,9 @@ func convert_refund_RefundLine_refundmodel_RefundLine(arg *refund.RefundLine, ou
 }
 
 func Convert_refund_RefundLines_refundmodel_RefundLines(args []*refund.RefundLine) (outs []*refundmodel.RefundLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]refundmodel.RefundLine, len(args))
 	outs = make([]*refundmodel.RefundLine, len(args))
 	for i := range tmps {

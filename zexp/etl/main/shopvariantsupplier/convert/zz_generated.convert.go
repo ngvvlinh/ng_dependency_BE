@@ -64,6 +64,9 @@ func convert_shopvariantsuppliermodel_ShopVariantSupplier_catalogmodel_ShopVaria
 }
 
 func Convert_shopvariantsuppliermodel_ShopVariantSuppliers_catalogmodel_ShopVariantSuppliers(args []*shopvariantsuppliermodel.ShopVariantSupplier) (outs []*catalogmodel.ShopVariantSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ShopVariantSupplier, len(args))
 	outs = make([]*catalogmodel.ShopVariantSupplier, len(args))
 	for i := range tmps {
@@ -93,6 +96,9 @@ func convert_catalogmodel_ShopVariantSupplier_shopvariantsuppliermodel_ShopVaria
 }
 
 func Convert_catalogmodel_ShopVariantSuppliers_shopvariantsuppliermodel_ShopVariantSuppliers(args []*catalogmodel.ShopVariantSupplier) (outs []*shopvariantsuppliermodel.ShopVariantSupplier) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopvariantsuppliermodel.ShopVariantSupplier, len(args))
 	outs = make([]*shopvariantsuppliermodel.ShopVariantSupplier, len(args))
 	for i := range tmps {

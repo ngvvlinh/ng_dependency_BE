@@ -70,6 +70,9 @@ func convert_shopbrandmodel_ShopBrand_catalogmodel_ShopBrand(arg *shopbrandmodel
 }
 
 func Convert_shopbrandmodel_ShopBrands_catalogmodel_ShopBrands(args []*shopbrandmodel.ShopBrand) (outs []*catalogmodel.ShopBrand) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ShopBrand, len(args))
 	outs = make([]*catalogmodel.ShopBrand, len(args))
 	for i := range tmps {
@@ -102,6 +105,9 @@ func convert_catalogmodel_ShopBrand_shopbrandmodel_ShopBrand(arg *catalogmodel.S
 }
 
 func Convert_catalogmodel_ShopBrands_shopbrandmodel_ShopBrands(args []*catalogmodel.ShopBrand) (outs []*shopbrandmodel.ShopBrand) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopbrandmodel.ShopBrand, len(args))
 	outs = make([]*shopbrandmodel.ShopBrand, len(args))
 	for i := range tmps {

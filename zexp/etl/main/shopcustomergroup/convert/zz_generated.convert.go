@@ -68,6 +68,9 @@ func convert_shopcustomergroupmodel_ShopCustomerGroup_customeringmodel_ShopCusto
 }
 
 func Convert_shopcustomergroupmodel_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*shopcustomergroupmodel.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopCustomerGroup, len(args))
 	outs = make([]*customeringmodel.ShopCustomerGroup, len(args))
 	for i := range tmps {
@@ -98,6 +101,9 @@ func convert_customeringmodel_ShopCustomerGroup_shopcustomergroupmodel_ShopCusto
 }
 
 func Convert_customeringmodel_ShopCustomerGroups_shopcustomergroupmodel_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*shopcustomergroupmodel.ShopCustomerGroup) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shopcustomergroupmodel.ShopCustomerGroup, len(args))
 	outs = make([]*shopcustomergroupmodel.ShopCustomerGroup, len(args))
 	for i := range tmps {

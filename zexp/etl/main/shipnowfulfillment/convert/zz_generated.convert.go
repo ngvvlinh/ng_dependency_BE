@@ -89,6 +89,9 @@ func convert_shipnowfulfillmentmodel_DeliveryPoint_shipnowmodel_DeliveryPoint(ar
 }
 
 func Convert_shipnowfulfillmentmodel_DeliveryPoints_shipnowmodel_DeliveryPoints(args []*shipnowfulfillmentmodel.DeliveryPoint) (outs []*shipnowmodel.DeliveryPoint) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipnowmodel.DeliveryPoint, len(args))
 	outs = make([]*shipnowmodel.DeliveryPoint, len(args))
 	for i := range tmps {
@@ -125,6 +128,9 @@ func convert_shipnowmodel_DeliveryPoint_shipnowfulfillmentmodel_DeliveryPoint(ar
 }
 
 func Convert_shipnowmodel_DeliveryPoints_shipnowfulfillmentmodel_DeliveryPoints(args []*shipnowmodel.DeliveryPoint) (outs []*shipnowfulfillmentmodel.DeliveryPoint) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipnowfulfillmentmodel.DeliveryPoint, len(args))
 	outs = make([]*shipnowfulfillmentmodel.DeliveryPoint, len(args))
 	for i := range tmps {
@@ -191,6 +197,9 @@ func convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulf
 }
 
 func Convert_shipnowfulfillmentmodel_ShipnowFulfillments_shipnowmodel_ShipnowFulfillments(args []*shipnowfulfillmentmodel.ShipnowFulfillment) (outs []*shipnowmodel.ShipnowFulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipnowmodel.ShipnowFulfillment, len(args))
 	outs = make([]*shipnowmodel.ShipnowFulfillment, len(args))
 	for i := range tmps {
@@ -255,6 +264,9 @@ func convert_shipnowmodel_ShipnowFulfillment_shipnowfulfillmentmodel_ShipnowFulf
 }
 
 func Convert_shipnowmodel_ShipnowFulfillments_shipnowfulfillmentmodel_ShipnowFulfillments(args []*shipnowmodel.ShipnowFulfillment) (outs []*shipnowfulfillmentmodel.ShipnowFulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipnowfulfillmentmodel.ShipnowFulfillment, len(args))
 	outs = make([]*shipnowfulfillmentmodel.ShipnowFulfillment, len(args))
 	for i := range tmps {

@@ -171,6 +171,9 @@ func convert_moneytxmodel_MoneyTransactionShipping_moneytx_MoneyTransactionShipp
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippings_moneytx_MoneyTransactionShippings(args []*moneytxmodel.MoneyTransactionShipping) (outs []*moneytx.MoneyTransactionShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShipping, len(args))
 	outs = make([]*moneytx.MoneyTransactionShipping, len(args))
 	for i := range tmps {
@@ -214,6 +217,9 @@ func convert_moneytx_MoneyTransactionShipping_moneytxmodel_MoneyTransactionShipp
 }
 
 func Convert_moneytx_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShippings(args []*moneytx.MoneyTransactionShipping) (outs []*moneytxmodel.MoneyTransactionShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShipping, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShipping, len(args))
 	for i := range tmps {
@@ -253,6 +259,9 @@ func convert_moneytxmodel_MoneyTransactionShippingEtop_moneytx_MoneyTransactionS
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingEtops_moneytx_MoneyTransactionShippingEtops(args []*moneytxmodel.MoneyTransactionShippingEtop) (outs []*moneytx.MoneyTransactionShippingEtop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShippingEtop, len(args))
 	outs = make([]*moneytx.MoneyTransactionShippingEtop, len(args))
 	for i := range tmps {
@@ -290,6 +299,9 @@ func convert_moneytx_MoneyTransactionShippingEtop_moneytxmodel_MoneyTransactionS
 }
 
 func Convert_moneytx_MoneyTransactionShippingEtops_moneytxmodel_MoneyTransactionShippingEtops(args []*moneytx.MoneyTransactionShippingEtop) (outs []*moneytxmodel.MoneyTransactionShippingEtop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShippingEtop, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShippingEtop, len(args))
 	for i := range tmps {
@@ -327,6 +339,9 @@ func convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransact
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternals_moneytx_MoneyTransactionShippingExternals(args []*moneytxmodel.MoneyTransactionShippingExternal) (outs []*moneytx.MoneyTransactionShippingExternal) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShippingExternal, len(args))
 	outs = make([]*moneytx.MoneyTransactionShippingExternal, len(args))
 	for i := range tmps {
@@ -362,6 +377,9 @@ func convert_moneytx_MoneyTransactionShippingExternal_moneytxmodel_MoneyTransact
 }
 
 func Convert_moneytx_MoneyTransactionShippingExternals_moneytxmodel_MoneyTransactionShippingExternals(args []*moneytx.MoneyTransactionShippingExternal) (outs []*moneytxmodel.MoneyTransactionShippingExternal) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShippingExternal, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternal, len(args))
 	for i := range tmps {
@@ -389,6 +407,9 @@ func convert_moneytxmodel_MoneyTransactionShippingExternalExtended_moneytx_Money
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalExtendeds_moneytx_MoneyTransactionShippingExternalExtendeds(args []*moneytxmodel.MoneyTransactionShippingExternalExtended) (outs []*moneytx.MoneyTransactionShippingExternalExtended) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShippingExternalExtended, len(args))
 	outs = make([]*moneytx.MoneyTransactionShippingExternalExtended, len(args))
 	for i := range tmps {
@@ -414,6 +435,9 @@ func convert_moneytx_MoneyTransactionShippingExternalExtended_moneytxmodel_Money
 }
 
 func Convert_moneytx_MoneyTransactionShippingExternalExtendeds_moneytxmodel_MoneyTransactionShippingExternalExtendeds(args []*moneytx.MoneyTransactionShippingExternalExtended) (outs []*moneytxmodel.MoneyTransactionShippingExternalExtended) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShippingExternalExtended, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalExtended, len(args))
 	for i := range tmps {
@@ -454,6 +478,9 @@ func convert_moneytxmodel_MoneyTransactionShippingExternalLine_moneytx_MoneyTran
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalLines_moneytx_MoneyTransactionShippingExternalLines(args []*moneytxmodel.MoneyTransactionShippingExternalLine) (outs []*moneytx.MoneyTransactionShippingExternalLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShippingExternalLine, len(args))
 	outs = make([]*moneytx.MoneyTransactionShippingExternalLine, len(args))
 	for i := range tmps {
@@ -492,6 +519,9 @@ func convert_moneytx_MoneyTransactionShippingExternalLine_moneytxmodel_MoneyTran
 }
 
 func Convert_moneytx_MoneyTransactionShippingExternalLines_moneytxmodel_MoneyTransactionShippingExternalLines(args []*moneytx.MoneyTransactionShippingExternalLine) (outs []*moneytxmodel.MoneyTransactionShippingExternalLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShippingExternalLine, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalLine, len(args))
 	for i := range tmps {
@@ -521,6 +551,9 @@ func convert_moneytxmodel_MoneyTransactionShippingExternalLineExtended_moneytx_M
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalLineExtendeds_moneytx_MoneyTransactionShippingExternalLineExtendeds(args []*moneytxmodel.MoneyTransactionShippingExternalLineExtended) (outs []*moneytx.MoneyTransactionShippingExternalLineExtended) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytx.MoneyTransactionShippingExternalLineExtended, len(args))
 	outs = make([]*moneytx.MoneyTransactionShippingExternalLineExtended, len(args))
 	for i := range tmps {
@@ -548,6 +581,9 @@ func convert_moneytx_MoneyTransactionShippingExternalLineExtended_moneytxmodel_M
 }
 
 func Convert_moneytx_MoneyTransactionShippingExternalLineExtendeds_moneytxmodel_MoneyTransactionShippingExternalLineExtendeds(args []*moneytx.MoneyTransactionShippingExternalLineExtended) (outs []*moneytxmodel.MoneyTransactionShippingExternalLineExtended) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShippingExternalLineExtended, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalLineExtended, len(args))
 	for i := range tmps {

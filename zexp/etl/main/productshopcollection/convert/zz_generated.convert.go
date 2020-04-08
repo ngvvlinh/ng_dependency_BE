@@ -65,6 +65,9 @@ func convert_productshopcollectionmodel_ProductShopCollection_catalogmodel_Produ
 }
 
 func Convert_productshopcollectionmodel_ProductShopCollections_catalogmodel_ProductShopCollections(args []*productshopcollectionmodel.ProductShopCollection) (outs []*catalogmodel.ProductShopCollection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]catalogmodel.ProductShopCollection, len(args))
 	outs = make([]*catalogmodel.ProductShopCollection, len(args))
 	for i := range tmps {
@@ -95,6 +98,9 @@ func convert_catalogmodel_ProductShopCollection_productshopcollectionmodel_Produ
 }
 
 func Convert_catalogmodel_ProductShopCollections_productshopcollectionmodel_ProductShopCollections(args []*catalogmodel.ProductShopCollection) (outs []*productshopcollectionmodel.ProductShopCollection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]productshopcollectionmodel.ProductShopCollection, len(args))
 	outs = make([]*productshopcollectionmodel.ProductShopCollection, len(args))
 	for i := range tmps {

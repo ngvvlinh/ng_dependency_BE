@@ -80,6 +80,9 @@ func convert_shoptraderaddressmodel_ShopTraderAddress_customeringmodel_ShopTrade
 }
 
 func Convert_shoptraderaddressmodel_ShopTraderAddresses_customeringmodel_ShopTraderAddresses(args []*shoptraderaddressmodel.ShopTraderAddress) (outs []*customeringmodel.ShopTraderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopTraderAddress, len(args))
 	outs = make([]*customeringmodel.ShopTraderAddress, len(args))
 	for i := range tmps {
@@ -121,6 +124,9 @@ func convert_customeringmodel_ShopTraderAddress_shoptraderaddressmodel_ShopTrade
 }
 
 func Convert_customeringmodel_ShopTraderAddresses_shoptraderaddressmodel_ShopTraderAddresses(args []*customeringmodel.ShopTraderAddress) (outs []*shoptraderaddressmodel.ShopTraderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shoptraderaddressmodel.ShopTraderAddress, len(args))
 	outs = make([]*shoptraderaddressmodel.ShopTraderAddress, len(args))
 	for i := range tmps {

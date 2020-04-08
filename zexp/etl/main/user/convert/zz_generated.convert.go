@@ -95,6 +95,9 @@ func convert_usermodel_User_identitymodel_User(arg *usermodel.User, out *identit
 }
 
 func Convert_usermodel_Users_identitymodel_Users(args []*usermodel.User) (outs []*identitymodel.User) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.User, len(args))
 	outs = make([]*identitymodel.User, len(args))
 	for i := range tmps {
@@ -130,6 +133,9 @@ func convert_identitymodel_User_usermodel_User(arg *identitymodel.User, out *use
 }
 
 func Convert_identitymodel_Users_usermodel_Users(args []*identitymodel.User) (outs []*usermodel.User) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]usermodel.User, len(args))
 	outs = make([]*usermodel.User, len(args))
 	for i := range tmps {
@@ -159,6 +165,9 @@ func convert_usermodel_UserInner_identitymodel_UserInner(arg *usermodel.UserInne
 }
 
 func Convert_usermodel_UserInners_identitymodel_UserInners(args []*usermodel.UserInner) (outs []*identitymodel.UserInner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.UserInner, len(args))
 	outs = make([]*identitymodel.UserInner, len(args))
 	for i := range tmps {
@@ -186,6 +195,9 @@ func convert_identitymodel_UserInner_usermodel_UserInner(arg *identitymodel.User
 }
 
 func Convert_identitymodel_UserInners_usermodel_UserInners(args []*identitymodel.UserInner) (outs []*usermodel.UserInner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]usermodel.UserInner, len(args))
 	outs = make([]*usermodel.UserInner, len(args))
 	for i := range tmps {

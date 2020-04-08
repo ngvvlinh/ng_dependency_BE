@@ -163,6 +163,9 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 }
 
 func Convert_fulfillmentmodel_Fulfillments_shippingmodel_Fulfillments(args []*fulfillmentmodel.Fulfillment) (outs []*shippingmodel.Fulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shippingmodel.Fulfillment, len(args))
 	outs = make([]*shippingmodel.Fulfillment, len(args))
 	for i := range tmps {
@@ -285,6 +288,9 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 }
 
 func Convert_shippingmodel_Fulfillments_fulfillmentmodel_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*fulfillmentmodel.Fulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]fulfillmentmodel.Fulfillment, len(args))
 	outs = make([]*fulfillmentmodel.Fulfillment, len(args))
 	for i := range tmps {

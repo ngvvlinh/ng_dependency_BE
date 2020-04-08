@@ -97,6 +97,9 @@ func convert_purchaserefundmodel1_PurchaseRefund_purchaserefundmodel_PurchaseRef
 }
 
 func Convert_purchaserefundmodel1_PurchaseRefunds_purchaserefundmodel_PurchaseRefunds(args []*purchaserefundmodel1.PurchaseRefund) (outs []*purchaserefundmodel.PurchaseRefund) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaserefundmodel.PurchaseRefund, len(args))
 	outs = make([]*purchaserefundmodel.PurchaseRefund, len(args))
 	for i := range tmps {
@@ -139,6 +142,9 @@ func convert_purchaserefundmodel_PurchaseRefund_purchaserefundmodel1_PurchaseRef
 }
 
 func Convert_purchaserefundmodel_PurchaseRefunds_purchaserefundmodel1_PurchaseRefunds(args []*purchaserefundmodel.PurchaseRefund) (outs []*purchaserefundmodel1.PurchaseRefund) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaserefundmodel1.PurchaseRefund, len(args))
 	outs = make([]*purchaserefundmodel1.PurchaseRefund, len(args))
 	for i := range tmps {
@@ -173,6 +179,9 @@ func convert_purchaserefundmodel1_PurchaseRefundLine_purchaserefundmodel_Purchas
 }
 
 func Convert_purchaserefundmodel1_PurchaseRefundLines_purchaserefundmodel_PurchaseRefundLines(args []*purchaserefundmodel1.PurchaseRefundLine) (outs []*purchaserefundmodel.PurchaseRefundLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaserefundmodel.PurchaseRefundLine, len(args))
 	outs = make([]*purchaserefundmodel.PurchaseRefundLine, len(args))
 	for i := range tmps {
@@ -205,6 +214,9 @@ func convert_purchaserefundmodel_PurchaseRefundLine_purchaserefundmodel1_Purchas
 }
 
 func Convert_purchaserefundmodel_PurchaseRefundLines_purchaserefundmodel1_PurchaseRefundLines(args []*purchaserefundmodel.PurchaseRefundLine) (outs []*purchaserefundmodel1.PurchaseRefundLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]purchaserefundmodel1.PurchaseRefundLine, len(args))
 	outs = make([]*purchaserefundmodel1.PurchaseRefundLine, len(args))
 	for i := range tmps {

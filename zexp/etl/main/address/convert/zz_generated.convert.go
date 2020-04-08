@@ -120,6 +120,9 @@ func convert_addressmodel1_Address_addressmodel_Address(arg *addressmodel1.Addre
 }
 
 func Convert_addressmodel1_Addresses_addressmodel_Addresses(args []*addressmodel1.Address) (outs []*addressmodel.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.Address, len(args))
 	outs = make([]*addressmodel.Address, len(args))
 	for i := range tmps {
@@ -169,6 +172,9 @@ func convert_addressmodel_Address_addressmodel1_Address(arg *addressmodel.Addres
 }
 
 func Convert_addressmodel_Addresses_addressmodel1_Addresses(args []*addressmodel.Address) (outs []*addressmodel1.Address) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel1.Address, len(args))
 	outs = make([]*addressmodel1.Address, len(args))
 	for i := range tmps {
@@ -198,6 +204,9 @@ func convert_addressmodel1_AddressNote_addressmodel_AddressNote(arg *addressmode
 }
 
 func Convert_addressmodel1_AddressNotes_addressmodel_AddressNotes(args []*addressmodel1.AddressNote) (outs []*addressmodel.AddressNote) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.AddressNote, len(args))
 	outs = make([]*addressmodel.AddressNote, len(args))
 	for i := range tmps {
@@ -225,6 +234,9 @@ func convert_addressmodel_AddressNote_addressmodel1_AddressNote(arg *addressmode
 }
 
 func Convert_addressmodel_AddressNotes_addressmodel1_AddressNotes(args []*addressmodel.AddressNote) (outs []*addressmodel1.AddressNote) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel1.AddressNote, len(args))
 	outs = make([]*addressmodel1.AddressNote, len(args))
 	for i := range tmps {
@@ -252,6 +264,9 @@ func convert_addressmodel1_Coordinates_addressmodel_Coordinates(arg *addressmode
 }
 
 func Convert_addressmodel1_Coordinateses_addressmodel_Coordinateses(args []*addressmodel1.Coordinates) (outs []*addressmodel.Coordinates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel.Coordinates, len(args))
 	outs = make([]*addressmodel.Coordinates, len(args))
 	for i := range tmps {
@@ -277,6 +292,9 @@ func convert_addressmodel_Coordinates_addressmodel1_Coordinates(arg *addressmode
 }
 
 func Convert_addressmodel_Coordinateses_addressmodel1_Coordinateses(args []*addressmodel.Coordinates) (outs []*addressmodel1.Coordinates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressmodel1.Coordinates, len(args))
 	outs = make([]*addressmodel1.Coordinates, len(args))
 	for i := range tmps {

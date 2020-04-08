@@ -166,6 +166,9 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipping.Fulfillment, len(args))
 	outs = make([]*shipping.Fulfillment, len(args))
 	for i := range tmps {
@@ -293,6 +296,9 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 }
 
 func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.Fulfillment) (outs []*shippingmodel.Fulfillment) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shippingmodel.Fulfillment, len(args))
 	outs = make([]*shippingmodel.Fulfillment, len(args))
 	for i := range tmps {
@@ -322,6 +328,9 @@ func convert_sharemodel_FulfillmentSyncStates_shipping_FulfillmentSyncStates(arg
 }
 
 func Convert_sharemodel_FulfillmentSyncStateses_shipping_FulfillmentSyncStateses(args []*sharemodel.FulfillmentSyncStates) (outs []*shipping.FulfillmentSyncStates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipping.FulfillmentSyncStates, len(args))
 	outs = make([]*shipping.FulfillmentSyncStates, len(args))
 	for i := range tmps {
@@ -349,6 +358,9 @@ func convert_shipping_FulfillmentSyncStates_sharemodel_FulfillmentSyncStates(arg
 }
 
 func Convert_shipping_FulfillmentSyncStateses_sharemodel_FulfillmentSyncStateses(args []*shipping.FulfillmentSyncStates) (outs []*sharemodel.FulfillmentSyncStates) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.FulfillmentSyncStates, len(args))
 	outs = make([]*sharemodel.FulfillmentSyncStates, len(args))
 	for i := range tmps {
@@ -379,6 +391,9 @@ func convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg *sharemodel
 }
 
 func Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(args []*sharemodel.ShippingFeeLine) (outs []*shipping.ShippingFeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]shipping.ShippingFeeLine, len(args))
 	outs = make([]*shipping.ShippingFeeLine, len(args))
 	for i := range tmps {
@@ -410,6 +425,9 @@ func convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shipping.S
 }
 
 func Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(args []*shipping.ShippingFeeLine) (outs []*sharemodel.ShippingFeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.ShippingFeeLine, len(args))
 	outs = make([]*sharemodel.ShippingFeeLine, len(args))
 	for i := range tmps {

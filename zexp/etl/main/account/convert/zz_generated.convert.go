@@ -65,6 +65,9 @@ func convert_accountmodel_Account_identitymodel_Account(arg *accountmodel.Accoun
 }
 
 func Convert_accountmodel_Accounts_identitymodel_Accounts(args []*accountmodel.Account) (outs []*identitymodel.Account) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Account, len(args))
 	outs = make([]*identitymodel.Account, len(args))
 	for i := range tmps {
@@ -95,6 +98,9 @@ func convert_identitymodel_Account_accountmodel_Account(arg *identitymodel.Accou
 }
 
 func Convert_identitymodel_Accounts_accountmodel_Accounts(args []*identitymodel.Account) (outs []*accountmodel.Account) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]accountmodel.Account, len(args))
 	outs = make([]*accountmodel.Account, len(args))
 	for i := range tmps {

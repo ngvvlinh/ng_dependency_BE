@@ -73,6 +73,9 @@ func convert_smslogmodel_SmsLog_smslog_SmsLog(arg *smslogmodel.SmsLog, out *smsl
 }
 
 func Convert_smslogmodel_SmsLogs_smslog_SmsLogs(args []*smslogmodel.SmsLog) (outs []*smslog.SmsLog) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]smslog.SmsLog, len(args))
 	outs = make([]*smslog.SmsLog, len(args))
 	for i := range tmps {
@@ -104,6 +107,9 @@ func convert_smslog_SmsLog_smslogmodel_SmsLog(arg *smslog.SmsLog, out *smslogmod
 }
 
 func Convert_smslog_SmsLogs_smslogmodel_SmsLogs(args []*smslog.SmsLog) (outs []*smslogmodel.SmsLog) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]smslogmodel.SmsLog, len(args))
 	outs = make([]*smslogmodel.SmsLog, len(args))
 	for i := range tmps {

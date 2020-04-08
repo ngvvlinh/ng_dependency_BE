@@ -181,6 +181,9 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 }
 
 func Convert_customeringmodel_ShopTraderAddresses_addressing_ShopTraderAddresses(args []*customeringmodel.ShopTraderAddress) (outs []*addressing.ShopTraderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]addressing.ShopTraderAddress, len(args))
 	outs = make([]*addressing.ShopTraderAddress, len(args))
 	for i := range tmps {
@@ -224,6 +227,9 @@ func convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(arg
 }
 
 func Convert_addressing_ShopTraderAddresses_customeringmodel_ShopTraderAddresses(args []*addressing.ShopTraderAddress) (outs []*customeringmodel.ShopTraderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopTraderAddress, len(args))
 	outs = make([]*customeringmodel.ShopTraderAddress, len(args))
 	for i := range tmps {
@@ -332,6 +338,9 @@ func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 }
 
 func Convert_customeringmodel_ShopCustomers_customering_ShopCustomers(args []*customeringmodel.ShopCustomer) (outs []*customering.ShopCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customering.ShopCustomer, len(args))
 	outs = make([]*customering.ShopCustomer, len(args))
 	for i := range tmps {
@@ -377,6 +386,9 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 }
 
 func Convert_customering_ShopCustomers_customeringmodel_ShopCustomers(args []*customering.ShopCustomer) (outs []*customeringmodel.ShopCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopCustomer, len(args))
 	outs = make([]*customeringmodel.ShopCustomer, len(args))
 	for i := range tmps {
@@ -466,6 +478,9 @@ func convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(ar
 }
 
 func Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customering.ShopCustomerGroup, len(args))
 	outs = make([]*customering.ShopCustomerGroup, len(args))
 	for i := range tmps {
@@ -497,6 +512,9 @@ func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(ar
 }
 
 func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*customering.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopCustomerGroup, len(args))
 	outs = make([]*customeringmodel.ShopCustomerGroup, len(args))
 	for i := range tmps {
@@ -526,6 +544,9 @@ func convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomer
 }
 
 func Convert_customeringmodel_ShopCustomerGroupCustomers_customering_ShopCustomerGroupCustomers(args []*customeringmodel.ShopCustomerGroupCustomer) (outs []*customering.ShopCustomerGroupCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customering.ShopCustomerGroupCustomer, len(args))
 	outs = make([]*customering.ShopCustomerGroupCustomer, len(args))
 	for i := range tmps {
@@ -554,6 +575,9 @@ func convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomer
 }
 
 func Convert_customering_ShopCustomerGroupCustomers_customeringmodel_ShopCustomerGroupCustomers(args []*customering.ShopCustomerGroupCustomer) (outs []*customeringmodel.ShopCustomerGroupCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopCustomerGroupCustomer, len(args))
 	outs = make([]*customeringmodel.ShopCustomerGroupCustomer, len(args))
 	for i := range tmps {
@@ -584,6 +608,9 @@ func convert_customeringmodel_ShopTrader_tradering_ShopTrader(arg *customeringmo
 }
 
 func Convert_customeringmodel_ShopTraders_tradering_ShopTraders(args []*customeringmodel.ShopTrader) (outs []*tradering.ShopTrader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]tradering.ShopTrader, len(args))
 	outs = make([]*tradering.ShopTrader, len(args))
 	for i := range tmps {
@@ -610,6 +637,9 @@ func convert_tradering_ShopTrader_customeringmodel_ShopTrader(arg *tradering.Sho
 }
 
 func Convert_tradering_ShopTraders_customeringmodel_ShopTraders(args []*tradering.ShopTrader) (outs []*customeringmodel.ShopTrader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]customeringmodel.ShopTrader, len(args))
 	outs = make([]*customeringmodel.ShopTrader, len(args))
 	for i := range tmps {

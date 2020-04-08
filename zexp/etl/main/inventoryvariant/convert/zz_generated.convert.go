@@ -66,6 +66,9 @@ func convert_inventoryvariantmodel_InventoryVariant_inventorymodel_InventoryVari
 }
 
 func Convert_inventoryvariantmodel_InventoryVariants_inventorymodel_InventoryVariants(args []*inventoryvariantmodel.InventoryVariant) (outs []*inventorymodel.InventoryVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventorymodel.InventoryVariant, len(args))
 	outs = make([]*inventorymodel.InventoryVariant, len(args))
 	for i := range tmps {
@@ -97,6 +100,9 @@ func convert_inventorymodel_InventoryVariant_inventoryvariantmodel_InventoryVari
 }
 
 func Convert_inventorymodel_InventoryVariants_inventoryvariantmodel_InventoryVariants(args []*inventorymodel.InventoryVariant) (outs []*inventoryvariantmodel.InventoryVariant) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inventoryvariantmodel.InventoryVariant, len(args))
 	outs = make([]*inventoryvariantmodel.InventoryVariant, len(args))
 	for i := range tmps {

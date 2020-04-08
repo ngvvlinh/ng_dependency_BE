@@ -291,6 +291,9 @@ func convert_webservermodel_Banner_webserver_Banner(arg *webservermodel.Banner, 
 }
 
 func Convert_webservermodel_Banners_webserver_Banners(args []*webservermodel.Banner) (outs []*webserver.Banner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.Banner, len(args))
 	outs = make([]*webserver.Banner, len(args))
 	for i := range tmps {
@@ -316,6 +319,9 @@ func convert_webserver_Banner_webservermodel_Banner(arg *webserver.Banner, out *
 }
 
 func Convert_webserver_Banners_webservermodel_Banners(args []*webserver.Banner) (outs []*webservermodel.Banner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.Banner, len(args))
 	outs = make([]*webservermodel.Banner, len(args))
 	for i := range tmps {
@@ -344,6 +350,9 @@ func convert_webservermodel_BannerItem_webserver_BannerItem(arg *webservermodel.
 }
 
 func Convert_webservermodel_BannerItems_webserver_BannerItems(args []*webservermodel.BannerItem) (outs []*webserver.BannerItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.BannerItem, len(args))
 	outs = make([]*webserver.BannerItem, len(args))
 	for i := range tmps {
@@ -370,6 +379,9 @@ func convert_webserver_BannerItem_webservermodel_BannerItem(arg *webserver.Banne
 }
 
 func Convert_webserver_BannerItems_webservermodel_BannerItems(args []*webserver.BannerItem) (outs []*webservermodel.BannerItem) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.BannerItem, len(args))
 	outs = make([]*webservermodel.BannerItem, len(args))
 	for i := range tmps {
@@ -397,6 +409,9 @@ func convert_webservermodel_ComparePrice_webserver_ComparePrice(arg *webservermo
 }
 
 func Convert_webservermodel_ComparePrices_webserver_ComparePrices(args []*webservermodel.ComparePrice) (outs []*webserver.ComparePrice) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.ComparePrice, len(args))
 	outs = make([]*webserver.ComparePrice, len(args))
 	for i := range tmps {
@@ -422,6 +437,9 @@ func convert_webserver_ComparePrice_webservermodel_ComparePrice(arg *webserver.C
 }
 
 func Convert_webserver_ComparePrices_webservermodel_ComparePrices(args []*webserver.ComparePrice) (outs []*webservermodel.ComparePrice) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.ComparePrice, len(args))
 	outs = make([]*webservermodel.ComparePrice, len(args))
 	for i := range tmps {
@@ -449,6 +467,9 @@ func convert_webservermodel_Facebook_webserver_Facebook(arg *webservermodel.Face
 }
 
 func Convert_webservermodel_Facebooks_webserver_Facebooks(args []*webservermodel.Facebook) (outs []*webserver.Facebook) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.Facebook, len(args))
 	outs = make([]*webserver.Facebook, len(args))
 	for i := range tmps {
@@ -474,6 +495,9 @@ func convert_webserver_Facebook_webservermodel_Facebook(arg *webserver.Facebook,
 }
 
 func Convert_webserver_Facebooks_webservermodel_Facebooks(args []*webserver.Facebook) (outs []*webservermodel.Facebook) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.Facebook, len(args))
 	outs = make([]*webservermodel.Facebook, len(args))
 	for i := range tmps {
@@ -503,6 +527,9 @@ func convert_webservermodel_ShopInfo_webserver_ShopInfo(arg *webservermodel.Shop
 }
 
 func Convert_webservermodel_ShopInfoes_webserver_ShopInfoes(args []*webservermodel.ShopInfo) (outs []*webserver.ShopInfo) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.ShopInfo, len(args))
 	outs = make([]*webserver.ShopInfo, len(args))
 	for i := range tmps {
@@ -530,6 +557,9 @@ func convert_webserver_ShopInfo_webservermodel_ShopInfo(arg *webserver.ShopInfo,
 }
 
 func Convert_webserver_ShopInfoes_webservermodel_ShopInfoes(args []*webserver.ShopInfo) (outs []*webservermodel.ShopInfo) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.ShopInfo, len(args))
 	outs = make([]*webservermodel.ShopInfo, len(args))
 	for i := range tmps {
@@ -557,6 +587,9 @@ func convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg *webserv
 }
 
 func Convert_webservermodel_SpecialProducts_webserver_SpecialProducts(args []*webservermodel.SpecialProduct) (outs []*webserver.SpecialProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.SpecialProduct, len(args))
 	outs = make([]*webserver.SpecialProduct, len(args))
 	for i := range tmps {
@@ -582,6 +615,9 @@ func convert_webserver_SpecialProduct_webservermodel_SpecialProduct(arg *webserv
 }
 
 func Convert_webserver_SpecialProducts_webservermodel_SpecialProducts(args []*webserver.SpecialProduct) (outs []*webservermodel.SpecialProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.SpecialProduct, len(args))
 	outs = make([]*webservermodel.SpecialProduct, len(args))
 	for i := range tmps {
@@ -616,6 +652,9 @@ func convert_webservermodel_WsCategory_webserver_WsCategory(arg *webservermodel.
 }
 
 func Convert_webservermodel_WsCategories_webserver_WsCategories(args []*webservermodel.WsCategory) (outs []*webserver.WsCategory) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsCategory, len(args))
 	outs = make([]*webserver.WsCategory, len(args))
 	for i := range tmps {
@@ -647,6 +686,9 @@ func convert_webserver_WsCategory_webservermodel_WsCategory(arg *webserver.WsCat
 }
 
 func Convert_webserver_WsCategories_webservermodel_WsCategories(args []*webserver.WsCategory) (outs []*webservermodel.WsCategory) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsCategory, len(args))
 	outs = make([]*webservermodel.WsCategory, len(args))
 	for i := range tmps {
@@ -699,6 +741,9 @@ func convert_webservermodel_WsGeneralSEO_webserver_WsGeneralSEO(arg *webservermo
 }
 
 func Convert_webservermodel_WsGeneralSEOs_webserver_WsGeneralSEOs(args []*webservermodel.WsGeneralSEO) (outs []*webserver.WsGeneralSEO) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsGeneralSEO, len(args))
 	outs = make([]*webserver.WsGeneralSEO, len(args))
 	for i := range tmps {
@@ -726,6 +771,9 @@ func convert_webserver_WsGeneralSEO_webservermodel_WsGeneralSEO(arg *webserver.W
 }
 
 func Convert_webserver_WsGeneralSEOs_webservermodel_WsGeneralSEOs(args []*webserver.WsGeneralSEO) (outs []*webservermodel.WsGeneralSEO) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsGeneralSEO, len(args))
 	outs = make([]*webservermodel.WsGeneralSEO, len(args))
 	for i := range tmps {
@@ -762,6 +810,9 @@ func convert_webservermodel_WsPage_webserver_WsPage(arg *webservermodel.WsPage, 
 }
 
 func Convert_webservermodel_WsPages_webserver_WsPages(args []*webservermodel.WsPage) (outs []*webserver.WsPage) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsPage, len(args))
 	outs = make([]*webserver.WsPage, len(args))
 	for i := range tmps {
@@ -796,6 +847,9 @@ func convert_webserver_WsPage_webservermodel_WsPage(arg *webserver.WsPage, out *
 }
 
 func Convert_webserver_WsPages_webservermodel_WsPages(args []*webserver.WsPage) (outs []*webservermodel.WsPage) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsPage, len(args))
 	outs = make([]*webservermodel.WsPage, len(args))
 	for i := range tmps {
@@ -881,6 +935,9 @@ func convert_webservermodel_WsProduct_webserver_WsProduct(arg *webservermodel.Ws
 }
 
 func Convert_webservermodel_WsProducts_webserver_WsProducts(args []*webservermodel.WsProduct) (outs []*webserver.WsProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsProduct, len(args))
 	outs = make([]*webserver.WsProduct, len(args))
 	for i := range tmps {
@@ -913,6 +970,9 @@ func convert_webserver_WsProduct_webservermodel_WsProduct(arg *webserver.WsProdu
 }
 
 func Convert_webserver_WsProducts_webservermodel_WsProducts(args []*webserver.WsProduct) (outs []*webservermodel.WsProduct) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsProduct, len(args))
 	outs = make([]*webservermodel.WsProduct, len(args))
 	for i := range tmps {
@@ -965,6 +1025,9 @@ func convert_webservermodel_WsSEOConfig_webserver_WsSEOConfig(arg *webservermode
 }
 
 func Convert_webservermodel_WsSEOConfigs_webserver_WsSEOConfigs(args []*webservermodel.WsSEOConfig) (outs []*webserver.WsSEOConfig) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsSEOConfig, len(args))
 	outs = make([]*webserver.WsSEOConfig, len(args))
 	for i := range tmps {
@@ -991,6 +1054,9 @@ func convert_webserver_WsSEOConfig_webservermodel_WsSEOConfig(arg *webserver.WsS
 }
 
 func Convert_webserver_WsSEOConfigs_webservermodel_WsSEOConfigs(args []*webserver.WsSEOConfig) (outs []*webservermodel.WsSEOConfig) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsSEOConfig, len(args))
 	outs = make([]*webservermodel.WsSEOConfig, len(args))
 	for i := range tmps {
@@ -1033,6 +1099,9 @@ func convert_webservermodel_WsWebsite_webserver_WsWebsite(arg *webservermodel.Ws
 }
 
 func Convert_webservermodel_WsWebsites_webserver_WsWebsites(args []*webservermodel.WsWebsite) (outs []*webserver.WsWebsite) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webserver.WsWebsite, len(args))
 	outs = make([]*webserver.WsWebsite, len(args))
 	for i := range tmps {
@@ -1073,6 +1142,9 @@ func convert_webserver_WsWebsite_webservermodel_WsWebsite(arg *webserver.WsWebsi
 }
 
 func Convert_webserver_WsWebsites_webservermodel_WsWebsites(args []*webserver.WsWebsite) (outs []*webservermodel.WsWebsite) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]webservermodel.WsWebsite, len(args))
 	outs = make([]*webservermodel.WsWebsite, len(args))
 	for i := range tmps {

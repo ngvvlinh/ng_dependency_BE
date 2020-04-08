@@ -241,6 +241,9 @@ func convert_identitymodel_Affiliate_identity_Affiliate(arg *identitymodel.Affil
 }
 
 func Convert_identitymodel_Affiliates_identity_Affiliates(args []*identitymodel.Affiliate) (outs []*identity.Affiliate) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.Affiliate, len(args))
 	outs = make([]*identity.Affiliate, len(args))
 	for i := range tmps {
@@ -268,6 +271,9 @@ func convert_identity_Affiliate_identitymodel_Affiliate(arg *identity.Affiliate,
 }
 
 func Convert_identity_Affiliates_identitymodel_Affiliates(args []*identity.Affiliate) (outs []*identitymodel.Affiliate) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Affiliate, len(args))
 	outs = make([]*identitymodel.Affiliate, len(args))
 	for i := range tmps {
@@ -305,6 +311,9 @@ func convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamov
 }
 
 func Convert_identitymodel_ExternalAccountAhamoves_identity_ExternalAccountAhamoves(args []*identitymodel.ExternalAccountAhamove) (outs []*identity.ExternalAccountAhamove) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.ExternalAccountAhamove, len(args))
 	outs = make([]*identity.ExternalAccountAhamove, len(args))
 	for i := range tmps {
@@ -349,6 +358,9 @@ func convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamov
 }
 
 func Convert_identity_ExternalAccountAhamoves_identitymodel_ExternalAccountAhamoves(args []*identity.ExternalAccountAhamove) (outs []*identitymodel.ExternalAccountAhamove) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.ExternalAccountAhamove, len(args))
 	outs = make([]*identitymodel.ExternalAccountAhamove, len(args))
 	for i := range tmps {
@@ -381,6 +393,9 @@ func convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, 
 }
 
 func Convert_identitymodel_Partners_identity_Partners(args []*identitymodel.Partner) (outs []*identity.Partner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.Partner, len(args))
 	outs = make([]*identity.Partner, len(args))
 	for i := range tmps {
@@ -423,6 +438,9 @@ func convert_identity_Partner_identitymodel_Partner(arg *identity.Partner, out *
 }
 
 func Convert_identity_Partners_identitymodel_Partners(args []*identity.Partner) (outs []*identitymodel.Partner) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Partner, len(args))
 	outs = make([]*identitymodel.Partner, len(args))
 	for i := range tmps {
@@ -450,6 +468,9 @@ func convert_identitymodel_Permission_identity_Permission(arg *identitymodel.Per
 }
 
 func Convert_identitymodel_Permissions_identity_Permissions(args []*identitymodel.Permission) (outs []*identity.Permission) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.Permission, len(args))
 	outs = make([]*identity.Permission, len(args))
 	for i := range tmps {
@@ -475,6 +496,9 @@ func convert_identity_Permission_identitymodel_Permission(arg *identity.Permissi
 }
 
 func Convert_identity_Permissions_identitymodel_Permissions(args []*identity.Permission) (outs []*identitymodel.Permission) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Permission, len(args))
 	outs = make([]*identitymodel.Permission, len(args))
 	for i := range tmps {
@@ -512,6 +536,9 @@ func convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *iden
 }
 
 func Convert_identitymodel_Shops_identity_Shops(args []*identitymodel.Shop) (outs []*identity.Shop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.Shop, len(args))
 	outs = make([]*identity.Shop, len(args))
 	for i := range tmps {
@@ -558,6 +585,9 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 }
 
 func Convert_identity_Shops_identitymodel_Shops(args []*identity.Shop) (outs []*identitymodel.Shop) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.Shop, len(args))
 	outs = make([]*identitymodel.Shop, len(args))
 	for i := range tmps {
@@ -589,6 +619,9 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identity.User, len(args))
 	outs = make([]*identity.User, len(args))
 	for i := range tmps {
@@ -629,6 +662,9 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 }
 
 func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*identitymodel.User) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitymodel.User, len(args))
 	outs = make([]*identitymodel.User, len(args))
 	for i := range tmps {
@@ -652,6 +688,9 @@ func convert_sharemodel_BankAccount_identitytypes_BankAccount(arg *sharemodel.Ba
 }
 
 func Convert_sharemodel_BankAccounts_identitytypes_BankAccounts(args []*sharemodel.BankAccount) (outs []*identitytypes.BankAccount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]identitytypes.BankAccount, len(args))
 	outs = make([]*identitytypes.BankAccount, len(args))
 	for i := range tmps {
@@ -673,6 +712,9 @@ func convert_identitytypes_BankAccount_sharemodel_BankAccount(arg *identitytypes
 }
 
 func Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(args []*identitytypes.BankAccount) (outs []*sharemodel.BankAccount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.BankAccount, len(args))
 	outs = make([]*sharemodel.BankAccount, len(args))
 	for i := range tmps {
@@ -700,6 +742,9 @@ func convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg *sharemodel.A
 }
 
 func Convert_sharemodel_AdjustmentLines_inttypes_AdjustmentLines(args []*sharemodel.AdjustmentLine) (outs []*inttypes.AdjustmentLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inttypes.AdjustmentLine, len(args))
 	outs = make([]*inttypes.AdjustmentLine, len(args))
 	for i := range tmps {
@@ -725,6 +770,9 @@ func convert_inttypes_AdjustmentLine_sharemodel_AdjustmentLine(arg *inttypes.Adj
 }
 
 func Convert_inttypes_AdjustmentLines_sharemodel_AdjustmentLines(args []*inttypes.AdjustmentLine) (outs []*sharemodel.AdjustmentLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.AdjustmentLine, len(args))
 	outs = make([]*sharemodel.AdjustmentLine, len(args))
 	for i := range tmps {
@@ -752,6 +800,9 @@ func convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg *sharemodel.Disco
 }
 
 func Convert_sharemodel_DiscountLines_inttypes_DiscountLines(args []*sharemodel.DiscountLine) (outs []*inttypes.DiscountLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inttypes.DiscountLine, len(args))
 	outs = make([]*inttypes.DiscountLine, len(args))
 	for i := range tmps {
@@ -777,6 +828,9 @@ func convert_inttypes_DiscountLine_sharemodel_DiscountLine(arg *inttypes.Discoun
 }
 
 func Convert_inttypes_DiscountLines_sharemodel_DiscountLines(args []*inttypes.DiscountLine) (outs []*sharemodel.DiscountLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.DiscountLine, len(args))
 	outs = make([]*sharemodel.DiscountLine, len(args))
 	for i := range tmps {
@@ -804,6 +858,9 @@ func convert_sharemodel_FeeLine_inttypes_FeeLine(arg *sharemodel.FeeLine, out *i
 }
 
 func Convert_sharemodel_FeeLines_inttypes_FeeLines(args []*sharemodel.FeeLine) (outs []*inttypes.FeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]inttypes.FeeLine, len(args))
 	outs = make([]*inttypes.FeeLine, len(args))
 	for i := range tmps {
@@ -829,6 +886,9 @@ func convert_inttypes_FeeLine_sharemodel_FeeLine(arg *inttypes.FeeLine, out *sha
 }
 
 func Convert_inttypes_FeeLines_sharemodel_FeeLines(args []*inttypes.FeeLine) (outs []*sharemodel.FeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]sharemodel.FeeLine, len(args))
 	outs = make([]*sharemodel.FeeLine, len(args))
 	for i := range tmps {

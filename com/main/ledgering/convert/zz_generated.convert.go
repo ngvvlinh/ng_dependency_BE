@@ -81,6 +81,9 @@ func convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.
 }
 
 func Convert_ledgeringmodel_ShopLedgers_ledgering_ShopLedgers(args []*ledgeringmodel.ShopLedger) (outs []*ledgering.ShopLedger) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ledgering.ShopLedger, len(args))
 	outs = make([]*ledgering.ShopLedger, len(args))
 	for i := range tmps {
@@ -116,6 +119,9 @@ func convert_ledgering_ShopLedger_ledgeringmodel_ShopLedger(arg *ledgering.ShopL
 }
 
 func Convert_ledgering_ShopLedgers_ledgeringmodel_ShopLedgers(args []*ledgering.ShopLedger) (outs []*ledgeringmodel.ShopLedger) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ledgeringmodel.ShopLedger, len(args))
 	outs = make([]*ledgeringmodel.ShopLedger, len(args))
 	for i := range tmps {

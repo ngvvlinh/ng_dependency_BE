@@ -80,6 +80,9 @@ func convert_moneytransactionshippingmodel_MoneyTransactionShipping_moneytxmodel
 }
 
 func Convert_moneytransactionshippingmodel_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShippings(args []*moneytransactionshippingmodel.MoneyTransactionShipping) (outs []*moneytxmodel.MoneyTransactionShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytxmodel.MoneyTransactionShipping, len(args))
 	outs = make([]*moneytxmodel.MoneyTransactionShipping, len(args))
 	for i := range tmps {
@@ -120,6 +123,9 @@ func convert_moneytxmodel_MoneyTransactionShipping_moneytransactionshippingmodel
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippings_moneytransactionshippingmodel_MoneyTransactionShippings(args []*moneytxmodel.MoneyTransactionShipping) (outs []*moneytransactionshippingmodel.MoneyTransactionShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]moneytransactionshippingmodel.MoneyTransactionShipping, len(args))
 	outs = make([]*moneytransactionshippingmodel.MoneyTransactionShipping, len(args))
 	for i := range tmps {

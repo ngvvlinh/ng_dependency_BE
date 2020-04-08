@@ -124,6 +124,9 @@ func convert_receiptmodel_Receipt_receiptingmodel_Receipt(arg *receiptmodel.Rece
 }
 
 func Convert_receiptmodel_Receipts_receiptingmodel_Receipts(args []*receiptmodel.Receipt) (outs []*receiptingmodel.Receipt) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptingmodel.Receipt, len(args))
 	outs = make([]*receiptingmodel.Receipt, len(args))
 	for i := range tmps {
@@ -171,6 +174,9 @@ func convert_receiptingmodel_Receipt_receiptmodel_Receipt(arg *receiptingmodel.R
 }
 
 func Convert_receiptingmodel_Receipts_receiptmodel_Receipts(args []*receiptingmodel.Receipt) (outs []*receiptmodel.Receipt) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptmodel.Receipt, len(args))
 	outs = make([]*receiptmodel.Receipt, len(args))
 	for i := range tmps {
@@ -199,6 +205,9 @@ func convert_receiptmodel_ReceiptLine_receiptingmodel_ReceiptLine(arg *receiptmo
 }
 
 func Convert_receiptmodel_ReceiptLines_receiptingmodel_ReceiptLines(args []*receiptmodel.ReceiptLine) (outs []*receiptingmodel.ReceiptLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptingmodel.ReceiptLine, len(args))
 	outs = make([]*receiptingmodel.ReceiptLine, len(args))
 	for i := range tmps {
@@ -225,6 +234,9 @@ func convert_receiptingmodel_ReceiptLine_receiptmodel_ReceiptLine(arg *receiptin
 }
 
 func Convert_receiptingmodel_ReceiptLines_receiptmodel_ReceiptLines(args []*receiptingmodel.ReceiptLine) (outs []*receiptmodel.ReceiptLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptmodel.ReceiptLine, len(args))
 	outs = make([]*receiptmodel.ReceiptLine, len(args))
 	for i := range tmps {
@@ -254,6 +266,9 @@ func convert_receiptmodel_Trader_receiptingmodel_Trader(arg *receiptmodel.Trader
 }
 
 func Convert_receiptmodel_Traders_receiptingmodel_Traders(args []*receiptmodel.Trader) (outs []*receiptingmodel.Trader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptingmodel.Trader, len(args))
 	outs = make([]*receiptingmodel.Trader, len(args))
 	for i := range tmps {
@@ -281,6 +296,9 @@ func convert_receiptingmodel_Trader_receiptmodel_Trader(arg *receiptingmodel.Tra
 }
 
 func Convert_receiptingmodel_Traders_receiptmodel_Traders(args []*receiptingmodel.Trader) (outs []*receiptmodel.Trader) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]receiptmodel.Trader, len(args))
 	outs = make([]*receiptmodel.Trader, len(args))
 	for i := range tmps {

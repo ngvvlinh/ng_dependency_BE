@@ -150,6 +150,9 @@ func convert_connectioningmodel_Connection_connectioning_Connection(arg *connect
 }
 
 func Convert_connectioningmodel_Connections_connectioning_Connections(args []*connectioningmodel.Connection) (outs []*connectioning.Connection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioning.Connection, len(args))
 	outs = make([]*connectioning.Connection, len(args))
 	for i := range tmps {
@@ -189,6 +192,9 @@ func convert_connectioning_Connection_connectioningmodel_Connection(arg *connect
 }
 
 func Convert_connectioning_Connections_connectioningmodel_Connections(args []*connectioning.Connection) (outs []*connectioningmodel.Connection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioningmodel.Connection, len(args))
 	outs = make([]*connectioningmodel.Connection, len(args))
 	for i := range tmps {
@@ -306,6 +312,9 @@ func convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliate
 }
 
 func Convert_connectioningmodel_EtopAffiliateAccounts_connectioning_EtopAffiliateAccounts(args []*connectioningmodel.EtopAffiliateAccount) (outs []*connectioning.EtopAffiliateAccount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioning.EtopAffiliateAccount, len(args))
 	outs = make([]*connectioning.EtopAffiliateAccount, len(args))
 	for i := range tmps {
@@ -331,6 +340,9 @@ func convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliate
 }
 
 func Convert_connectioning_EtopAffiliateAccounts_connectioningmodel_EtopAffiliateAccounts(args []*connectioning.EtopAffiliateAccount) (outs []*connectioningmodel.EtopAffiliateAccount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioningmodel.EtopAffiliateAccount, len(args))
 	outs = make([]*connectioningmodel.EtopAffiliateAccount, len(args))
 	for i := range tmps {
@@ -366,6 +378,9 @@ func convert_connectioningmodel_ShopConnection_connectioning_ShopConnection(arg 
 }
 
 func Convert_connectioningmodel_ShopConnections_connectioning_ShopConnections(args []*connectioningmodel.ShopConnection) (outs []*connectioning.ShopConnection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioning.ShopConnection, len(args))
 	outs = make([]*connectioning.ShopConnection, len(args))
 	for i := range tmps {
@@ -400,6 +415,9 @@ func convert_connectioning_ShopConnection_connectioningmodel_ShopConnection(arg 
 }
 
 func Convert_connectioning_ShopConnections_connectioningmodel_ShopConnections(args []*connectioning.ShopConnection) (outs []*connectioningmodel.ShopConnection) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioningmodel.ShopConnection, len(args))
 	outs = make([]*connectioningmodel.ShopConnection, len(args))
 	for i := range tmps {
@@ -475,6 +493,9 @@ func convert_connectioningmodel_ShopConnectionExternalData_connectioning_ShopCon
 }
 
 func Convert_connectioningmodel_ShopConnectionExternalDatas_connectioning_ShopConnectionExternalDatas(args []*connectioningmodel.ShopConnectionExternalData) (outs []*connectioning.ShopConnectionExternalData) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioning.ShopConnectionExternalData, len(args))
 	outs = make([]*connectioning.ShopConnectionExternalData, len(args))
 	for i := range tmps {
@@ -500,6 +521,9 @@ func convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopCon
 }
 
 func Convert_connectioning_ShopConnectionExternalDatas_connectioningmodel_ShopConnectionExternalDatas(args []*connectioning.ShopConnectionExternalData) (outs []*connectioningmodel.ShopConnectionExternalData) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]connectioningmodel.ShopConnectionExternalData, len(args))
 	outs = make([]*connectioningmodel.ShopConnectionExternalData, len(args))
 	for i := range tmps {

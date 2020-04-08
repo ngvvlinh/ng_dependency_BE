@@ -188,6 +188,9 @@ func convert_ordermodel_MetaField_orderingmodel_MetaField(arg *ordermodel.MetaFi
 }
 
 func Convert_ordermodel_MetaFields_orderingmodel_MetaFields(args []*ordermodel.MetaField) (outs []*orderingmodel.MetaField) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.MetaField, len(args))
 	outs = make([]*orderingmodel.MetaField, len(args))
 	for i := range tmps {
@@ -214,6 +217,9 @@ func convert_orderingmodel_MetaField_ordermodel_MetaField(arg *orderingmodel.Met
 }
 
 func Convert_orderingmodel_MetaFields_ordermodel_MetaFields(args []*orderingmodel.MetaField) (outs []*ordermodel.MetaField) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.MetaField, len(args))
 	outs = make([]*ordermodel.MetaField, len(args))
 	for i := range tmps {
@@ -308,6 +314,9 @@ func convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *or
 }
 
 func Convert_ordermodel_Orders_orderingmodel_Orders(args []*ordermodel.Order) (outs []*orderingmodel.Order) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.Order, len(args))
 	outs = make([]*orderingmodel.Order, len(args))
 	for i := range tmps {
@@ -391,6 +400,9 @@ func convert_orderingmodel_Order_ordermodel_Order(arg *orderingmodel.Order, out 
 }
 
 func Convert_orderingmodel_Orders_ordermodel_Orders(args []*orderingmodel.Order) (outs []*ordermodel.Order) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.Order, len(args))
 	outs = make([]*ordermodel.Order, len(args))
 	for i := range tmps {
@@ -434,6 +446,9 @@ func convert_ordermodel_OrderAddress_orderingmodel_OrderAddress(arg *ordermodel.
 }
 
 func Convert_ordermodel_OrderAddresses_orderingmodel_OrderAddresses(args []*ordermodel.OrderAddress) (outs []*orderingmodel.OrderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderAddress, len(args))
 	outs = make([]*orderingmodel.OrderAddress, len(args))
 	for i := range tmps {
@@ -475,6 +490,9 @@ func convert_orderingmodel_OrderAddress_ordermodel_OrderAddress(arg *orderingmod
 }
 
 func Convert_orderingmodel_OrderAddresses_ordermodel_OrderAddresses(args []*orderingmodel.OrderAddress) (outs []*ordermodel.OrderAddress) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderAddress, len(args))
 	outs = make([]*ordermodel.OrderAddress, len(args))
 	for i := range tmps {
@@ -509,6 +527,9 @@ func convert_ordermodel_OrderCustomer_orderingmodel_OrderCustomer(arg *ordermode
 }
 
 func Convert_ordermodel_OrderCustomers_orderingmodel_OrderCustomers(args []*ordermodel.OrderCustomer) (outs []*orderingmodel.OrderCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderCustomer, len(args))
 	outs = make([]*orderingmodel.OrderCustomer, len(args))
 	for i := range tmps {
@@ -541,6 +562,9 @@ func convert_orderingmodel_OrderCustomer_ordermodel_OrderCustomer(arg *orderingm
 }
 
 func Convert_orderingmodel_OrderCustomers_ordermodel_OrderCustomers(args []*orderingmodel.OrderCustomer) (outs []*ordermodel.OrderCustomer) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderCustomer, len(args))
 	outs = make([]*ordermodel.OrderCustomer, len(args))
 	for i := range tmps {
@@ -569,6 +593,9 @@ func convert_ordermodel_OrderDiscount_orderingmodel_OrderDiscount(arg *ordermode
 }
 
 func Convert_ordermodel_OrderDiscounts_orderingmodel_OrderDiscounts(args []*ordermodel.OrderDiscount) (outs []*orderingmodel.OrderDiscount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderDiscount, len(args))
 	outs = make([]*orderingmodel.OrderDiscount, len(args))
 	for i := range tmps {
@@ -595,6 +622,9 @@ func convert_orderingmodel_OrderDiscount_ordermodel_OrderDiscount(arg *orderingm
 }
 
 func Convert_orderingmodel_OrderDiscounts_ordermodel_OrderDiscounts(args []*orderingmodel.OrderDiscount) (outs []*ordermodel.OrderDiscount) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderDiscount, len(args))
 	outs = make([]*ordermodel.OrderDiscount, len(args))
 	for i := range tmps {
@@ -625,6 +655,9 @@ func convert_ordermodel_OrderFeeLine_orderingmodel_OrderFeeLine(arg *ordermodel.
 }
 
 func Convert_ordermodel_OrderFeeLines_orderingmodel_OrderFeeLines(args []*ordermodel.OrderFeeLine) (outs []*orderingmodel.OrderFeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderFeeLine, len(args))
 	outs = make([]*orderingmodel.OrderFeeLine, len(args))
 	for i := range tmps {
@@ -653,6 +686,9 @@ func convert_orderingmodel_OrderFeeLine_ordermodel_OrderFeeLine(arg *orderingmod
 }
 
 func Convert_orderingmodel_OrderFeeLines_ordermodel_OrderFeeLines(args []*orderingmodel.OrderFeeLine) (outs []*ordermodel.OrderFeeLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderFeeLine, len(args))
 	outs = make([]*ordermodel.OrderFeeLine, len(args))
 	for i := range tmps {
@@ -696,6 +732,9 @@ func convert_ordermodel_OrderLine_orderingmodel_OrderLine(arg *ordermodel.OrderL
 }
 
 func Convert_ordermodel_OrderLines_orderingmodel_OrderLines(args []*ordermodel.OrderLine) (outs []*orderingmodel.OrderLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderLine, len(args))
 	outs = make([]*orderingmodel.OrderLine, len(args))
 	for i := range tmps {
@@ -737,6 +776,9 @@ func convert_orderingmodel_OrderLine_ordermodel_OrderLine(arg *orderingmodel.Ord
 }
 
 func Convert_orderingmodel_OrderLines_ordermodel_OrderLines(args []*orderingmodel.OrderLine) (outs []*ordermodel.OrderLine) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderLine, len(args))
 	outs = make([]*ordermodel.OrderLine, len(args))
 	for i := range tmps {
@@ -775,6 +817,9 @@ func convert_ordermodel_OrderShipping_orderingmodel_OrderShipping(arg *ordermode
 }
 
 func Convert_ordermodel_OrderShippings_orderingmodel_OrderShippings(args []*ordermodel.OrderShipping) (outs []*orderingmodel.OrderShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]orderingmodel.OrderShipping, len(args))
 	outs = make([]*orderingmodel.OrderShipping, len(args))
 	for i := range tmps {
@@ -811,6 +856,9 @@ func convert_orderingmodel_OrderShipping_ordermodel_OrderShipping(arg *orderingm
 }
 
 func Convert_orderingmodel_OrderShippings_ordermodel_OrderShippings(args []*orderingmodel.OrderShipping) (outs []*ordermodel.OrderShipping) {
+	if args == nil {
+		return nil
+	}
 	tmps := make([]ordermodel.OrderShipping, len(args))
 	outs = make([]*ordermodel.OrderShipping, len(args))
 	for i := range tmps {
