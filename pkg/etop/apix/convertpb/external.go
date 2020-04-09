@@ -672,10 +672,13 @@ func PbShopTraderAddressHistory(ctx context.Context, m customermodel.ShopTraderA
 		DistrictCode: m.DistrictCode().String().Apply(""),
 		WardCode:     m.WardCode().String().Apply(""),
 	}
-	if err := locationBus.Dispatch(ctx, query); err != nil {
-		panic("Internal: " + err.Error())
+	province, district, ward := (*location.Province)(nil), (*location.District)(nil), (*location.Ward)(nil)
+	if query.DistrictCode != "" && query.WardCode != "" {
+		if err := locationBus.Dispatch(ctx, query); err != nil {
+			panic("Internal: " + err.Error())
+		}
+		province, district, ward = query.Result.Province, query.Result.District, query.Result.Ward
 	}
-	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
 	out := &exttypes.CustomerAddress{
 		Id:          m.ID().ID().Apply(0),
 		CustomerID:  m.TraderID().ID().Apply(0),
