@@ -32,6 +32,15 @@ func CoalesceInt(is ...int) int {
 	return 0
 }
 
+func CoalesceID(ids ...dot.ID) dot.ID {
+	for _, id := range ids {
+		if id != 0 {
+			return id
+		}
+	}
+	return 0
+}
+
 func StringsContain(ss []string, s string) bool {
 	for _, item := range ss {
 		if item == s {
