@@ -67,8 +67,11 @@ func init() {
 }
 
 func TestConnectionAggregate(t *testing.T) {
-
 	Convey("Connection Aggregate", t, func() {
+		Reset(func() {
+			db.MustExec("truncate connection CASCADE")
+		})
+
 		_conn := &model.Connection{
 			ID:     connID,
 			Name:   "Connection",
@@ -79,10 +82,6 @@ func TestConnectionAggregate(t *testing.T) {
 		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
 		_, err := db.Insert(_conn)
 		So(err, ShouldBeNil)
-
-		Reset(func() {
-			db.MustExec("truncate connection CASCADE")
-		})
 
 		Convey("Create Connection Success", func() {
 			cmd := &connectioning.CreateConnectionCommand{
@@ -152,6 +151,10 @@ func TestConnectionAggregate(t *testing.T) {
 
 func TestShopConnectionAggregate(t *testing.T) {
 	Convey("Connection Aggregate", t, func() {
+		Reset(func() {
+			db.MustExec("truncate connection, shop_connection CASCADE")
+		})
+
 		_shopConn := &model.ShopConnection{
 			ShopID:       shopID,
 			ConnectionID: connID,
@@ -163,10 +166,6 @@ func TestShopConnectionAggregate(t *testing.T) {
 		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
 		_, err := db.Insert(_shopConn)
 		So(err, ShouldBeNil)
-
-		Reset(func() {
-			db.MustExec("truncate connection, shop_connection CASCADE")
-		})
 
 		Convey("Create Success", func() {
 			cmd := &connectioning.CreateShopConnectionCommand{

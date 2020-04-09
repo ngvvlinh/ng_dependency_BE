@@ -17,6 +17,8 @@ var (
 	db     *cmsql.Database
 	connID = dot.ID(1234)
 	shopID = dot.ID(4567)
+	QS     connectioning.QueryBus
+	ctx    context.Context
 )
 
 func init() {
@@ -56,31 +58,26 @@ func init() {
 			, external_data JSONB
 		);
 	`)
+	_conn := &model.Connection{
+		ID:     connID,
+		Name:   "Connection",
+		Status: 1,
+	}
+	_shopConn := &model.ShopConnection{
+		ShopID:       shopID,
+		ConnectionID: connID,
+		Token:        "token",
+		Status:       1,
+	}
+
+	QS = NewConnectionQuery(db).MessageBus()
+
+	ctx = context.Background()
+	db.Insert(_conn, _shopConn)
 }
 
 func TestConnectionQueryService(t *testing.T) {
 	Convey("Connection QueryService", t, func() {
-		Reset(func() {
-			db.MustExec("truncate connection, shop_connection CASCADE")
-		})
-		_conn := &model.Connection{
-			ID:     connID,
-			Name:   "Connection",
-			Status: 1,
-		}
-		_shopConn := &model.ShopConnection{
-			ShopID:       shopID,
-			ConnectionID: connID,
-			Token:        "token",
-			Status:       1,
-		}
-
-		QS := NewConnectionQuery(db).MessageBus()
-
-		ctx := context.Background()
-		_, err := db.Insert(_conn, _shopConn)
-		So(err, ShouldBeNil)
-
 		Convey("Get Connection Success", func() {
 			query := &connectioning.GetConnectionByIDQuery{
 				ID: connID,
