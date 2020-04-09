@@ -66,6 +66,7 @@ func (p *plugin) generateEachPackage(ng generator.Engine, pkg *packages.Package,
 
 	printer.Import("cmsql", "etop.vn/backend/pkg/common/sql/cmsql")
 	printer.Import("core", "etop.vn/backend/pkg/common/sql/sq/core")
+	printer.Import("migration", "etop.vn/backend/pkg/common/sql/migration")
 
 	sort.Slice(typs, func(i, j int) bool {
 		return typs[i].Obj().Name() < typs[j].Obj().Name()

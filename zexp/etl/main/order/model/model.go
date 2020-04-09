@@ -27,7 +27,7 @@ type Order struct {
 	ProductIDs []dot.ID
 	VariantIDs []dot.ID
 
-	PaymentMethod payment_method.PaymentMethod
+	PaymentMethod payment_method.PaymentMethod `sql_type:"text"`
 
 	Customer        *OrderCustomer
 	CustomerAddress *OrderAddress
@@ -45,11 +45,11 @@ type Order struct {
 	CancelledAt  time.Time
 	CancelReason string
 
-	ShopConfirm   status3.Status
-	ConfirmStatus status3.Status
+	ShopConfirm   status3.Status `sql_type:"int2"`
+	ConfirmStatus status3.Status `sql_type:"int2"`
 
-	FulfillmentShippingStatus status5.Status
-	EtopPaymentStatus         status4.Status
+	FulfillmentShippingStatus status5.Status `sql_type:"int2"`
+	EtopPaymentStatus         status4.Status `sql_type:"int2"`
 
 	// -1:cancelled, 0:default, 1:delivered, 2:processing
 	//
@@ -58,7 +58,7 @@ type Order struct {
 	// 1: done
 	// -1: cancelled
 	// -2: returned
-	Status status5.Status
+	Status status5.Status `sql_type:"int2"`
 
 	FulfillmentShippingStates  []string
 	FulfillmentPaymentStatuses []int
@@ -88,15 +88,15 @@ type Order struct {
 	IsOutsideEtop   bool
 
 	// @deprecated: use try_on instead
-	GhnNoteCode ghn_note_code.GHNNoteCode
-	TryOn       try_on.TryOnCode
+	GhnNoteCode ghn_note_code.GHNNoteCode `sql_type:"enum(ghn_note_code)"`
+	TryOn       try_on.TryOnCode          `sql_type:"enum(try_on)"`
 
-	FulfillmentType ordertypes.ShippingType
+	FulfillmentType ordertypes.ShippingType `sql_type:"int2"`
 	FulfillmentIDs  []dot.ID
 	ExternalMeta    json.RawMessage
 
 	// payment
-	PaymentStatus status4.Status
+	PaymentStatus status4.Status `sql_type:"int2"`
 	PaymentID     dot.ID
 
 	CustomerID dot.ID

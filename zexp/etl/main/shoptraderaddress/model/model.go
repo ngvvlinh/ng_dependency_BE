@@ -28,7 +28,7 @@ type ShopTraderAddress struct {
 	UpdatedAt    time.Time
 
 	//Default status = 1
-	Status status3.Status
+	Status status3.Status `sql_type:"int2"`
 
 	Rid dot.ID
 }

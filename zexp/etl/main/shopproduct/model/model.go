@@ -36,12 +36,12 @@ type ShopProduct struct {
 	RetailPrice int
 	BrandID     dot.ID
 
-	Status status3.Status
+	Status status3.Status `sql_type:"int2"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	ProductType product_type.ProductType
+	ProductType product_type.ProductType `sql_type:"text"`
 
 	MetaFields []*MetaField
 

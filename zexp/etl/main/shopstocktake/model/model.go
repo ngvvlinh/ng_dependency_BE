@@ -17,7 +17,7 @@ type ShopStocktake struct {
 	CreatedBy     dot.ID
 	UpdatedBy     dot.ID
 	CancelReason  string
-	Type          stocktake_type.StocktakeType
+	Type          stocktake_type.StocktakeType `sql_type:"text"`
 	Code          string
 	Status        status3.Status
 	CreatedAt     time.Time

@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,140 @@ func (m *ShopCustomer) SQLListCols() string   { return __sqlShopCustomer_ListCol
 func (m *ShopCustomer) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlShopCustomer_ListCols + " FROM \"shop_customer\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *ShopCustomer) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "shop_customer"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_code": {
+			ColumnName:       "external_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"partner_id": {
+			ColumnName:       "partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"code": {
+			ColumnName:       "code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"full_name": {
+			ColumnName:       "full_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"gender": {
+			ColumnName:       "gender",
+			ColumnType:       "gender.Gender",
+			ColumnDBType:     "enum",
+			ColumnTag:        "enum(gender_type)",
+			ColumnEnumValues: []string{"unknown", "male", "female", "other"},
+		},
+		"type": {
+			ColumnName:       "type",
+			ColumnType:       "customer_type.CustomerType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "enum(customer_type)",
+			ColumnEnumValues: []string{"unknown", "individual", "organization", "anonymous", "independent"},
+		},
+		"birthday": {
+			ColumnName:       "birthday",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "date",
+			ColumnEnumValues: []string{},
+		},
+		"note": {
+			ColumnName:       "note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"phone": {
+			ColumnName:       "phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"email": {
+			ColumnName:       "email",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "int2",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "shop_customer", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

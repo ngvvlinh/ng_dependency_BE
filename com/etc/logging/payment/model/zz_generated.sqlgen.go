@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,70 @@ func (m *Payment) SQLListCols() string   { return __sqlPayment_ListCols }
 func (m *Payment) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlPayment_ListCols + " FROM \"payment\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *Payment) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "payment"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"data": {
+			ColumnName:       "data",
+			ColumnType:       "json.RawMessage",
+			ColumnDBType:     "[]byte",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"order_id": {
+			ColumnName:       "order_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"payment_provider": {
+			ColumnName:       "payment_provider",
+			ColumnType:       "payment_provider.PaymentProvider",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "vtpay"},
+		},
+		"action": {
+			ColumnName:       "action",
+			ColumnType:       "PaymentAction",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "payment", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

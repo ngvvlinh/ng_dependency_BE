@@ -17,6 +17,7 @@ import (
 )
 
 const sqlTag = "sq"
+const sqlTypeTag = "sql_type"
 
 var pr generator.Printer
 
@@ -54,8 +55,11 @@ type typeDef struct {
 }
 
 type colDef struct {
-	ColumnName string
-	FieldName  string
+	ColumnName       string
+	FieldName        string
+	columnDBType     string
+	columnDBTag      string
+	columnEnumValues []string
 
 	fieldType  types.Type
 	fieldTag   string
@@ -196,6 +200,28 @@ var (
 	reTagPreload    = regexp.MustCompile(`^preload,fkey:'([0-9A-Za-z._-]+)'$`)
 )
 
+func genColumnDBType(typ types.Type) string {
+	result := ""
+
+	if t, ok := typ.Underlying().(*types.Slice); ok {
+		result = "[]" + genColumnDBType(t.Elem())
+	}
+	if t, ok := typ.Underlying().(*types.Pointer); ok {
+		result = "*" + genColumnDBType(t.Elem())
+	}
+	if _, ok := typ.Underlying().(*types.Struct); ok {
+		result = "struct"
+	}
+	if CurrentInfo.IsEnum(typ) {
+		result = "enum"
+	}
+	if result == "" {
+		result = typ.Underlying().String()
+	}
+
+	return result
+}
+
 func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct) ([]*colDef, []*colDef, error) {
 	var cols, excols []*colDef
 	for i, n := 0, sTyp.NumFields(); i < n; i++ {
@@ -205,6 +231,7 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 		}
 		fieldPath := path.append(field)
 
+		columnDBTag := ""
 		tag := ""
 		if rawTag := reflect.StructTag(sTyp.Tag(i)); rawTag != "" {
 			t, ok := rawTag.Lookup(sqlTag)
@@ -214,6 +241,10 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 					pr.TypeString(root), fieldPath)
 			}
 			tag = t
+
+			if t, ok := rawTag.Lookup(sqlTypeTag); ok {
+				columnDBTag = t
+			}
 		}
 		if strings.HasPrefix(tag, "-") {
 			// Skip the field
@@ -222,6 +253,12 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 
 		columnName := toSnake(field.Name())
 		columnType := pr.TypeString(field.Type())
+		columnDBType := genColumnDBType(field.Type())
+		var columnEnumValues []string
+		if columnDBType == "enum" {
+			columnEnumValues = CurrentInfo.GetEnum(field.Type()).Names
+		}
+
 		inline, create, update := false, false, false
 		var fkey string
 		if tag != "" {
@@ -292,14 +329,17 @@ func parseColumnsFromType(path pathElems, root *types.Named, sTyp *types.Struct)
 
 	endparse:
 		col := &colDef{
-			FieldName:  field.Name(),
-			fieldType:  field.Type(),
-			fieldTag:   tag,
-			ColumnName: columnName,
-			columnType: columnType,
-			pathElems:  fieldPath,
-			fkey:       fkey,
-			exclude:    tag == "preload",
+			FieldName:        field.Name(),
+			fieldType:        field.Type(),
+			fieldTag:         tag,
+			ColumnName:       columnName,
+			columnDBType:     columnDBType,
+			columnDBTag:      columnDBTag,
+			columnEnumValues: columnEnumValues,
+			columnType:       columnType,
+			pathElems:        fieldPath,
+			fkey:             fkey,
+			exclude:          tag == "preload",
 		}
 		if create {
 			col.timeLevel = timeCreate

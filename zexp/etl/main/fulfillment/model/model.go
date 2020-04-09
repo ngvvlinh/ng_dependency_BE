@@ -25,8 +25,8 @@ type Fulfillment struct {
 	ShopID    dot.ID
 	PartnerID dot.ID
 
-	ShopConfirm   status3.Status
-	ConfirmStatus status3.Status
+	ShopConfirm   status3.Status `sql_type:"int2"`
+	ConfirmStatus status3.Status `sql_type:"int2"`
 
 	TotalItems        int
 	TotalWeight       int
@@ -98,14 +98,14 @@ type Fulfillment struct {
 	// UpdatedBy   dot.ID
 	// CancelledBy dot.ID
 
-	ShippingProvider    shipping_provider.ShippingProvider
+	ShippingProvider    shipping_provider.ShippingProvider `sql_type:"enum(shipping_provider)"`
 	ProviderServiceID   string
 	ShippingCode        string
 	ShippingNote        string
-	TryOn               try_on.TryOnCode
+	TryOn               try_on.TryOnCode `sql_type:"enum(try_on)"`
 	IncludeInsurance    bool
 	ConnectionID        dot.ID
-	ConnectionMethod    connection_type.ConnectionMethod
+	ConnectionMethod    connection_type.ConnectionMethod `sql_type:"text"`
 	ShippingServiceName string
 
 	ExternalShippingName        string
@@ -119,15 +119,15 @@ type Fulfillment struct {
 	ExternalShippingClosedAt    time.Time
 	ExternalShippingState       string
 	ExternalShippingStateCode   string
-	ExternalShippingStatus      status5.Status
+	ExternalShippingStatus      status5.Status `sql_type:"int2"`
 	ExternalShippingNote        string
 	ExternalShippingSubState    string
 
 	ExternalShippingData json.RawMessage
 
 	ShippingState     shipping.State
-	ShippingStatus    status5.Status
-	EtopPaymentStatus status4.Status
+	ShippingStatus    status5.Status `sql_type:"int2"`
+	EtopPaymentStatus status4.Status `sql_type:"int2"`
 
 	// -1:cancelled, 0:default, 1:delivered, 2:processing
 	//
@@ -136,9 +136,9 @@ type Fulfillment struct {
 	// 1: done
 	// -1: cancelled
 	// -2: returned
-	Status status5.Status
+	Status status5.Status `sql_type:"int2"`
 
-	SyncStatus status4.Status // -1:error, 0:new, 1:created, 2:pending
+	SyncStatus status4.Status `sql_type:"int2"` // -1:error, 0:new, 1:created, 2:pending
 	SyncStates *shippingsharemodel.FulfillmentSyncStates
 
 	// Updated by webhook or querying GHN API

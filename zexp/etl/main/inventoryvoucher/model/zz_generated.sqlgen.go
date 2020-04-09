@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,182 @@ func (m *InventoryVoucher) SQLListCols() string   { return __sqlInventoryVoucher
 func (m *InventoryVoucher) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlInventoryVoucher_ListCols + " FROM \"inventory_voucher\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *InventoryVoucher) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "inventory_voucher"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_by": {
+			ColumnName:       "created_by",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_by": {
+			ColumnName:       "updated_by",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"code": {
+			ColumnName:       "code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"trader_id": {
+			ColumnName:       "trader_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"trader": {
+			ColumnName:       "trader",
+			ColumnType:       "*Trader",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_amount": {
+			ColumnName:       "total_amount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"type": {
+			ColumnName:       "type",
+			ColumnType:       "inventory_type.InventoryVoucherType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "enum(inventory_type)",
+			ColumnEnumValues: []string{"unknown", "in", "out"},
+		},
+		"lines": {
+			ColumnName:       "lines",
+			ColumnType:       "[]*InventoryVoucherItem",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"variant_ids": {
+			ColumnName:       "variant_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_id": {
+			ColumnName:       "ref_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_code": {
+			ColumnName:       "ref_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_type": {
+			ColumnName:       "ref_type",
+			ColumnType:       "inventory_voucher_ref.InventoryVoucherRef",
+			ColumnDBType:     "enum",
+			ColumnTag:        "text",
+			ColumnEnumValues: []string{"unknown", "refund", "purchase_refund", "stocktake", "purchase_order", "order"},
+		},
+		"title": {
+			ColumnName:       "title",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"confirmed_at": {
+			ColumnName:       "confirmed_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cancelled_at": {
+			ColumnName:       "cancelled_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cancel_reason": {
+			ColumnName:       "cancel_reason",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"product_ids": {
+			ColumnName:       "product_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "inventory_voucher", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

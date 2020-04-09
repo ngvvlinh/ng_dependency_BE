@@ -15,7 +15,7 @@ type ShopLedger struct {
 	Name        string
 	BankAccount *identitysharemodel.BankAccount
 	Note        string
-	Type        ledger_type.LedgerType
+	Type        ledger_type.LedgerType `sql_type:"enum(shop_ledger_type)"`
 	Status      int
 	CreatedBy   dot.ID
 	CreatedAt   time.Time

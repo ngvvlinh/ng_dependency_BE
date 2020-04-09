@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,182 @@ func (m *Shop) SQLListCols() string   { return __sqlShop_ListCols }
 func (m *Shop) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlShop_ListCols + " FROM \"shop\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *Shop) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "shop"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"owner_id": {
+			ColumnName:       "owner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_id": {
+			ColumnName:       "address_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ship_to_address_id": {
+			ColumnName:       "ship_to_address_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ship_from_address_id": {
+			ColumnName:       "ship_from_address_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"phone": {
+			ColumnName:       "phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"bank_account": {
+			ColumnName:       "bank_account",
+			ColumnType:       "*sharemodel.BankAccount",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"website_url": {
+			ColumnName:       "website_url",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"image_url": {
+			ColumnName:       "image_url",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"email": {
+			ColumnName:       "email",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"code": {
+			ColumnName:       "code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"auto_create_ffm": {
+			ColumnName:       "auto_create_ffm",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int2",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"recognized_hosts": {
+			ColumnName:       "recognized_hosts",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ghn_note_code": {
+			ColumnName:       "ghn_note_code",
+			ColumnType:       "ghn_note_code.GHNNoteCode",
+			ColumnDBType:     "enum",
+			ColumnTag:        "enum(ghn_note_code)",
+			ColumnEnumValues: []string{"unknown", "CHOTHUHANG", "CHOXEMHANGKHONGTHU", "KHONGCHOXEMHANG"},
+		},
+		"try_on": {
+			ColumnName:       "try_on",
+			ColumnType:       "try_on.TryOnCode",
+			ColumnDBType:     "enum",
+			ColumnTag:        "enum(try_on)",
+			ColumnEnumValues: []string{"unknown", "none", "open", "try"},
+		},
+		"company_info": {
+			ColumnName:       "company_info",
+			ColumnType:       "*sharemodel.CompanyInfo",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"money_transaction_rrule": {
+			ColumnName:       "money_transaction_rrule",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"survey_info": {
+			ColumnName:       "survey_info",
+			ColumnType:       "[]*SurveyInfo",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "shop", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

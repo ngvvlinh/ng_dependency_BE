@@ -28,7 +28,7 @@ type Shop struct {
 	Code              string
 	AutoCreateFFM     bool
 
-	Status    status3.Status
+	Status    status3.Status `sql_type:"int2"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -37,8 +37,8 @@ type Shop struct {
 	RecognizedHosts []string
 
 	// @deprecated use try_on instead
-	GhnNoteCode ghn_note_code.GHNNoteCode
-	TryOn       try_on.TryOnCode
+	GhnNoteCode ghn_note_code.GHNNoteCode `sql_type:"enum(ghn_note_code)"`
+	TryOn       try_on.TryOnCode          `sql_type:"enum(try_on)"`
 	CompanyInfo *identitysharemodel.CompanyInfo
 	// MoneyTransactionRRule format:
 	// FREQ=DAILY

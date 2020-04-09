@@ -17,19 +17,19 @@ type Receipt struct {
 	TraderID    dot.ID
 	Code        string
 	Title       string
-	Type        receipt_type.ReceiptType
+	Type        receipt_type.ReceiptType `sql_gen:"enum(receipt_type)"`
 	Description string
 	TraderType  string
 
 	Amount          int
-	Status          status3.Status
+	Status          status3.Status `sql_type:"int2"`
 	RefIDs          []dot.ID
-	RefType         receipt_ref.ReceiptRef
+	RefType         receipt_ref.ReceiptRef `sql_gen:"enum(receipt_ref_type)"`
 	Lines           []*ReceiptLine
 	LedgerID        dot.ID
 	Trader          *Trader
 	CancelledReason string
-	CreatedType     receipt_mode.ReceiptMode
+	CreatedType     receipt_mode.ReceiptMode `sql_gen:"enum(receipt_created_type)"`
 	CreatedBy       dot.ID
 	PaidAt          time.Time
 	ConfirmedAt     time.Time

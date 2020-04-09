@@ -59,8 +59,8 @@ func Convert_shopbrandmodel_ShopBrand_catalogmodel_ShopBrand(arg *shopbrandmodel
 func convert_shopbrandmodel_ShopBrand_catalogmodel_ShopBrand(arg *shopbrandmodel.ShopBrand, out *catalogmodel.ShopBrand) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
-	out.ExternalID = arg.ExternalID   // simple assign
-	out.PartnerID = arg.PartnerID     // simple assign
+	out.ExternalID = ""               // zero value
+	out.PartnerID = 0                 // zero value
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
@@ -95,8 +95,6 @@ func Convert_catalogmodel_ShopBrand_shopbrandmodel_ShopBrand(arg *catalogmodel.S
 func convert_catalogmodel_ShopBrand_shopbrandmodel_ShopBrand(arg *catalogmodel.ShopBrand, out *shopbrandmodel.ShopBrand) {
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
-	out.ExternalID = arg.ExternalID   // simple assign
-	out.PartnerID = arg.PartnerID     // simple assign
 	out.BrandName = arg.BrandName     // simple assign
 	out.Description = arg.Description // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign

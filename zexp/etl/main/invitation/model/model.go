@@ -17,7 +17,7 @@ type Invitation struct {
 	ShortName  string
 	Roles      []string
 	Token      string
-	Status     status3.Status
+	Status     status3.Status `sql_type:"int2"`
 	InvitedBy  dot.ID
 	AcceptedAt time.Time
 	RejectedAt time.Time

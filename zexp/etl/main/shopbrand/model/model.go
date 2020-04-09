@@ -8,10 +8,8 @@ import (
 
 // +sqlgen
 type ShopBrand struct {
-	ID         dot.ID
-	ShopID     dot.ID
-	ExternalID string
-	PartnerID  dot.ID
+	ID     dot.ID
+	ShopID dot.ID
 
 	BrandName   string
 	Description string

@@ -12,8 +12,8 @@ type AccountUser struct {
 	AccountID dot.ID
 	UserID    dot.ID
 
-	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
-	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
+	Status         status3.Status `sql_type:"int2"` // 1: activated, -1: rejected/disabled, 0: pending
+	ResponseStatus status3.Status `sql_type:"int2"` // 1: accepted,  -1: rejected, 0: pending
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -30,7 +30,7 @@ type AccountUser struct {
 	InvitationRejectedAt time.Time
 
 	DisabledAt    time.Time
-	DisabledBy    time.Time
+	DisabledBy    int8
 	DisableReason string
 
 	Rid dot.ID

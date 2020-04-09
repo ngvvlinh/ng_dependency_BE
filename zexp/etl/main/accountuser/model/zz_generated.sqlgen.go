@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -48,6 +49,154 @@ func (m *AccountUser) SQLVerifySchema(db *cmsql.Database) {
 	}
 }
 
+func (m *AccountUser) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "account_user"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"account_id": {
+			ColumnName:       "account_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"user_id": {
+			ColumnName:       "user_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int2",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"response_status": {
+			ColumnName:       "response_status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int2",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"roles": {
+			ColumnName:       "roles",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"permissions": {
+			ColumnName:       "permissions",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"full_name": {
+			ColumnName:       "full_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"short_name": {
+			ColumnName:       "short_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"position": {
+			ColumnName:       "position",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"invitation_sent_at": {
+			ColumnName:       "invitation_sent_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"invitation_sent_by": {
+			ColumnName:       "invitation_sent_by",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"invitation_accepted_at": {
+			ColumnName:       "invitation_accepted_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"invitation_rejected_at": {
+			ColumnName:       "invitation_rejected_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"disabled_at": {
+			ColumnName:       "disabled_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"disabled_by": {
+			ColumnName:       "disabled_by",
+			ColumnType:       "int8",
+			ColumnDBType:     "int8",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"disable_reason": {
+			ColumnName:       "disable_reason",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "account_user", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
 func init() {
 	__sqlModels = append(__sqlModels, (*AccountUser)(nil))
 }
@@ -70,7 +219,7 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.InvitationAcceptedAt),
 		core.Time(m.InvitationRejectedAt),
 		core.Time(m.DisabledAt),
-		core.Time(m.DisabledBy),
+		core.Int8(m.DisabledBy),
 		core.String(m.DisableReason),
 		m.Rid,
 	}
@@ -94,7 +243,7 @@ func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.InvitationAcceptedAt),
 		(*core.Time)(&m.InvitationRejectedAt),
 		(*core.Time)(&m.DisabledAt),
-		(*core.Time)(&m.DisabledBy),
+		(*core.Int8)(&m.DisabledBy),
 		(*core.String)(&m.DisableReason),
 		&m.Rid,
 	}
@@ -303,7 +452,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DisabledAt)
 	}
-	if !m.DisabledBy.IsZero() {
+	if m.DisabledBy != 0 {
 		flag = true
 		w.WriteName("disabled_by")
 		w.WriteByte('=')

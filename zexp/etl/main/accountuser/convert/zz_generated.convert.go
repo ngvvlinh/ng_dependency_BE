@@ -92,7 +92,7 @@ func convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *account
 	out.InvitationAcceptedAt = arg.InvitationAcceptedAt // simple assign
 	out.InvitationRejectedAt = arg.InvitationRejectedAt // simple assign
 	out.DisabledAt = arg.DisabledAt                     // simple assign
-	out.DisabledBy = arg.DisabledBy                     // simple assign
+	out.DisabledBy = time.Time{}                        // types do not match
 	out.DisableReason = arg.DisableReason               // simple assign
 	out.Rid = arg.Rid                                   // simple assign
 }
@@ -136,7 +136,7 @@ func convert_identitymodel_AccountUser_accountusermodel_AccountUser(arg *identit
 	out.InvitationAcceptedAt = arg.InvitationAcceptedAt // simple assign
 	out.InvitationRejectedAt = arg.InvitationRejectedAt // simple assign
 	out.DisabledAt = arg.DisabledAt                     // simple assign
-	out.DisabledBy = arg.DisabledBy                     // simple assign
+	out.DisabledBy = 0                                  // types do not match
 	out.DisableReason = arg.DisableReason               // simple assign
 	out.Rid = arg.Rid                                   // simple assign
 }

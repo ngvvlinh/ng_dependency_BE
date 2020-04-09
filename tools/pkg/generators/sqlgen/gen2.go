@@ -213,6 +213,7 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 		"TypeNames":                Strs,
 		"TableName":                tableName,
 		"Cols":                     def.cols,
+		"ColNamesAndTypes":         getMapColTypes(def.cols),
 		"ColsList":                 listColumns("", def.cols),
 		"ColsListUpdateOnConflict": listUpdateOnConflictColumns("", def.cols),
 		"QueryArgs":                listInsertArgs(p, def.cols),
@@ -251,4 +252,21 @@ func w(p io.Writer, format string, args ...interface{}) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getMapColTypes(cols []*colDef) string {
+	result := ""
+	for _, col := range cols {
+		enumValues := "[]string{"
+		if len(col.columnEnumValues) > 0 {
+			for _, val := range col.columnEnumValues {
+				enumValues += fmt.Sprintf("%q,", val)
+			}
+			enumValues = enumValues[:len(enumValues)-1]
+		}
+		enumValues += "}"
+		result += fmt.Sprintf("%q : {\nColumnName: %q,\nColumnType: %q,\nColumnDBType: %q,\nColumnTag: %q,\nColumnEnumValues: %s,\n},\n", col.ColumnName, col.ColumnName, col.columnType, col.columnDBType, col.columnDBTag, enumValues)
+	}
+
+	return fmt.Sprintf("map[string]migration.ColumnDef{\n%s}", result)
 }

@@ -26,7 +26,7 @@ type ShopVariant struct {
 	ListPrice   int
 	RetailPrice int
 
-	Status     status3.Status
+	Status     status3.Status `sql_type:"int2"`
 	Attributes ProductAttributes
 
 	CreatedAt time.Time

@@ -20,7 +20,7 @@ type User struct {
 
 	UserInner `sq:"inline"`
 
-	Status status3.Status
+	Status status3.Status `sql_type:"int2"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

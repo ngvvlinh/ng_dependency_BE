@@ -42,10 +42,10 @@ type ShipnowFulfillment struct {
 	DeliveryPoints []*DeliveryPoint
 	CancelReason   string
 
-	Status            status5.Status
-	ConfirmStatus     status3.Status
-	ShippingStatus    status5.Status
-	EtopPaymentStatus status4.Status
+	Status            status5.Status `sql_type:"int4"`
+	ConfirmStatus     status3.Status `sql_type:"int4"`
+	ShippingStatus    status5.Status `sql_type:"int4"`
+	EtopPaymentStatus status4.Status `sql_type:"int4"`
 
 	ShippingState        shipnow_state.State
 	ShippingCode         string
@@ -58,7 +58,7 @@ type ShipnowFulfillment struct {
 	ShippingDeliveredAt  time.Time
 	ShippingCancelledAt  time.Time
 
-	SyncStatus          status4.Status
+	SyncStatus          status4.Status `sql_type:"int4"`
 	SyncStates          *shippingsharemodel.FulfillmentSyncStates
 	CreatedAt           time.Time
 	UpdatedAt           time.Time

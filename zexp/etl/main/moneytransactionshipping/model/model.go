@@ -15,14 +15,14 @@ type MoneyTransactionShipping struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	ClosedAt      time.Time
-	Status        status3.Status
+	Status        status3.Status `sql_gen:"int2"`
 	TotalCOD      int
 	TotalAmount   int
 	TotalOrders   int
 	Code          string
-	Provider      string
+	Provider      string `sql_gen:"enum(shipping_provider)"`
 	ConfirmedAt   time.Time
-	BankAccount   *identitysharemodel.BankAccount
+	BankAccount   *identitysharemodel.BankAccount `sql_gen:"json"`
 	Note          string
 	InvoiceNumber string
 	Type          string

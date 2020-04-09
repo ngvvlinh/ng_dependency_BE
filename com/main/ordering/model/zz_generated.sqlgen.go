@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,504 @@ func (m *Order) SQLListCols() string   { return __sqlOrder_ListCols }
 func (m *Order) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlOrder_ListCols + " FROM \"order\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *Order) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "order"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"code": {
+			ColumnName:       "code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ed_code": {
+			ColumnName:       "ed_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"product_ids": {
+			ColumnName:       "product_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"variant_ids": {
+			ColumnName:       "variant_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"partner_id": {
+			ColumnName:       "partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"currency": {
+			ColumnName:       "currency",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"payment_method": {
+			ColumnName:       "payment_method",
+			ColumnType:       "payment_method.PaymentMethod",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "cod", "bank", "other", "vtpay", "momo", "bankdeposit"},
+		},
+		"customer": {
+			ColumnName:       "customer",
+			ColumnType:       "*OrderCustomer",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_address": {
+			ColumnName:       "customer_address",
+			ColumnType:       "*OrderAddress",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"billing_address": {
+			ColumnName:       "billing_address",
+			ColumnType:       "*OrderAddress",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_address": {
+			ColumnName:       "shipping_address",
+			ColumnType:       "*OrderAddress",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_name": {
+			ColumnName:       "customer_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_phone": {
+			ColumnName:       "customer_phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_email": {
+			ColumnName:       "customer_email",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"processed_at": {
+			ColumnName:       "processed_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"closed_at": {
+			ColumnName:       "closed_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"confirmed_at": {
+			ColumnName:       "confirmed_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cancelled_at": {
+			ColumnName:       "cancelled_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cancel_reason": {
+			ColumnName:       "cancel_reason",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_confirm": {
+			ColumnName:       "customer_confirm",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"shop_confirm": {
+			ColumnName:       "shop_confirm",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"confirm_status": {
+			ColumnName:       "confirm_status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"fulfillment_shipping_status": {
+			ColumnName:       "fulfillment_shipping_status",
+			ColumnType:       "status5.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "S", "N", "NS"},
+		},
+		"etop_payment_status": {
+			ColumnName:       "etop_payment_status",
+			ColumnType:       "status4.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "S", "N"},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status5.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "S", "N", "NS"},
+		},
+		"fulfillment_shipping_states": {
+			ColumnName:       "fulfillment_shipping_states",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"fulfillment_payment_statuses": {
+			ColumnName:       "fulfillment_payment_statuses",
+			ColumnType:       "[]int",
+			ColumnDBType:     "[]int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"fulfillment_statuses": {
+			ColumnName:       "fulfillment_statuses",
+			ColumnType:       "[]int",
+			ColumnDBType:     "[]int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"lines": {
+			ColumnName:       "lines",
+			ColumnType:       "OrderLinesList",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"discounts": {
+			ColumnName:       "discounts",
+			ColumnType:       "[]*OrderDiscount",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_items": {
+			ColumnName:       "total_items",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"basket_value": {
+			ColumnName:       "basket_value",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_weight": {
+			ColumnName:       "total_weight",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_tax": {
+			ColumnName:       "total_tax",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"order_discount": {
+			ColumnName:       "order_discount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_discount": {
+			ColumnName:       "total_discount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_shipping_fee": {
+			ColumnName:       "shop_shipping_fee",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_fee": {
+			ColumnName:       "total_fee",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"fee_lines": {
+			ColumnName:       "fee_lines",
+			ColumnType:       "OrderFeeLines",
+			ColumnDBType:     "[]struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_cod": {
+			ColumnName:       "shop_cod",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_amount": {
+			ColumnName:       "total_amount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"order_note": {
+			ColumnName:       "order_note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_note": {
+			ColumnName:       "shop_note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_note": {
+			ColumnName:       "shipping_note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"order_source_type": {
+			ColumnName:       "order_source_type",
+			ColumnType:       "order_source.Source",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "self", "import", "api", "etop_pos", "etop_pxs", "etop_cmx", "ts_app", "etop_app", "haravan"},
+		},
+		"order_source_id": {
+			ColumnName:       "order_source_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_order_id": {
+			ColumnName:       "external_order_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"reference_url": {
+			ColumnName:       "reference_url",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_url": {
+			ColumnName:       "external_url",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_shipping": {
+			ColumnName:       "shop_shipping",
+			ColumnType:       "*OrderShipping",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"is_outside_etop": {
+			ColumnName:       "is_outside_etop",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ghn_note_code": {
+			ColumnName:       "ghn_note_code",
+			ColumnType:       "ghn_note_code.GHNNoteCode",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "CHOTHUHANG", "CHOXEMHANGKHONGTHU", "KHONGCHOXEMHANG"},
+		},
+		"try_on": {
+			ColumnName:       "try_on",
+			ColumnType:       "try_on.TryOnCode",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "none", "open", "try"},
+		},
+		"customer_name_norm": {
+			ColumnName:       "customer_name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"product_name_norm": {
+			ColumnName:       "product_name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"fulfillment_type": {
+			ColumnName:       "fulfillment_type",
+			ColumnType:       "orderingtypes.ShippingType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"none", "manual", "shipment", "shipnow"},
+		},
+		"fulfillment_ids": {
+			ColumnName:       "fulfillment_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_meta": {
+			ColumnName:       "external_meta",
+			ColumnType:       "json.RawMessage",
+			ColumnDBType:     "[]byte",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"trading_shop_id": {
+			ColumnName:       "trading_shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"payment_status": {
+			ColumnName:       "payment_status",
+			ColumnType:       "status4.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "S", "N"},
+		},
+		"payment_id": {
+			ColumnName:       "payment_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"referral_meta": {
+			ColumnName:       "referral_meta",
+			ColumnType:       "json.RawMessage",
+			ColumnDBType:     "[]byte",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"customer_id": {
+			ColumnName:       "customer_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_by": {
+			ColumnName:       "created_by",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "order", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }
@@ -1133,6 +1632,140 @@ func (m *OrderLine) SQLListCols() string   { return __sqlOrderLine_ListCols }
 func (m *OrderLine) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlOrderLine_ListCols + " FROM \"order_line\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *OrderLine) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "order_line"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"order_id": {
+			ColumnName:       "order_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"variant_id": {
+			ColumnName:       "variant_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"product_name": {
+			ColumnName:       "product_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"product_id": {
+			ColumnName:       "product_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"weight": {
+			ColumnName:       "weight",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"quantity": {
+			ColumnName:       "quantity",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"list_price": {
+			ColumnName:       "list_price",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"retail_price": {
+			ColumnName:       "retail_price",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"payment_price": {
+			ColumnName:       "payment_price",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"line_amount": {
+			ColumnName:       "line_amount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_discount": {
+			ColumnName:       "total_discount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_line_amount": {
+			ColumnName:       "total_line_amount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"image_url": {
+			ColumnName:       "image_url",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"is_outside_etop": {
+			ColumnName:       "is_outside_etop",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"code": {
+			ColumnName:       "code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"meta_fields": {
+			ColumnName:       "meta_fields",
+			ColumnType:       "[]*MetaField",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "order_line", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

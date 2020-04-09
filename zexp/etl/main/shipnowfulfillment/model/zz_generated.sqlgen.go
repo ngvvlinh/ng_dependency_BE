@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -44,6 +45,308 @@ func (m *ShipnowFulfillment) SQLListCols() string   { return __sqlShipnowFulfill
 func (m *ShipnowFulfillment) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *ShipnowFulfillment) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "shipnow_fulfillment"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"partner_id": {
+			ColumnName:       "partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"order_ids": {
+			ColumnName:       "order_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"pickup_address": {
+			ColumnName:       "pickup_address",
+			ColumnType:       "*orderingmodel.OrderAddress",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"carrier": {
+			ColumnName:       "carrier",
+			ColumnType:       "Carrier",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_service_code": {
+			ColumnName:       "shipping_service_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_service_fee": {
+			ColumnName:       "shipping_service_fee",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_service_name": {
+			ColumnName:       "shipping_service_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_service_description": {
+			ColumnName:       "shipping_service_description",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"chargeable_weight": {
+			ColumnName:       "chargeable_weight",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"gross_weight": {
+			ColumnName:       "gross_weight",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"basket_value": {
+			ColumnName:       "basket_value",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cod_amount": {
+			ColumnName:       "cod_amount",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_note": {
+			ColumnName:       "shipping_note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"request_pickup_at": {
+			ColumnName:       "request_pickup_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"delivery_points": {
+			ColumnName:       "delivery_points",
+			ColumnType:       "[]*DeliveryPoint",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cancel_reason": {
+			ColumnName:       "cancel_reason",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status5.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "S", "N", "NS"},
+		},
+		"confirm_status": {
+			ColumnName:       "confirm_status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"shipping_status": {
+			ColumnName:       "shipping_status",
+			ColumnType:       "status5.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "S", "N", "NS"},
+		},
+		"etop_payment_status": {
+			ColumnName:       "etop_payment_status",
+			ColumnType:       "status4.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "S", "N"},
+		},
+		"shipping_state": {
+			ColumnName:       "shipping_state",
+			ColumnType:       "shipnow_state.State",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"default", "created", "assigning", "picking", "delivering", "delivered", "returning", "returned", "unknown", "undeliverable", "cancelled"},
+		},
+		"shipping_code": {
+			ColumnName:       "shipping_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"fee_lines": {
+			ColumnName:       "fee_lines",
+			ColumnType:       "[]*sharemodel.ShippingFeeLine",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"carrier_fee_lines": {
+			ColumnName:       "carrier_fee_lines",
+			ColumnType:       "[]*sharemodel.ShippingFeeLine",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"total_fee": {
+			ColumnName:       "total_fee",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_created_at": {
+			ColumnName:       "shipping_created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_picking_at": {
+			ColumnName:       "shipping_picking_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_delivering_at": {
+			ColumnName:       "shipping_delivering_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_delivered_at": {
+			ColumnName:       "shipping_delivered_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_cancelled_at": {
+			ColumnName:       "shipping_cancelled_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"sync_status": {
+			ColumnName:       "sync_status",
+			ColumnType:       "status4.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "int4",
+			ColumnEnumValues: []string{"Z", "P", "S", "N"},
+		},
+		"sync_states": {
+			ColumnName:       "sync_states",
+			ColumnType:       "*sharemodel.FulfillmentSyncStates",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"cod_etop_transfered_at": {
+			ColumnName:       "cod_etop_transfered_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shipping_shared_link": {
+			ColumnName:       "shipping_shared_link",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_to_province_code": {
+			ColumnName:       "address_to_province_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_to_district_code": {
+			ColumnName:       "address_to_district_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"rid": {
+			ColumnName:       "rid",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "shipnow_fulfillment", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

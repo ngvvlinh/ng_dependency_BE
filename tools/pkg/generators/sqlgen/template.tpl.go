@@ -23,6 +23,20 @@ func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 		query := "SELECT " + {{._ListCols}} + " FROM \"{{.TableName}}\" WHERE false"
 		if _, err := db.SQL(query).Exec(); err != nil {
 			db.RecordError(err)
+		}	
+	}
+
+	func (m *{{.TypeName}}) Migration(db *cmsql.Database) {
+		var mDBColumnNameAndType map[string]string 
+		if val, err := migration.GetColumnNamesAndTypes(db, "{{.TableName}}"); err != nil {
+			db.RecordError(err)
+			return
+		} else {
+			mDBColumnNameAndType = val 
+		}
+		mModelColumnNameAndType := {{.ColNamesAndTypes}}
+		if err := migration.Compare(db, "{{.TableName}}", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+			db.RecordError(err)
 		}
 	}
 

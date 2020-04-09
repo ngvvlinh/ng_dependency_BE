@@ -27,7 +27,7 @@ type Refund struct {
 	CreatedBy       dot.ID
 	UpdatedBy       dot.ID
 	CancelReason    string
-	Status          status3.Status
+	Status          status3.Status `sql_type:"int4"`
 	CustomerID      dot.ID
 	TotalAmount     int
 	BasketValue     int

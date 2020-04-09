@@ -17,16 +17,16 @@ type InventoryVoucher struct {
 	CreatedBy    dot.ID
 	UpdatedBy    dot.ID
 	Code         string
-	Status       status3.Status
+	Status       status3.Status `sql_type:"int4"`
 	TraderID     dot.ID
 	Trader       *Trader
 	TotalAmount  int
-	Type         inventory_type.InventoryVoucherType
+	Type         inventory_type.InventoryVoucherType `sql_type:"enum(inventory_type)"`
 	Lines        []*InventoryVoucherItem
 	VariantIDs   []dot.ID
 	RefID        dot.ID
 	RefCode      string
-	RefType      inventory_voucher_ref.InventoryVoucherRef
+	RefType      inventory_voucher_ref.InventoryVoucherRef `sql_type:"text"`
 	Title        string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time

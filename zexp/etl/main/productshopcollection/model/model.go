@@ -11,7 +11,7 @@ type ProductShopCollection struct {
 	CollectionID dot.ID
 	ProductID    dot.ID
 	ShopID       dot.ID
-	Status       int
+	Status       int `sql_gen:"int2"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	Rid          dot.ID

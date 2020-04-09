@@ -8,7 +8,7 @@ import (
 type ShopTrader struct {
 	ID     dot.ID
 	ShopID dot.ID
-	Type   string
+	Type   string `sql_type:"enum(trader_type)"`
 
 	Rid dot.ID
 }

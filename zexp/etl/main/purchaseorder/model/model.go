@@ -14,14 +14,14 @@ type PurchaseOrder struct {
 	ShopID          dot.ID
 	SupplierID      dot.ID
 	Supplier        *PurchaseOrderSupplier
-	BasketValue     int
+	BasketValue     int `sql_gen:"int4"`
 	TotalDiscount   int
-	TotalFee        int
-	TotalAmount     int
+	TotalFee        int `sql_gen:"int4"`
+	TotalAmount     int `sql_gen:"int4"`
 	Code            string
 	CodeNorm        int
 	Note            string
-	Status          status3.Status
+	Status          status3.Status `sql_gen:"int2"`
 	VariantIDs      []dot.ID
 	Lines           []*PurchaseOrderLine
 	CreatedBy       dot.ID

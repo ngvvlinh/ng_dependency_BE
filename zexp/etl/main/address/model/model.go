@@ -30,7 +30,7 @@ type Address struct {
 	Company     string       `json:"company"`
 	Address1    string       `json:"address1"`
 	Address2    string       `json:"address2"`
-	Type        string       `json:"type"`
+	Type        string       `json:"type" sql_type:"enum(address_type)"`
 	AccountID   dot.ID       `json:"account_id"`
 	Notes       *AddressNote `json:"notes"`
 	CreatedAt   time.Time

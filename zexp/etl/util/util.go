@@ -25,6 +25,39 @@ import (
 	"etop.vn/backend/pkg/common/sql/cmsql"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/zexp/etl"
+	accountmodel "etop.vn/backend/zexp/etl/main/account/model"
+	accountusermodel "etop.vn/backend/zexp/etl/main/accountuser/model"
+	addressmodel "etop.vn/backend/zexp/etl/main/address/model"
+	customermodel "etop.vn/backend/zexp/etl/main/customer/model"
+	fulfillmentmodel "etop.vn/backend/zexp/etl/main/fulfillment/model"
+	inventoryvariantmodel "etop.vn/backend/zexp/etl/main/inventoryvariant/model"
+	inventoryvouchermodel "etop.vn/backend/zexp/etl/main/inventoryvoucher/model"
+	invitationmodel "etop.vn/backend/zexp/etl/main/invitation/model"
+	moneytransactionshippingmodel "etop.vn/backend/zexp/etl/main/moneytransactionshipping/model"
+	ordermodel "etop.vn/backend/zexp/etl/main/order/model"
+	productshopcollectionmodel "etop.vn/backend/zexp/etl/main/productshopcollection/model"
+	purchaseordermodel "etop.vn/backend/zexp/etl/main/purchaseorder/model"
+	purchaserefundmodel "etop.vn/backend/zexp/etl/main/purchaserefund/model"
+	receiptmodel "etop.vn/backend/zexp/etl/main/receipt/model"
+	refundmodel "etop.vn/backend/zexp/etl/main/refund/model"
+	shipnowfulfillmentmodel "etop.vn/backend/zexp/etl/main/shipnowfulfillment/model"
+	shopmodel "etop.vn/backend/zexp/etl/main/shop/model"
+	shopbrandmodel "etop.vn/backend/zexp/etl/main/shopbrand/model"
+	shopcarriermodel "etop.vn/backend/zexp/etl/main/shopcarrier/model"
+	shopcategorymodel "etop.vn/backend/zexp/etl/main/shopcategory/model"
+	shopcollectionmodel "etop.vn/backend/zexp/etl/main/shopcollection/model"
+	shopcustomergroupmodel "etop.vn/backend/zexp/etl/main/shopcustomergroup/model"
+	shopcustomergroupcustomermodel "etop.vn/backend/zexp/etl/main/shopcustomergroupcustomer/model"
+	shopledgermodel "etop.vn/backend/zexp/etl/main/shopledger/model"
+	shopproductmodel "etop.vn/backend/zexp/etl/main/shopproduct/model"
+	shopproductcollectionmodel "etop.vn/backend/zexp/etl/main/shopproductcollection/model"
+	shopstocktakemodel "etop.vn/backend/zexp/etl/main/shopstocktake/model"
+	shopsuppliermodel "etop.vn/backend/zexp/etl/main/shopsupplier/model"
+	shoptradermodel "etop.vn/backend/zexp/etl/main/shoptrader/model"
+	shoptraderaddressmodel "etop.vn/backend/zexp/etl/main/shoptraderaddress/model"
+	shopvariantmodel "etop.vn/backend/zexp/etl/main/shopvariant/model"
+	shopvariantsuppliermodel "etop.vn/backend/zexp/etl/main/shopvariantsupplier/model"
+	usermodel "etop.vn/backend/zexp/etl/main/user/model"
 	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -51,7 +84,45 @@ type accountUser struct {
 
 var mAccountUser map[string]*accountUser
 
-func initDBs(mapDBCfgs map[string]config.Database) map[string]*cmsql.Database {
+type migrationFunc func(db *cmsql.Database)
+
+var mTableNameAndModel = map[table_name.TableName]migrationFunc{
+	table_name.User:                      func(db *cmsql.Database) { (&usermodel.User{}).Migration(db) },
+	table_name.Account:                   func(db *cmsql.Database) { (&accountmodel.Account{}).Migration(db) },
+	table_name.ShopCustomer:              func(db *cmsql.Database) { (&customermodel.ShopCustomer{}).Migration(db) },
+	table_name.Order:                     func(db *cmsql.Database) { (&ordermodel.Order{}).Migration(db) },
+	table_name.Shop:                      func(db *cmsql.Database) { (&shopmodel.Shop{}).Migration(db) },
+	table_name.Fulfillment:               func(db *cmsql.Database) { (&fulfillmentmodel.Fulfillment{}).Migration(db) },
+	table_name.ShopBrand:                 func(db *cmsql.Database) { (&shopbrandmodel.ShopBrand{}).Migration(db) },
+	table_name.ShopProduct:               func(db *cmsql.Database) { (&shopproductmodel.ShopProduct{}).Migration(db) },
+	table_name.AccountUser:               func(db *cmsql.Database) { (&accountusermodel.AccountUser{}).Migration(db) },
+	table_name.Address:                   func(db *cmsql.Database) { (&addressmodel.Address{}).Migration(db) },
+	table_name.InventoryVariant:          func(db *cmsql.Database) { (&inventoryvariantmodel.InventoryVariant{}).Migration(db) },
+	table_name.InventoryVoucher:          func(db *cmsql.Database) { (&inventoryvouchermodel.InventoryVoucher{}).Migration(db) },
+	table_name.Invitation:                func(db *cmsql.Database) { (&invitationmodel.Invitation{}).Migration(db) },
+	table_name.MoneyTransactionShipping:  func(db *cmsql.Database) { (&moneytransactionshippingmodel.MoneyTransactionShipping{}).Migration(db) },
+	table_name.ProductShopCollection:     func(db *cmsql.Database) { (&productshopcollectionmodel.ProductShopCollection{}).Migration(db) },
+	table_name.PurchaseOrder:             func(db *cmsql.Database) { (&purchaseordermodel.PurchaseOrder{}).Migration(db) },
+	table_name.PurchaseRefund:            func(db *cmsql.Database) { (&purchaserefundmodel.PurchaseRefund{}).Migration(db) },
+	table_name.Receipt:                   func(db *cmsql.Database) { (&receiptmodel.Receipt{}).Migration(db) },
+	table_name.Refund:                    func(db *cmsql.Database) { (&refundmodel.Refund{}).Migration(db) },
+	table_name.ShipNowFufillment:         func(db *cmsql.Database) { (&shipnowfulfillmentmodel.ShipnowFulfillment{}).Migration(db) },
+	table_name.ShopCarrier:               func(db *cmsql.Database) { (&shopcarriermodel.ShopCarrier{}).Migration(db) },
+	table_name.ShopCategory:              func(db *cmsql.Database) { (&shopcategorymodel.ShopCategory{}).Migration(db) },
+	table_name.ShopCollection:            func(db *cmsql.Database) { (&shopcollectionmodel.ShopCollection{}).Migration(db) },
+	table_name.ShopCustomerGroup:         func(db *cmsql.Database) { (&shopcustomergroupmodel.ShopCustomerGroup{}).Migration(db) },
+	table_name.ShopCustomerGroupCustomer: func(db *cmsql.Database) { (&shopcustomergroupcustomermodel.ShopCustomerGroupCustomer{}).Migration(db) },
+	table_name.ShopLedger:                func(db *cmsql.Database) { (&shopledgermodel.ShopLedger{}).Migration(db) },
+	table_name.ShopProductCollection:     func(db *cmsql.Database) { (&shopproductcollectionmodel.ShopProductCollection{}).Migration(db) },
+	table_name.ShopStocktake:             func(db *cmsql.Database) { (&shopstocktakemodel.ShopStocktake{}).Migration(db) },
+	table_name.ShopSupplier:              func(db *cmsql.Database) { (&shopsuppliermodel.ShopSupplier{}).Migration(db) },
+	table_name.ShopTrader:                func(db *cmsql.Database) { (&shoptradermodel.ShopTrader{}).Migration(db) },
+	table_name.ShopTraderAddress:         func(db *cmsql.Database) { (&shoptraderaddressmodel.ShopTraderAddress{}).Migration(db) },
+	table_name.ShopVariant:               func(db *cmsql.Database) { (&shopvariantmodel.ShopVariant{}).Migration(db) },
+	table_name.ShopVariantSupplier:       func(db *cmsql.Database) { (&shopvariantsuppliermodel.ShopVariantSupplier{}).Migration(db) },
+}
+
+func initDBs(mapDBCfgs map[string]config.Database, mapTableNames map[string][]table_name.TableName, resetDB bool) map[string]*cmsql.Database {
 	mapDBs := make(map[string]*cmsql.Database)
 	mAccountUser = make(map[string]*accountUser)
 	for wlName, dbCfg := range mapDBCfgs {
@@ -60,9 +131,31 @@ func initDBs(mapDBCfgs map[string]config.Database) map[string]*cmsql.Database {
 		if err != nil {
 			ll.Fatal("Unable to connect to Postgres", l.Error(err))
 		}
+
 		if wlName == drivers.ETop(cmenv.Env()).Key {
 			sqlstore.Init(db)
 		} else {
+			if cmenv.IsDev() && resetDB {
+				_, _ = db.Exec(`
+				DO $$ DECLARE
+					r RECORD;
+				BEGIN
+					FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+						EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+					END LOOP;
+				END $$;`)
+			}
+
+			runAllScriptsDB(db, mapTableNames[wlName])
+
+			for _, tableName := range dbCfg.Tables {
+				tbName, ok := table_name.ParseTableName(tableName)
+				if !ok {
+					continue
+				}
+				mTableNameAndModel[tbName](db)
+			}
+
 			mAccountUser[wlName] = &accountUser{
 				mUserIDs:    make(map[dot.ID]bool),
 				mAccountIDs: make(map[dot.ID]bool),
@@ -89,36 +182,16 @@ func New(
 	etlUtil := &ETLUtil{
 		bot:           bot,
 		mapDBCfgs:     mapDBCfgs,
-		mapDBs:        initDBs(mapDBCfgs),
 		mapTableNames: convertTableNames(mapDBCfgs),
 		resetDB:       resetDB,
 	}
+	etlUtil.mapDBs = initDBs(mapDBCfgs, etlUtil.mapTableNames, resetDB)
+
 	etlUtil.identityQuery = identityquery.NewQueryService(etlUtil.mapDBs[drivers.ETop(cmenv.Env()).Key]).MessageBus()
 	return etlUtil
 }
 
 func (s *ETLUtil) HandleETL(ctx context.Context) {
-	for wlKey, _ := range s.mapDBCfgs {
-		db := s.mapDBs[wlKey]
-
-		if drivers.ETop(cmenv.Env()).Key == wlKey {
-			continue
-		}
-
-		if cmenv.IsDev() && s.resetDB {
-			_, _ = db.Exec(`
-				DO $$ DECLARE
-					r RECORD;
-				BEGIN
-					FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
-						EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
-					END LOOP;
-				END $$;`)
-		}
-
-		runAllScriptsDB(db, s.mapTableNames[wlKey])
-	}
-
 	ticker := time.NewTicker(5 * time.Minute)
 	now := time.Now()
 	tomorrow := time.Date(now.Year(), now.Month(), now.Day(), 2, 0, 0, 0, time.Local)
@@ -173,6 +246,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 
 		newAccountIDs, deletedAccountIDs, latestAccountRID, err := scanShop(srcDB, mAccountUser[driver.Key].latestAccountRID, driver.ID)
 		if err != nil {
+			fmt.Println(err)
 			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
 			continue
 		}
