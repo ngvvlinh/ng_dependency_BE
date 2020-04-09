@@ -368,7 +368,7 @@ func handleWLAuthorizeShopByExternalUserID(ctx context.Context, q *AuthorizeShop
 		if err := checkExtraTokenInvitation(q.ExtraToken); err != nil {
 			return err
 		}
-		redirectURL = fmt.Sprintf("%v?t=%v", wlPartner.InviteUserURL, q.ExtraToken)
+		redirectURL = fmt.Sprintf("%v?t=%v", wlPartner.InviteUserURLByEmail, q.ExtraToken)
 	case q.ExternalUserID != "" && q.ExternalShopID == "":
 		// TH login bằng external_user_id
 		redirectURL = wlPartner.Config.RootURL
@@ -464,7 +464,7 @@ func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndp
 		if err := checkExtraTokenInvitation(q.ExtraToken); err != nil {
 			return err
 		}
-		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURL, q.ExtraToken)
+		info.RedirectURL = fmt.Sprintf("%v?t=%v", whiteLabelData.InviteUserURLByEmail, q.ExtraToken)
 	}
 
 	token, err := generateAuthToken(info)

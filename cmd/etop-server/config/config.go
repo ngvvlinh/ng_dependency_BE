@@ -98,7 +98,8 @@ type Config struct {
 		} `yaml:"imgroup"`
 	} `yaml:"white_label"`
 
-	FlagEnablePermission string `yaml:"flag_enable_permission"`
+	FlagEnablePermission        string `yaml:"flag_enable_permission"`
+	FlagEnableNewLinkInvitation bool   `yaml:"flag_enable_new_link_invitation"`
 }
 
 // Default ...

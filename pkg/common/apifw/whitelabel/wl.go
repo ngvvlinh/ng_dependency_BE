@@ -31,7 +31,9 @@ type Config struct {
 
 	AuthURL string
 
-	InviteUserURL string
+	InviteUserURLByEmail string
+
+	InviteUserURLByPhone string
 
 	SiteName string
 

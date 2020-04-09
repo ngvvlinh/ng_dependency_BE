@@ -147,14 +147,21 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	var invitationUrl string
-	invitationUrl = wl.X(ctx).InviteUserURL
+	if args.Email != "" || (args.Phone != "" && !a.cfg.FlagEnableNewLinkInvitation) {
+		invitationUrl = wl.X(ctx).InviteUserURLByEmail
+	} else {
+		// format url: https://etop.vn/i/p000000
+		invitationUrl = wl.X(ctx).InviteUserURLByPhone + "/p" + args.Phone
+	}
 
 	URL, err := url.Parse(invitationUrl)
 	if err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
 	}
 	urlQuery := URL.Query()
-	urlQuery.Set("t", token)
+	if args.Email != "" || (args.Phone != "" && !a.cfg.FlagEnableNewLinkInvitation) {
+		urlQuery.Set("t", token)
+	}
 	URL.RawQuery = urlQuery.Encode()
 
 	fullName := "bạn"
@@ -182,7 +189,6 @@ func (a *InvitationAggregate) CreateInvitation(
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 			}
-
 			cmd := &email.SendEmailCommand{
 				FromName:    "eTop.vn (no-reply)",
 				ToAddresses: []string{string(emailNorm)},
@@ -201,7 +207,6 @@ func (a *InvitationAggregate) CreateInvitation(
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
 			}
-
 			cmd := &sms.SendSMSCommand{
 				Phone:   args.Phone,
 				Content: b.String(),
