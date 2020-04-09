@@ -96,7 +96,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
 var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
 var smsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
 
@@ -109,6 +109,7 @@ var smsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện tho�
 var smsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
 
 var smsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+
 var smsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 2 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
 var smsResetPasswordTplRepeat = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`

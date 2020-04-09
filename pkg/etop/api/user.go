@@ -916,20 +916,20 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 	}
 	var msg string
 	var sendTime int
-	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", r.Context.UserID)
+	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", user.ID)
 	err = redisStore.Get(redisCodeCount, &sendTime)
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
 	if err != nil && err == redis.ErrNil {
-		err = redisStore.SetWithTTL(redisCodeCount, 1, 2*60*60)
+		err = redisStore.SetWithTTL(redisCodeCount, 1, 1*60*60)
 		if err != nil {
 			return nil, err
 		}
 		msg = smsResetPasswordTpl
 	} else {
 		sendTime++
-		err = redisStore.SetWithTTL(redisCodeCount, sendTime, 2*60*60)
+		err = redisStore.SetWithTTL(redisCodeCount, sendTime, 1*60*60)
 		if err != nil {
 			return nil, err
 		}
@@ -939,6 +939,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 	if err = verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, msg, r.Context, false); err != nil {
 		return r, err
 	}
+
 	r.Result = &etop.ResetPasswordResponse{
 		AccessToken: r.Context.Token,
 		ExpiresIn:   expiresIn,
