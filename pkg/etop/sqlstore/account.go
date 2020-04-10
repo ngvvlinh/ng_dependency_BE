@@ -53,7 +53,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		return cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
 
-	ownerQuery := &identity.GetUserByIDQuery{UserID: cmd.OwnerID}
+	ownerQuery := &identitymodelx.GetUserByIDQuery{UserID: cmd.OwnerID}
 	if err := bus.Dispatch(ctx, ownerQuery); err != nil {
 		return cm.Error(cm.Internal, "invalid owner_id", nil)
 	}
