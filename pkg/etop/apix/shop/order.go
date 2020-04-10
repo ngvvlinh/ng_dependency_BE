@@ -6,12 +6,14 @@ import (
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/inventory_auto"
 	"etop.vn/api/top/types/etc/inventory_policy"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 )
 
 func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {
-	resp, err := shipping.CancelOrder(ctx, r.Context.User.ID, r.Context.Shop.ID, r.CancelOrderRequest)
+	userID := cm.CoalesceID(r.Context.UserID, r.Context.Shop.OwnerID)
+	resp, err := shipping.CancelOrder(ctx, userID, r.Context.Shop.ID, r.CancelOrderRequest)
 	r.Result = resp
 	return err
 }
