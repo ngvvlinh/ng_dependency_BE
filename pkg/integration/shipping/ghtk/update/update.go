@@ -39,7 +39,7 @@ func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclien
 
 func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, ghtkOrder *ghtkclient.OrderInfo) (*shipmodel.Fulfillment, error) {
 	if !shipping.CanUpdateFulfillment(ffm) {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this fulfillment")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this fulfillment").WithMeta("result", "ignore")
 	}
 
 	now := time.Now()

@@ -418,7 +418,7 @@ func (d *GHTKDriver) GenerateServiceID(generator *randgenerator.RandGenerator, t
 	return string(code), nil
 }
 
-func (d *GHTKDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+func (d *GHTKDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, err error) {
 	externalOrder, err := d.client.GetOrder(ctx, ffm.ShippingCode, "")
 	if err != nil {
 		return nil, err
