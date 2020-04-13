@@ -232,6 +232,9 @@ func PopulateTradingProductWithInventoryCount(ctx context.Context, args *shop.Sh
 	for _, v := range args.Variants {
 		variantIDs = append(variantIDs, v.Id)
 	}
+	if len(variantIDs) == 0 {
+		return args, nil
+	}
 	query := &inventory.GetInventoryVariantsByVariantIDsQuery{
 		ShopID:     model.EtopTradingAccountID,
 		VariantIDs: variantIDs,
