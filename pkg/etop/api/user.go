@@ -71,6 +71,7 @@ type SignalUpdate string
 const (
 	keyRequestVerifyCode                string       = "request_phone_verification_code"
 	keyRequestVerifyPhone               string       = "request_phone_verification"
+	keyRequestEmailVerifyCode           string       = "request_email_verification_code"
 	keyRequestPhoneVerificationVerified string       = "request_phone_verification_verified"
 	keyRequestAuthUsage                 string       = "request_auth_usage"
 	keyRedisFirstCodeUpdateUser         string       = "update-first-code"
@@ -88,12 +89,14 @@ func init() {
 		userService.Register,
 		userService.ResetPassword,
 		userService.SendEmailVerification,
+		userService.SendEmailVerificationUsingOTP,
 		userService.SendPhoneVerification,
 		userService.SendSTokenEmail,
 		userService.SessionInfo,
 		userService.SwitchAccount,
 		userService.UpgradeAccessToken,
 		userService.VerifyEmailUsingToken,
+		userService.VerifyEmailUsingOTP,
 		userService.VerifyPhoneUsingToken,
 		userService.UpdateReferenceUser,
 		userService.UpdateReferenceSale,
@@ -1321,6 +1324,92 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	return resp, respShop, nil
 }
 
+func (s *UserService) SendEmailVerificationUsingOTP(ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint) error {
+	key := fmt.Sprintf("SendEmailVerificationUsingOTP %s-%s", r.Context.User.ID, r.Email)
+	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
+		func() (interface{}, error) {
+			return s.sendEmailVerificationUsingOTP(ctx, r)
+		}, "gửi email xác nhận tài khoản")
+	if err != nil {
+		return err
+	}
+	r.Result = res.(*SendEmailVerificationUsingOTPEndpoint).Result
+	return err
+}
+
+func (s *UserService) sendEmailVerificationUsingOTP(ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint) (*SendEmailVerificationUsingOTPEndpoint, error) {
+	if !enabledEmail {
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+	}
+	if r.Email == "" {
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+	if !strings.Contains(r.Email, "@") {
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+
+	user := r.Context.User.User
+	emailNorm, ok := validate.NormalizeEmail(r.Email)
+	if !ok || user.Email != emailNorm.String() {
+		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+	if !user.EmailVerifiedAt.IsZero() {
+		r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+		return r, nil
+	}
+
+	code, err := gencode.Random6Digits()
+	if err != nil {
+		return r, err
+	}
+
+	var b strings.Builder
+	if err := emailVerificationByOTPTpl.Execute(&b, map[string]interface{}{
+		"Email": user.Email,
+		"Code":  code,
+	}); err != nil {
+		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+	}
+
+	address := user.Email
+	cmd := &email.SendEmailCommand{
+		FromName:    "eTop.vn (no-reply)",
+		ToAddresses: []string{address},
+		Subject:     "Xác nhận địa chỉ email",
+		Content:     b.String(),
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return r, err
+	}
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
+		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
+	fmt.Println(b.String())
+
+	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
+		UserID:                  user.ID,
+		EmailVerificationSentAt: time.Now(),
+	}
+	if err := bus.Dispatch(ctx, updateCmd); err != nil {
+		return r, err
+	}
+
+	extra := make(map[string]string)
+	if r.Context.Claim.Extra != nil {
+		extra = r.Context.Claim.Extra
+	}
+
+	extra[keyRequestEmailVerifyCode] = code
+	extra[keyRequestAuthUsage] = auth.UsageEmailVerification
+	updateSessionCmd := &tokens.UpdateSessionCommand{
+		Token:  r.Context.Token,
+		Values: extra,
+	}
+	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
 func (s *UserService) SendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) error {
 	key := fmt.Sprintf("SendEmailVerification %v-%v", r.Context.User.ID, r.Email)
 	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
@@ -1515,6 +1604,46 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 	authStore.Revoke(auth.UsageEmailVerification, r.VerificationToken)
 	r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
 	return r, nil
+}
+
+func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsingOTPEndpoint) error {
+	extra := r.Context.Extra
+	user := r.Context.User
+
+	if r.VerificationToken == "" {
+		return cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
+	}
+
+	if extra == nil || extra[keyRequestAuthUsage] != auth.UsageEmailVerification {
+		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email. Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+	if extra[keyRequestEmailVerifyCode] != r.VerificationToken {
+		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+	}
+
+	delete(extra, keyRequestAuthUsage)
+	delete(extra, keyRequestEmailVerifyCode)
+
+	updateSessionCmd := &tokens.UpdateSessionCommand{
+		Token:  r.Context.Token,
+		Values: extra,
+	}
+	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+		return err
+	}
+
+	if user.EmailVerifiedAt.IsZero() {
+		cmd := &identitymodelx.UpdateUserVerificationCommand{
+			UserID:          user.ID,
+			EmailVerifiedAt: time.Now(),
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+	}
+
+	r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+	return nil
 }
 
 func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) error {

@@ -1,6 +1,8 @@
 package api
 
-import "html/template"
+import (
+	"html/template"
+)
 
 var resetPasswordTpl = template.Must(template.New("reset-password").Parse(`
 Gửi {{.FullName}},<br><br>
@@ -122,6 +124,16 @@ Bạn (hoặc một ai đó) đang muốn đăng nhập vào tài khoản <b>{{.
 <div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>
 
 <b>{{.Notice}}</b><br><br>
+
+Nếu không phải bạn, hãy bỏ qua email này.<br><br>
+
+Đội ngũ eTop
+`))
+
+var emailVerificationByOTPTpl = template.Must(template.New("verify-email-by-otp").Parse(`
+Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email <b>{{.Email}}</b>. Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục xác thực: (có hiệu lực trong 2 giờ)<br><br>
+
+<div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>
 
 Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 

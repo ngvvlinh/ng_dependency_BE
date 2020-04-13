@@ -553,6 +553,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 			return s.inner.SendEmailVerification(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/etop.User/SendEmailVerificationUsingOTP":
+		msg := &SendEmailVerificationUsingOTPRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.SendEmailVerificationUsingOTP(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/etop.User/SendPhoneVerification":
 		msg := &SendPhoneVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -611,6 +617,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &UpgradeAccessTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpgradeAccessToken(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.User/VerifyEmailUsingOTP":
+		msg := &VerifyEmailUsingOTPRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.VerifyEmailUsingOTP(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingToken":

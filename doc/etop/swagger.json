@@ -913,6 +913,33 @@
         }
       }
     },
+    "/api/etop.User/SendEmailVerificationUsingOTP": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "SendEmailVerificationUsingOTP",
+        "operationId": "etop.User-SendEmailVerificationUsingOTP",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baSendEmailVerificationUsingOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktMessageResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/SendPhoneVerification": {
       "post": {
         "tags": [
@@ -1180,6 +1207,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/baAccessTokenResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/VerifyEmailUsingOTP": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "VerifyEmailUsingOTP",
+        "operationId": "etop.User-VerifyEmailUsingOTP",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baVerifyEmailUsingOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -2512,6 +2566,17 @@
         }
       }
     },
+    "baSendEmailVerificationUsingOTPRequest": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
     "baSendPhoneVerificationRequest": {
       "type": "object",
       "required": [
@@ -3083,6 +3148,17 @@
         "account_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "baVerifyEmailUsingOTPRequest": {
+      "type": "object",
+      "required": [
+        "verification_token"
+      ],
+      "properties": {
+        "verification_token": {
+          "type": "string"
         }
       }
     },

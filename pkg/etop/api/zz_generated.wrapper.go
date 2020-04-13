@@ -1590,6 +1590,50 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	return resp, nil
 }
 
+type SendEmailVerificationUsingOTPEndpoint struct {
+	*api.SendEmailVerificationUsingOTPRequest
+	Result  *cm.MessageResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserService) SendEmailVerificationUsingOTP(ctx context.Context, req *api.SendEmailVerificationUsingOTPRequest) (resp *cm.MessageResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/SendEmailVerificationUsingOTP"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &SendEmailVerificationUsingOTPEndpoint{SendEmailVerificationUsingOTPRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.SendEmailVerificationUsingOTP(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type SendPhoneVerificationEndpoint struct {
 	*api.SendPhoneVerificationRequest
 	Result  *cm.MessageResponse
@@ -2017,6 +2061,50 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpgradeAccessToken(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type VerifyEmailUsingOTPEndpoint struct {
+	*api.VerifyEmailUsingOTPRequest
+	Result  *cm.MessageResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserService) VerifyEmailUsingOTP(ctx context.Context, req *api.VerifyEmailUsingOTPRequest) (resp *cm.MessageResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/VerifyEmailUsingOTP"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &VerifyEmailUsingOTPEndpoint{VerifyEmailUsingOTPRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.VerifyEmailUsingOTP(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

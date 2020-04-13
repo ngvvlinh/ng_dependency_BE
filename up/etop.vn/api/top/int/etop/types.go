@@ -389,7 +389,9 @@ type ChangePasswordForPhoneUsingTokenRequest struct {
 func (m *ChangePasswordForPhoneUsingTokenRequest) Reset() {
 	*m = ChangePasswordForPhoneUsingTokenRequest{}
 }
-func (m *ChangePasswordForPhoneUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ChangePasswordForPhoneUsingTokenRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 // Represents permission of the current user relation with an account.
 type Permission struct {
@@ -556,6 +558,13 @@ type SendEmailVerificationRequest struct {
 
 func (m *SendEmailVerificationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type SendEmailVerificationUsingOTPRequest struct {
+	// @required
+	Email string `json:"email"`
+}
+
+func (m *SendEmailVerificationUsingOTPRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type SendPhoneVerificationRequest struct {
 	// @required
 	Phone string `json:"phone"`
@@ -569,6 +578,13 @@ type VerifyEmailUsingTokenRequest struct {
 }
 
 func (m *VerifyEmailUsingTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type VerifyEmailUsingOTPRequest struct {
+	// @required
+	VerificationToken string `json:"verification_token"`
+}
+
+func (m *VerifyEmailUsingOTPRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type VerifyPhoneUsingTokenRequest struct {
 	// @required

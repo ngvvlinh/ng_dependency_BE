@@ -65,9 +65,13 @@ type UserService interface {
 
 	SendEmailVerification(context.Context, *SendEmailVerificationRequest) (*cm.MessageResponse, error)
 
+	SendEmailVerificationUsingOTP(context.Context, *SendEmailVerificationUsingOTPRequest) (*cm.MessageResponse, error)
+
 	SendPhoneVerification(context.Context, *SendPhoneVerificationRequest) (*cm.MessageResponse, error)
 
 	VerifyEmailUsingToken(context.Context, *VerifyEmailUsingTokenRequest) (*cm.MessageResponse, error)
+
+	VerifyEmailUsingOTP(context.Context, *VerifyEmailUsingOTPRequest) (*cm.MessageResponse, error)
 
 	VerifyPhoneUsingToken(context.Context, *VerifyPhoneUsingTokenRequest) (*cm.MessageResponse, error)
 
