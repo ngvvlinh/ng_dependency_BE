@@ -94,23 +94,23 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
 var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var smsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var smsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai.`
+var smsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại %v của bạn. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var smsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 2 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var smsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
 var smsResetPasswordTplRepeat = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
