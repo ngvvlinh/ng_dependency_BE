@@ -1337,7 +1337,9 @@ func (s *UserService) SendEmailVerificationUsingOTP(ctx context.Context, r *Send
 	return err
 }
 
-func (s *UserService) sendEmailVerificationUsingOTP(ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint) (*SendEmailVerificationUsingOTPEndpoint, error) {
+func (s *UserService) sendEmailVerificationUsingOTP(
+	ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint,
+) (_ *SendEmailVerificationUsingOTPEndpoint, err error) {
 	if !enabledEmail {
 		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
@@ -1358,9 +1360,20 @@ func (s *UserService) sendEmailVerificationUsingOTP(ctx context.Context, r *Send
 		return r, nil
 	}
 
-	code, err := gencode.Random6Digits()
-	if err != nil {
+	var code string
+	err = redisStore.Get(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode), &code)
+	if err != nil && err != redis.ErrNil {
 		return r, err
+	}
+	if code == "" {
+		code, err = gencode.Random6Digits()
+		if err != nil {
+			return r, err
+		}
+		err = redisStore.SetWithTTL(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode), code, 2*60*60)
+		if err != nil {
+			return r, err
+		}
 	}
 
 	var b strings.Builder
@@ -1383,7 +1396,6 @@ func (s *UserService) sendEmailVerificationUsingOTP(ctx context.Context, r *Send
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
-	fmt.Println(b.String())
 
 	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
 		UserID:                  user.ID,
@@ -1618,7 +1630,7 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsi
 		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email. Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if extra[keyRequestEmailVerifyCode] != r.VerificationToken {
-		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (mã xác thực không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	delete(extra, keyRequestAuthUsage)
@@ -1629,6 +1641,10 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsi
 		Values: extra,
 	}
 	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+		return err
+	}
+
+	if err := redisStore.Del(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode)); err != nil {
 		return err
 	}
 
