@@ -187,7 +187,8 @@ func (p InPart) WriteSQLTo(w core.SQLWriter) error {
 	}
 
 	// TODO: remove this workaround
-	if *p.prefix == "" && strings.Contains(p.column, ".") {
+	if *p.prefix == "" &&
+		(strings.Contains(p.column, ".") || strings.Contains(p.column, `"`)) {
 		w.WriteQueryName(p.column)
 	} else {
 		w.WritePrefixedName(*p.prefix, p.column)

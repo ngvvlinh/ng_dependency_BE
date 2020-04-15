@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-xorm/builder"
 	"github.com/lib/pq"
 
 	"o.o/api/meta"
@@ -55,7 +54,7 @@ func (f *FilterWhitelist) ToCol(col, suffix string) string {
 		}
 		return p + `."` + col + suffix + `" `
 	}
-	return `"` + col + suffix + `" `
+	return `"` + col + suffix + `"`
 }
 
 type Paging struct {
@@ -557,16 +556,12 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 				if err != nil {
 					return cmsql.Query{}, false, err
 				}
-				ors := make([]builder.Cond, len(names))
+				ors := make([]sq.WriterTo, len(names))
 				for i, name := range names {
 					col := whitelist.ToCol(name, "")
-					ors[i] = builder.In(col, value)
+					ors[i] = sq.In(col, value)
 				}
-				sql, args, err := builder.ToSQL(builder.Or(ors...))
-				if err != nil {
-					return cmsql.Query{}, false, err
-				}
-				s = s.Where(combineArgs(sql, args)...)
+				s = s.Where(sq.Or(ors))
 			}
 
 		case "<", ">", "<=", ">=", "≤", "≥":
