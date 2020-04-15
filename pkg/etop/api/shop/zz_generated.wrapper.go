@@ -10817,10 +10817,10 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 	}
 	authorization := auth.New()
 	// Do not check permission for 3rd party requests
-	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:update", isTest) {
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/stocktake:update|shop/stocktake:self_update", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
-	query.Context.Actions = strings.Split("shop/stocktake:update", "|")
+	query.Context.Actions = strings.Split("shop/stocktake:update|shop/stocktake:self_update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateStocktake(ctx, query)
 	resp = query.Result

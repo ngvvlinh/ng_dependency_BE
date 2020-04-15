@@ -142,13 +142,14 @@ const (
 	RelationshipPermissionUpdate   permission.ActionType = "relationship/permission:update"
 	RelationshipRelationshipUpdate permission.ActionType = "relationship/relationship:update"
 	RelationshipRelationshipView   permission.ActionType = "relationship/relationship:view"
-	RelationshipUserRemove         permission.ActionType = "relationship/user:remove"
+	RelationshipRelationshipRemove permission.ActionType = "relationship/relationship:remove"
 
-	ShopStocktakeCreate  permission.ActionType = "shop/stocktake:create"
-	ShopStocktakeUpdate  permission.ActionType = "shop/stocktake:update"
-	ShopStocktakeConfirm permission.ActionType = "shop/stocktake:confirm"
-	ShopStocktakeCancel  permission.ActionType = "shop/stocktake:cancel"
-	ShopStocktakeView    permission.ActionType = "shop/stocktake:view"
+	ShopStocktakeCreate     permission.ActionType = "shop/stocktake:create"
+	ShopStocktakeUpdate     permission.ActionType = "shop/stocktake:update"
+	ShopStocktakeConfirm    permission.ActionType = "shop/stocktake:confirm"
+	ShopStocktakeCancel     permission.ActionType = "shop/stocktake:cancel"
+	ShopStocktakeView       permission.ActionType = "shop/stocktake:view"
+	ShopStocktakeSelfUpdate permission.ActionType = "shop/stocktake:self_update"
 
 	ShopRefundCreate  permission.ActionType = "shop/refund:create"
 	ShopRefundUpdate  permission.ActionType = "shop/refund:update"
@@ -830,7 +831,7 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	// Stocktake:
 	"shop.Stocktake/CreateStocktake":    {Type: Shop, Auth: User, Actions: actions(ShopStocktakeCreate)},
-	"shop.Stocktake/UpdateStocktake":    {Type: Shop, Actions: actions(ShopStocktakeUpdate)},
+	"shop.Stocktake/UpdateStocktake":    {Type: Shop, Actions: actions(ShopStocktakeUpdate, ShopStocktakeSelfUpdate)},
 	"shop.Stocktake/ConfirmStocktake":   {Type: Shop, Actions: actions(ShopStocktakeConfirm)},
 	"shop.Stocktake/CancelStocktake":    {Type: Shop, Actions: actions(ShopStocktakeCancel)},
 	"shop.Stocktake/GetStocktake":       {Type: Shop, Actions: actions(ShopStocktakeView)},
@@ -851,7 +852,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.AccountRelationship/UpdatePermission":   {Type: Shop, Actions: actions(RelationshipPermissionUpdate)},
 	"etop.AccountRelationship/UpdateRelationship": {Type: Shop, Actions: actions(RelationshipRelationshipUpdate)},
 	"etop.AccountRelationship/GetRelationships":   {Type: Shop, Actions: actions(RelationshipRelationshipView)},
-	"etop.AccountRelationship/RemoveUser":         {Type: Shop, Actions: actions(RelationshipUserRemove)},
+	"etop.AccountRelationship/RemoveUser":         {Type: Shop, Actions: actions(RelationshipRelationshipRemove)},
 
 	"shop.Refund/CreateRefund":    {Type: Shop, Actions: actions(ShopRefundCreate)},
 	"shop.Refund/UpdateRefund":    {Type: Shop, Actions: actions(ShopRefundUpdate)},

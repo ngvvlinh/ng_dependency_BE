@@ -425,10 +425,10 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 	}
 	authorization := auth.New()
 	// Do not check permission for 3rd party requests
-	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/user:remove", isTest) {
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "relationship/relationship:remove", isTest) {
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
-	query.Context.Actions = strings.Split("relationship/user:remove", "|")
+	query.Context.Actions = strings.Split("relationship/relationship:remove", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveUser(ctx, query)
 	resp = query.Result

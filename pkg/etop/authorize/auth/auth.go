@@ -128,13 +128,14 @@ const (
 	p, relationship/permission:update, admin, owner, staff_management
 	p, relationship/relationship:update, admin, owner, staff_management
 	p, relationship/relationship:view, admin, owner, staff_management
-	p, relationship/user:remove, admin, owner, staff_management
+	p, relationship/relationship:remove, admin, owner, staff_management
 	# stocktake
 	p, shop/stocktake:create, admin, owner, purchasing_management, inventory_management
 	p, shop/stocktake:update, admin, owner, inventory_management
-	p, shop/stocktake:confirm, admin, owner, purchasing_management, inventory_management
+	p, shop/stocktake:confirm, admin, owner, inventory_management
 	p, shop/stocktake:cancel, admin, owner, inventory_management
-	p, shop/stocktake:view, admin, owner, accountant, inventory_management
+	p, shop/stocktake:view, admin, owner, accountant, purchasing_management, inventory_management
+	p, shop/stocktake:self_update, purchasing_management
 	# supplier
 	p, shop/supplier:create, admin, owner, purchasing_management
 	p, shop/supplier:update, admin, owner, purchasing_management

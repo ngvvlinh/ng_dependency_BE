@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/stocktaking"
@@ -10,6 +11,7 @@ import (
 	"etop.vn/api/top/int/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"etop.vn/backend/tools/pkg/acl"
 	"etop.vn/capi/dot"
 )
 
@@ -131,6 +133,22 @@ func (s *StocktakeService) UpdateStocktake(
 	ctx context.Context, q *UpdateStocktakeEndpoint) error {
 	shopID := q.Context.Shop.ID
 	UserID := q.Context.UserID
+
+	query := &stocktaking.GetStocktakeByIDQuery{
+		Id:     q.Id,
+		ShopID: shopID,
+	}
+	if err := StocktakeQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	if !authorization.IsContainsActionString(q.Context.Actions, string(acl.ShopStocktakeUpdate)) &&
+		authorization.IsContainsActionString(q.Context.Actions, string(acl.ShopStocktakeSelfUpdate)) {
+		if query.Result.CreatedBy != UserID {
+			return cm.Errorf(cm.PermissionDenied, nil, "")
+		}
+	}
+
 	var lines []*stocktaking.StocktakeLine
 	for _, value := range q.Lines {
 		lines = append(lines, &stocktaking.StocktakeLine{
