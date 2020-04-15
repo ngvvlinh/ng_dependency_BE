@@ -19,7 +19,7 @@ func (s *ConnectionService) GetConnections(ctx context.Context, q *GetConnection
 		Status:         status3.WrapStatus(status3.P),
 	}
 	if err := connectionQuery.Dispatch(ctx, query); err != nil {
-		return nil
+		return err
 	}
 	q.Result = &types.GetConnectionsResponse{
 		Connections: convertpb.PbConnections(query.Result),
