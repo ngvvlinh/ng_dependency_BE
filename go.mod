@@ -35,6 +35,7 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lfittl/pg_query_go v1.0.0
 	github.com/lib/pq v1.2.0
+	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/pkg/errors v0.8.1
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
@@ -50,6 +51,7 @@ require (
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20190821162956-65e3620a7ae7
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
