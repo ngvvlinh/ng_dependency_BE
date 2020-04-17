@@ -93,6 +93,8 @@ const (
 	ShopOrderUpdate   permission.ActionType = "shop/order:update"
 	ShopOrderCancel   permission.ActionType = "shop/order:cancel"
 	ShopOrderView     permission.ActionType = "shop/order:view"
+	ShopOrderImport   permission.ActionType = "shop/order:import"
+	ShopOrderExport   permission.ActionType = "shop/order:export"
 
 	ShopPurchaseOrderCreate  permission.ActionType = "shop/purchase_order:create"
 	ShopPurchaseOrderConfirm permission.ActionType = "shop/purchase_order:confirm"

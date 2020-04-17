@@ -32,8 +32,10 @@ import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/tools/pkg/acl"
 	"etop.vn/capi/dot"
 	"etop.vn/common/strs"
 	"etop.vn/common/xerrors"
@@ -41,6 +43,15 @@ import (
 
 func HandleImportOrders(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
+	authorization := auth.New()
+	isTest := 0
+	if claim.Shop != nil {
+		isTest = claim.Shop.IsTest
+	}
+	// Do not check permission for 3rd party requests
+	if claim.AuthPartnerID == 0 && !authorization.Check(claim.Roles, string(acl.ShopOrderImport), isTest) {
+		return cm.Error(cm.PermissionDenied, "", nil)
+	}
 	userID := c.Session.GetUserID()
 	shop := claim.Shop
 	key := shop.ID.String()

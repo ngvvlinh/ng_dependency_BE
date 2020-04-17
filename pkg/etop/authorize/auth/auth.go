@@ -76,6 +76,8 @@ const (
 	p, shop/order:complete, admin, owner, salesman
 	p, shop/order:update, admin, owner, salesman
 	p, shop/order:cancel, admin, owner, salesman
+	p, shop/order:import, admin, owner, salesman
+	p, shop/order:export, admin, owner, salesman, inventory_management
     # order: hotfix, all users can access order page
 	p, shop/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# purchase_order
