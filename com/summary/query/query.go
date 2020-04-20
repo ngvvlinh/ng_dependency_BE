@@ -146,7 +146,6 @@ func (q *DashboardQuery) SummaryPOS(ctx context.Context, req *summary.SummaryPOS
 		return nil, err
 	}
 	summaryTableRedis.ListTable = append(summaryTableRedis.ListTable, buildStaffOrderTable(resultStaffOrder))
-	summaryTableRedis.ListTable = append(summaryTableRedis.ListTable, buildOtherSourceTable(resultStaffOrder))
 
 	err = q.redisStore.SetWithTTL(keyRedis, summaryTableRedis, redisTime)
 	if err != nil && err != redis.ErrNil {
@@ -621,54 +620,6 @@ func buildStaffOrderTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[1].Spec + summaryTable.Rows[index].Spec,
 			Label: value.UserName,
-		})
-		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
-			Spec:  summaryTable.Cols[2].Spec + summaryTable.Rows[index].Spec,
-			Value: int(value.TotalCount),
-		})
-		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
-			Spec:  summaryTable.Cols[3].Spec + summaryTable.Rows[index].Spec,
-			Value: int(value.TotalAmount),
-		})
-	}
-	return &summaryTable
-}
-
-func buildOtherSourceTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
-	var summaryTable summary.SummaryTable
-	summaryTable.Label = "Doanh số bán hàng từ nguồn khác"
-	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{
-		Spec:  "other_source_id:",
-		Label: "ID nguồn khác",
-	})
-	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{
-		Spec:  "other_soure_type:",
-		Label: "Loại nguồn",
-	})
-	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{
-		Spec:  "count(order_id):",
-		Label: "Tổng đơn",
-	})
-	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{
-		Spec:  "sum(total_amount):",
-		Label: "Tổng doanh thu",
-	})
-
-	for index, value := range args {
-		if value.UserID != 0 {
-			continue
-		}
-		summaryTable.Rows = append(summaryTable.Rows, summary.SummaryColRow{
-			Spec:  "groupby(other_source_id),orderby(sum(total_amount)),row_number(" + strconv.Itoa(index) + ")" + "status!=-1",
-			Label: strconv.Itoa(index),
-		})
-		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
-			Spec:  summaryTable.Cols[0].Spec + summaryTable.Rows[index].Spec,
-			Label: value.OrderSourceID.String(),
-		})
-		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
-			Spec:  summaryTable.Cols[1].Spec + summaryTable.Rows[index].Spec,
-			Label: value.OrderSourceType,
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[2].Spec + summaryTable.Rows[index].Spec,

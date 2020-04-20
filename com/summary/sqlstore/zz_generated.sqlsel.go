@@ -65,8 +65,6 @@ func (m *StaffOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.UserID,
 		(*core.Int32)(&m.TotalCount),
 		(*core.Int32)(&m.TotalAmount),
-		&m.OrderSourceID,
-		(*core.String)(&m.OrderSourceType),
 	}
 }
 
@@ -92,12 +90,12 @@ func (ms *StaffOrders) SQLScan(opts core.Opts, rows *sql.Rows) error {
 }
 
 func (_ *StaffOrder) SQLSelect(w core.SQLWriter) error {
-	w.WriteRawString(`SELECT u.full_name, u.id, count(o.id) as total_amount, sum(o.total_amount) as order_count, o.order_source_id, o.order_source_type`)
+	w.WriteRawString(`SELECT u.full_name, u.id, count(o.id) as total_amount, sum(o.total_amount) as order_count`)
 	return nil
 }
 
 func (_ *StaffOrders) SQLSelect(w core.SQLWriter) error {
-	w.WriteRawString(`SELECT u.full_name, u.id, count(o.id) as total_amount, sum(o.total_amount) as order_count, o.order_source_id, o.order_source_type`)
+	w.WriteRawString(`SELECT u.full_name, u.id, count(o.id) as total_amount, sum(o.total_amount) as order_count`)
 	return nil
 }
 

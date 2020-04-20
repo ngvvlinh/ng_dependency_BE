@@ -131,25 +131,22 @@ func (s *SummaryStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo 
 
 // +sqlsel
 type StaffOrder struct {
-	UserName        string `sel:"u.full_name"`
-	UserID          dot.ID `sel:"u.id"`
-	TotalCount      int32  `sel:"count(o.id) as total_amount"`
-	TotalAmount     int32  `sel:"sum(o.total_amount) as order_count"`
-	OrderSourceID   dot.ID `sel:"o.order_source_id"`
-	OrderSourceType string `sel:"o.order_source_type"`
+	UserName    string `sel:"u.full_name"`
+	UserID      dot.ID `sel:"u.id"`
+	TotalCount  int32  `sel:"count(o.id) as total_amount"`
+	TotalAmount int32  `sel:"sum(o.total_amount) as order_count"`
 }
 
 func (s *SummaryStore) GetListStaffOrder(shopID dot.ID, dateFrom time.Time, dateTo time.Time) (StaffOrders, error) {
 	var result StaffOrders
 
-	sqlStr := `from "order" o, "order_line" ol, "user" u`
+	sqlStr := `from "order" o, "user" u`
 	q := s.query().SQL(sqlStr)
 	q = q.Where("o.created_at BETWEEN ? AND ?", dateFrom, dateTo)
 	q = q.Where(`o.status != ?`, -1)
 	q = q.Where(`o.shop_id = ?`, shopID)
-	q = q.Where(`o.id = ol.order_id`)
 	q = q.Where(`o.created_by = u.id`)
-	q = q.GroupBy(`u.id, u.full_name, o.order_source_id, o.order_source_type`).OrderBy("total_amount desc")
+	q = q.GroupBy(`u.id, u.full_name`).OrderBy("total_amount desc")
 	err := q.Find(&result)
 	return result, err
 }
