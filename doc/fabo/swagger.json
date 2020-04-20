@@ -1,0 +1,399 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/fabo.Page/ListFbPages": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "ListFbPages",
+        "operationId": "fabo.Page-ListFbPages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListFbPagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbPagesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Page/RemoveFbPages": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "RemoveFbPages",
+        "operationId": "fabo.Page-RemoveFbPages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvRemoveFbPagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Session/InitSession": {
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "InitSession",
+        "operationId": "fabo.Session-InitSession",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvInitSessionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvInitSessionResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ]
+    },
+    "cvExternalCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "cvExternalFbUserInfo": {
+      "type": "object",
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        }
+      }
+    },
+    "cvFbPage": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_category": {
+          "type": "string"
+        },
+        "external_category_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvExternalCategory"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_name": {
+          "type": "string"
+        },
+        "external_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fb_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvFbPageCombined": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_category": {
+          "type": "string"
+        },
+        "external_category_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvExternalCategory"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_name": {
+          "type": "string"
+        },
+        "external_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fb_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvFbPagesResponse": {
+      "type": "object",
+      "properties": {
+        "fb_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbPage"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "cvFbUserCombined": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_info": {
+          "$ref": "#/definitions/cvExternalFbUserInfo"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvInitSessionRequest": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        }
+      }
+    },
+    "cvInitSessionResponse": {
+      "type": "object",
+      "properties": {
+        "fb_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbPageCombined"
+          }
+        },
+        "fb_user": {
+          "$ref": "#/definitions/cvFbUserCombined"
+        }
+      }
+    },
+    "cvListFbPagesRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "cvRemoveFbPagesRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
+          "type": "string"
+        },
+        "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
+          "type": "string"
+        },
+        "value": {
+          "description": "Must always be string\n",
+          "type": "string"
+        }
+      }
+    },
+    "ktPageInfo": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Page"
+    },
+    {
+      "name": "Session"
+    }
+  ]
+}

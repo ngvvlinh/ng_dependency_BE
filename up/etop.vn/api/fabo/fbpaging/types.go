@@ -1,4 +1,4 @@
-package model
+package fbpaging
 
 import (
 	"time"
@@ -7,7 +7,6 @@ import (
 	"etop.vn/capi/dot"
 )
 
-// +sqlgen
 type FbPage struct {
 	ID                   dot.ID
 	ExternalID           string
@@ -19,19 +18,22 @@ type FbPage struct {
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
 	Status               status3.Status
-	CreatedAt            time.Time `sq:"create"`
-	UpdatedAt            time.Time `sq:"update"`
-	DeletedAt            time.Time
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type ExternalCategory struct {
-	ID   dot.ID `json:"id"`
-	Name string `json:"name"`
+	ID   dot.ID
+	Name string
 }
 
-// +sqlgen
 type FbPageInternal struct {
 	ID        dot.ID
 	Token     string
-	UpdatedAt time.Time `sq:"update"`
+	UpdatedAt time.Time
+}
+
+type FbPageCombined struct {
+	FbPage         *FbPage
+	FbPageInternal *FbPageInternal
 }

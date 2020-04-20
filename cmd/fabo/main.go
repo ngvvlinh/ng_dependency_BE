@@ -9,11 +9,25 @@ import (
 	"time"
 
 	"etop.vn/backend/cmd/fabo/config"
+	servicefbpage "etop.vn/backend/com/fabo/main/fbpage"
+	servicefbuser "etop.vn/backend/com/fabo/main/fbuser"
+	"etop.vn/backend/com/fabo/util"
+	serviceidentity "etop.vn/backend/com/main/identity"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
+	cmservice "etop.vn/backend/pkg/common/apifw/service"
+	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
+	"etop.vn/backend/pkg/common/headers"
+	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/backend/pkg/common/sql/cmsql"
+	"etop.vn/backend/pkg/etop/authorize/middleware"
+	"etop.vn/backend/pkg/etop/authorize/tokens"
+	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/backend/pkg/fabo"
 	"etop.vn/common/l"
 )
 
@@ -60,6 +74,8 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
+	wl.Init(cmenv.Env())
+
 	bot, err = cfg.TelegramBot.ConnectDefault()
 	if err != nil {
 		ll.Fatal("Unable to connect to Telegram", l.Error(err))
@@ -69,6 +85,32 @@ func main() {
 		bot.SendMessage("–––\n✨ fabo-app started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👹 fabo-app stopped 👹\n–––")
 	}
+
+	redisStore := redis.Connect(cfg.Redis.ConnectionString())
+	tokens.Init(redisStore)
+	db, err := cmsql.Connect(cfg.Postgres)
+	if err != nil {
+		ll.Fatal("Unable to connect to Postgres", l.Error(err))
+	}
+	eventBus := bus.New()
+	sqlstore.Init(db)
+	sqlstore.AddEventBus(eventBus)
+
+	_ = serviceidentity.NewQueryService(db).MessageBus()
+	fbpageaggregate := servicefbpage.NewFbPageAggregate(db).MessageBus()
+	fbpagequery := servicefbpage.NewFbPageQuery(db).MessageBus()
+	fbuseraggregate := servicefbuser.NewFbUserAggregate(db, fbpageaggregate).MessageBus()
+	fbuserquery := servicefbuser.NewFbUserQuery(db).MessageBus()
+	middleware.NewFabo(fbpagequery, fbuserquery)
+	fabo.Init(
+		fbuserquery,
+		fbuseraggregate,
+		fbpagequery,
+		fbpageaggregate,
+		cfg.App.Scopes,
+	)
+	util.New(cfg.ApiInfo, cfg.App, bot)
+
 	healthservice.MarkReady()
 
 	mux := http.NewServeMux()
@@ -77,6 +119,19 @@ func main() {
 		Addr:    cfg.HTTP.Address(),
 		Handler: mux,
 	}
+
+	mux.Handle("/", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
+	mux.Handle("/doc", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
+	mux.Handle("/doc/fabo", cmservice.RedocHandler())
+	mux.Handle("/doc/fabo/swagger.json", cmservice.SwaggerHandler("fabo/swagger.json"))
+
+	apiMux := http.NewServeMux()
+	apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
+
+	mux.Handle("/api/", http.StripPrefix("/api",
+		headers.ForwardHeaders(apiMux)))
+
+	fabo.NewFaboServer(apiMux)
 
 	go func() {
 		defer ctxCancel()

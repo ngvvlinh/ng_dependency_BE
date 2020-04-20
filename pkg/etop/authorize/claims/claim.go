@@ -68,10 +68,16 @@ type PartnerClaim struct {
 	Partner *identitymodel.Partner
 }
 
+type FaboInfo struct {
+	FbUserID  dot.ID
+	FbPageIDs []dot.ID
+}
+
 type ShopClaim struct {
 	UserClaim
 	CommonAccountClaim
-	Actions []string
+	Actions  []string
+	FaboInfo *FaboInfo
 
 	Shop *identitymodel.Shop
 }

@@ -36,6 +36,7 @@ var funcs = map[string]interface{}{
 	"requireCaptcha":           requireCaptcha,
 	"authPartner":              authPartner,
 	"requireActions":           requireActions,
+	"requireIncludeFaboInfo":   requireIncludeFaboInfo,
 }
 
 func getPermission(m *Method) *permission.PermissionDecl {
@@ -187,6 +188,11 @@ func requireActions(m *Method) string {
 	return strings.Join(actionsTemp, "|")
 }
 
+func requireIncludeFaboInfo(m *Method) bool {
+	p := getPermission(m)
+	return p.IncludeFaboInfo
+}
+
 var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 
 const tplText = `
@@ -288,6 +294,21 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 		return nil, common.Error(common.PermissionDenied, "", nil)
 	}
 	query.Context.Actions = strings.Split("{{$m|requireActions}}", "|")
+	{{end -}}
+
+	{{if requireIncludeFaboInfo $m -}}
+	// Include Fabo's information
+	if query.Context.Shop != nil {
+		getFaboInfoQuery := &middleware.GetFaboInfoQuery{
+			ShopID: query.Context.Shop.ID,
+			UserID: query.Context.UserID,
+		}
+		faboInfo, err := middleware.GetFaboInfo(ctx, getFaboInfoQuery)
+		if err != nil {
+			return nil, err
+		}
+		query.Context.FaboInfo = faboInfo
+	}
 	{{end -}}
 
 	{{if requireSecret $m -}}

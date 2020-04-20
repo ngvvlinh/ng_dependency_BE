@@ -13,11 +13,11 @@ type Account struct {
 }
 
 type AccountData struct {
-	AccessToken  string           `json:"access_token"`
-	Category     string           `json:"category"`
-	CategoryList []model.Category `json:"category_list"`
-	Name         string           `json:"name"`
-	Id           string           `json:"id"`
-	Tasks        []string         `json:"tasks"`
-	FanCount     int              `json:"fan_count"`
+	AccessToken  string                   `json:"access_token"`
+	Category     string                   `json:"category"`
+	CategoryList []model.ExternalCategory `json:"category_list"`
+	Name         string                   `json:"name"`
+	Id           string                   `json:"id"`
+	Tasks        []string                 `json:"tasks"`
+	FanCount     int                      `json:"fan_count"`
 }

@@ -64,6 +64,25 @@ func (ft *FbPageFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr
 	}
 }
 
+func (ft *FbPageFilters) ByFbUserID(FbUserID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "fb_user_id",
+		Value:  FbUserID,
+		IsNil:  FbUserID == 0,
+	}
+}
+
+func (ft *FbPageFilters) ByFbUserIDPtr(FbUserID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "fb_user_id",
+		Value:  FbUserID,
+		IsNil:  FbUserID == nil,
+		IsZero: FbUserID != nil && (*FbUserID) == 0,
+	}
+}
+
 func (ft *FbPageFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -102,41 +121,41 @@ func (ft *FbPageFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageFilters) ByName(Name string) *sq.ColumnFilter {
+func (ft *FbPageFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "name",
-		Value:  Name,
-		IsNil:  Name == "",
+		Column: "external_name",
+		Value:  ExternalName,
+		IsNil:  ExternalName == "",
 	}
 }
 
-func (ft *FbPageFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+func (ft *FbPageFilters) ByExternalNamePtr(ExternalName *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "name",
-		Value:  Name,
-		IsNil:  Name == nil,
-		IsZero: Name != nil && (*Name) == "",
+		Column: "external_name",
+		Value:  ExternalName,
+		IsNil:  ExternalName == nil,
+		IsZero: ExternalName != nil && (*ExternalName) == "",
 	}
 }
 
-func (ft *FbPageFilters) ByCategory(Category string) *sq.ColumnFilter {
+func (ft *FbPageFilters) ByExternalCategory(ExternalCategory string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "category",
-		Value:  Category,
-		IsNil:  Category == "",
+		Column: "external_category",
+		Value:  ExternalCategory,
+		IsNil:  ExternalCategory == "",
 	}
 }
 
-func (ft *FbPageFilters) ByCategoryPtr(Category *string) *sq.ColumnFilterPtr {
+func (ft *FbPageFilters) ByExternalCategoryPtr(ExternalCategory *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "category",
-		Value:  Category,
-		IsNil:  Category == nil,
-		IsZero: Category != nil && (*Category) == "",
+		Column: "external_category",
+		Value:  ExternalCategory,
+		IsNil:  ExternalCategory == nil,
+		IsZero: ExternalCategory != nil && (*ExternalCategory) == "",
 	}
 }
 
@@ -268,40 +287,21 @@ func (ft *FbPageInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageInternalFilters) ByExpiresIn(ExpiresIn int) *sq.ColumnFilter {
+func (ft *FbPageInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "expires_in",
-		Value:  ExpiresIn,
-		IsNil:  ExpiresIn == 0,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
 	}
 }
 
-func (ft *FbPageInternalFilters) ByExpiresInPtr(ExpiresIn *int) *sq.ColumnFilterPtr {
+func (ft *FbPageInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "expires_in",
-		Value:  ExpiresIn,
-		IsNil:  ExpiresIn == nil,
-		IsZero: ExpiresIn != nil && (*ExpiresIn) == 0,
-	}
-}
-
-func (ft *FbPageInternalFilters) ByUpdateAt(UpdateAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "update_at",
-		Value:  UpdateAt,
-		IsNil:  UpdateAt.IsZero(),
-	}
-}
-
-func (ft *FbPageInternalFilters) ByUpdateAtPtr(UpdateAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "update_at",
-		Value:  UpdateAt,
-		IsNil:  UpdateAt == nil,
-		IsZero: UpdateAt != nil && (*UpdateAt).IsZero(),
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }

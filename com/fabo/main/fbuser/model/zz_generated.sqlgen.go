@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
+	migration "etop.vn/backend/pkg/common/sql/migration"
 	core "etop.vn/backend/pkg/common/sql/sq/core"
 )
 
@@ -29,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type FbUsers []*FbUser
 
 const __sqlFbUser_Table = "fb_user"
-const __sqlFbUser_ListCols = "\"id\",\"external_id\",\"user_id\",\"info\",\"status\",\"created_at\",\"updated_at\""
-const __sqlFbUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"user_id\" = EXCLUDED.\"user_id\",\"info\" = EXCLUDED.\"info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbUser_ListCols = "\"id\",\"external_id\",\"user_id\",\"external_info\",\"status\",\"created_at\",\"updated_at\""
+const __sqlFbUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"user_id\" = EXCLUDED.\"user_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFbUser_Insert = "INSERT INTO \"fb_user\" (" + __sqlFbUser_ListCols + ") VALUES"
 const __sqlFbUser_Select = "SELECT " + __sqlFbUser_ListCols + " FROM \"fb_user\""
 const __sqlFbUser_Select_history = "SELECT " + __sqlFbUser_ListCols + " FROM history.\"fb_user\""
@@ -48,6 +49,70 @@ func (m *FbUser) SQLVerifySchema(db *cmsql.Database) {
 	}
 }
 
+func (m *FbUser) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_user"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"user_id": {
+			ColumnName:       "user_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_info": {
+			ColumnName:       "external_info",
+			ColumnType:       "*ExternalFBUserInfo",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "fb_user", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
 func init() {
 	__sqlModels = append(__sqlModels, (*FbUser)(nil))
 }
@@ -58,7 +123,7 @@ func (m *FbUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		core.String(m.ExternalID),
 		m.UserID,
-		core.JSON{&m.Info},
+		core.JSON{m.ExternalInfo},
 		m.Status,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -70,7 +135,7 @@ func (m *FbUser) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		(*core.String)(&m.ExternalID),
 		&m.UserID,
-		core.JSON{&m.Info},
+		core.JSON{&m.ExternalInfo},
 		&m.Status,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -176,13 +241,13 @@ func (m *FbUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.UserID)
 	}
-	if true {
+	if m.ExternalInfo != nil {
 		flag = true
-		w.WriteName("info")
+		w.WriteName("external_info")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(core.JSON{&m.Info})
+		w.WriteArg(core.JSON{m.ExternalInfo})
 	}
 	if m.Status != 0 {
 		flag = true
@@ -240,13 +305,13 @@ func (m FbUserHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FbUserHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m FbUserHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
-func (m FbUserHistory) UserID() core.Interface     { return core.Interface{m["user_id"]} }
-func (m FbUserHistory) Info() core.Interface       { return core.Interface{m["info"]} }
-func (m FbUserHistory) Status() core.Interface     { return core.Interface{m["status"]} }
-func (m FbUserHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
-func (m FbUserHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
+func (m FbUserHistory) ID() core.Interface           { return core.Interface{m["id"]} }
+func (m FbUserHistory) ExternalID() core.Interface   { return core.Interface{m["external_id"]} }
+func (m FbUserHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
+func (m FbUserHistory) ExternalInfo() core.Interface { return core.Interface{m["external_info"]} }
+func (m FbUserHistory) Status() core.Interface       { return core.Interface{m["status"]} }
+func (m FbUserHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m FbUserHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 
 func (m *FbUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 7)
@@ -261,7 +326,7 @@ func (m *FbUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["id"] = data[0]
 	res["external_id"] = data[1]
 	res["user_id"] = data[2]
-	res["info"] = data[3]
+	res["external_info"] = data[3]
 	res["status"] = data[4]
 	res["created_at"] = data[5]
 	res["updated_at"] = data[6]
@@ -284,7 +349,7 @@ func (ms *FbUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["external_id"] = data[1]
 		m["user_id"] = data[2]
-		m["info"] = data[3]
+		m["external_info"] = data[3]
 		m["status"] = data[4]
 		m["created_at"] = data[5]
 		m["updated_at"] = data[6]
@@ -315,6 +380,49 @@ func (m *FbUserInternal) SQLListCols() string   { return __sqlFbUserInternal_Lis
 func (m *FbUserInternal) SQLVerifySchema(db *cmsql.Database) {
 	query := "SELECT " + __sqlFbUserInternal_ListCols + " FROM \"fb_user_internal\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *FbUserInternal) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_user_internal"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"token": {
+			ColumnName:       "token",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"expires_in": {
+			ColumnName:       "expires_in",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "fb_user_internal", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }

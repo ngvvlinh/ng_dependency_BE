@@ -15,6 +15,7 @@ type QueryInterface interface {
 	Get(obj core.IGet, preds ...interface{}) (bool, error)
 	Find(objs core.IFind, preds ...interface{}) error
 	Insert(objs ...core.IInsert) (int, error)
+	Upsert(objs ...core.IUpsert) (int, error)
 	Update(objs ...core.IUpdate) (int, error)
 	UpdateMap(m map[string]interface{}) (int, error)
 	Delete(obj core.ITableName) (int, error)
@@ -95,6 +96,11 @@ func (q Query) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.
 // Insert ...
 func (q Query) Insert(objs ...core.IInsert) (int, error) {
 	return q.query.Insert(objs...)
+}
+
+// Upsert ...
+func (q Query) Upsert(objs ...core.IUpsert) (int, error) {
+	return q.query.Upsert(objs...)
 }
 
 // UpdateInfo ...
@@ -230,6 +236,11 @@ func (db Database) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *
 // Insert ...
 func (db Database) Insert(objs ...core.IInsert) (int, error) {
 	return db.db.Insert(objs...)
+}
+
+// Upsert ...
+func (db Database) Upsert(objs ...core.IUpsert) (int, error) {
+	return db.db.Upsert(objs...)
 }
 
 // UpdateInfo ...
@@ -369,6 +380,11 @@ func (tx tx) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.Ro
 // Insert ...
 func (tx tx) Insert(objs ...core.IInsert) (int, error) {
 	return tx.tx.Insert(objs...)
+}
+
+// Upsert ...
+func (tx tx) Upsert(objs ...core.IUpsert) (int, error) {
+	return tx.tx.Upsert(objs...)
 }
 
 // UpdateInfo ...

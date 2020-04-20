@@ -35,13 +35,14 @@ const (
 
 // PermissionDecl ...
 type PermissionDecl struct {
-	Type        PermType
-	Auth        AuthType
-	Permissions string
-	Validate    string
-	Captcha     string
-	AuthPartner AuthOpt
-	Actions     []ActionType
+	Type            PermType
+	Auth            AuthType
+	Permissions     string
+	Validate        string
+	Captcha         string
+	AuthPartner     AuthOpt
+	Actions         []ActionType
+	IncludeFaboInfo bool
 
 	Rename string
 }
