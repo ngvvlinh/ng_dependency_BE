@@ -15,7 +15,7 @@ type CreateShopCommand struct {
 	Address                     *adressmodel.Address
 	Phone                       string
 	BankAccount                 *identitysharemodel.BankAccount
-	WebsiteURL                  string
+	WebsiteURL                  dot.NullString
 	ImageURL                    string
 	Email                       string
 	AutoCreateFFM               bool

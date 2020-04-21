@@ -1910,25 +1910,6 @@ func (ft *ShopFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopFilters) ByWebsiteURL(WebsiteURL string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "website_url",
-		Value:  WebsiteURL,
-		IsNil:  WebsiteURL == "",
-	}
-}
-
-func (ft *ShopFilters) ByWebsiteURLPtr(WebsiteURL *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "website_url",
-		Value:  WebsiteURL,
-		IsNil:  WebsiteURL == nil,
-		IsZero: WebsiteURL != nil && (*WebsiteURL) == "",
-	}
-}
-
 func (ft *ShopFilters) ByImageURL(ImageURL string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

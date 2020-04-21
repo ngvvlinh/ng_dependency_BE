@@ -4104,8 +4104,8 @@ func (m *Shop) Migration(db *cmsql.Database) {
 		},
 		"website_url": {
 			ColumnName:       "website_url",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+			ColumnType:       "dot.NullString",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -4264,7 +4264,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ShipFromAddressID,
 		core.String(m.Phone),
 		core.JSON{m.BankAccount},
-		core.String(m.WebsiteURL),
+		m.WebsiteURL,
 		core.String(m.ImageURL),
 		core.String(m.Email),
 		core.String(m.Code),
@@ -4298,7 +4298,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ShipFromAddressID,
 		(*core.String)(&m.Phone),
 		core.JSON{&m.BankAccount},
-		(*core.String)(&m.WebsiteURL),
+		&m.WebsiteURL,
 		(*core.String)(&m.ImageURL),
 		(*core.String)(&m.Email),
 		(*core.String)(&m.Code),
@@ -4468,7 +4468,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.BankAccount})
 	}
-	if m.WebsiteURL != "" {
+	if m.WebsiteURL.Valid {
 		flag = true
 		w.WriteName("website_url")
 		w.WriteByte('=')

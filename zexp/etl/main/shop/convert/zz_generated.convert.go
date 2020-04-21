@@ -161,7 +161,7 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
 	out.Phone = arg.Phone                                 // simple assign
 	out.BankAccount = arg.BankAccount                     // simple assign
-	out.WebsiteURL = arg.WebsiteURL                       // simple assign
+	out.WebsiteURL = dot.NullString{}                     // types do not match
 	out.ImageURL = arg.ImageURL                           // simple assign
 	out.Email = arg.Email                                 // simple assign
 	out.Code = arg.Code                                   // simple assign
@@ -216,7 +216,7 @@ func convert_identitymodel_Shop_shopmodel_Shop(arg *identitymodel.Shop, out *sho
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
 	out.Phone = arg.Phone                                 // simple assign
 	out.BankAccount = arg.BankAccount                     // simple assign
-	out.WebsiteURL = arg.WebsiteURL                       // simple assign
+	out.WebsiteURL = ""                                   // types do not match
 	out.ImageURL = arg.ImageURL                           // simple assign
 	out.Email = arg.Email                                 // simple assign
 	out.Code = arg.Code                                   // simple assign

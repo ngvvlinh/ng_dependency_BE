@@ -14,6 +14,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	sharemodel "o.o/backend/com/main/identity/sharemodel"
 	conversion "o.o/backend/pkg/common/conversion"
+	dot "o.o/capi/dot"
 )
 
 /*
@@ -670,7 +671,7 @@ func convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *iden
 	out.ShipToAddressID = arg.ShipToAddressID             // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
 	out.Phone = arg.Phone                                 // simple assign
-	out.WebsiteURL = arg.WebsiteURL                       // simple assign
+	out.WebsiteURL = ""                                   // types do not match
 	out.ImageURL = arg.ImageURL                           // simple assign
 	out.Email = arg.Email                                 // simple assign
 	out.Code = arg.Code                                   // simple assign
@@ -716,7 +717,7 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.ShipFromAddressID = arg.ShipFromAddressID // simple assign
 	out.Phone = arg.Phone                         // simple assign
 	out.BankAccount = Convert_identitytypes_BankAccount_sharemodel_BankAccount(arg.BankAccount, nil)
-	out.WebsiteURL = arg.WebsiteURL           // simple assign
+	out.WebsiteURL = dot.NullString{}         // types do not match
 	out.ImageURL = arg.ImageURL               // simple assign
 	out.Email = arg.Email                     // simple assign
 	out.Code = arg.Code                       // simple assign

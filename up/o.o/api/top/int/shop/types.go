@@ -547,7 +547,7 @@ type RegisterShopRequest struct {
 	Address     *etop.Address     `json:"address"`
 	Phone       string            `json:"phone"`
 	BankAccount *etop.BankAccount `json:"bank_account"`
-	WebsiteUrl  string            `json:"website_url"`
+	WebsiteUrl  dot.NullString    `json:"website_url"`
 	ImageUrl    string            `json:"image_url"`
 	Email       string            `json:"email"`
 	UrlSlug     string            `json:"url_slug"`
@@ -573,7 +573,7 @@ type UpdateShopRequest struct {
 	Address            *etop.Address     `json:"address"`
 	Phone              string            `json:"phone"`
 	BankAccount        *etop.BankAccount `json:"bank_account"`
-	WebsiteUrl         string            `json:"website_url"`
+	WebsiteUrl         dot.NullString    `json:"website_url"`
 	ImageUrl           string            `json:"image_url"`
 	Email              string            `json:"email"`
 	AutoCreateFfm      dot.NullBool      `json:"auto_create_ffm"`

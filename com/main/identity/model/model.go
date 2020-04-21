@@ -132,7 +132,7 @@ type Shop struct {
 	ShipFromAddressID dot.ID
 	Phone             string
 	BankAccount       *identitysharemodel.BankAccount
-	WebsiteURL        string
+	WebsiteURL        dot.NullString
 	ImageURL          string
 	Email             string
 	Code              string
