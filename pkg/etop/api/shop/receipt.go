@@ -294,6 +294,7 @@ func (s *ReceiptService) listTraders(
 	if err := s.TraderQuery.Dispatch(ctx, getTradersByIDsQuery); err != nil {
 		return err
 	}
+
 	for _, trader := range getTradersByIDsQuery.Result.Traders {
 		switch trader.Type {
 		case tradering.CarrierType:
@@ -302,6 +303,11 @@ func (s *ReceiptService) listTraders(
 			customerIDs = append(customerIDs, trader.ID)
 		case tradering.SupplierType:
 			supplierIDs = append(supplierIDs, trader.ID)
+		}
+	}
+	for _, traderID := range traderIDs {
+		if traderID == customering.CustomerAnonymous {
+			customerIDs = append(customerIDs, traderID)
 		}
 	}
 	// Get elements for each of type
