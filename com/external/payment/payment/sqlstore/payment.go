@@ -42,6 +42,11 @@ func (s *PaymentStore) ExternalTransactionID(id string) *PaymentStore {
 	return s
 }
 
+func (s *PaymentStore) OptionalExternalTransactionID(id string) *PaymentStore {
+	s.preds = append(s.preds, s.ft.ByExternalTransID(id).Optional())
+	return s
+}
+
 func (s *PaymentStore) PaymentProvider(provider payment_provider.PaymentProvider) *PaymentStore {
 	s.preds = append(s.preds, s.ft.ByPaymentProvider(provider))
 	return s

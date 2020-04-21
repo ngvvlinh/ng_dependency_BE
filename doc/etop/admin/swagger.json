@@ -1905,6 +1905,492 @@
           }
         }
       }
+    },
+    "/api/admin.Subscription/ActivateSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "ActivateSubscription",
+        "operationId": "admin.Subscription-ActivateSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/CancelSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CancelSubscription",
+        "operationId": "admin.Subscription-CancelSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/CreateSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CreateSubscription",
+        "operationId": "admin.Subscription-CreateSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateSubscriptionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscription"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/CreateSubscriptionBill": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CreateSubscriptionBill",
+        "operationId": "admin.Subscription-CreateSubscriptionBill",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateSubscriptionBillRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionBill"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/CreateSubscriptionPlan": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CreateSubscriptionPlan",
+        "operationId": "admin.Subscription-CreateSubscriptionPlan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateSubrPlanRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionPlan"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/CreateSubscriptionProduct": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CreateSubscriptionProduct",
+        "operationId": "admin.Subscription-CreateSubscriptionProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateSubrProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/DeleteSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "DeleteSubscription",
+        "operationId": "admin.Subscription-DeleteSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/DeleteSubscriptionBill": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "DeleteSubscriptionBill",
+        "operationId": "admin.Subscription-DeleteSubscriptionBill",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/DeleteSubscriptionPlan": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "DeleteSubscriptionPlan",
+        "operationId": "admin.Subscription-DeleteSubscriptionPlan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/DeleteSubscriptionProduct": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "DeleteSubscriptionProduct",
+        "operationId": "admin.Subscription-DeleteSubscriptionProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/GetSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscription",
+        "operationId": "admin.Subscription-GetSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscription"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/GetSubscriptionBills": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptionBills",
+        "operationId": "admin.Subscription-GetSubscriptionBills",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionBillsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionBillsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/GetSubscriptionPlans": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptionPlans",
+        "operationId": "admin.Subscription-GetSubscriptionPlans",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrPlansResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/GetSubscriptionProducts": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptionProducts",
+        "operationId": "admin.Subscription-GetSubscriptionProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/GetSubscriptions": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptions",
+        "operationId": "admin.Subscription-GetSubscriptions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/ManualPaymentSubscriptionBill": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "ManualPaymentSubscriptionBill",
+        "operationId": "admin.Subscription-ManualPaymentSubscriptionBill",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdManualPaymentSubscriptionBillRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/UpdateSubscriptionInfo": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "UpdateSubscriptionInfo",
+        "operationId": "admin.Subscription-UpdateSubscriptionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateSubscriptionInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Subscription/UpdateSubscriptionPlan": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "UpdateSubscriptionPlan",
+        "operationId": "admin.Subscription-UpdateSubscriptionPlan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateSubrPlanRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2635,6 +3121,16 @@
         "NS"
       ]
     },
+    "bqSubscriptionPlanInterval": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "day",
+        "week",
+        "month",
+        "year"
+      ]
+    },
     "bwShippingProvider": {
       "type": "string",
       "enum": [
@@ -2982,6 +3478,94 @@
         },
         "token": {
           "type": "string"
+        }
+      }
+    },
+    "qdCreateSubrPlanRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+        },
+        "interval_count": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdCreateSubrProductRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/qeProductSubscriptionType"
+        }
+      }
+    },
+    "qdCreateSubscriptionBillRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdCreateSubscriptionRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "type": "boolean"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
         }
       }
     },
@@ -3440,6 +4024,108 @@
           "items": {
             "$ref": "#/definitions/qdShopConnection"
           }
+        }
+      }
+    },
+    "qdGetSubrPlansResponse": {
+      "type": "object",
+      "properties": {
+        "subscription_plans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionPlan"
+          }
+        }
+      }
+    },
+    "qdGetSubrProductsResponse": {
+      "type": "object",
+      "properties": {
+        "subscription_products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionProduct"
+          }
+        }
+      }
+    },
+    "qdGetSubscriptionBillsRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "qdGetSubscriptionBillsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "subscription_bills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionBill"
+          }
+        }
+      }
+    },
+    "qdGetSubscriptionsRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "qdGetSubscriptionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscription"
+          }
+        }
+      }
+    },
+    "qdManualPaymentSubscriptionBillRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_bill_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "integer"
         }
       }
     },
@@ -4487,6 +5173,283 @@
         }
       }
     },
+    "qdSubrBillLine": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "line_amount": {
+          "type": "integer"
+        },
+        "period_end_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "period_start_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "subscription_bill_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_line_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubrCustomer": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "qdSubscription": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_period_end_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_period_start_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionBill": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubrBillLine"
+          }
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionIDRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdSubscriptionLine": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "plan_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionPlan": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "interval": {
+          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+        },
+        "interval_count": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionProduct": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/qeProductSubscriptionType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "qdUpdateShopConnectionRequest": {
       "type": "object",
       "properties": {
@@ -4499,6 +5462,63 @@
         },
         "token": {
           "type": "string"
+        }
+      }
+    },
+    "qdUpdateSubrPlanRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "interval": {
+          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+        },
+        "interval_count": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdUpdateSubscriptionInfoRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "type": "boolean"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
         }
       }
     },
@@ -4795,6 +5815,13 @@
           "$ref": "#/definitions/bmStatus"
         }
       }
+    },
+    "qeProductSubscriptionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ecomify"
+      ]
     },
     "sdShippingFeeType": {
       "type": "string",
@@ -6073,7 +7100,8 @@
         "other",
         "vtpay",
         "momo",
-        "bankdeposit"
+        "bankdeposit",
+        "manual"
       ]
     }
   },
@@ -6110,6 +7138,9 @@
     },
     {
       "name": "Shop"
+    },
+    {
+      "name": "Subscription"
     }
   ]
 }

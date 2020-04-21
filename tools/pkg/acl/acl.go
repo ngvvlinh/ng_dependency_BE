@@ -554,6 +554,25 @@ var _acl = map[string]*permission.Decl{
 	"admin.Location/UpdateCustomRegion": {Type: EtopAdmin},
 	"admin.Location/DeleteCustomRegion": {Type: EtopAdmin},
 
+	"admin.Subscription/CreateSubscriptionProduct": {Type: EtopAdmin},
+	"admin.Subscription/GetSubscriptionProducts":   {Type: EtopAdmin},
+	"admin.Subscription/DeleteSubscriptionProduct": {Type: EtopAdmin},
+	"admin.Subscription/CreateSubscriptionPlan":    {Type: EtopAdmin},
+	"admin.Subscription/UpdateSubscriptionPlan":    {Type: EtopAdmin},
+	"admin.Subscription/GetSubscriptionPlans":      {Type: EtopAdmin},
+	"admin.Subscription/DeleteSubscriptionPlan":    {Type: EtopAdmin},
+
+	"admin.Subscription/GetSubscription":               {Type: EtopAdmin},
+	"admin.Subscription/GetSubscriptions":              {Type: EtopAdmin},
+	"admin.Subscription/CreateSubscription":            {Type: EtopAdmin},
+	"admin.Subscription/UpdateSubscriptionInfo":        {Type: EtopAdmin},
+	"admin.Subscription/CancelSubscription":            {Type: EtopAdmin},
+	"admin.Subscription/ActivateSubscription":          {Type: EtopAdmin},
+	"admin.Subscription/DeleteSubscription":            {Type: EtopAdmin},
+	"admin.Subscription/GetSubscriptionBills":          {Type: EtopAdmin},
+	"admin.Subscription/CreateSubscriptionBill":        {Type: EtopAdmin},
+	"admin.Subscription/ManualPaymentSubscriptionBill": {Type: EtopAdmin},
+	"admin.Subscription/DeleteSubscriptionBill":        {Type: EtopAdmin},
 	//-- shop --//
 
 	"shop.Account/RegisterShop": {Type: CurUsr, AuthPartner: Opt},
@@ -773,6 +792,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Connection/DeleteShopConnection":    {Type: Shop},
 	"shop.Connection/UpdateShopConnection":    {Type: Shop},
 
+	"shop.Subscription/GetSubscription":  {Type: Shop},
+	"shop.Subscription/GetSubscriptions": {Type: Shop},
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
 	"pgevent.Event/GenerateEvents": {Type: Secret},

@@ -43,6 +43,8 @@ func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bo
 		return NewShipmentPriceServiceServer(builder, hooks...), true
 	case func() ShopService:
 		return NewShopServiceServer(builder, hooks...), true
+	case func() SubscriptionService:
+		return NewSubscriptionServiceServer(builder, hooks...), true
 	default:
 		return nil, false
 	}
@@ -1316,6 +1318,250 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 				return nil, err
 			}
 			return inner.GetShopsByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type SubscriptionServiceServer struct {
+	hooks   httprpc.Hooks
+	builder func() SubscriptionService
+}
+
+func NewSubscriptionServiceServer(builder func() SubscriptionService, hooks ...*httprpc.Hooks) httprpc.Server {
+	return &SubscriptionServiceServer{
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
+	}
+}
+
+const SubscriptionServicePathPrefix = "/admin.Subscription/"
+
+func (s *SubscriptionServiceServer) PathPrefix() string {
+	return SubscriptionServicePathPrefix
+}
+
+func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+}
+
+func (s *SubscriptionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/admin.Subscription/ActivateSubscription":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ActivateSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/CancelSubscription":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CancelSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/CreateSubscription":
+		msg := &inttypes.CreateSubscriptionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/CreateSubscriptionBill":
+		msg := &inttypes.CreateSubscriptionBillRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateSubscriptionBill(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/CreateSubscriptionPlan":
+		msg := &inttypes.CreateSubrPlanRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateSubscriptionPlan(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/CreateSubscriptionProduct":
+		msg := &inttypes.CreateSubrProductRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateSubscriptionProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/DeleteSubscription":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/DeleteSubscriptionBill":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteSubscriptionBill(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/DeleteSubscriptionPlan":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteSubscriptionPlan(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/DeleteSubscriptionProduct":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteSubscriptionProduct(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/GetSubscription":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/GetSubscriptionBills":
+		msg := &inttypes.GetSubscriptionBillsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscriptionBills(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/GetSubscriptionPlans":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscriptionPlans(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/GetSubscriptionProducts":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscriptionProducts(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/GetSubscriptions":
+		msg := &inttypes.GetSubscriptionsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscriptions(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/ManualPaymentSubscriptionBill":
+		msg := &inttypes.ManualPaymentSubscriptionBillRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ManualPaymentSubscriptionBill(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/UpdateSubscriptionInfo":
+		msg := &inttypes.UpdateSubscriptionInfoRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateSubscriptionInfo(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/admin.Subscription/UpdateSubscriptionPlan":
+		msg := &inttypes.UpdateSubrPlanRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateSubscriptionPlan(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

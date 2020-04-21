@@ -3322,3 +3322,839 @@ func (s wrapShopService) GetShopsByIDs(ctx context.Context, req *cm.IDsRequest) 
 	errs = cmwrapper.HasErrors(resp)
 	return resp, nil
 }
+
+func WrapSubscriptionService(s func() *SubscriptionService) func() api.SubscriptionService {
+	return func() api.SubscriptionService { return wrapSubscriptionService{s: s} }
+}
+
+type wrapSubscriptionService struct {
+	s func() *SubscriptionService
+}
+
+type ActivateSubscriptionEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) ActivateSubscription(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/ActivateSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ActivateSubscriptionEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().ActivateSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CancelSubscriptionEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) CancelSubscription(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/CancelSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelSubscriptionEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CancelSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateSubscriptionEndpoint struct {
+	*inttypes.CreateSubscriptionRequest
+	Result  *inttypes.Subscription
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) CreateSubscription(ctx context.Context, req *inttypes.CreateSubscriptionRequest) (resp *inttypes.Subscription, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/CreateSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateSubscriptionEndpoint{CreateSubscriptionRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateSubscriptionBillEndpoint struct {
+	*inttypes.CreateSubscriptionBillRequest
+	Result  *inttypes.SubscriptionBill
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) CreateSubscriptionBill(ctx context.Context, req *inttypes.CreateSubscriptionBillRequest) (resp *inttypes.SubscriptionBill, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/CreateSubscriptionBill"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateSubscriptionBillEndpoint{CreateSubscriptionBillRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateSubscriptionBill(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateSubscriptionPlanEndpoint struct {
+	*inttypes.CreateSubrPlanRequest
+	Result  *inttypes.SubscriptionPlan
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) CreateSubscriptionPlan(ctx context.Context, req *inttypes.CreateSubrPlanRequest) (resp *inttypes.SubscriptionPlan, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/CreateSubscriptionPlan"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateSubscriptionPlanEndpoint{CreateSubrPlanRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateSubscriptionPlan(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateSubscriptionProductEndpoint struct {
+	*inttypes.CreateSubrProductRequest
+	Result  *inttypes.SubscriptionProduct
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) CreateSubscriptionProduct(ctx context.Context, req *inttypes.CreateSubrProductRequest) (resp *inttypes.SubscriptionProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/CreateSubscriptionProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateSubscriptionProductEndpoint{CreateSubrProductRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateSubscriptionProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteSubscriptionEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) DeleteSubscription(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/DeleteSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteSubscriptionEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteSubscriptionBillEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) DeleteSubscriptionBill(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/DeleteSubscriptionBill"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteSubscriptionBillEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteSubscriptionBill(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteSubscriptionPlanEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) DeleteSubscriptionPlan(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/DeleteSubscriptionPlan"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteSubscriptionPlanEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteSubscriptionPlan(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteSubscriptionProductEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) DeleteSubscriptionProduct(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/DeleteSubscriptionProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteSubscriptionProductEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteSubscriptionProduct(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *inttypes.Subscription
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) GetSubscription(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *inttypes.Subscription, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/GetSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionBillsEndpoint struct {
+	*inttypes.GetSubscriptionBillsRequest
+	Result  *inttypes.GetSubscriptionBillsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) GetSubscriptionBills(ctx context.Context, req *inttypes.GetSubscriptionBillsRequest) (resp *inttypes.GetSubscriptionBillsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/GetSubscriptionBills"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionBillsEndpoint{GetSubscriptionBillsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscriptionBills(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionPlansEndpoint struct {
+	*cm.Empty
+	Result  *inttypes.GetSubrPlansResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) GetSubscriptionPlans(ctx context.Context, req *cm.Empty) (resp *inttypes.GetSubrPlansResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/GetSubscriptionPlans"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionPlansEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscriptionPlans(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionProductsEndpoint struct {
+	*cm.Empty
+	Result  *inttypes.GetSubrProductsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) GetSubscriptionProducts(ctx context.Context, req *cm.Empty) (resp *inttypes.GetSubrProductsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/GetSubscriptionProducts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionProductsEndpoint{Empty: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscriptionProducts(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionsEndpoint struct {
+	*inttypes.GetSubscriptionsRequest
+	Result  *inttypes.GetSubscriptionsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) GetSubscriptions(ctx context.Context, req *inttypes.GetSubscriptionsRequest) (resp *inttypes.GetSubscriptionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/GetSubscriptions"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionsEndpoint{GetSubscriptionsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscriptions(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ManualPaymentSubscriptionBillEndpoint struct {
+	*inttypes.ManualPaymentSubscriptionBillRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) ManualPaymentSubscriptionBill(ctx context.Context, req *inttypes.ManualPaymentSubscriptionBillRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/ManualPaymentSubscriptionBill"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ManualPaymentSubscriptionBillEndpoint{ManualPaymentSubscriptionBillRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().ManualPaymentSubscriptionBill(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateSubscriptionInfoEndpoint struct {
+	*inttypes.UpdateSubscriptionInfoRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) UpdateSubscriptionInfo(ctx context.Context, req *inttypes.UpdateSubscriptionInfoRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/UpdateSubscriptionInfo"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateSubscriptionInfoEndpoint{UpdateSubscriptionInfoRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().UpdateSubscriptionInfo(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateSubscriptionPlanEndpoint struct {
+	*inttypes.UpdateSubrPlanRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapSubscriptionService) UpdateSubscriptionPlan(ctx context.Context, req *inttypes.UpdateSubrPlanRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Subscription/UpdateSubscriptionPlan"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateSubscriptionPlanEndpoint{UpdateSubrPlanRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().UpdateSubscriptionPlan(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}

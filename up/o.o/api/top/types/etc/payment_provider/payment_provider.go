@@ -15,4 +15,10 @@ const (
 
 	// +enum=vtpay
 	VTPay PaymentProvider = 1
+
+	// +enum=bank
+	Bank PaymentProvider = 2
+
+	// +enum=manual
+	Manual PaymentProvider = 3
 )

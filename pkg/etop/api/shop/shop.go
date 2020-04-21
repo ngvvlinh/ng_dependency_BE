@@ -31,6 +31,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/shopping/suppliering"
 	"o.o/api/shopping/tradering"
+	"o.o/api/subscripting/subscription"
 	"o.o/api/summary"
 	"o.o/api/top/int/etop"
 	"o.o/api/top/int/shop"
@@ -220,6 +221,7 @@ var (
 	shippingQuery       shipping.QueryBus
 	webserverAggr       webserver.CommandBus
 	webserverQuery      webserver.QueryBus
+	subscriptionQuery   subscription.QueryBus
 )
 
 func Init(
@@ -269,6 +271,7 @@ func Init(
 	shippingQ shipping.QueryBus,
 	webserverA webserver.CommandBus,
 	webserverQ webserver.QueryBus,
+	subscriptionQ subscription.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -316,6 +319,7 @@ func Init(
 	shippingQuery = shippingQ
 	webserverAggr = webserverA
 	webserverQuery = webserverQ
+	subscriptionQuery = subscriptionQ
 }
 
 type MiscService struct{}
@@ -350,6 +354,7 @@ type ConnectionService struct{}
 type RefundService struct{}
 type PurchaseRefundService struct{}
 type WebServerService struct{}
+type SubscriptionService struct{}
 
 func (s *MiscService) Clone() *MiscService                         { res := *s; return &res }
 func (s *InventoryService) Clone() *InventoryService               { res := *s; return &res }
@@ -416,6 +421,7 @@ var connectionService = &ConnectionService{}
 var refundService = &RefundService{}
 var purchaseRefundService = &PurchaseRefundService{}
 var webServerService = &WebServerService{}
+var subscriptionService = &SubscriptionService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

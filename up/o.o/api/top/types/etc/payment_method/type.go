@@ -34,4 +34,7 @@ const (
 	BankDeposit PaymentMethod = 6
 
 	// -- End backward-compatible --//
+
+	// +enum=manual
+	Manual PaymentMethod = 7
 )

@@ -10834,6 +10834,106 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 	return resp, nil
 }
 
+func WrapSubscriptionService(s func() *SubscriptionService) func() api.SubscriptionService {
+	return func() api.SubscriptionService { return wrapSubscriptionService{s: s} }
+}
+
+type wrapSubscriptionService struct {
+	s func() *SubscriptionService
+}
+
+type GetSubscriptionEndpoint struct {
+	*inttypes.SubscriptionIDRequest
+	Result  *inttypes.Subscription
+	Context claims.ShopClaim
+}
+
+func (s wrapSubscriptionService) GetSubscription(ctx context.Context, req *inttypes.SubscriptionIDRequest) (resp *inttypes.Subscription, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Subscription/GetSubscription"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionEndpoint{SubscriptionIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscription(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetSubscriptionsEndpoint struct {
+	*inttypes.GetSubscriptionsRequest
+	Result  *inttypes.GetSubscriptionsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapSubscriptionService) GetSubscriptions(ctx context.Context, req *inttypes.GetSubscriptionsRequest) (resp *inttypes.GetSubscriptionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Subscription/GetSubscriptions"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetSubscriptionsEndpoint{GetSubscriptionsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetSubscriptions(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapSummaryService(s func() *SummaryService) func() api.SummaryService {
 	return func() api.SummaryService { return wrapSummaryService{s: s} }
 }

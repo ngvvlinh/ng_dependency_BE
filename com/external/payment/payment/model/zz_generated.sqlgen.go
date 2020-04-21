@@ -91,7 +91,7 @@ func (m *Payment) Migration(db *cmsql.Database) {
 			ColumnType:       "payment_provider.PaymentProvider",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "vtpay"},
+			ColumnEnumValues: []string{"unknown", "vtpay", "bank", "manual"},
 		},
 		"external_trans_id": {
 			ColumnName:       "external_trans_id",

@@ -17,11 +17,15 @@ var __jsonNull = []byte("null")
 var enumPaymentProviderName = map[int]string{
 	0: "unknown",
 	1: "vtpay",
+	2: "bank",
+	3: "manual",
 }
 
 var enumPaymentProviderValue = map[string]int{
 	"unknown": 0,
 	"vtpay":   1,
+	"bank":    2,
+	"manual":  3,
 }
 
 func ParsePaymentProvider(s string) (PaymentProvider, bool) {

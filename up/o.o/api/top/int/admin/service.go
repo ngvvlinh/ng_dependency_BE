@@ -138,3 +138,28 @@ type LocationService interface {
 	UpdateCustomRegion(context.Context, *CustomRegion) (*cm.UpdatedResponse, error)
 	DeleteCustomRegion(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
+
+// +apix:path=/admin.Subscription
+type SubscriptionService interface {
+	CreateSubscriptionProduct(context.Context, *types.CreateSubrProductRequest) (*types.SubscriptionProduct, error)
+	GetSubscriptionProducts(context.Context, *cm.Empty) (*types.GetSubrProductsResponse, error)
+	DeleteSubscriptionProduct(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+
+	CreateSubscriptionPlan(context.Context, *types.CreateSubrPlanRequest) (*types.SubscriptionPlan, error)
+	UpdateSubscriptionPlan(context.Context, *types.UpdateSubrPlanRequest) (*cm.UpdatedResponse, error)
+	GetSubscriptionPlans(context.Context, *cm.Empty) (*types.GetSubrPlansResponse, error)
+	DeleteSubscriptionPlan(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+
+	GetSubscription(context.Context, *types.SubscriptionIDRequest) (*types.Subscription, error)
+	GetSubscriptions(context.Context, *types.GetSubscriptionsRequest) (*types.GetSubscriptionsResponse, error)
+	CreateSubscription(context.Context, *types.CreateSubscriptionRequest) (*types.Subscription, error)
+	UpdateSubscriptionInfo(context.Context, *types.UpdateSubscriptionInfoRequest) (*cm.UpdatedResponse, error)
+	CancelSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.UpdatedResponse, error)
+	ActivateSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.UpdatedResponse, error)
+	DeleteSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
+
+	GetSubscriptionBills(context.Context, *types.GetSubscriptionBillsRequest) (*types.GetSubscriptionBillsResponse, error)
+	CreateSubscriptionBill(context.Context, *types.CreateSubscriptionBillRequest) (*types.SubscriptionBill, error)
+	ManualPaymentSubscriptionBill(context.Context, *types.ManualPaymentSubscriptionBillRequest) (*cm.UpdatedResponse, error)
+	DeleteSubscriptionBill(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
+}

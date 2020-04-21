@@ -119,7 +119,7 @@ func (m *Order) Migration(db *cmsql.Database) {
 			ColumnType:       "payment_method.PaymentMethod",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "cod", "bank", "other", "vtpay", "momo", "bankdeposit"},
+			ColumnEnumValues: []string{"unknown", "cod", "bank", "other", "vtpay", "momo", "bankdeposit", "manual"},
 		},
 		"customer": {
 			ColumnName:       "customer",

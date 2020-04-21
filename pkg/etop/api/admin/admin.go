@@ -10,6 +10,10 @@ import (
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/api/subscripting/subscription"
+	"o.o/api/subscripting/subscriptionbill"
+	"o.o/api/subscripting/subscriptionplan"
+	"o.o/api/subscripting/subscriptionproduct"
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/etop"
 	"o.o/api/top/int/types"
@@ -51,6 +55,14 @@ var (
 	locationAggr           location.CommandBus
 	locationQuery          location.QueryBus
 	shipmentManager        *shippingcarrier.ShipmentManager
+	subrProductAggr        subscriptionproduct.CommandBus
+	subrProductQuery       subscriptionproduct.QueryBus
+	subrPlanAggr           subscriptionplan.CommandBus
+	subrPlanQuery          subscriptionplan.QueryBus
+	subscriptionQuery      subscription.QueryBus
+	subscriptionAggr       subscription.CommandBus
+	subrBillAggr           subscriptionbill.CommandBus
+	subrBillQuery          subscriptionbill.QueryBus
 )
 
 func Init(
@@ -69,6 +81,15 @@ func Init(
 	locationA location.CommandBus,
 	locationQ location.QueryBus,
 	shipmentM *shippingcarrier.ShipmentManager,
+	subrProductA subscriptionproduct.CommandBus,
+	subrProductQ subscriptionproduct.QueryBus,
+	subrPlanA subscriptionplan.CommandBus,
+	subrPlanQ subscriptionplan.QueryBus,
+	subscriptionA subscription.CommandBus,
+	subscriptionQ subscription.QueryBus,
+	subrBillA subscriptionbill.CommandBus,
+	subrBillQ subscriptionbill.QueryBus,
+
 ) {
 	eventBus = eventB
 	moneyTxQuery = moneyTxQ
@@ -85,6 +106,14 @@ func Init(
 	locationAggr = locationA
 	locationQuery = locationQ
 	shipmentManager = shipmentM
+	subrProductAggr = subrProductA
+	subrProductQuery = subrProductQ
+	subrPlanAggr = subrPlanA
+	subrPlanQuery = subrPlanQ
+	subscriptionAggr = subscriptionA
+	subscriptionQuery = subscriptionQ
+	subrBillAggr = subrBillA
+	subrBillQuery = subrBillQ
 }
 
 func init() {
@@ -133,6 +162,7 @@ type NotificationService struct{}
 type ConnectionService struct{}
 type ShipmentPriceService struct{}
 type LocationService struct{}
+type SubscriptionService struct{}
 
 var miscService = &MiscService{}
 var accountService = &AccountService{}
@@ -145,6 +175,7 @@ var notificationService = &NotificationService{}
 var connectionService = &ConnectionService{}
 var shipmentPriceService = &ShipmentPriceService{}
 var locationService = &LocationService{}
+var subscriptionService = &SubscriptionService{}
 
 func (s *MiscService) Clone() *MiscService {
 	res := *s

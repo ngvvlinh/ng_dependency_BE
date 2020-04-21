@@ -21,6 +21,7 @@ import (
 	"o.o/backend/cmd/etop-server/config"
 	smsAgg "o.o/backend/com/etc/logging/smslog/aggregate"
 	servicepaymentmanager "o.o/backend/com/external/payment/manager"
+	paymentaggregate "o.o/backend/com/external/payment/payment/aggregate"
 	"o.o/backend/com/handler/etop-handler/intctl"
 	"o.o/backend/com/main/address"
 	authorizationaggregate "o.o/backend/com/main/authorization/aggregate"
@@ -85,6 +86,11 @@ import (
 	traderAgg "o.o/backend/com/shopping/tradering/aggregate"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
 	traderquery "o.o/backend/com/shopping/tradering/query"
+	"o.o/backend/com/subscripting/subscription"
+	subscriptionpm "o.o/backend/com/subscripting/subscription/pm"
+	"o.o/backend/com/subscripting/subscriptionbill"
+	"o.o/backend/com/subscripting/subscriptionplan"
+	"o.o/backend/com/subscripting/subscriptionproduct"
 	summaryquery "o.o/backend/com/summary/query"
 	webserveraggregate "o.o/backend/com/web/webserver/aggregate"
 	webserverquery "o.o/backend/com/web/webserver/query"
@@ -433,6 +439,7 @@ func main() {
 		vtpayClient = vtpayclient.New(cfg.VTPay)
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
+	paymentAggr := paymentaggregate.NewAggregate(db).MessageBus()
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
@@ -485,6 +492,17 @@ func main() {
 	if err := whiteLabel.VerifyPartners(context.Background(), identityQuery); err != nil {
 		ll.Fatal("error loading white label partners", l.Error(err))
 	}
+
+	subrProductAggr := subscriptionproduct.NewSubrProductAggregate(db).MessageBus()
+	subrProductQuery := subscriptionproduct.NewSubrProductQuery(db).MessageBus()
+	subrPlanAggr := subscriptionplan.NewSubrPlanAggregate(db).MessageBus()
+	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(db).MessageBus()
+	subscriptionQuery := subscription.NewSubscriptionQuery(db).MessageBus()
+	subscriptionAggr := subscription.NewSubscriptionAggregate(db).MessageBus()
+	subrBillAggr := subscriptionbill.NewSubrBillAggregate(db, eventBus, paymentAggr, subscriptionQuery, subrPlanQuery).MessageBus()
+	subrBillQuery := subscriptionbill.NewSubrBillQuery(db).MessageBus()
+	subscriptionPM := subscriptionpm.New(subrBillQuery, subscriptionQuery, subscriptionAggr)
+	subscriptionPM.RegisterEventHandlers(eventBus)
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)
@@ -551,6 +569,7 @@ func main() {
 		shippingQuery,
 		webServerAggregate,
 		webServerQuery,
+		subscriptionQuery,
 	)
 	partner.Init(
 		shutdowner,
@@ -597,7 +616,21 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
-	admin.Init(eventBus, moneyTxQuery, moneyTxAggr, connectionAggregate, connectionQuery, identityQuery, shipmentPriceAggr, shipmentPriceQuery, shipmentServiceAggr, shipmentServiceQuery, shipmentPriceListAggr, shipmentPriceListQuery, locationAggr, locationBus, shipmentManager)
+	admin.Init(
+		eventBus,
+		moneyTxQuery, moneyTxAggr,
+		connectionAggregate, connectionQuery,
+		identityQuery,
+		shipmentPriceAggr, shipmentPriceQuery,
+		shipmentServiceAggr, shipmentServiceQuery,
+		shipmentPriceListAggr, shipmentPriceListQuery,
+		locationAggr, locationBus,
+		shipmentManager,
+		subrProductAggr, subrProductQuery,
+		subrPlanAggr, subrPlanQuery,
+		subscriptionAggr, subscriptionQuery,
+		subrBillAggr, subrBillQuery,
+	)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

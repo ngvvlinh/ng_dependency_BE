@@ -5209,6 +5209,60 @@
         }
       }
     },
+    "/api/shop.Subscription/GetSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscription",
+        "operationId": "shop.Subscription-GetSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscription"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Subscription/GetSubscriptions": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptions",
+        "operationId": "shop.Subscription-GetSubscriptions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubscriptionsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Summary/CalcBalanceShop": {
       "post": {
         "tags": [
@@ -8090,7 +8144,7 @@
           "type": "integer"
         },
         "type": {
-          "$ref": "#/definitions/qeStocktakeType"
+          "$ref": "#/definitions/vmStocktakeType"
         }
       }
     },
@@ -13554,6 +13608,38 @@
         }
       }
     },
+    "qdGetSubscriptionsRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "qdGetSubscriptionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscription"
+          }
+        }
+      }
+    },
     "qdLoginShopConnectionRequest": {
       "type": "object",
       "properties": {
@@ -14560,6 +14646,113 @@
         }
       }
     },
+    "qdSubrCustomer": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "qdSubscription": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_period_end_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_period_start_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionIDRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdSubscriptionLine": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "plan_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "qdTradingCreateOrderRequest": {
       "type": "object",
       "properties": {
@@ -15056,13 +15249,6 @@
         }
       }
     },
-    "qeStocktakeType": {
-      "type": "string",
-      "enum": [
-        "balance",
-        "discard"
-      ]
-    },
     "rjInventoryVoucherType": {
       "type": "string",
       "enum": [
@@ -15157,6 +15343,13 @@
         "auto"
       ]
     },
+    "vmStocktakeType": {
+      "type": "string",
+      "enum": [
+        "balance",
+        "discard"
+      ]
+    },
     "xjSource": {
       "type": "string",
       "enum": [
@@ -15181,7 +15374,8 @@
         "other",
         "vtpay",
         "momo",
-        "bankdeposit"
+        "bankdeposit",
+        "manual"
       ]
     },
     "yjProductType": {
@@ -15196,7 +15390,9 @@
       "type": "string",
       "enum": [
         "unknown",
-        "vtpay"
+        "vtpay",
+        "bank",
+        "manual"
       ]
     }
   },
@@ -15284,6 +15480,9 @@
     },
     {
       "name": "Stocktake"
+    },
+    {
+      "name": "Subscription"
     },
     {
       "name": "Summary"

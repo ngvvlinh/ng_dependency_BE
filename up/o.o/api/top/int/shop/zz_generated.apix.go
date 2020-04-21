@@ -78,6 +78,8 @@ func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bo
 		return NewShipnowServiceServer(builder, hooks...), true
 	case func() StocktakeService:
 		return NewStocktakeServiceServer(builder, hooks...), true
+	case func() SubscriptionService:
+		return NewSubscriptionServiceServer(builder, hooks...), true
 	case func() SummaryService:
 		return NewSummaryServiceServer(builder, hooks...), true
 	case func() SupplierService:
@@ -3483,6 +3485,74 @@ func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 				return nil, err
 			}
 			return inner.UpdateStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type SubscriptionServiceServer struct {
+	hooks   httprpc.Hooks
+	builder func() SubscriptionService
+}
+
+func NewSubscriptionServiceServer(builder func() SubscriptionService, hooks ...*httprpc.Hooks) httprpc.Server {
+	return &SubscriptionServiceServer{
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
+	}
+}
+
+const SubscriptionServicePathPrefix = "/shop.Subscription/"
+
+func (s *SubscriptionServiceServer) PathPrefix() string {
+	return SubscriptionServicePathPrefix
+}
+
+func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+}
+
+func (s *SubscriptionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Subscription/GetSubscription":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscription(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Subscription/GetSubscriptions":
+		msg := &inttypes.GetSubscriptionsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetSubscriptions(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

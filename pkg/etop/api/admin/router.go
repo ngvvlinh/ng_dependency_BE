@@ -21,6 +21,7 @@ func NewAdminServer(m httprpc.Muxer) {
 		service.NewConnectionServiceServer(WrapConnectionService(connectionService.Clone)),
 		service.NewShipmentPriceServiceServer(WrapShipmentPriceService(shipmentPriceService.Clone)),
 		service.NewLocationServiceServer(WrapLocationService(locationService.Clone)),
+		service.NewSubscriptionServiceServer(WrapSubscriptionService(subscriptionService.Clone)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

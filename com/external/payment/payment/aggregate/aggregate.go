@@ -30,7 +30,7 @@ func (a *Aggregate) MessageBus() payment.CommandBus {
 }
 
 func (a *Aggregate) CreateOrUpdatePayment(ctx context.Context, args *payment.CreatePaymentArgs) (*payment.Payment, error) {
-	_payment, err := a.store(ctx).ExternalTransactionID(args.ExternalTransID).PaymentProvider(args.PaymentProvider).GetPayment()
+	_payment, err := a.store(ctx).OptionalExternalTransactionID(args.ExternalTransID).PaymentProvider(args.PaymentProvider).GetPayment()
 	if cm.ErrorCode(err) == cm.NotFound {
 		// create
 		cmd := &sqlstore.CreatePaymentArgs{

@@ -3337,7 +3337,8 @@
         "other",
         "vtpay",
         "momo",
-        "bankdeposit"
+        "bankdeposit",
+        "manual"
       ]
     },
     "yjProductType": {
