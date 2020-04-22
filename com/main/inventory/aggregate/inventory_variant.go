@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/purchaseorder"
 	"o.o/api/main/purchaserefund"
@@ -37,6 +38,7 @@ type InventoryAggregate struct {
 	db                    *cmsql.Database
 	PurchaseOrderQuery    purchaseorder.QueryBus
 	StocktakeQuery        stocktaking.QueryBus
+	CatalogQuery          catalog.QueryBus
 	RefundQuery           refund.QueryBus
 	PurchaseRefundQuery   purchaserefund.QueryBus
 }
@@ -49,6 +51,7 @@ func NewAggregateInventory(
 	StocktakeQuery stocktaking.QueryBus,
 	refundQuery refund.QueryBus,
 	purchaserRefundQuery purchaserefund.QueryBus,
+	CatalogQ catalog.QueryBus,
 ) *InventoryAggregate {
 	return &InventoryAggregate{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
@@ -60,6 +63,7 @@ func NewAggregateInventory(
 		StocktakeQuery:        StocktakeQuery,
 		RefundQuery:           refundQuery,
 		PurchaseRefundQuery:   purchaserRefundQuery,
+		CatalogQuery:          CatalogQ,
 	}
 }
 

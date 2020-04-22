@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"o.o/api/main/catalog"
 	"o.o/api/main/catalog/types"
 	"o.o/api/main/inventory"
 	"o.o/api/main/purchaseorder"
@@ -679,6 +680,7 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 		switch value.Status {
 		case status3.P:
 			var typeInventoryVoucher inventory_type.InventoryVoucherType
+			var result *inventory.InventoryVoucher
 			if value.Type == inventory_type.Out {
 				typeInventoryVoucher = inventory_type.In
 			} else {
@@ -696,11 +698,46 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 				Type:        typeInventoryVoucher,
 				Lines:       value.Lines,
 			}
-			result, err := q.CreateInventoryVoucher(ctx, args.InventoryOverStock, newVoucher)
-			if err != nil {
-				return nil, err
+
+			if args.RefType == inventory_voucher_ref.PurchaseOrder {
+				var variantIDs []dot.ID
+				var linesTemp []*inventory.InventoryVoucherItem
+				mapCheckVariant := make(map[dot.ID]bool)
+				for _, line := range newVoucher.Lines {
+					variantIDs = append(variantIDs, line.VariantID)
+				}
+				var queryVariants = &catalog.ListShopVariantsByIDsQuery{
+					ShopID: newVoucher.ShopID,
+					IDs:    variantIDs,
+				}
+				if err := q.CatalogQuery.Dispatch(ctx, queryVariants); err != nil {
+					return nil, err
+				}
+				for _, variant := range queryVariants.Result.Variants {
+					mapCheckVariant[variant.VariantID] = true
+				}
+				for _, line := range newVoucher.Lines {
+					if mapCheckVariant[line.VariantID] {
+						linesTemp = append(linesTemp, line)
+					}
+				}
+				if len(linesTemp) != 0 {
+					newVoucher.Lines = linesTemp
+					result, err = q.CreateInventoryVoucher(ctx, args.InventoryOverStock, newVoucher)
+					if err != nil {
+						return nil, err
+					}
+				}
+
+			} else {
+				result, err = q.CreateInventoryVoucher(ctx, args.InventoryOverStock, newVoucher)
+				if err != nil {
+					return nil, err
+				}
 			}
-			inventoryVouchers = append(inventoryVouchers, result)
+			if result != nil {
+				inventoryVouchers = append(inventoryVouchers, result)
+			}
 		case status3.Z:
 			cancelResult, err := q.CancelInventoryVoucher(ctx, &inventory.CancelInventoryVoucherArgs{
 				ShopID:       value.ShopID,
@@ -730,9 +767,11 @@ func (q *InventoryAggregate) CancelInventoryByRefID(ctx context.Context, args *i
 			}
 		}
 	}
-	inventoryVouchers, err = q.populateInventoryVouchers(ctx, inventoryVouchers)
-	if err != nil {
-		return nil, err
+	if len(inventoryVouchers) != 0 {
+		inventoryVouchers, err = q.populateInventoryVouchers(ctx, inventoryVouchers)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &inventory.CancelInventoryByRefIDResponse{
 		InventoryVouchers: inventoryVouchers,

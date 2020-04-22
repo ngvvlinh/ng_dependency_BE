@@ -255,7 +255,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	refundQueryBus := query11.RefundQueryServiceMessageBus(refundQueryService)
 	purchaseRefundQueryService := query12.NewQueryPurchasePurchaseRefund(eventBus, mainDB)
 	purchaserefundQueryBus := query12.PurchaseRefundQueryServiceMessageBus(purchaseRefundQueryService)
-	inventoryAggregate := aggregate5.NewAggregateInventory(eventBus, mainDB, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus)
+	inventoryAggregate := aggregate5.NewAggregateInventory(eventBus, mainDB, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus, catalogQueryBus)
 	inventoryCommandBus := aggregate5.InventoryAggregateMessageBus(inventoryAggregate)
 	inventoryService := &shop.InventoryService{
 		TraderQuery:    traderingQueryBus,

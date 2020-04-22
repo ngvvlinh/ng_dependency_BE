@@ -89,6 +89,7 @@ func (m *ProcessManager) RefundCancelledEvent(ctx context.Context, event *refund
 
 func (m *ProcessManager) PurchaseOrderCancelledEvent(ctx context.Context, event *purchaseorder.PurchaseOrderCancelledEvent) error {
 	cmd := &inventory.CancelInventoryByRefIDCommand{
+		RefType:              inventory_voucher_ref.PurchaseOrder,
 		RefID:                event.PurchaseOrderID,
 		ShopID:               event.ShopID,
 		InventoryOverStock:   true,
