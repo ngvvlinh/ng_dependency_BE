@@ -10,7 +10,6 @@ import (
 
 func NewFaboServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewSessionServiceServer(WrapSessionService(sessionService)),
 		service.NewPageServiceServer(WrapPageService(pageService)),
 	}
 	for _, s := range servers {

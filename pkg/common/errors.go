@@ -33,6 +33,8 @@ const (
 	AccountClosed        = xerrors.AccountClosed
 
 	SkipSync = xerrors.SkipSync
+
+	FacebookPermissionDenied = xerrors.FacebookPermissionDenied
 )
 
 var (

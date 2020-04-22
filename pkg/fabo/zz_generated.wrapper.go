@@ -25,17 +25,17 @@ type wrapPageService struct {
 	s *PageService
 }
 
-type ListFbPagesEndpoint struct {
-	*api.ListFbPagesRequest
-	Result  *api.FbPagesResponse
+type ConnectPagesEndpoint struct {
+	*api.ConnectPagesRequest
+	Result  *api.ConnectPagesResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapPageService) ListFbPages(ctx context.Context, req *api.ListFbPagesRequest) (resp *api.FbPagesResponse, err error) {
+func (s wrapPageService) ConnectPages(ctx context.Context, req *api.ConnectPagesRequest) (resp *api.ConnectPagesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "fabo.Page/ListFbPages"
+	const rpcName = "fabo.Page/ConnectPages"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -50,7 +50,53 @@ func (s wrapPageService) ListFbPages(ctx context.Context, req *api.ListFbPagesRe
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &ListFbPagesEndpoint{ListFbPagesRequest: req}
+	query := &ConnectPagesEndpoint{ConnectPagesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ConnectPages(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ListPagesEndpoint struct {
+	*api.ListPagesRequest
+	Result  *api.ListPagesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapPageService) ListPages(ctx context.Context, req *api.ListPagesRequest) (resp *api.ListPagesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "fabo.Page/ListPages"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ListPagesEndpoint{ListPagesRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -71,7 +117,7 @@ func (s wrapPageService) ListFbPages(ctx context.Context, req *api.ListFbPagesRe
 		query.Context.FaboInfo = faboInfo
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListFbPages(ctx, query)
+	err = s.s.ListPages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -83,17 +129,17 @@ func (s wrapPageService) ListFbPages(ctx context.Context, req *api.ListFbPagesRe
 	return resp, nil
 }
 
-type RemoveFbPagesEndpoint struct {
-	*api.RemoveFbPagesRequest
+type RemovePagesEndpoint struct {
+	*api.RemovePagesRequest
 	Result  *cm.Empty
 	Context claims.ShopClaim
 }
 
-func (s wrapPageService) RemoveFbPages(ctx context.Context, req *api.RemoveFbPagesRequest) (resp *cm.Empty, err error) {
+func (s wrapPageService) RemovePages(ctx context.Context, req *api.RemovePagesRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "fabo.Page/RemoveFbPages"
+	const rpcName = "fabo.Page/RemovePages"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -108,7 +154,7 @@ func (s wrapPageService) RemoveFbPages(ctx context.Context, req *api.RemoveFbPag
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &RemoveFbPagesEndpoint{RemoveFbPagesRequest: req}
+	query := &RemovePagesEndpoint{RemovePagesRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -129,61 +175,7 @@ func (s wrapPageService) RemoveFbPages(ctx context.Context, req *api.RemoveFbPag
 		query.Context.FaboInfo = faboInfo
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveFbPages(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-func WrapSessionService(s *SessionService) api.SessionService {
-	return wrapSessionService{s: s}
-}
-
-type wrapSessionService struct {
-	s *SessionService
-}
-
-type InitSessionEndpoint struct {
-	*api.InitSessionRequest
-	Result  *api.InitSessionResponse
-	Context claims.ShopClaim
-}
-
-func (s wrapSessionService) InitSession(ctx context.Context, req *api.InitSessionRequest) (resp *api.InitSessionResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "fabo.Session/InitSession"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	ctx, err = middleware.StartSession(ctx, sessionQuery)
-	if err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &InitSessionEndpoint{InitSessionRequest: req}
-	if session != nil {
-		query.Context.Claim = session.Claim
-	}
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.InitSession(ctx, query)
+	err = s.s.RemovePages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

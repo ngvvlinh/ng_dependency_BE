@@ -12,7 +12,7 @@ func (ft *FbPageFilters) NotDeleted() sq.WriterTo {
 var FilterFbPage = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at"},
 	Numbers: []string{"id"},
-	Status:  []string{"status"},
+	Status:  []string{"status", "connection_status"},
 }
 
 var SortFbPage = map[string]string{

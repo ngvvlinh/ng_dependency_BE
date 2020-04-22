@@ -85,6 +85,8 @@ const (
 	AccountClosed        = Code(2001)
 
 	SkipSync = Code(2101)
+
+	FacebookPermissionDenied = Code(3001)
 )
 
 var (

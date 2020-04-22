@@ -896,9 +896,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 
 	// -- Fabo --
-	"fabo.Session/InitSession": {Type: Shop},
-	"fabo.Page/RemoveFbPages":  {Type: Shop, IncludeFaboInfo: true},
-	"fabo.Page/ListFbPages":    {Type: Shop, IncludeFaboInfo: true},
+	"fabo.Page/ConnectPages": {Type: Shop},
+	"fabo.Page/RemovePages":  {Type: Shop, IncludeFaboInfo: true},
+	"fabo.Page/ListPages":    {Type: Shop, IncludeFaboInfo: true},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

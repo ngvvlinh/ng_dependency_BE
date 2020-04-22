@@ -10,7 +10,7 @@ var (
 	fbUserAggr  fbusering.CommandBus
 	fbPageQuery fbpaging.QueryBus
 	fbPageAggr  fbpaging.CommandBus
-	appScopes   []string
+	appScopes   map[string]string
 )
 
 func Init(
@@ -18,7 +18,7 @@ func Init(
 	fbuserA fbusering.CommandBus,
 	fbPageQ fbpaging.QueryBus,
 	fbPageA fbpaging.CommandBus,
-	_appScopes []string,
+	_appScopes map[string]string,
 ) {
 	fbUserQuery = fbUserQ
 	fbUserAggr = fbuserA
@@ -27,8 +27,6 @@ func Init(
 	appScopes = _appScopes
 }
 
-type SessionService struct{}
 type PageService struct{}
 
-var sessionService = &SessionService{}
 var pageService = &PageService{}

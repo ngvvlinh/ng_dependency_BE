@@ -19,6 +19,7 @@ type FbPage struct {
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
 	Status               status3.Status
+	ConnectionStatus     status3.Status
 	CreatedAt            time.Time `sq:"create"`
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time

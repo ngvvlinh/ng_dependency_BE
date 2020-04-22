@@ -28,6 +28,7 @@ func PbFbPageCombined(m *fbpaging.FbPageCombined) *fabo.FbPageCombined {
 		ExternalCategoryList: externalCategoryList,
 		ExternalTasks:        m.FbPage.ExternalTasks,
 		Status:               m.FbPage.Status,
+		ConnectionStatus:     m.FbPage.ConnectionStatus,
 		CreatedAt:            m.FbPage.CreatedAt,
 		UpdatedAt:            m.FbPage.UpdatedAt,
 	}
@@ -60,6 +61,7 @@ func PbFbPage(m *fbpaging.FbPage) *fabo.FbPage {
 		ExternalCategoryList: categoryList,
 		ExternalTasks:        m.ExternalTasks,
 		Status:               m.Status,
+		ConnectionStatus:     m.ConnectionStatus,
 		CreatedAt:            m.CreatedAt,
 		UpdatedAt:            m.UpdatedAt,
 	}

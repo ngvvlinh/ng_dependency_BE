@@ -15,20 +15,20 @@
     "version": "v1"
   },
   "paths": {
-    "/api/fabo.Page/ListFbPages": {
+    "/api/fabo.Page/ConnectPages": {
       "post": {
         "tags": [
           "Page"
         ],
-        "summary": "ListFbPages",
-        "operationId": "fabo.Page-ListFbPages",
+        "summary": "ConnectPages",
+        "operationId": "fabo.Page-ConnectPages",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cvListFbPagesRequest"
+              "$ref": "#/definitions/cvConnectPagesRequest"
             }
           }
         ],
@@ -36,26 +36,53 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/cvFbPagesResponse"
+              "$ref": "#/definitions/cvConnectPagesResponse"
             }
           }
         }
       }
     },
-    "/api/fabo.Page/RemoveFbPages": {
+    "/api/fabo.Page/ListPages": {
       "post": {
         "tags": [
           "Page"
         ],
-        "summary": "RemoveFbPages",
-        "operationId": "fabo.Page-RemoveFbPages",
+        "summary": "ListPages",
+        "operationId": "fabo.Page-ListPages",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cvRemoveFbPagesRequest"
+              "$ref": "#/definitions/cvListPagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListPagesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Page/RemovePages": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "RemovePages",
+        "operationId": "fabo.Page-RemovePages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvRemovePagesRequest"
             }
           }
         ],
@@ -64,33 +91,6 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
-    "/api/fabo.Session/InitSession": {
-      "post": {
-        "tags": [
-          "Session"
-        ],
-        "summary": "InitSession",
-        "operationId": "fabo.Session-InitSession",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cvInitSessionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/cvInitSessionResponse"
             }
           }
         }
@@ -105,6 +105,28 @@
         "P",
         "N"
       ]
+    },
+    "cvConnectPagesRequest": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        }
+      }
+    },
+    "cvConnectPagesResponse": {
+      "type": "object",
+      "properties": {
+        "fb_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbPageCombined"
+          }
+        },
+        "fb_user": {
+          "$ref": "#/definitions/cvFbUserCombined"
+        }
+      }
     },
     "cvExternalCategory": {
       "type": "object",
@@ -141,6 +163,9 @@
     "cvFbPage": {
       "type": "object",
       "properties": {
+        "connection_status": {
+          "$ref": "#/definitions/blStatus"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -194,6 +219,9 @@
     "cvFbPageCombined": {
       "type": "object",
       "properties": {
+        "connection_status": {
+          "$ref": "#/definitions/blStatus"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -244,20 +272,6 @@
         }
       }
     },
-    "cvFbPagesResponse": {
-      "type": "object",
-      "properties": {
-        "fb_pages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cvFbPage"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/ktPageInfo"
-        }
-      }
-    },
     "cvFbUserCombined": {
       "type": "object",
       "properties": {
@@ -288,29 +302,7 @@
         }
       }
     },
-    "cvInitSessionRequest": {
-      "type": "object",
-      "properties": {
-        "access_token": {
-          "type": "string"
-        }
-      }
-    },
-    "cvInitSessionResponse": {
-      "type": "object",
-      "properties": {
-        "fb_pages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cvFbPageCombined"
-          }
-        },
-        "fb_user": {
-          "$ref": "#/definitions/cvFbUserCombined"
-        }
-      }
-    },
-    "cvListFbPagesRequest": {
+    "cvListPagesRequest": {
       "type": "object",
       "properties": {
         "filters": {
@@ -324,7 +316,21 @@
         }
       }
     },
-    "cvRemoveFbPagesRequest": {
+    "cvListPagesResponse": {
+      "type": "object",
+      "properties": {
+        "fb_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbPage"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "cvRemovePagesRequest": {
       "type": "object",
       "properties": {
         "ids": {
@@ -391,9 +397,6 @@
   "tags": [
     {
       "name": "Page"
-    },
-    {
-      "name": "Session"
     }
   ]
 }

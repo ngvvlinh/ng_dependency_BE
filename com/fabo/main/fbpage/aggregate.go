@@ -109,7 +109,7 @@ func (a *FbPageAggregate) CreateFbPageCombineds(
 			}
 
 			if len(externalIDs) > 0 {
-				if _, err := a.fbPageStore(ctx).ExternalIDs(externalIDs).UpdateStatus(int(status3.N)); err != nil {
+				if _, err := a.fbPageStore(ctx).ExternalIDs(externalIDs).UpdateConnectionStatus(int(status3.N)); err != nil {
 					return err
 				}
 			}

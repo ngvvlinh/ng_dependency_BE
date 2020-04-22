@@ -9,18 +9,18 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type InitSessionRequest struct {
+type ConnectPagesRequest struct {
 	AccessToken string `json:"access_token"`
 }
 
-func (m *InitSessionRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ConnectPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type InitSessionResponse struct {
+type ConnectPagesResponse struct {
 	FbUser  *FbUserCombined   `json:"fb_user"`
 	FbPages []*FbPageCombined `json:"fb_pages"`
 }
 
-func (m *InitSessionResponse) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ConnectPagesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbUserCombined struct {
 	ID           dot.ID              `json:"id"`
@@ -65,6 +65,7 @@ type FbPageCombined struct {
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
 	Status               status3.Status      `json:"status"`
+	ConnectionStatus     status3.Status      `json:"connection_status"`
 	CreatedAt            time.Time           `json:"created_at"`
 	UpdatedAt            time.Time           `json:"updated_at"`
 }
@@ -82,6 +83,7 @@ type FbPage struct {
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
 	Status               status3.Status      `json:"status"`
+	ConnectionStatus     status3.Status      `json:"connection_status"`
 	CreatedAt            time.Time           `json:"created_at"`
 	UpdatedAt            time.Time           `json:"updated_at"`
 }
@@ -93,22 +95,22 @@ type ExternalCategory struct {
 
 func (m *FbPage) String() string { return jsonx.MustMarshalToString(m) }
 
-type RemoveFbPagesRequest struct {
+type RemovePagesRequest struct {
 	IDs []dot.ID `json:"ids"`
 }
 
-func (m *RemoveFbPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *RemovePagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type ListFbPagesRequest struct {
+type ListPagesRequest struct {
 	Paging  *common.Paging   `json:"paging"`
 	Filters []*common.Filter `json:"filters"`
 }
 
-func (m *ListFbPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ListPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type FbPagesResponse struct {
+type ListPagesResponse struct {
 	FbPages []*FbPage        `json:"fb_pages"`
 	Paging  *common.PageInfo `json:"paging"`
 }
 
-func (m *FbPagesResponse) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ListPagesResponse) String() string { return jsonx.MustMarshalToString(m) }

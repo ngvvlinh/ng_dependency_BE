@@ -178,6 +178,25 @@ func (ft *FbPageFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr
 	}
 }
 
+func (ft *FbPageFilters) ByConnectionStatus(ConnectionStatus status3.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_status",
+		Value:  ConnectionStatus,
+		IsNil:  ConnectionStatus == 0,
+	}
+}
+
+func (ft *FbPageFilters) ByConnectionStatusPtr(ConnectionStatus *status3.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_status",
+		Value:  ConnectionStatus,
+		IsNil:  ConnectionStatus == nil,
+		IsZero: ConnectionStatus != nil && (*ConnectionStatus) == 0,
+	}
+}
+
 func (ft *FbPageFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

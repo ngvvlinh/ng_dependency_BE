@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"etop.vn/backend/cmd/fabo/config"
+	"etop.vn/backend/com/fabo/api"
 	servicefbpage "etop.vn/backend/com/fabo/main/fbpage"
 	servicefbuser "etop.vn/backend/com/fabo/main/fbuser"
 	"etop.vn/backend/com/fabo/util"
@@ -39,6 +40,18 @@ var (
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
+
+	apiInfo = config.ApiInfo{
+		Host:    "https://graph.facebook.com",
+		Version: "v6.0",
+	}
+	appScopes = map[string]string{
+		"manage_pages":    "Quản lý các trang của bạn",
+		"pages_show_list": "Hiển thị các trang do tài khoản quản lý",
+		"publish_pages":   "Đăng nội dung lên trang do bạn quản lý",
+		"pages_messaging": "Quản lý và truy cập các cuộc trò chuyện của trang",
+		"public_profile":  "Hiển thị thông tin cơ bản của tài khoản",
+	}
 )
 
 func main() {
@@ -107,9 +120,10 @@ func main() {
 		fbuseraggregate,
 		fbpagequery,
 		fbpageaggregate,
-		cfg.App.Scopes,
+		appScopes,
 	)
-	util.New(cfg.ApiInfo, cfg.App, bot)
+	api.InitHandleError(bot)
+	util.New(apiInfo, cfg.App, bot)
 
 	healthservice.MarkReady()
 

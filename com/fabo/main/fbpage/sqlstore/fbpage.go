@@ -97,6 +97,25 @@ func (s *FbPageStore) UpdateStatus(status int) (int, error) {
 	return updateStatus, err
 }
 
+func (s *FbPageStore) UpdateConnectionStatus(connectionStatus int) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	updateConnectionStatus, err := query.Table("fb_page").UpdateMap(map[string]interface{}{
+		"connection_status": connectionStatus,
+	})
+	return updateConnectionStatus, err
+}
+
+func (s *FbPageStore) UpdateStatusAndConnectionStatus(status, connectionStatus int) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	updateStatusAndConnectionStatus, err := query.Table("fb_page").UpdateMap(map[string]interface{}{
+		"status":            status,
+		"connection_status": connectionStatus,
+	})
+	return updateStatusAndConnectionStatus, err
+}
+
 func (s *FbPageStore) CreateFbPage(fbPage *fbpaging.FbPage) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbPageDB := new(model.FbPage)

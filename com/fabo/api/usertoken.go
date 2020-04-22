@@ -14,15 +14,9 @@ type Data struct {
 	Scopes              []string         `json:"scopes"`
 	GranularScopes      []*GranularScope `json:"granular_scopes"`
 	UserID              string           `json:"user_id"`
-	Error               *Error           `json:"error"`
 }
 
 type GranularScope struct {
 	Scope     string   `json:"scope"`
 	TargetIDs []string `json:"target_ids"`
-}
-
-type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
 }

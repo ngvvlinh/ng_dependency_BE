@@ -9,7 +9,6 @@ import (
 
 	"etop.vn/backend/cmd/fabo/config"
 	"etop.vn/backend/com/fabo/api"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 )
 
@@ -52,6 +51,10 @@ func CallAPIGetMe(accessToken string) (*api.Me, error) {
 		return nil, err
 	}
 
+	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
 	var me api.Me
 	if err := json.Unmarshal(body, &me); err != nil {
 		return nil, err
@@ -82,6 +85,10 @@ func CallAPIGetAccounts(accessToken string) (*api.Accounts, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
+		return nil, err
+	}
+
+	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
 		return nil, err
 	}
 
@@ -121,6 +128,10 @@ func CallAPIGetLongLivedAccessToken(accessToken string) (*api.Token, error) {
 		return nil, err
 	}
 
+	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
 	var tok api.Token
 
 	if err := json.Unmarshal(body, &tok); err != nil {
@@ -155,18 +166,15 @@ func CallAPICheckAccessToken(accessToken string) (*api.UserToken, error) {
 		return nil, err
 	}
 
+	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
 	var tok api.UserToken
 
 	if err := json.Unmarshal(body, &tok); err != nil {
 		return nil, err
 	}
 
-	if tok.Data.Error != nil {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "").
-			WithMetaM(map[string]string{
-				"code":    fmt.Sprintf("%v", tok.Data.Error.Code),
-				"message": tok.Data.Error.Message,
-			})
-	}
 	return &tok, nil
 }

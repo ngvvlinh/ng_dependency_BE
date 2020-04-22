@@ -42,6 +42,7 @@ type CreateFbPageArgs struct {
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
 	Status               status3.Status
+	ConnectionStatus     status3.Status
 }
 
 // +convert:create=FbPageInternal

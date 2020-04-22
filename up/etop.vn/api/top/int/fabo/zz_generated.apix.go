@@ -51,61 +51,22 @@ func (s *PageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/fabo.Page/ListFbPages":
-		msg := &ListFbPagesRequest{}
+	case "/fabo.Page/ConnectPages":
+		msg := &ConnectPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ListFbPages(ctx, msg)
+			return s.inner.ConnectPages(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/fabo.Page/RemoveFbPages":
-		msg := &RemoveFbPagesRequest{}
+	case "/fabo.Page/ListPages":
+		msg := &ListPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveFbPages(ctx, msg)
+			return s.inner.ListPages(ctx, msg)
 		}
 		return msg, fn, nil
-	default:
-		msg := fmt.Sprintf("no handler for path %q", path)
-		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
-	}
-}
-
-type SessionServiceServer struct {
-	inner SessionService
-}
-
-func NewSessionServiceServer(svc SessionService) Server {
-	return &SessionServiceServer{
-		inner: svc,
-	}
-}
-
-const SessionServicePathPrefix = "/fabo.Session/"
-
-func (s *SessionServiceServer) PathPrefix() string {
-	return SessionServicePathPrefix
-}
-
-func (s *SessionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	serve, err := httprpc.ParseRequestHeader(req)
-	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
-		return
-	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
-	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
-		return
-	}
-	serve(ctx, resp, req, reqMsg, exec)
-}
-
-func (s *SessionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
-	switch path {
-	case "/fabo.Session/InitSession":
-		msg := &InitSessionRequest{}
+	case "/fabo.Page/RemovePages":
+		msg := &RemovePagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.InitSession(ctx, msg)
+			return s.inner.RemovePages(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
