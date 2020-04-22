@@ -145,6 +145,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 		return nil, err
 	}
 	resp = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
+	resp.ShopName = shop.Name
 	if autoCreateFfm {
 		req := &apishop.OrderIDRequest{
 			OrderId: r.OrderId,
