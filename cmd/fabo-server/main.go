@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/fabo/config"
+	"etop.vn/backend/cmd/fabo-server/config"
 	servicefbpage "etop.vn/backend/com/fabo/main/fbpage"
 	servicefbuser "etop.vn/backend/com/fabo/main/fbuser"
 	"etop.vn/backend/com/fabo/pkg/fbclient"
@@ -110,7 +110,7 @@ func main() {
 	fbuseraggregate := servicefbuser.NewFbUserAggregate(db, fbpageaggregate).MessageBus()
 	fbuserquery := servicefbuser.NewFbUserQuery(db).MessageBus()
 
-	fbClient := fbclient.New(cfg.App, bot)
+	fbClient := fbclient.New(cfg.FacebookApp, bot)
 	middleware.NewFabo(fbpagequery, fbuserquery)
 
 	fabo.Init(

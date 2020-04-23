@@ -22,6 +22,7 @@ go version
 time go install ./...
 
 build ./cmd/etop-server           $BUILD_SERVER
+build ./cmd/fabo-server           $BUILD_FABO_SERVER
 build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
 build ./cmd/etop-uploader         $BUILD_UPLOADER
 build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER

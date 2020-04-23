@@ -7,10 +7,28 @@ import (
 	"net/http"
 	"net/url"
 
-	"etop.vn/backend/cmd/fabo/config"
 	"etop.vn/backend/com/fabo/pkg/fbclient/model"
+	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 )
+
+type AppConfig struct {
+	ID          string `yaml:"id"`
+	Secret      string `yaml:"secret"`
+	AccessToken string `yaml:"access_token"`
+}
+
+func (c *AppConfig) MustLoadEnv(prefix ...string) {
+	p := "ET_FACEBOOK_APP"
+	if len(prefix) > 0 {
+		p = prefix[0]
+	}
+	cc.EnvMap{
+		p + "_ID":           &c.ID,
+		p + "_SECRET":       &c.Secret,
+		p + "_ACCESS_TOKEN": &c.AccessToken,
+	}.MustLoad()
+}
 
 type ApiInfo struct {
 	Host    string
@@ -22,13 +40,13 @@ func (api ApiInfo) Url() string {
 }
 
 type FbClient struct {
-	appInfo              config.AppInfo
+	appInfo              AppConfig
 	apiInfo              ApiInfo
 	facebookErrorService *FacebookErrorService
 	bot                  *telebot.Channel
 }
 
-func New(_appInfo config.AppInfo, _bot *telebot.Channel) *FbClient {
+func New(_appInfo AppConfig, _bot *telebot.Channel) *FbClient {
 	return &FbClient{
 		appInfo: _appInfo,
 		apiInfo: ApiInfo{
@@ -127,8 +145,8 @@ func (f *FbClient) CallAPIGetLongLivedAccessToken(accessToken string) (*model.To
 
 	query.Add(GrantType, GrantTypeFBExchangeToken)
 	query.Add(FBExchangeToken, accessToken)
-	query.Add(ClientIDKey, f.appInfo.AppID)
-	query.Add(ClientSecretKey, f.appInfo.AppSecret)
+	query.Add(ClientIDKey, f.appInfo.ID)
+	query.Add(ClientSecretKey, f.appInfo.Secret)
 
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -165,7 +183,7 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 		return nil, err
 	}
 
-	query.Add(AccessTokenKey, f.appInfo.AppAccessToken)
+	query.Add(AccessTokenKey, f.appInfo.AccessToken)
 	query.Add(InputToken, accessToken)
 
 	URL.RawQuery = query.Encode()
