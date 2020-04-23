@@ -9,6 +9,7 @@ const (
 	InputToken               = "input_token"
 	GrantTypeFBExchangeToken = "fb_exchange_token"
 	FBExchangeToken          = "fb_exchange_token"
+	ClientCredentials        = "client_credentials"
 	ExpiresInUserToken       = 5184000 // 60 days
 )
 

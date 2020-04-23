@@ -17,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/common/apifw/health"
 	cmservice "etop.vn/backend/pkg/common/apifw/service"
 	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmenv"
 	cc "etop.vn/backend/pkg/common/config"
@@ -100,6 +101,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
+	cmwrapper.InitBot(bot)
 	eventBus := bus.New()
 	sqlstore.Init(db)
 	sqlstore.AddEventBus(eventBus)
@@ -111,6 +113,9 @@ func main() {
 	fbuserquery := servicefbuser.NewFbUserQuery(db).MessageBus()
 
 	fbClient := fbclient.New(cfg.FacebookApp, bot)
+	if err := fbClient.Ping(); err != nil {
+		ll.Fatal("Error while connection Facebook", l.Error(err))
+	}
 	middleware.NewFabo(fbpagequery, fbuserquery)
 
 	fabo.Init(

@@ -3,6 +3,8 @@ package fbclient
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strings"
 
 	"etop.vn/backend/com/fabo/pkg/fbclient/model"
 	cm "etop.vn/backend/pkg/common"
@@ -24,12 +26,7 @@ func NewFacebookErrorService(_bot *telebot.Channel) *FacebookErrorService {
 	}
 }
 
-func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL string) (_err error) {
-	defer func() {
-		if _err != nil {
-			s.bot.SendMessage(fmt.Sprintf("[Error][Fabo]: %s", _err.Error()))
-		}
-	}()
+func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL string) error {
 	var facebookError struct {
 		Data *struct {
 			Error *model.FacebookError `json:"error"`
@@ -52,6 +49,10 @@ func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL st
 }
 
 func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL string) error {
+	currentURL, err := censorTokens(currentURL)
+	if err != nil {
+		return err
+	}
 	if facebookError.Code.Valid {
 		if 200 <= facebookError.Code.Int && facebookError.Code.Int <= 299 {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Facebook API error").
@@ -83,6 +84,35 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL strin
 		}
 	}
 	return nil
+}
+
+func censorTokens(currentURL string) (string, error) {
+	URL, err := url.Parse(currentURL)
+	if err != nil {
+		return "", err
+	}
+
+	queryParams, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return "", err
+	}
+
+	var keysRemoved []string
+
+	for key := range queryParams {
+		if strings.Contains(strings.ToLower(key), "token") {
+			keysRemoved = append(keysRemoved, key)
+		}
+	}
+
+	if len(keysRemoved) > 0 {
+		for _, key := range keysRemoved {
+			queryParams.Del(key)
+		}
+	}
+
+	URL.RawQuery = queryParams.Encode()
+	return URL.String(), nil
 }
 
 type Code int

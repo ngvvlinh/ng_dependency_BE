@@ -58,6 +58,44 @@ func New(_appInfo AppConfig, _bot *telebot.Channel) *FbClient {
 	}
 }
 
+func (f *FbClient) Ping() error {
+	URL, err := url.Parse(fmt.Sprintf("%s/oauth/access_token", f.apiInfo.Url()))
+	if err != nil {
+		return err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return err
+	}
+
+	query.Add(ClientIDKey, f.appInfo.ID)
+	query.Add(ClientSecretKey, f.appInfo.Secret)
+	query.Add(GrantType, ClientCredentials)
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(URL.String())
+	if err != nil {
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return err
+	}
+
+	var tok model.Token
+	if err := json.Unmarshal(body, &tok); err != nil {
+		return err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (f *FbClient) CallAPIGetMe(accessToken string) (*model.Me, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/me", f.apiInfo.Url()))
 	if err != nil {
