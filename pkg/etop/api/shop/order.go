@@ -17,6 +17,7 @@ import (
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status5"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
@@ -218,32 +219,64 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 	if q.CustomerId == 0 && q.Customer == nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
 	}
-	customerKey := ""
+	customerKey := q.CustomerId.String()
 	if q.Customer != nil {
 		customerKey = q.Customer.FullName
 		if phone := strings.TrimSpace(q.Customer.Phone); phone != "" {
 			customerKey = phone
 		}
-	} else {
-		customerKey = q.CustomerId.String()
 	}
+
 	var variantIDs []dot.ID
 	for _, line := range q.Lines {
 		variantIDs = append(variantIDs, line.VariantId)
 	}
 	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, customerKey,
-		q.TotalAmount, q.BasketValue, q.ShopCod, variantIDs)
-	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
-		func() (interface{}, error) {
-			return s.createOrder(ctx, q)
-		}, "tạo đơn hàng")
+		q.TotalAmount, q.BasketValue, q.ShopCod, dot.JoinIDs(variantIDs))
 
+	res, cached, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "tạo đơn hàng",
+		func() (interface{}, error) { return s.createOrder(ctx, q) })
 	if err != nil {
 		return err
 	}
 
-	q.Result = res.(*CreateOrderEndpoint).Result
+	defer func() { q.Result = res.(*CreateOrderEndpoint).Result }()
+	if !cached {
+		return nil
+	}
+
+	// FIX(vu): https://github.com/etopvn/one/issues/1910
+	//
+	// User may want to retry when an order is cancelled by external events. We
+	// allow recreating the order when the response is cached and the previous
+	// order has status = N
+
+	key2 := key + "/retry"
+	res, _, err = idempgroup.DoAndWrap(
+		ctx, key2, 5*time.Second, "tạo đơn hàng",
+		func() (interface{}, error) {
+			query := &ordermodelx.GetOrderQuery{
+				OrderID:            res.(*CreateOrderEndpoint).Result.Id,
+				ShopID:             q.Context.Shop.ID,
+				PartnerID:          q.CtxPartner.GetID(),
+				IncludeFulfillment: true,
+			}
+			if _err := bus.Dispatch(ctx, query); _err != nil {
+				return res, _err // keep the response
+			}
+			if query.Result.Order.Status != status5.N {
+				return res, nil // keep the response
+			}
+
+			// release the old key and retry
+			idempgroup.ReleaseKey(key, "")
+			_res, _, _err := idempgroup.DoAndWrap(
+				ctx, key2, 30*time.Second, "tạo đơn hàng",
+				func() (interface{}, error) { return s.createOrder(ctx, q) })
+			return _res, _err // keep the response
+		})
 	return nil
 }
 
@@ -261,10 +294,9 @@ func (s *OrderService) UpdateOrder(ctx context.Context, q *UpdateOrderEndpoint) 
 
 func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) error {
 	key := fmt.Sprintf("cancelOrder %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(ctx, key, 5*time.Second,
-		func() (interface{}, error) {
-			return s.cancelOrder(ctx, q)
-		}, "hủy đơn hàng")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 5*time.Second, "hủy đơn hàng",
+		func() (interface{}, error) { return s.cancelOrder(ctx, q) })
 
 	if err != nil {
 		return err
@@ -294,10 +326,9 @@ func (s *OrderService) CompleteOrder(ctx context.Context, q *CompleteOrderEndpoi
 
 func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) error {
 	key := fmt.Sprintf("ConfirmOrder %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
-		func() (interface{}, error) {
-			return s.confirmOrder(ctx, q)
-		}, "Xác nhận đơn hàng")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Second, "Xác nhận đơn hàng",
+		func() (interface{}, error) { return s.confirmOrder(ctx, q) })
 	if err != nil {
 		return err
 	}
@@ -329,10 +360,9 @@ func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint
 
 func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {
 	key := fmt.Sprintf("ConfirmOrderAndCreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderId)
-	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
-		func() (interface{}, error) {
-			return s.confirmOrderAndCreateFulfillments(ctx, q)
-		}, "xác nhận đơn hàng")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Second, "xác nhận đơn hàng",
+		func() (interface{}, error) { return s.confirmOrderAndCreateFulfillments(ctx, q) })
 
 	if err != nil {
 		return err
@@ -547,10 +577,9 @@ func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippin
 
 func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) error {
 	key := fmt.Sprintf("CreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderID)
-	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
-		func() (interface{}, error) {
-			return s.createFulfillments(ctx, q)
-		}, "tạo đơn giao hàng")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Second, "tạo đơn giao hàng",
+		func() (interface{}, error) { return s.createFulfillments(ctx, q) })
 
 	if err != nil {
 		return err
@@ -608,10 +637,9 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfi
 
 func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) error {
 	key := fmt.Sprintf("CancelFulfillment %v-%v", q.Context.Shop.ID, q.FulfillmentID)
-	res, err := idempgroup.DoAndWrap(ctx, key, 10*time.Second,
-		func() (interface{}, error) {
-			return s.cancelFulfillment(ctx, q)
-		}, "huỷ đơn giao hàng")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Second, "huỷ đơn giao hàng",
+		func() (interface{}, error) { return s.cancelFulfillment(ctx, q) })
 
 	if err != nil {
 		return err

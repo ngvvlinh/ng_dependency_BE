@@ -17,7 +17,7 @@ var ErrAnotherInstance = errors.New("idemp: waiting for another instance")
 const DefaultTTL = 1 * 60 // 1 minutes
 
 type TaskFunc func() (interface{}, error)
-type ExecFunc func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error)
+type ExecFunc func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, cached bool, err error, idempErr error)
 
 type LockItem struct {
 	SubKey string
@@ -53,37 +53,39 @@ func (rg *RedisGroup) Shutdown() {
 
 // DoAndWrap is short-hand for calling AcquireLock() and then exec. It also automatically
 // removes the key if an error occurs.
-func (rg *RedisGroup) DoAndWrap(ctx context.Context, key string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
+func (rg *RedisGroup) DoAndWrap(
+	ctx context.Context, key string, timeout time.Duration, msg string, fn TaskFunc,
+) (v interface{}, cached bool, err error) {
 	execFn, err := rg.AcquireLock(key, "")
 	if err != nil {
-		return nil, WrapError(ctx, err, msg)
+		return nil, false, WrapError(ctx, err, msg)
 	}
 
-	v, err, idempErr := execFn(key, timeout, fn)
+	v, cached, err, idempErr := execFn(key, timeout, fn)
 	if idempErr != nil {
-		return nil, WrapError(ctx, idempErr, msg)
+		return nil, false, WrapError(ctx, idempErr, msg)
 	}
 	if err != nil {
 		rg.forget(key)
 	}
-	return v, err
+	return v, cached, err
 }
 
 // DoAndWrapWithSubkey is short-hand for calling AcquireLock() and then exec
-func (rg *RedisGroup) DoAndWrapWithSubkey(ctx context.Context, key string, subkey string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, err error) {
+func (rg *RedisGroup) DoAndWrapWithSubkey(ctx context.Context, key string, subkey string, timeout time.Duration, fn TaskFunc, msg string) (v interface{}, cached bool, err error) {
 	execFn, err := rg.AcquireLock(key, subkey)
 	if err != nil {
-		return nil, WrapError(ctx, err, msg)
+		return nil, false, WrapError(ctx, err, msg)
 	}
 
-	v, err, idempErr := execFn(key, timeout, fn)
+	v, cached, err, idempErr := execFn(key, timeout, fn)
 	if idempErr != nil {
-		return nil, WrapError(ctx, idempErr, msg)
+		return nil, false, WrapError(ctx, idempErr, msg)
 	}
 	if err != nil {
 		rg.forget(key)
 	}
-	return v, err
+	return v, cached, err
 }
 
 func (rg *RedisGroup) Acquire(groupKey, subkey string) (err error) {
@@ -140,15 +142,15 @@ func (rg *RedisGroup) setKeyAndAquireLock(groupKey, subkey string) (exec ExecFun
 	// key does not exist in Redis, set key and acquire lock
 	rg.set(groupKey, subkey)
 	rg.Unlock()
-	return func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error) {
+	return func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, cached bool, err error, idempErr error) {
 		v, err, _ = rg.g.DoAndCleanup(taskKey, timeout, fn, func() {
 			rg.ReleaseKey(groupKey, subkey)
 		})
-		return v, err, nil
+		return v, false, err, nil
 	}, nil
 }
 
-func (rg *RedisGroup) wait(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, err error, idempErr error) {
+func (rg *RedisGroup) wait(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, cached bool, err error, idempErr error) {
 	rg.g.Lock()
 
 	// key exists in Redis, subkey matches
@@ -157,12 +159,12 @@ func (rg *RedisGroup) wait(taskKey string, timeout time.Duration, fn TaskFunc) (
 		c.dups++
 		rg.g.Unlock()
 		c.wg.Wait()
-		return c.val, c.err, nil
+		return c.val, true, c.err, nil
 	}
 
 	// ...but the call does not execute in this instance
 	rg.g.Unlock()
-	return nil, nil, ErrAnotherInstance
+	return nil, false, nil, ErrAnotherInstance
 }
 
 func (rg *RedisGroup) set(key string, subkey string) {

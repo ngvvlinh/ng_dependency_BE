@@ -38,7 +38,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	// share the same key with HandleShopImportProducts
 	key := shop.ID.String()
 
-	resp, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
+	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleShopImportSampleProducts(c.Req.Context(), c, shop, user)
 	}, "tạo sản phẩm mẫu")
 	if err != nil {
@@ -83,7 +83,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	// share the same key with HandleShopImportSampleProducts
 	key := shop.ID.String()
 
-	resp, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
+	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleShopImportProducts(c.Req.Context(), c, shop, user)
 	}, "import đơn hàng")
 	if err != nil {

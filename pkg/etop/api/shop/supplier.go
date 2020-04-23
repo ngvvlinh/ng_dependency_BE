@@ -84,7 +84,8 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierEndpoint) error {
 	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v",
 		r.Context.Shop.ID, r.Context.UserID, r.FullName, r.Phone, r.Email)
-	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 15*time.Second, "tạo nhà cung cấp",
 		func() (interface{}, error) {
 			cmd := &suppliering.CreateSupplierCommand{
 				ShopID:            r.Context.Shop.ID,
@@ -101,7 +102,7 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierE
 			}
 			r.Result = convertpb.PbSupplier(cmd.Result)
 			return r, nil
-		}, "tạo nhà cung cấp")
+		})
 
 	if err != nil {
 		return err

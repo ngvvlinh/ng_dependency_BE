@@ -152,10 +152,9 @@ func Init(
 
 func (s *UserService) UpdateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) error {
 	key := fmt.Sprintf("UpdateUserEmail %v-%v-%v-%v", r.Email, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
-	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
-		func() (interface{}, error) {
-			return s.updateUserEmail(ctx, r)
-		}, "thay đổi email")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 60*time.Second, "thay đổi email",
+		func() (interface{}, error) { return s.updateUserEmail(ctx, r) })
 
 	if err != nil {
 		return err
@@ -166,10 +165,9 @@ func (s *UserService) UpdateUserEmail(ctx context.Context, r *UpdateUserEmailEnd
 
 func (s *UserService) UpdateUserPhone(ctx context.Context, r *UpdateUserPhoneEndpoint) error {
 	key := fmt.Sprintf("UpdateUserPhone %v-%v-%v-%v", r.Phone, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
-	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
-		func() (interface{}, error) {
-			return s.updateUserPhone(ctx, r)
-		}, "thay đổi số điện thoại")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 60*time.Second, "thay đổi số điện thoại",
+		func() (interface{}, error) { return s.updateUserPhone(ctx, r) })
 
 	if err != nil {
 		return err
@@ -868,10 +866,9 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 
 func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoint) error {
 	key := fmt.Sprintf("ResetPassword %v-%v", r.Email, r.Phone)
-	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
-		func() (interface{}, error) {
-			return s.resetPassword(ctx, r)
-		}, "gửi email khôi phục mật khẩu")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 60*time.Second, "gửi email khôi phục mật khẩu",
+		func() (interface{}, error) { return s.resetPassword(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1053,10 +1050,9 @@ func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpo
 
 func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) error {
 	key := fmt.Sprintf("ChangePasswordUsingToken %v-%v-%v", r.ResetPasswordToken, r.NewPassword, r.ConfirmPassword)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.changePasswordUsingToken(ctx, r)
-		}, "khôi phục mật khẩu")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "khôi phục mật khẩu",
+		func() (interface{}, error) { return s.changePasswordUsingToken(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1326,10 +1322,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 
 func (s *UserService) SendEmailVerificationUsingOTP(ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint) error {
 	key := fmt.Sprintf("SendEmailVerificationUsingOTP %s-%s", r.Context.User.ID, r.Email)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.sendEmailVerificationUsingOTP(ctx, r)
-		}, "gửi email xác nhận tài khoản")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "gửi email xác nhận tài khoản",
+		func() (interface{}, error) { return s.sendEmailVerificationUsingOTP(ctx, r) })
 	if err != nil {
 		return err
 	}
@@ -1424,10 +1419,9 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 
 func (s *UserService) SendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) error {
 	key := fmt.Sprintf("SendEmailVerification %v-%v", r.Context.User.ID, r.Email)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.sendEmailVerification(ctx, r)
-		}, "gửi email xác nhận tài khoản")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "gửi email xác nhận tài khoản",
+		func() (interface{}, error) { return s.sendEmailVerification(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1511,10 +1505,9 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 
 func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
 	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
-	res, err := idempgroup.DoAndWrap(ctx, key, 60*time.Second,
-		func() (interface{}, error) {
-			return s.sendPhoneVerification(ctx, r)
-		}, "gửi tin nhắn xác nhận số điện thoại")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 60*time.Second, "gửi tin nhắn xác nhận số điện thoại",
+		func() (interface{}, error) { return s.sendPhoneVerification(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1575,10 +1568,9 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 }
 func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.verifyEmailUsingToken(ctx, r)
-		}, "xác nhận địa chỉ email")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "xác nhận địa chỉ email",
+		func() (interface{}, error) { return s.verifyEmailUsingToken(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1664,10 +1656,9 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsi
 
 func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.Token, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.verifyPhoneUsingToken(ctx, r)
-		}, "xác nhận số điện thoại")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "xác nhận số điện thoại",
+		func() (interface{}, error) { return s.verifyPhoneUsingToken(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1745,10 +1736,9 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 
 func (s *UserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context, r *VerifyPhoneResetPasswordUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyPhoneResetPasswordUsingToken %v-%v", r.Context.Token, r.VerificationToken)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.verifyPhoneResetPasswordUsingToken(ctx, r)
-		}, "xác nhận số điện thoại")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "xác nhận số điện thoại",
+		func() (interface{}, error) { return s.verifyPhoneResetPasswordUsingToken(ctx, r) })
 	if err != nil {
 		return err
 	}
@@ -1813,10 +1803,9 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 
 func (s *UserService) UpgradeAccessToken(ctx context.Context, r *UpgradeAccessTokenEndpoint) error {
 	key := fmt.Sprintf("UpgradeAccessToken %v-%v", r.Context.User.ID, r.Stoken)
-	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
-		func() (interface{}, error) {
-			return s.upgradeAccessToken(ctx, r)
-		}, "cập nhật thông tin")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 15*time.Second, "cập nhật thông tin",
+		func() (interface{}, error) { return s.upgradeAccessToken(ctx, r) })
 
 	if err != nil {
 		return err
@@ -1879,10 +1868,9 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 
 func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) error {
 	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", r.Context.User.ID, r.Email, r.AccountId)
-	res, err := idempgroup.DoAndWrap(ctx, key, 30*time.Second,
-		func() (interface{}, error) {
-			return s.sendSTokenEmail(ctx, r)
-		}, "gửi email xác nhận")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "gửi email xác nhận",
+		func() (interface{}, error) { return s.sendSTokenEmail(ctx, r) })
 
 	if err != nil {
 		return err

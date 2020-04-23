@@ -40,10 +40,9 @@ func init() {
 func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_err error) {
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.LedgerId, q.Title, q.Description, q.Amount, q.Type)
-	result, err := idempgroup.DoAndWrap(
-		ctx, key, 15*time.Second,
-		func() (interface{}, error) { return s.createReceipt(ctx, q) },
-		"Create receipt")
+	result, _, err := idempgroup.DoAndWrap(
+		ctx, key, 15*time.Second, "Create receipt",
+		func() (interface{}, error) { return s.createReceipt(ctx, q) })
 	if err != nil {
 		return err
 	}

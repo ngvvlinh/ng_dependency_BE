@@ -42,7 +42,8 @@ func init() {
 func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
 	key := fmt.Sprintf("CreateCustomer %v-%v-%v-%v-%v",
 		r.Context.Shop.ID, r.Context.UserID, r.Phone, r.FullName, r.Email)
-	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 15*time.Second, "tạo khách hàng",
 		func() (interface{}, error) {
 			cmd := &customering.CreateCustomerCommand{
 				ShopID:   r.Context.Shop.ID,
@@ -59,7 +60,7 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 			}
 			r.Result = convertpb.PbCustomer(cmd.Result)
 			return r, nil
-		}, "tạo khách hàng")
+		})
 
 	if err != nil {
 		return err

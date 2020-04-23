@@ -292,10 +292,9 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 
 func (s *IntegrationService) RequestLogin(ctx context.Context, r *RequestLoginEndpoint) error {
 	key := fmt.Sprintf("RequestLogin %v", r.Login)
-	res, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second,
-		func() (interface{}, error) {
-			return s.requestLogin(ctx, r)
-		}, "gửi mã đăng nhập")
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 15*time.Second, "gửi mã đăng nhập",
+		func() (interface{}, error) { return s.requestLogin(ctx, r) })
 
 	if err != nil {
 		return err
