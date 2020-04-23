@@ -117,6 +117,12 @@
     "cvConnectPagesResponse": {
       "type": "object",
       "properties": {
+        "fb_error_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbErrorPage"
+          }
+        },
         "fb_pages": {
           "type": "array",
           "items": {
@@ -160,6 +166,23 @@
         }
       }
     },
+    "cvFbErrorPage": {
+      "type": "object",
+      "properties": {
+        "external_id": {
+          "type": "string"
+        },
+        "external_image_url": {
+          "type": "string"
+        },
+        "external_name": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
     "cvFbPage": {
       "type": "object",
       "properties": {
@@ -180,6 +203,9 @@
           }
         },
         "external_id": {
+          "type": "string"
+        },
+        "external_image_url": {
           "type": "string"
         },
         "external_name": {
@@ -236,6 +262,9 @@
           }
         },
         "external_id": {
+          "type": "string"
+        },
+        "external_image_url": {
           "type": "string"
         },
         "external_name": {

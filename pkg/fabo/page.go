@@ -113,8 +113,21 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 	}
 	fbUserID = createFbUserCombinedCmd.Result.FbUser.ID
 
+	var fbErrorPages []*fabo.FbErrorPage
+
 	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbPageCombinedArgs, 0, len(accounts.Accounts.Data))
 	for _, account := range accounts.Accounts.Data {
+		// Verify role (Admin)
+		if util.GetRole(account.Tasks) != util.ADMIN {
+			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
+				ExternalID:       account.Id,
+				ExternalName:     account.Name,
+				ExternalImageURL: account.Picture.Data.Url,
+				Reason:           "Tài khoản Facebook cần có quyền Admin trên Fanpage để kết nối.",
+			})
+			continue
+		}
+
 		fbPageID := cm.NewID()
 		categories := make([]*fbpaging.ExternalCategory, 0, len(account.CategoryList))
 		for _, category := range account.CategoryList {
@@ -133,6 +146,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 			ExternalCategory:     account.Category,
 			ExternalCategoryList: categories,
 			ExternalTasks:        account.Tasks,
+			ExternalImageURL:     account.Picture.Data.Url,
 			Status:               status3.P,
 			ConnectionStatus:     status3.P,
 		}
@@ -145,35 +159,40 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 			FbPageInternal: createFbPageInternalCmd,
 		})
 	}
-	createFbPageCombinedsCmd := &fbpaging.CreateFbPageCombinedsCommand{
-		ShopID:          shopID,
-		UserID:          userID,
-		FbPageCombineds: listCreateFbPageCombinedCmd,
-		Result:          nil,
-	}
-	if err := fbPageAggr.Dispatch(ctx, createFbPageCombinedsCmd); err != nil {
-		return err
+	var fbPageCombinedsResult []*fabo.FbPageCombined
+
+	if len(listCreateFbPageCombinedCmd) > 0 {
+		createFbPageCombinedsCmd := &fbpaging.CreateFbPageCombinedsCommand{
+			ShopID:          shopID,
+			UserID:          userID,
+			FbPageCombineds: listCreateFbPageCombinedCmd,
+			Result:          nil,
+		}
+		if err := fbPageAggr.Dispatch(ctx, createFbPageCombinedsCmd); err != nil {
+			return err
+		}
+
+		fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbPageCombinedsCmd.Result)
 	}
 
 	r.Result = &fabo.ConnectPagesResponse{
-		FbUser:  convertpb.PbFbUserCombined(createFbUserCombinedCmd.Result),
-		FbPages: convertpb.PbFbPageCombineds(createFbPageCombinedsCmd.Result),
+		FbUser:       convertpb.PbFbUserCombined(createFbUserCombinedCmd.Result),
+		FbPages:      fbPageCombinedsResult,
+		FbErrorPages: fbErrorPages,
 	}
 	return nil
 }
 
 func verifyScopes(scopes []string) error {
-	{
-		mapScope := make(map[string]bool)
-		for _, scope := range scopes {
-			mapScope[scope] = true
-		}
+	mapScope := make(map[string]bool)
+	for _, scope := range scopes {
+		mapScope[scope] = true
+	}
 
-		for scope, messageScope := range appScopes {
-			if _, ok := mapScope[scope]; !ok {
-				return cm.Errorf(cm.FacebookPermissionDenied, nil, "Bạn chưa cấp đủ quyền để tiếp tục").
-					WithMeta(fmt.Sprintf("scope.%s", scope), messageScope)
-			}
+	for scope, messageScope := range appScopes {
+		if _, ok := mapScope[scope]; !ok {
+			return cm.Errorf(cm.FacebookPermissionDenied, nil, "Bạn chưa cấp đủ quyền để tiếp tục").
+				WithMeta(fmt.Sprintf("scope.%s", scope), messageScope)
 		}
 	}
 	return nil

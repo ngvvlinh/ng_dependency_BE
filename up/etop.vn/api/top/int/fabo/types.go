@@ -16,11 +16,21 @@ type ConnectPagesRequest struct {
 func (m *ConnectPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConnectPagesResponse struct {
-	FbUser  *FbUserCombined   `json:"fb_user"`
-	FbPages []*FbPageCombined `json:"fb_pages"`
+	FbUser       *FbUserCombined   `json:"fb_user"`
+	FbPages      []*FbPageCombined `json:"fb_pages"`
+	FbErrorPages []*FbErrorPage    `json:"fb_error_pages"`
 }
 
 func (m *ConnectPagesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type FbErrorPage struct {
+	ExternalID       string `json:"external_id"`
+	ExternalName     string `json:"external_name"`
+	ExternalImageURL string `json:"external_image_url"`
+	Reason           string `json:"reason"`
+}
+
+func (m *FbErrorPage) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbUserCombined struct {
 	ID           dot.ID              `json:"id"`
@@ -64,6 +74,7 @@ type FbPageCombined struct {
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
+	ExternalImageURL     string              `json:"external_image_url"`
 	Status               status3.Status      `json:"status"`
 	ConnectionStatus     status3.Status      `json:"connection_status"`
 	CreatedAt            time.Time           `json:"created_at"`
@@ -82,6 +93,7 @@ type FbPage struct {
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
+	ExternalImageURL     string              `json:"external_image_url"`
 	Status               status3.Status      `json:"status"`
 	ConnectionStatus     status3.Status      `json:"connection_status"`
 	CreatedAt            time.Time           `json:"created_at"`

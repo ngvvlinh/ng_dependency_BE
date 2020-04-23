@@ -75,7 +75,7 @@ func CallAPIGetAccounts(accessToken string) (*api.Accounts, error) {
 	}
 
 	query.Add(AccessTokenKey, accessToken)
-	query.Add(Fields, "accounts{access_token,category,category_list,name,id,tasks,description,about,fan_count}")
+	query.Add(Fields, "accounts{access_token,category,category_list,name,id,tasks,description,about,fan_count,picture}")
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
 	if err != nil {
@@ -177,4 +177,49 @@ func CallAPICheckAccessToken(accessToken string) (*api.UserToken, error) {
 	}
 
 	return &tok, nil
+}
+
+func GetRole(tasks []string) FacebookRole {
+	var hasAdvertise, hasAnalyze, hasCreateContent, hasManage, hasModerate bool
+	for _, task := range tasks {
+		switch task {
+		case "ADVERTISE":
+			hasAdvertise = true
+		case "ANALYZE":
+			hasAnalyze = true
+		case "CREATE_CONTENT":
+			hasCreateContent = true
+		case "MANAGE":
+			hasManage = true
+		case "MODERATE":
+			hasModerate = true
+		}
+	}
+
+	if isBool(hasAdvertise, hasAnalyze, hasCreateContent, hasManage, hasModerate) {
+		return ADMIN
+	}
+	if isBool(hasAdvertise, hasAnalyze, hasCreateContent, hasModerate) {
+		return EDITOR
+	}
+	if isBool(hasAdvertise, hasAnalyze, hasModerate) {
+		return MODERATOR
+	}
+	if isBool(hasAdvertise, hasAnalyze) {
+		return ADVERTISER
+	}
+	if isBool(hasAnalyze) {
+		return ANALYST
+	}
+
+	return UNKNOWN
+}
+
+func isBool(A ...bool) bool {
+	for _, a := range A {
+		if !a {
+			return false
+		}
+	}
+	return true
 }

@@ -10,6 +10,15 @@ const (
 	GrantTypeFBExchangeToken = "fb_exchange_token"
 	FBExchangeToken          = "fb_exchange_token"
 	ExpiresInUserToken       = 5184000 // 60 days
+)
 
-	ADMIN = "ADMIN"
+type FacebookRole int
+
+const (
+	UNKNOWN    FacebookRole = 0
+	ADMIN      FacebookRole = 1
+	ADVERTISER FacebookRole = 2
+	ANALYST    FacebookRole = 3
+	EDITOR     FacebookRole = 4
+	MODERATOR  FacebookRole = 5
 )

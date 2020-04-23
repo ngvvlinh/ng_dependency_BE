@@ -159,6 +159,25 @@ func (ft *FbPageFilters) ByExternalCategoryPtr(ExternalCategory *string) *sq.Col
 	}
 }
 
+func (ft *FbPageFilters) ByExternalImageURL(ExternalImageURL string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_image_url",
+		Value:  ExternalImageURL,
+		IsNil:  ExternalImageURL == "",
+	}
+}
+
+func (ft *FbPageFilters) ByExternalImageURLPtr(ExternalImageURL *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_image_url",
+		Value:  ExternalImageURL,
+		IsNil:  ExternalImageURL == nil,
+		IsZero: ExternalImageURL != nil && (*ExternalImageURL) == "",
+	}
+}
+
 func (ft *FbPageFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

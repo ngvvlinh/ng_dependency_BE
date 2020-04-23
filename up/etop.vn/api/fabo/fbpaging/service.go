@@ -41,6 +41,7 @@ type CreateFbPageArgs struct {
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
+	ExternalImageURL     string
 	Status               status3.Status
 	ConnectionStatus     status3.Status
 }

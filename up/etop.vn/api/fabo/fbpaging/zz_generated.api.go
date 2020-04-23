@@ -36,6 +36,7 @@ type CreateFbPageCommand struct {
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
+	ExternalImageURL     string
 	Status               status3.Status
 	ConnectionStatus     status3.Status
 
@@ -197,6 +198,7 @@ func (q *CreateFbPageCommand) GetArgs(ctx context.Context) (_ context.Context, _
 			ExternalCategory:     q.ExternalCategory,
 			ExternalCategoryList: q.ExternalCategoryList,
 			ExternalTasks:        q.ExternalTasks,
+			ExternalImageURL:     q.ExternalImageURL,
 			Status:               q.Status,
 			ConnectionStatus:     q.ConnectionStatus,
 		}
@@ -212,6 +214,7 @@ func (q *CreateFbPageCommand) SetCreateFbPageArgs(args *CreateFbPageArgs) {
 	q.ExternalCategory = args.ExternalCategory
 	q.ExternalCategoryList = args.ExternalCategoryList
 	q.ExternalTasks = args.ExternalTasks
+	q.ExternalImageURL = args.ExternalImageURL
 	q.Status = args.Status
 	q.ConnectionStatus = args.ConnectionStatus
 }

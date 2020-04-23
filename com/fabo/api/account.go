@@ -20,4 +20,5 @@ type AccountData struct {
 	Id           string                   `json:"id"`
 	Tasks        []string                 `json:"tasks"`
 	FanCount     int                      `json:"fan_count"`
+	Picture      Picture                  `json:"picture"`
 }
