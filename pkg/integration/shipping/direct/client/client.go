@@ -106,7 +106,8 @@ func (c *Client) GetFulfillment(ctx context.Context, req *GetFulfillmentRequest)
 }
 
 func (c *Client) CancelFulfillment(ctx context.Context, req *CancelFulfillmentRequest) error {
-	if err := c.sendPostRequest(ctx, c.cancelFulfillmentURL, req, nil, "Không thể hủy đơn giao hàng"); err != nil {
+	var resp CommonResponse
+	if err := c.sendPostRequest(ctx, c.cancelFulfillmentURL, req, &resp, "Không thể hủy đơn giao hàng"); err != nil {
 		return err
 	}
 	return nil

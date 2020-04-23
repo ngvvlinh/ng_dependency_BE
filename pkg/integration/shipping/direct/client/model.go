@@ -136,8 +136,8 @@ type GetFulfillmentResponse struct {
 }
 
 type CancelFulfillmentRequest struct {
-	FulfillmentID string
-	ShippingCode  string
+	FulfillmentID string `json:"fulfillment_id"`
+	ShippingCode  string `json:"shipping_code"`
 }
 
 func (s *ShippingService) validate() error {
