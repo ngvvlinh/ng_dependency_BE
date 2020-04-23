@@ -1,4 +1,4 @@
-package util
+package fbclient
 
 const (
 	AccessTokenKey           = "access_token"

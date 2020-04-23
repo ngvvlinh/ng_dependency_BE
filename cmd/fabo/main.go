@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"etop.vn/backend/cmd/fabo/config"
-	"etop.vn/backend/com/fabo/api"
 	servicefbpage "etop.vn/backend/com/fabo/main/fbpage"
 	servicefbuser "etop.vn/backend/com/fabo/main/fbuser"
-	"etop.vn/backend/com/fabo/util"
+	"etop.vn/backend/com/fabo/pkg/fbclient"
 	serviceidentity "etop.vn/backend/com/main/identity"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/health"
@@ -41,10 +40,6 @@ var (
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
 
-	apiInfo = config.ApiInfo{
-		Host:    "https://graph.facebook.com",
-		Version: "v6.0",
-	}
 	appScopes = map[string]string{
 		"manage_pages":    "Quản lý các trang của bạn",
 		"pages_show_list": "Hiển thị các trang do tài khoản quản lý",
@@ -114,16 +109,18 @@ func main() {
 	fbpagequery := servicefbpage.NewFbPageQuery(db).MessageBus()
 	fbuseraggregate := servicefbuser.NewFbUserAggregate(db, fbpageaggregate).MessageBus()
 	fbuserquery := servicefbuser.NewFbUserQuery(db).MessageBus()
+
+	fbClient := fbclient.New(cfg.App, bot)
 	middleware.NewFabo(fbpagequery, fbuserquery)
+
 	fabo.Init(
 		fbuserquery,
 		fbuseraggregate,
 		fbpagequery,
 		fbpageaggregate,
+		fbClient,
 		appScopes,
 	)
-	api.InitHandleError(bot)
-	util.New(apiInfo, cfg.App, bot)
 
 	healthservice.MarkReady()
 

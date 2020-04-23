@@ -1,4 +1,4 @@
-package util
+package fbclient
 
 import (
 	"encoding/json"
@@ -8,26 +8,40 @@ import (
 	"net/url"
 
 	"etop.vn/backend/cmd/fabo/config"
-	"etop.vn/backend/com/fabo/api"
+	"etop.vn/backend/com/fabo/pkg/fbclient/model"
 	"etop.vn/backend/pkg/common/extservice/telebot"
 )
 
-var (
-	apiInfo config.ApiInfo
-	appInfo config.AppInfo
-	bot     *telebot.Channel
-)
-
-// TODO: check errors
-
-func New(_apiInfo config.ApiInfo, _appInfo config.AppInfo, _bot *telebot.Channel) {
-	apiInfo = _apiInfo
-	appInfo = _appInfo
-	bot = _bot
+type ApiInfo struct {
+	Host    string
+	Version string
 }
 
-func CallAPIGetMe(accessToken string) (*api.Me, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/me", apiInfo.Url()))
+func (api ApiInfo) Url() string {
+	return fmt.Sprintf("%s/%s", api.Host, api.Version)
+}
+
+type FbClient struct {
+	appInfo              config.AppInfo
+	apiInfo              ApiInfo
+	facebookErrorService *FacebookErrorService
+	bot                  *telebot.Channel
+}
+
+func New(_appInfo config.AppInfo, _bot *telebot.Channel) *FbClient {
+	return &FbClient{
+		appInfo: _appInfo,
+		apiInfo: ApiInfo{
+			Host:    "https://graph.facebook.com",
+			Version: "v6.0",
+		},
+		bot:                  _bot,
+		facebookErrorService: NewFacebookErrorService(_bot),
+	}
+}
+
+func (f *FbClient) CallAPIGetMe(accessToken string) (*model.Me, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
 	}
@@ -51,11 +65,11 @@ func CallAPIGetMe(accessToken string) (*api.Me, error) {
 		return nil, err
 	}
 
-	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
 		return nil, err
 	}
 
-	var me api.Me
+	var me model.Me
 	if err := json.Unmarshal(body, &me); err != nil {
 		return nil, err
 	}
@@ -63,8 +77,8 @@ func CallAPIGetMe(accessToken string) (*api.Me, error) {
 	return &me, nil
 }
 
-func CallAPIGetAccounts(accessToken string) (*api.Accounts, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/me", apiInfo.Url()))
+func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.Accounts, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
 	}
@@ -88,11 +102,11 @@ func CallAPIGetAccounts(accessToken string) (*api.Accounts, error) {
 		return nil, err
 	}
 
-	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
 		return nil, err
 	}
 
-	var accounts api.Accounts
+	var accounts model.Accounts
 
 	if err := json.Unmarshal(body, &accounts); err != nil {
 		return nil, err
@@ -100,8 +114,8 @@ func CallAPIGetAccounts(accessToken string) (*api.Accounts, error) {
 	return &accounts, nil
 }
 
-func CallAPIGetLongLivedAccessToken(accessToken string) (*api.Token, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/oauth/access_token", apiInfo.Url()))
+func (f *FbClient) CallAPIGetLongLivedAccessToken(accessToken string) (*model.Token, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/oauth/access_token", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +127,8 @@ func CallAPIGetLongLivedAccessToken(accessToken string) (*api.Token, error) {
 
 	query.Add(GrantType, GrantTypeFBExchangeToken)
 	query.Add(FBExchangeToken, accessToken)
-	query.Add(ClientIDKey, appInfo.AppID)
-	query.Add(ClientSecretKey, appInfo.AppSecret)
+	query.Add(ClientIDKey, f.appInfo.AppID)
+	query.Add(ClientSecretKey, f.appInfo.AppSecret)
 
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -128,11 +142,11 @@ func CallAPIGetLongLivedAccessToken(accessToken string) (*api.Token, error) {
 		return nil, err
 	}
 
-	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
 		return nil, err
 	}
 
-	var tok api.Token
+	var tok model.Token
 
 	if err := json.Unmarshal(body, &tok); err != nil {
 		return nil, err
@@ -140,8 +154,8 @@ func CallAPIGetLongLivedAccessToken(accessToken string) (*api.Token, error) {
 	return &tok, nil
 }
 
-func CallAPICheckAccessToken(accessToken string) (*api.UserToken, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/debug_token", apiInfo.Url()))
+func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/debug_token", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +165,7 @@ func CallAPICheckAccessToken(accessToken string) (*api.UserToken, error) {
 		return nil, err
 	}
 
-	query.Add(AccessTokenKey, appInfo.AppAccessToken)
+	query.Add(AccessTokenKey, f.appInfo.AppAccessToken)
 	query.Add(InputToken, accessToken)
 
 	URL.RawQuery = query.Encode()
@@ -166,11 +180,11 @@ func CallAPICheckAccessToken(accessToken string) (*api.UserToken, error) {
 		return nil, err
 	}
 
-	if err := api.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
 		return nil, err
 	}
 
-	var tok api.UserToken
+	var tok model.UserToken
 
 	if err := json.Unmarshal(body, &tok); err != nil {
 		return nil, err

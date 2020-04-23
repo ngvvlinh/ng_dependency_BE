@@ -9,7 +9,7 @@ import (
 	"etop.vn/api/top/int/fabo"
 	"etop.vn/api/top/types/common"
 	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/fabo/util"
+	"etop.vn/backend/com/fabo/pkg/fbclient"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/apifw/cmapi"
 	"etop.vn/backend/pkg/fabo/convertpb"
@@ -56,7 +56,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 	shopID := r.Context.Shop.ID
 	userID := r.Context.UserID
 
-	userToken, err := util.CallAPICheckAccessToken(r.AccessToken)
+	userToken, err := fbClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
 		return err
 	}
@@ -69,17 +69,17 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 	if r.AccessToken == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
 	}
-	longLivedAccessToken, err := util.CallAPIGetLongLivedAccessToken(r.AccessToken)
+	longLivedAccessToken, err := fbClient.CallAPIGetLongLivedAccessToken(r.AccessToken)
 	if err != nil {
 		return err
 	}
 
-	me, err := util.CallAPIGetMe(longLivedAccessToken.AccessToken)
+	me, err := fbClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return err
 	}
 
-	accounts, err := util.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
+	accounts, err := fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 		FbUserInternal: &fbusering.CreateFbUserInternalArgs{
 			ID:        fbUserID,
 			Token:     longLivedAccessToken.AccessToken,
-			ExpiresIn: util.ExpiresInUserToken, // 60 days
+			ExpiresIn: fbclient.ExpiresInUserToken, // 60 days
 		},
 	}
 	if err := fbUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
@@ -118,7 +118,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbPageCombinedArgs, 0, len(accounts.Accounts.Data))
 	for _, account := range accounts.Accounts.Data {
 		// Verify role (Admin)
-		if util.GetRole(account.Tasks) != util.ADMIN {
+		if fbclient.GetRole(account.Tasks) != fbclient.ADMIN {
 			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
 				ExternalID:       account.Id,
 				ExternalName:     account.Name,

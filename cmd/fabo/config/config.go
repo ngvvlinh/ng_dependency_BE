@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	cc "etop.vn/backend/pkg/common/config"
 )
 
@@ -10,15 +8,6 @@ type AppInfo struct {
 	AppID          string `yaml:"app_id"`
 	AppSecret      string `yaml:"app_secret"`
 	AppAccessToken string `yaml:"app_access_token"`
-}
-
-type ApiInfo struct {
-	Host    string
-	Version string
-}
-
-func (api ApiInfo) Url() string {
-	return fmt.Sprintf("%s/%s", api.Host, api.Version)
 }
 
 type Config struct {
