@@ -11,6 +11,7 @@ import (
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -36,6 +37,7 @@ type CreateFbPageCommand struct {
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
+	ExternalPermissions  []string
 	ExternalImageURL     string
 	Status               status3.Status
 	ConnectionStatus     status3.Status
@@ -158,8 +160,19 @@ func (h QueryServiceHandler) HandleListFbPages(ctx context.Context, msg *ListFbP
 	return err
 }
 
+type ListFbPagesActiveByExternalIDsQuery struct {
+	ExternalIDs []string
+
+	Result []*FbPage `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbPagesActiveByExternalIDs(ctx context.Context, msg *ListFbPagesActiveByExternalIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbPagesActiveByExternalIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbPagesByIDsQuery struct {
-	IDs []dot.ID
+	IDs filter.IDs
 
 	Result []*FbPage `json:"-"`
 }
@@ -178,11 +191,12 @@ func (q *CreateFbPageInternalCommand) command()  {}
 func (q *DisableAllFbPagesCommand) command()     {}
 func (q *DisableFbPagesByIDsCommand) command()   {}
 
-func (q *GetFbPageByExternalIDQuery) query() {}
-func (q *GetFbPageByIDQuery) query()         {}
-func (q *GetFbPageInternalByIDQuery) query() {}
-func (q *ListFbPagesQuery) query()           {}
-func (q *ListFbPagesByIDsQuery) query()      {}
+func (q *GetFbPageByExternalIDQuery) query()          {}
+func (q *GetFbPageByIDQuery) query()                  {}
+func (q *GetFbPageInternalByIDQuery) query()          {}
+func (q *ListFbPagesQuery) query()                    {}
+func (q *ListFbPagesActiveByExternalIDsQuery) query() {}
+func (q *ListFbPagesByIDsQuery) query()               {}
 
 // implement conversion
 
@@ -198,6 +212,7 @@ func (q *CreateFbPageCommand) GetArgs(ctx context.Context) (_ context.Context, _
 			ExternalCategory:     q.ExternalCategory,
 			ExternalCategoryList: q.ExternalCategoryList,
 			ExternalTasks:        q.ExternalTasks,
+			ExternalPermissions:  q.ExternalPermissions,
 			ExternalImageURL:     q.ExternalImageURL,
 			Status:               q.Status,
 			ConnectionStatus:     q.ConnectionStatus,
@@ -214,6 +229,7 @@ func (q *CreateFbPageCommand) SetCreateFbPageArgs(args *CreateFbPageArgs) {
 	q.ExternalCategory = args.ExternalCategory
 	q.ExternalCategoryList = args.ExternalCategoryList
 	q.ExternalTasks = args.ExternalTasks
+	q.ExternalPermissions = args.ExternalPermissions
 	q.ExternalImageURL = args.ExternalImageURL
 	q.Status = args.Status
 	q.ConnectionStatus = args.ConnectionStatus
@@ -288,37 +304,19 @@ func (q *DisableFbPagesByIDsCommand) SetDisableFbPagesByIDsArgs(args *DisableFbP
 	q.UserID = args.UserID
 }
 
-func (q *GetFbPageByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbPageByExternalIDArgs) {
+func (q *GetFbPageByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
-		&GetFbPageByExternalIDArgs{
-			ExternalID: q.ExternalID,
-		}
+		q.ExternalID
 }
 
-func (q *GetFbPageByExternalIDQuery) SetGetFbPageByExternalIDArgs(args *GetFbPageByExternalIDArgs) {
-	q.ExternalID = args.ExternalID
-}
-
-func (q *GetFbPageByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbPageByIDArgs) {
+func (q *GetFbPageByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
-		&GetFbPageByIDArgs{
-			ID: q.ID,
-		}
+		q.ID
 }
 
-func (q *GetFbPageByIDQuery) SetGetFbPageByIDArgs(args *GetFbPageByIDArgs) {
-	q.ID = args.ID
-}
-
-func (q *GetFbPageInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbPageInternalByIDArgs) {
+func (q *GetFbPageInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
-		&GetFbPageInternalByIDArgs{
-			ID: q.ID,
-		}
-}
-
-func (q *GetFbPageInternalByIDQuery) SetGetFbPageInternalByIDArgs(args *GetFbPageInternalByIDArgs) {
-	q.ID = args.ID
+		q.ID
 }
 
 func (q *ListFbPagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbPagesArgs) {
@@ -340,15 +338,14 @@ func (q *ListFbPagesQuery) SetListFbPagesArgs(args *ListFbPagesArgs) {
 	q.Filters = args.Filters
 }
 
-func (q *ListFbPagesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbPagesByIDsArgs) {
+func (q *ListFbPagesActiveByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs []string) {
 	return ctx,
-		&ListFbPagesByIDsArgs{
-			IDs: q.IDs,
-		}
+		q.ExternalIDs
 }
 
-func (q *ListFbPagesByIDsQuery) SetListFbPagesByIDsArgs(args *ListFbPagesByIDsArgs) {
-	q.IDs = args.IDs
+func (q *ListFbPagesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs filter.IDs) {
+	return ctx,
+		q.IDs
 }
 
 // implement dispatching
@@ -388,6 +385,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbPageByID)
 	b.AddHandler(h.HandleGetFbPageInternalByID)
 	b.AddHandler(h.HandleListFbPages)
+	b.AddHandler(h.HandleListFbPagesActiveByExternalIDs)
 	b.AddHandler(h.HandleListFbPagesByIDs)
 	return QueryBus{b}
 }

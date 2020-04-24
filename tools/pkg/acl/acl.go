@@ -964,8 +964,8 @@ var _acl = map[string]*permission.Decl{
 
 	// -- Fabo --
 	"fabo.Page/ConnectPages": {Type: Shop},
-	"fabo.Page/RemovePages":  {Type: Shop, IncludeFaboInfo: true},
-	"fabo.Page/ListPages":    {Type: Shop, IncludeFaboInfo: true},
+	"fabo.Page/RemovePages":  {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.Page/ListPages":    {Type: Shop, Auth: User, IncludeFaboInfo: true},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

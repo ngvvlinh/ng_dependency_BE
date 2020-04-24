@@ -70,7 +70,7 @@ func (a *FbUserAggregate) CreateFbUserInternal(
 func (a *FbUserAggregate) CreateFbUserCombined(
 	ctx context.Context, args *fbusering.CreateFbUserCombinedArgs,
 ) (*fbusering.FbUserCombined, error) {
-	oldFbUser, err := a.fbUserStore(ctx).GetFbUser()
+	oldFbUser, err := a.fbUserStore(ctx).UserID(args.UserID).ExternalID(args.FbUser.ExternalID).GetFbUser()
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -78,25 +78,24 @@ func (a *FbUserAggregate) CreateFbUserCombined(
 	fbUserResult := new(fbusering.FbUser)
 	fbUserInternalResult := new(fbusering.FbUserInternal)
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if oldFbUser != nil {
-			if oldFbUser.ExternalID != args.FbUser.ExternalID {
-				_, err := a.fbUserStore(ctx).ExternalID(oldFbUser.ExternalID).UpdateStatus(int(status3.N))
-				if err != nil {
-					return err
-				}
-
-				// disable all fbPages of old FbUser
-				disableAllFbPagesCmd := &fbpaging.DisableAllFbPagesCommand{
-					ShopID: args.ShopID,
-					UserID: args.UserID,
-				}
-				if err := a.fbPageAggr.Dispatch(ctx, disableAllFbPagesCmd); err != nil {
-					return err
-				}
-			} else {
-				args.FbUser.ID = oldFbUser.ID
-				args.FbUserInternal.ID = oldFbUser.ID
+		{
+			_, err := a.fbUserStore(ctx).UserID(args.UserID).UpdateStatus(int(status3.N))
+			if err != nil {
+				return err
 			}
+
+			// disable all fbPages of old FbUser
+			disableAllFbPagesCmd := &fbpaging.DisableAllFbPagesCommand{
+				ShopID: args.ShopID,
+				UserID: args.UserID,
+			}
+			if err := a.fbPageAggr.Dispatch(ctx, disableAllFbPagesCmd); err != nil {
+				return err
+			}
+		}
+		if oldFbUser != nil {
+			args.FbUser.ID = oldFbUser.ID
+			args.FbUserInternal.ID = oldFbUser.ID
 		}
 
 		// create FbUser

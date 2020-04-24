@@ -178,48 +178,24 @@ func (q *CreateFbUserInternalCommand) SetCreateFbUserInternalArgs(args *CreateFb
 	q.ExpiresIn = args.ExpiresIn
 }
 
-func (q *GetFbUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbUserByExternalIDArgs) {
+func (q *GetFbUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
-		&GetFbUserByExternalIDArgs{
-			ExternalID: q.ExternalID,
-		}
+		q.ExternalID
 }
 
-func (q *GetFbUserByExternalIDQuery) SetGetFbUserByExternalIDArgs(args *GetFbUserByExternalIDArgs) {
-	q.ExternalID = args.ExternalID
-}
-
-func (q *GetFbUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbUserByIDArgs) {
+func (q *GetFbUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
-		&GetFbUserByIDArgs{
-			ID: q.ID,
-		}
+		q.ID
 }
 
-func (q *GetFbUserByIDQuery) SetGetFbUserByIDArgs(args *GetFbUserByIDArgs) {
-	q.ID = args.ID
-}
-
-func (q *GetFbUserByUserIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbUserByUserIDArgs) {
+func (q *GetFbUserByUserIDQuery) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
 	return ctx,
-		&GetFbUserByUserIDArgs{
-			UserID: q.UserID,
-		}
+		q.UserID
 }
 
-func (q *GetFbUserByUserIDQuery) SetGetFbUserByUserIDArgs(args *GetFbUserByUserIDArgs) {
-	q.UserID = args.UserID
-}
-
-func (q *GetFbUserInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFbUserInternalByIDArgs) {
+func (q *GetFbUserInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
-		&GetFbUserInternalByIDArgs{
-			ID: q.ID,
-		}
-}
-
-func (q *GetFbUserInternalByIDQuery) SetGetFbUserInternalByIDArgs(args *GetFbUserInternalByIDArgs) {
-	q.ID = args.ID
+		q.ID
 }
 
 // implement dispatching

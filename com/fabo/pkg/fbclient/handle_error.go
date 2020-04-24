@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
 	"strings"
 
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/capi/dot"
 )
 
 const (
@@ -27,22 +29,14 @@ func NewFacebookErrorService(_bot *telebot.Channel) *FacebookErrorService {
 }
 
 func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL string) error {
-	var facebookError struct {
-		Data *struct {
-			Error *model.FacebookError `json:"error"`
-		} `json:"data"`
-		Error *model.FacebookError `json:"error"`
-	}
+	var bodyJson interface{}
 
-	if err := json.Unmarshal(body, &facebookError); err != nil {
+	if err := json.Unmarshal(body, &bodyJson); err != nil {
 		return err
 	}
 
-	if facebookError.Error != nil {
-		return handleErrorFacebookAPI(facebookError.Error, currentURL)
-	}
-	if facebookError.Data != nil && facebookError.Data.Error != nil {
-		return handleErrorFacebookAPI(facebookError.Data.Error, currentURL)
+	if facebookError := findError(bodyJson); facebookError != nil {
+		return handleErrorFacebookAPI(facebookError, currentURL)
 	}
 
 	return nil
@@ -84,6 +78,61 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL strin
 		}
 	}
 	return nil
+}
+
+func findError(arg interface{}) *model.FacebookError {
+	typ := reflect.TypeOf(arg)
+	if typ.Kind() == reflect.Map {
+		mapBody := arg.(map[string]interface{})
+		if errorObject, ok := mapBody["error"]; ok {
+			return convertFacebookError(errorObject.(map[string]interface{}))
+		}
+
+		for _, val := range mapBody {
+			if reflect.TypeOf(val).Kind() == reflect.Map {
+				facebookError := findError(val)
+				if facebookError != nil {
+					return facebookError
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func convertFacebookError(arg map[string]interface{}) *model.FacebookError {
+	if len(arg) == 0 {
+		return nil
+	}
+	var errorSubCode, code int
+	var message, typ, errorUserTitle, fbTraceID string
+	if arg["message"] != nil {
+		message = arg["message"].(string)
+	}
+	if arg["type"] != nil {
+		message = arg["type"].(string)
+	}
+	if arg["error_user_title"] != nil {
+		errorUserTitle = arg["error_user_title"].(string)
+	}
+	if arg["subcode"] != nil {
+		errorSubCode = int(arg["subcode"].(float64))
+	}
+	if arg["fbtrace_id"] != nil {
+		fbTraceID = arg["fbtrace_id"].(string)
+	}
+	if arg["code"] != nil {
+		code = int(arg["code"].(float64))
+	}
+	return &model.FacebookError{
+		Message:        dot.String(message),
+		Type:           dot.String(typ),
+		Code:           dot.Int(code),
+		ErrorSubcode:   dot.Int(errorSubCode),
+		ErrorUserTitle: dot.String(errorUserTitle),
+		FbtraceId:      dot.String(fbTraceID),
+	}
 }
 
 func censorTokens(currentURL string) (string, error) {

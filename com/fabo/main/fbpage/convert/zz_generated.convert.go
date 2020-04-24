@@ -167,12 +167,13 @@ func convert_fbpagemodel_FbPage_fbpaging_FbPage(arg *fbpagemodel.FbPage, out *fb
 	out.ExternalName = arg.ExternalName         // simple assign
 	out.ExternalCategory = arg.ExternalCategory // simple assign
 	out.ExternalCategoryList = Convert_fbpagemodel_ExternalCategories_fbpaging_ExternalCategories(arg.ExternalCategoryList)
-	out.ExternalTasks = arg.ExternalTasks       // simple assign
-	out.ExternalImageURL = arg.ExternalImageURL // simple assign
-	out.Status = arg.Status                     // simple assign
-	out.ConnectionStatus = arg.ConnectionStatus // simple assign
-	out.CreatedAt = arg.CreatedAt               // simple assign
-	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.ExternalTasks = arg.ExternalTasks             // simple assign
+	out.ExternalPermissions = arg.ExternalPermissions // simple assign
+	out.ExternalImageURL = arg.ExternalImageURL       // simple assign
+	out.Status = arg.Status                           // simple assign
+	out.ConnectionStatus = arg.ConnectionStatus       // simple assign
+	out.CreatedAt = arg.CreatedAt                     // simple assign
+	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 }
 
 func Convert_fbpagemodel_FbPages_fbpaging_FbPages(args []*fbpagemodel.FbPage) (outs []*fbpaging.FbPage) {
@@ -207,13 +208,14 @@ func convert_fbpaging_FbPage_fbpagemodel_FbPage(arg *fbpaging.FbPage, out *fbpag
 	out.ExternalName = arg.ExternalName         // simple assign
 	out.ExternalCategory = arg.ExternalCategory // simple assign
 	out.ExternalCategoryList = Convert_fbpaging_ExternalCategories_fbpagemodel_ExternalCategories(arg.ExternalCategoryList)
-	out.ExternalTasks = arg.ExternalTasks       // simple assign
-	out.ExternalImageURL = arg.ExternalImageURL // simple assign
-	out.Status = arg.Status                     // simple assign
-	out.ConnectionStatus = arg.ConnectionStatus // simple assign
-	out.CreatedAt = arg.CreatedAt               // simple assign
-	out.UpdatedAt = arg.UpdatedAt               // simple assign
-	out.DeletedAt = time.Time{}                 // zero value
+	out.ExternalTasks = arg.ExternalTasks             // simple assign
+	out.ExternalPermissions = arg.ExternalPermissions // simple assign
+	out.ExternalImageURL = arg.ExternalImageURL       // simple assign
+	out.Status = arg.Status                           // simple assign
+	out.ConnectionStatus = arg.ConnectionStatus       // simple assign
+	out.CreatedAt = arg.CreatedAt                     // simple assign
+	out.UpdatedAt = arg.UpdatedAt                     // simple assign
+	out.DeletedAt = time.Time{}                       // zero value
 }
 
 func Convert_fbpaging_FbPages_fbpagemodel_FbPages(args []*fbpaging.FbPage) (outs []*fbpagemodel.FbPage) {
@@ -249,6 +251,7 @@ func apply_fbpaging_CreateFbPageArgs_fbpaging_FbPage(arg *fbpaging.CreateFbPageA
 	out.ExternalCategory = arg.ExternalCategory         // simple assign
 	out.ExternalCategoryList = arg.ExternalCategoryList // simple assign
 	out.ExternalTasks = arg.ExternalTasks               // simple assign
+	out.ExternalPermissions = arg.ExternalPermissions   // simple assign
 	out.ExternalImageURL = arg.ExternalImageURL         // simple assign
 	out.Status = arg.Status                             // simple assign
 	out.ConnectionStatus = arg.ConnectionStatus         // simple assign

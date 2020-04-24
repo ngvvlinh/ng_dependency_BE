@@ -18,11 +18,11 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetFbUserByID(context.Context, *GetFbUserByIDArgs) (*FbUser, error)
-	GetFbUserByExternalID(context.Context, *GetFbUserByExternalIDArgs) (*FbUser, error)
-	GetFbUserByUserID(context.Context, *GetFbUserByUserIDArgs) (*FbUser, error)
+	GetFbUserByID(_ context.Context, ID dot.ID) (*FbUser, error)
+	GetFbUserByExternalID(_ context.Context, externalID string) (*FbUser, error)
+	GetFbUserByUserID(_ context.Context, userID dot.ID) (*FbUser, error)
 
-	GetFbUserInternalByID(context.Context, *GetFbUserInternalByIDArgs) (*FbUserInternal, error)
+	GetFbUserInternalByID(_ context.Context, ID dot.ID) (*FbUserInternal, error)
 }
 
 // +convert:create=FbUser
@@ -47,20 +47,4 @@ type CreateFbUserCombinedArgs struct {
 	ShopID         dot.ID
 	FbUser         *CreateFbUserArgs
 	FbUserInternal *CreateFbUserInternalArgs
-}
-
-type GetFbUserByIDArgs struct {
-	ID dot.ID
-}
-
-type GetFbUserByExternalIDArgs struct {
-	ExternalID string
-}
-
-type GetFbUserByUserIDArgs struct {
-	UserID dot.ID
-}
-
-type GetFbUserInternalByIDArgs struct {
-	ID dot.ID
 }

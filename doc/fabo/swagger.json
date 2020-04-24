@@ -211,6 +211,12 @@
         "external_name": {
           "type": "string"
         },
+        "external_permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "external_tasks": {
           "type": "array",
           "items": {
@@ -269,6 +275,12 @@
         },
         "external_name": {
           "type": "string"
+        },
+        "external_permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "external_tasks": {
           "type": "array",

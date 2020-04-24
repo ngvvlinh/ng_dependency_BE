@@ -6,6 +6,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 // +gen:api
@@ -22,12 +23,13 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetFbPageByID(context.Context, *GetFbPageByIDArgs) (*FbPage, error)
-	GetFbPageByExternalID(context.Context, *GetFbPageByExternalIDArgs) (*FbPage, error)
-	ListFbPagesByIDs(context.Context, *ListFbPagesByIDsArgs) ([]*FbPage, error)
+	GetFbPageByID(_ context.Context, ID dot.ID) (*FbPage, error)
+	GetFbPageByExternalID(_ context.Context, externalID string) (*FbPage, error)
+	ListFbPagesByIDs(_ context.Context, IDs filter.IDs) ([]*FbPage, error)
 	ListFbPages(context.Context, *ListFbPagesArgs) (*FbPagesResponse, error)
+	ListFbPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbPage, error)
 
-	GetFbPageInternalByID(context.Context, *GetFbPageInternalByIDArgs) (*FbPageInternal, error)
+	GetFbPageInternalByID(_ context.Context, ID dot.ID) (*FbPageInternal, error)
 }
 
 // +convert:create=FbPage
@@ -41,6 +43,7 @@ type CreateFbPageArgs struct {
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
 	ExternalTasks        []string
+	ExternalPermissions  []string
 	ExternalImageURL     string
 	Status               status3.Status
 	ConnectionStatus     status3.Status
@@ -72,22 +75,6 @@ type DisableFbPagesByIDsArgs struct {
 type DisableAllFbPagesArgs struct {
 	ShopID dot.ID
 	UserID dot.ID
-}
-
-type GetFbPageByIDArgs struct {
-	ID dot.ID
-}
-
-type GetFbPageByExternalIDArgs struct {
-	ExternalID string
-}
-
-type GetFbPageInternalByIDArgs struct {
-	ID dot.ID
-}
-
-type ListFbPagesByIDsArgs struct {
-	IDs []dot.ID
 }
 
 type ListFbPagesArgs struct {

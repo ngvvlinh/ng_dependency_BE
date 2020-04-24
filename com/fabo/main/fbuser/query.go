@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ fbusering.QueryService = &FbUserQuery{}
@@ -19,7 +20,7 @@ type FbUserQuery struct {
 }
 
 func (q *FbUserQuery) GetFbUserInternalByID(
-	ctx context.Context, args *fbusering.GetFbUserInternalByIDArgs,
+	ctx context.Context, ID dot.ID,
 ) (*fbusering.FbUserInternal, error) {
 	panic("implement me")
 }
@@ -37,19 +38,19 @@ func (q *FbUserQuery) MessageBus() fbusering.QueryBus {
 }
 
 func (f FbUserQuery) GetFbUserByID(
-	ctx context.Context, args *fbusering.GetFbUserByIDArgs,
+	ctx context.Context, ID dot.ID,
 ) (*fbusering.FbUser, error) {
 	panic("implement me")
 }
 
 func (f FbUserQuery) GetFbUserByExternalID(
-	ctx context.Context, args *fbusering.GetFbUserByExternalIDArgs,
+	ctx context.Context, externalID string,
 ) (*fbusering.FbUser, error) {
 	panic("implement me")
 }
 
 func (q *FbUserQuery) GetFbUserByUserID(
-	ctx context.Context, args *fbusering.GetFbUserByUserIDArgs,
+	ctx context.Context, userID dot.ID,
 ) (*fbusering.FbUser, error) {
-	return q.fbUserStore(ctx).UserID(args.UserID).Status(status3.P).GetFbUser()
+	return q.fbUserStore(ctx).UserID(userID).Status(status3.P).GetFbUser()
 }

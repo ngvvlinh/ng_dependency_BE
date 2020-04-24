@@ -74,6 +74,7 @@ type FbPageCombined struct {
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
+	ExternalPermissions  []string            `json:"external_permissions"`
 	ExternalImageURL     string              `json:"external_image_url"`
 	Status               status3.Status      `json:"status"`
 	ConnectionStatus     status3.Status      `json:"connection_status"`
@@ -93,6 +94,7 @@ type FbPage struct {
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
 	ExternalTasks        []string            `json:"external_tasks"`
+	ExternalPermissions  []string            `json:"external_permissions"`
 	ExternalImageURL     string              `json:"external_image_url"`
 	Status               status3.Status      `json:"status"`
 	ConnectionStatus     status3.Status      `json:"connection_status"`

@@ -2,14 +2,15 @@ package model
 
 import "o.o/backend/com/fabo/main/fbpage/model"
 
-type Accounts struct {
-	Accounts Account `json:"accounts"`
-	Id       string  `json:"id"`
+type AccountsResponse struct {
+	Accounts    Accounts            `json:"accounts"`
+	Permissions AccountsPermissions `json:"permissions"`
+	Id          string              `json:"id"`
 }
 
-type Account struct {
-	Data   []AccountData  `json:"data"`
-	Paging FacebookPaging `json:"paging"`
+type Accounts struct {
+	Data   []AccountData          `json:"data"`
+	Paging FacebookPagingResponse `json:"paging"`
 }
 
 type AccountData struct {
@@ -21,4 +22,13 @@ type AccountData struct {
 	Tasks        []string                 `json:"tasks"`
 	FanCount     int                      `json:"fan_count"`
 	Picture      Picture                  `json:"picture"`
+}
+
+type AccountsPermissions struct {
+	Data []AccountPermission `json:"data"`
+}
+
+type AccountPermission struct {
+	Permission string `json:"permission"`
+	Status     string `json:"status"`
 }

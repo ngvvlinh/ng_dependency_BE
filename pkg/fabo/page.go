@@ -10,6 +10,7 @@ import (
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/pkg/fbclient"
+	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -103,15 +104,15 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	shopID := s.ss.Shop().ID
 	userID := s.ss.Claim().UserID
 
-	userToken, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
+	_, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
 		return nil, err
 	}
 
 	// verify permissions
-	if err := verifyScopes(s.appScopes, userToken.Data.Scopes); err != nil {
-		return nil, err
-	}
+	//if err := verifyScopes(s.appScopes, userToken.Data.Scopes); err != nil {
+	//	return nil, err
+	//}
 
 	if r.AccessToken == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
@@ -129,6 +130,25 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	accounts, err := s.fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
+	}
+
+	var externalIDs []string
+	for _, account := range accounts.Accounts.Data {
+		externalIDs = append(externalIDs, account.Id)
+	}
+
+	listFbPagesActiveQuery := &fbpaging.ListFbPagesActiveByExternalIDsQuery{
+		ExternalIDs: externalIDs,
+	}
+
+	if err := s.fbPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
+		return nil, err
+	}
+
+	// key externalID
+	mapFbPageActive := make(map[string]*fbpaging.FbPage)
+	for _, fbPage := range listFbPagesActiveQuery.Result {
+		mapFbPageActive[fbPage.ExternalID] = fbPage
 	}
 
 	fbUserID := cm.NewID()
@@ -162,6 +182,8 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 
 	var fbErrorPages []*fabo.FbErrorPage
 
+	permissionsGranted := getPermissionsGranted(accounts.Permissions)
+
 	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbPageCombinedArgs, 0, len(accounts.Accounts.Data))
 	for _, account := range accounts.Accounts.Data {
 		// Verify role (Admin)
@@ -171,6 +193,16 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 				ExternalName:     account.Name,
 				ExternalImageURL: account.Picture.Data.Url,
 				Reason:           "Tài khoản Facebook cần có quyền Admin trên Fanpage để kết nối.",
+			})
+			continue
+		}
+
+		if fbPage, ok := mapFbPageActive[account.Id]; ok && fbPage.FbUserID != fbUserID {
+			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
+				ExternalID:       account.Id,
+				ExternalName:     account.Name,
+				ExternalImageURL: account.Picture.Data.Url,
+				Reason:           "Fanpage đã được kết nối với tài khoản trong hệ thống.",
 			})
 			continue
 		}
@@ -193,6 +225,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			ExternalCategory:     account.Category,
 			ExternalCategoryList: categories,
 			ExternalTasks:        account.Tasks,
+			ExternalPermissions:  permissionsGranted,
 			ExternalImageURL:     account.Picture.Data.Url,
 			Status:               status3.P,
 			ConnectionStatus:     status3.P,
@@ -243,4 +276,14 @@ func verifyScopes(appScopes map[string]string, scopes []string) error {
 		}
 	}
 	return nil
+}
+
+func getPermissionsGranted(permissionsData model.AccountsPermissions) []string {
+	var permissions []string
+	for _, permission := range permissionsData.Data {
+		if permission.Status == fbclient.PermissionGranted {
+			permissions = append(permissions, permission.Permission)
+		}
+	}
+	return permissions
 }

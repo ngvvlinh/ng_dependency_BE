@@ -150,7 +150,7 @@ func main() {
 	apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
 
 	mux.Handle("/api/", http.StripPrefix("/api",
-		middleware.CORS(headers.ForwardHeaders(apiMux))))
+		middleware.CORS(headers.ForwardHeaders(bus.Middleware(apiMux)))))
 
 	for _, s := range servers {
 		apiMux.Handle(s.PathPrefix(), s)

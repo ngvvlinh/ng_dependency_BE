@@ -70,7 +70,7 @@ func (f *FbClient) Ping() error {
 	}
 
 	query.Add(ClientIDKey, f.appInfo.ID)
-	query.Add(ClientSecretKey, f.appInfo.Secret)
+	query.Add(ClientSecret, f.appInfo.Secret)
 	query.Add(GrantType, ClientCredentials)
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -84,14 +84,16 @@ func (f *FbClient) Ping() error {
 		return err
 	}
 
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return err
+	}
+
 	var tok model.Token
 	if err := json.Unmarshal(body, &tok); err != nil {
 		return err
 	}
 
-	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
-		return err
-	}
+	f.appInfo.AccessToken = tok.AccessToken
 
 	return nil
 }
@@ -107,7 +109,7 @@ func (f *FbClient) CallAPIGetMe(accessToken string) (*model.Me, error) {
 		return nil, err
 	}
 
-	query.Add(AccessTokenKey, accessToken)
+	query.Add(AccessToken, accessToken)
 	query.Add(Fields, "id,name,last_name,first_name,short_name,picture")
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -133,7 +135,8 @@ func (f *FbClient) CallAPIGetMe(accessToken string) (*model.Me, error) {
 	return &me, nil
 }
 
-func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.Accounts, error) {
+// TODO: add pagination
+func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.AccountsResponse, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/me", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
@@ -144,8 +147,9 @@ func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.Accounts, erro
 		return nil, err
 	}
 
-	query.Add(AccessTokenKey, accessToken)
-	query.Add(Fields, "accounts{access_token,category,category_list,name,id,tasks,description,about,fan_count,picture}")
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, "accounts{access_token,category,category_list,name,id,tasks,description,about,fan_count,picture},permissions")
+	query.Add(DateFormat, UnixDateFormat)
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
 	if err != nil {
@@ -162,7 +166,7 @@ func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.Accounts, erro
 		return nil, err
 	}
 
-	var accounts model.Accounts
+	var accounts model.AccountsResponse
 
 	if err := json.Unmarshal(body, &accounts); err != nil {
 		return nil, err
@@ -184,7 +188,7 @@ func (f *FbClient) CallAPIGetLongLivedAccessToken(accessToken string) (*model.To
 	query.Add(GrantType, GrantTypeFBExchangeToken)
 	query.Add(FBExchangeToken, accessToken)
 	query.Add(ClientIDKey, f.appInfo.ID)
-	query.Add(ClientSecretKey, f.appInfo.Secret)
+	query.Add(ClientSecret, f.appInfo.Secret)
 
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -221,7 +225,7 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 		return nil, err
 	}
 
-	query.Add(AccessTokenKey, f.appInfo.AccessToken)
+	query.Add(AccessToken, f.appInfo.AccessToken)
 	query.Add(InputToken, accessToken)
 
 	URL.RawQuery = query.Encode()
@@ -247,6 +251,222 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 	}
 
 	return &tok, nil
+}
+
+func (f *FbClient) CallAPIPublishedPosts(pageID, accessToken string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), pageID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	defaultPaging := 100
+	if pagination != nil && pagination.Limit.Valid {
+		defaultPaging = pagination.Limit.Int
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, fmt.Sprintf("published_posts.limit(%d){id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,type,subattachments}}", defaultPaging))
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, 0))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var publishedPostsResponse model.PublishedPostsResponse
+
+	if err := json.Unmarshal(body, &publishedPostsResponse); err != nil {
+		return nil, err
+	}
+
+	return &publishedPostsResponse, nil
+}
+
+func (f *FbClient) CallAPIGetPost(pageID, postID, accessToken string) (*model.Post, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s_%s", f.apiInfo.Url(), pageID, postID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,type,subattachments}")
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var post model.Post
+
+	if err := json.Unmarshal(body, &post); err != nil {
+		return nil, err
+	}
+
+	return &post, nil
+}
+
+func (f *FbClient) CallAPIGetComments(parentID, ID, accessToken string, pagination *model.FacebookPagingRequest) (*model.CommentsResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s_%s/comments", f.apiInfo.Url(), parentID, ID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, "message,id,from,attachment,comment_count,parent,created_time")
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), true, 100))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var commentsResponse model.CommentsResponse
+
+	if err := json.Unmarshal(body, &commentsResponse); err != nil {
+		return nil, err
+	}
+
+	return &commentsResponse, nil
+}
+
+func (f *FbClient) CallAPIGetConversations(pageID, accessToken string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), pageID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	defaultPaging := 100
+	if pagination != nil && pagination.Limit.Valid {
+		defaultPaging = pagination.Limit.Int
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, fmt.Sprintf("conversations.limit(%d){message_count,id,updated_time,link}", defaultPaging))
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, 100))
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(URL.String())
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var conversationsResponse model.ConversationsResponse
+
+	if err := json.Unmarshal(body, &conversationsResponse); err != nil {
+		return nil, err
+	}
+
+	return &conversationsResponse, nil
+}
+
+func (f *FbClient) CallAPIGetMessages(conversationID, accessToken string, pagination *model.FacebookPagingRequest) (*model.MessagesResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), conversationID))
+	if err != nil {
+		return nil, err
+	}
+
+	defaultPaging := 100
+	if pagination != nil && pagination.Limit.Valid {
+		defaultPaging = pagination.Limit.Int
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, fmt.Sprintf("messages.limit(%d){from,to,message,created_time,id}", defaultPaging))
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, 100))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var messagesResponse model.MessagesResponse
+
+	if err := json.Unmarshal(body, &messagesResponse); err != nil {
+		return nil, err
+	}
+
+	return &messagesResponse, nil
 }
 
 func GetRole(tasks []string) FacebookRole {

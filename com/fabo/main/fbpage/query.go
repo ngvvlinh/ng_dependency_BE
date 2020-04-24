@@ -4,9 +4,12 @@ import (
 	"context"
 
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 var _ fbpaging.QueryService = &FbPageQuery{}
@@ -31,25 +34,25 @@ func (q *FbPageQuery) MessageBus() fbpaging.QueryBus {
 }
 
 func (f FbPageQuery) GetFbPageByID(
-	ctx context.Context, args *fbpaging.GetFbPageByIDArgs,
+	ctx context.Context, ID dot.ID,
 ) (*fbpaging.FbPage, error) {
 	panic("implement me")
 }
 
 func (f FbPageQuery) GetFbPageByExternalID(
-	ctx context.Context, args *fbpaging.GetFbPageByExternalIDArgs,
+	ctx context.Context, externalID string,
 ) (*fbpaging.FbPage, error) {
 	panic("implement me")
 }
 
 func (f FbPageQuery) GetFbPageInternalByID(
-	ctx context.Context, args *fbpaging.GetFbPageInternalByIDArgs,
+	ctx context.Context, ID dot.ID,
 ) (*fbpaging.FbPageInternal, error) {
 	panic("implement me")
 }
 
 func (q *FbPageQuery) ListFbPagesByIDs(
-	ctx context.Context, args *fbpaging.ListFbPagesByIDsArgs,
+	ctx context.Context, IDs filter.IDs,
 ) ([]*fbpaging.FbPage, error) {
 	panic("implement me")
 }
@@ -70,4 +73,14 @@ func (q *FbPageQuery) ListFbPages(
 		FbPages: fbPages,
 		Paging:  query.GetPaging(),
 	}, nil
+}
+
+func (q *FbPageQuery) ListFbPagesActiveByExternalIDs(
+	ctx context.Context, externalIDs []string,
+) ([]*fbpaging.FbPage, error) {
+	fbPages, err := q.fbPageStore(ctx).ExternalIDs(externalIDs).Status(status3.P).ListFbPages()
+	if err != nil {
+		return nil, err
+	}
+	return fbPages, nil
 }
