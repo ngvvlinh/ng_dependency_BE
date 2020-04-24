@@ -192,7 +192,7 @@ func (a *RefundAggregate) ConfirmRefund(ctx context.Context, args *refund.Confir
 	if refundDB.Status != status3.Z {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiếu trả hàng %v đã hủy hoặc đã xác nhận không thể cập nhập trạng thái")
 	}
-	refundDB.CancelledAt = time.Now()
+	refundDB.ConfirmedAt = time.Now()
 	refundDB.Status = status3.P
 	refundDB.UpdatedAt = time.Now()
 	refundDB.UpdatedBy = args.UpdatedBy

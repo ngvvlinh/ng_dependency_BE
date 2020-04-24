@@ -148,11 +148,13 @@ const (
 	p, shop/refund:update, admin, owner, salesman
 	p, shop/refund:delete, admin, owner, salesman
 	p, shop/refund:view, admin, owner, salesman
+	p, shop/refund:confirm, admin, owner, salesman
 	# purchaserefund
 	p, shop/purchaserefund:create, admin, owner, purchasing_management
 	p, shop/purchaserefund:update, admin, owner, purchasing_management
 	p, shop/purchaserefund:delete, admin, owner, purchasing_management
 	p, shop/purchaserefund:view, admin, owner, purchasing_management
+	p, shop/purchaserefund:confirm, admin, owner, purchasing_management
 	# trading
 	p, trading/order:view, admin, owner
 	p, trading/order:create, admin, owner
