@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 
 	addressmodel "o.o/backend/com/main/address/model"
 	addressmodelx "o.o/backend/com/main/address/modelx"
@@ -111,6 +112,10 @@ func DeleteAddress(ctx context.Context, cmd *addressmodelx.DeleteAddressCommand)
 
 	s := x.Table("address").Where("id = ? AND account_id = ?", cmd.ID, cmd.AccountID)
 	if deleted, err := s.Delete(&addressmodel.Address{}); err != nil {
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "shop_address_id_fkey") || strings.Contains(errMsg, "shop_ship_from_address_id_fkey") {
+			err = cm.Errorf(cm.FailedPrecondition, nil, "không thể xóa địa chỉ mặc định")
+		}
 		return err
 	} else if deleted == 0 {
 		return cm.Error(cm.NotFound, "", nil)
