@@ -145,7 +145,7 @@ func main() {
 	apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
 
 	mux.Handle("/api/", http.StripPrefix("/api",
-		headers.ForwardHeaders(apiMux)))
+		middleware.CORS(headers.ForwardHeaders(apiMux))))
 
 	fabo.NewFaboServer(apiMux)
 
