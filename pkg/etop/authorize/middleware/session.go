@@ -212,6 +212,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		session.IsOwner = account.GetAccount().OwnerID == claim.UserID
 	}
 	q.Result = session
+	q.Result.Shop.BankAccount = nil
 	return ctx, nil
 }
 
