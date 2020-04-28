@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/ledger_type"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/ledger_type"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

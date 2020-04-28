@@ -8,9 +8,9 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/res/dl/imports"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/res/dl/imports"
+	"o.o/common/l"
 )
 
 var dlShopOrderXlsx []byte

@@ -3,16 +3,16 @@ package sqlstore
 import (
 	"context"
 
-	st "etop.vn/api/main/stocktaking"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/stocktaking/convert"
-	"etop.vn/backend/com/main/stocktaking/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	st "o.o/api/main/stocktaking"
+	"o.o/api/meta"
+	"o.o/backend/com/main/stocktaking/convert"
+	"o.o/backend/com/main/stocktaking/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 var Sort = map[string]string{

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/common/jsonx"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/common/jsonx"
 	"flag"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

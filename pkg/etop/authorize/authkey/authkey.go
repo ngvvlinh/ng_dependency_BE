@@ -3,11 +3,11 @@ package authkey
 import (
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var ll = l.New()

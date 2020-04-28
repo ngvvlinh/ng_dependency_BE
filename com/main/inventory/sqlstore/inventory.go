@@ -3,13 +3,13 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/backend/com/main/inventory/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/backend/com/main/inventory/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 var Sort = map[string]string{

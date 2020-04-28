@@ -3,10 +3,10 @@ package sqlstore
 import (
 	"context"
 
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	catalogmodelx "o.o/backend/com/main/catalog/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
 )
 
 func init() {

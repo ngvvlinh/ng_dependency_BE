@@ -3,13 +3,13 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	crmvht "etop.vn/api/supporting/crm/vht"
-	"etop.vn/backend/com/supporting/crm/vht/convert"
-	"etop.vn/backend/com/supporting/crm/vht/model"
-	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/meta"
+	crmvht "o.o/api/supporting/crm/vht"
+	"o.o/backend/com/supporting/crm/vht/convert"
+	"o.o/backend/com/supporting/crm/vht/model"
+	"o.o/backend/com/supporting/crm/vht/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 type QueryService struct {

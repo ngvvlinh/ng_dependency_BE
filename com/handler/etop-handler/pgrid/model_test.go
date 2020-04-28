@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/com/handler/pgevent"
-	cm "etop.vn/backend/pkg/common"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/common/xerrors"
+	"o.o/backend/com/handler/pgevent"
+	cm "o.o/backend/pkg/common"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/common/xerrors"
 )
 
 var db *cmsql.Database

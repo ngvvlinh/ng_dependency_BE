@@ -9,10 +9,10 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 type keyWithNull struct{}
@@ -91,10 +91,10 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 		currentInfo.Set(enum, keyWithNull{}, true)
 	}
 
-	printer.Import("dot", "etop.vn/capi/dot")
+	printer.Import("dot", "o.o/capi/dot")
 	printer.Import("driver", "database/sql/driver")
 	printer.Import("fmt", "fmt")
-	printer.Import("mix", "etop.vn/capi/mix")
+	printer.Import("mix", "o.o/capi/mix")
 	vars := map[string]interface{}{
 		"Enums": enums,
 	}

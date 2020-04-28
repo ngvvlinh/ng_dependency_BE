@@ -3,10 +3,10 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/webserver"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/webserver"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func (w WebserverQueryService) GetWsProductByID(ctx context.Context, shopID dot.ID, ID dot.ID) (*webserver.WsProduct, error) {

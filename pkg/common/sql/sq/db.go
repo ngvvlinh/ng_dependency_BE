@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 // Database ...

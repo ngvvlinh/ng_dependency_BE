@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	carryingmodel "etop.vn/backend/com/shopping/carrying/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopcarriermodel "etop.vn/backend/zexp/etl/main/shopcarrier/model"
+	carryingmodel "o.o/backend/com/shopping/carrying/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopcarriermodel "o.o/backend/zexp/etl/main/shopcarrier/model"
 )
 
 /*
@@ -43,7 +43,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/shopping/carrying/model.ShopCarrier --//
+//-- convert o.o/backend/com/shopping/carrying/model.ShopCarrier --//
 
 func Convert_shopcarriermodel_ShopCarrier_carryingmodel_ShopCarrier(arg *shopcarriermodel.ShopCarrier, out *carryingmodel.ShopCarrier) *carryingmodel.ShopCarrier {
 	if arg == nil {

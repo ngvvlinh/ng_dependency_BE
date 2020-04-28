@@ -3,16 +3,16 @@ package webhook
 import (
 	"context"
 
-	"etop.vn/api/top/external/types"
-	"etop.vn/backend/com/handler/etop-handler/intctl"
-	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/top/external/types"
+	"o.o/backend/com/handler/etop-handler/intctl"
+	"o.o/backend/com/handler/etop-handler/webhook/sender"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/capi/dot"
 )
 
 var producer mq.Producer

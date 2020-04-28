@@ -13,15 +13,15 @@ import (
 	"github.com/go-xorm/builder"
 	"github.com/lib/pq"
 
-	"etop.vn/api/meta"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/strs"
-	"etop.vn/common/xerrors"
+	"o.o/api/meta"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/strs"
+	"o.o/common/xerrors"
 )
 
 type IncludeDeleted bool

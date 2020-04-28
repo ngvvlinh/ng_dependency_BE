@@ -3,10 +3,10 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/stocktake_type"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/stocktake_type"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

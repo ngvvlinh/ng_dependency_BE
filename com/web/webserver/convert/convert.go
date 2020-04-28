@@ -5,12 +5,12 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 
-	"etop.vn/api/webserver"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/webserver"
+	cm "o.o/backend/pkg/common"
 )
 
-// +gen:convert: etop.vn/backend/com/web/webserver/model -> etop.vn/api/webserver
-// +gen:convert: etop.vn/api/webserver
+// +gen:convert: o.o/backend/com/web/webserver/model  -> o.o/api/webserver
+// +gen:convert:  o.o/api/webserver
 
 func createOrUpdateWsCategory(in *webserver.CreateOrUpdateWsCategoryArgs, out *webserver.WsCategory) {
 	if out == nil {

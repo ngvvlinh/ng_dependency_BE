@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	model "etop.vn/backend/com/supporting/crm/vht/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/jsonx"
+	model "o.o/backend/com/supporting/crm/vht/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/jsonx"
 )
 
 var (

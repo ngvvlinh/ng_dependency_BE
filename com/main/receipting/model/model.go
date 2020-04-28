@@ -3,11 +3,11 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/receipt_mode"
-	"etop.vn/api/top/types/etc/receipt_ref"
-	"etop.vn/api/top/types/etc/receipt_type"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/receipt_mode"
+	"o.o/api/top/types/etc/receipt_ref"
+	"o.o/api/top/types/etc/receipt_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

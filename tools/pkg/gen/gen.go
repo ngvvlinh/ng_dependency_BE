@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-const ProjectImport = "etop.vn/backend"
+const ProjectImport = "o.o/backend"
 const ProjectImport_ = ProjectImport + "/"
 
 var (
@@ -56,9 +56,9 @@ func loadGoPath() (path string, err error) {
 }
 
 func loadProjectPath() (path string, err error) {
-	dirEnv := os.Getenv("ETOPDIR")
+	dirEnv := os.Getenv("PROJECT_DIR")
 	if dirEnv == "" {
-		return "", errors.New("ETOPDIR not set")
+		return "", errors.New("PROJECT_DIR not set")
 	}
 
 	rootTree, err = filepath.Abs(filepath.Join(dirEnv, ".."))
@@ -86,12 +86,12 @@ func validDir(path string) error {
 	return nil
 }
 
-// ProjectPath is absolute path to etop.vn/backend
+// ProjectPath is absolute path to o.o/backend
 func ProjectPath() string {
 	return projectPath
 }
 
-// RootTree is absolute path to etop.vn/..
+// RootTree is absolute path to o.o/..
 func RootTree() string {
 	return rootTree
 }
@@ -120,7 +120,7 @@ func WriteFile(outputPath string, data []byte) {
 // FormatFiles ...
 func FormatFiles(outputPath ...string) {
 	args := make([]string, 0, len(outputPath)+3)
-	args = append(args, "-local", "etop.vn", "-w")
+	args = append(args, "-local", "o.o", "-w")
 	for _, p := range outputPath {
 		args = append(args, GetAbsPath(p))
 	}

@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	receipting "etop.vn/backend/com/main/receipting/model"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	receipting "o.o/backend/com/main/receipting/model"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

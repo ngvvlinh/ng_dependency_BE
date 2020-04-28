@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 
-	"etop.vn/api/top/int/etop"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/capi/dot"
+	"o.o/api/top/int/etop"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/capi/dot"
 )
 
 func CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *identitymodel.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*etop.LoginResponse, error) {

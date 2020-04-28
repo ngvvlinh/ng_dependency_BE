@@ -7,7 +7,7 @@ package pgrid
 import (
 	"database/sql"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 type Foos []*Foo

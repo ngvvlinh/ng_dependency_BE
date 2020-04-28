@@ -16,13 +16,13 @@ import (
 	"github.com/go-openapi/spec"
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/gen"
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/generators/apix"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/l"
+	"o.o/backend/tools/pkg/gen"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/generators/apix"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/l"
 )
 
 var ll = l.New()
@@ -194,10 +194,10 @@ func getCompactPath(origPath string) string {
 	}
 
 	compPath := origPath
-	compPath = strings.TrimPrefix(compPath, "etop.vn/api/pb/")
-	compPath = strings.TrimPrefix(compPath, "etop.vn/backend/")
-	compPath = strings.TrimPrefix(compPath, "etop.vn/api/")
-	compPath = strings.TrimPrefix(compPath, "etop.vn/")
+	compPath = strings.TrimPrefix(compPath, "o.o/api/pb/")
+	compPath = strings.TrimPrefix(compPath, "o.o/backend/")
+	compPath = strings.TrimPrefix(compPath, "o.o/api/")
+	compPath = strings.TrimPrefix(compPath, "o.o/")
 
 	i := byte(10)
 	compPath = rotatePath(compactPath(compPath), i)

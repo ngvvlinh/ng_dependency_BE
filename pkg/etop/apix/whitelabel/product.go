@@ -3,12 +3,12 @@ package whitelabel
 import (
 	"context"
 
-	"etop.vn/api/top/external/whitelabel"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/catalog/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/capi/dot"
+	"o.o/api/top/external/whitelabel"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/catalog/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 const shopID = 1057650360222204339

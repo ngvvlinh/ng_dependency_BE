@@ -3,10 +3,10 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/ws_banner_show_style"
-	"etop.vn/api/top/types/etc/ws_list_product_show_style"
-	"etop.vn/backend/com/main/address/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/ws_banner_show_style"
+	"o.o/api/top/types/etc/ws_list_product_show_style"
+	"o.o/backend/com/main/address/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

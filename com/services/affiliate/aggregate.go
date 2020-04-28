@@ -5,17 +5,17 @@ import (
 	"math"
 	"time"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/services/affiliate"
-	"etop.vn/backend/com/services/affiliate/model"
-	"etop.vn/backend/com/services/affiliate/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/main/catalog"
+	"o.o/api/main/identity"
+	"o.o/api/main/ordering"
+	"o.o/api/services/affiliate"
+	"o.o/backend/com/services/affiliate/model"
+	"o.o/backend/com/services/affiliate/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var _ affiliate.Aggregate = &Aggregate{}

@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/top/int/fabo"
-	"etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/fabo/pkg/fbclient"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/fabo/convertpb"
-	"etop.vn/capi/dot"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/top/int/fabo"
+	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/fabo/pkg/fbclient"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/fabo/convertpb"
+	"o.o/capi/dot"
 )
 
 func (s *PageService) RemovePages(ctx context.Context, r *RemovePagesEndpoint) error {

@@ -3,17 +3,17 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/ordering"
-	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/com/main/ordering/convert"
-	"etop.vn/backend/com/main/ordering/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering"
+	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/com/main/ordering/convert"
+	"o.o/backend/com/main/ordering/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/capi/dot"
 )
 
 type OrderStoreFactory func(context.Context) *OrderStore

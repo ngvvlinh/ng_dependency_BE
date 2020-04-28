@@ -1,6 +1,6 @@
 package config
 
-import cc "etop.vn/backend/pkg/common/config"
+import cc "o.o/backend/pkg/common/config"
 
 type Config struct {
 	Postgres         cc.Postgres `yaml:"postgres"`

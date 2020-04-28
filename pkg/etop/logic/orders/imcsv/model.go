@@ -1,11 +1,11 @@
 package imcsv
 
 import (
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/top/types/etc/ghn_note_code"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	"etop.vn/backend/pkg/common/imcsv"
-	"etop.vn/backend/pkg/common/validate"
+	"o.o/api/main/catalog"
+	"o.o/api/top/types/etc/ghn_note_code"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	"o.o/backend/pkg/common/imcsv"
+	"o.o/backend/pkg/common/validate"
 )
 
 var schema = imcsv.Schema{

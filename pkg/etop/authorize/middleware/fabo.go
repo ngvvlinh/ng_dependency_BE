@@ -3,11 +3,11 @@ package middleware
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/meta"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/capi/dot"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/meta"
+	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/capi/dot"
 )
 
 var (

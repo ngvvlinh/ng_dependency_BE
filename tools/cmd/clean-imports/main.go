@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 	var goimportsArgs []string
-	goimportsArgs = append(goimportsArgs, "-local", "etop.vn", "-w")
+	goimportsArgs = append(goimportsArgs, "-local", "o.o", "-w")
 	goimportsArgs = append(goimportsArgs, files...)
 	output, err := exec.Command("goimports", goimportsArgs...).CombinedOutput()
 	must(err, "can not run goimports")
@@ -147,7 +147,7 @@ var reAliasLine = regexp.MustCompile(`^\t([A-z0-9_]+)|\. "`)
 var reNewline = regexp.MustCompile(`\n\n+`)
 var newline = []byte("\n")
 var quote = []byte(`"`)
-var etopvn = []byte("etop.vn/")
+var etopvn = []byte("o.o/")
 var dot = []byte(".")
 
 func extractImportGroup(data []byte) ([]int, []byte) {
@@ -189,7 +189,7 @@ func checkAlias(data []byte) error {
 
 func getMode(line []byte) int {
 	switch {
-	case bytes.Contains(line, etopvn): // "etop.vn/..."
+	case bytes.Contains(line, etopvn): // "o.o/..."
 		return 3
 
 	case bytes.Contains(line, dot): // "example.com/..."

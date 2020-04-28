@@ -3,15 +3,15 @@ package handler
 import (
 	"context"
 
-	handler "etop.vn/backend/com/handler/etop-handler"
-	"etop.vn/backend/com/handler/etop-handler/pgrid"
-	notifiermodel "etop.vn/backend/com/handler/notifier/model"
-	"etop.vn/backend/com/handler/notifier/sqlstore"
-	"etop.vn/backend/pkg/common/extservice/telebot"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
-	"etop.vn/common/l"
+	handler "o.o/backend/com/handler/etop-handler"
+	"o.o/backend/com/handler/etop-handler/pgrid"
+	notifiermodel "o.o/backend/com/handler/notifier/model"
+	"o.o/backend/com/handler/notifier/sqlstore"
+	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/common/sql/cmsql"
+	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
+	"o.o/common/l"
 )
 
 var (

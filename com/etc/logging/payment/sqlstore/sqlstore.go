@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/com/etc/logging/payment/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/com/etc/logging/payment/model"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 type PaymentLogStoreFactory func(context.Context) *PaymentLogStore

@@ -1,10 +1,10 @@
 package convertpb
 
 import (
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
+	"o.o/capi/dot"
 )
 
 func Pb3Ptr(s dot.NullInt) status3.NullStatus {

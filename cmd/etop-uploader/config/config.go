@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/common/l"
 )
 
 var ll = l.New()

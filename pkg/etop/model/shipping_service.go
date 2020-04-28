@@ -1,6 +1,6 @@
 package model
 
-import "etop.vn/api/top/types/etc/shipping_provider"
+import "o.o/api/top/types/etc/shipping_provider"
 
 type ShippingServiceRegistry struct {
 	getShippingServiceNamesFuncs map[shipping_provider.ShippingProvider]func(code string) (name string, ok bool)

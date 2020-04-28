@@ -3,19 +3,19 @@ package main
 import (
 	"flag"
 
-	"etop.vn/api/main/location"
-	"etop.vn/backend/cmd/etop-server/config"
-	servicelocation "etop.vn/backend/com/main/location"
-	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
-	shipping "etop.vn/backend/com/main/shipping/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/main/location"
+	"o.o/backend/cmd/etop-server/config"
+	servicelocation "o.o/backend/com/main/location"
+	shipnowmodel "o.o/backend/com/main/shipnow/model"
+	shipping "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	etopmodel "o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

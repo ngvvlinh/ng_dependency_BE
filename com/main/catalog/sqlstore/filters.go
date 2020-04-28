@@ -1,8 +1,8 @@
 package sqlstore
 
 import (
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
 func (ft ShopProductFilters) NotDeleted() sq.WriterTo {

@@ -1,11 +1,11 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/identity"
-	"etop.vn/api/services/affiliate"
-	etop "etop.vn/api/top/int/etop"
-	affiliate3 "etop.vn/api/top/services/affiliate"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/main/identity"
+	"o.o/api/services/affiliate"
+	etop "o.o/api/top/int/etop"
+	affiliate3 "o.o/api/top/services/affiliate"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func PbCommissionSetting(m *affiliate.CommissionSetting) *affiliate3.CommissionSetting {

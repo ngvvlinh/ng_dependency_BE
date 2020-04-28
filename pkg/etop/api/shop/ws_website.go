@@ -3,12 +3,12 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/top/int/shop"
-	"etop.vn/api/webserver"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/top/int/shop"
+	"o.o/api/webserver"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *CreateWsWebsiteEndpoint) error {

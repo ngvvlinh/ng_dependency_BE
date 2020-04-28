@@ -1,9 +1,9 @@
 package fabo
 
 import (
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/backend/com/fabo/pkg/fbclient"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
+	"o.o/backend/com/fabo/pkg/fbclient"
 )
 
 var (

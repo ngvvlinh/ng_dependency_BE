@@ -3,7 +3,7 @@ package xshop
 import (
 	"context"
 
-	"etop.vn/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/apix/shopping"
 )
 
 func (s *ProductService) GetProduct(ctx context.Context, r *GetProductEndpoint) error {

@@ -5,16 +5,16 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"etop.vn/api/main/authorization"
-	"etop.vn/api/main/invitation"
-	"etop.vn/backend/com/main/authorization/convert"
-	"etop.vn/backend/com/main/invitation/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/main/authorization"
+	"o.o/api/main/invitation"
+	"o.o/backend/com/main/authorization/convert"
+	"o.o/backend/com/main/invitation/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
-// +gen:convert: etop.vn/backend/com/main/invitation/model -> etop.vn/api/main/invitation
-// +gen:convert: etop.vn/api/main/invitation
+// +gen:convert: o.o/backend/com/main/invitation/model  -> o.o/api/main/invitation
+// +gen:convert:  o.o/api/main/invitation
 
 const ExpiresIn = 24 * time.Hour
 

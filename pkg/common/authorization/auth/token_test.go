@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/redis"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var gFoo Generator

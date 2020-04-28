@@ -21,15 +21,15 @@ func init() {
 }
 
 func loadPath() (string, error) {
-	etopdir := os.Getenv("ETOPDIR")
-	if etopdir == "" {
+	dir := os.Getenv("PROJECT_DIR")
+	if dir == "" {
 		return os.Getwd()
 	}
-	return loadProjectPath(etopdir)
+	return loadProjectPath(dir)
 }
 
-func loadProjectPath(etopdir string) (string, error) {
-	path := filepath.Join(etopdir, "backend")
+func loadProjectPath(dir string) (string, error) {
+	path := filepath.Join(dir, "backend")
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return "", err

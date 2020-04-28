@@ -3,13 +3,13 @@ package vtpost
 import (
 	"time"
 
-	mdlocation "etop.vn/api/main/location"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/etop/model"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/capi/dot"
+	mdlocation "o.o/api/main/location"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/etop/model"
+	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/capi/dot"
 )
 
 type Config struct {

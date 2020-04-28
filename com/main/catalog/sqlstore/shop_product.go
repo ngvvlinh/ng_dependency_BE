@@ -5,15 +5,15 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/catalog/convert"
-	"etop.vn/backend/com/main/catalog/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/meta"
+	"o.o/backend/com/main/catalog/convert"
+	"o.o/backend/com/main/catalog/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type ShopProductStoreFactory func(context.Context) *ShopProductStore

@@ -1,6 +1,6 @@
 package model
 
-import "etop.vn/capi/dot"
+import "o.o/capi/dot"
 
 type GetDeviceArgs struct {
 	UserID           dot.ID

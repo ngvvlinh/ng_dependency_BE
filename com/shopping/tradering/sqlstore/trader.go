@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/tradering/convert"
-	"etop.vn/backend/com/shopping/tradering/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/tradering/convert"
+	"o.o/backend/com/shopping/tradering/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type TraderStoreFactory func(ctx context.Context) *TraderStore

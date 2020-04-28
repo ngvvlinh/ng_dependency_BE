@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/extservice/telebot"
-	"etop.vn/capi/dot"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/capi/dot"
 )
 
 const (

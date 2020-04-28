@@ -3,7 +3,7 @@ package types
 import (
 	"strconv"
 
-	"etop.vn/api/main/location"
+	"o.o/api/main/location"
 )
 
 const CountryVietnam = "Việt Nam"

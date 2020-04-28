@@ -7,9 +7,9 @@ package sqlstore
 import (
 	time "time"
 
-	ledger_type "etop.vn/api/top/types/etc/ledger_type"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	ledger_type "o.o/api/top/types/etc/ledger_type"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ShopLedgerFilters struct{ prefix string }

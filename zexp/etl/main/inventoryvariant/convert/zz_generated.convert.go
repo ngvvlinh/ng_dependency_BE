@@ -5,9 +5,9 @@
 package convert
 
 import (
-	inventorymodel "etop.vn/backend/com/main/inventory/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	inventoryvariantmodel "etop.vn/backend/zexp/etl/main/inventoryvariant/model"
+	inventorymodel "o.o/backend/com/main/inventory/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	inventoryvariantmodel "o.o/backend/zexp/etl/main/inventoryvariant/model"
 )
 
 /*
@@ -41,7 +41,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/inventory/model.InventoryVariant --//
+//-- convert o.o/backend/com/main/inventory/model.InventoryVariant --//
 
 func Convert_inventoryvariantmodel_InventoryVariant_inventorymodel_InventoryVariant(arg *inventoryvariantmodel.InventoryVariant, out *inventorymodel.InventoryVariant) *inventorymodel.InventoryVariant {
 	if arg == nil {

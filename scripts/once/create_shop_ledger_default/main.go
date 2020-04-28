@@ -4,16 +4,16 @@ import (
 	"flag"
 	"time"
 
-	"etop.vn/api/top/types/etc/ledger_type"
-	"etop.vn/backend/cmd/etop-server/config"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/ledger_type"
+	"o.o/backend/cmd/etop-server/config"
+	identitymodel "o.o/backend/com/main/identity/model"
+	ledgeringmodel "o.o/backend/com/main/ledgering/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

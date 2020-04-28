@@ -1,12 +1,12 @@
 package convert
 
 import (
-	"etop.vn/api/main/location"
-	"etop.vn/backend/com/main/location/types"
+	"o.o/api/main/location"
+	"o.o/backend/com/main/location/types"
 )
 
-// +gen:convert: etop.vn/backend/com/main/location/model->etop.vn/api/main/location
-// +gen:convert: etop.vn/api/main/location
+// +gen:convert: o.o/backend/com/main/location/model -> o.o/api/main/location
+// +gen:convert:  o.o/api/main/location
 
 func Provinces(ins []*types.Province, outs *[]*location.Province) error {
 	if *outs == nil {

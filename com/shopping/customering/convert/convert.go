@@ -6,20 +6,20 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/top/types/etc/status3"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	"etop.vn/backend/com/shopping/customering/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
+	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
+	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/status3"
+	addressconvert "o.o/backend/com/main/address/convert"
+	"o.o/backend/com/shopping/customering/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering,etop.vn/api/shopping/addressing,etop.vn/api/shopping/tradering
-// +gen:convert: etop.vn/api/shopping/customering
-// +gen:convert: etop.vn/api/shopping/addressing
+// +gen:convert: o.o/backend/com/shopping/customering/model  -> o.o/api/shopping/customering, o.o/api/shopping/addressing, o.o/api/shopping/tradering
+// +gen:convert:  o.o/api/shopping/customering
+// +gen:convert:  o.o/api/shopping/addressing
 
 var ll = l.New()
 

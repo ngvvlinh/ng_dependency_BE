@@ -3,11 +3,11 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/supporting/crm/vht/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/backend/pkg/common/validate"
+	"o.o/api/meta"
+	"o.o/backend/com/supporting/crm/vht/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 )
 
 type VhtCallHistoriesFactory func(context.Context) *VhtCallHistoryStore

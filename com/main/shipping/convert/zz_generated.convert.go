@@ -7,16 +7,16 @@ package convert
 import (
 	time "time"
 
-	shipping "etop.vn/api/main/shipping"
-	shippingtypes "etop.vn/api/main/shipping/types"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	etopconvert "etop.vn/backend/com/main/etop/convert"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	orderingconvert "etop.vn/backend/com/main/ordering/convert"
-	shippingmodel "etop.vn/backend/com/main/shipping/model"
-	modely "etop.vn/backend/com/main/shipping/modely"
-	sharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	shipping "o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
+	addressconvert "o.o/backend/com/main/address/convert"
+	etopconvert "o.o/backend/com/main/etop/convert"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	orderingconvert "o.o/backend/com/main/ordering/convert"
+	shippingmodel "o.o/backend/com/main/shipping/model"
+	modely "o.o/backend/com/main/shipping/modely"
+	sharemodel "o.o/backend/com/main/shipping/sharemodel"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -105,7 +105,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/shipping.Fulfillment --//
+//-- convert o.o/api/main/shipping.Fulfillment --//
 
 func Convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.Fulfillment, out *shipping.Fulfillment) *shipping.Fulfillment {
 	if arg == nil {
@@ -327,7 +327,7 @@ func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.F
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipping.FulfillmentExtended --//
+//-- convert o.o/api/main/shipping.FulfillmentExtended --//
 
 func Convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg *modely.FulfillmentExtended, out *shipping.FulfillmentExtended) *shipping.FulfillmentExtended {
 	if arg == nil {
@@ -388,7 +388,7 @@ func Convert_shipping_FulfillmentExtendeds_modely_FulfillmentExtendeds(args []*s
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipping.FulfillmentSyncStates --//
+//-- convert o.o/api/main/shipping.FulfillmentSyncStates --//
 
 func Convert_sharemodel_FulfillmentSyncStates_shipping_FulfillmentSyncStates(arg *sharemodel.FulfillmentSyncStates, out *shipping.FulfillmentSyncStates) *shipping.FulfillmentSyncStates {
 	if arg == nil {
@@ -450,7 +450,7 @@ func Convert_shipping_FulfillmentSyncStateses_sharemodel_FulfillmentSyncStateses
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipping.ShippingFeeLine --//
+//-- convert o.o/api/main/shipping.ShippingFeeLine --//
 
 func Convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg *sharemodel.ShippingFeeLine, out *shipping.ShippingFeeLine) *shipping.ShippingFeeLine {
 	if arg == nil {

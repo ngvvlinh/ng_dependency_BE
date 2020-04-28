@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	status4 "etop.vn/api/top/types/etc/status4"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	dot "etop.vn/capi/dot"
+	status4 "o.o/api/top/types/etc/status4"
+	sq "o.o/backend/pkg/common/sql/sq"
+	etopmodel "o.o/backend/pkg/etop/model"
+	dot "o.o/capi/dot"
 )
 
 type CallbackFilters struct{ prefix string }

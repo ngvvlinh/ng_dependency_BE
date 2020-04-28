@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/carrying"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/carrying/convert"
-	"etop.vn/backend/com/shopping/carrying/model"
-	customeringmodel "etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/carrying"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/carrying/convert"
+	"o.o/backend/com/shopping/carrying/model"
+	customeringmodel "o.o/backend/com/shopping/customering/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type CarrierStoreFactory func(context.Context) *CarrierStore

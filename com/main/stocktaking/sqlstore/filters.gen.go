@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	status3 "etop.vn/api/top/types/etc/status3"
-	stocktake_type "etop.vn/api/top/types/etc/stocktake_type"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	status3 "o.o/api/top/types/etc/status3"
+	stocktake_type "o.o/api/top/types/etc/stocktake_type"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ShopStocktakeFilters struct{ prefix string }

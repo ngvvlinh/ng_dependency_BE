@@ -1,11 +1,11 @@
 package config
 
 import (
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/integration/shipping/ghn"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/integration/shipping/ghn"
+	"o.o/backend/pkg/integration/shipping/ghtk"
+	"o.o/common/l"
 )
 
 var ll = l.New()

@@ -3,17 +3,17 @@ package shop
 import (
 	"context"
 
-	apietop "etop.vn/api/top/int/etop"
-	apishop "etop.vn/api/top/int/shop"
-	pbcm "etop.vn/api/top/types/common"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/validate"
-	etop "etop.vn/backend/pkg/etop/api"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/sqlstore"
+	apietop "o.o/api/top/int/etop"
+	apishop "o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/validate"
+	etop "o.o/backend/pkg/etop/api"
+	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 func init() {

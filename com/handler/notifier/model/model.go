@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/top/types/etc/notifier_entity"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
+	"o.o/api/top/types/etc/notifier_entity"
+	"o.o/api/top/types/etc/status3"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 type NotiEntity = notifier_entity.NotifierEntity

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
+	"o.o/common/l"
 )
 
 var ll = l.New()

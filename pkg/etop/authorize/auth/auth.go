@@ -5,7 +5,7 @@ import (
 
 	"github.com/casbin/casbin"
 
-	"etop.vn/backend/pkg/common/authorization/casbin/adapter"
+	"o.o/backend/pkg/common/authorization/casbin/adapter"
 )
 
 const (

@@ -3,10 +3,10 @@ package admin
 import (
 	"context"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/int/admin"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/location"
+	"o.o/api/top/int/admin"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func (s *LocationService) GetCustomRegion(ctx context.Context, r *GetCustomRegionEndpoint) error {

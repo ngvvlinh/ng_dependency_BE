@@ -5,7 +5,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	cm "etop.vn/backend/pkg/common"
+	cm "o.o/backend/pkg/common"
 )
 
 var apiRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{

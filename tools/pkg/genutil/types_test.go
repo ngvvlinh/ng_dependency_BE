@@ -8,7 +8,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-const testPath = "etop.vn/backend/tools/pkg/genutil/testdata"
+const testPath = "o.o/backend/tools/pkg/genutil/testdata"
 
 var initialized bool
 var testPkg *packages.Package
@@ -90,7 +90,7 @@ func TestCheckType(t *testing.T) {
 		namedStruct := getType(t, "NamedStruct")
 
 		_, err := CheckType(namedSlice, namedStruct)
-		require.EqualError(t, err, "must be named type etop.vn/backend/tools/pkg/genutil/testdata.NamedStruct")
+		require.EqualError(t, err, "must be named type o.o/backend/tools/pkg/genutil/testdata.NamedStruct")
 	})
 	t.Run("named slice of ptr named struct", func(t *testing.T) {
 		result, err := CheckType(namedSlice, Named, Slice, Pointer, Named, Struct)

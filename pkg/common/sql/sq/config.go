@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/common/jsonx"
+	core "o.o/backend/pkg/common/sql/sq/core"
+	"o.o/common/jsonx"
 )
 
 // Error ...

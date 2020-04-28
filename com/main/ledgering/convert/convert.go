@@ -3,12 +3,12 @@ package convert
 import (
 	"time"
 
-	"etop.vn/api/main/ledgering"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/main/ledgering"
+	cm "o.o/backend/pkg/common"
 )
 
-// +gen:convert: etop.vn/backend/com/main/ledgering/model -> etop.vn/api/main/ledgering
-// +gen:convert: etop.vn/api/main/ledgering
+// +gen:convert: o.o/backend/com/main/ledgering/model  -> o.o/api/main/ledgering
+// +gen:convert:  o.o/api/main/ledgering
 
 func createShopLedger(args *ledgering.CreateLedgerArgs, out *ledgering.ShopLedger) {
 	apply_ledgering_CreateLedgerArgs_ledgering_ShopLedger(args, out)

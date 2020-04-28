@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/top/external/whitelabel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/top/external/whitelabel"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func (s *ImportService) ProductCollections(ctx context.Context, r *ProductCollectionsEndpoint) error {

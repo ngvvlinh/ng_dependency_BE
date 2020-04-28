@@ -3,13 +3,13 @@ package query
 import (
 	"context"
 
-	st "etop.vn/api/main/stocktaking"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/stocktaking/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	st "o.o/api/main/stocktaking"
+	"o.o/api/meta"
+	"o.o/backend/com/main/stocktaking/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ st.QueryService = &StocktakeQuery{}

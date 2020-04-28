@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 func init() {

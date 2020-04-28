@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	address "etop.vn/api/main/address"
-	orderingtypes "etop.vn/api/main/ordering/types"
-	addressmodel "etop.vn/backend/com/main/address/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	address "o.o/api/main/address"
+	orderingtypes "o.o/api/main/ordering/types"
+	addressmodel "o.o/backend/com/main/address/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -86,7 +86,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/address.Address --//
+//-- convert o.o/api/main/address.Address --//
 
 func Convert_addressmodel_Address_address_Address(arg *addressmodel.Address, out *address.Address) *address.Address {
 	return Address(arg)
@@ -176,7 +176,7 @@ func Convert_address_Addresses_addressmodel_Addresses(args []*address.Address) (
 	return outs
 }
 
-//-- convert etop.vn/api/main/ordering/types.Address --//
+//-- convert o.o/api/main/ordering/types.Address --//
 
 func Convert_addressmodel_Address_orderingtypes_Address(arg *addressmodel.Address, out *orderingtypes.Address) *orderingtypes.Address {
 	return OrderAddress(arg)
@@ -249,7 +249,7 @@ func Convert_orderingtypes_Addresses_addressmodel_Addresses(args []*orderingtype
 	return outs
 }
 
-//-- convert etop.vn/api/main/ordering/types.Coordinates --//
+//-- convert o.o/api/main/ordering/types.Coordinates --//
 
 func Convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg *addressmodel.Coordinates, out *orderingtypes.Coordinates) *orderingtypes.Coordinates {
 	return Coordinates(arg)

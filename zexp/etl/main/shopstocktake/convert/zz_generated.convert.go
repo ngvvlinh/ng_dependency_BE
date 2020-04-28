@@ -5,9 +5,9 @@
 package convert
 
 import (
-	stocktakingmodel "etop.vn/backend/com/main/stocktaking/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopstocktakemodel "etop.vn/backend/zexp/etl/main/shopstocktake/model"
+	stocktakingmodel "o.o/backend/com/main/stocktaking/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopstocktakemodel "o.o/backend/zexp/etl/main/shopstocktake/model"
 )
 
 /*
@@ -59,7 +59,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/stocktaking/model.ShopStocktake --//
+//-- convert o.o/backend/com/main/stocktaking/model.ShopStocktake --//
 
 func Convert_shopstocktakemodel_ShopStocktake_stocktakingmodel_ShopStocktake(arg *shopstocktakemodel.ShopStocktake, out *stocktakingmodel.ShopStocktake) *stocktakingmodel.ShopStocktake {
 	if arg == nil {
@@ -148,7 +148,7 @@ func Convert_stocktakingmodel_ShopStocktakes_shopstocktakemodel_ShopStocktakes(a
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/stocktaking/model.StocktakeLine --//
+//-- convert o.o/backend/com/main/stocktaking/model.StocktakeLine --//
 
 func Convert_shopstocktakemodel_StocktakeLine_stocktakingmodel_StocktakeLine(arg *shopstocktakemodel.StocktakeLine, out *stocktakingmodel.StocktakeLine) *stocktakingmodel.StocktakeLine {
 	if arg == nil {

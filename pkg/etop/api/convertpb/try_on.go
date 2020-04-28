@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/top/types/etc/try_on"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/try_on"
+	"o.o/capi/dot"
 )
 
 func PbPtrTryOn(m try_on.TryOnCode) try_on.NullTryOnCode {

@@ -3,15 +3,15 @@ package admin
 import (
 	"context"
 
-	"etop.vn/api/top/int/types"
-	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
-	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/int/types"
+	ordermodelx "o.o/backend/com/main/ordering/modelx"
+	shipmodelx "o.o/backend/com/main/shipping/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func init() {

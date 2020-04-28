@@ -3,12 +3,12 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/purchaserefund"
-	"etop.vn/backend/com/main/purchaserefund/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
+	"o.o/api/main/purchaserefund"
+	"o.o/backend/com/main/purchaserefund/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
 )
 
 var _ purchaserefund.QueryService = &PurchaseRefundQueryService{}

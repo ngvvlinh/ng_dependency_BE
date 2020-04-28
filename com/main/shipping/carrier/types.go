@@ -1,8 +1,8 @@
 package carrier
 
 import (
-	carriertypes "etop.vn/backend/com/main/shipping/carrier/types"
-	"etop.vn/capi/dot"
+	carriertypes "o.o/backend/com/main/shipping/carrier/types"
+	"o.o/capi/dot"
 )
 
 type ConnectionSignInArgs struct {

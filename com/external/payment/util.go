@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"etop.vn/api/top/types/etc/payment_source"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/payment_source"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func ParsePaymentCode(code string) (payment_source.PaymentSource, dot.ID, error) {

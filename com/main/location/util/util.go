@@ -1,11 +1,11 @@
 package util
 
 import (
-	corelocation "etop.vn/api/main/location"
-	"etop.vn/api/top/types/etc/location_type"
-	"etop.vn/api/top/types/etc/route_type"
-	"etop.vn/backend/com/main/location"
-	"etop.vn/capi/dot"
+	corelocation "o.o/api/main/location"
+	"o.o/api/top/types/etc/location_type"
+	"o.o/api/top/types/etc/route_type"
+	"o.o/backend/com/main/location"
+	"o.o/capi/dot"
 )
 
 func CheckUrbanHCMHN(district *corelocation.District) bool {

@@ -7,13 +7,13 @@ package convert
 import (
 	time "time"
 
-	identity "etop.vn/api/main/identity"
-	identitytypes "etop.vn/api/main/identity/types"
-	inttypes "etop.vn/api/top/int/types"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	sharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	identity "o.o/api/main/identity"
+	identitytypes "o.o/api/main/identity/types"
+	inttypes "o.o/api/top/int/types"
+	addressconvert "o.o/backend/com/main/address/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
+	sharemodel "o.o/backend/com/main/identity/sharemodel"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -310,7 +310,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/identity.Affiliate --//
+//-- convert o.o/api/main/identity.Affiliate --//
 
 func Convert_identitymodel_Affiliate_identity_Affiliate(arg *identitymodel.Affiliate, out *identity.Affiliate) *identity.Affiliate {
 	return Affiliate(arg)
@@ -372,7 +372,7 @@ func Convert_identity_Affiliates_identitymodel_Affiliates(args []*identity.Affil
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.ExternalAccountAhamove --//
+//-- convert o.o/api/main/identity.ExternalAccountAhamove --//
 
 func Convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamove(arg *identitymodel.ExternalAccountAhamove, out *identity.ExternalAccountAhamove) *identity.ExternalAccountAhamove {
 	return XAccountAhamove(arg)
@@ -459,7 +459,7 @@ func Convert_identity_ExternalAccountAhamoves_identitymodel_ExternalAccountAhamo
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.Partner --//
+//-- convert o.o/api/main/identity.Partner --//
 
 func Convert_identitymodel_Partner_identity_Partner(arg *identitymodel.Partner, out *identity.Partner) *identity.Partner {
 	if arg == nil {
@@ -539,7 +539,7 @@ func Convert_identity_Partners_identitymodel_Partners(args []*identity.Partner) 
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.Permission --//
+//-- convert o.o/api/main/identity.Permission --//
 
 func Convert_identitymodel_Permission_identity_Permission(arg *identitymodel.Permission, out *identity.Permission) *identity.Permission {
 	if arg == nil {
@@ -597,7 +597,7 @@ func Convert_identity_Permissions_identitymodel_Permissions(args []*identity.Per
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.ShippingServiceSelectStrategyItem --//
+//-- convert o.o/api/main/identity.ShippingServiceSelectStrategyItem --//
 
 func Convert_identitymodel_ShippingServiceSelectStrategyItem_identity_ShippingServiceSelectStrategyItem(arg *identitymodel.ShippingServiceSelectStrategyItem, out *identity.ShippingServiceSelectStrategyItem) *identity.ShippingServiceSelectStrategyItem {
 	if arg == nil {
@@ -655,7 +655,7 @@ func Convert_identity_ShippingServiceSelectStrategyItems_identitymodel_ShippingS
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.Shop --//
+//-- convert o.o/api/main/identity.Shop --//
 
 func Convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *identity.Shop) *identity.Shop {
 	return Shop(arg)
@@ -751,7 +751,7 @@ func Convert_identity_Shops_identitymodel_Shops(args []*identity.Shop) (outs []*
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.ShopExtended --//
+//-- convert o.o/api/main/identity.ShopExtended --//
 
 func Convert_identitymodel_ShopExtended_identity_ShopExtended(arg *identitymodel.ShopExtended, out *identity.ShopExtended) *identity.ShopExtended {
 	if arg == nil {
@@ -811,7 +811,7 @@ func Convert_identity_ShopExtendeds_identitymodel_ShopExtendeds(args []*identity
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.SurveyInfo --//
+//-- convert o.o/api/main/identity.SurveyInfo --//
 
 func Convert_identitymodel_SurveyInfo_identity_SurveyInfo(arg *identitymodel.SurveyInfo, out *identity.SurveyInfo) *identity.SurveyInfo {
 	if arg == nil {
@@ -871,7 +871,7 @@ func Convert_identity_SurveyInfoes_identitymodel_SurveyInfoes(args []*identity.S
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity.User --//
+//-- convert o.o/api/main/identity.User --//
 
 func Convert_identitymodel_User_identity_User(arg *identitymodel.User, out *identity.User) *identity.User {
 	return User(arg)
@@ -952,7 +952,7 @@ func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity/types.BankAccount --//
+//-- convert o.o/api/main/identity/types.BankAccount --//
 
 func Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg *sharemodel.BankAccount, out *identitytypes.BankAccount) *identitytypes.BankAccount {
 	return BankAccount(arg)
@@ -1002,7 +1002,7 @@ func Convert_identitytypes_BankAccounts_sharemodel_BankAccounts(args []*identity
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity/types.CompanyInfo --//
+//-- convert o.o/api/main/identity/types.CompanyInfo --//
 
 func Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg *sharemodel.CompanyInfo, out *identitytypes.CompanyInfo) *identitytypes.CompanyInfo {
 	if arg == nil {
@@ -1066,7 +1066,7 @@ func Convert_identitytypes_CompanyInfoes_sharemodel_CompanyInfoes(args []*identi
 	return outs
 }
 
-//-- convert etop.vn/api/main/identity/types.ContactPerson --//
+//-- convert o.o/api/main/identity/types.ContactPerson --//
 
 func Convert_sharemodel_ContactPerson_identitytypes_ContactPerson(arg *sharemodel.ContactPerson, out *identitytypes.ContactPerson) *identitytypes.ContactPerson {
 	if arg == nil {
@@ -1128,7 +1128,7 @@ func Convert_identitytypes_ContactPersons_sharemodel_ContactPersons(args []*iden
 	return outs
 }
 
-//-- convert etop.vn/api/top/int/types.AdjustmentLine --//
+//-- convert o.o/api/top/int/types.AdjustmentLine --//
 
 func Convert_sharemodel_AdjustmentLine_inttypes_AdjustmentLine(arg *sharemodel.AdjustmentLine, out *inttypes.AdjustmentLine) *inttypes.AdjustmentLine {
 	if arg == nil {
@@ -1186,7 +1186,7 @@ func Convert_inttypes_AdjustmentLines_sharemodel_AdjustmentLines(args []*inttype
 	return outs
 }
 
-//-- convert etop.vn/api/top/int/types.DiscountLine --//
+//-- convert o.o/api/top/int/types.DiscountLine --//
 
 func Convert_sharemodel_DiscountLine_inttypes_DiscountLine(arg *sharemodel.DiscountLine, out *inttypes.DiscountLine) *inttypes.DiscountLine {
 	if arg == nil {
@@ -1244,7 +1244,7 @@ func Convert_inttypes_DiscountLines_sharemodel_DiscountLines(args []*inttypes.Di
 	return outs
 }
 
-//-- convert etop.vn/api/top/int/types.FeeLine --//
+//-- convert o.o/api/top/int/types.FeeLine --//
 
 func Convert_sharemodel_FeeLine_inttypes_FeeLine(arg *sharemodel.FeeLine, out *inttypes.FeeLine) *inttypes.FeeLine {
 	if arg == nil {

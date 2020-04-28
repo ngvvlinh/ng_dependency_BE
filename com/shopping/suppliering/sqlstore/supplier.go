@@ -4,17 +4,17 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/suppliering"
-	"etop.vn/api/shopping/tradering"
-	customeringmodel "etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/com/shopping/suppliering/convert"
-	"etop.vn/backend/com/shopping/suppliering/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/suppliering"
+	"o.o/api/shopping/tradering"
+	customeringmodel "o.o/backend/com/shopping/customering/model"
+	"o.o/backend/com/shopping/suppliering/convert"
+	"o.o/backend/com/shopping/suppliering/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 type SupplierStoreFactory func(ctx context.Context) *SupplierStore

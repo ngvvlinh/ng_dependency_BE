@@ -3,14 +3,14 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/main/authorization"
-	"etop.vn/backend/com/main/authorization/convert"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	authservice "etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/capi/dot"
+	"o.o/api/main/authorization"
+	"o.o/backend/com/main/authorization/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	authservice "o.o/backend/pkg/etop/authorize/auth"
+	"o.o/capi/dot"
 )
 
 var _ authorization.Aggregate = &AuthorizationAggregate{}

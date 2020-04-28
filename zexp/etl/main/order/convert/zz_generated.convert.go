@@ -5,9 +5,9 @@
 package convert
 
 import (
-	orderingmodel "etop.vn/backend/com/main/ordering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	ordermodel "etop.vn/backend/zexp/etl/main/order/model"
+	orderingmodel "o.o/backend/com/main/ordering/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	ordermodel "o.o/backend/zexp/etl/main/order/model"
 )
 
 /*
@@ -168,7 +168,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.MetaField --//
+//-- convert o.o/backend/com/main/ordering/model.MetaField --//
 
 func Convert_ordermodel_MetaField_orderingmodel_MetaField(arg *ordermodel.MetaField, out *orderingmodel.MetaField) *orderingmodel.MetaField {
 	if arg == nil {
@@ -228,7 +228,7 @@ func Convert_orderingmodel_MetaFields_ordermodel_MetaFields(args []*orderingmode
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.Order --//
+//-- convert o.o/backend/com/main/ordering/model.Order --//
 
 func Convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *orderingmodel.Order) *orderingmodel.Order {
 	if arg == nil {
@@ -411,7 +411,7 @@ func Convert_orderingmodel_Orders_ordermodel_Orders(args []*orderingmodel.Order)
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderAddress --//
+//-- convert o.o/backend/com/main/ordering/model.OrderAddress --//
 
 func Convert_ordermodel_OrderAddress_orderingmodel_OrderAddress(arg *ordermodel.OrderAddress, out *orderingmodel.OrderAddress) *orderingmodel.OrderAddress {
 	if arg == nil {
@@ -501,7 +501,7 @@ func Convert_orderingmodel_OrderAddresses_ordermodel_OrderAddresses(args []*orde
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderCustomer --//
+//-- convert o.o/backend/com/main/ordering/model.OrderCustomer --//
 
 func Convert_ordermodel_OrderCustomer_orderingmodel_OrderCustomer(arg *ordermodel.OrderCustomer, out *orderingmodel.OrderCustomer) *orderingmodel.OrderCustomer {
 	if arg == nil {
@@ -573,7 +573,7 @@ func Convert_orderingmodel_OrderCustomers_ordermodel_OrderCustomers(args []*orde
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderDiscount --//
+//-- convert o.o/backend/com/main/ordering/model.OrderDiscount --//
 
 func Convert_ordermodel_OrderDiscount_orderingmodel_OrderDiscount(arg *ordermodel.OrderDiscount, out *orderingmodel.OrderDiscount) *orderingmodel.OrderDiscount {
 	if arg == nil {
@@ -633,7 +633,7 @@ func Convert_orderingmodel_OrderDiscounts_ordermodel_OrderDiscounts(args []*orde
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderFeeLine --//
+//-- convert o.o/backend/com/main/ordering/model.OrderFeeLine --//
 
 func Convert_ordermodel_OrderFeeLine_orderingmodel_OrderFeeLine(arg *ordermodel.OrderFeeLine, out *orderingmodel.OrderFeeLine) *orderingmodel.OrderFeeLine {
 	if arg == nil {
@@ -697,7 +697,7 @@ func Convert_orderingmodel_OrderFeeLines_ordermodel_OrderFeeLines(args []*orderi
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderLine --//
+//-- convert o.o/backend/com/main/ordering/model.OrderLine --//
 
 func Convert_ordermodel_OrderLine_orderingmodel_OrderLine(arg *ordermodel.OrderLine, out *orderingmodel.OrderLine) *orderingmodel.OrderLine {
 	if arg == nil {
@@ -787,7 +787,7 @@ func Convert_orderingmodel_OrderLines_ordermodel_OrderLines(args []*orderingmode
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/ordering/model.OrderShipping --//
+//-- convert o.o/backend/com/main/ordering/model.OrderShipping --//
 
 func Convert_ordermodel_OrderShipping_orderingmodel_OrderShipping(arg *ordermodel.OrderShipping, out *orderingmodel.OrderShipping) *orderingmodel.OrderShipping {
 	if arg == nil {

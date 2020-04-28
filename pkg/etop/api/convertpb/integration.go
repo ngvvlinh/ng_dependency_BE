@@ -1,9 +1,9 @@
 package convertpb
 
 import (
-	integration "etop.vn/api/top/int/integration"
-	"etop.vn/api/top/types/etc/account_type"
-	identitymodel "etop.vn/backend/com/main/identity/model"
+	integration "o.o/api/top/int/integration"
+	"o.o/api/top/types/etc/account_type"
+	identitymodel "o.o/backend/com/main/identity/model"
 )
 
 func PbPartnerUserInfo(m *identitymodel.User) *integration.PartnerUserLogin {

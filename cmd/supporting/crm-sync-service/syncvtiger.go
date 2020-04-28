@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/pkg/common/apifw/scheduler"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/pkg/common/apifw/scheduler"
 )
 
 var (

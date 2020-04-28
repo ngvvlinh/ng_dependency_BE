@@ -1,9 +1,9 @@
 package drivers
 
 import (
-	"etop.vn/api/main/identity"
-	"etop.vn/backend/pkg/common/apifw/whitelabel"
-	"etop.vn/backend/pkg/common/cmenv"
+	"o.o/api/main/identity"
+	"o.o/backend/pkg/common/apifw/whitelabel"
+	"o.o/backend/pkg/common/cmenv"
 )
 
 func ETop(env cmenv.EnvType) *whitelabel.WL {

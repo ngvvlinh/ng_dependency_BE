@@ -3,12 +3,12 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/moneytx"
-	"etop.vn/api/main/shipping"
-	"etop.vn/api/top/types/etc/status3"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
+	"o.o/api/main/moneytx"
+	"o.o/api/main/shipping"
+	"o.o/api/top/types/etc/status3"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
 )
 
 type ProcessManager struct {

@@ -3,9 +3,9 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/moneytx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/main/moneytx"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func (q *MoneyTxQuery) GetMoneyTxShippingByID(ctx context.Context, args *moneytx.GetMoneyTxByIDQueryArgs) (*moneytx.MoneyTransactionShipping, error) {

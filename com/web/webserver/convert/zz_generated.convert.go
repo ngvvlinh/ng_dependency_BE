@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	webserver "etop.vn/api/webserver"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	webservermodel "etop.vn/backend/com/web/webserver/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	webserver "o.o/api/webserver"
+	addressconvert "o.o/backend/com/main/address/convert"
+	webservermodel "o.o/backend/com/web/webserver/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -272,7 +272,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/webserver.Banner --//
+//-- convert o.o/api/webserver.Banner --//
 
 func Convert_webservermodel_Banner_webserver_Banner(arg *webservermodel.Banner, out *webserver.Banner) *webserver.Banner {
 	if arg == nil {
@@ -330,7 +330,7 @@ func Convert_webserver_Banners_webservermodel_Banners(args []*webserver.Banner) 
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.BannerItem --//
+//-- convert o.o/api/webserver.BannerItem --//
 
 func Convert_webservermodel_BannerItem_webserver_BannerItem(arg *webservermodel.BannerItem, out *webserver.BannerItem) *webserver.BannerItem {
 	if arg == nil {
@@ -390,7 +390,7 @@ func Convert_webserver_BannerItems_webservermodel_BannerItems(args []*webserver.
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.ComparePrice --//
+//-- convert o.o/api/webserver.ComparePrice --//
 
 func Convert_webservermodel_ComparePrice_webserver_ComparePrice(arg *webservermodel.ComparePrice, out *webserver.ComparePrice) *webserver.ComparePrice {
 	if arg == nil {
@@ -448,7 +448,7 @@ func Convert_webserver_ComparePrices_webservermodel_ComparePrices(args []*webser
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.Facebook --//
+//-- convert o.o/api/webserver.Facebook --//
 
 func Convert_webservermodel_Facebook_webserver_Facebook(arg *webservermodel.Facebook, out *webserver.Facebook) *webserver.Facebook {
 	if arg == nil {
@@ -506,7 +506,7 @@ func Convert_webserver_Facebooks_webservermodel_Facebooks(args []*webserver.Face
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.ShopInfo --//
+//-- convert o.o/api/webserver.ShopInfo --//
 
 func Convert_webservermodel_ShopInfo_webserver_ShopInfo(arg *webservermodel.ShopInfo, out *webserver.ShopInfo) *webserver.ShopInfo {
 	if arg == nil {
@@ -568,7 +568,7 @@ func Convert_webserver_ShopInfoes_webservermodel_ShopInfoes(args []*webserver.Sh
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.SpecialProduct --//
+//-- convert o.o/api/webserver.SpecialProduct --//
 
 func Convert_webservermodel_SpecialProduct_webserver_SpecialProduct(arg *webservermodel.SpecialProduct, out *webserver.SpecialProduct) *webserver.SpecialProduct {
 	if arg == nil {
@@ -626,7 +626,7 @@ func Convert_webserver_SpecialProducts_webservermodel_SpecialProducts(args []*we
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.WsCategory --//
+//-- convert o.o/api/webserver.WsCategory --//
 
 func Convert_webservermodel_WsCategory_webserver_WsCategory(arg *webservermodel.WsCategory, out *webserver.WsCategory) *webserver.WsCategory {
 	if arg == nil {
@@ -720,7 +720,7 @@ func apply_webserver_CreateOrUpdateWsCategoryArgs_webserver_WsCategory(arg *webs
 	out.UpdatedAt = out.UpdatedAt             // no change
 }
 
-//-- convert etop.vn/api/webserver.WsGeneralSEO --//
+//-- convert o.o/api/webserver.WsGeneralSEO --//
 
 func Convert_webservermodel_WsGeneralSEO_webserver_WsGeneralSEO(arg *webservermodel.WsGeneralSEO, out *webserver.WsGeneralSEO) *webserver.WsGeneralSEO {
 	if arg == nil {
@@ -782,7 +782,7 @@ func Convert_webserver_WsGeneralSEOs_webservermodel_WsGeneralSEOs(args []*webser
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.WsPage --//
+//-- convert o.o/api/webserver.WsPage --//
 
 func Convert_webservermodel_WsPage_webserver_WsPage(arg *webservermodel.WsPage, out *webserver.WsPage) *webserver.WsPage {
 	if arg == nil {
@@ -908,7 +908,7 @@ func apply_webserver_UpdateWsPageArgs_webserver_WsPage(arg *webserver.UpdateWsPa
 	out.DeletedAt = out.DeletedAt                   // no change
 }
 
-//-- convert etop.vn/api/webserver.WsProduct --//
+//-- convert o.o/api/webserver.WsProduct --//
 
 func Convert_webservermodel_WsProduct_webserver_WsProduct(arg *webservermodel.WsProduct, out *webserver.WsProduct) *webserver.WsProduct {
 	if arg == nil {
@@ -1005,7 +1005,7 @@ func apply_webserver_CreateOrUpdateWsProductArgs_webserver_WsProduct(arg *webser
 	out.Product = out.Product                       // no change
 }
 
-//-- convert etop.vn/api/webserver.WsSEOConfig --//
+//-- convert o.o/api/webserver.WsSEOConfig --//
 
 func Convert_webservermodel_WsSEOConfig_webserver_WsSEOConfig(arg *webservermodel.WsSEOConfig, out *webserver.WsSEOConfig) *webserver.WsSEOConfig {
 	if arg == nil {
@@ -1065,7 +1065,7 @@ func Convert_webserver_WsSEOConfigs_webservermodel_WsSEOConfigs(args []*webserve
 	return outs
 }
 
-//-- convert etop.vn/api/webserver.WsWebsite --//
+//-- convert o.o/api/webserver.WsWebsite --//
 
 func Convert_webservermodel_WsWebsite_webserver_WsWebsite(arg *webservermodel.WsWebsite, out *webserver.WsWebsite) *webserver.WsWebsite {
 	if arg == nil {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"etop.vn/backend/pkg/common/apifw/captcha"
-	"etop.vn/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/apifw/captcha"
+	"o.o/backend/pkg/common/cmenv"
 )
 
 func CORS(next http.Handler) http.HandlerFunc {

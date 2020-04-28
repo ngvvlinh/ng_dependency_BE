@@ -7,11 +7,11 @@ package convert
 import (
 	time "time"
 
-	purchaseorder "etop.vn/api/main/purchaseorder"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	purchaseordermodel "etop.vn/backend/com/main/purchaseorder/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	purchaseorder "o.o/api/main/purchaseorder"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	purchaseordermodel "o.o/backend/com/main/purchaseorder/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -95,7 +95,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/purchaseorder.PurchaseOrder --//
+//-- convert o.o/api/main/purchaseorder.PurchaseOrder --//
 
 func Convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg *purchaseordermodel.PurchaseOrder, out *purchaseorder.PurchaseOrder) *purchaseorder.PurchaseOrder {
 	if arg == nil {
@@ -275,7 +275,7 @@ func apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.UpdatedAt = out.UpdatedAt                                  // no change
 }
 
-//-- convert etop.vn/api/main/purchaseorder.PurchaseOrderLine --//
+//-- convert o.o/api/main/purchaseorder.PurchaseOrderLine --//
 
 func Convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLine(arg *purchaseordermodel.PurchaseOrderLine, out *purchaseorder.PurchaseOrderLine) *purchaseorder.PurchaseOrderLine {
 	if arg == nil {
@@ -346,7 +346,7 @@ func Convert_purchaseorder_PurchaseOrderLines_purchaseordermodel_PurchaseOrderLi
 	return outs
 }
 
-//-- convert etop.vn/api/main/purchaseorder.PurchaseOrderSupplier --//
+//-- convert o.o/api/main/purchaseorder.PurchaseOrderSupplier --//
 
 func Convert_purchaseordermodel_PurchaseOrderSupplier_purchaseorder_PurchaseOrderSupplier(arg *purchaseordermodel.PurchaseOrderSupplier, out *purchaseorder.PurchaseOrderSupplier) *purchaseorder.PurchaseOrderSupplier {
 	if arg == nil {

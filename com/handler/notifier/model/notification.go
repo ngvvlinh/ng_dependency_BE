@@ -3,10 +3,10 @@ package model
 import (
 	"encoding/json"
 
-	"etop.vn/api/top/types/etc/notifier_entity"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/extservice/onesignal"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/notifier_entity"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/extservice/onesignal"
+	"o.o/capi/dot"
 )
 
 type CreateNotificationArgs struct {

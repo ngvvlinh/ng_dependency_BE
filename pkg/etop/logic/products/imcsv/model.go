@@ -3,11 +3,11 @@ package imcsv
 import (
 	"context"
 
-	"etop.vn/backend/com/main/catalog/convert"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/pkg/common/imcsv"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/backend/com/main/catalog/convert"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/backend/pkg/common/imcsv"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 var schemaV0 = imcsv.Schema{

@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	pricelist "etop.vn/api/main/shipmentpricing/pricelist"
-	pricelistmodel "etop.vn/backend/com/main/shipmentpricing/pricelist/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	pricelist "o.o/api/main/shipmentpricing/pricelist"
+	pricelistmodel "o.o/backend/com/main/shipmentpricing/pricelist/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -51,7 +51,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/pricelist.ShipmentPriceList --//
+//-- convert o.o/api/main/shipmentpricing/pricelist.ShipmentPriceList --//
 
 func Convert_pricelistmodel_ShipmentPriceList_pricelist_ShipmentPriceList(arg *pricelistmodel.ShipmentPriceList, out *pricelist.ShipmentPriceList) *pricelist.ShipmentPriceList {
 	if arg == nil {

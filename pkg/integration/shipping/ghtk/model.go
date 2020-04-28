@@ -3,11 +3,11 @@ package ghtk
 import (
 	"strings"
 
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/etop/model"
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/etop/model"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
+	"o.o/capi/dot"
 )
 
 type Config struct {

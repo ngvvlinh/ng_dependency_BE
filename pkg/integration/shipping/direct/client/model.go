@@ -1,13 +1,13 @@
 package client
 
 import (
-	"etop.vn/api/main/connectioning"
-	orderingtypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/top/types/etc/connection_type"
-	shippingstate "etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_fee_type"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
+	"o.o/api/main/connectioning"
+	orderingtypes "o.o/api/main/ordering/types"
+	"o.o/api/top/types/etc/connection_type"
+	shippingstate "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
 )
 
 type (

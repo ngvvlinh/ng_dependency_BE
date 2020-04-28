@@ -1,3 +1,3 @@
 package convert
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/purchaserefund/model->etop.vn/backend/com/main/purchaserefund/model
+// +gen:convert: o.o/backend/zexp/etl/main/purchaserefund/model -> o.o/backend/com/main/purchaserefund/model

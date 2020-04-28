@@ -1,3 +1,3 @@
 package convert
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/shopbrand/model->etop.vn/backend/com/main/catalog/model
+// +gen:convert: o.o/backend/zexp/etl/main/shopbrand/model -> o.o/backend/com/main/catalog/model

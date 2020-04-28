@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/purchaserefund"
-	"etop.vn/api/top/types/etc/status3"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/main/purchaserefund"
+	"o.o/api/top/types/etc/status3"
+	cm "o.o/backend/pkg/common"
 )
 
-// +gen:convert: etop.vn/backend/com/main/purchaserefund/model -> etop.vn/api/main/purchaserefund
-// +gen:convert: etop.vn/api/main/purchaserefund
+// +gen:convert: o.o/backend/com/main/purchaserefund/model  -> o.o/api/main/purchaserefund
+// +gen:convert:  o.o/api/main/purchaserefund
 
 const (
 	MaxCodeNorm = 999999

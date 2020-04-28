@@ -1,6 +1,6 @@
 package partner
 
-import "etop.vn/capi/dot"
+import "o.o/capi/dot"
 
 type AuthMode string
 type AuthType string

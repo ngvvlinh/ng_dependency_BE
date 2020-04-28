@@ -5,9 +5,9 @@
 package convert
 
 import (
-	refundmodel "etop.vn/backend/com/main/refund/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	refundmodel1 "etop.vn/backend/zexp/etl/main/refund/model"
+	refundmodel "o.o/backend/com/main/refund/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	refundmodel1 "o.o/backend/zexp/etl/main/refund/model"
 )
 
 /*
@@ -59,7 +59,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/refund/model.Refund --//
+//-- convert o.o/backend/com/main/refund/model.Refund --//
 
 func Convert_refundmodel1_Refund_refundmodel_Refund(arg *refundmodel1.Refund, out *refundmodel.Refund) *refundmodel.Refund {
 	if arg == nil {
@@ -155,7 +155,7 @@ func Convert_refundmodel_Refunds_refundmodel1_Refunds(args []*refundmodel.Refund
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/refund/model.RefundLine --//
+//-- convert o.o/backend/com/main/refund/model.RefundLine --//
 
 func Convert_refundmodel1_RefundLine_refundmodel_RefundLine(arg *refundmodel1.RefundLine, out *refundmodel.RefundLine) *refundmodel.RefundLine {
 	if arg == nil {

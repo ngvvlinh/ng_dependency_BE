@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/redis"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 const (

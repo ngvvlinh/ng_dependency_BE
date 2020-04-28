@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 const defaultGeneratedFileNameTpl = "zz_generated.%v.go"

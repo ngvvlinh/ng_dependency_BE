@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/com/supporting/crm/vht/model"
-	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	vhtclient "etop.vn/backend/pkg/integration/vht/client"
-	"etop.vn/common/jsonx"
+	"o.o/backend/com/supporting/crm/vht/model"
+	"o.o/backend/com/supporting/crm/vht/sqlstore"
+	cm "o.o/backend/pkg/common"
+	vhtclient "o.o/backend/pkg/integration/vht/client"
+	"o.o/common/jsonx"
 )
 
 type SyncVht struct {

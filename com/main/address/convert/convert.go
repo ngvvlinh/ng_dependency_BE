@@ -1,13 +1,13 @@
 package convert
 
 import (
-	"etop.vn/api/main/address"
-	ordertypes "etop.vn/api/main/ordering/types"
-	addressmodel "etop.vn/backend/com/main/address/model"
+	"o.o/api/main/address"
+	ordertypes "o.o/api/main/ordering/types"
+	addressmodel "o.o/backend/com/main/address/model"
 )
 
-// +gen:convert: etop.vn/backend/com/main/address/model->etop.vn/api/main/ordering/types
-// +gen:convert: etop.vn/backend/com/main/address/model->etop.vn/api/main/address
+// +gen:convert: o.o/backend/com/main/address/model -> o.o/api/main/ordering/types
+// +gen:convert: o.o/backend/com/main/address/model -> o.o/api/main/address
 
 func AddressToModel(in *address.Address) (out *addressmodel.Address) {
 	if in == nil {

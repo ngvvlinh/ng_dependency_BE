@@ -3,15 +3,15 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/main/receipting"
-	"etop.vn/api/main/refund"
-	"etop.vn/api/top/types/etc/receipt_ref"
-	"etop.vn/api/top/types/etc/receipt_type"
-	"etop.vn/api/top/types/etc/status3"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering"
+	"o.o/api/main/receipting"
+	"o.o/api/main/refund"
+	"o.o/api/top/types/etc/receipt_ref"
+	"o.o/api/top/types/etc/receipt_type"
+	"o.o/api/top/types/etc/status3"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi/dot"
 )
 
 type ProcessManager struct {

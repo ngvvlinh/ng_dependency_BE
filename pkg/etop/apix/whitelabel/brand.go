@@ -3,11 +3,11 @@ package whitelabel
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/top/external/whitelabel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/top/external/whitelabel"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {

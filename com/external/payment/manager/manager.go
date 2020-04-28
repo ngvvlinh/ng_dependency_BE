@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	paymentmanager "etop.vn/api/external/payment/manager"
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/top/types/etc/payment_provider"
-	"etop.vn/api/top/types/etc/payment_source"
-	paymentutil "etop.vn/backend/com/external/payment"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi/dot"
+	paymentmanager "o.o/api/external/payment/manager"
+	"o.o/api/main/ordering"
+	"o.o/api/top/types/etc/payment_provider"
+	"o.o/api/top/types/etc/payment_source"
+	paymentutil "o.o/backend/com/external/payment"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi/dot"
 )
 
 var _ paymentmanager.Aggregate = &PaymentManager{}

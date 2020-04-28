@@ -1,6 +1,6 @@
 package api
 
-import "etop.vn/backend/com/fabo/main/fbpage/model"
+import "o.o/backend/com/fabo/main/fbpage/model"
 
 type Accounts struct {
 	Accounts Account `json:"accounts"`

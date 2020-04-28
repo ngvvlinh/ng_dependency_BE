@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	. "etop.vn/backend/pkg/common/testing"
+	. "o.o/backend/pkg/common/testing"
 )
 
 func TestShouldResembleSlice(t *testing.T) {

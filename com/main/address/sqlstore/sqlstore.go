@@ -3,12 +3,12 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/address"
-	"etop.vn/backend/com/main/address/convert"
-	addressmodel "etop.vn/backend/com/main/address/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/address"
+	"o.o/backend/com/main/address/convert"
+	addressmodel "o.o/backend/com/main/address/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 type AddressStore struct {

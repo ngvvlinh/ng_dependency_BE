@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	"etop.vn/backend/pkg/common/bus"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	"o.o/backend/pkg/common/bus"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/common/l"
 )
 
 var (
@@ -30,7 +30,7 @@ type Content struct {
 func main() {
 	cc.ParseFlags()
 
-	projectPath := os.Getenv("ETOPDIR") + "/backend"
+	projectPath := os.Getenv("PROJECT_DIR") + "/backend"
 	sqlPath := filepath.Join(projectPath, "/db/main")
 
 	var contents []Content

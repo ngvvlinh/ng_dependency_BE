@@ -6,10 +6,10 @@ import (
 	"math/rand"
 	"strings"
 
-	"etop.vn/backend/com/main/location"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
+	"o.o/backend/com/main/location"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 )
 
 type (

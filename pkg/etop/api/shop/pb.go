@@ -1,19 +1,19 @@
 package shop
 
 import (
-	"etop.vn/api/main/address"
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/purchaserefund"
-	"etop.vn/api/main/refund"
-	"etop.vn/api/main/stocktaking"
-	"etop.vn/api/top/int/etop"
-	"etop.vn/api/top/int/shop"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/address_type"
-	"etop.vn/api/webserver"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/address"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/purchaserefund"
+	"o.o/api/main/refund"
+	"o.o/api/main/stocktaking"
+	"o.o/api/top/int/etop"
+	"o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/address_type"
+	"o.o/api/webserver"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 func PbWsPages(arg []*webserver.WsPage) []*shop.WsPage {

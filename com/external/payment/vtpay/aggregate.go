@@ -3,18 +3,18 @@ package vtpay
 import (
 	"context"
 
-	"etop.vn/api/external/payment"
-	"etop.vn/api/external/payment/vtpay"
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/top/types/etc/payment_provider"
-	"etop.vn/api/top/types/etc/payment_source"
-	paymentutil "etop.vn/backend/com/external/payment"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
+	"o.o/api/external/payment"
+	"o.o/api/external/payment/vtpay"
+	"o.o/api/main/ordering"
+	"o.o/api/top/types/etc/payment_provider"
+	"o.o/api/top/types/etc/payment_source"
+	paymentutil "o.o/backend/com/external/payment"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 type Aggregate struct {

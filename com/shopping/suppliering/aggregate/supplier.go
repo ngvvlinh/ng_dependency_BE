@@ -3,18 +3,18 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/shopping/suppliering"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/suppliering/convert"
-	"etop.vn/backend/com/shopping/suppliering/model"
-	"etop.vn/backend/com/shopping/suppliering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping/suppliering"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/suppliering/convert"
+	"o.o/backend/com/shopping/suppliering/model"
+	"o.o/backend/com/shopping/suppliering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 var _ suppliering.Aggregate = &SupplierAggregate{}

@@ -3,11 +3,11 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/top/int/shop"
-	pbcm "etop.vn/api/top/types/common"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/backend/pkg/common/bus"
+	"o.o/api/main/identity"
+	"o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/backend/pkg/common/bus"
 )
 
 func init() {

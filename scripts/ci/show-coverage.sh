@@ -34,8 +34,8 @@ if [[ $# -gt 0 ]]; then
   echo COVERAGE: $(cat "$output")
 
   # gocov
-  : ${ETOPDIR?Must set ETOPDIR}
-  BACKEND="${ETOPDIR}/backend"
+  : ${PROJECT_DIR?Must set PROJECT_DIR}
+  BACKEND="${PROJECT_DIR}/backend"
   source "${BACKEND}/scripts/lib/init.sh"
 
   gocov=$(::get cmd github.com/axw/gocov/gocov)

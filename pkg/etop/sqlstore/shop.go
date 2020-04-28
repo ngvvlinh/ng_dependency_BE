@@ -5,17 +5,17 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/catalog/convert"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/backend/pkg/common/validate"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/catalog/convert"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	catalogmodelx "o.o/backend/com/main/catalog/modelx"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 )
 
 func init() {

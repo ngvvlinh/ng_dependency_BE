@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	invitationmodel "etop.vn/backend/com/main/invitation/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	invitationmodel1 "etop.vn/backend/zexp/etl/main/invitation/model"
+	invitationmodel "o.o/backend/com/main/invitation/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	invitationmodel1 "o.o/backend/zexp/etl/main/invitation/model"
 )
 
 /*
@@ -43,7 +43,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/invitation/model.Invitation --//
+//-- convert o.o/backend/com/main/invitation/model.Invitation --//
 
 func Convert_invitationmodel1_Invitation_invitationmodel_Invitation(arg *invitationmodel1.Invitation, out *invitationmodel.Invitation) *invitationmodel.Invitation {
 	if arg == nil {

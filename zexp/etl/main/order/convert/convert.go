@@ -1,11 +1,11 @@
 package convert
 
 import (
-	orderingmodel "etop.vn/backend/com/main/ordering/model"
-	"etop.vn/backend/zexp/etl/main/order/model"
+	orderingmodel "o.o/backend/com/main/ordering/model"
+	"o.o/backend/zexp/etl/main/order/model"
 )
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/order/model->etop.vn/backend/com/main/ordering/model
+// +gen:convert: o.o/backend/zexp/etl/main/order/model -> o.o/backend/com/main/ordering/model
 
 func ConvertOrder(in *orderingmodel.Order, out *model.Order) {
 	convert_orderingmodel_Order_ordermodel_Order(in, out)

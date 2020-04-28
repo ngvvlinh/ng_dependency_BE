@@ -3,9 +3,9 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/backend/com/etc/logging/payment/model"
-	"etop.vn/backend/com/etc/logging/payment/sqlstore"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/com/etc/logging/payment/model"
+	"o.o/backend/com/etc/logging/payment/sqlstore"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 type Aggregate struct {

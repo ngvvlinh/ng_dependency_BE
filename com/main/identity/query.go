@@ -3,15 +3,15 @@ package identity
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/identity/convert"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/com/main/identity/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/identity"
+	"o.o/api/meta"
+	"o.o/backend/com/main/identity/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/com/main/identity/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ identity.QueryService = &QueryService{}

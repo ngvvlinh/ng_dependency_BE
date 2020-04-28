@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/top/int/fabo"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/top/int/fabo"
 )
 
 func PbFbUserCombined(m *fbusering.FbUserCombined) *fabo.FbUserCombined {

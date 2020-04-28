@@ -12,15 +12,15 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/valyala/tsvreader"
 
-	identitytypes "etop.vn/api/main/identity/types"
-	"etop.vn/api/main/moneytx"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/imcsv"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	identitytypes "o.o/api/main/identity/types"
+	"o.o/api/main/moneytx"
+	"o.o/api/top/types/etc/shipping_provider"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/imcsv"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 const (

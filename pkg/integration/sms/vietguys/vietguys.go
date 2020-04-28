@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
 )
 
 var ll = l.New()

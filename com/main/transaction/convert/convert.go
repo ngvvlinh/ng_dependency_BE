@@ -1,8 +1,8 @@
 package convert
 
 import (
-	"etop.vn/api/main/transaction"
-	transactionmodel "etop.vn/backend/com/main/transaction/model"
+	"o.o/api/main/transaction"
+	transactionmodel "o.o/backend/com/main/transaction/model"
 )
 
 func TransactionMetadata(in *transactionmodel.TransactionMetadata) *transaction.TransactionMetadata {

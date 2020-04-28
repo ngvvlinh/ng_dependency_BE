@@ -7,11 +7,11 @@ package sqlstore
 import (
 	time "time"
 
-	payment_provider "etop.vn/api/top/types/etc/payment_provider"
-	payment_state "etop.vn/api/top/types/etc/payment_state"
-	status4 "etop.vn/api/top/types/etc/status4"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	payment_provider "o.o/api/top/types/etc/payment_provider"
+	payment_state "o.o/api/top/types/etc/payment_state"
+	status4 "o.o/api/top/types/etc/status4"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type PaymentFilters struct{ prefix string }

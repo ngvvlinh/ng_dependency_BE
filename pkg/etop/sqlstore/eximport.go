@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func init() {

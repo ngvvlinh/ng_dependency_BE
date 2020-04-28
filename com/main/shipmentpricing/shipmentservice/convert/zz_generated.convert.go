@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	shipmentservice "etop.vn/api/main/shipmentpricing/shipmentservice"
-	shipmentservicemodel "etop.vn/backend/com/main/shipmentpricing/shipmentservice/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	shipmentservice "o.o/api/main/shipmentpricing/shipmentservice"
+	shipmentservicemodel "o.o/backend/com/main/shipmentpricing/shipmentservice/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -106,7 +106,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.AvailableLocation --//
+//-- convert o.o/api/main/shipmentpricing/shipmentservice.AvailableLocation --//
 
 func Convert_shipmentservicemodel_AvailableLocation_shipmentservice_AvailableLocation(arg *shipmentservicemodel.AvailableLocation, out *shipmentservice.AvailableLocation) *shipmentservice.AvailableLocation {
 	if arg == nil {
@@ -170,7 +170,7 @@ func Convert_shipmentservice_AvailableLocations_shipmentservicemodel_AvailableLo
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.BlacklistLocation --//
+//-- convert o.o/api/main/shipmentpricing/shipmentservice.BlacklistLocation --//
 
 func Convert_shipmentservicemodel_BlacklistLocation_shipmentservice_BlacklistLocation(arg *shipmentservicemodel.BlacklistLocation, out *shipmentservice.BlacklistLocation) *shipmentservice.BlacklistLocation {
 	if arg == nil {
@@ -234,7 +234,7 @@ func Convert_shipmentservice_BlacklistLocations_shipmentservicemodel_BlacklistLo
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.OtherCondition --//
+//-- convert o.o/api/main/shipmentpricing/shipmentservice.OtherCondition --//
 
 func Convert_shipmentservicemodel_OtherCondition_shipmentservice_OtherCondition(arg *shipmentservicemodel.OtherCondition, out *shipmentservice.OtherCondition) *shipmentservice.OtherCondition {
 	if arg == nil {
@@ -292,7 +292,7 @@ func Convert_shipmentservice_OtherConditions_shipmentservicemodel_OtherCondition
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentservice.ShipmentService --//
+//-- convert o.o/api/main/shipmentpricing/shipmentservice.ShipmentService --//
 
 func Convert_shipmentservicemodel_ShipmentService_shipmentservice_ShipmentService(arg *shipmentservicemodel.ShipmentService, out *shipmentservice.ShipmentService) *shipmentservice.ShipmentService {
 	if arg == nil {

@@ -8,8 +8,8 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 const CmdTopic = "gen:event:topic"

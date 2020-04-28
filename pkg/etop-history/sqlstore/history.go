@@ -3,9 +3,9 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/capi/dot"
 )
 
 const (

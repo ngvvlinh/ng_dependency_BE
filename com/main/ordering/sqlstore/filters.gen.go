@@ -7,16 +7,16 @@ package sqlstore
 import (
 	time "time"
 
-	orderingtypes "etop.vn/api/main/ordering/types"
-	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
-	order_source "etop.vn/api/top/types/etc/order_source"
-	payment_method "etop.vn/api/top/types/etc/payment_method"
-	status3 "etop.vn/api/top/types/etc/status3"
-	status4 "etop.vn/api/top/types/etc/status4"
-	status5 "etop.vn/api/top/types/etc/status5"
-	try_on "etop.vn/api/top/types/etc/try_on"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	orderingtypes "o.o/api/main/ordering/types"
+	ghn_note_code "o.o/api/top/types/etc/ghn_note_code"
+	order_source "o.o/api/top/types/etc/order_source"
+	payment_method "o.o/api/top/types/etc/payment_method"
+	status3 "o.o/api/top/types/etc/status3"
+	status4 "o.o/api/top/types/etc/status4"
+	status5 "o.o/api/top/types/etc/status5"
+	try_on "o.o/api/top/types/etc/try_on"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type OrderFilters struct{ prefix string }

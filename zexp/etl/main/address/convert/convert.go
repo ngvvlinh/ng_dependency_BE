@@ -1,3 +1,3 @@
 package convert
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/address/model->etop.vn/backend/com/main/address/model
+// +gen:convert: o.o/backend/zexp/etl/main/address/model -> o.o/backend/com/main/address/model

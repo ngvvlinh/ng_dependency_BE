@@ -3,8 +3,8 @@ package partner
 import (
 	"context"
 
-	"etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/etop/apix/shipping"
+	"o.o/api/top/types/common"
+	"o.o/backend/pkg/etop/apix/shipping"
 )
 
 func (s *FulfillmentService) GetFulfillment(ctx context.Context, r *FulfillmentGetFulfillmentEndpoint) error {

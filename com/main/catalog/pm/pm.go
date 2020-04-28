@@ -3,14 +3,14 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/purchaseorder"
-	"etop.vn/api/shopping/tradering"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/purchaseorder"
+	"o.o/api/shopping/tradering"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 type ProcessManager struct {

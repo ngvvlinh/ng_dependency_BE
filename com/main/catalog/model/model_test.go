@@ -3,8 +3,8 @@ package model
 import (
 	"testing"
 
-	"etop.vn/api/main/catalog/types"
 	"github.com/stretchr/testify/assert"
+	"o.o/api/main/catalog/types"
 )
 
 func TestNormalizeAttributes(t *testing.T) {

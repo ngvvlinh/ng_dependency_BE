@@ -7,16 +7,16 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"etop.vn/api/top/types/etc/status5"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/shipping"
-	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/status5"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/integration/shipping"
+	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var ll = l.New()

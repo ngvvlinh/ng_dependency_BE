@@ -8,14 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	locationlist "etop.vn/backend/com/main/location/list"
-	"etop.vn/backend/pkg/common/bus"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/integration/shipping/vtpost"
-	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	locationlist "o.o/backend/com/main/location/list"
+	"o.o/backend/pkg/common/bus"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/integration/shipping/vtpost"
+	vtpostClient "o.o/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var (

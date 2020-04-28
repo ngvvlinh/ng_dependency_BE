@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/api/main/location"
-	servicelocation "etop.vn/backend/com/main/location"
-	locationlist "etop.vn/backend/com/main/location/list"
+	"o.o/api/main/location"
+	servicelocation "o.o/backend/com/main/location"
+	locationlist "o.o/backend/com/main/location/list"
 )
 
 var locationBus = servicelocation.New(nil).MessageBus()

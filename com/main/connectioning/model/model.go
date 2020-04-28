@@ -3,11 +3,11 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

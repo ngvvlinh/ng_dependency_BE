@@ -6,7 +6,7 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 //go:generate stringer -type=Code -output=error_string.gen.go

@@ -3,14 +3,14 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/int/types"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/shipping/carrier"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/int/types"
+	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/shipping/carrier"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func (s *ConnectionService) GetConnections(ctx context.Context, q *GetConnectionsEndpoint) error {

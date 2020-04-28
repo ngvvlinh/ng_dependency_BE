@@ -3,10 +3,10 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/com/main/identity/sharemodel"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/backend/com/main/identity/sharemodel"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

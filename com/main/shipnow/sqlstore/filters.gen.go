@@ -7,13 +7,13 @@ package sqlstore
 import (
 	time "time"
 
-	shipnow_state "etop.vn/api/top/types/etc/shipnow_state"
-	status3 "etop.vn/api/top/types/etc/status3"
-	status4 "etop.vn/api/top/types/etc/status4"
-	status5 "etop.vn/api/top/types/etc/status5"
-	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	shipnow_state "o.o/api/top/types/etc/shipnow_state"
+	status3 "o.o/api/top/types/etc/status3"
+	status4 "o.o/api/top/types/etc/status4"
+	status5 "o.o/api/top/types/etc/status5"
+	shipnowmodel "o.o/backend/com/main/shipnow/model"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ShipnowFulfillmentFilters struct{ prefix string }

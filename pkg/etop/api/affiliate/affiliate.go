@@ -3,10 +3,10 @@ package affiliate
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/identity"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func init() {

@@ -3,14 +3,14 @@ package shopping
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	externaltypes "etop.vn/api/top/external/types"
-	"etop.vn/api/top/types/common"
-	cm "etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
-	"etop.vn/capi/filter"
+	"o.o/api/main/catalog"
+	externaltypes "o.o/api/top/external/types"
+	"o.o/api/top/types/common"
+	cm "o.o/api/top/types/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 func GetProduct(ctx context.Context, shopID dot.ID, request *externaltypes.GetProductRequest) (*externaltypes.ShopProduct, error) {

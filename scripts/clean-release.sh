@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-: ${ETOPDIR?Must set ETOPDIR}
-BACKEND="${ETOPDIR}/backend"
+: ${PROJECT_DIR?Must set PROJECT_DIR}
+BACKEND="${PROJECT_DIR}/backend"
 
 # remove generated files
 find "$BACKEND" -name 'zz_release.*.go' -exec rm {} +

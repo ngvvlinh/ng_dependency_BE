@@ -3,11 +3,11 @@ package vtpay
 import (
 	"context"
 
-	paymentmanager "etop.vn/api/external/payment/manager"
-	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
+	paymentmanager "o.o/api/external/payment/manager"
+	servicepaymentmanager "o.o/backend/com/external/payment/manager"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 )
 
 var _ servicepaymentmanager.PaymentProvider = &Provider{}

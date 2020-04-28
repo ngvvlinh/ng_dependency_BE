@@ -4,11 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/catalog/types"
-	"etop.vn/api/top/types/etc/product_type"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog/types"
+	"o.o/api/top/types/etc/product_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 // Normalize attributes, do not sort them. Empty attributes is '_'.

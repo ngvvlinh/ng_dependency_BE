@@ -1,8 +1,8 @@
 package modelx
 
 import (
-	"etop.vn/backend/com/main/address/model"
-	"etop.vn/capi/dot"
+	"o.o/backend/com/main/address/model"
+	"o.o/capi/dot"
 )
 
 type GetAddressQuery struct {

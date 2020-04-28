@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/invitation"
-	"etop.vn/backend/com/main/authorization/convert"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
+	"o.o/api/main/identity"
+	"o.o/api/main/invitation"
+	"o.o/backend/com/main/authorization/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
 )
 
 type ProcessManager struct {

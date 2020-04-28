@@ -8,9 +8,9 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/l"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/l"
 )
 
 var ll = l.New()

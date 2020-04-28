@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	shipping_provider "o.o/api/top/types/etc/shipping_provider"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type MoneyTransactionShippingFilters struct{ prefix string }

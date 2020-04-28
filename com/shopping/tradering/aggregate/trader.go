@@ -3,11 +3,11 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/tradering/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/tradering/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ tradering.Aggregate = &TraderAgg{}

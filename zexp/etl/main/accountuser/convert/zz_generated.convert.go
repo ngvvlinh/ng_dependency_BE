@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	accountusermodel "etop.vn/backend/zexp/etl/main/accountuser/model"
+	identitymodel "o.o/backend/com/main/identity/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	accountusermodel "o.o/backend/zexp/etl/main/accountuser/model"
 )
 
 /*
@@ -62,7 +62,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.AccountUser --//
+//-- convert o.o/backend/com/main/identity/model.AccountUser --//
 
 func Convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *accountusermodel.AccountUser, out *identitymodel.AccountUser) *identitymodel.AccountUser {
 	if arg == nil {
@@ -153,7 +153,7 @@ func Convert_identitymodel_AccountUsers_accountusermodel_AccountUsers(args []*id
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.Permission --//
+//-- convert o.o/backend/com/main/identity/model.Permission --//
 
 func Convert_accountusermodel_Permission_identitymodel_Permission(arg *accountusermodel.Permission, out *identitymodel.Permission) *identitymodel.Permission {
 	if arg == nil {

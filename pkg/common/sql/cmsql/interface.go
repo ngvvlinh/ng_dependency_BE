@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/capi/dot"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/capi/dot"
 )
 
 // QueryInterface wraps common/sql.QueryInterface

@@ -3,17 +3,17 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/api/main/ordering"
-	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/com/main/ordering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering"
+	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/com/main/ordering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 var _ ordering.Aggregate = &Aggregate{}

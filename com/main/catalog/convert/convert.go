@@ -9,15 +9,15 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 
-	"etop.vn/api/main/catalog"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
+	"o.o/api/main/catalog"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/main/catalog/model->etop.vn/api/main/catalog,etop.vn/api/main/catalog/types
-// +gen:convert: etop.vn/api/main/catalog
+// +gen:convert: o.o/backend/com/main/catalog/model -> o.o/api/main/catalog, o.o/api/main/catalog/types
+// +gen:convert:  o.o/api/main/catalog
 
 var ll = l.New()
 var htmlPolicy = bluemonday.UGCPolicy()

@@ -5,10 +5,10 @@
 package convert
 
 import (
-	shippingmodel "etop.vn/backend/com/main/shipping/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	fulfillmentmodel "etop.vn/backend/zexp/etl/main/fulfillment/model"
-	orderconvert "etop.vn/backend/zexp/etl/main/order/convert"
+	shippingmodel "o.o/backend/com/main/shipping/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	fulfillmentmodel "o.o/backend/zexp/etl/main/fulfillment/model"
+	orderconvert "o.o/backend/zexp/etl/main/order/convert"
 )
 
 /*
@@ -42,7 +42,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/shipping/model.Fulfillment --//
+//-- convert o.o/backend/com/main/shipping/model.Fulfillment --//
 
 func Convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfillmentmodel.Fulfillment, out *shippingmodel.Fulfillment) *shippingmodel.Fulfillment {
 	if arg == nil {

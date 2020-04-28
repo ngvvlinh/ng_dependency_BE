@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"etop.vn/capi/dot"
+	"o.o/capi/dot"
 )
 
 // Client define header and url of request

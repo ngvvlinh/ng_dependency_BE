@@ -1,11 +1,11 @@
 package ghn
 
 import (
-	"etop.vn/api/main/location"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/etop/model"
-	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
+	"o.o/api/main/location"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/etop/model"
+	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 )
 
 type Account struct {

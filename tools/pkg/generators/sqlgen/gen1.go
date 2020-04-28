@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/gen"
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/sqlgen/filtergen"
+	"o.o/backend/tools/pkg/gen"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/sqlgen/filtergen"
 )
 
 type Option func(*genImpl, *typeDef)
@@ -139,7 +139,7 @@ func (g *genImpl) parseDef(p generator.Printer, def *typeDef, st *types.Named) {
 					if err != nil {
 						panic(err)
 					}
-					pkgPath = filepath.Join("etop.vn/backend", pkgPath)
+					pkgPath = filepath.Join("o.o/backend", pkgPath)
 				}
 				g.genFilter = filtergen.NewGen(pkgPath)
 			}

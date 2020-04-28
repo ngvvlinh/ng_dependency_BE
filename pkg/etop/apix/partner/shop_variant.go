@@ -3,7 +3,7 @@ package partner
 import (
 	"context"
 
-	"etop.vn/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/apix/shopping"
 )
 
 func (s *VariantService) GetVariant(ctx context.Context, r *GetVariantEndpoint) error {

@@ -3,14 +3,14 @@ package imcsv
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/com/main/ordering/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/imcsv"
+	"o.o/api/main/catalog"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/com/main/ordering/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/imcsv"
 )
 
 // - Duplicated code

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-: ${ETOPDIR?Must set ETOPDIR}
-BACKEND="$ETOPDIR/backend"
+: ${PROJECT_DIR?Must set PROJECT_DIR}
+BACKEND="$PROJECT_DIR/backend"
 
 ::get() { ${BACKEND}/scripts/lib/get.sh $@ ; }
 

@@ -1,11 +1,11 @@
 package fabo
 
 import (
-	service "etop.vn/api/top/int/fabo"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/int/fabo"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/int/fabo
+// +gen:wrapper=o.o/api/top/int/fabo
 // +gen:wrapper:package=fabo
 
 func NewFaboServer(m httprpc.Muxer) {

@@ -11,7 +11,7 @@ build() {
     # enable CGO for building github.com/lfittl/pg_query_go
     CGO_ENABLED=1 go build "$@" \
         -tags release \
-        -ldflags "-X \"etop.vn/backend/pkg/common.commit=${COMMIT}\"" \
+        -ldflags "-X \"o.o/backend/pkg/common.commit=${COMMIT}\"" \
         -o bin/$NAME $FILE
 }
 

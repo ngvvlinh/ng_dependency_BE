@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go/types"
 
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generator"
 )
 
 var (

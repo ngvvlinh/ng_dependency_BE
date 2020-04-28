@@ -3,8 +3,8 @@ package whitelabel
 import (
 	"text/template"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/top/types/etc/connection_type"
+	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/connection_type"
 )
 
 type WL struct {

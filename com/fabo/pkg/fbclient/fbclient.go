@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"etop.vn/backend/com/fabo/pkg/fbclient/model"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/extservice/telebot"
+	"o.o/backend/com/fabo/pkg/fbclient/model"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/extservice/telebot"
 )
 
 type AppConfig struct {

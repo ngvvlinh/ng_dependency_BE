@@ -6,7 +6,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/bus"
 )
 
 var schema1 = Schema{

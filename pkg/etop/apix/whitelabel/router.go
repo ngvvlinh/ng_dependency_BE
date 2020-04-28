@@ -1,11 +1,11 @@
 package whitelabel
 
 import (
-	"etop.vn/api/top/external/whitelabel"
-	"etop.vn/capi/httprpc"
+	"o.o/api/top/external/whitelabel"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/external/whitelabel
+// +gen:wrapper=o.o/api/top/external/whitelabel
 // +gen:wrapper:package=partner
 // +gen:wrapper:prefix=ext
 

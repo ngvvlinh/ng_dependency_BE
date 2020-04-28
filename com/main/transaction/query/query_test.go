@@ -6,15 +6,15 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/api/main/transaction"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/status3"
-	transactionmodel "etop.vn/backend/com/main/transaction/model"
-	cm "etop.vn/backend/pkg/common"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	. "etop.vn/backend/pkg/common/testing"
-	"etop.vn/capi/dot"
+	"o.o/api/main/transaction"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
+	transactionmodel "o.o/backend/com/main/transaction/model"
+	cm "o.o/backend/pkg/common"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	. "o.o/backend/pkg/common/testing"
+	"o.o/capi/dot"
 )
 
 var (

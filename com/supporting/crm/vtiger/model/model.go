@@ -3,8 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

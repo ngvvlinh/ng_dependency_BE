@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 
-	"etop.vn/api/external/payment"
-	"etop.vn/api/top/types/etc/payment_provider"
-	"etop.vn/api/top/types/etc/payment_state"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/backend/com/external/payment/payment/convert"
-	"etop.vn/backend/com/external/payment/payment/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/external/payment"
+	"o.o/api/top/types/etc/payment_provider"
+	"o.o/api/top/types/etc/payment_state"
+	"o.o/api/top/types/etc/status4"
+	"o.o/backend/com/external/payment/payment/convert"
+	"o.o/backend/com/external/payment/payment/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 type PaymentStoreFactory func(context.Context) *PaymentStore

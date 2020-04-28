@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 func init() {

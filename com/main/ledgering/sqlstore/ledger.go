@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/ledgering"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/ledger_type"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	"etop.vn/backend/com/main/ledgering/convert"
-	"etop.vn/backend/com/main/ledgering/model"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ledgering"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/ledger_type"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	"o.o/backend/com/main/ledgering/convert"
+	"o.o/backend/com/main/ledgering/model"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type LedgerStoreFactory func(ctx context.Context) *LedgerStore

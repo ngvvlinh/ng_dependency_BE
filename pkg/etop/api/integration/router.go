@@ -1,11 +1,11 @@
 package integration
 
 import (
-	service "etop.vn/api/top/int/integration"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/int/integration"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/int/integration
+// +gen:wrapper=o.o/api/top/int/integration
 // +gen:wrapper:package=integration
 
 func NewIntegrationServer(m httprpc.Muxer) {

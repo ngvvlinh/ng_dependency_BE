@@ -1,9 +1,9 @@
 package convert
 
 import (
-	"etop.vn/api/main/authorization"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	authservice "etop.vn/backend/pkg/etop/authorize/auth"
+	"o.o/api/main/authorization"
+	identitymodel "o.o/backend/com/main/identity/model"
+	authservice "o.o/backend/pkg/etop/authorize/auth"
 )
 
 func ConvertStringsToRoles(args []string) (roles []authorization.Role) {

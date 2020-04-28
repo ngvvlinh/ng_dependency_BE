@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	notifier_entity "etop.vn/api/top/types/etc/notifier_entity"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	notifier_entity "o.o/api/top/types/etc/notifier_entity"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type DeviceFilters struct{ prefix string }

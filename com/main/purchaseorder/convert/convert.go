@@ -6,15 +6,15 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/main/purchaseorder"
-	"etop.vn/backend/com/main/purchaseorder/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
+	"o.o/api/main/purchaseorder"
+	"o.o/backend/com/main/purchaseorder/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/main/purchaseorder/model -> etop.vn/api/main/purchaseorder
-// +gen:convert: etop.vn/api/main/purchaseorder
+// +gen:convert: o.o/backend/com/main/purchaseorder/model  -> o.o/api/main/purchaseorder
+// +gen:convert:  o.o/api/main/purchaseorder
 
 var ll = l.New()
 

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	. "etop.vn/backend/pkg/etop/logic/summary"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	. "o.o/backend/pkg/etop/logic/summary"
+	"o.o/capi/dot"
 )
 
 type SummaryStoreFactory func(context.Context) *SummaryStore

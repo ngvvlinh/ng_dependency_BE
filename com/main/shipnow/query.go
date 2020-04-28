@@ -3,10 +3,10 @@ package shipnow
 import (
 	"context"
 
-	"etop.vn/api/main/shipnow"
-	"etop.vn/backend/com/main/shipnow/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/main/shipnow"
+	"o.o/backend/com/main/shipnow/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ shipnow.QueryService = &QueryService{}

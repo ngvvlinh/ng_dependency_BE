@@ -4,15 +4,15 @@ import (
 	"database/sql"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/com/main/shipping/modely"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status4"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	"o.o/backend/com/main/shipping/modely"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/capi/dot"
 )
 
 type GetFulfillmentExtendedsQuery struct {

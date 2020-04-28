@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/main/shipnow"
-	"etop.vn/api/top/types/etc/shipnow_state"
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/api/top/types/etc/status5"
-	locationutil "etop.vn/backend/com/main/location/util"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/main/location"
+	"o.o/api/main/shipnow"
+	"o.o/api/top/types/etc/shipnow_state"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status5"
+	locationutil "o.o/backend/com/main/location/util"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/model"
 )
 
 func CalcPickTime(shippingProvider shipping_provider.ShippingProvider, t time.Time) time.Time {

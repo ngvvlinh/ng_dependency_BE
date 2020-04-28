@@ -3,10 +3,10 @@ package sqlstore
 import (
 	"context"
 
-	addressmodel "etop.vn/backend/com/main/address/model"
-	addressmodelx "etop.vn/backend/com/main/address/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
+	addressmodel "o.o/backend/com/main/address/model"
+	addressmodelx "o.o/backend/com/main/address/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
 )
 
 func init() {

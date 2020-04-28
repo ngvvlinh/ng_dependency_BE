@@ -1,8 +1,8 @@
 package modely
 
 import (
-	"etop.vn/backend/com/main/ordering/model"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
+	"o.o/backend/com/main/ordering/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
 )
 
 // +sqlgen:           Order as order

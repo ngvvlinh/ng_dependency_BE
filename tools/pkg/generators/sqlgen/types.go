@@ -5,8 +5,8 @@ import (
 	"go/types"
 	"reflect"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/typedesc"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/typedesc"
 )
 
 type TypeDesc = typedesc.TypeDesc

@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status4"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status4"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type ImportType string

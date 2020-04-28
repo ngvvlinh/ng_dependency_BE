@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/api/main/location"
-	"etop.vn/backend/com/main/location/list"
+	"o.o/api/main/location"
+	"o.o/backend/com/main/location/list"
 )
 
 func TestNormalizeDistrict(t *testing.T) {

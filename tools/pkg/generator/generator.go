@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 var buildFlags = strings.Split("-tags generator", " ")

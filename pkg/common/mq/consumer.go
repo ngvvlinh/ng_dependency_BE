@@ -8,7 +8,7 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 // EventHandler ...

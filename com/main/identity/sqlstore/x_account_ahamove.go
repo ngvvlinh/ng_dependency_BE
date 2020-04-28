@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/backend/com/main/identity/convert"
-	"etop.vn/backend/com/main/identity/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/identity"
+	"o.o/backend/com/main/identity/convert"
+	"o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 type XAccountAhamoveStoreFactory func(context.Context) *XAccountAhamoveStore

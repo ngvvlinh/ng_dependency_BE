@@ -1,8 +1,8 @@
 package convert
 
 import (
-	"etop.vn/api/supporting/crm/vht"
-	"etop.vn/backend/com/supporting/crm/vht/model"
+	"o.o/api/supporting/crm/vht"
+	"o.o/backend/com/supporting/crm/vht/model"
 )
 
 func ConvertToModel(v *vht.VhtCallLog) *model.VhtCallHistory {

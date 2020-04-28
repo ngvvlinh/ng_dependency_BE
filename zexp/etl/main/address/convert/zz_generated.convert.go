@@ -5,9 +5,9 @@
 package convert
 
 import (
-	addressmodel "etop.vn/backend/com/main/address/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	addressmodel1 "etop.vn/backend/zexp/etl/main/address/model"
+	addressmodel "o.o/backend/com/main/address/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	addressmodel1 "o.o/backend/zexp/etl/main/address/model"
 )
 
 /*
@@ -77,7 +77,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/address/model.Address --//
+//-- convert o.o/backend/com/main/address/model.Address --//
 
 func Convert_addressmodel1_Address_addressmodel_Address(arg *addressmodel1.Address, out *addressmodel.Address) *addressmodel.Address {
 	if arg == nil {
@@ -183,7 +183,7 @@ func Convert_addressmodel_Addresses_addressmodel1_Addresses(args []*addressmodel
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/address/model.AddressNote --//
+//-- convert o.o/backend/com/main/address/model.AddressNote --//
 
 func Convert_addressmodel1_AddressNote_addressmodel_AddressNote(arg *addressmodel1.AddressNote, out *addressmodel.AddressNote) *addressmodel.AddressNote {
 	if arg == nil {
@@ -245,7 +245,7 @@ func Convert_addressmodel_AddressNotes_addressmodel1_AddressNotes(args []*addres
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/address/model.Coordinates --//
+//-- convert o.o/backend/com/main/address/model.Coordinates --//
 
 func Convert_addressmodel1_Coordinates_addressmodel_Coordinates(arg *addressmodel1.Coordinates, out *addressmodel.Coordinates) *addressmodel.Coordinates {
 	if arg == nil {

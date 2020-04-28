@@ -5,9 +5,9 @@ import (
 	"strings"
 	"text/template"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/generators/api/parse"
 )
 
 var meta = make(parse.Meta)
@@ -27,7 +27,7 @@ var funcs = map[string]interface{}{
 
 func generate(w generator.Printer, services []*defs.Service) {
 	w.Import("context", "context")
-	w.Import("capi", "etop.vn/capi")
+	w.Import("capi", "o.o/capi")
 	vars := map[string]interface{}{
 		"Services": services,
 	}

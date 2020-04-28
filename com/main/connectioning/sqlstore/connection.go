@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/connectioning/convert"
-	"etop.vn/backend/com/main/connectioning/model"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/connectioning/convert"
+	"o.o/backend/com/main/connectioning/model"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type ConnectionStore struct {

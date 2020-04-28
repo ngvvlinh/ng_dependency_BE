@@ -6,11 +6,11 @@ import (
 
 	"github.com/lib/pq"
 
-	"etop.vn/backend/com/handler/notifier/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/capi/util"
+	"o.o/backend/com/handler/notifier/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/capi/util"
 )
 
 type DeviceStore struct {

@@ -8,7 +8,7 @@ import (
 	"github.com/dustin/go-humanize/english"
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generator"
 )
 
 var _ generator.Qualifier = &Qualifier{}

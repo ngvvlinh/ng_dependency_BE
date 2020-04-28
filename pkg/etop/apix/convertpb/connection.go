@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/connectioning"
-	extpartner "etop.vn/api/top/external/partner"
+	"o.o/api/main/connectioning"
+	extpartner "o.o/api/top/external/partner"
 )
 
 func PbShipmentConnection(in *connectioning.Connection) *extpartner.ShipmentConnection {

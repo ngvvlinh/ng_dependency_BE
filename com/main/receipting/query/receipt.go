@@ -3,12 +3,12 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/receipting"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/receipting/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/receipting"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/receipting/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ receipting.QueryService = &ReceiptQuery{}

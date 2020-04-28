@@ -3,7 +3,7 @@ package sample
 import (
 	"fmt"
 
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generator"
 )
 
 func New() generator.Plugin {

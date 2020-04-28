@@ -3,14 +3,14 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/invitation"
-	"etop.vn/api/shopping"
-	"etop.vn/backend/com/main/invitation/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/api/main/invitation"
+	"o.o/api/shopping"
+	"o.o/backend/com/main/invitation/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 var _ invitation.QueryService = &InvitationQuery{}

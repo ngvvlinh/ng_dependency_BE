@@ -1,8 +1,8 @@
 package txmodely
 
 import (
-	"etop.vn/backend/com/main/moneytx/model"
-	shippingmodely "etop.vn/backend/com/main/shipping/modely"
+	"o.o/backend/com/main/moneytx/model"
+	shippingmodely "o.o/backend/com/main/shipping/modely"
 )
 
 // +convert:type=moneytx.MoneyTransactionShippingExtended

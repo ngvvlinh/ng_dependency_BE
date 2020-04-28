@@ -3,11 +3,11 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/external/payment"
-	"etop.vn/backend/com/external/payment/payment/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/external/payment"
+	"o.o/backend/com/external/payment/payment/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ payment.Aggregate = &Aggregate{}

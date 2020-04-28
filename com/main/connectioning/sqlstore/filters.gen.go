@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	connection_type "etop.vn/api/top/types/etc/connection_type"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	connection_type "o.o/api/top/types/etc/connection_type"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ConnectionFilters struct{ prefix string }

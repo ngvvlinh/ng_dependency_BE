@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/top/types/etc/status3"
-	notifiermodel "etop.vn/backend/com/handler/notifier/model"
-	"etop.vn/backend/com/handler/pgevent"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/status3"
+	notifiermodel "o.o/backend/com/handler/notifier/model"
+	"o.o/backend/com/handler/pgevent"
+	txmodel "o.o/backend/com/main/moneytx/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/mq"
+	"o.o/common/l"
 )
 
 func HandleMoneyTransactionShippingEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/stocktaking"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/main/stocktaking"
+	cm "o.o/backend/pkg/common"
 )
 
-// +gen:convert: etop.vn/backend/com/main/stocktaking/model->etop.vn/api/main/stocktaking
-// +gen:convert: etop.vn/api/main/stocktaking
+// +gen:convert: o.o/backend/com/main/stocktaking/model -> o.o/api/main/stocktaking
+// +gen:convert:  o.o/api/main/stocktaking
 
 const (
 	MaxCodeNorm = 999999

@@ -1,11 +1,11 @@
 package admin
 
 import (
-	service "etop.vn/api/top/int/admin"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/int/admin"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/int/admin
+// +gen:wrapper=o.o/api/top/int/admin
 // +gen:wrapper:package=admin
 
 func NewAdminServer(m httprpc.Muxer) {

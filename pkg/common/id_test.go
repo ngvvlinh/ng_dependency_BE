@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	. "etop.vn/backend/pkg/common"
+	. "o.o/backend/pkg/common"
 )
 
 func TestID(t *testing.T) {

@@ -1,17 +1,17 @@
 package convert
 
 import (
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/main/ordering/types"
-	shiptypes "etop.vn/api/main/shipping/types"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	"etop.vn/backend/com/main/ordering/model"
-	"etop.vn/common/jsonx"
+	"o.o/api/main/ordering"
+	"o.o/api/main/ordering/types"
+	shiptypes "o.o/api/main/shipping/types"
+	addressconvert "o.o/backend/com/main/address/convert"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	"o.o/backend/com/main/ordering/model"
+	"o.o/common/jsonx"
 )
 
-// +gen:convert: etop.vn/backend/com/main/ordering/model->etop.vn/api/main/ordering,etop.vn/api/main/ordering/types
-// +gen:convert: etop.vn/api/main/ordering
+// +gen:convert: o.o/backend/com/main/ordering/model -> o.o/api/main/ordering, o.o/api/main/ordering/types
+// +gen:convert:  o.o/api/main/ordering
 
 func AddressDB(in *types.Address) (out *model.OrderAddress) {
 	if in == nil {

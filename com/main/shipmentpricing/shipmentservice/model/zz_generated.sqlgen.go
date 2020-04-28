@@ -9,9 +9,9 @@ import (
 	"sync"
 	time "time"
 
-	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
-	migration "etop.vn/backend/pkg/common/sql/migration"
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	cmsql "o.o/backend/pkg/common/sql/cmsql"
+	migration "o.o/backend/pkg/common/sql/migration"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }

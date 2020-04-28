@@ -1,9 +1,9 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/int/types"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/int/types"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func PbShopConnection(c *connectioning.ShopConnection) *types.ShopConnection {

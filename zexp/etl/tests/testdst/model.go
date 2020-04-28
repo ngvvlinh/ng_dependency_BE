@@ -1,6 +1,6 @@
 package testdst
 
-import "etop.vn/capi/dot"
+import "o.o/capi/dot"
 
 // +sqlgen
 type Account struct {

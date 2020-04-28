@@ -3,10 +3,10 @@ package affiliate
 import (
 	"context"
 
-	"etop.vn/api/services/affiliate"
-	"etop.vn/backend/com/services/affiliate/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/services/affiliate"
+	"o.o/backend/com/services/affiliate/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ affiliate.QueryService = &QueryService{}

@@ -1,17 +1,17 @@
 package convert
 
 import (
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/main/shipnow"
-	carrier "etop.vn/api/main/shipnow/carrier/types"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
-	shippingtypes "etop.vn/api/main/shipping/types"
-	"etop.vn/api/top/types/etc/try_on"
-	etopconvert "etop.vn/backend/com/main/etop/convert"
-	orderconvert "etop.vn/backend/com/main/ordering/convert"
-	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering"
+	"o.o/api/main/shipnow"
+	carrier "o.o/api/main/shipnow/carrier/types"
+	shipnowtypes "o.o/api/main/shipnow/types"
+	shippingtypes "o.o/api/main/shipping/types"
+	"o.o/api/top/types/etc/try_on"
+	etopconvert "o.o/backend/com/main/etop/convert"
+	orderconvert "o.o/backend/com/main/ordering/convert"
+	shipnowmodel "o.o/backend/com/main/shipnow/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	"o.o/capi/dot"
 )
 
 func CarrierToModel(in carrier.Carrier) shipnowmodel.Carrier {

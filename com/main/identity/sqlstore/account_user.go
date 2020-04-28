@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	identitymodel "o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 type AccountUserStoreFactory func(context.Context) *AccountUserStore

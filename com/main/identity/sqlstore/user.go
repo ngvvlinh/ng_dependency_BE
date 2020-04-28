@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/backend/com/main/identity/convert"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/main/identity"
+	"o.o/backend/com/main/identity/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 type UserStoreFactory func(context.Context) *UserStore

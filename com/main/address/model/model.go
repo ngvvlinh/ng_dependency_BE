@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/capi/dot"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

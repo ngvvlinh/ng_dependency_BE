@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/top/types/etc/gender"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/gender"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

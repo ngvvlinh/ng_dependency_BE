@@ -3,11 +3,11 @@ package shop
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/export"
-	"etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/backend/tools/pkg/acl"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/export"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/tools/pkg/acl"
 )
 
 func init() {

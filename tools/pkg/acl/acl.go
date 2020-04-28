@@ -3,7 +3,7 @@ package acl
 import (
 	"strings"
 
-	"etop.vn/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/authorize/permission"
 )
 
 func init() {

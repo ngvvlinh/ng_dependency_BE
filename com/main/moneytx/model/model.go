@@ -3,14 +3,14 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/api/top/types/etc/status3"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

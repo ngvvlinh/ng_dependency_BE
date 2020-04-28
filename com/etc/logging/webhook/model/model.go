@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

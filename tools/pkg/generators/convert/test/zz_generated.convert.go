@@ -5,7 +5,7 @@
 package test
 
 import (
-	conversion "etop.vn/backend/pkg/common/conversion"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -114,7 +114,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/tools/pkg/generators/convert/test.A --//
+//-- convert o.o/backend/tools/pkg/generators/convert/test.A --//
 
 func Convert_B_A(arg *B, out *A) *A {
 	if arg == nil {
@@ -192,7 +192,7 @@ func Convert_As_Bs(args []*A) (outs []*B) {
 	return outs
 }
 
-//-- convert etop.vn/backend/tools/pkg/generators/convert/test.C0 --//
+//-- convert o.o/backend/tools/pkg/generators/convert/test.C0 --//
 
 func Convert_C1_C0(arg *C1, out *C0) *C0 {
 	return ConvertC10(arg, out)
@@ -349,7 +349,7 @@ func Convert_C0s_C3s(args []*C0) (outs []*C3) {
 	return outs
 }
 
-//-- convert etop.vn/backend/tools/pkg/generators/convert/test.D0 --//
+//-- convert o.o/backend/tools/pkg/generators/convert/test.D0 --//
 
 func Convert_D1_D0(arg *D1, out *D0) *D0 {
 	if arg == nil {

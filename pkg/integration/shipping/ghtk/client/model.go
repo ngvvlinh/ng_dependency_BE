@@ -3,12 +3,12 @@ package client
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/api/top/types/etc/status5"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status5"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
+	"o.o/backend/pkg/etop/model"
 )
 
 type TransportType string

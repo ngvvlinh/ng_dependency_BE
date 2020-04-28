@@ -3,14 +3,14 @@ package handler
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/top/external/types"
-	"etop.vn/backend/com/handler/pgevent"
-	inventorymodel "etop.vn/backend/com/main/inventory/model"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/main/inventory"
+	"o.o/api/top/external/types"
+	"o.o/backend/com/handler/pgevent"
+	inventorymodel "o.o/backend/com/main/inventory/model"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func (h *Handler) HandleInventoryVariantEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

@@ -5,14 +5,14 @@ import (
 	"net/url"
 	"time"
 
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/com/supporting/crm/vtiger/convert"
-	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-	"etop.vn/backend/com/supporting/crm/vtiger/model"
-	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
-	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
-	cm "etop.vn/backend/pkg/common"
-	sqlbuilder "etop.vn/backend/pkg/common/sql/simple-sql-builder"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/com/supporting/crm/vtiger/convert"
+	"o.o/backend/com/supporting/crm/vtiger/mapping"
+	"o.o/backend/com/supporting/crm/vtiger/model"
+	"o.o/backend/com/supporting/crm/vtiger/sqlstore"
+	"o.o/backend/com/supporting/crm/vtiger/vtigerstore"
+	cm "o.o/backend/pkg/common"
+	sqlbuilder "o.o/backend/pkg/common/sql/simple-sql-builder"
 )
 
 type SyncVtiger struct {

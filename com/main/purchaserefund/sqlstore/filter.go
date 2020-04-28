@@ -1,7 +1,7 @@
 package sqlstore
 
 import (
-	"etop.vn/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
 var FilterPurchaseRefund = sqlstore.FilterWhitelist{

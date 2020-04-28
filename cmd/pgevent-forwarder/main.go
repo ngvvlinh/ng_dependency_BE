@@ -10,17 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	pgeventapi "etop.vn/backend/cmd/pgevent-forwarder/api"
-	"etop.vn/backend/cmd/pgevent-forwarder/config"
-	"etop.vn/backend/com/handler/pgevent"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/health"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/headers"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/l"
+	pgeventapi "o.o/backend/cmd/pgevent-forwarder/api"
+	"o.o/backend/cmd/pgevent-forwarder/config"
+	"o.o/backend/com/handler/pgevent"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/headers"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/etop/model"
+	"o.o/common/l"
 )
 
 var (

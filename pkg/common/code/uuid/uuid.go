@@ -4,8 +4,8 @@ import (
 	"database/sql/driver"
 	"errors"
 
-	"etop.vn/api/meta"
 	uuid "github.com/satori/go.uuid"
+	"o.o/api/meta"
 )
 
 type UUID meta.UUID

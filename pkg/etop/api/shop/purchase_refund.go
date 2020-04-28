@@ -3,16 +3,16 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/purchaseorder"
-	"etop.vn/api/main/purchaserefund"
-	"etop.vn/api/shopping/suppliering"
-	"etop.vn/api/top/int/shop"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/api/main/purchaseorder"
+	"o.o/api/main/purchaserefund"
+	"o.o/api/shopping/suppliering"
+	"o.o/api/top/int/shop"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/capi/dot"
 )
 
 func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *CreatePurchaseRefundEndpoint) error {

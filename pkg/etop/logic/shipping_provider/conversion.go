@@ -3,8 +3,8 @@ package shipping_provider
 import (
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/backend/pkg/etop/model"
+	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 )
 
 func Convert_vtpost_ClientStates_To_model_ShippingSourceInternal(in *vtpostclient.ClientStates) *model.ShippingSourceInternal {

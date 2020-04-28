@@ -3,11 +3,11 @@ package shopping
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/top/external/types"
-	externaltypes "etop.vn/api/top/external/types"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/api/top/external/types"
+	externaltypes "o.o/api/top/external/types"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
 )
 
 func ListInventoryLevels(ctx context.Context, shopID dot.ID, request *externaltypes.ListInventoryLevelsRequest) (*externaltypes.InventoryLevelsResponse, error) {

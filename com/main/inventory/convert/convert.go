@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/top/types/etc/inventory_type"
-	"etop.vn/backend/com/main/inventory/model"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/main/inventory"
+	"o.o/api/top/types/etc/inventory_type"
+	"o.o/backend/com/main/inventory/model"
+	cm "o.o/backend/pkg/common"
 )
 
-// +gen:convert: etop.vn/backend/com/main/inventory/model->etop.vn/api/main/inventory
-// +gen:convert: etop.vn/api/main/inventory
+// +gen:convert: o.o/backend/com/main/inventory/model -> o.o/api/main/inventory
+// +gen:convert:  o.o/api/main/inventory
 
 const (
 	MaxCodeNorm = 999999

@@ -25,7 +25,7 @@
 package list
 
 import (
-	"etop.vn/backend/com/main/location/types"
+	"o.o/backend/com/main/location/types"
 )
 
 var Districts = []*types.District{

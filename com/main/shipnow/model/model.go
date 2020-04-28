@@ -5,16 +5,16 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/shipnow_state"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/api/top/types/etc/try_on"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
-	"etop.vn/common/xerrors"
+	"o.o/api/top/types/etc/shipnow_state"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
+	"o.o/api/top/types/etc/try_on"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
+	"o.o/common/xerrors"
 )
 
 type Carrier string

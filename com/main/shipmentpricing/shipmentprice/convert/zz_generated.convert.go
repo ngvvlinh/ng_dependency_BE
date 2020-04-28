@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	shipmentprice "etop.vn/api/main/shipmentpricing/shipmentprice"
-	shipmentpricemodel "etop.vn/backend/com/main/shipmentpricing/shipmentprice/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	shipmentprice "o.o/api/main/shipmentpricing/shipmentprice"
+	shipmentpricemodel "o.o/backend/com/main/shipmentpricing/shipmentprice/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -87,7 +87,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentprice.PricingDetail --//
+//-- convert o.o/api/main/shipmentpricing/shipmentprice.PricingDetail --//
 
 func Convert_shipmentpricemodel_PricingDetail_shipmentprice_PricingDetail(arg *shipmentpricemodel.PricingDetail, out *shipmentprice.PricingDetail) *shipmentprice.PricingDetail {
 	if arg == nil {
@@ -147,7 +147,7 @@ func Convert_shipmentprice_PricingDetails_shipmentpricemodel_PricingDetails(args
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentprice.PricingDetailOverweight --//
+//-- convert o.o/api/main/shipmentpricing/shipmentprice.PricingDetailOverweight --//
 
 func Convert_shipmentpricemodel_PricingDetailOverweight_shipmentprice_PricingDetailOverweight(arg *shipmentpricemodel.PricingDetailOverweight, out *shipmentprice.PricingDetailOverweight) *shipmentprice.PricingDetailOverweight {
 	if arg == nil {
@@ -209,7 +209,7 @@ func Convert_shipmentprice_PricingDetailOverweights_shipmentpricemodel_PricingDe
 	return outs
 }
 
-//-- convert etop.vn/api/main/shipmentpricing/shipmentprice.ShipmentPrice --//
+//-- convert o.o/api/main/shipmentpricing/shipmentprice.ShipmentPrice --//
 
 func Convert_shipmentpricemodel_ShipmentPrice_shipmentprice_ShipmentPrice(arg *shipmentpricemodel.ShipmentPrice, out *shipmentprice.ShipmentPrice) *shipmentprice.ShipmentPrice {
 	if arg == nil {

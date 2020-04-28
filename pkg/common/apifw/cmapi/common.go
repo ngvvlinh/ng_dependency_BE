@@ -6,14 +6,14 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
-	meta "etop.vn/api/meta"
-	"etop.vn/api/top/types/common"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	meta "o.o/api/meta"
+	"o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()

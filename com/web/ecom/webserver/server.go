@@ -7,9 +7,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"etop.vn/api/webserver"
-	"etop.vn/backend/com/web/ecom/middlewares"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/webserver"
+	"o.o/backend/com/web/ecom/middlewares"
+	cm "o.o/backend/pkg/common"
 )
 
 var webserverQueryBus webserver.QueryBus

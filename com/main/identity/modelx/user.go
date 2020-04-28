@@ -3,10 +3,10 @@ package modelx
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/user_source"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/user_source"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/capi/dot"
 )
 
 // SignedInUser ...

@@ -3,11 +3,11 @@ package notifier
 import (
 	"context"
 
-	"etop.vn/backend/com/handler/notifier/model"
-	"etop.vn/backend/pkg/common/bus"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/extservice/onesignal"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/com/handler/notifier/model"
+	"o.o/backend/pkg/common/bus"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/extservice/onesignal"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 func init() {

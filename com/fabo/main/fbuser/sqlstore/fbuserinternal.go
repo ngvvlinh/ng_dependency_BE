@@ -3,11 +3,11 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/fabo/main/fbuser/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/meta"
+	"o.o/backend/com/fabo/main/fbuser/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
 type FbUserInternalFactory func(ctx context.Context) *FbUserInternalStore

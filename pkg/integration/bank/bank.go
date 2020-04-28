@@ -1,8 +1,8 @@
 package bank
 
 import (
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
 )
 
 var ll = l.New()

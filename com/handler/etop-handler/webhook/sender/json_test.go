@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/capi/dot"
+	"o.o/capi/dot"
 )
 
 func TestBuildJSON(t *testing.T) {

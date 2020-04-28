@@ -3,14 +3,14 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/webserver"
-	"etop.vn/backend/com/web/webserver/convert"
-	"etop.vn/backend/com/web/webserver/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/webserver"
+	"o.o/backend/com/web/webserver/convert"
+	"o.o/backend/com/web/webserver/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type WsCategoryStoreFactory func(ctx context.Context) *WsCategoryStore

@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/etop/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/etop/model"
 )
 
 func createCode(ctx context.Context, x Qx, cmd *model.CreateCodeCommand) (int, error) {

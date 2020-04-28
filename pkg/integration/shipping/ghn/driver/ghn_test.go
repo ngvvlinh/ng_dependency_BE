@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"etop.vn/backend/pkg/common/randgenerator"
+	"o.o/backend/pkg/common/randgenerator"
 )
 
 func TestGenerateServiceID(t *testing.T) {

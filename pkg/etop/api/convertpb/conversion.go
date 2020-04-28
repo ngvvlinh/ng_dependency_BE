@@ -1,14 +1,14 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/address"
-	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/main/shipnow"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
-	shippingtypes "etop.vn/api/main/shipping/types"
-	etop "etop.vn/api/top/int/etop"
-	"etop.vn/api/top/int/types"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/main/address"
+	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/main/shipnow"
+	shipnowtypes "o.o/api/main/shipnow/types"
+	shippingtypes "o.o/api/main/shipping/types"
+	etop "o.o/api/top/int/etop"
+	"o.o/api/top/int/types"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *types.ShipnowFulfillment {

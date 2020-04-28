@@ -7,17 +7,17 @@ package sqlstore
 import (
 	time "time"
 
-	orderingtypes "etop.vn/api/main/ordering/types"
-	connection_type "etop.vn/api/top/types/etc/connection_type"
-	shipping "etop.vn/api/top/types/etc/shipping"
-	shipping_provider "etop.vn/api/top/types/etc/shipping_provider"
-	status3 "etop.vn/api/top/types/etc/status3"
-	status4 "etop.vn/api/top/types/etc/status4"
-	status5 "etop.vn/api/top/types/etc/status5"
-	try_on "etop.vn/api/top/types/etc/try_on"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	dot "etop.vn/capi/dot"
+	orderingtypes "o.o/api/main/ordering/types"
+	connection_type "o.o/api/top/types/etc/connection_type"
+	shipping "o.o/api/top/types/etc/shipping"
+	shipping_provider "o.o/api/top/types/etc/shipping_provider"
+	status3 "o.o/api/top/types/etc/status3"
+	status4 "o.o/api/top/types/etc/status4"
+	status5 "o.o/api/top/types/etc/status5"
+	try_on "o.o/api/top/types/etc/try_on"
+	sq "o.o/backend/pkg/common/sql/sq"
+	etopmodel "o.o/backend/pkg/etop/model"
+	dot "o.o/capi/dot"
 )
 
 type FulfillmentFilters struct{ prefix string }

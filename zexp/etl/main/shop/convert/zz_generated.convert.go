@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopmodel "etop.vn/backend/zexp/etl/main/shop/model"
-	dot "etop.vn/capi/dot"
+	identitymodel "o.o/backend/com/main/identity/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopmodel "o.o/backend/zexp/etl/main/shop/model"
+	dot "o.o/capi/dot"
 )
 
 /*
@@ -80,7 +80,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.ShippingServiceSelectStrategyItem --//
+//-- convert o.o/backend/com/main/identity/model.ShippingServiceSelectStrategyItem --//
 
 func Convert_shopmodel_ShippingServiceSelectStrategyItem_identitymodel_ShippingServiceSelectStrategyItem(arg *shopmodel.ShippingServiceSelectStrategyItem, out *identitymodel.ShippingServiceSelectStrategyItem) *identitymodel.ShippingServiceSelectStrategyItem {
 	if arg == nil {
@@ -138,7 +138,7 @@ func Convert_identitymodel_ShippingServiceSelectStrategyItems_shopmodel_Shipping
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.Shop --//
+//-- convert o.o/backend/com/main/identity/model.Shop --//
 
 func Convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identitymodel.Shop) *identitymodel.Shop {
 	if arg == nil {
@@ -246,7 +246,7 @@ func Convert_identitymodel_Shops_shopmodel_Shops(args []*identitymodel.Shop) (ou
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.SurveyInfo --//
+//-- convert o.o/backend/com/main/identity/model.SurveyInfo --//
 
 func Convert_shopmodel_SurveyInfo_identitymodel_SurveyInfo(arg *shopmodel.SurveyInfo, out *identitymodel.SurveyInfo) *identitymodel.SurveyInfo {
 	if arg == nil {

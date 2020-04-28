@@ -9,11 +9,11 @@ import (
 
 	"github.com/dustin/go-humanize/english"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/sqlgen/filtergen"
-	"etop.vn/backend/tools/pkg/generators/sqlgen/substruct"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/strs"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/sqlgen/filtergen"
+	"o.o/backend/tools/pkg/generators/sqlgen/substruct"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/strs"
 )
 
 const sqlTag = "sq"

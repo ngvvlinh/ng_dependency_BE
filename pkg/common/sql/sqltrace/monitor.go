@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/backend/pkg/common/apifw/idemp"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/metrics"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/common/l"
 )
 
 var ll = l.New()

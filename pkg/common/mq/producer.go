@@ -6,8 +6,8 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var ll = l.New()

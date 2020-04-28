@@ -11,10 +11,10 @@ import (
 	"os"
 	"path/filepath"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 const (

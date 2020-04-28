@@ -6,17 +6,17 @@ import (
 	"strconv"
 	"strings"
 
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	notifiermodel "etop.vn/backend/com/handler/notifier/model"
-	"etop.vn/backend/com/handler/pgevent"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/mq"
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_provider"
+	notifiermodel "o.o/backend/com/handler/notifier/model"
+	"o.o/backend/com/handler/pgevent"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/mq"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
+	"o.o/common/l"
 )
 
 var acceptNotifyStates = []string{shipping.Returning.String(), shipping.Returned.String(), shipping.Undeliverable.String()}

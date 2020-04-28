@@ -3,12 +3,12 @@ package xshop
 import (
 	"context"
 
-	"etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/inventory_auto"
-	"etop.vn/api/top/types/etc/inventory_policy"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/backend/pkg/etop/apix/shipping"
+	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/inventory_auto"
+	"o.o/api/top/types/etc/inventory_policy"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/backend/pkg/etop/apix/shipping"
 )
 
 func (s *OrderService) CancelOrder(ctx context.Context, r *OrderCancelOrderEndpoint) error {

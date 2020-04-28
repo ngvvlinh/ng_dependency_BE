@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"etop.vn/backend/doc"
-	"etop.vn/backend/pkg/common/apifw/idemp"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/res/dl/imports"
-	"etop.vn/common/l"
+	"o.o/backend/doc"
+	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/res/dl/imports"
+	"o.o/common/l"
 )
 
 const (

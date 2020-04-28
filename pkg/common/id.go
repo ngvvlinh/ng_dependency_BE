@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
-	"etop.vn/common/timex"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/capi/dot"
+	"o.o/common/l"
+	"o.o/common/timex"
 )
 
 const magicNumber = int64(1012345678909e6>>24 + 1)

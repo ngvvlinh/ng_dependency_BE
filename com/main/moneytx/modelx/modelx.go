@@ -3,14 +3,14 @@ package modelx
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	"etop.vn/backend/com/main/moneytx/txmodely"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
+	txmodel "o.o/backend/com/main/moneytx/model"
+	"o.o/backend/com/main/moneytx/txmodely"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 // use for import csv file

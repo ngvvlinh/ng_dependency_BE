@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"strings"
 
-	"etop.vn/backend/com/fabo/pkg/fbclient/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/extservice/telebot"
+	"o.o/backend/com/fabo/pkg/fbclient/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/extservice/telebot"
 )
 
 const (

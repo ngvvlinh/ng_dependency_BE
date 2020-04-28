@@ -9,15 +9,15 @@ import (
 	"strings"
 	"time"
 
-	api "etop.vn/api/top/int/etop"
-	cm "etop.vn/api/top/types/common"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	common "etop.vn/backend/pkg/common"
-	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
-	bus "etop.vn/backend/pkg/common/bus"
-	auth "etop.vn/backend/pkg/etop/authorize/auth"
-	claims "etop.vn/backend/pkg/etop/authorize/claims"
-	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "o.o/api/top/int/etop"
+	cm "o.o/api/top/types/common"
+	identitymodel "o.o/backend/com/main/identity/model"
+	common "o.o/backend/pkg/common"
+	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
+	bus "o.o/backend/pkg/common/bus"
+	auth "o.o/backend/pkg/etop/authorize/auth"
+	claims "o.o/backend/pkg/etop/authorize/claims"
+	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {

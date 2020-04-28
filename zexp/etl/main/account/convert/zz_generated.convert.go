@@ -5,9 +5,9 @@
 package convert
 
 import (
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	accountmodel "etop.vn/backend/zexp/etl/main/account/model"
+	identitymodel "o.o/backend/com/main/identity/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	accountmodel "o.o/backend/zexp/etl/main/account/model"
 )
 
 /*
@@ -41,7 +41,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.Account --//
+//-- convert o.o/backend/com/main/identity/model.Account --//
 
 func Convert_accountmodel_Account_identitymodel_Account(arg *accountmodel.Account, out *identitymodel.Account) *identitymodel.Account {
 	if arg == nil {

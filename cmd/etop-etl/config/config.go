@@ -3,7 +3,7 @@ package config
 import (
 	"strings"
 
-	cc "etop.vn/backend/pkg/common/config"
+	cc "o.o/backend/pkg/common/config"
 )
 
 type Database struct {

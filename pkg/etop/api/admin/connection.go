@@ -3,12 +3,12 @@ package admin
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/int/types"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/connection_type"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/int/types"
+	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func (s *ConnectionService) GetConnections(ctx context.Context, r *GetConnectionsEndpoint) error {

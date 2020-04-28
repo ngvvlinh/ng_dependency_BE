@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 // Alphabet ...

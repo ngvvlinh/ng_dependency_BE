@@ -1,11 +1,11 @@
 package query
 
 import (
-	"etop.vn/api/main/moneytx"
-	"etop.vn/api/main/shipping"
-	"etop.vn/backend/com/main/moneytx/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/main/moneytx"
+	"o.o/api/main/shipping"
+	"o.o/backend/com/main/moneytx/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ moneytx.QueryService = &MoneyTxQuery{}

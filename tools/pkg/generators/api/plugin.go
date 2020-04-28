@@ -3,10 +3,10 @@ package api
 import (
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 func New() generator.Plugin {

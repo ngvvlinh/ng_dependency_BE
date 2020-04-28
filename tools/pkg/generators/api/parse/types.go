@@ -7,9 +7,9 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 type MetaKey struct {
@@ -36,7 +36,7 @@ func (m Meta) Cache(item, key interface{}, fn func() interface{}) interface{} {
 	return value
 }
 
-const dotPkgPath = "etop.vn/capi/dot"
+const dotPkgPath = "o.o/capi/dot"
 
 type Info struct {
 	Meta

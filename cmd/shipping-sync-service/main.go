@@ -10,16 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/shipping-sync-service/config"
-	servicelocation "etop.vn/backend/com/main/location"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/health"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/extservice/telebot"
-	"etop.vn/backend/pkg/integration/shipping/ghn"
-	ghnsync "etop.vn/backend/pkg/integration/shipping/ghn/sync"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/shipping-sync-service/config"
+	servicelocation "o.o/backend/com/main/location"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/integration/shipping/ghn"
+	ghnsync "o.o/backend/pkg/integration/shipping/ghn/sync"
+	"o.o/common/l"
 )
 
 var (

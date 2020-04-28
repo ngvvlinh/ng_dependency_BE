@@ -3,9 +3,9 @@ package sqlstore
 import (
 	"context"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
-	"etop.vn/capi/dot"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitysqlstore "o.o/backend/com/main/identity/sqlstore"
+	"o.o/capi/dot"
 )
 
 type AccountAuthStore struct {

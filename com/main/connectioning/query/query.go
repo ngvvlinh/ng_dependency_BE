@@ -3,16 +3,16 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/backend/com/main/connectioning/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	shippingservices "etop.vn/backend/pkg/integration/shipping/services"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/backend/com/main/connectioning/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	shippingservices "o.o/backend/pkg/integration/shipping/services"
+	"o.o/capi/dot"
 )
 
 var _ connectioning.QueryService = &ConnectionQuery{}

@@ -1,11 +1,11 @@
 package shopping
 
 import (
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/location"
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/api/shopping/customering"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/location"
+	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
 )
 
 var (

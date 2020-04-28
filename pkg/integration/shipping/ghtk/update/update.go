@@ -4,14 +4,14 @@ import (
 	"strconv"
 	"time"
 
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/integration/shipping"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/integration/shipping"
+	"o.o/backend/pkg/integration/shipping/ghtk"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackOrder, ffmToUpdate *shipmodel.Fulfillment) {

@@ -3,15 +3,15 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/moneytx"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/moneytx/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/moneytx"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/moneytx/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type MoneyTxShippingEtopStore struct {

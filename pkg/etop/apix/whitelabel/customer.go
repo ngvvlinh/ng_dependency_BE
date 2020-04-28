@@ -3,12 +3,12 @@ package whitelabel
 import (
 	"context"
 
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/top/external/whitelabel"
-	"etop.vn/backend/com/shopping/customering/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/external/whitelabel"
+	"o.o/backend/com/shopping/customering/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/capi/dot"
 )
 
 func (s *ImportService) Customers(ctx context.Context, r *CustomersEndpoint) error {

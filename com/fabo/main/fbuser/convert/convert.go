@@ -1,4 +1,4 @@
 package convert
 
-// +gen:convert: etop.vn/backend/com/fabo/main/fbuser/model->etop.vn/api/fabo/fbusering
-// +gen:convert: etop.vn/api/fabo/fbusering
+// +gen:convert: o.o/backend/com/fabo/main/fbuser/model -> o.o/api/fabo/fbusering
+// +gen:convert:  o.o/api/fabo/fbusering

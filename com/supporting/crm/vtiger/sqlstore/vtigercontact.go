@@ -3,13 +3,13 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/supporting/crm/vtiger/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/backend/com/supporting/crm/vtiger/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
+	"o.o/capi/dot"
 )
 
 type VtigerContactStoreFactory func(context.Context) *VtigerContactStore

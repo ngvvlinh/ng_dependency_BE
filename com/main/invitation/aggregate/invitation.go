@@ -6,29 +6,29 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/authorization"
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/invitation"
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/cmd/etop-server/config"
-	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/backend/com/main/invitation/convert"
-	"etop.vn/backend/com/main/invitation/model"
-	"etop.vn/backend/com/main/invitation/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/authorization/auth"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/api"
-	"etop.vn/backend/pkg/integration/email"
-	"etop.vn/backend/pkg/integration/sms"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/authorization"
+	"o.o/api/main/identity"
+	"o.o/api/main/invitation"
+	"o.o/api/shopping/customering"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/cmd/etop-server/config"
+	authorizationconvert "o.o/backend/com/main/authorization/convert"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/backend/com/main/invitation/convert"
+	"o.o/backend/com/main/invitation/model"
+	"o.o/backend/com/main/invitation/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/authorization/auth"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etop/api"
+	"o.o/backend/pkg/integration/email"
+	"o.o/backend/pkg/integration/sms"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 var _ invitation.Aggregate = &InvitationAggregate{}
@@ -150,7 +150,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	if args.Email != "" || (args.Phone != "" && !a.cfg.FlagEnableNewLinkInvitation) {
 		invitationUrl = wl.X(ctx).InviteUserURLByEmail
 	} else {
-		// format url: https://etop.vn/i/p000000
+		// format url: https://example.com/i/p000000
 		invitationUrl = wl.X(ctx).InviteUserURLByPhone + "/p" + args.Phone
 	}
 

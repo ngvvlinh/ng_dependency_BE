@@ -1,17 +1,14 @@
-module etop.vn/backend
+module o.o/backend
 
 go 1.14
 
 replace (
-	etop.vn/api => ./up/etop.vn/api
-	etop.vn/capi => ./up/etop.vn/capi
-	etop.vn/common => ./up/etop.vn/common
+	o.o/api => ./up/o.o/api
+	o.o/capi => ./up/o.o/capi
+	o.o/common => ./up/o.o/common
 )
 
 require (
-	etop.vn/api v0.0.0-00010101000000-000000000000
-	etop.vn/capi v0.0.0-00010101000000-000000000000
-	etop.vn/common v0.0.0-00010101000000-000000000000
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20191004194446-69852d3cd6a8
 	github.com/PuerkitoBio/goquery v1.5.0
@@ -57,4 +54,7 @@ require (
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.2.4
+	o.o/api v0.0.0-00010101000000-000000000000
+	o.o/capi v0.0.0-00010101000000-000000000000
+	o.o/common v0.0.0-00010101000000-000000000000
 )

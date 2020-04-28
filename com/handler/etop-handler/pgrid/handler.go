@@ -7,12 +7,12 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"etop.vn/backend/com/handler/pgevent"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	"o.o/backend/com/handler/pgevent"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/mq"
+	"o.o/common/jsonx"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()

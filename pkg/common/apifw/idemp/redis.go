@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/redis"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/redis"
 )
 
 var ErrAnotherLock = errors.New("idemp: waiting for another lock")

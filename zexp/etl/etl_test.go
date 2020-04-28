@@ -9,14 +9,14 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/tools/pkg/gen"
-	"etop.vn/backend/zexp/etl/tests/testdst"
-	"etop.vn/backend/zexp/etl/tests/testsrc"
-	"etop.vn/backend/zexp/etl/types"
-	"etop.vn/capi/dot"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/tools/pkg/gen"
+	"o.o/backend/zexp/etl/tests/testdst"
+	"o.o/backend/zexp/etl/tests/testsrc"
+	"o.o/backend/zexp/etl/types"
+	"o.o/capi/dot"
 )
 
 var srcDB, dstDB *cmsql.Database

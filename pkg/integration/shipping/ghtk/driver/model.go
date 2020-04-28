@@ -1,8 +1,8 @@
 package driver
 
 import (
-	"etop.vn/api/main/location"
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	"o.o/api/main/location"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 )
 
 type CalcShippingFeeArgs struct {

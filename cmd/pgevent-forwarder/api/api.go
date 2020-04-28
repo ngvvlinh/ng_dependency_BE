@@ -9,11 +9,11 @@ import (
 
 	"github.com/lib/pq"
 
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/com/handler/pgevent"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/common/l"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/com/handler/pgevent"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/common/l"
 )
 
 func init() {

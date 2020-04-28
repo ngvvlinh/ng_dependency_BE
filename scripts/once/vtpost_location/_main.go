@@ -10,11 +10,11 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	locationlist "etop.vn/backend/com/main/location/list"
-	cc "etop.vn/backend/pkg/common/config"
-	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	locationlist "o.o/backend/com/main/location/list"
+	cc "o.o/backend/pkg/common/config"
+	vtpostClient "o.o/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/common/l"
 )
 
 var (

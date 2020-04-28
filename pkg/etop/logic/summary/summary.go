@@ -6,16 +6,16 @@ import (
 	"math"
 	"time"
 
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/idemp"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	txmodel "o.o/backend/com/main/moneytx/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

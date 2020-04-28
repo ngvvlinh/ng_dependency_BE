@@ -1,10 +1,10 @@
 package whitelabel
 
 import (
-	"etop.vn/api/main/catalog"
-	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
-	customersqlstore "etop.vn/backend/com/shopping/customering/sqlstore"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/main/catalog"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
+	customersqlstore "o.o/backend/com/shopping/customering/sqlstore"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var (

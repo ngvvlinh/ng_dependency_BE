@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	inventory "etop.vn/api/main/inventory"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	inventorymodel "etop.vn/backend/com/main/inventory/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	inventory "o.o/api/main/inventory"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	inventorymodel "o.o/backend/com/main/inventory/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -113,7 +113,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/inventory.InventoryVariant --//
+//-- convert o.o/api/main/inventory.InventoryVariant --//
 
 func Convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg *inventorymodel.InventoryVariant, out *inventory.InventoryVariant) *inventory.InventoryVariant {
 	return inventoryVariant(arg, out)
@@ -169,7 +169,7 @@ func Convert_inventory_InventoryVariants_inventorymodel_InventoryVariants(args [
 	return outs
 }
 
-//-- convert etop.vn/api/main/inventory.InventoryVoucher --//
+//-- convert o.o/api/main/inventory.InventoryVoucher --//
 
 func Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inventorymodel.InventoryVoucher, out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
 	return inventoryVoucher(arg, out)
@@ -326,7 +326,7 @@ func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.Status = out.Status                         // no change
 }
 
-//-- convert etop.vn/api/main/inventory.InventoryVoucherItem --//
+//-- convert o.o/api/main/inventory.InventoryVoucherItem --//
 
 func Convert_inventorymodel_InventoryVoucherItem_inventory_InventoryVoucherItem(arg *inventorymodel.InventoryVoucherItem, out *inventory.InventoryVoucherItem) *inventory.InventoryVoucherItem {
 	if arg == nil {
@@ -398,7 +398,7 @@ func Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItem
 	return outs
 }
 
-//-- convert etop.vn/api/main/inventory.Trader --//
+//-- convert o.o/api/main/inventory.Trader --//
 
 func Convert_inventorymodel_Trader_inventory_Trader(arg *inventorymodel.Trader, out *inventory.Trader) *inventory.Trader {
 	if arg == nil {

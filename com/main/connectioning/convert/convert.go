@@ -1,9 +1,9 @@
 package convert
 
 import (
-	_ "etop.vn/api/main/connectioning"
-	_ "etop.vn/backend/com/main/connectioning/model"
+	_ "o.o/api/main/connectioning"
+	_ "o.o/backend/com/main/connectioning/model"
 )
 
-// +gen:convert: etop.vn/backend/com/main/connectioning/model->etop.vn/api/main/connectioning
-// +gen:convert: etop.vn/api/main/connectioning
+// +gen:convert: o.o/backend/com/main/connectioning/model -> o.o/api/main/connectioning
+// +gen:convert:  o.o/api/main/connectioning

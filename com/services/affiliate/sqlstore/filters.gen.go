@@ -7,9 +7,9 @@ package sqlstore
 import (
 	time "time"
 
-	status4 "etop.vn/api/top/types/etc/status4"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	status4 "o.o/api/top/types/etc/status4"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type AffiliateReferralCodeFilters struct{ prefix string }

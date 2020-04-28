@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	transaction "etop.vn/api/main/transaction"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	transaction "o.o/api/main/transaction"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type TransactionFilters struct{ prefix string }

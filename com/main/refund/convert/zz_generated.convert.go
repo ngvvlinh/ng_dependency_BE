@@ -7,11 +7,11 @@ package convert
 import (
 	time "time"
 
-	refund "etop.vn/api/main/refund"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	refundmodel "etop.vn/backend/com/main/refund/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	refund "o.o/api/main/refund"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	refundmodel "o.o/backend/com/main/refund/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -73,7 +73,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/refund.Refund --//
+//-- convert o.o/api/main/refund.Refund --//
 
 func Convert_refundmodel_Refund_refund_Refund(arg *refundmodel.Refund, out *refund.Refund) *refund.Refund {
 	if arg == nil {
@@ -229,7 +229,7 @@ func apply_refund_UpdateRefundArgs_refund_Refund(arg *refund.UpdateRefundArgs, o
 	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)             // apply change
 }
 
-//-- convert etop.vn/api/main/refund.RefundLine --//
+//-- convert o.o/api/main/refund.RefundLine --//
 
 func Convert_refundmodel_RefundLine_refund_RefundLine(arg *refundmodel.RefundLine, out *refund.RefundLine) *refund.RefundLine {
 	if arg == nil {

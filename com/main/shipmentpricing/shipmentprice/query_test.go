@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"etop.vn/api/main/shipmentpricing/shipmentprice"
+	"o.o/api/main/shipmentpricing/shipmentprice"
 )
 
 func TestGetOverweightPrice(t *testing.T) {

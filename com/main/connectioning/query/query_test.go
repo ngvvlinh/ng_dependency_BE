@@ -6,15 +6,15 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/backend/com/main/connectioning/model"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/backend/com/main/connectioning/model"
+	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var (

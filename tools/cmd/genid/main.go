@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	cm "etop.vn/backend/pkg/common"
+	cm "o.o/backend/pkg/common"
 )
 
 var flN = flag.Int("N", 1, "Number of id to generate")

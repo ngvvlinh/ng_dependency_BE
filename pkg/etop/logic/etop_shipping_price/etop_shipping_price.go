@@ -7,13 +7,13 @@ import (
 	"sort"
 	"strings"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/main/location"
+	"o.o/api/top/types/etc/shipping_provider"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 type ESPriceRule struct {

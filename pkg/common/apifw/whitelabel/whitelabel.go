@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/backend/pkg/common/headers"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	"o.o/api/main/identity"
+	"o.o/backend/pkg/common/headers"
+	"o.o/capi/dot"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()

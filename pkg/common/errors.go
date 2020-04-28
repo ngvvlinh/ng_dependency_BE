@@ -1,6 +1,6 @@
 package cm
 
-import "etop.vn/common/xerrors"
+import "o.o/common/xerrors"
 
 const (
 	Canceled           = xerrors.Canceled

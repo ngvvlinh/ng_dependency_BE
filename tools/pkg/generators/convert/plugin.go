@@ -11,10 +11,10 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/l"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/l"
 )
 
 var ll = l.New()
@@ -689,7 +689,7 @@ func generateConverts(
 		}
 	}
 	{
-		p.Import("conversion", "etop.vn/backend/pkg/common/conversion")
+		p.Import("conversion", "o.o/backend/pkg/common/conversion")
 		vars := map[string]interface{}{
 			"Conversions": conversions,
 		}

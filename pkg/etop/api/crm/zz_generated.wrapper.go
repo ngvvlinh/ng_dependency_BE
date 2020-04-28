@@ -8,14 +8,14 @@ import (
 	"context"
 	"time"
 
-	api "etop.vn/api/top/services/crm"
-	cm "etop.vn/api/top/types/common"
-	common "etop.vn/backend/pkg/common"
-	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
-	bus "etop.vn/backend/pkg/common/bus"
-	headers "etop.vn/backend/pkg/common/headers"
-	claims "etop.vn/backend/pkg/etop/authorize/claims"
-	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "o.o/api/top/services/crm"
+	cm "o.o/api/top/types/common"
+	common "o.o/backend/pkg/common"
+	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
+	bus "o.o/backend/pkg/common/bus"
+	headers "o.o/backend/pkg/common/headers"
+	claims "o.o/backend/pkg/etop/authorize/claims"
+	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
 func WrapCrmService(s *CrmService, secret string) api.CrmService {

@@ -1,13 +1,13 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/identity"
-	identitytypes "etop.vn/api/main/identity/types"
-	"etop.vn/api/main/purchaseorder"
-	"etop.vn/api/main/receipting"
-	etop "etop.vn/api/top/int/etop"
-	shop "etop.vn/api/top/int/shop"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/main/identity"
+	identitytypes "o.o/api/main/identity/types"
+	"o.o/api/main/purchaseorder"
+	"o.o/api/main/receipting"
+	etop "o.o/api/top/int/etop"
+	shop "o.o/api/top/int/shop"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove, hideInfo bool) *shop.ExternalAccountAhamove {

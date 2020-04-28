@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	receiptingmodel "etop.vn/backend/com/main/receipting/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	receiptmodel "etop.vn/backend/zexp/etl/main/receipt/model"
+	receiptingmodel "o.o/backend/com/main/receipting/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	receiptmodel "o.o/backend/zexp/etl/main/receipt/model"
 )
 
 /*
@@ -79,7 +79,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/receipting/model.Receipt --//
+//-- convert o.o/backend/com/main/receipting/model.Receipt --//
 
 func Convert_receiptmodel_Receipt_receiptingmodel_Receipt(arg *receiptmodel.Receipt, out *receiptingmodel.Receipt) *receiptingmodel.Receipt {
 	if arg == nil {
@@ -185,7 +185,7 @@ func Convert_receiptingmodel_Receipts_receiptmodel_Receipts(args []*receiptingmo
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/receipting/model.ReceiptLine --//
+//-- convert o.o/backend/com/main/receipting/model.ReceiptLine --//
 
 func Convert_receiptmodel_ReceiptLine_receiptingmodel_ReceiptLine(arg *receiptmodel.ReceiptLine, out *receiptingmodel.ReceiptLine) *receiptingmodel.ReceiptLine {
 	if arg == nil {
@@ -245,7 +245,7 @@ func Convert_receiptingmodel_ReceiptLines_receiptmodel_ReceiptLines(args []*rece
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/receipting/model.Trader --//
+//-- convert o.o/backend/com/main/receipting/model.Trader --//
 
 func Convert_receiptmodel_Trader_receiptingmodel_Trader(arg *receiptmodel.Trader, out *receiptingmodel.Trader) *receiptingmodel.Trader {
 	if arg == nil {

@@ -6,16 +6,16 @@ import (
 	"strings"
 	"time"
 
-	typesshipping "etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_fee_type"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/api/top/types/etc/status5"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/shipping"
-	"etop.vn/common/strs"
+	typesshipping "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status5"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
+	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/integration/shipping"
+	"o.o/common/strs"
 )
 
 type (

@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/capi/dot"
 )
 
 func PbPtr(s dot.NullString) shipping.NullState {

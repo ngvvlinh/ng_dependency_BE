@@ -5,14 +5,14 @@ import (
 	"math/rand"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	"etop.vn/backend/pkg/common/apifw/scheduler"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/integration/shipping/ghn/update"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/shipping_provider"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	shipmodelx "o.o/backend/com/main/shipping/modelx"
+	"o.o/backend/pkg/common/apifw/scheduler"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/integration/shipping/ghn/update"
+	"o.o/backend/pkg/integration/shipping/ghtk"
+	"o.o/common/l"
 )
 
 var (

@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	location "etop.vn/api/main/location"
-	locationmodel "etop.vn/backend/com/main/location/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	location "o.o/api/main/location"
+	locationmodel "o.o/backend/com/main/location/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -56,7 +56,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/location.CustomRegion --//
+//-- convert o.o/api/main/location.CustomRegion --//
 
 func Convert_locationmodel_CustomRegion_location_CustomRegion(arg *locationmodel.CustomRegion, out *location.CustomRegion) *location.CustomRegion {
 	if arg == nil {

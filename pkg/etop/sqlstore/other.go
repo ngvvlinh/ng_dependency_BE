@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/backend/pkg/common/µjson"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/jsonx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/µjson"
+	"o.o/backend/pkg/etop/model"
+	"o.o/common/jsonx"
 )
 
 func init() {

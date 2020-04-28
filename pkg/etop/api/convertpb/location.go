@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/int/admin"
+	"o.o/api/main/location"
+	"o.o/api/top/int/admin"
 )
 
 func PbCustomRegion(in *location.CustomRegion) *admin.CustomRegion {

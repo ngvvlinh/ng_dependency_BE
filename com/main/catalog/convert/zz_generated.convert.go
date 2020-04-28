@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	catalog "etop.vn/api/main/catalog"
-	catalogtypes "etop.vn/api/main/catalog/types"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	catalog "o.o/api/main/catalog"
+	catalogtypes "o.o/api/main/catalog/types"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -238,7 +238,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/catalog.ShopBrand --//
+//-- convert o.o/api/main/catalog.ShopBrand --//
 
 func Convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg *catalogmodel.ShopBrand, out *catalog.ShopBrand) *catalog.ShopBrand {
 	if arg == nil {
@@ -357,7 +357,7 @@ func apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg *catalog.UpdateBrandArg
 	out.DeletedAt = out.DeletedAt     // no change
 }
 
-//-- convert etop.vn/api/main/catalog.ShopCategory --//
+//-- convert o.o/api/main/catalog.ShopCategory --//
 
 func Convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.ShopCategory, out *catalog.ShopCategory) *catalog.ShopCategory {
 	if arg == nil {
@@ -477,7 +477,7 @@ func apply_catalog_UpdateShopCategoryArgs_catalog_ShopCategory(arg *catalog.Upda
 	out.DeletedAt = out.DeletedAt               // no change
 }
 
-//-- convert etop.vn/api/main/catalog.ShopCollection --//
+//-- convert o.o/api/main/catalog.ShopCollection --//
 
 func Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmodel.ShopCollection, out *catalog.ShopCollection) *catalog.ShopCollection {
 	if arg == nil {
@@ -597,7 +597,7 @@ func apply_catalog_UpdateShopCollectionArgs_catalog_ShopCollection(arg *catalog.
 	out.Deleted = out.Deleted                                // no change
 }
 
-//-- convert etop.vn/api/main/catalog.ShopProduct --//
+//-- convert o.o/api/main/catalog.ShopProduct --//
 
 func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) *catalog.ShopProduct {
 	if arg == nil {
@@ -831,7 +831,7 @@ func apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(arg *catalog.Up
 	out.Deleted = out.Deleted                                // no change
 }
 
-//-- convert etop.vn/api/main/catalog.ShopProductCollection --//
+//-- convert o.o/api/main/catalog.ShopProductCollection --//
 
 func Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) *catalog.ShopProductCollection {
 	if arg == nil {
@@ -903,7 +903,7 @@ func Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(
 	return outs
 }
 
-//-- convert etop.vn/api/main/catalog.ShopVariant --//
+//-- convert o.o/api/main/catalog.ShopVariant --//
 
 func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) *catalog.ShopVariant {
 	if arg == nil {
@@ -1077,7 +1077,7 @@ func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 	out.Deleted = out.Deleted                                // no change
 }
 
-//-- convert etop.vn/api/main/catalog.ShopVariantSupplier --//
+//-- convert o.o/api/main/catalog.ShopVariantSupplier --//
 
 func Convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(arg *catalogmodel.ShopVariantSupplier, out *catalog.ShopVariantSupplier) *catalog.ShopVariantSupplier {
 	if arg == nil {
@@ -1161,7 +1161,7 @@ func apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg *catalo
 	out.UpdatedAt = time.Time{}     // zero value
 }
 
-//-- convert etop.vn/api/main/catalog/types.Attribute --//
+//-- convert o.o/api/main/catalog/types.Attribute --//
 
 func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
 	if arg == nil {

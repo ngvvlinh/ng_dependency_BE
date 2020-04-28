@@ -5,9 +5,9 @@
 package convert
 
 import (
-	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shipnowfulfillmentmodel "etop.vn/backend/zexp/etl/main/shipnowfulfillment/model"
+	shipnowmodel "o.o/backend/com/main/shipnow/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shipnowfulfillmentmodel "o.o/backend/zexp/etl/main/shipnowfulfillment/model"
 )
 
 /*
@@ -59,7 +59,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/shipnow/model.DeliveryPoint --//
+//-- convert o.o/backend/com/main/shipnow/model.DeliveryPoint --//
 
 func Convert_shipnowfulfillmentmodel_DeliveryPoint_shipnowmodel_DeliveryPoint(arg *shipnowfulfillmentmodel.DeliveryPoint, out *shipnowmodel.DeliveryPoint) *shipnowmodel.DeliveryPoint {
 	if arg == nil {
@@ -139,7 +139,7 @@ func Convert_shipnowmodel_DeliveryPoints_shipnowfulfillmentmodel_DeliveryPoints(
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/shipnow/model.ShipnowFulfillment --//
+//-- convert o.o/backend/com/main/shipnow/model.ShipnowFulfillment --//
 
 func Convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulfillment(arg *shipnowfulfillmentmodel.ShipnowFulfillment, out *shipnowmodel.ShipnowFulfillment) *shipnowmodel.ShipnowFulfillment {
 	if arg == nil {

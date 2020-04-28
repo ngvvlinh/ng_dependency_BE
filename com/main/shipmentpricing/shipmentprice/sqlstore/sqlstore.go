@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/shipmentpricing/shipmentprice"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/convert"
-	"etop.vn/backend/com/main/shipmentpricing/shipmentprice/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/shipmentpricing/shipmentprice"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/shipmentpricing/shipmentprice/convert"
+	"o.o/backend/com/main/shipmentpricing/shipmentprice/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type ShipmentPriceStore struct {

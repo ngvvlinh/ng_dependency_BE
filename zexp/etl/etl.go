@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"sync"
 
-	conversion "etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/zexp/etl/types"
-	"etop.vn/capi/dot"
+	conversion "o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/zexp/etl/types"
+	"o.o/capi/dot"
 )
 
 func NewETLEngine(etlModelPairs []*types.ModelPair) *ETLEngine {

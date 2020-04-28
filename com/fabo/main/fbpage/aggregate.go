@@ -3,16 +3,16 @@ package fbpage
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/fabo/main/fbpage/convert"
-	"etop.vn/backend/com/fabo/main/fbpage/model"
-	"etop.vn/backend/com/fabo/main/fbpage/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/fabo/main/fbpage/convert"
+	"o.o/backend/com/fabo/main/fbpage/model"
+	"o.o/backend/com/fabo/main/fbpage/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var ll = l.New()

@@ -1,6 +1,6 @@
 package pgevent
 
-import "etop.vn/backend/pkg/etop/model"
+import "o.o/backend/pkg/etop/model"
 
 type TopicDef struct {
 	Name       string

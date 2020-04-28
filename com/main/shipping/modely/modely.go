@@ -1,10 +1,10 @@
 package modely
 
 import (
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
+	identitymodel "o.o/backend/com/main/identity/model"
+	txmodel "o.o/backend/com/main/moneytx/model"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
 )
 
 // +sqlgen:     Fulfillment as f

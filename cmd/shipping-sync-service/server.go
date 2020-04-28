@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 
-	servicelocation "etop.vn/backend/com/main/location"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/logic/shipping_provider"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/integration/shipping/ghn"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-	"etop.vn/common/l"
+	servicelocation "o.o/backend/com/main/location"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/metrics"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/logic/shipping_provider"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/backend/pkg/integration/shipping/ghn"
+	"o.o/backend/pkg/integration/shipping/ghtk"
+	"o.o/common/l"
 )
 
 func startServers() []*http.Server {

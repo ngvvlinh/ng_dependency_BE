@@ -3,15 +3,15 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/fabo/main/fbuser/convert"
-	"etop.vn/backend/com/fabo/main/fbuser/model"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/fabo/main/fbuser/convert"
+	"o.o/backend/com/fabo/main/fbuser/model"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbUserStoreFactory func(ctx context.Context) *FbUserStore

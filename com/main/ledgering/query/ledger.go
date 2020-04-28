@@ -3,14 +3,14 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/ledgering"
-	"etop.vn/api/shopping"
-	"etop.vn/api/top/types/etc/ledger_type"
-	"etop.vn/backend/com/main/ledgering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ledgering"
+	"o.o/api/shopping"
+	"o.o/api/top/types/etc/ledger_type"
+	"o.o/backend/com/main/ledgering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ ledgering.QueryService = &LedgerQuery{}

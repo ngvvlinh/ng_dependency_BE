@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	receipting "etop.vn/api/main/receipting"
-	status3 "etop.vn/api/top/types/etc/status3"
-	receiptingmodel "etop.vn/backend/com/main/receipting/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	receipting "o.o/api/main/receipting"
+	status3 "o.o/api/top/types/etc/status3"
+	receiptingmodel "o.o/backend/com/main/receipting/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -94,7 +94,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/receipting.Receipt --//
+//-- convert o.o/api/main/receipting.Receipt --//
 
 func Convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Receipt, out *receipting.Receipt) *receipting.Receipt {
 	if arg == nil {
@@ -273,7 +273,7 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.UpdatedAt = out.UpdatedAt                            // no change
 }
 
-//-- convert etop.vn/api/main/receipting.ReceiptLine --//
+//-- convert o.o/api/main/receipting.ReceiptLine --//
 
 func Convert_receiptingmodel_ReceiptLine_receipting_ReceiptLine(arg *receiptingmodel.ReceiptLine, out *receipting.ReceiptLine) *receipting.ReceiptLine {
 	if arg == nil {
@@ -333,7 +333,7 @@ func Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(args []*receip
 	return outs
 }
 
-//-- convert etop.vn/api/main/receipting.Trader --//
+//-- convert o.o/api/main/receipting.Trader --//
 
 func Convert_receiptingmodel_Trader_receipting_Trader(arg *receiptingmodel.Trader, out *receipting.Trader) *receipting.Trader {
 	if arg == nil {

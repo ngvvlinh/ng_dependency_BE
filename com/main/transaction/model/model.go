@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/main/transaction"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/capi/dot"
+	"o.o/api/main/transaction"
+	"o.o/api/top/types/etc/status3"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

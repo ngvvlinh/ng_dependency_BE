@@ -3,12 +3,12 @@ package partner
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	extpartner "etop.vn/api/top/external/partner"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/connection_type"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
+	"o.o/api/main/connectioning"
+	extpartner "o.o/api/top/external/partner"
+	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/apix/convertpb"
 )
 
 func (s *ShipmentConnectionService) GetConnections(ctx context.Context, r *GetConnectionsEndpoint) error {

@@ -3,10 +3,10 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/services/affiliate"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/common/l"
+	"o.o/api/main/ordering"
+	"o.o/api/services/affiliate"
+	"o.o/backend/pkg/common/bus"
+	"o.o/common/l"
 )
 
 type ProcessManager struct {

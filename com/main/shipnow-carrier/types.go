@@ -3,10 +3,10 @@ package shipnow_carrier
 import (
 	"context"
 
-	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/main/shipnow/carrier"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/capi/dot"
+	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/main/shipnow/carrier"
+	shipnowtypes "o.o/api/main/shipnow/types"
+	"o.o/capi/dot"
 )
 
 type ShipnowCarrier interface {

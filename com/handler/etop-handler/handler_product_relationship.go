@@ -3,15 +3,15 @@ package handler
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/top/external/types"
-	"etop.vn/backend/com/handler/pgevent"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/main/catalog"
+	"o.o/api/top/external/types"
+	"o.o/backend/com/handler/pgevent"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func (h *Handler) HandleShopProductionCollectionRelationshipEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

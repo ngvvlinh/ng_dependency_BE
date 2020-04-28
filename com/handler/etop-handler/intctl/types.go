@@ -3,8 +3,8 @@ package intctl
 import (
 	"bytes"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func Topic(prefix string) string {

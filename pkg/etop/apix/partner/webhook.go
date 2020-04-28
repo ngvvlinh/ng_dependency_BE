@@ -3,9 +3,9 @@ package partner
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/apix/webhook"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/apix/webhook"
 )
 
 func init() {

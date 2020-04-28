@@ -3,16 +3,16 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/authorization"
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/stocktaking"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/int/shop"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/tools/pkg/acl"
-	"etop.vn/capi/dot"
+	"o.o/api/main/authorization"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/stocktaking"
+	"o.o/api/meta"
+	"o.o/api/top/int/shop"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/tools/pkg/acl"
+	"o.o/capi/dot"
 )
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {

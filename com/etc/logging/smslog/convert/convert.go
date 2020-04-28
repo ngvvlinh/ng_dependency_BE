@@ -3,13 +3,13 @@ package convert
 import (
 	"regexp"
 
-	"etop.vn/api/etc/logging/smslog"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/l"
+	"o.o/api/etc/logging/smslog"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/etc/logging/smslog/model -> etop.vn/api/etc/logging/smslog
-// +gen:convert: etop.vn/api/etc/logging/smslog
+// +gen:convert: o.o/backend/com/etc/logging/smslog/model  -> o.o/api/etc/logging/smslog
+// +gen:convert:  o.o/api/etc/logging/smslog
 
 var ll = l.New()
 

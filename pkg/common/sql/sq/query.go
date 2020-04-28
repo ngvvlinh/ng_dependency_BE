@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strconv"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 // Query ...

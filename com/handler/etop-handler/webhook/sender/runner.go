@@ -9,13 +9,13 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/backend/com/handler/etop-handler/webhook/types"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/backend/com/handler/etop-handler/webhook/types"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 const PrefixRedisWebhook = "webhook_states:"

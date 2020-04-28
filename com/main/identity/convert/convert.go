@@ -1,17 +1,17 @@
 package convert
 
 import (
-	"etop.vn/api/main/identity"
-	identitytypes "etop.vn/api/main/identity/types"
-	"etop.vn/api/top/types/etc/status3"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
+	"o.o/api/main/identity"
+	identitytypes "o.o/api/main/identity/types"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
 )
 
-// +gen:convert: etop.vn/backend/com/main/identity/sharemodel->etop.vn/api/main/identity/types
-// +gen:convert: etop.vn/backend/com/main/identity/model->etop.vn/api/main/identity
-// +gen:convert: etop.vn/api/main/identity
-// +gen:convert: etop.vn/backend/com/main/identity/sharemodel->etop.vn/api/top/int/types
+// +gen:convert: o.o/backend/com/main/identity/sharemodel -> o.o/api/main/identity/types
+// +gen:convert: o.o/backend/com/main/identity/model -> o.o/api/main/identity
+// +gen:convert:  o.o/api/main/identity
+// +gen:convert: o.o/backend/com/main/identity/sharemodel -> o.o/api/top/int/types
 
 func ShopDB(in *identity.Shop) *identitymodel.Shop {
 	if in == nil {

@@ -4,17 +4,17 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/shipnow/carrier"
-	carriertypes "etop.vn/api/main/shipnow/carrier/types"
-	"etop.vn/backend/com/main/identity/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
+	"o.o/api/main/identity"
+	"o.o/api/main/shipnow/carrier"
+	carriertypes "o.o/api/main/shipnow/carrier/types"
+	"o.o/backend/com/main/identity/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 var _ identity.Aggregate = &Aggregate{}

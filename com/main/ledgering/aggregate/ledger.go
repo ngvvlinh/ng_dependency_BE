@@ -3,19 +3,19 @@ package aggregate
 import (
 	"context"
 
-	identitytypes "etop.vn/api/main/identity/types"
-	"etop.vn/api/main/ledgering"
-	"etop.vn/api/main/receipting"
-	"etop.vn/api/top/types/etc/ledger_type"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	"etop.vn/backend/com/main/ledgering/convert"
-	"etop.vn/backend/com/main/ledgering/model"
-	"etop.vn/backend/com/main/ledgering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	identitytypes "o.o/api/main/identity/types"
+	"o.o/api/main/ledgering"
+	"o.o/api/main/receipting"
+	"o.o/api/top/types/etc/ledger_type"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	"o.o/backend/com/main/ledgering/convert"
+	"o.o/backend/com/main/ledgering/model"
+	"o.o/backend/com/main/ledgering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ ledgering.Aggregate = &LedgerAggregate{}

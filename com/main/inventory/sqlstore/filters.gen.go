@@ -7,11 +7,11 @@ package sqlstore
 import (
 	time "time"
 
-	inventory_type "etop.vn/api/top/types/etc/inventory_type"
-	inventory_voucher_ref "etop.vn/api/top/types/etc/inventory_voucher_ref"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	inventory_type "o.o/api/top/types/etc/inventory_type"
+	inventory_voucher_ref "o.o/api/top/types/etc/inventory_voucher_ref"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type InventoryVariantFilters struct{ prefix string }

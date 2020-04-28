@@ -5,10 +5,10 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	. "etop.vn/backend/pkg/common/testing"
-	"etop.vn/backend/zexp/sample/model"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	. "o.o/backend/pkg/common/testing"
+	"o.o/backend/zexp/sample/model"
 )
 
 var db *cmsql.Database

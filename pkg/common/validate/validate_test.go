@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 )
 
 func TestNormalize(t *testing.T) {

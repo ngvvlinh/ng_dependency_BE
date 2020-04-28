@@ -4,15 +4,15 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-	"etop.vn/backend/com/handler/notifier/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/account_type"
+	"o.o/backend/com/handler/notifier/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var ll = l.New()

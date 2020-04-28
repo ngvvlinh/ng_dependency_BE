@@ -7,13 +7,13 @@ package convert
 import (
 	time "time"
 
-	addressing "etop.vn/api/shopping/addressing"
-	customering "etop.vn/api/shopping/customering"
-	tradering "etop.vn/api/shopping/tradering"
-	status3 "etop.vn/api/top/types/etc/status3"
-	addressconvert "etop.vn/backend/com/main/address/convert"
-	customeringmodel "etop.vn/backend/com/shopping/customering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	addressing "o.o/api/shopping/addressing"
+	customering "o.o/api/shopping/customering"
+	tradering "o.o/api/shopping/tradering"
+	status3 "o.o/api/top/types/etc/status3"
+	addressconvert "o.o/backend/com/main/address/convert"
+	customeringmodel "o.o/backend/com/shopping/customering/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -146,7 +146,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/shopping/addressing.ShopTraderAddress --//
+//-- convert o.o/api/shopping/addressing.ShopTraderAddress --//
 
 func Convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg *customeringmodel.ShopTraderAddress, out *addressing.ShopTraderAddress) *addressing.ShopTraderAddress {
 	if arg == nil {
@@ -302,7 +302,7 @@ func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.Deleted = out.Deleted                                   // no change
 }
 
-//-- convert etop.vn/api/shopping/customering.ShopCustomer --//
+//-- convert o.o/api/shopping/customering.ShopCustomer --//
 
 func Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *customeringmodel.ShopCustomer, out *customering.ShopCustomer) *customering.ShopCustomer {
 	if arg == nil {
@@ -456,7 +456,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Deleted = out.Deleted                       // no change
 }
 
-//-- convert etop.vn/api/shopping/customering.ShopCustomerGroup --//
+//-- convert o.o/api/shopping/customering.ShopCustomerGroup --//
 
 func Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg *customeringmodel.ShopCustomerGroup, out *customering.ShopCustomerGroup) *customering.ShopCustomerGroup {
 	if arg == nil {
@@ -523,7 +523,7 @@ func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(
 	return outs
 }
 
-//-- convert etop.vn/api/shopping/customering.ShopCustomerGroupCustomer --//
+//-- convert o.o/api/shopping/customering.ShopCustomerGroupCustomer --//
 
 func Convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(arg *customeringmodel.ShopCustomerGroupCustomer, out *customering.ShopCustomerGroupCustomer) *customering.ShopCustomerGroupCustomer {
 	if arg == nil {
@@ -586,7 +586,7 @@ func Convert_customering_ShopCustomerGroupCustomers_customeringmodel_ShopCustome
 	return outs
 }
 
-//-- convert etop.vn/api/shopping/tradering.ShopTrader --//
+//-- convert o.o/api/shopping/tradering.ShopTrader --//
 
 func Convert_customeringmodel_ShopTrader_tradering_ShopTrader(arg *customeringmodel.ShopTrader, out *tradering.ShopTrader) *tradering.ShopTrader {
 	if arg == nil {

@@ -9,17 +9,17 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/supporting/etl/config"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/common/apifw/health"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	etl2 "etop.vn/backend/zexp/etl"
-	convert "etop.vn/backend/zexp/etl/tests/convert"
-	"etop.vn/backend/zexp/etl/tests/models"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/supporting/etl/config"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/metrics"
+	"o.o/backend/pkg/common/sql/cmsql"
+	etl2 "o.o/backend/zexp/etl"
+	convert "o.o/backend/zexp/etl/tests/convert"
+	"o.o/backend/zexp/etl/tests/models"
+	"o.o/common/l"
 )
 
 var (

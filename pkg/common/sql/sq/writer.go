@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"unsafe"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 var _ core.SQLWriter = &Writer{}

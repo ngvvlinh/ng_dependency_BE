@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/top/types/etc/payment_provider"
-	"etop.vn/api/top/types/etc/payment_state"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/payment_provider"
+	"o.o/api/top/types/etc/payment_state"
+	"o.o/api/top/types/etc/status4"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

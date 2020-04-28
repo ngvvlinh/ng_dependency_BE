@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/supporting/crm/vtiger"
+	"o.o/api/supporting/crm/vtiger"
 )
 
 // ConfigMap maps config [lead, contact, tickets]

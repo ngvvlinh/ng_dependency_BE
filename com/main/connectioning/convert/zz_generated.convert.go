@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	connectioning "etop.vn/api/main/connectioning"
-	connectioningmodel "etop.vn/backend/com/main/connectioning/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	connectioning "o.o/api/main/connectioning"
+	connectioningmodel "o.o/backend/com/main/connectioning/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -135,7 +135,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/connectioning.Connection --//
+//-- convert o.o/api/main/connectioning.Connection --//
 
 func Convert_connectioningmodel_Connection_connectioning_Connection(arg *connectioningmodel.Connection, out *connectioning.Connection) *connectioning.Connection {
 	if arg == nil {
@@ -321,7 +321,7 @@ func apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *conn
 	out.WLPartnerID = out.WLPartnerID                   // no change
 }
 
-//-- convert etop.vn/api/main/connectioning.ConnectionService --//
+//-- convert o.o/api/main/connectioning.ConnectionService --//
 
 func Convert_connectioningmodel_ConnectionService_connectioning_ConnectionService(arg *connectioningmodel.ConnectionService, out *connectioning.ConnectionService) *connectioning.ConnectionService {
 	if arg == nil {
@@ -379,7 +379,7 @@ func Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServi
 	return outs
 }
 
-//-- convert etop.vn/api/main/connectioning.EtopAffiliateAccount --//
+//-- convert o.o/api/main/connectioning.EtopAffiliateAccount --//
 
 func Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg *connectioningmodel.EtopAffiliateAccount, out *connectioning.EtopAffiliateAccount) *connectioning.EtopAffiliateAccount {
 	if arg == nil {
@@ -437,7 +437,7 @@ func Convert_connectioning_EtopAffiliateAccounts_connectioningmodel_EtopAffiliat
 	return outs
 }
 
-//-- convert etop.vn/api/main/connectioning.ShopConnection --//
+//-- convert o.o/api/main/connectioning.ShopConnection --//
 
 func Convert_connectioningmodel_ShopConnection_connectioning_ShopConnection(arg *connectioningmodel.ShopConnection, out *connectioning.ShopConnection) *connectioning.ShopConnection {
 	if arg == nil {
@@ -560,7 +560,7 @@ func apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_Shop
 	out.ExternalData = arg.ExternalData     // simple assign
 }
 
-//-- convert etop.vn/api/main/connectioning.ShopConnectionExternalData --//
+//-- convert o.o/api/main/connectioning.ShopConnectionExternalData --//
 
 func Convert_connectioningmodel_ShopConnectionExternalData_connectioning_ShopConnectionExternalData(arg *connectioningmodel.ShopConnectionExternalData, out *connectioning.ShopConnectionExternalData) *connectioning.ShopConnectionExternalData {
 	if arg == nil {

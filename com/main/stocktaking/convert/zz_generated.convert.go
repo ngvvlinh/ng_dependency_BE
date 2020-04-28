@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	stocktaking "etop.vn/api/main/stocktaking"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	stocktakingmodel "etop.vn/backend/com/main/stocktaking/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	stocktaking "o.o/api/main/stocktaking"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	stocktakingmodel "o.o/backend/com/main/stocktaking/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -73,7 +73,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/stocktaking.ShopStocktake --//
+//-- convert o.o/api/main/stocktaking.ShopStocktake --//
 
 func Convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg *stocktakingmodel.ShopStocktake, out *stocktaking.ShopStocktake) *stocktaking.ShopStocktake {
 	if arg == nil {
@@ -207,7 +207,7 @@ func apply_stocktaking_UpdateStocktakeRequest_stocktaking_ShopStocktake(arg *sto
 	out.Type = out.Type                   // no change
 }
 
-//-- convert etop.vn/api/main/stocktaking.StocktakeLine --//
+//-- convert o.o/api/main/stocktaking.StocktakeLine --//
 
 func Convert_stocktakingmodel_StocktakeLine_stocktaking_StocktakeLine(arg *stocktakingmodel.StocktakeLine, out *stocktaking.StocktakeLine) *stocktaking.StocktakeLine {
 	if arg == nil {

@@ -3,9 +3,9 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/top/int/shop"
-	"etop.vn/api/webserver"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/top/int/shop"
+	"o.o/api/webserver"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *CreateOrUpdateWsCategoryEndpoint) error {

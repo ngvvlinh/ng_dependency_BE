@@ -1,10 +1,10 @@
 package modelx
 
 import (
-	"etop.vn/api/top/types/etc/account_type"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/account_type"
+	identitymodel "o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type GetAccountUserQuery struct {

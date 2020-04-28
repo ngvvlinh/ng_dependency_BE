@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/top/int/fabo"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/top/int/fabo"
 )
 
 func PbFbPageCombined(m *fbpaging.FbPageCombined) *fabo.FbPageCombined {

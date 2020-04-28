@@ -1,6 +1,6 @@
 package model
 
-import "etop.vn/capi/dot"
+import "o.o/capi/dot"
 
 type SummarizeFulfillmentsRequest struct {
 	ShopID   dot.ID

@@ -5,9 +5,9 @@
 package convert
 
 import (
-	purchaserefundmodel "etop.vn/backend/com/main/purchaserefund/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	purchaserefundmodel1 "etop.vn/backend/zexp/etl/main/purchaserefund/model"
+	purchaserefundmodel "o.o/backend/com/main/purchaserefund/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	purchaserefundmodel1 "o.o/backend/zexp/etl/main/purchaserefund/model"
 )
 
 /*
@@ -59,7 +59,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/purchaserefund/model.PurchaseRefund --//
+//-- convert o.o/backend/com/main/purchaserefund/model.PurchaseRefund --//
 
 func Convert_purchaserefundmodel1_PurchaseRefund_purchaserefundmodel_PurchaseRefund(arg *purchaserefundmodel1.PurchaseRefund, out *purchaserefundmodel.PurchaseRefund) *purchaserefundmodel.PurchaseRefund {
 	if arg == nil {
@@ -153,7 +153,7 @@ func Convert_purchaserefundmodel_PurchaseRefunds_purchaserefundmodel1_PurchaseRe
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/purchaserefund/model.PurchaseRefundLine --//
+//-- convert o.o/backend/com/main/purchaserefund/model.PurchaseRefundLine --//
 
 func Convert_purchaserefundmodel1_PurchaseRefundLine_purchaserefundmodel_PurchaseRefundLine(arg *purchaserefundmodel1.PurchaseRefundLine, out *purchaserefundmodel.PurchaseRefundLine) *purchaserefundmodel.PurchaseRefundLine {
 	if arg == nil {

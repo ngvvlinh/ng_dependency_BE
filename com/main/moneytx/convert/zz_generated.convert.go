@@ -5,14 +5,14 @@
 package convert
 
 import (
-	moneytx "etop.vn/api/main/moneytx"
-	etopconvert "etop.vn/backend/com/main/etop/convert"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	moneytxmodel "etop.vn/backend/com/main/moneytx/model"
-	txmodely "etop.vn/backend/com/main/moneytx/txmodely"
-	orderingconvert "etop.vn/backend/com/main/ordering/convert"
-	shippingconvert "etop.vn/backend/com/main/shipping/convert"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	moneytx "o.o/api/main/moneytx"
+	etopconvert "o.o/backend/com/main/etop/convert"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	moneytxmodel "o.o/backend/com/main/moneytx/model"
+	txmodely "o.o/backend/com/main/moneytx/txmodely"
+	orderingconvert "o.o/backend/com/main/ordering/convert"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -190,7 +190,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShipping --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShipping --//
 
 func Convert_moneytxmodel_MoneyTransactionShipping_moneytx_MoneyTransactionShipping(arg *moneytxmodel.MoneyTransactionShipping, out *moneytx.MoneyTransactionShipping) *moneytx.MoneyTransactionShipping {
 	if arg == nil {
@@ -283,7 +283,7 @@ func Convert_moneytx_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShip
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingEtop --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingEtop --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingEtop_moneytx_MoneyTransactionShippingEtop(arg *moneytxmodel.MoneyTransactionShippingEtop, out *moneytx.MoneyTransactionShippingEtop) *moneytx.MoneyTransactionShippingEtop {
 	if arg == nil {
@@ -365,7 +365,7 @@ func Convert_moneytx_MoneyTransactionShippingEtops_moneytxmodel_MoneyTransaction
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingEtopExtended --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingEtopExtended --//
 
 func Convert_txmodely_MoneyTransactionShippingEtopExtended_moneytx_MoneyTransactionShippingEtopExtended(arg *txmodely.MoneyTransactionShippingEtopExtended, out *moneytx.MoneyTransactionShippingEtopExtended) *moneytx.MoneyTransactionShippingEtopExtended {
 	if arg == nil {
@@ -423,7 +423,7 @@ func Convert_moneytx_MoneyTransactionShippingEtopExtendeds_txmodely_MoneyTransac
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExtended --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExtended --//
 
 func Convert_txmodely_MoneyTransactionExtended_moneytx_MoneyTransactionShippingExtended(arg *txmodely.MoneyTransactionExtended, out *moneytx.MoneyTransactionShippingExtended) *moneytx.MoneyTransactionShippingExtended {
 	if arg == nil {
@@ -481,7 +481,7 @@ func Convert_moneytx_MoneyTransactionShippingExtendeds_txmodely_MoneyTransaction
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternal --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExternal --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransactionShippingExternal(arg *moneytxmodel.MoneyTransactionShippingExternal, out *moneytx.MoneyTransactionShippingExternal) *moneytx.MoneyTransactionShippingExternal {
 	if arg == nil {
@@ -559,7 +559,7 @@ func Convert_moneytx_MoneyTransactionShippingExternals_moneytxmodel_MoneyTransac
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternalExtended --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExternalExtended --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalExtended_moneytx_MoneyTransactionShippingExternalExtended(arg *moneytxmodel.MoneyTransactionShippingExternalExtended, out *moneytx.MoneyTransactionShippingExternalExtended) *moneytx.MoneyTransactionShippingExternalExtended {
 	if arg == nil {
@@ -617,7 +617,7 @@ func Convert_moneytx_MoneyTransactionShippingExternalExtendeds_moneytxmodel_Mone
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternalFtLine --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExternalFtLine --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalFtLine_moneytx_MoneyTransactionShippingExternalFtLine(arg *moneytxmodel.MoneyTransactionShippingExternalFtLine, out *moneytx.MoneyTransactionShippingExternalFtLine) *moneytx.MoneyTransactionShippingExternalFtLine {
 	if arg == nil {
@@ -675,7 +675,7 @@ func Convert_moneytx_MoneyTransactionShippingExternalFtLines_moneytxmodel_MoneyT
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternalLine --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExternalLine --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalLine_moneytx_MoneyTransactionShippingExternalLine(arg *moneytxmodel.MoneyTransactionShippingExternalLine, out *moneytx.MoneyTransactionShippingExternalLine) *moneytx.MoneyTransactionShippingExternalLine {
 	if arg == nil {
@@ -759,7 +759,7 @@ func Convert_moneytx_MoneyTransactionShippingExternalLines_moneytxmodel_MoneyTra
 	return outs
 }
 
-//-- convert etop.vn/api/main/moneytx.MoneyTransactionShippingExternalLineExtended --//
+//-- convert o.o/api/main/moneytx.MoneyTransactionShippingExternalLineExtended --//
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternalLineExtended_moneytx_MoneyTransactionShippingExternalLineExtended(arg *moneytxmodel.MoneyTransactionShippingExternalLineExtended, out *moneytx.MoneyTransactionShippingExternalLineExtended) *moneytx.MoneyTransactionShippingExternalLineExtended {
 	if arg == nil {

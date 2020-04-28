@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	fbusering "etop.vn/api/fabo/fbusering"
-	fbusermodel "etop.vn/backend/com/fabo/main/fbuser/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	fbusering "o.o/api/fabo/fbusering"
+	fbusermodel "o.o/backend/com/fabo/main/fbuser/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -87,7 +87,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/fabo/fbusering.ExternalFBUserInfo --//
+//-- convert o.o/api/fabo/fbusering.ExternalFBUserInfo --//
 
 func Convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg *fbusermodel.ExternalFBUserInfo, out *fbusering.ExternalFBUserInfo) *fbusering.ExternalFBUserInfo {
 	if arg == nil {
@@ -151,7 +151,7 @@ func Convert_fbusering_ExternalFBUserInfoes_fbusermodel_ExternalFBUserInfoes(arg
 	return outs
 }
 
-//-- convert etop.vn/api/fabo/fbusering.FbUser --//
+//-- convert o.o/api/fabo/fbusering.FbUser --//
 
 func Convert_fbusermodel_FbUser_fbusering_FbUser(arg *fbusermodel.FbUser, out *fbusering.FbUser) *fbusering.FbUser {
 	if arg == nil {
@@ -240,7 +240,7 @@ func apply_fbusering_CreateFbUserArgs_fbusering_FbUser(arg *fbusering.CreateFbUs
 	out.UpdatedAt = time.Time{}         // zero value
 }
 
-//-- convert etop.vn/api/fabo/fbusering.FbUserInternal --//
+//-- convert o.o/api/fabo/fbusering.FbUserInternal --//
 
 func Convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(arg *fbusermodel.FbUserInternal, out *fbusering.FbUserInternal) *fbusering.FbUserInternal {
 	if arg == nil {

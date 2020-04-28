@@ -3,14 +3,14 @@ package handler
 import (
 	"context"
 
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/top/external/types"
-	"etop.vn/backend/com/handler/pgevent"
-	customermodel "etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/shopping/customering"
+	"o.o/api/top/external/types"
+	"o.o/backend/com/handler/pgevent"
+	customermodel "o.o/backend/com/shopping/customering/model"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func (h *Handler) HandleShopCustomerGroupEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

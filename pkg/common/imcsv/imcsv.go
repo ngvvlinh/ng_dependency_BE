@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/validate"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()

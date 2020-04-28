@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	cc "etop.vn/backend/pkg/common/config"
+	cc "o.o/backend/pkg/common/config"
 )
 
 type Vtiger struct {
@@ -16,7 +16,7 @@ type Vtiger struct {
 
 func DefaultVtiger() Vtiger {
 	exampleMappingFile := filepath.Join(
-		os.Getenv("ETOPDIR"),
+		os.Getenv("PROJECT_DIR"),
 		"backend/cmd/etop-server/config/field_mapping_example.json",
 	)
 	return Vtiger{

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/gen"
+	"o.o/backend/tools/pkg/gen"
 )
 
 func Asset(name string) ([]byte, error) {

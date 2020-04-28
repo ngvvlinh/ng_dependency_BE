@@ -8,14 +8,14 @@ import (
 	"context"
 	"time"
 
-	etop "etop.vn/api/top/int/etop"
-	api "etop.vn/api/top/int/sadmin"
-	cm "etop.vn/api/top/types/common"
-	common "etop.vn/backend/pkg/common"
-	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
-	bus "etop.vn/backend/pkg/common/bus"
-	claims "etop.vn/backend/pkg/etop/authorize/claims"
-	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	etop "o.o/api/top/int/etop"
+	api "o.o/api/top/int/sadmin"
+	cm "o.o/api/top/types/common"
+	common "o.o/backend/pkg/common"
+	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
+	bus "o.o/backend/pkg/common/bus"
+	claims "o.o/backend/pkg/etop/authorize/claims"
+	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
 func WrapMiscService(s *MiscService) api.MiscService {

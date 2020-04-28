@@ -6,9 +6,9 @@ import (
 	"strings"
 	"text/template"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 var tplRegister, tplConvertType, tplUpdate, tplCreate *template.Template

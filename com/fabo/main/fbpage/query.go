@@ -3,10 +3,10 @@ package fbpage
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/backend/com/fabo/main/fbpage/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/fabo/fbpaging"
+	"o.o/backend/com/fabo/main/fbpage/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ fbpaging.QueryService = &FbPageQuery{}

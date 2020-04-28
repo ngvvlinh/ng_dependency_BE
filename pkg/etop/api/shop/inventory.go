@@ -3,15 +3,15 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/api/top/int/shop"
-	"etop.vn/api/top/types/etc/inventory_auto"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/authorize/auth"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/api/meta"
+	"o.o/api/shopping/tradering"
+	"o.o/api/top/int/shop"
+	"o.o/api/top/types/etc/inventory_auto"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/capi/dot"
 )
 
 func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEndpoint) error {

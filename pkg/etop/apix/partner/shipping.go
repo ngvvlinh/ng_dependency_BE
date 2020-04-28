@@ -3,14 +3,14 @@ package partner
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	shippingcore "etop.vn/api/main/shipping"
-	pbcm "etop.vn/api/top/types/common"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/apix/shipping"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	shippingcore "o.o/api/main/shipping"
+	pbcm "o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/apix/shipping"
+	"o.o/capi/dot"
 )
 
 func init() {

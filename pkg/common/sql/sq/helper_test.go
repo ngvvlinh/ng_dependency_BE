@@ -5,7 +5,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 type A = []interface{}

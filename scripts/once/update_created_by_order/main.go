@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

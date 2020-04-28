@@ -1,16 +1,16 @@
 package convert
 
 import (
-	"etop.vn/api/main/shipping"
-	shippingtypes "etop.vn/api/main/shipping/types"
-	orderconvert "etop.vn/backend/com/main/ordering/convert"
-	shippingmodel "etop.vn/backend/com/main/shipping/model"
+	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
+	orderconvert "o.o/backend/com/main/ordering/convert"
+	shippingmodel "o.o/backend/com/main/shipping/model"
 )
 
-// +gen:convert: etop.vn/backend/com/main/shipping/model->etop.vn/api/main/shipping,etop.vn/api/main/shipping/types
-// +gen:convert: etop.vn/backend/com/main/shipping/sharemodel->etop.vn/api/main/shipping
-// +gen:convert: etop.vn/backend/com/main/shipping/modely->etop.vn/api/main/shipping
-// +gen:convert: etop.vn/api/main/shipping
+// +gen:convert: o.o/backend/com/main/shipping/model -> o.o/api/main/shipping, o.o/api/main/shipping/types
+// +gen:convert: o.o/backend/com/main/shipping/sharemodel -> o.o/api/main/shipping
+// +gen:convert: o.o/backend/com/main/shipping/modely -> o.o/api/main/shipping
+// +gen:convert:  o.o/api/main/shipping
 
 func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 	if in == nil {

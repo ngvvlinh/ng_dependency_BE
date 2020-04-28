@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/conversion"
 )
 
 var scheme = conversion.Build(RegisterConversions)

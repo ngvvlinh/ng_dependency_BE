@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/com/main/catalog/convert"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
-	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/backend/com/main/catalog/convert"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	catalogmodelx "o.o/backend/com/main/catalog/modelx"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func init() {

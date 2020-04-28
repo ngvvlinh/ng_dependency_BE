@@ -3,7 +3,7 @@ package types
 import (
 	"strings"
 
-	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
 )
 
 func GetShippingProviderNote(ffm *shipmodel.Fulfillment) string {

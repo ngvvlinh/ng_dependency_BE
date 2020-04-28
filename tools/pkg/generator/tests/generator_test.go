@@ -9,10 +9,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generator"
 )
 
-const testPath = "etop.vn/backend/tools/pkg/generator/tests"
+const testPath = "o.o/backend/tools/pkg/generator/tests"
 const testPatterns = testPath + "/..."
 
 type mockPlugin struct {

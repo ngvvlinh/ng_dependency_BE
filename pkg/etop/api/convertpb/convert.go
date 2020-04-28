@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/top/int/shop"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	"o.o/api/top/int/shop"
+	catalogmodel "o.o/backend/com/main/catalog/model"
 )
 
 func PbCategories(cs []*catalogmodel.ShopCategory) []*shop.Category {

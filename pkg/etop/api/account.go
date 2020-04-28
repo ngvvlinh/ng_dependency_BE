@@ -3,16 +3,16 @@ package api
 import (
 	"context"
 
-	"etop.vn/api/top/int/etop"
-	pbcm "etop.vn/api/top/types/common"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/top/int/etop"
+	pbcm "o.o/api/top/types/common"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/capi/dot"
 )
 
 func init() {

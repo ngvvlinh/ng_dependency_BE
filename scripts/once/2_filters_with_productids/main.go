@@ -3,15 +3,15 @@ package main
 import (
 	"flag"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	"etop.vn/backend/com/main/inventory/model"
-	stocktaking "etop.vn/backend/com/main/stocktaking/model"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	"o.o/backend/com/main/inventory/model"
+	stocktaking "o.o/backend/com/main/stocktaking/model"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

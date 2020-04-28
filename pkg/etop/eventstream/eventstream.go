@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
-	cmService "etop.vn/backend/pkg/common/apifw/service"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
+	cmService "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var ll = l.New()

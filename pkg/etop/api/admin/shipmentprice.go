@@ -3,15 +3,15 @@ package admin
 import (
 	"context"
 
-	"etop.vn/api/main/shipmentpricing/pricelist"
-	"etop.vn/api/main/shipmentpricing/shipmentprice"
-	"etop.vn/api/main/shipmentpricing/shipmentservice"
-	"etop.vn/api/top/int/admin"
-	"etop.vn/api/top/int/types"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/com/main/shipping/carrier"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/main/shipmentpricing/shipmentprice"
+	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/api/top/int/admin"
+	"o.o/api/top/int/types"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/com/main/shipping/carrier"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 //-- ShipmentService --//

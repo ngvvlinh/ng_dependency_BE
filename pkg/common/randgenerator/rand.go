@@ -3,7 +3,7 @@ package randgenerator
 import (
 	"math/rand"
 
-	"etop.vn/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/common/code/gencode"
 )
 
 type RandGenerator struct {

@@ -4,16 +4,16 @@ import (
 	"context"
 	"flag"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/backend/cmd/etop-server/config"
-	"etop.vn/backend/com/main/shipping/modelx"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/backend/cmd/etop-server/config"
+	"o.o/backend/com/main/shipping/modelx"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/backend/pkg/integration/shipping/ghtk"
+	"o.o/common/l"
 )
 
 var (

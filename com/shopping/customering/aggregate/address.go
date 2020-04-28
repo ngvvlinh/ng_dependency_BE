@@ -3,16 +3,16 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/backend/com/shopping/customering/convert"
-	"etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/com/shopping/customering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/addressing"
+	"o.o/backend/com/shopping/customering/convert"
+	"o.o/backend/com/shopping/customering/model"
+	"o.o/backend/com/shopping/customering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ addressing.Aggregate = &AddressAggregate{}

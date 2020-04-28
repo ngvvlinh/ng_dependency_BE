@@ -1,7 +1,7 @@
 package config
 
 import (
-	cc "etop.vn/backend/pkg/common/config"
+	cc "o.o/backend/pkg/common/config"
 )
 
 type Config struct {

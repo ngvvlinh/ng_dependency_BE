@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/capi/dot"
 )
 
 func PbShippingProviderType(sp shipping_provider.ShippingProvider) shipping_provider.ShippingProvider {

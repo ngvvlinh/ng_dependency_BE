@@ -7,8 +7,8 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/resty.v1"
 
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/metrics"
+	"o.o/common/l"
 )
 
 type RestyConfig struct {

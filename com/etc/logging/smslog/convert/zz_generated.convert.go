@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	smslog "etop.vn/api/etc/logging/smslog"
-	smslogmodel "etop.vn/backend/com/etc/logging/smslog/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	smslog "o.o/api/etc/logging/smslog"
+	smslogmodel "o.o/backend/com/etc/logging/smslog/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -48,7 +48,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/etc/logging/smslog.SmsLog --//
+//-- convert o.o/api/etc/logging/smslog.SmsLog --//
 
 func Convert_smslogmodel_SmsLog_smslog_SmsLog(arg *smslogmodel.SmsLog, out *smslog.SmsLog) *smslog.SmsLog {
 	if arg == nil {

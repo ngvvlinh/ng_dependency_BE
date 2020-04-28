@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
 )
 
 type ChangesStore struct {

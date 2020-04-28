@@ -3,17 +3,17 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/inventory_type"
-	"etop.vn/api/top/types/etc/inventory_voucher_ref"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/inventory/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/inventory_type"
+	"o.o/api/top/types/etc/inventory_voucher_ref"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/inventory/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type InventoryVoucherFactory func(context.Context) *InventoryVoucherStore

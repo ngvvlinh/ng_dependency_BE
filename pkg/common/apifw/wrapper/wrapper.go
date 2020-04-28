@@ -13,19 +13,19 @@ import (
 
 	"go.uber.org/zap/zapcore"
 
-	cmP "etop.vn/api/top/types/common"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/common/extservice/telebot"
-	"etop.vn/backend/pkg/common/headers"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/capi"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
-	"etop.vn/common/xerrors/logline"
+	cmP "o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/headers"
+	"o.o/backend/pkg/common/metrics"
+	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/capi"
+	"o.o/common/jsonx"
+	"o.o/common/l"
+	"o.o/common/xerrors"
+	"o.o/common/xerrors/logline"
 )
 
 var (

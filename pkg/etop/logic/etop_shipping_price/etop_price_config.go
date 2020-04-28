@@ -1,9 +1,9 @@
 package etop_shipping_price
 
 import (
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/main/location"
+	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/backend/pkg/etop/model"
 )
 
 var ESPriceRules = []*ESPriceRule{

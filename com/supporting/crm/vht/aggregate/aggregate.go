@@ -3,15 +3,15 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	crmvht "etop.vn/api/supporting/crm/vht"
-	"etop.vn/backend/com/supporting/crm/vht/convert"
-	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
-	syncvht "etop.vn/backend/com/supporting/crm/vht/sync"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	vhtclient "etop.vn/backend/pkg/integration/vht/client"
+	"o.o/api/meta"
+	crmvht "o.o/api/supporting/crm/vht"
+	"o.o/backend/com/supporting/crm/vht/convert"
+	"o.o/backend/com/supporting/crm/vht/sqlstore"
+	syncvht "o.o/backend/com/supporting/crm/vht/sync"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	vhtclient "o.o/backend/pkg/integration/vht/client"
 )
 
 var _ crmvht.Aggregate = &AggregateService{}

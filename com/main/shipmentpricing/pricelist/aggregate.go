@@ -3,16 +3,16 @@ package pricelist
 import (
 	"context"
 
-	"etop.vn/api/main/shipmentpricing/pricelist"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/shipmentpricing/pricelist/convert"
-	"etop.vn/backend/com/main/shipmentpricing/pricelist/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/meta"
+	"o.o/backend/com/main/shipmentpricing/pricelist/convert"
+	"o.o/backend/com/main/shipmentpricing/pricelist/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 var _ pricelist.Aggregate = &Aggregate{}

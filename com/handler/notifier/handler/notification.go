@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	notifiermodel "etop.vn/backend/com/handler/notifier/model"
-	"etop.vn/backend/com/handler/pgevent"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/status3"
+	notifiermodel "o.o/backend/com/handler/notifier/model"
+	"o.o/backend/com/handler/pgevent"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/mq"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func HandleNotificationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

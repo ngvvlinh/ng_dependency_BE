@@ -1,7 +1,7 @@
 rules:
-- selectorRegexp: "etop[.]vn"
+- selectorRegexp: "o[.]o"
   allowedPrefixes:
-  - etop.vn/backend/doc
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/res/dl
-  - etop.vn/common
+  - o.o/backend/doc
+  - o.o/backend/pkg/common
+  - o.o/backend/res/dl
+  - o.o/common

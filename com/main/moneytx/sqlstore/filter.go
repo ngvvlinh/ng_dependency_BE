@@ -1,6 +1,6 @@
 package sqlstore
 
-import "etop.vn/backend/pkg/common/sql/sqlstore"
+import "o.o/backend/pkg/common/sql/sqlstore"
 
 var filterMoneyTxShippingExtendedWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,

@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/com/etc/logging/smslog/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/com/etc/logging/smslog/model"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 type SmsLogStoreFactory func(context.Context) *SmsLogStore

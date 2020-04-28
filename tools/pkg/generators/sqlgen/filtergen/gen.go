@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/typedesc"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/typedesc"
 )
 
 type ColumnDef struct {
@@ -170,9 +170,9 @@ func (g *Gen) Generate(p generator.Printer) {
 		"Tables":     g.tables,
 		"JoinTables": g.joinTables,
 	}
-	p.Import("sq", "etop.vn/backend/pkg/common/sql/sq")
-	p.Import("etopmodel", "etop.vn/backend/pkg/etop/model")
-	p.Import("orderingtypes", "etop.vn/api/main/ordering/types") // TODO: remove this
+	p.Import("sq", "o.o/backend/pkg/common/sql/sq")
+	p.Import("etopmodel", "o.o/backend/pkg/etop/model")
+	p.Import("orderingtypes", "o.o/api/main/ordering/types") // TODO: remove this
 
 	printer = p
 	err := tpl.Execute(p, vars)

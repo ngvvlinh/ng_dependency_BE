@@ -1,10 +1,10 @@
 package services
 
 import (
-	"etop.vn/api/top/types/etc/shipping_provider"
-	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/api/top/types/etc/shipping_provider"
+	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
+	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 )
 
 type ShipmentService struct {

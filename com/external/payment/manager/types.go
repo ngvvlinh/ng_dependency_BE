@@ -3,9 +3,9 @@ package manager
 import (
 	"context"
 
-	paymentmanager "etop.vn/api/external/payment/manager"
-	"etop.vn/api/top/types/etc/payment_state"
-	"etop.vn/api/top/types/etc/status4"
+	paymentmanager "o.o/api/external/payment/manager"
+	"o.o/api/top/types/etc/payment_state"
+	"o.o/api/top/types/etc/status4"
 )
 
 type PaymentProvider interface {

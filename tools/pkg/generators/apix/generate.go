@@ -4,8 +4,8 @@ import (
 	"go/types"
 	"text/template"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/defs"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/defs"
 )
 
 var currentPrinter generator.Printer
@@ -22,11 +22,11 @@ type Opts struct {
 
 func generateServices(printer generator.Printer, opts Opts, services []*defs.Service) error {
 	currentPrinter = printer
-	printer.Import("capi", "etop.vn/capi")
+	printer.Import("capi", "o.o/capi")
 	printer.Import("context", "context")
 	printer.Import("fmt", "fmt")
 	printer.Import("http", "net/http")
-	printer.Import("httprpc", "etop.vn/capi/httprpc")
+	printer.Import("httprpc", "o.o/capi/httprpc")
 	vars := map[string]interface{}{
 		"Services": services,
 		"Opts":     opts,

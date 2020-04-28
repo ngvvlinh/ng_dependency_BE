@@ -5,16 +5,16 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/customering/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/customering"
+	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/customering/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type CustomerStoreFactory func(context.Context) *CustomerStore

@@ -1,11 +1,11 @@
 package shop
 
 import (
-	service "etop.vn/api/top/int/shop"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/int/shop"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/int/shop
+// +gen:wrapper=o.o/api/top/int/shop
 // +gen:wrapper:package=shop
 
 // hack for imcsv

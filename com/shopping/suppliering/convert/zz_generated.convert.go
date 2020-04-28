@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	suppliering "etop.vn/api/shopping/suppliering"
-	status3 "etop.vn/api/top/types/etc/status3"
-	supplieringmodel "etop.vn/backend/com/shopping/suppliering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	suppliering "o.o/api/shopping/suppliering"
+	status3 "o.o/api/top/types/etc/status3"
+	supplieringmodel "o.o/backend/com/shopping/suppliering/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -55,7 +55,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/shopping/suppliering.ShopSupplier --//
+//-- convert o.o/api/shopping/suppliering.ShopSupplier --//
 
 func Convert_supplieringmodel_ShopSupplier_suppliering_ShopSupplier(arg *supplieringmodel.ShopSupplier, out *suppliering.ShopSupplier) *suppliering.ShopSupplier {
 	if arg == nil {

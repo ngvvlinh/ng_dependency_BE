@@ -5,9 +5,9 @@ import (
 
 	"github.com/labstack/echo"
 
-	"etop.vn/api/webserver"
-	"etop.vn/backend/com/web/ecom/middlewares"
-	"etop.vn/capi/dot"
+	"o.o/api/webserver"
+	"o.o/backend/com/web/ecom/middlewares"
+	"o.o/capi/dot"
 )
 
 type indexData struct {

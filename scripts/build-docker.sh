@@ -1,6 +1,6 @@
 #!/bin/bash
 
-: ${ETOPDIR?Must set ETOPDIR}
-BACKEND="${ETOPDIR}/backend"
+: ${PROJECT_DIR?Must set PROJECT_DIR}
+BACKEND="${PROJECT_DIR}/backend"
 
 "$BACKEND"/scripts/build.sh docker

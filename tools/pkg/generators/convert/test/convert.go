@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-// +gen:convert: etop.vn/backend/tools/pkg/generators/convert/test
+// +gen:convert: o.o/backend/tools/pkg/generators/convert/test
 
 type S string
 

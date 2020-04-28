@@ -3,7 +3,7 @@ package sqlstore
 import (
 	"context"
 
-	notimodel "etop.vn/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/handler/notifier/model"
 )
 
 func CreateDevice(ctx context.Context, args *notimodel.CreateDeviceArgs) (*notimodel.Device, error) {

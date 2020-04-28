@@ -1,8 +1,8 @@
 package usering
 
 import (
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/backend/pkg/common/bus"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/backend/pkg/common/bus"
 )
 
 type CreateUserCommand identitymodelx.CreateUserCommand

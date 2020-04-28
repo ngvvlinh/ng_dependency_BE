@@ -3,14 +3,14 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/etc/logging/smslog"
-	"etop.vn/backend/com/etc/logging/smslog/convert"
-	"etop.vn/backend/com/etc/logging/smslog/model"
-	"etop.vn/backend/com/etc/logging/smslog/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
+	"o.o/api/etc/logging/smslog"
+	"o.o/backend/com/etc/logging/smslog/convert"
+	"o.o/backend/com/etc/logging/smslog/model"
+	"o.o/backend/com/etc/logging/smslog/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
 )
 
 var _ smslog.Aggregate = &SmsLogAggregate{}

@@ -3,11 +3,11 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/shopping"
-	"etop.vn/api/shopping/suppliering"
-	"etop.vn/backend/com/shopping/suppliering/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/shopping"
+	"o.o/api/shopping/suppliering"
+	"o.o/backend/com/shopping/suppliering/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ suppliering.QueryService = &SupplierQuery{}

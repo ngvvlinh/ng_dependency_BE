@@ -1,3 +1,3 @@
 package convert
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/inventoryvoucher/model->etop.vn/backend/com/main/inventory/model
+// +gen:convert: o.o/backend/zexp/etl/main/inventoryvoucher/model -> o.o/backend/com/main/inventory/model

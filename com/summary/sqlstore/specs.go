@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/summary"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	smry "etop.vn/backend/pkg/etop/logic/summary"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/summary"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	smry "o.o/backend/pkg/etop/logic/summary"
+	etopmodel "o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 type SummaryStore struct {

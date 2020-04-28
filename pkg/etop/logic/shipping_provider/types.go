@@ -3,10 +3,10 @@ package shipping_provider
 import (
 	"context"
 
-	ordermodel "etop.vn/backend/com/main/ordering/model"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 type ShippingCarrier interface {

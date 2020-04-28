@@ -7,10 +7,10 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/pkg/etop/authorize/permission"
-	"etop.vn/backend/tools/pkg/acl"
-	"etop.vn/backend/tools/pkg/gen"
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/tools/pkg/acl"
+	"o.o/backend/tools/pkg/gen"
+	"o.o/backend/tools/pkg/generator"
 )
 
 var currentPrinter generator.Printer
@@ -357,17 +357,17 @@ func generate(printer generator.Printer, pkg *packages.Package, services []*Serv
 	}
 	currentPrinter = printer
 	printer.Import("api", services[0].PkgPb)
-	printer.Import("bus", "etop.vn/backend/pkg/common/bus")
-	printer.Import("claims", "etop.vn/backend/pkg/etop/authorize/claims")
-	printer.Import("cm", "etop.vn/api/top/types/common")
-	printer.Import("cmwrapper", "etop.vn/backend/pkg/common/apifw/wrapper")
-	printer.Import("common", "etop.vn/backend/pkg/common")
-	printer.Import("metrics", "etop.vn/backend/pkg/common/metrics")
-	printer.Import("middleware", "etop.vn/backend/pkg/etop/authorize/middleware")
-	printer.Import("identitymodel", "etop.vn/backend/com/main/identity/model")
-	printer.Import("permission", "etop.vn/backend/pkg/etop/authorize/permission")
-	printer.Import("auth", "etop.vn/backend/pkg/etop/authorize/auth")
-	printer.Import("headers", "etop.vn/backend/pkg/common/headers")
+	printer.Import("bus", "o.o/backend/pkg/common/bus")
+	printer.Import("claims", "o.o/backend/pkg/etop/authorize/claims")
+	printer.Import("cm", "o.o/api/top/types/common")
+	printer.Import("cmwrapper", "o.o/backend/pkg/common/apifw/wrapper")
+	printer.Import("common", "o.o/backend/pkg/common")
+	printer.Import("metrics", "o.o/backend/pkg/common/metrics")
+	printer.Import("middleware", "o.o/backend/pkg/etop/authorize/middleware")
+	printer.Import("identitymodel", "o.o/backend/com/main/identity/model")
+	printer.Import("permission", "o.o/backend/pkg/etop/authorize/permission")
+	printer.Import("auth", "o.o/backend/pkg/etop/authorize/auth")
+	printer.Import("headers", "o.o/backend/pkg/common/headers")
 
 	vars := map[string]interface{}{
 		"PackageName":   services[0].PkgName,

@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/etop-etl/config"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/health"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/extservice/telebot"
-	etlutil "etop.vn/backend/zexp/etl/util"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-etl/config"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/extservice/telebot"
+	etlutil "o.o/backend/zexp/etl/util"
+	"o.o/common/l"
 )
 
 var (

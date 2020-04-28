@@ -3,10 +3,10 @@ package modelx
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/credit_type"
-	creditmodel "etop.vn/backend/com/main/credit/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/credit_type"
+	creditmodel "o.o/backend/com/main/credit/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type CreateCreditCommand struct {

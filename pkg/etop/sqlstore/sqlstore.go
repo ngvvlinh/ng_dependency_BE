@@ -3,15 +3,15 @@ package sqlstore
 import (
 	"time"
 
-	notisqlstore "etop.vn/backend/com/handler/notifier/sqlstore"
-	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
-	servicelocation "etop.vn/backend/com/main/location"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi"
-	"etop.vn/common/l"
+	notisqlstore "o.o/backend/com/handler/notifier/sqlstore"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
+	servicelocation "o.o/backend/com/main/location"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/capi"
+	"o.o/common/l"
 )
 
 var (

@@ -11,9 +11,9 @@ scripts/generate-all.sh
 scripts/clean-imports.sh
 
 go mod tidy
-tidy $wd/up/etop.vn/api
-tidy $wd/up/etop.vn/capi
-tidy $wd/up/etop.vn/common
+tidy $wd/up/o.o/api
+tidy $wd/up/o.o/capi
+tidy $wd/up/o.o/common
 
 CHANGES="$(git status -s)"
 if [[ ! -z "$CHANGES" ]]; then

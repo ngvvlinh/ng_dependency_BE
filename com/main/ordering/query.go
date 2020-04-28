@@ -3,13 +3,13 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/com/main/ordering/convert"
-	"etop.vn/backend/com/main/ordering/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/com/main/ordering/convert"
+	"o.o/backend/com/main/ordering/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ ordering.QueryService = &QueryService{}

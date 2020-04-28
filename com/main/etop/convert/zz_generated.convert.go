@@ -5,9 +5,9 @@
 package convert
 
 import (
-	meta "etop.vn/api/meta"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	etopmodel "etop.vn/backend/pkg/etop/model"
+	meta "o.o/api/meta"
+	conversion "o.o/backend/pkg/common/conversion"
+	etopmodel "o.o/backend/pkg/etop/model"
 )
 
 /*
@@ -49,7 +49,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/meta.Error --//
+//-- convert o.o/api/meta.Error --//
 
 func Convert_etopmodel_Error_meta_Error(arg *etopmodel.Error, out *meta.Error) *meta.Error {
 	return Error(arg)

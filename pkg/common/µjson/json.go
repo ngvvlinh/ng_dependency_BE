@@ -12,9 +12,9 @@ import (
 	"fmt"
 	"strings"
 
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var ll = l.New()

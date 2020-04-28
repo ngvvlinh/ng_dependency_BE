@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/top/int/shop"
-	"etop.vn/backend/com/main/shipping/modely"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/sql/sq/core"
+	"o.o/api/top/int/shop"
+	"o.o/backend/com/main/shipping/modely"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/sql/sq/core"
 )
 
 const exportFulfillmentLines = false

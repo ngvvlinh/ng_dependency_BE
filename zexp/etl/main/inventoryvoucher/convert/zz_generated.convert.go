@@ -5,9 +5,9 @@
 package convert
 
 import (
-	inventorymodel "etop.vn/backend/com/main/inventory/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	inventoryvouchermodel "etop.vn/backend/zexp/etl/main/inventoryvoucher/model"
+	inventorymodel "o.o/backend/com/main/inventory/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	inventoryvouchermodel "o.o/backend/zexp/etl/main/inventoryvoucher/model"
 )
 
 /*
@@ -77,7 +77,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/inventory/model.InventoryVoucher --//
+//-- convert o.o/backend/com/main/inventory/model.InventoryVoucher --//
 
 func Convert_inventoryvouchermodel_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inventoryvouchermodel.InventoryVoucher, out *inventorymodel.InventoryVoucher) *inventorymodel.InventoryVoucher {
 	if arg == nil {
@@ -178,7 +178,7 @@ func Convert_inventorymodel_InventoryVouchers_inventoryvouchermodel_InventoryVou
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/inventory/model.InventoryVoucherItem --//
+//-- convert o.o/backend/com/main/inventory/model.InventoryVoucherItem --//
 
 func Convert_inventoryvouchermodel_InventoryVoucherItem_inventorymodel_InventoryVoucherItem(arg *inventoryvouchermodel.InventoryVoucherItem, out *inventorymodel.InventoryVoucherItem) *inventorymodel.InventoryVoucherItem {
 	if arg == nil {
@@ -250,7 +250,7 @@ func Convert_inventorymodel_InventoryVoucherItems_inventoryvouchermodel_Inventor
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/inventory/model.Trader --//
+//-- convert o.o/backend/com/main/inventory/model.Trader --//
 
 func Convert_inventoryvouchermodel_Trader_inventorymodel_Trader(arg *inventoryvouchermodel.Trader, out *inventorymodel.Trader) *inventorymodel.Trader {
 	if arg == nil {

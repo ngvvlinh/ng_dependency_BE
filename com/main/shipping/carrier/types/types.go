@@ -3,9 +3,9 @@ package types
 import (
 	"context"
 
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 type ShipmentCarrier interface {

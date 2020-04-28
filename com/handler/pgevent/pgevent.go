@@ -10,11 +10,11 @@ import (
 
 	"github.com/lib/pq"
 
-	"etop.vn/backend/pkg/common/mq"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var ll = l.New()

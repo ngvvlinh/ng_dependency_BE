@@ -3,19 +3,19 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/ordering"
-	"etop.vn/api/main/purchaseorder"
-	"etop.vn/api/main/purchaserefund"
-	"etop.vn/api/main/refund"
-	stocktake "etop.vn/api/main/stocktaking"
-	"etop.vn/api/top/types/etc/inventory_auto"
-	"etop.vn/api/top/types/etc/inventory_type"
-	"etop.vn/api/top/types/etc/inventory_voucher_ref"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/ordering"
+	"o.o/api/main/purchaseorder"
+	"o.o/api/main/purchaserefund"
+	"o.o/api/main/refund"
+	stocktake "o.o/api/main/stocktaking"
+	"o.o/api/top/types/etc/inventory_auto"
+	"o.o/api/top/types/etc/inventory_type"
+	"o.o/api/top/types/etc/inventory_voucher_ref"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 type ProcessManager struct {

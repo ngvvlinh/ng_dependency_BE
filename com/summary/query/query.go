@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/summary"
-	"etop.vn/backend/com/summary/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/location"
+	"o.o/api/summary"
+	"o.o/backend/com/summary/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 const currentVersion = "2"

@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/connectioning/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/connectioning/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type ShopConnectionStore struct {

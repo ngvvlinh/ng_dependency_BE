@@ -9,11 +9,11 @@ import (
 	"strings"
 	"unsafe"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/capi/dot"
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/text/unicode/norm"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/capi/dot"
 )
 
 const (

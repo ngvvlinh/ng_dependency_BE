@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	moneytxmodel "etop.vn/backend/com/main/moneytx/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	moneytransactionshippingmodel "etop.vn/backend/zexp/etl/main/moneytransactionshipping/model"
+	moneytxmodel "o.o/backend/com/main/moneytx/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	moneytransactionshippingmodel "o.o/backend/zexp/etl/main/moneytransactionshipping/model"
 )
 
 /*
@@ -43,7 +43,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/moneytx/model.MoneyTransactionShipping --//
+//-- convert o.o/backend/com/main/moneytx/model.MoneyTransactionShipping --//
 
 func Convert_moneytransactionshippingmodel_MoneyTransactionShipping_moneytxmodel_MoneyTransactionShipping(arg *moneytransactionshippingmodel.MoneyTransactionShipping, out *moneytxmodel.MoneyTransactionShipping) *moneytxmodel.MoneyTransactionShipping {
 	if arg == nil {

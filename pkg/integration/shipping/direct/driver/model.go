@@ -1,10 +1,10 @@
 package driver
 
 import (
-	"etop.vn/api/top/types/etc/shipping_provider"
-	shippingsharemodel "etop.vn/backend/com/main/shipping/sharemodel"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	directclient "etop.vn/backend/pkg/integration/shipping/direct/client"
+	"o.o/api/top/types/etc/shipping_provider"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	etopmodel "o.o/backend/pkg/etop/model"
+	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 )
 
 func toShippingFeeLine(line *directclient.ShippingFeeLine) *shippingsharemodel.ShippingFeeLine {

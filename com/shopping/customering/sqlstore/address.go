@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/addressing"
+	"o.o/backend/com/shopping/customering/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type AddressStoreFactory func(context.Context) *AddressStore

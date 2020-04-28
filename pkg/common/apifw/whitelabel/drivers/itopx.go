@@ -1,10 +1,10 @@
 package drivers
 
 import (
-	"etop.vn/api/main/identity"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/backend/pkg/common/apifw/whitelabel"
-	"etop.vn/backend/pkg/common/cmenv"
+	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/backend/pkg/common/apifw/whitelabel"
+	"o.o/backend/pkg/common/cmenv"
 )
 
 const ITopXID = 1000642056506289649

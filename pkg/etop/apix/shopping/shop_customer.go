@@ -3,16 +3,16 @@ package shopping
 import (
 	"context"
 
-	"etop.vn/api/main/ordering/types"
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/customering/customer_type"
-	externaltypes "etop.vn/api/top/external/types"
-	cm "etop.vn/api/top/types/common"
-	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/apix/convertpb"
-	"etop.vn/capi/dot"
+	"o.o/api/main/ordering/types"
+	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
+	"o.o/api/shopping/customering/customer_type"
+	externaltypes "o.o/api/top/external/types"
+	cm "o.o/api/top/types/common"
+	common "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/capi/dot"
 )
 
 func GetCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.GetCustomerRequest) (*externaltypes.Customer, error) {

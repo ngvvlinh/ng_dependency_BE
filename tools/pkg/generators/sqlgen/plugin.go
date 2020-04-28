@@ -8,10 +8,10 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/l"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/l"
 )
 
 const CmdPrefix = "sqlgen"
@@ -64,9 +64,9 @@ func (p *plugin) generateEachPackage(ng generator.Engine, pkg *packages.Package,
 		}
 	}
 
-	printer.Import("cmsql", "etop.vn/backend/pkg/common/sql/cmsql")
-	printer.Import("core", "etop.vn/backend/pkg/common/sql/sq/core")
-	printer.Import("migration", "etop.vn/backend/pkg/common/sql/migration")
+	printer.Import("cmsql", "o.o/backend/pkg/common/sql/cmsql")
+	printer.Import("core", "o.o/backend/pkg/common/sql/sq/core")
+	printer.Import("migration", "o.o/backend/pkg/common/sql/migration")
 
 	sort.Slice(typs, func(i, j int) bool {
 		return typs[i].Obj().Name() < typs[j].Obj().Name()

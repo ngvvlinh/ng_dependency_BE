@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
-	stocktake "etop.vn/api/main/stocktaking"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/stocktake_type"
-	"etop.vn/backend/com/main/stocktaking/convert"
-	"etop.vn/backend/com/main/stocktaking/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
+	stocktake "o.o/api/main/stocktaking"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/stocktake_type"
+	"o.o/backend/com/main/stocktaking/convert"
+	"o.o/backend/com/main/stocktaking/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
 )
 
 var _ stocktake.Aggregate = &StocktakeAggregate{}

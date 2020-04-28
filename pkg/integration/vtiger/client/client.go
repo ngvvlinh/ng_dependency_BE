@@ -11,8 +11,8 @@ import (
 
 	"github.com/gorilla/schema"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/jsonx"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/jsonx"
 )
 
 var schemaEncoder = schema.NewEncoder()

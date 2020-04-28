@@ -11,10 +11,10 @@ import (
 
 	"github.com/dustin/go-humanize/english"
 
-	"etop.vn/backend/tools/pkg/gen"
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/genutil"
-	"etop.vn/common/strs"
+	"o.o/backend/tools/pkg/gen"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/genutil"
+	"o.o/common/strs"
 )
 
 var funcs = template.FuncMap{
@@ -131,7 +131,7 @@ func (g *genImpl) genQueryFor(typ types.Type) (_err error) {
 			if g.genFilter == nil {
 				return
 			}
-			pkgSortPath := strings.TrimPrefix(g.genFilter.PkgPath, "etop.vn/backend/")
+			pkgSortPath := strings.TrimPrefix(g.genFilter.PkgPath, "o.o/backend/")
 			dir := filepath.Join(gen.ProjectPath(), pkgSortPath, "../sqlstore")
 			sqlstorePath, err := filepath.Abs(dir)
 			if err != nil {

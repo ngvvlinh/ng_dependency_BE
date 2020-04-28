@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/com/handler/etop-handler/webhook/sender"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
 )
 
 var whsender *sender.WebhookSender

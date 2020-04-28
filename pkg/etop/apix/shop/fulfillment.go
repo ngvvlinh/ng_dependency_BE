@@ -3,7 +3,7 @@ package xshop
 import (
 	"context"
 
-	"etop.vn/backend/pkg/etop/apix/shipping"
+	"o.o/backend/pkg/etop/apix/shipping"
 )
 
 func (s *FulfillmentService) GetFulfillment(ctx context.Context, r *FulfillmentGetFulfillmentEndpoint) error {

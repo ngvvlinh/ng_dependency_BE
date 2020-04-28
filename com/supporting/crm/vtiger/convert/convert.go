@@ -1,8 +1,8 @@
 package convert
 
 import (
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/com/supporting/crm/vtiger/model"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/com/supporting/crm/vtiger/model"
 )
 
 // ConvertModelContact covert protobuf to model Contact

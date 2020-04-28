@@ -3,9 +3,9 @@ package claims
 import (
 	"time"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/capi/dot"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/capi/dot"
 )
 
 type ClaimInfo struct {

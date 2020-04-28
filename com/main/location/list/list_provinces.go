@@ -6,8 +6,8 @@
 package list
 
 import (
-	"etop.vn/api/main/location"
-	"etop.vn/backend/com/main/location/types"
+	"o.o/api/main/location"
+	"o.o/backend/com/main/location/types"
 )
 
 var Countries = []*types.Country{{Name: types.CountryVietnam}}

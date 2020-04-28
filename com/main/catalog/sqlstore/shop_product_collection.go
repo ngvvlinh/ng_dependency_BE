@@ -3,14 +3,14 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/catalog/convert"
-	"etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/meta"
+	"o.o/backend/com/main/catalog/convert"
+	"o.o/backend/com/main/catalog/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type ShopProductCollectionStoreFactory func(context.Context) *ShopProductCollectionStore

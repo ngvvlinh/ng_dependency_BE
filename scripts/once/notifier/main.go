@@ -4,15 +4,15 @@ import (
 	"context"
 	"flag"
 
-	"etop.vn/backend/cmd/etop-server/config"
-	notimodel "etop.vn/backend/com/handler/notifier/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/common/l"
+	"o.o/backend/cmd/etop-server/config"
+	notimodel "o.o/backend/com/handler/notifier/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/common/l"
 )
 
 var (

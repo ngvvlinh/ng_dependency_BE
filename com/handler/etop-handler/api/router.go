@@ -1,11 +1,11 @@
 package api
 
 import (
-	service "etop.vn/api/top/services/handler"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/services/handler"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/services/handler
+// +gen:wrapper=o.o/api/top/services/handler
 // +gen:wrapper:package=handler
 
 func NewHandlerServer(m httprpc.Muxer, secret string) {

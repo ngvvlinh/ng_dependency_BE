@@ -1,8 +1,8 @@
 package convert
 
 import (
-	"etop.vn/api/external/payment"
-	paymentmodel "etop.vn/backend/com/external/payment/payment/model"
+	"o.o/api/external/payment"
+	paymentmodel "o.o/backend/com/external/payment/payment/model"
 )
 
 func Payment(in *paymentmodel.Payment) (out *payment.Payment) {

@@ -1,6 +1,6 @@
 package client
 
-import cc "etop.vn/backend/pkg/common/config"
+import cc "o.o/backend/pkg/common/config"
 
 type Connection struct {
 	Subdomain string

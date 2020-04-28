@@ -6,8 +6,8 @@ import (
 	"io"
 	"mime/multipart"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
 )
 
 type UploadedImages struct {

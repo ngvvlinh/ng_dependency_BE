@@ -1,11 +1,11 @@
 package api
 
 import (
-	"etop.vn/api/top/int/etop"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/int/etop"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func MixAccount(claim *claims.Claim, m *etop.MixedAccount) ([]dot.ID, error) {

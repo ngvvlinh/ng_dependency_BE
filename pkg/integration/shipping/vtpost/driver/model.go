@@ -1,8 +1,8 @@
 package driver
 
 import (
-	"etop.vn/api/main/location"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/api/main/location"
+	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 )
 
 type CalcShippingFeeArgs struct {

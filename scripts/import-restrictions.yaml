@@ -1,36 +1,36 @@
 - baseImportPath: "./cmd/pgevent-forwarder"
   allowedImports:
-  - etop.vn/backend/cmd/pgevent-forwarder
-  - etop.vn/backend/com/handler/pgevent
-  - etop.vn/backend/pb/common
-  - etop.vn/backend/pb/services/pgevent
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/pkg/etop/authorize/claims
-  - etop.vn/backend/pkg/etop/authorize/middleware
-  - etop.vn/backend/pkg/etop/model
-  - etop.vn/api/top/services/pgevent
+  - o.o/backend/cmd/pgevent-forwarder
+  - o.o/backend/com/handler/pgevent
+  - o.o/backend/pb/common
+  - o.o/backend/pb/services/pgevent
+  - o.o/backend/pkg/common
+  - o.o/backend/pkg/etop/authorize/claims
+  - o.o/backend/pkg/etop/authorize/middleware
+  - o.o/backend/pkg/etop/model
+  - o.o/api/top/services/pgevent
 
 - baseImportPath: "./cmd/etop-uploader"
   allowedImports:
-  - etop.vn/backend/cmd/etop-uploader
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/pkg/etop/authorize/tokens
-  - etop.vn/backend/pkg/etop/authorize/middleware
+  - o.o/backend/cmd/etop-uploader
+  - o.o/backend/pkg/common
+  - o.o/backend/pkg/etop/authorize/tokens
+  - o.o/backend/pkg/etop/authorize/middleware
 
 - baseImportPath: "./cmd/supporting/crm-sync-service"
   allowedImports:
-  - etop.vn/backend/cmd/supporting/crm-sync-service
-  - etop.vn/backend/com/supporting/crm
-  - etop.vn/backend/pb/common
-  - etop.vn/backend/pb/services/crmservice
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/pkg/etop/authorize/middleware
-  - etop.vn/backend/pkg/etop/authorize/tokens
-  - etop.vn/backend/pkg/integration/vht/client
-  - etop.vn/backend/pkg/integration/vtiger/client
-  - etop.vn/backend/pkg/services/crm-service
-  - etop.vn/backend/zexp/api
-  - etop.vn/common
+  - o.o/backend/cmd/supporting/crm-sync-service
+  - o.o/backend/com/supporting/crm
+  - o.o/backend/pb/common
+  - o.o/backend/pb/services/crmservice
+  - o.o/backend/pkg/common
+  - o.o/backend/pkg/etop/authorize/middleware
+  - o.o/backend/pkg/etop/authorize/tokens
+  - o.o/backend/pkg/integration/vht/client
+  - o.o/backend/pkg/integration/vtiger/client
+  - o.o/backend/pkg/services/crm-service
+  - o.o/backend/zexp/api
+  - o.o/common
 
 - baseImportPath: "./pkg/common"
   ignoredSubTrees:
@@ -40,7 +40,7 @@
   - "./pkg/common/apifw/cmapi"
   - "./pkg/common/apifw/whitelabel"
   allowedImports:
-  - etop.vn/backend/pkg/common
+  - o.o/backend/pkg/common
 
 ## TODO: resolve this later
 #
@@ -48,21 +48,21 @@
 #  ignoredSubTrees:
 #  - "./pkg/integration/kiotviet"
 #  allowedImports:
-#  - etop.vn/backend/pkg/integration
-#  - etop.vn/backend/pkg/common
-#  - etop.vn/backend/pkg/etop/model
-#  - etop.vn/backend/pkg/etop/model_log
-#  - etop.vn/backend/cmd/etop-server/config
+#  - o.o/backend/pkg/integration
+#  - o.o/backend/pkg/common
+#  - o.o/backend/pkg/etop/model
+#  - o.o/backend/pkg/etop/model_log
+#  - o.o/backend/cmd/etop-server/config
 
 - baseImportPath: "./pkg"
   ignoredSubTrees:
   - "./pkg/etop/apix/webhook"
   - "./pkg/common"
   allowedImports:
-  - etop.vn/backend/cmd/etop-server/config
-  - etop.vn/backend/com
-  - etop.vn/backend/pb
-  - etop.vn/backend/pkg
-  - etop.vn/backend/res/dl
-  - etop.vn/backend/zexp/api
-  - etop.vn/backend/tools/pkg/acl
+  - o.o/backend/cmd/etop-server/config
+  - o.o/backend/com
+  - o.o/backend/pb
+  - o.o/backend/pkg
+  - o.o/backend/res/dl
+  - o.o/backend/zexp/api
+  - o.o/backend/tools/pkg/acl

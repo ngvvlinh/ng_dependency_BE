@@ -1,4 +1,4 @@
 package convert
 
-// +gen:convert: etop.vn/backend/com/fabo/main/fbpage/model->etop.vn/api/fabo/fbpaging
-// +gen:convert: etop.vn/api/fabo/fbpaging
+// +gen:convert: o.o/backend/com/fabo/main/fbpage/model -> o.o/api/fabo/fbpaging
+// +gen:convert:  o.o/api/fabo/fbpaging

@@ -5,10 +5,10 @@
 package convert
 
 import (
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	usermodel "etop.vn/backend/zexp/etl/main/user/model"
-	dot "etop.vn/capi/dot"
+	identitymodel "o.o/backend/com/main/identity/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	usermodel "o.o/backend/zexp/etl/main/user/model"
+	dot "o.o/capi/dot"
 )
 
 /*
@@ -61,7 +61,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.User --//
+//-- convert o.o/backend/com/main/identity/model.User --//
 
 func Convert_usermodel_User_identitymodel_User(arg *usermodel.User, out *identitymodel.User) *identitymodel.User {
 	if arg == nil {
@@ -144,7 +144,7 @@ func Convert_identitymodel_Users_usermodel_Users(args []*identitymodel.User) (ou
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/identity/model.UserInner --//
+//-- convert o.o/backend/com/main/identity/model.UserInner --//
 
 func Convert_usermodel_UserInner_identitymodel_UserInner(arg *usermodel.UserInner, out *identitymodel.UserInner) *identitymodel.UserInner {
 	if arg == nil {

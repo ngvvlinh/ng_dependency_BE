@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"etop.vn/common/jsonx"
+	"o.o/common/jsonx"
 )
 
 func TestCipherX(t *testing.T) {

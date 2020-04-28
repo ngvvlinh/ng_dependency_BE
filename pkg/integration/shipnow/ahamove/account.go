@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/shipnow/carrier"
-	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
-	"etop.vn/capi/dot"
+	"o.o/api/main/identity"
+	"o.o/api/main/shipnow/carrier"
+	shipnowcarrier "o.o/backend/com/main/shipnow-carrier"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/integration/shipnow/ahamove/client"
+	"o.o/capi/dot"
 )
 
 var _ shipnowcarrier.ShipnowCarrierAccount = &CarrierAccount{}
@@ -110,7 +110,7 @@ func prepareAhamovePhotoUrl(
 	newName := fmt.Sprintf("user_%v_%v_%v", typeImg, ahamoveAccount.ExternalID, ahamoveAccount.ExternalCreatedAt.Unix())
 
 	// example result:
-	// https://3rd.d.etop.vn/ahamove/user_verification/BdVzaWz6ssamNKrRV7W8/user_id_front_84909090999_1444118656.jpg
+	// https://example.com/ahamove/user_verification/BdVzaWz6ssamNKrRV7W8/user_id_front_84909090999_1444118656.jpg
 	return fmt.Sprintf("%v%v/%v/%v%v",
 		urlConfig.ThirdPartyHost,
 		urlConfig.PathUserVerification,

@@ -7,10 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	product_type "etop.vn/api/top/types/etc/product_type"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	product_type "o.o/api/top/types/etc/product_type"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ProductShopCollectionFilters struct{ prefix string }

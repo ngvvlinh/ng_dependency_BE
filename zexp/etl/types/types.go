@@ -3,8 +3,8 @@ package types
 import (
 	"database/sql"
 
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq/core"
 )
 
 type Model interface {

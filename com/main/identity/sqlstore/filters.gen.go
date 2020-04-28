@@ -7,14 +7,14 @@ package sqlstore
 import (
 	time "time"
 
-	account_type "etop.vn/api/top/types/etc/account_type"
-	ghn_note_code "etop.vn/api/top/types/etc/ghn_note_code"
-	status3 "etop.vn/api/top/types/etc/status3"
-	try_on "etop.vn/api/top/types/etc/try_on"
-	user_source "etop.vn/api/top/types/etc/user_source"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	account_type "o.o/api/top/types/etc/account_type"
+	ghn_note_code "o.o/api/top/types/etc/ghn_note_code"
+	status3 "o.o/api/top/types/etc/status3"
+	try_on "o.o/api/top/types/etc/try_on"
+	user_source "o.o/api/top/types/etc/user_source"
+	identitymodel "o.o/backend/com/main/identity/model"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type AccountFilters struct{ prefix string }

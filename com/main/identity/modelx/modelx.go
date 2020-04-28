@@ -1,9 +1,9 @@
 package modelx
 
 import (
-	"etop.vn/api/top/types/etc/account_type"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/account_type"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/capi/dot"
 )
 
 type GetByIDArgs struct {

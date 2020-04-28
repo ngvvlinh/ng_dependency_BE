@@ -3,11 +3,11 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/external/payment"
-	"etop.vn/backend/com/external/payment/payment/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/external/payment"
+	"o.o/backend/com/external/payment/payment/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ payment.QueryService = &QueryService{}

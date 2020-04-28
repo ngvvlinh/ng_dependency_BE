@@ -1,9 +1,9 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/moneytx"
-	"etop.vn/api/top/int/types"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
+	"o.o/api/main/moneytx"
+	"o.o/api/top/int/types"
+	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
 func PbMoneyTxShippingExternalsFtLine(items []*moneytx.MoneyTransactionShippingExternalFtLine) []*types.MoneyTransactionShippingExternal {

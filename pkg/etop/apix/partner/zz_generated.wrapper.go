@@ -8,15 +8,15 @@ import (
 	"context"
 	"time"
 
-	api "etop.vn/api/top/external/partner"
-	externaltypes "etop.vn/api/top/external/types"
-	etop "etop.vn/api/top/int/etop"
-	cm "etop.vn/api/top/types/common"
-	common "etop.vn/backend/pkg/common"
-	cmwrapper "etop.vn/backend/pkg/common/apifw/wrapper"
-	bus "etop.vn/backend/pkg/common/bus"
-	claims "etop.vn/backend/pkg/etop/authorize/claims"
-	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "o.o/api/top/external/partner"
+	externaltypes "o.o/api/top/external/types"
+	etop "o.o/api/top/int/etop"
+	cm "o.o/api/top/types/common"
+	common "o.o/backend/pkg/common"
+	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
+	bus "o.o/backend/pkg/common/bus"
+	claims "o.o/backend/pkg/etop/authorize/claims"
+	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
 func WrapCustomerService(s *CustomerService) api.CustomerService {

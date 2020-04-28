@@ -7,8 +7,8 @@ package sqlstore
 import (
 	time "time"
 
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type WsCategoryFilters struct{ prefix string }

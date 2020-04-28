@@ -9,7 +9,7 @@ import (
 
 	"github.com/dustin/go-humanize/english"
 
-	"etop.vn/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generator"
 )
 
 func Generate(p generator.Printer, name string, out, in types.Type) error {

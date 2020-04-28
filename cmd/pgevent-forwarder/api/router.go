@@ -1,11 +1,11 @@
 package api
 
 import (
-	service "etop.vn/api/top/services/pgevent"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/services/pgevent"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/services/pgevent
+// +gen:wrapper=o.o/api/top/services/pgevent
 // +gen:wrapper:package=pgevent
 
 func NewPgeventServer(m httprpc.Muxer, secret string) {

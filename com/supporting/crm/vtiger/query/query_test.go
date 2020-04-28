@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
+	"o.o/api/meta"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/com/supporting/crm/vtiger/mapping"
 )
 
 func TestBuildVtigerQuery(t *testing.T) {

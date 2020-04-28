@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/capi/dot"
 )
 
 func startOfDay(dayFromToday int) time.Time {

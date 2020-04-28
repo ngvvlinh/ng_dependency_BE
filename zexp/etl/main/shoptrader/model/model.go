@@ -1,7 +1,7 @@
 package model
 
 import (
-	"etop.vn/capi/dot"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/backend/com/handler/pgevent"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/capi/dot"
+	"o.o/backend/com/handler/pgevent"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/capi/dot"
 )
 
 // Foo is used for testing only

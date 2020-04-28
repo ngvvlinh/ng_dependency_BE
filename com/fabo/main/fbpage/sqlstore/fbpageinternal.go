@@ -3,12 +3,12 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbpaging"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/fabo/main/fbpage/convert"
-	"etop.vn/backend/com/fabo/main/fbpage/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/meta"
+	"o.o/backend/com/fabo/main/fbpage/convert"
+	"o.o/backend/com/fabo/main/fbpage/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
 type FbPageInternalStoreFactory func(ctx context.Context) *FbPageInternalStore

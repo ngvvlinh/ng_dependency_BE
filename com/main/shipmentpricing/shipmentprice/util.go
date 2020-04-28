@@ -3,9 +3,9 @@ package shipmentprice
 import (
 	"context"
 
-	"etop.vn/backend/com/main/shipmentpricing"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/redis"
+	"o.o/backend/com/main/shipmentpricing"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/redis"
 )
 
 const (

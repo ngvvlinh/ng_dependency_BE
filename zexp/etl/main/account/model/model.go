@@ -1,8 +1,8 @@
 package model
 
 import (
-	"etop.vn/api/top/types/etc/account_type"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/account_type"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

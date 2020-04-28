@@ -5,14 +5,14 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/main/location"
-	"etop.vn/api/main/shipmentpricing/shipmentprice"
-	"etop.vn/api/main/shipmentpricing/shipmentservice"
-	"etop.vn/api/top/types/etc/connection_type"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/capi/dot"
+	"o.o/api/main/connectioning"
+	"o.o/api/main/location"
+	"o.o/api/main/shipmentpricing/shipmentprice"
+	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/capi/dot"
 )
 
 var (

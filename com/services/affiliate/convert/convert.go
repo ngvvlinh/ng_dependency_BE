@@ -1,8 +1,8 @@
 package convert
 
 import (
-	"etop.vn/api/services/affiliate"
-	"etop.vn/backend/com/services/affiliate/model"
+	"o.o/api/services/affiliate"
+	"o.o/backend/com/services/affiliate/model"
 )
 
 func CommissionSetting(in *model.CommissionSetting) *affiliate.CommissionSetting {

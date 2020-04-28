@@ -1,11 +1,11 @@
 package xshop
 
 import (
-	service "etop.vn/api/top/external/shop"
-	"etop.vn/capi/httprpc"
+	service "o.o/api/top/external/shop"
+	"o.o/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/top/external/shop
+// +gen:wrapper=o.o/api/top/external/shop
 // +gen:wrapper:package=shop
 // +gen:wrapper:prefix=ext
 

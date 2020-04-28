@@ -3,14 +3,14 @@ package location
 import (
 	"context"
 
-	"etop.vn/api/main/location"
-	"etop.vn/backend/com/main/location/convert"
-	"etop.vn/backend/com/main/location/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/location"
+	"o.o/backend/com/main/location/convert"
+	"o.o/backend/com/main/location/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ location.Aggregate = &Aggregate{}

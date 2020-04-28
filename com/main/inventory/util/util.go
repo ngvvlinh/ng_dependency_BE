@@ -3,14 +3,14 @@ package util
 import (
 	"fmt"
 
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/stocktaking"
-	"etop.vn/api/top/types/etc/inventory_type"
-	"etop.vn/api/top/types/etc/inventory_voucher_ref"
-	"etop.vn/api/top/types/etc/ref_action"
-	"etop.vn/api/top/types/etc/stocktake_type"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/main/inventory"
+	"o.o/api/main/stocktaking"
+	"o.o/api/top/types/etc/inventory_type"
+	"o.o/api/top/types/etc/inventory_voucher_ref"
+	"o.o/api/top/types/etc/ref_action"
+	"o.o/api/top/types/etc/stocktake_type"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func PopulateInventoryVouchers(args []*inventory.InventoryVoucher, mapStocktake map[dot.ID]stocktake_type.StocktakeType) ([]*inventory.InventoryVoucher, error) {

@@ -3,18 +3,18 @@ package xshop
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/location"
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/api/shopping/customering"
-	pbcm "etop.vn/api/top/types/common"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/idemp"
-	cmservice "etop.vn/backend/pkg/common/apifw/service"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
+	"o.o/api/main/location"
+	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
+	pbcm "o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 var (

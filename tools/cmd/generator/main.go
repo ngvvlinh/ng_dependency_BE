@@ -6,17 +6,17 @@ import (
 	"os"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api"
-	"etop.vn/backend/tools/pkg/generators/apix"
-	"etop.vn/backend/tools/pkg/generators/convert"
-	"etop.vn/backend/tools/pkg/generators/enum"
-	"etop.vn/backend/tools/pkg/generators/event"
-	"etop.vn/backend/tools/pkg/generators/sample"
-	"etop.vn/backend/tools/pkg/generators/sqlgen"
-	"etop.vn/backend/tools/pkg/generators/sqlsel"
-	"etop.vn/backend/tools/pkg/generators/swagger"
-	"etop.vn/backend/tools/pkg/generators/wrapper"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api"
+	"o.o/backend/tools/pkg/generators/apix"
+	"o.o/backend/tools/pkg/generators/convert"
+	"o.o/backend/tools/pkg/generators/enum"
+	"o.o/backend/tools/pkg/generators/event"
+	"o.o/backend/tools/pkg/generators/sample"
+	"o.o/backend/tools/pkg/generators/sqlgen"
+	"o.o/backend/tools/pkg/generators/sqlsel"
+	"o.o/backend/tools/pkg/generators/swagger"
+	"o.o/backend/tools/pkg/generators/wrapper"
 )
 
 var flClean = flag.Bool("clean", false, "clean generated files without generating new files")
@@ -65,9 +65,9 @@ func main() {
 
 	cfg := generator.Config{
 		CleanOnly:      *flClean,
-		Namespace:      "etop.vn",
+		Namespace:      "o.o",
 		EnabledPlugins: enabledPlugins,
-		GoimportsArgs:  []string{"-local", "etop.vn"},
+		GoimportsArgs:  []string{"-local", "o.o"},
 	}
 
 	if err := generator.RegisterPlugin(plugins...); err != nil {

@@ -7,13 +7,13 @@ import (
 	"strings"
 	"sync"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/shipping"
-	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
-	"etop.vn/common/l"
+	"o.o/api/top/types/etc/shipping_provider"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/integration/shipping"
+	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
+	"o.o/common/l"
 )
 
 type ClientType byte

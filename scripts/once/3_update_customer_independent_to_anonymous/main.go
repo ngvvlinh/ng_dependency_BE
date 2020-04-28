@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 
-	"etop.vn/api/shopping/customering"
-	"etop.vn/backend/cmd/etop-server/config"
-	modelcustomering "etop.vn/backend/com/shopping/customering/model"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
+	"o.o/api/shopping/customering"
+	"o.o/backend/cmd/etop-server/config"
+	modelcustomering "o.o/backend/com/shopping/customering/model"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 var (

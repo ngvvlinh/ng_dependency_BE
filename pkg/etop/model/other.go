@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping_provider"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping_provider"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type GetHistoryQuery struct {

@@ -1,11 +1,11 @@
 package modelx
 
 import (
-	adressmodel "etop.vn/backend/com/main/address/model"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	adressmodel "o.o/backend/com/main/address/model"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type CreateShopCommand struct {

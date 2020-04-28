@@ -3,13 +3,13 @@ package pricelist
 import (
 	"context"
 
-	"etop.vn/api/main/shipmentpricing/pricelist"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/shipmentpricing/pricelist/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/meta"
+	"o.o/backend/com/main/shipmentpricing/pricelist/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ pricelist.QueryService = &QueryService{}

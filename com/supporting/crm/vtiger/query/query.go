@@ -6,17 +6,17 @@ import (
 	"sort"
 	"strconv"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/com/supporting/crm/vtiger/convert"
-	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-	"etop.vn/backend/com/supporting/crm/vtiger/model"
-	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
-	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	sqlbuilder "etop.vn/backend/pkg/common/sql/simple-sql-builder"
-	"etop.vn/backend/pkg/integration/vtiger/client"
+	"o.o/api/meta"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/com/supporting/crm/vtiger/convert"
+	"o.o/backend/com/supporting/crm/vtiger/mapping"
+	"o.o/backend/com/supporting/crm/vtiger/model"
+	"o.o/backend/com/supporting/crm/vtiger/sqlstore"
+	"o.o/backend/com/supporting/crm/vtiger/vtigerstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	sqlbuilder "o.o/backend/pkg/common/sql/simple-sql-builder"
+	"o.o/backend/pkg/integration/vtiger/client"
 )
 
 var (

@@ -1,11 +1,12 @@
 rules:
-- selectorRegexp: "etop[.]vn"
+- selectorRegexp: "o[.]o"
   allowedPrefixes:
-  - etop.vn/api
-  - etop.vn/backend/com
-  - etop.vn/backend/pb
-  - etop.vn/backend/pkg
-  - etop.vn/backend/res/dl
-  - etop.vn/capi
-  - etop.vn/common
-  - etop.vn/backend/zexp/api
+  - o.o/api
+  - o.o/backend/com
+  - o.o/backend/pb
+  - o.o/backend/pkg
+  - o.o/backend/res/dl
+  - o.o/capi
+  - o.o/common
+  - o.o/backend/zexp/api
+  - o.o/backend/tools/pkg/acl # TODO: remove this

@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/l"
 )
 
 var ll = l.New()

@@ -7,9 +7,9 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "etop.vn/backend/pkg/common/sql/sq"
-	core "etop.vn/backend/pkg/common/sql/sq/core"
-	mock "etop.vn/backend/pkg/common/sql/sq/mock"
+	. "o.o/backend/pkg/common/sql/sq"
+	core "o.o/backend/pkg/common/sql/sq/core"
+	mock "o.o/backend/pkg/common/sql/sq/mock"
 )
 
 var (

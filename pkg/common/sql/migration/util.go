@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 type ColumnDef struct {

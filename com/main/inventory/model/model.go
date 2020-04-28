@@ -3,11 +3,11 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/inventory_type"
-	"etop.vn/api/top/types/etc/inventory_voucher_ref"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/main/catalog/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/inventory_type"
+	"o.o/api/top/types/etc/inventory_voucher_ref"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/main/catalog/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

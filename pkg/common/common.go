@@ -6,10 +6,10 @@ import (
 	"strings"
 	"sync"
 
-	"etop.vn/api/meta"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	"o.o/api/meta"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 var (

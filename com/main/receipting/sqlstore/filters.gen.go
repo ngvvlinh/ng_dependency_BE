@@ -7,12 +7,12 @@ package sqlstore
 import (
 	time "time"
 
-	receipt_mode "etop.vn/api/top/types/etc/receipt_mode"
-	receipt_ref "etop.vn/api/top/types/etc/receipt_ref"
-	receipt_type "etop.vn/api/top/types/etc/receipt_type"
-	status3 "etop.vn/api/top/types/etc/status3"
-	sq "etop.vn/backend/pkg/common/sql/sq"
-	dot "etop.vn/capi/dot"
+	receipt_mode "o.o/api/top/types/etc/receipt_mode"
+	receipt_ref "o.o/api/top/types/etc/receipt_ref"
+	receipt_type "o.o/api/top/types/etc/receipt_type"
+	status3 "o.o/api/top/types/etc/status3"
+	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type ReceiptFilters struct{ prefix string }

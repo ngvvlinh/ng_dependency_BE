@@ -14,7 +14,7 @@ import (
 	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 
-	"etop.vn/common/jsonx"
+	"o.o/common/jsonx"
 )
 
 var FileNames = []string{

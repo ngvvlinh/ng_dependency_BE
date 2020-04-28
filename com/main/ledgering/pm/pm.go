@@ -3,11 +3,11 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/api/main/ledgering"
-	"etop.vn/api/top/types/etc/ledger_type"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
+	"o.o/api/main/identity"
+	"o.o/api/main/ledgering"
+	"o.o/api/top/types/etc/ledger_type"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
 )
 
 type ProcessManager struct {

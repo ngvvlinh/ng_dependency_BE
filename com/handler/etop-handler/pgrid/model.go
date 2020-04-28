@@ -3,8 +3,8 @@ package pgrid
 import (
 	"time"
 
-	"etop.vn/backend/com/handler/pgevent"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/backend/com/handler/pgevent"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 // We must always use string for id, shop_id, order_id, etc.

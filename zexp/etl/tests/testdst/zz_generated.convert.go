@@ -5,8 +5,8 @@
 package testdst
 
 import (
-	conversion "etop.vn/backend/pkg/common/conversion"
-	testsrc "etop.vn/backend/zexp/etl/tests/testsrc"
+	conversion "o.o/backend/pkg/common/conversion"
+	testsrc "o.o/backend/zexp/etl/tests/testsrc"
 )
 
 /*
@@ -41,7 +41,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/zexp/etl/tests/testsrc.Account --//
+//-- convert o.o/backend/zexp/etl/tests/testsrc.Account --//
 
 func Convert_Account_testsrc_Account(arg *Account, out *testsrc.Account) *testsrc.Account {
 	if arg == nil {

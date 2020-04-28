@@ -3,12 +3,12 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/ghn_note_code"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/try_on"
-	addressmodel "etop.vn/backend/com/main/address/model"
-	identitysharemodel "etop.vn/backend/com/main/identity/sharemodel"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/ghn_note_code"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/try_on"
+	addressmodel "o.o/backend/com/main/address/model"
+	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

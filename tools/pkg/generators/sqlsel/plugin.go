@@ -10,10 +10,10 @@ import (
 
 	"golang.org/x/tools/go/packages"
 
-	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/generators/api/parse"
-	"etop.vn/backend/tools/pkg/generators/sqlgen"
-	"etop.vn/backend/tools/pkg/genutil"
+	"o.o/backend/tools/pkg/generator"
+	"o.o/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/generators/sqlgen"
+	"o.o/backend/tools/pkg/genutil"
 )
 
 const CmdPrefix = "sqlsel"
@@ -57,7 +57,7 @@ func (p *plugin) generateEachPackage(ng generator.Engine, pkg *packages.Package,
 	}
 
 	printer.Import("", "database/sql")
-	printer.Import("core", "etop.vn/backend/pkg/common/sql/sq/core")
+	printer.Import("core", "o.o/backend/pkg/common/sql/sq/core")
 	for _, typ := range typs {
 		if err := genStruct(printer, typ); err != nil {
 			return err

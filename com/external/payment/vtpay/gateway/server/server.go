@@ -3,14 +3,14 @@ package server
 import (
 	"context"
 
-	vtpaygateway "etop.vn/api/external/payment/vtpay/gateway"
-	"etop.vn/api/top/types/etc/payment_provider"
-	paymentlogaggregate "etop.vn/backend/com/etc/logging/payment/aggregate"
-	paymentlogmodel "etop.vn/backend/com/etc/logging/payment/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
-	"etop.vn/common/jsonx"
-	"etop.vn/common/l"
+	vtpaygateway "o.o/api/external/payment/vtpay/gateway"
+	"o.o/api/top/types/etc/payment_provider"
+	paymentlogaggregate "o.o/backend/com/etc/logging/payment/aggregate"
+	paymentlogmodel "o.o/backend/com/etc/logging/payment/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
 type Server struct {

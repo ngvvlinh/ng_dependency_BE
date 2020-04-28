@@ -3,16 +3,16 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/com/main/catalog/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/meta"
+	"o.o/api/shopping"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/backend/com/main/catalog/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
+	"o.o/capi/dot"
 )
 
 var _ catalog.QueryService = &QueryService{}

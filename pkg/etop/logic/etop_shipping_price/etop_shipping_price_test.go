@@ -6,11 +6,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/types/etc/shipping_provider"
-	servicelocation "etop.vn/backend/com/main/location"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/l"
+	"o.o/api/main/location"
+	"o.o/api/top/types/etc/shipping_provider"
+	servicelocation "o.o/backend/com/main/location"
+	"o.o/backend/pkg/etop/model"
+	"o.o/common/l"
 )
 
 var locationBus = servicelocation.New(nil).MessageBus()

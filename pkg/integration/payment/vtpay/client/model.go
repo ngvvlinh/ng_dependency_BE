@@ -3,9 +3,9 @@ package client
 import (
 	"strconv"
 
-	"etop.vn/api/top/types/etc/payment_state"
-	"etop.vn/api/top/types/etc/status4"
-	cm "etop.vn/backend/pkg/common"
+	"o.o/api/top/types/etc/payment_state"
+	"o.o/api/top/types/etc/status4"
+	cm "o.o/backend/pkg/common"
 )
 
 type (

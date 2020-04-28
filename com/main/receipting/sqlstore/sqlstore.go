@@ -1,8 +1,8 @@
 package sqlstore
 
 import (
-	"etop.vn/backend/com/main/receipting/convert"
-	"etop.vn/backend/pkg/common/conversion"
+	"o.o/backend/com/main/receipting/convert"
+	"o.o/backend/pkg/common/conversion"
 )
 
 var scheme = conversion.Build(convert.RegisterConversions)

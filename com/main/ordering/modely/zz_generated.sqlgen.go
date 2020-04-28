@@ -8,10 +8,10 @@ import (
 	"database/sql"
 	"sync"
 
-	orderingmodel "etop.vn/backend/com/main/ordering/model"
-	shippingmodel "etop.vn/backend/com/main/shipping/model"
-	cmsql "etop.vn/backend/pkg/common/sql/cmsql"
-	core "etop.vn/backend/pkg/common/sql/sq/core"
+	orderingmodel "o.o/backend/com/main/ordering/model"
+	shippingmodel "o.o/backend/com/main/shipping/model"
+	cmsql "o.o/backend/pkg/common/sql/cmsql"
+	core "o.o/backend/pkg/common/sql/sq/core"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }

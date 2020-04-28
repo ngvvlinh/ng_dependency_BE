@@ -10,8 +10,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"etop.vn/capi/dot"
-	"etop.vn/common/jsonx"
+	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 func Coalesce(ss ...string) string {

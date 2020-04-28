@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-: ${ETOPDIR?Must set ETOPDIR}
-BACKEND="${ETOPDIR}/backend"
+: ${PROJECT_DIR?Must set PROJECT_DIR}
+BACKEND="${PROJECT_DIR}/backend"
 USAGE="Usage: build.sh [docker]"
 
 replace() { echo "$1" | sed "s/$2/$3/g"; }
@@ -24,20 +24,20 @@ preprocess() {
 }
 
 build_docker() {
-    if docker ps -a | grep 'etop_golang$' | grep Exited ; then
+    if docker ps -a | grep 'project_golang$' | grep Exited ; then
         docker start etop_golang
     fi
-    if ! docker ps | grep 'etop_golang$' ; then
+    if ! docker ps | grep 'project_golang$' ; then
         docker run -d --name etop_golang \
-            -e 'ETOPDIR=/etop.vn' \
-            -v "$PWD":/etop.vn/backend \
-            -w /etop.vn/backend olvrng/golang-toolbox \
+            -e 'PROJECT_DIR=/o.o' \
+            -v "$PWD":/o.o/backend \
+            -w /o.o/backend olvrng/golang-toolbox \
             sleep 3600
     fi
 
     if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
     docker exec -it -e COMMIT="$COMMIT" $_env_file \
-        etop_golang scripts/build-inner.sh
+        project_golang scripts/build-inner.sh
 }
 
 case "$1" in

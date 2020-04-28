@@ -3,11 +3,11 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/main/identity"
-	"etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/capi/dot"
+	"o.o/api/main/identity"
+	"o.o/backend/com/main/identity/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/capi/dot"
 )
 
 type PartnerStoreFactory func(context.Context) *PartnerStore

@@ -3,9 +3,9 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
 )
 
 type ProcessManager struct {

@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	purchaseordermodel "etop.vn/backend/com/main/purchaseorder/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	purchaseordermodel1 "etop.vn/backend/zexp/etl/main/purchaseorder/model"
+	purchaseordermodel "o.o/backend/com/main/purchaseorder/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	purchaseordermodel1 "o.o/backend/zexp/etl/main/purchaseorder/model"
 )
 
 /*
@@ -79,7 +79,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/purchaseorder/model.PurchaseOrder --//
+//-- convert o.o/backend/com/main/purchaseorder/model.PurchaseOrder --//
 
 func Convert_purchaseordermodel1_PurchaseOrder_purchaseordermodel_PurchaseOrder(arg *purchaseordermodel1.PurchaseOrder, out *purchaseordermodel.PurchaseOrder) *purchaseordermodel.PurchaseOrder {
 	if arg == nil {
@@ -180,7 +180,7 @@ func Convert_purchaseordermodel_PurchaseOrders_purchaseordermodel1_PurchaseOrder
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/purchaseorder/model.PurchaseOrderLine --//
+//-- convert o.o/backend/com/main/purchaseorder/model.PurchaseOrderLine --//
 
 func Convert_purchaseordermodel1_PurchaseOrderLine_purchaseordermodel_PurchaseOrderLine(arg *purchaseordermodel1.PurchaseOrderLine, out *purchaseordermodel.PurchaseOrderLine) *purchaseordermodel.PurchaseOrderLine {
 	if arg == nil {
@@ -250,7 +250,7 @@ func Convert_purchaseordermodel_PurchaseOrderLines_purchaseordermodel1_PurchaseO
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/purchaseorder/model.PurchaseOrderSupplier --//
+//-- convert o.o/backend/com/main/purchaseorder/model.PurchaseOrderSupplier --//
 
 func Convert_purchaseordermodel1_PurchaseOrderSupplier_purchaseordermodel_PurchaseOrderSupplier(arg *purchaseordermodel1.PurchaseOrderSupplier, out *purchaseordermodel.PurchaseOrderSupplier) *purchaseordermodel.PurchaseOrderSupplier {
 	if arg == nil {

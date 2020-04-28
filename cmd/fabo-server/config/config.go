@@ -1,8 +1,8 @@
 package config
 
 import (
-	"etop.vn/backend/com/fabo/pkg/fbclient"
-	cc "etop.vn/backend/pkg/common/config"
+	"o.o/backend/com/fabo/pkg/fbclient"
+	cc "o.o/backend/pkg/common/config"
 )
 
 type Config struct {

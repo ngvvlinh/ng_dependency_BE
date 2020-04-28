@@ -1,12 +1,12 @@
 package client
 
 import (
-	"etop.vn/api/top/types/etc/shipnow_state"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
-	"etop.vn/backend/pkg/common/cmenv"
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/common/jsonx"
+	"o.o/api/top/types/etc/shipnow_state"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/pkg/common/apifw/httpreq"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/common/jsonx"
 )
 
 type Config struct {

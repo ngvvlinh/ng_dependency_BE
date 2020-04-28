@@ -6,10 +6,10 @@ import (
 	"reflect"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/generators/api/parse"
+	"o.o/backend/tools/pkg/generators/api/parse"
 )
 
-const dotPkgPath = "etop.vn/capi/dot"
+const dotPkgPath = "o.o/capi/dot"
 
 // TypeDesc describes types for generating code
 type TypeDesc struct {

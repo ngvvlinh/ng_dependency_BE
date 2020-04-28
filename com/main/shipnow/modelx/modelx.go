@@ -1,9 +1,9 @@
 package modelx
 
 import (
-	"etop.vn/backend/com/main/shipnow/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
+	"o.o/backend/com/main/shipnow/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 type UpdateShipnowFulfillmentArgs struct {

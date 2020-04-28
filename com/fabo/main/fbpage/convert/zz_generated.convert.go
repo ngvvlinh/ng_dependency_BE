@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	fbpaging "etop.vn/api/fabo/fbpaging"
-	fbpagemodel "etop.vn/backend/com/fabo/main/fbpage/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	fbpaging "o.o/api/fabo/fbpaging"
+	fbpagemodel "o.o/backend/com/fabo/main/fbpage/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -87,7 +87,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/fabo/fbpaging.ExternalCategory --//
+//-- convert o.o/api/fabo/fbpaging.ExternalCategory --//
 
 func Convert_fbpagemodel_ExternalCategory_fbpaging_ExternalCategory(arg *fbpagemodel.ExternalCategory, out *fbpaging.ExternalCategory) *fbpaging.ExternalCategory {
 	if arg == nil {
@@ -145,7 +145,7 @@ func Convert_fbpaging_ExternalCategories_fbpagemodel_ExternalCategories(args []*
 	return outs
 }
 
-//-- convert etop.vn/api/fabo/fbpaging.FbPage --//
+//-- convert o.o/api/fabo/fbpaging.FbPage --//
 
 func Convert_fbpagemodel_FbPage_fbpaging_FbPage(arg *fbpagemodel.FbPage, out *fbpaging.FbPage) *fbpaging.FbPage {
 	if arg == nil {
@@ -256,7 +256,7 @@ func apply_fbpaging_CreateFbPageArgs_fbpaging_FbPage(arg *fbpaging.CreateFbPageA
 	out.UpdatedAt = time.Time{}                         // zero value
 }
 
-//-- convert etop.vn/api/fabo/fbpaging.FbPageInternal --//
+//-- convert o.o/api/fabo/fbpaging.FbPageInternal --//
 
 func Convert_fbpagemodel_FbPageInternal_fbpaging_FbPageInternal(arg *fbpagemodel.FbPageInternal, out *fbpaging.FbPageInternal) *fbpaging.FbPageInternal {
 	if arg == nil {

@@ -1,10 +1,10 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/shipmentpricing/pricelist"
-	"etop.vn/api/main/shipmentpricing/shipmentprice"
-	"etop.vn/api/main/shipmentpricing/shipmentservice"
-	"etop.vn/api/top/int/admin"
+	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/main/shipmentpricing/shipmentprice"
+	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/api/top/int/admin"
 )
 
 func PbShipmentService(in *shipmentservice.ShipmentService) *admin.ShipmentService {

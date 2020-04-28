@@ -1,10 +1,10 @@
 package carrier
 
 import (
-	shipmodel "etop.vn/backend/com/main/shipping/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
-	"etop.vn/backend/pkg/etop/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/logic/etop_shipping_price"
+	"o.o/backend/pkg/etop/model"
 )
 
 func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee int, services []*model.AvailableShippingService) (etopService *model.AvailableShippingService, err error) {

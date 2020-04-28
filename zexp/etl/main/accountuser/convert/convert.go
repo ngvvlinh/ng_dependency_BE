@@ -1,11 +1,11 @@
 package convert
 
 import (
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/backend/zexp/etl/main/accountuser/model"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/zexp/etl/main/accountuser/model"
 )
 
-// +gen:convert: etop.vn/backend/zexp/etl/main/accountuser/model->etop.vn/backend/com/main/identity/model
+// +gen:convert: o.o/backend/zexp/etl/main/accountuser/model -> o.o/backend/com/main/identity/model
 
 func ConvertAccountUser(in *identitymodel.AccountUser, out *model.AccountUser) {
 	convert_identitymodel_AccountUser_accountusermodel_AccountUser(in, out)

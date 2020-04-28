@@ -1,14 +1,14 @@
 package convert
 
 import (
-	"etop.vn/api/meta"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/api/top/types/etc/status4"
-	"etop.vn/api/top/types/etc/status5"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
+	"o.o/backend/pkg/etop/model"
 )
 
-// +gen:convert: etop.vn/backend/pkg/etop/model->etop.vn/api/meta
+// +gen:convert: o.o/backend/pkg/etop/model -> o.o/api/meta
 
 func Status3(in status3.Status) (out status3.Status) {
 	if in < 0 {

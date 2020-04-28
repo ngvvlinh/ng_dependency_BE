@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopproductmodel "etop.vn/backend/zexp/etl/main/shopproduct/model"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopproductmodel "o.o/backend/zexp/etl/main/shopproduct/model"
 )
 
 /*
@@ -61,7 +61,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/catalog/model.MetaField --//
+//-- convert o.o/backend/com/main/catalog/model.MetaField --//
 
 func Convert_shopproductmodel_MetaField_catalogmodel_MetaField(arg *shopproductmodel.MetaField, out *catalogmodel.MetaField) *catalogmodel.MetaField {
 	if arg == nil {
@@ -119,7 +119,7 @@ func Convert_catalogmodel_MetaFields_shopproductmodel_MetaFields(args []*catalog
 	return outs
 }
 
-//-- convert etop.vn/backend/com/main/catalog/model.ShopProduct --//
+//-- convert o.o/backend/com/main/catalog/model.ShopProduct --//
 
 func Convert_shopproductmodel_ShopProduct_catalogmodel_ShopProduct(arg *shopproductmodel.ShopProduct, out *catalogmodel.ShopProduct) *catalogmodel.ShopProduct {
 	if arg == nil {

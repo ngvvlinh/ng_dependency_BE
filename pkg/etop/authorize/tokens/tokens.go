@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/authorization/auth"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/common/l"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/authorization/auth"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/common/l"
 )
 
 var ll = l.New()

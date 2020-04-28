@@ -3,11 +3,11 @@ package carrier
 import (
 	"context"
 
-	"etop.vn/api/main/connectioning"
-	"etop.vn/api/main/location"
-	"etop.vn/api/top/int/types"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/main/connectioning"
+	"o.o/api/main/location"
+	"o.o/api/top/int/types"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/model"
 )
 
 /*

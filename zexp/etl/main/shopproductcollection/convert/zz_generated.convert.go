@@ -5,9 +5,9 @@
 package convert
 
 import (
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopproductcollectionmodel "etop.vn/backend/zexp/etl/main/shopproductcollection/model"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopproductcollectionmodel "o.o/backend/zexp/etl/main/shopproductcollection/model"
 )
 
 /*
@@ -41,7 +41,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/catalog/model.ShopProductCollection --//
+//-- convert o.o/backend/com/main/catalog/model.ShopProductCollection --//
 
 func Convert_shopproductcollectionmodel_ShopProductCollection_catalogmodel_ShopProductCollection(arg *shopproductcollectionmodel.ShopProductCollection, out *catalogmodel.ShopProductCollection) *catalogmodel.ShopProductCollection {
 	if arg == nil {

@@ -3,16 +3,16 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/shopping"
-	"etop.vn/api/shopping/carrying"
-	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/suppliering"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/tradering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping"
+	"o.o/api/shopping/carrying"
+	"o.o/api/shopping/customering"
+	"o.o/api/shopping/suppliering"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/tradering/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 )
 
 var _ tradering.QueryService = &TraderQuery{}

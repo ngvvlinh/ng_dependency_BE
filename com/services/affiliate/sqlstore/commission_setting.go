@@ -3,13 +3,13 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/services/affiliate"
-	"etop.vn/backend/com/services/affiliate/convert"
-	"etop.vn/backend/com/services/affiliate/model"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqlstore"
-	"etop.vn/capi/dot"
+	"o.o/api/services/affiliate"
+	"o.o/backend/com/services/affiliate/convert"
+	"o.o/backend/com/services/affiliate/model"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type CommissionSettingStoreFactory func(ctx context.Context) *AffiliateCommissonStore

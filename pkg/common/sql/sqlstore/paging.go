@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/timex"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/timex"
 )
 
 // +enum

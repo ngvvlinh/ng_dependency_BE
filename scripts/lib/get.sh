@@ -33,9 +33,9 @@ The commands are:
 
     cmd <cmd>           get the command
     dir                 print some predefined directory or error
-        backend         print '\$ETOPDIR/backend'
-        config          print '\$ETOPDIR/etop-config'
-        etop            print '\$ETOPDIR'
+        backend         print '\$PROJECT_DIR/backend'
+        config          print '\$PROJECT_DIR/etop-config'
+        etop            print '\$PROJECT_DIR'
     gopath              print the current gopath or default to ~/go
     mod
         path <import>   print the location of 'import' from \$GOPATH/pkg/mod
@@ -53,21 +53,21 @@ cmd_gopath() { echo "$gopath" ; }
 
 cmd_dir() {
     set -eo pipefail
-    if [[ -z "$ETOPDIR" ]]; then
-        >&2 echo "ETOPDIR is not set"
+    if [[ -z "$PROJECT_DIR" ]]; then
+        >&2 echo "PROJECT_DIR is not set"
         exit 1
     fi
 
     dir=$1 ; expect "<dir>" "$@" ; shift
     case $dir in
     etop)
-        echo $ETOPDIR
+        echo $PROJECT_DIR
         ;;
     backend)
-        echo $ETOPDIR/backend
+        echo $PROJECT_DIR/backend
         ;;
     config)
-        echo $ETOPDIR/config
+        echo $PROJECT_DIR/config
         ;;
     *)
         quickusage
@@ -93,7 +93,7 @@ cmd_cmd() {
 	path=$1 ; expect "<cmd>" "$@" ; shift
 	name=$(basename $path)
 
-	if [[ "$path" =~ ^etop.vn ]]; then
+	if [[ "$path" =~ ^o.o ]]; then
 		go install "$path" || exit 1
 	  cmdpath="${gopath}/bin/${name}"
 	  echo $cmdpath

@@ -8,7 +8,7 @@ import (
 	driver "database/sql/driver"
 	fmt "fmt"
 
-	mix "etop.vn/capi/mix"
+	mix "o.o/capi/mix"
 )
 
 var __jsonNull = []byte("null")

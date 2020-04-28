@@ -8,14 +8,14 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	txmodel "etop.vn/backend/com/main/moneytx/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpx"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/wl"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	identitymodel "o.o/backend/com/main/identity/model"
+	txmodel "o.o/backend/com/main/moneytx/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var db cmsql.Transactioner

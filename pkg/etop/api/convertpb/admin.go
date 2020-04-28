@@ -1,8 +1,8 @@
 package convertpb
 
 import (
-	admin "etop.vn/api/top/int/admin"
-	identitymodel "etop.vn/backend/com/main/identity/model"
+	admin "o.o/api/top/int/admin"
+	identitymodel "o.o/backend/com/main/identity/model"
 )
 
 func CreatePartnerRequestToModel(m *admin.CreatePartnerRequest) *identitymodel.Partner {

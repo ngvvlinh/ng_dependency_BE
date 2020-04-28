@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	shopledgermodel "etop.vn/backend/zexp/etl/main/shopledger/model"
+	ledgeringmodel "o.o/backend/com/main/ledgering/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	shopledgermodel "o.o/backend/zexp/etl/main/shopledger/model"
 )
 
 /*
@@ -43,7 +43,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/main/ledgering/model.ShopLedger --//
+//-- convert o.o/backend/com/main/ledgering/model.ShopLedger --//
 
 func Convert_shopledgermodel_ShopLedger_ledgeringmodel_ShopLedger(arg *shopledgermodel.ShopLedger, out *ledgeringmodel.ShopLedger) *ledgeringmodel.ShopLedger {
 	if arg == nil {

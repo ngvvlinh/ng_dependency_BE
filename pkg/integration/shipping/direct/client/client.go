@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/schema"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/apifw/httpreq"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
 )
 
 var encoder = schema.NewEncoder()

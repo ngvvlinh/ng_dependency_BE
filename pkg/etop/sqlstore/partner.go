@@ -4,17 +4,17 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/top/types/etc/account_type"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	identitymodelx "etop.vn/backend/com/main/identity/modelx"
-	identitysqlstore "etop.vn/backend/com/main/identity/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sq/core"
-	"etop.vn/backend/pkg/etop/authorize/authkey"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/account_type"
+	identitymodel "o.o/backend/com/main/identity/model"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
+	identitysqlstore "o.o/backend/com/main/identity/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/etop/authorize/authkey"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func init() {

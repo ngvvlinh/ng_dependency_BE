@@ -3,8 +3,8 @@ package cmsql
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sql/sq"
-	"etop.vn/backend/pkg/common/sql/sqltrace"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqltrace"
 )
 
 type QueryFactory func() QueryInterface

@@ -6,12 +6,12 @@ import (
 
 	"github.com/gorilla/schema"
 
-	"etop.vn/api/supporting/crm/vtiger"
-	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-	cm "etop.vn/backend/pkg/common"
-	sqlbuilder "etop.vn/backend/pkg/common/sql/simple-sql-builder"
-	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
-	"etop.vn/common/jsonx"
+	"o.o/api/supporting/crm/vtiger"
+	"o.o/backend/com/supporting/crm/vtiger/mapping"
+	cm "o.o/backend/pkg/common"
+	sqlbuilder "o.o/backend/pkg/common/sql/simple-sql-builder"
+	vtigerclient "o.o/backend/pkg/integration/vtiger/client"
+	"o.o/common/jsonx"
 )
 
 var encoder = schema.NewEncoder()

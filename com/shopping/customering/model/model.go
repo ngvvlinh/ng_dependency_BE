@@ -3,11 +3,11 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/shopping/customering/customer_type"
-	"etop.vn/api/top/types/etc/gender"
-	"etop.vn/api/top/types/etc/status3"
-	addressmodel "etop.vn/backend/com/main/address/model"
-	"etop.vn/capi/dot"
+	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/gender"
+	"o.o/api/top/types/etc/status3"
+	addressmodel "o.o/backend/com/main/address/model"
+	"o.o/capi/dot"
 )
 
 // +convert:type=tradering.ShopTrader

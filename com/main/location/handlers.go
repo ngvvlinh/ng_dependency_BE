@@ -3,18 +3,18 @@ package location
 import (
 	"context"
 
-	"etop.vn/api/main/location"
-	"etop.vn/api/meta"
-	"etop.vn/backend/com/main/location/convert"
-	"etop.vn/backend/com/main/location/list"
-	"etop.vn/backend/com/main/location/sqlstore"
-	"etop.vn/backend/com/main/location/types"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi/dot"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
+	"o.o/api/main/location"
+	"o.o/api/meta"
+	"o.o/backend/com/main/location/convert"
+	"o.o/backend/com/main/location/list"
+	"o.o/backend/com/main/location/sqlstore"
+	"o.o/backend/com/main/location/types"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
+	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()

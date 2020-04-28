@@ -1,12 +1,12 @@
 package modelx
 
 import (
-	"etop.vn/api/main/catalog"
-	"etop.vn/api/main/catalog/types"
-	"etop.vn/api/top/types/etc/status3"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/main/catalog"
+	"o.o/api/main/catalog/types"
+	"o.o/api/top/types/etc/status3"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 // deprecated

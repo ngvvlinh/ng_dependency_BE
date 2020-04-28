@@ -13,8 +13,8 @@ import (
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api"
 
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/common/l"
+	"o.o/backend/pkg/common/bus"
+	"o.o/common/l"
 )
 
 var (

@@ -1,13 +1,13 @@
 package convertpb
 
 import (
-	"etop.vn/api/main/catalog"
-	exttypes "etop.vn/api/top/external/types"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/capi/dot"
-	"etop.vn/capi/util"
+	"o.o/api/main/catalog"
+	exttypes "o.o/api/top/external/types"
+	catalogmodel "o.o/backend/com/main/catalog/model"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/capi/dot"
+	"o.o/capi/util"
 )
 
 func PbShopProduct(arg *catalog.ShopProduct) *exttypes.ShopProduct {

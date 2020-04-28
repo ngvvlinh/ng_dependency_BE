@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/status3"
-	identitymodel "etop.vn/backend/com/main/identity/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/capi/dot"
 )
 
 // +sqlgen

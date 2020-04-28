@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 var ll = l.New()

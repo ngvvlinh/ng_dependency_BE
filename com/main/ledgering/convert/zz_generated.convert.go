@@ -7,10 +7,10 @@ package convert
 import (
 	time "time"
 
-	ledgering "etop.vn/api/main/ledgering"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	ledgeringmodel "etop.vn/backend/com/main/ledgering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	ledgering "o.o/api/main/ledgering"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	ledgeringmodel "o.o/backend/com/main/ledgering/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -54,7 +54,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/ledgering.ShopLedger --//
+//-- convert o.o/api/main/ledgering.ShopLedger --//
 
 func Convert_ledgeringmodel_ShopLedger_ledgering_ShopLedger(arg *ledgeringmodel.ShopLedger, out *ledgering.ShopLedger) *ledgering.ShopLedger {
 	if arg == nil {

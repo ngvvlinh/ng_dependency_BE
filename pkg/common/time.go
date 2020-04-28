@@ -3,7 +3,7 @@ package cm
 import (
 	"time"
 
-	"etop.vn/common/l"
+	"o.o/common/l"
 )
 
 const DateLayout = `2006-01-02`

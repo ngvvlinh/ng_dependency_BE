@@ -3,10 +3,10 @@ package sharemodel
 import (
 	"time"
 
-	"etop.vn/api/top/types/etc/shipping"
-	"etop.vn/api/top/types/etc/shipping_fee_type"
-	etopmodel "etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
+	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
+	etopmodel "o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 var ShippingFeeShopTypes = []shipping_fee_type.ShippingFeeType{

@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/main/receipting"
-	"etop.vn/backend/com/main/receipting/model"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/l"
+	"o.o/api/main/receipting"
+	"o.o/backend/com/main/receipting/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/main/receipting/model -> etop.vn/api/main/receipting
-// +gen:convert: etop.vn/api/main/receipting
+// +gen:convert: o.o/backend/com/main/receipting/model  -> o.o/api/main/receipting
+// +gen:convert:  o.o/api/main/receipting
 
 var ll = l.New()
 

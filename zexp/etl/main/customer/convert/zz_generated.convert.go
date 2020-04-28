@@ -7,9 +7,9 @@ package convert
 import (
 	time "time"
 
-	customeringmodel "etop.vn/backend/com/shopping/customering/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
-	customermodel "etop.vn/backend/zexp/etl/main/customer/model"
+	customeringmodel "o.o/backend/com/shopping/customering/model"
+	conversion "o.o/backend/pkg/common/conversion"
+	customermodel "o.o/backend/zexp/etl/main/customer/model"
 )
 
 /*
@@ -43,7 +43,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/backend/com/shopping/customering/model.ShopCustomer --//
+//-- convert o.o/backend/com/shopping/customering/model.ShopCustomer --//
 
 func Convert_customermodel_ShopCustomer_customeringmodel_ShopCustomer(arg *customermodel.ShopCustomer, out *customeringmodel.ShopCustomer) *customeringmodel.ShopCustomer {
 	if arg == nil {

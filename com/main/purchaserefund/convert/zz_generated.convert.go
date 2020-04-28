@@ -7,11 +7,11 @@ package convert
 import (
 	time "time"
 
-	purchaserefund "etop.vn/api/main/purchaserefund"
-	catalogconvert "etop.vn/backend/com/main/catalog/convert"
-	identityconvert "etop.vn/backend/com/main/identity/convert"
-	purchaserefundmodel "etop.vn/backend/com/main/purchaserefund/model"
-	conversion "etop.vn/backend/pkg/common/conversion"
+	purchaserefund "o.o/api/main/purchaserefund"
+	catalogconvert "o.o/backend/com/main/catalog/convert"
+	identityconvert "o.o/backend/com/main/identity/convert"
+	purchaserefundmodel "o.o/backend/com/main/purchaserefund/model"
+	conversion "o.o/backend/pkg/common/conversion"
 )
 
 /*
@@ -74,7 +74,7 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert etop.vn/api/main/purchaserefund.PurchaseRefund --//
+//-- convert o.o/api/main/purchaserefund.PurchaseRefund --//
 
 func Convert_purchaserefundmodel_PurchaseRefund_purchaserefund_PurchaseRefund(arg *purchaserefundmodel.PurchaseRefund, out *purchaserefund.PurchaseRefund) *purchaserefund.PurchaseRefund {
 	if arg == nil {
@@ -223,7 +223,7 @@ func apply_purchaserefund_UpdatePurchaseRefundArgs_purchaserefund_PurchaseRefund
 	out.BasketValue = arg.BasketValue.Apply(out.BasketValue)             // apply change
 }
 
-//-- convert etop.vn/api/main/purchaserefund.PurchaseRefundLine --//
+//-- convert o.o/api/main/purchaserefund.PurchaseRefundLine --//
 
 func Convert_purchaserefundmodel_PurchaseRefundLine_purchaserefund_PurchaseRefundLine(arg *purchaserefundmodel.PurchaseRefundLine, out *purchaserefund.PurchaseRefundLine) *purchaserefund.PurchaseRefundLine {
 	if arg == nil {

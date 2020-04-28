@@ -14,9 +14,9 @@ import (
 
 	"github.com/lib/pq"
 
-	"etop.vn/capi/dot"
-	"etop.vn/capi/util"
-	"etop.vn/common/jsonx"
+	"o.o/capi/dot"
+	"o.o/capi/util"
+	"o.o/common/jsonx"
 )
 
 type Row struct {

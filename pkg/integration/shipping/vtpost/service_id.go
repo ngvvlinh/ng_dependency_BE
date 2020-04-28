@@ -3,10 +3,10 @@ package vtpost
 import (
 	"math/rand"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/code/gencode"
-	"etop.vn/backend/pkg/etop/model"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/etop/model"
+	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 )
 
 type serviceIDGenerator struct {

@@ -3,11 +3,11 @@ package fbuser
 import (
 	"context"
 
-	"etop.vn/api/fabo/fbusering"
-	"etop.vn/api/top/types/etc/status3"
-	"etop.vn/backend/com/fabo/main/fbuser/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
+	"o.o/api/fabo/fbusering"
+	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/fabo/main/fbuser/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ fbusering.QueryService = &FbUserQuery{}

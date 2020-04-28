@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 )
 
 func TestGenerateServiceID(t *testing.T) {

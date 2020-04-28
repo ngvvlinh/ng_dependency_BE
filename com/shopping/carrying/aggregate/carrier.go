@@ -3,17 +3,17 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/meta"
-	"etop.vn/api/shopping/carrying"
-	"etop.vn/api/shopping/tradering"
-	"etop.vn/backend/com/shopping/carrying/convert"
-	"etop.vn/backend/com/shopping/carrying/model"
-	"etop.vn/backend/com/shopping/carrying/sqlstore"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/conversion"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/capi"
-	"etop.vn/capi/dot"
+	"o.o/api/meta"
+	"o.o/api/shopping/carrying"
+	"o.o/api/shopping/tradering"
+	"o.o/backend/com/shopping/carrying/convert"
+	"o.o/backend/com/shopping/carrying/model"
+	"o.o/backend/com/shopping/carrying/sqlstore"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
+	"o.o/capi/dot"
 )
 
 var _ carrying.Aggregate = &CarrierAggregate{}

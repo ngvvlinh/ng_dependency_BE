@@ -3,17 +3,17 @@ package shipnow_carrier
 import (
 	"context"
 
-	"etop.vn/api/main/location"
-	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/main/shipnow"
-	"etop.vn/api/main/shipnow/carrier"
-	carriertypes "etop.vn/api/main/shipnow/carrier/types"
-	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/backend/com/main/shipnow/sqlstore"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sql/cmsql"
-	"etop.vn/backend/pkg/etop/model"
+	"o.o/api/main/location"
+	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/main/shipnow"
+	"o.o/api/main/shipnow/carrier"
+	carriertypes "o.o/api/main/shipnow/carrier/types"
+	shipnowtypes "o.o/api/main/shipnow/types"
+	"o.o/backend/com/main/shipnow/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
 )
 
 const MinShopBalance = -200000

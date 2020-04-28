@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/ledgering"
-	"etop.vn/api/top/int/shop"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/api/top/types/etc/ledger_type"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/main/ledgering"
+	"o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/ledger_type"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func init() {

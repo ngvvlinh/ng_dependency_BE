@@ -3,12 +3,12 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/shopping/carrying"
-	"etop.vn/api/top/int/shop"
-	pbcm "etop.vn/api/top/types/common"
-	"etop.vn/backend/pkg/common/apifw/cmapi"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/api/convertpb"
+	"o.o/api/shopping/carrying"
+	"o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func init() {

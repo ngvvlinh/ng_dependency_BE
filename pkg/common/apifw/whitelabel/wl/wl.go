@@ -3,10 +3,10 @@ package wl
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/apifw/whitelabel"
-	"etop.vn/backend/pkg/common/apifw/whitelabel/drivers"
-	"etop.vn/backend/pkg/common/cmenv"
-	"etop.vn/capi/dot"
+	"o.o/backend/pkg/common/apifw/whitelabel"
+	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
+	"o.o/backend/pkg/common/cmenv"
+	"o.o/capi/dot"
 )
 
 var whiteLabel *whitelabel.WhiteLabel

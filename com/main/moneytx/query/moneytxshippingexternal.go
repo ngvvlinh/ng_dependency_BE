@@ -3,8 +3,8 @@ package query
 import (
 	"context"
 
-	"etop.vn/api/main/moneytx"
-	"etop.vn/capi/dot"
+	"o.o/api/main/moneytx"
+	"o.o/capi/dot"
 )
 
 func (q *MoneyTxQuery) GetMoneyTxShippingExternal(ctx context.Context, id dot.ID) (*moneytx.MoneyTransactionShippingExternalFtLine, error) {
