@@ -25,10 +25,10 @@ preprocess() {
 
 build_docker() {
     if docker ps -a | grep 'project_golang$' | grep Exited ; then
-        docker start etop_golang
+        docker start project_golang
     fi
     if ! docker ps | grep 'project_golang$' ; then
-        docker run -d --name etop_golang \
+        docker run -d --name project_golang \
             -e 'PROJECT_DIR=/o.o' \
             -v "$PWD":/o.o/backend \
             -w /o.o/backend olvrng/golang-toolbox \
