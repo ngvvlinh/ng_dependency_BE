@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/ledgering/model  -> o.o/api/main/ledgering
-// +gen:convert:  o.o/api/main/ledgering
+// +gen:convert: o.o/api/main/ledgering
 
 func createShopLedger(args *ledgering.CreateLedgerArgs, out *ledgering.ShopLedger) {
 	apply_ledgering_CreateLedgerArgs_ledgering_ShopLedger(args, out)

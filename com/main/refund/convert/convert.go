@@ -10,7 +10,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/refund/model  -> o.o/api/main/refund
-// +gen:convert:  o.o/api/main/refund
+// +gen:convert: o.o/api/main/refund
 
 const (
 	MaxCodeNorm = 999999

@@ -6,4 +6,4 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/connectioning/model -> o.o/api/main/connectioning
-// +gen:convert:  o.o/api/main/connectioning
+// +gen:convert: o.o/api/main/connectioning

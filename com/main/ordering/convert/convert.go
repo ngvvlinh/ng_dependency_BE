@@ -11,7 +11,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/ordering/model -> o.o/api/main/ordering, o.o/api/main/ordering/types
-// +gen:convert:  o.o/api/main/ordering
+// +gen:convert: o.o/api/main/ordering
 
 func AddressDB(in *types.Address) (out *model.OrderAddress) {
 	if in == nil {

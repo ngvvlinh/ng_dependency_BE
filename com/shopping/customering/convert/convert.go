@@ -18,8 +18,8 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/shopping/customering/model  -> o.o/api/shopping/customering, o.o/api/shopping/addressing, o.o/api/shopping/tradering
-// +gen:convert:  o.o/api/shopping/customering
-// +gen:convert:  o.o/api/shopping/addressing
+// +gen:convert: o.o/api/shopping/customering
+// +gen:convert: o.o/api/shopping/addressing
 
 var ll = l.New()
 

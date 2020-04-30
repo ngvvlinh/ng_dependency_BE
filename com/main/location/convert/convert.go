@@ -6,7 +6,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/location/model -> o.o/api/main/location
-// +gen:convert:  o.o/api/main/location
+// +gen:convert: o.o/api/main/location
 
 func Provinces(ins []*types.Province, outs *[]*location.Province) error {
 	if *outs == nil {

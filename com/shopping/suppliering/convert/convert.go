@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/shopping/suppliering/model  -> o.o/api/shopping/suppliering
-// +gen:convert:  o.o/api/shopping/suppliering
+// +gen:convert: o.o/api/shopping/suppliering
 
 const (
 	MaxCodeNorm = 999999

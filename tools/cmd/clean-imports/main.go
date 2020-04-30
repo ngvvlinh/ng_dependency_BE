@@ -13,6 +13,7 @@ import (
 )
 
 var flV = flag.Bool("v", false, "verbose")
+var flLocal = flag.String("local", "o.o", "local namespace for grouping imports")
 
 func main() {
 	flag.Usage = func() {
@@ -26,6 +27,11 @@ func main() {
 		flag.Usage()
 		os.Exit(2)
 	}
+	if *flLocal == "" || !strings.Contains(*flLocal, ".") {
+		fmt.Fprintf(flag.CommandLine.Output(), "invalid local (should be format example.com): `%v`", *flLocal)
+		os.Exit(1)
+	}
+	localPath = []byte(strings.TrimSuffix(*flLocal, "/") + "/")
 
 	var reFilter *regexp.Regexp
 	if *flRegexp != "" {
@@ -58,7 +64,7 @@ func main() {
 		return
 	}
 	var goimportsArgs []string
-	goimportsArgs = append(goimportsArgs, "-local", "o.o", "-w")
+	goimportsArgs = append(goimportsArgs, "-local", *flLocal, "-w")
 	goimportsArgs = append(goimportsArgs, files...)
 	output, err := exec.Command("goimports", goimportsArgs...).CombinedOutput()
 	must(err, "can not run goimports")
@@ -147,8 +153,8 @@ var reAliasLine = regexp.MustCompile(`^\t([A-z0-9_]+)|\. "`)
 var reNewline = regexp.MustCompile(`\n\n+`)
 var newline = []byte("\n")
 var quote = []byte(`"`)
-var etopvn = []byte("o.o/")
 var dot = []byte(".")
+var localPath []byte
 
 func extractImportGroup(data []byte) ([]int, []byte) {
 	idx := reImport.FindSubmatchIndex(data)
@@ -189,7 +195,7 @@ func checkAlias(data []byte) error {
 
 func getMode(line []byte) int {
 	switch {
-	case bytes.Contains(line, etopvn): // "o.o/..."
+	case bytes.Contains(line, localPath): // "o.o/..."
 		return 3
 
 	case bytes.Contains(line, dot): // "example.com/..."

@@ -13,7 +13,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/receipting/model  -> o.o/api/main/receipting
-// +gen:convert:  o.o/api/main/receipting
+// +gen:convert: o.o/api/main/receipting
 
 var ll = l.New()
 

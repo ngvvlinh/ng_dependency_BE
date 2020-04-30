@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/stocktaking/model -> o.o/api/main/stocktaking
-// +gen:convert:  o.o/api/main/stocktaking
+// +gen:convert: o.o/api/main/stocktaking
 
 const (
 	MaxCodeNorm = 999999

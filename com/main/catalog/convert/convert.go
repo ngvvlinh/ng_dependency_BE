@@ -17,7 +17,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/catalog/model -> o.o/api/main/catalog, o.o/api/main/catalog/types
-// +gen:convert:  o.o/api/main/catalog
+// +gen:convert: o.o/api/main/catalog
 
 var ll = l.New()
 var htmlPolicy = bluemonday.UGCPolicy()

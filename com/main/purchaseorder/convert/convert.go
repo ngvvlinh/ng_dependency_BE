@@ -14,7 +14,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/purchaseorder/model  -> o.o/api/main/purchaseorder
-// +gen:convert:  o.o/api/main/purchaseorder
+// +gen:convert: o.o/api/main/purchaseorder
 
 var ll = l.New()
 

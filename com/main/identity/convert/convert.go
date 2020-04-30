@@ -10,7 +10,7 @@ import (
 
 // +gen:convert: o.o/backend/com/main/identity/sharemodel -> o.o/api/main/identity/types
 // +gen:convert: o.o/backend/com/main/identity/model -> o.o/api/main/identity
-// +gen:convert:  o.o/api/main/identity
+// +gen:convert: o.o/api/main/identity
 // +gen:convert: o.o/backend/com/main/identity/sharemodel -> o.o/api/top/int/types
 
 func ShopDB(in *identity.Shop) *identitymodel.Shop {

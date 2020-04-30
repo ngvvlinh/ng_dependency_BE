@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/etc/logging/smslog/model  -> o.o/api/etc/logging/smslog
-// +gen:convert:  o.o/api/etc/logging/smslog
+// +gen:convert: o.o/api/etc/logging/smslog
 
 var ll = l.New()
 

@@ -10,7 +10,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/web/webserver/model  -> o.o/api/webserver
-// +gen:convert:  o.o/api/webserver
+// +gen:convert: o.o/api/webserver
 
 func createOrUpdateWsCategory(in *webserver.CreateOrUpdateWsCategoryArgs, out *webserver.WsCategory) {
 	if out == nil {

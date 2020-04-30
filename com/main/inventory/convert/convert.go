@@ -11,7 +11,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/inventory/model -> o.o/api/main/inventory
-// +gen:convert:  o.o/api/main/inventory
+// +gen:convert: o.o/api/main/inventory
 
 const (
 	MaxCodeNorm = 999999

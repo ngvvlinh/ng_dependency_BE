@@ -14,7 +14,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/invitation/model  -> o.o/api/main/invitation
-// +gen:convert:  o.o/api/main/invitation
+// +gen:convert: o.o/api/main/invitation
 
 const ExpiresIn = 24 * time.Hour
 
