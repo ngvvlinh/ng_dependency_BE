@@ -273,7 +273,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 			// release the old key and retry
 			idempgroup.ReleaseKey(key, "")
 			_res, _, _err := idempgroup.DoAndWrap(
-				ctx, key2, 30*time.Second, "tạo đơn hàng",
+				ctx, key, 30*time.Second, "tạo đơn hàng",
 				func() (interface{}, error) { return s.createOrder(ctx, q) })
 			return _res, _err // keep the response
 		})
