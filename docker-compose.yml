@@ -15,7 +15,7 @@ services:
       - 5432:5432
     volumes:
       - etop_postgres_data:/var/lib/postgresql/data
-      - $ETOPDIR/backend/db:/db
+      - $PROJECT_DIR/backend/db:/db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -31,7 +31,7 @@ services:
 #    ports:
 #      - 4080:80
 #    volumes:
-#      - $ETOPDIR/backend/scripts/nginx/conf.d:/etc/nginx/conf.d
+#      - $PROJECT_DIR/backend/scripts/nginx/conf.d:/etc/nginx/conf.d
 #    extra_hosts:
 #      - "local1:192.168.65.1"
 #      - "local2:192.168.65.2"
