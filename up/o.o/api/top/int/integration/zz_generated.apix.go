@@ -14,18 +14,30 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() IntegrationService:
+		return NewIntegrationServiceServer(builder, hooks...), true
+	case func() MiscService:
+		return NewMiscServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type IntegrationServiceServer struct {
-	inner IntegrationService
+	hooks   httprpc.Hooks
+	builder func() IntegrationService
 }
 
-func NewIntegrationServiceServer(svc IntegrationService) Server {
+func NewIntegrationServiceServer(builder func() IntegrationService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &IntegrationServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -36,18 +48,23 @@ func (s *IntegrationServiceServer) PathPrefix() string {
 }
 
 func (s *IntegrationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -55,43 +72,78 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message,
 	case "/integration.Integration/GrantAccess":
 		msg := &GrantAccessRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GrantAccess(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Init":
 		msg := &InitRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Init(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Init(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingToken":
 		msg := &LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.LoginUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingTokenWL":
 		msg := &LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.LoginUsingTokenWL(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.LoginUsingTokenWL(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Register":
 		msg := &RegisterRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Register(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/RequestLogin":
 		msg := &RequestLoginRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RequestLogin(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RequestLogin(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/SessionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SessionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SessionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -101,12 +153,14 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message,
 }
 
 type MiscServiceServer struct {
-	inner MiscService
+	hooks   httprpc.Hooks
+	builder func() MiscService
 }
 
-func NewMiscServiceServer(svc MiscService) Server {
+func NewMiscServiceServer(builder func() MiscService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &MiscServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -117,18 +171,23 @@ func (s *MiscServiceServer) PathPrefix() string {
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -136,7 +195,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/integration.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VersionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

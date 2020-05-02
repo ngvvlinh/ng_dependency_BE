@@ -197,12 +197,12 @@ var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 
 const tplText = `
 {{range $s := .Services}}
-func Wrap{{.Name}}Service(s *{{.Name}}Service{{if $s|hasSecret}}, secret string{{end}}) api.{{.Name}}Service {
-	return wrap{{.Name}}Service{s: s{{if $s|hasSecret}}, secret: secret{{end}}}
+func Wrap{{.Name}}Service(s func() *{{.Name}}Service{{if $s|hasSecret}}, secret string{{end}}) func() api.{{.Name}}Service {
+	return func() api.{{.Name}}Service { return wrap{{.Name}}Service{s: s{{if $s|hasSecret}}, secret: secret{{end}}} }
 }
 
 type wrap{{.Name}}Service struct {
-	s *{{.Name}}Service
+	s func() *{{.Name}}Service
 {{if $s|hasSecret}}secret string{{end}}
 }
 
@@ -332,11 +332,11 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	{{end -}}
 	ctx = bus.NewRootContext(ctx)
 	{{if $m.Kind|eq 1 -}}
-	err = s.s.{{$m.Name}}(ctx, query)
+	err = s.s().{{$m.Name}}(ctx, query)
 	resp = query.Result
 	{{else -}}
 	// TODO
-	resp, err = s.s.{{$m.Name}}(ctx, claim, req)
+	resp, err = s.s().{{$m.Name}}(ctx, claim, req)
 	{{end -}}
 	if err != nil {
 		return nil, err

@@ -10,8 +10,8 @@ import (
 
 func NewAffiliateServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService)),
-		service.NewAccountServiceServer(WrapAccountService(accountService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
+		service.NewAccountServiceServer(WrapAccountService(accountService.Clone)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

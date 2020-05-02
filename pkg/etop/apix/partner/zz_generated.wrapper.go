@@ -19,12 +19,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapCustomerService(s *CustomerService) api.CustomerService {
-	return wrapCustomerService{s: s}
+func WrapCustomerService(s func() *CustomerService) func() api.CustomerService {
+	return func() api.CustomerService { return wrapCustomerService{s: s} }
 }
 
 type wrapCustomerService struct {
-	s *CustomerService
+	s func() *CustomerService
 }
 
 type CreateCustomerEndpoint struct {
@@ -62,7 +62,7 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *externalty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomer(ctx, query)
+	err = s.s().CreateCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *externalty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCustomer(ctx, query)
+	err = s.s().DeleteCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *externaltypes
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomer(ctx, query)
+	err = s.s().GetCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -203,7 +203,7 @@ func (s wrapCustomerService) ListCustomers(ctx context.Context, req *externaltyp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListCustomers(ctx, query)
+	err = s.s().ListCustomers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -250,7 +250,7 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *externalty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomer(ctx, query)
+	err = s.s().UpdateCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -262,12 +262,12 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *externalty
 	return resp, nil
 }
 
-func WrapCustomerAddressService(s *CustomerAddressService) api.CustomerAddressService {
-	return wrapCustomerAddressService{s: s}
+func WrapCustomerAddressService(s func() *CustomerAddressService) func() api.CustomerAddressService {
+	return func() api.CustomerAddressService { return wrapCustomerAddressService{s: s} }
 }
 
 type wrapCustomerAddressService struct {
-	s *CustomerAddressService
+	s func() *CustomerAddressService
 }
 
 type CreateAddressEndpoint struct {
@@ -305,7 +305,7 @@ func (s wrapCustomerAddressService) CreateAddress(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateAddress(ctx, query)
+	err = s.s().CreateAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -352,7 +352,7 @@ func (s wrapCustomerAddressService) DeleteAddress(ctx context.Context, req *cm.I
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteAddress(ctx, query)
+	err = s.s().DeleteAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -399,7 +399,7 @@ func (s wrapCustomerAddressService) GetAddress(ctx context.Context, req *externa
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetAddress(ctx, query)
+	err = s.s().GetAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -446,7 +446,7 @@ func (s wrapCustomerAddressService) ListAddresses(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListAddresses(ctx, query)
+	err = s.s().ListAddresses(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -493,7 +493,7 @@ func (s wrapCustomerAddressService) UpdateAddress(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateAddress(ctx, query)
+	err = s.s().UpdateAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -505,12 +505,12 @@ func (s wrapCustomerAddressService) UpdateAddress(ctx context.Context, req *exte
 	return resp, nil
 }
 
-func WrapCustomerGroupService(s *CustomerGroupService) api.CustomerGroupService {
-	return wrapCustomerGroupService{s: s}
+func WrapCustomerGroupService(s func() *CustomerGroupService) func() api.CustomerGroupService {
+	return func() api.CustomerGroupService { return wrapCustomerGroupService{s: s} }
 }
 
 type wrapCustomerGroupService struct {
-	s *CustomerGroupService
+	s func() *CustomerGroupService
 }
 
 type CreateGroupEndpoint struct {
@@ -548,7 +548,7 @@ func (s wrapCustomerGroupService) CreateGroup(ctx context.Context, req *external
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateGroup(ctx, query)
+	err = s.s().CreateGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -595,7 +595,7 @@ func (s wrapCustomerGroupService) DeleteGroup(ctx context.Context, req *cm.IDReq
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteGroup(ctx, query)
+	err = s.s().DeleteGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -642,7 +642,7 @@ func (s wrapCustomerGroupService) GetGroup(ctx context.Context, req *cm.IDReques
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetGroup(ctx, query)
+	err = s.s().GetGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -689,7 +689,7 @@ func (s wrapCustomerGroupService) ListGroups(ctx context.Context, req *externalt
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListGroups(ctx, query)
+	err = s.s().ListGroups(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -736,7 +736,7 @@ func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *external
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateGroup(ctx, query)
+	err = s.s().UpdateGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -748,12 +748,12 @@ func (s wrapCustomerGroupService) UpdateGroup(ctx context.Context, req *external
 	return resp, nil
 }
 
-func WrapCustomerGroupRelationshipService(s *CustomerGroupRelationshipService) api.CustomerGroupRelationshipService {
-	return wrapCustomerGroupRelationshipService{s: s}
+func WrapCustomerGroupRelationshipService(s func() *CustomerGroupRelationshipService) func() api.CustomerGroupRelationshipService {
+	return func() api.CustomerGroupRelationshipService { return wrapCustomerGroupRelationshipService{s: s} }
 }
 
 type wrapCustomerGroupRelationshipService struct {
-	s *CustomerGroupRelationshipService
+	s func() *CustomerGroupRelationshipService
 }
 
 type CustomerGroupCreateRelationshipEndpoint struct {
@@ -791,7 +791,7 @@ func (s wrapCustomerGroupRelationshipService) CreateRelationship(ctx context.Con
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateRelationship(ctx, query)
+	err = s.s().CreateRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -838,7 +838,7 @@ func (s wrapCustomerGroupRelationshipService) DeleteRelationship(ctx context.Con
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteRelationship(ctx, query)
+	err = s.s().DeleteRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -885,7 +885,7 @@ func (s wrapCustomerGroupRelationshipService) ListRelationships(ctx context.Cont
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListRelationships(ctx, query)
+	err = s.s().ListRelationships(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -897,12 +897,12 @@ func (s wrapCustomerGroupRelationshipService) ListRelationships(ctx context.Cont
 	return resp, nil
 }
 
-func WrapFulfillmentService(s *FulfillmentService) api.FulfillmentService {
-	return wrapFulfillmentService{s: s}
+func WrapFulfillmentService(s func() *FulfillmentService) func() api.FulfillmentService {
+	return func() api.FulfillmentService { return wrapFulfillmentService{s: s} }
 }
 
 type wrapFulfillmentService struct {
-	s *FulfillmentService
+	s func() *FulfillmentService
 }
 
 type FulfillmentCancelFulfillmentEndpoint struct {
@@ -940,7 +940,7 @@ func (s wrapFulfillmentService) CancelFulfillment(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelFulfillment(ctx, query)
+	err = s.s().CancelFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -987,7 +987,7 @@ func (s wrapFulfillmentService) CreateFulfillment(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateFulfillment(ctx, query)
+	err = s.s().CreateFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1034,7 +1034,7 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *externa
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillment(ctx, query)
+	err = s.s().GetFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1081,7 +1081,7 @@ func (s wrapFulfillmentService) ListFulfillments(ctx context.Context, req *exter
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListFulfillments(ctx, query)
+	err = s.s().ListFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1093,12 +1093,12 @@ func (s wrapFulfillmentService) ListFulfillments(ctx context.Context, req *exter
 	return resp, nil
 }
 
-func WrapHistoryService(s *HistoryService) api.HistoryService {
-	return wrapHistoryService{s: s}
+func WrapHistoryService(s func() *HistoryService) func() api.HistoryService {
+	return func() api.HistoryService { return wrapHistoryService{s: s} }
 }
 
 type wrapHistoryService struct {
-	s *HistoryService
+	s func() *HistoryService
 }
 
 type GetChangesEndpoint struct {
@@ -1136,7 +1136,7 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetChanges(ctx, query)
+	err = s.s().GetChanges(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1148,12 +1148,12 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *cm.Empty) (resp
 	return resp, nil
 }
 
-func WrapInventoryService(s *InventoryService) api.InventoryService {
-	return wrapInventoryService{s: s}
+func WrapInventoryService(s func() *InventoryService) func() api.InventoryService {
+	return func() api.InventoryService { return wrapInventoryService{s: s} }
 }
 
 type wrapInventoryService struct {
-	s *InventoryService
+	s func() *InventoryService
 }
 
 type ListInventoryLevelsEndpoint struct {
@@ -1191,7 +1191,7 @@ func (s wrapInventoryService) ListInventoryLevels(ctx context.Context, req *exte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListInventoryLevels(ctx, query)
+	err = s.s().ListInventoryLevels(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1203,12 +1203,12 @@ func (s wrapInventoryService) ListInventoryLevels(ctx context.Context, req *exte
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type CurrentAccountEndpoint struct {
@@ -1246,7 +1246,7 @@ func (s wrapMiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (res
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CurrentAccount(ctx, query)
+	err = s.s().CurrentAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1293,7 +1293,7 @@ func (s wrapMiscService) GetLocationList(ctx context.Context, req *cm.Empty) (re
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetLocationList(ctx, query)
+	err = s.s().GetLocationList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1335,7 +1335,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1347,12 +1347,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapOrderService(s *OrderService) api.OrderService {
-	return wrapOrderService{s: s}
+func WrapOrderService(s func() *OrderService) func() api.OrderService {
+	return func() api.OrderService { return wrapOrderService{s: s} }
 }
 
 type wrapOrderService struct {
-	s *OrderService
+	s func() *OrderService
 }
 
 type OrderCancelOrderEndpoint struct {
@@ -1390,7 +1390,7 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *externaltypes.Ca
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelOrder(ctx, query)
+	err = s.s().CancelOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1437,7 +1437,7 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *externaltypes.C
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmOrder(ctx, query)
+	err = s.s().ConfirmOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1484,7 +1484,7 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *externaltypes.Cr
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrder(ctx, query)
+	err = s.s().CreateOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1531,7 +1531,7 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *externaltypes.Order
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrder(ctx, query)
+	err = s.s().GetOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1578,7 +1578,7 @@ func (s wrapOrderService) ListOrders(ctx context.Context, req *externaltypes.Lis
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListOrders(ctx, query)
+	err = s.s().ListOrders(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1590,12 +1590,12 @@ func (s wrapOrderService) ListOrders(ctx context.Context, req *externaltypes.Lis
 	return resp, nil
 }
 
-func WrapProductService(s *ProductService) api.ProductService {
-	return wrapProductService{s: s}
+func WrapProductService(s func() *ProductService) func() api.ProductService {
+	return func() api.ProductService { return wrapProductService{s: s} }
 }
 
 type wrapProductService struct {
-	s *ProductService
+	s func() *ProductService
 }
 
 type CreateProductEndpoint struct {
@@ -1633,7 +1633,7 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateProduct(ctx, query)
+	err = s.s().CreateProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1680,7 +1680,7 @@ func (s wrapProductService) DeleteProduct(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteProduct(ctx, query)
+	err = s.s().DeleteProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1727,7 +1727,7 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *externaltypes.G
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProduct(ctx, query)
+	err = s.s().GetProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1774,7 +1774,7 @@ func (s wrapProductService) ListProducts(ctx context.Context, req *externaltypes
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListProducts(ctx, query)
+	err = s.s().ListProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1821,7 +1821,7 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProduct(ctx, query)
+	err = s.s().UpdateProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1833,12 +1833,12 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *externaltype
 	return resp, nil
 }
 
-func WrapProductCollectionService(s *ProductCollectionService) api.ProductCollectionService {
-	return wrapProductCollectionService{s: s}
+func WrapProductCollectionService(s func() *ProductCollectionService) func() api.ProductCollectionService {
+	return func() api.ProductCollectionService { return wrapProductCollectionService{s: s} }
 }
 
 type wrapProductCollectionService struct {
-	s *ProductCollectionService
+	s func() *ProductCollectionService
 }
 
 type CreateCollectionEndpoint struct {
@@ -1876,7 +1876,7 @@ func (s wrapProductCollectionService) CreateCollection(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCollection(ctx, query)
+	err = s.s().CreateCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1923,7 +1923,7 @@ func (s wrapProductCollectionService) DeleteCollection(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCollection(ctx, query)
+	err = s.s().DeleteCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1970,7 +1970,7 @@ func (s wrapProductCollectionService) GetCollection(ctx context.Context, req *ex
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCollection(ctx, query)
+	err = s.s().GetCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2017,7 +2017,7 @@ func (s wrapProductCollectionService) ListCollections(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListCollections(ctx, query)
+	err = s.s().ListCollections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2064,7 +2064,7 @@ func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCollection(ctx, query)
+	err = s.s().UpdateCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2076,12 +2076,12 @@ func (s wrapProductCollectionService) UpdateCollection(ctx context.Context, req 
 	return resp, nil
 }
 
-func WrapProductCollectionRelationshipService(s *ProductCollectionRelationshipService) api.ProductCollectionRelationshipService {
-	return wrapProductCollectionRelationshipService{s: s}
+func WrapProductCollectionRelationshipService(s func() *ProductCollectionRelationshipService) func() api.ProductCollectionRelationshipService {
+	return func() api.ProductCollectionRelationshipService { return wrapProductCollectionRelationshipService{s: s} }
 }
 
 type wrapProductCollectionRelationshipService struct {
-	s *ProductCollectionRelationshipService
+	s func() *ProductCollectionRelationshipService
 }
 
 type ProductCollectionCreateRelationshipEndpoint struct {
@@ -2119,7 +2119,7 @@ func (s wrapProductCollectionRelationshipService) CreateRelationship(ctx context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateRelationship(ctx, query)
+	err = s.s().CreateRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2166,7 +2166,7 @@ func (s wrapProductCollectionRelationshipService) DeleteRelationship(ctx context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteRelationship(ctx, query)
+	err = s.s().DeleteRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2213,7 +2213,7 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListRelationships(ctx, query)
+	err = s.s().ListRelationships(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2225,12 +2225,12 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	return resp, nil
 }
 
-func WrapShipmentService(s *ShipmentService) api.ShipmentService {
-	return wrapShipmentService{s: s}
+func WrapShipmentService(s func() *ShipmentService) func() api.ShipmentService {
+	return func() api.ShipmentService { return wrapShipmentService{s: s} }
 }
 
 type wrapShipmentService struct {
-	s *ShipmentService
+	s func() *ShipmentService
 }
 
 type UpdateFulfillmentEndpoint struct {
@@ -2268,7 +2268,7 @@ func (s wrapShipmentService) UpdateFulfillment(ctx context.Context, req *api.Upd
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateFulfillment(ctx, query)
+	err = s.s().UpdateFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2280,12 +2280,12 @@ func (s wrapShipmentService) UpdateFulfillment(ctx context.Context, req *api.Upd
 	return resp, nil
 }
 
-func WrapShipmentConnectionService(s *ShipmentConnectionService) api.ShipmentConnectionService {
-	return wrapShipmentConnectionService{s: s}
+func WrapShipmentConnectionService(s func() *ShipmentConnectionService) func() api.ShipmentConnectionService {
+	return func() api.ShipmentConnectionService { return wrapShipmentConnectionService{s: s} }
 }
 
 type wrapShipmentConnectionService struct {
-	s *ShipmentConnectionService
+	s func() *ShipmentConnectionService
 }
 
 type CreateConnectionEndpoint struct {
@@ -2323,7 +2323,7 @@ func (s wrapShipmentConnectionService) CreateConnection(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateConnection(ctx, query)
+	err = s.s().CreateConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2370,7 +2370,7 @@ func (s wrapShipmentConnectionService) DeleteConnection(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteConnection(ctx, query)
+	err = s.s().DeleteConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2417,7 +2417,7 @@ func (s wrapShipmentConnectionService) GetConnections(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetConnections(ctx, query)
+	err = s.s().GetConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2464,7 +2464,7 @@ func (s wrapShipmentConnectionService) UpdateConnection(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateConnection(ctx, query)
+	err = s.s().UpdateConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2476,12 +2476,12 @@ func (s wrapShipmentConnectionService) UpdateConnection(ctx context.Context, req
 	return resp, nil
 }
 
-func WrapShippingService(s *ShippingService) api.ShippingService {
-	return wrapShippingService{s: s}
+func WrapShippingService(s func() *ShippingService) func() api.ShippingService {
+	return func() api.ShippingService { return wrapShippingService{s: s} }
 }
 
 type wrapShippingService struct {
-	s *ShippingService
+	s func() *ShippingService
 }
 
 type CancelOrderEndpoint struct {
@@ -2519,7 +2519,7 @@ func (s wrapShippingService) CancelOrder(ctx context.Context, req *externaltypes
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelOrder(ctx, query)
+	err = s.s().CancelOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2566,7 +2566,7 @@ func (s wrapShippingService) CreateAndConfirmOrder(ctx context.Context, req *ext
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateAndConfirmOrder(ctx, query)
+	err = s.s().CreateAndConfirmOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2613,7 +2613,7 @@ func (s wrapShippingService) GetFulfillment(ctx context.Context, req *externalty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillment(ctx, query)
+	err = s.s().GetFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2660,7 +2660,7 @@ func (s wrapShippingService) GetOrder(ctx context.Context, req *externaltypes.Or
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrder(ctx, query)
+	err = s.s().GetOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2707,7 +2707,7 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShippingServices(ctx, query)
+	err = s.s().GetShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2719,12 +2719,12 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	return resp, nil
 }
 
-func WrapShopService(s *ShopService) api.ShopService {
-	return wrapShopService{s: s}
+func WrapShopService(s func() *ShopService) func() api.ShopService {
+	return func() api.ShopService { return wrapShopService{s: s} }
 }
 
 type wrapShopService struct {
-	s *ShopService
+	s func() *ShopService
 }
 
 type AuthorizeShopEndpoint struct {
@@ -2762,7 +2762,7 @@ func (s wrapShopService) AuthorizeShop(ctx context.Context, req *api.AuthorizeSh
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AuthorizeShop(ctx, query)
+	err = s.s().AuthorizeShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2809,7 +2809,7 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CurrentShop(ctx, query)
+	err = s.s().CurrentShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2821,12 +2821,12 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapVariantService(s *VariantService) api.VariantService {
-	return wrapVariantService{s: s}
+func WrapVariantService(s func() *VariantService) func() api.VariantService {
+	return func() api.VariantService { return wrapVariantService{s: s} }
 }
 
 type wrapVariantService struct {
-	s *VariantService
+	s func() *VariantService
 }
 
 type CreateVariantEndpoint struct {
@@ -2864,7 +2864,7 @@ func (s wrapVariantService) CreateVariant(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateVariant(ctx, query)
+	err = s.s().CreateVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2911,7 +2911,7 @@ func (s wrapVariantService) DeleteVariant(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteVariant(ctx, query)
+	err = s.s().DeleteVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2958,7 +2958,7 @@ func (s wrapVariantService) GetVariant(ctx context.Context, req *externaltypes.G
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetVariant(ctx, query)
+	err = s.s().GetVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3005,7 +3005,7 @@ func (s wrapVariantService) ListVariants(ctx context.Context, req *externaltypes
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListVariants(ctx, query)
+	err = s.s().ListVariants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3052,7 +3052,7 @@ func (s wrapVariantService) UpdateVariant(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateVariant(ctx, query)
+	err = s.s().UpdateVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3064,12 +3064,12 @@ func (s wrapVariantService) UpdateVariant(ctx context.Context, req *externaltype
 	return resp, nil
 }
 
-func WrapWebhookService(s *WebhookService) api.WebhookService {
-	return wrapWebhookService{s: s}
+func WrapWebhookService(s func() *WebhookService) func() api.WebhookService {
+	return func() api.WebhookService { return wrapWebhookService{s: s} }
 }
 
 type wrapWebhookService struct {
-	s *WebhookService
+	s func() *WebhookService
 }
 
 type CreateWebhookEndpoint struct {
@@ -3107,7 +3107,7 @@ func (s wrapWebhookService) CreateWebhook(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateWebhook(ctx, query)
+	err = s.s().CreateWebhook(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3154,7 +3154,7 @@ func (s wrapWebhookService) DeleteWebhook(ctx context.Context, req *externaltype
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteWebhook(ctx, query)
+	err = s.s().DeleteWebhook(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3201,7 +3201,7 @@ func (s wrapWebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (res
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWebhooks(ctx, query)
+	err = s.s().GetWebhooks(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type VersionInfoEndpoint struct {
@@ -57,7 +57,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -69,12 +69,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapUserService(s *UserService) api.UserService {
-	return wrapUserService{s: s}
+func WrapUserService(s func() *UserService) func() api.UserService {
+	return func() api.UserService { return wrapUserService{s: s} }
 }
 
 type wrapUserService struct {
-	s *UserService
+	s func() *UserService
 }
 
 type CreateUserEndpoint struct {
@@ -108,7 +108,7 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUs
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateUser(ctx, query)
+	err = s.s().CreateUser(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -151,7 +151,7 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAcc
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.LoginAsAccount(ctx, query)
+	err = s.s().LoginAsAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -194,7 +194,7 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.SAdminReset
 	}
 	query.Context.IsSuperAdmin = session.IsSuperAdmin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ResetPassword(ctx, query)
+	err = s.s().ResetPassword(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

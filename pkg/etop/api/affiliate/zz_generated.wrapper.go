@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapAccountService(s *AccountService) api.AccountService {
-	return wrapAccountService{s: s}
+func WrapAccountService(s func() *AccountService) func() api.AccountService {
+	return func() api.AccountService { return wrapAccountService{s: s} }
 }
 
 type wrapAccountService struct {
-	s *AccountService
+	s func() *AccountService
 }
 
 type DeleteAffiliateEndpoint struct {
@@ -60,7 +60,7 @@ func (s wrapAccountService) DeleteAffiliate(ctx context.Context, req *cm.IDReque
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteAffiliate(ctx, query)
+	err = s.s().DeleteAffiliate(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (s wrapAccountService) RegisterAffiliate(ctx context.Context, req *api.Regi
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RegisterAffiliate(ctx, query)
+	err = s.s().RegisterAffiliate(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -150,7 +150,7 @@ func (s wrapAccountService) UpdateAffiliate(ctx context.Context, req *api.Update
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateAffiliate(ctx, query)
+	err = s.s().UpdateAffiliate(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -196,7 +196,7 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateAffiliateBankAccount(ctx, query)
+	err = s.s().UpdateAffiliateBankAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -208,12 +208,12 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type VersionInfoEndpoint struct {
@@ -246,7 +246,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

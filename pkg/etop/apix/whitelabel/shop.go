@@ -40,4 +40,6 @@ func Init(
 
 type ImportService struct{}
 
+func (s *ImportService) Clone() *ImportService { res := *s; return &res }
+
 var importService = &ImportService{}

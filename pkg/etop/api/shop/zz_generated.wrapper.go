@@ -22,12 +22,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapAccountService(s *AccountService) api.AccountService {
-	return wrapAccountService{s: s}
+func WrapAccountService(s func() *AccountService) func() api.AccountService {
+	return func() api.AccountService { return wrapAccountService{s: s} }
 }
 
 type wrapAccountService struct {
-	s *AccountService
+	s func() *AccountService
 }
 
 type CreateExternalAccountAhamoveEndpoint struct {
@@ -74,7 +74,7 @@ func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateExternalAccountAhamove(ctx, query)
+	err = s.s().CreateExternalAccountAhamove(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -130,7 +130,7 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/account:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteShop(ctx, query)
+	err = s.s().DeleteShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -186,7 +186,7 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 	}
 	query.Context.Actions = strings.Split("shop/balance:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBalanceShop(ctx, query)
+	err = s.s().GetBalanceShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -232,7 +232,7 @@ func (s wrapAccountService) GetExternalAccountAhamove(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetExternalAccountAhamove(ctx, query)
+	err = s.s().GetExternalAccountAhamove(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -279,7 +279,7 @@ func (s wrapAccountService) RegisterShop(ctx context.Context, req *api.RegisterS
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RegisterShop(ctx, query)
+	err = s.s().RegisterShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -335,7 +335,7 @@ func (s wrapAccountService) RequestVerifyExternalAccountAhamove(ctx context.Cont
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RequestVerifyExternalAccountAhamove(ctx, query)
+	err = s.s().RequestVerifyExternalAccountAhamove(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -391,7 +391,7 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SetDefaultAddress(ctx, query)
+	err = s.s().SetDefaultAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -447,7 +447,7 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateExternalAccountAhamoveVerification(ctx, query)
+	err = s.s().UpdateExternalAccountAhamoveVerification(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -503,7 +503,7 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateExternalAccountAhamoveVerificationImages(ctx, query)
+	err = s.s().UpdateExternalAccountAhamoveVerificationImages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -559,7 +559,7 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 	}
 	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShop(ctx, query)
+	err = s.s().UpdateShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -571,12 +571,12 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 	return resp, nil
 }
 
-func WrapAuthorizeService(s *AuthorizeService) api.AuthorizeService {
-	return wrapAuthorizeService{s: s}
+func WrapAuthorizeService(s func() *AuthorizeService) func() api.AuthorizeService {
+	return func() api.AuthorizeService { return wrapAuthorizeService{s: s} }
 }
 
 type wrapAuthorizeService struct {
-	s *AuthorizeService
+	s func() *AuthorizeService
 }
 
 type AuthorizePartnerEndpoint struct {
@@ -623,7 +623,7 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *api.Aut
 	}
 	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AuthorizePartner(ctx, query)
+	err = s.s().AuthorizePartner(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -669,7 +669,7 @@ func (s wrapAuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetAuthorizedPartners(ctx, query)
+	err = s.s().GetAuthorizedPartners(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -715,7 +715,7 @@ func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetAvailablePartners(ctx, query)
+	err = s.s().GetAvailablePartners(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -727,12 +727,12 @@ func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.
 	return resp, nil
 }
 
-func WrapBrandService(s *BrandService) api.BrandService {
-	return wrapBrandService{s: s}
+func WrapBrandService(s func() *BrandService) func() api.BrandService {
+	return func() api.BrandService { return wrapBrandService{s: s} }
 }
 
 type wrapBrandService struct {
-	s *BrandService
+	s func() *BrandService
 }
 
 type CreateBrandEndpoint struct {
@@ -779,7 +779,7 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *api.CreateBrandR
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateBrand(ctx, query)
+	err = s.s().CreateBrand(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -835,7 +835,7 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteBrand(ctx, query)
+	err = s.s().DeleteBrand(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -891,7 +891,7 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBrandByID(ctx, query)
+	err = s.s().GetBrandByID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -950,7 +950,7 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *api.GetBrandsReque
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBrands(ctx, query)
+	err = s.s().GetBrands(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1006,7 +1006,7 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBrandsByIDs(ctx, query)
+	err = s.s().GetBrandsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1062,7 +1062,7 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateBrandInfo(ctx, query)
+	err = s.s().UpdateBrandInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1074,12 +1074,12 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 	return resp, nil
 }
 
-func WrapCarrierService(s *CarrierService) api.CarrierService {
-	return wrapCarrierService{s: s}
+func WrapCarrierService(s func() *CarrierService) func() api.CarrierService {
+	return func() api.CarrierService { return wrapCarrierService{s: s} }
 }
 
 type wrapCarrierService struct {
-	s *CarrierService
+	s func() *CarrierService
 }
 
 type CreateCarrierEndpoint struct {
@@ -1126,7 +1126,7 @@ func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *api.CreateCa
 	}
 	query.Context.Actions = strings.Split("shop/carrier:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCarrier(ctx, query)
+	err = s.s().CreateCarrier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1182,7 +1182,7 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 	}
 	query.Context.Actions = strings.Split("shop/carrier:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCarrier(ctx, query)
+	err = s.s().DeleteCarrier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1238,7 +1238,7 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCarrier(ctx, query)
+	err = s.s().GetCarrier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1294,7 +1294,7 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *api.GetCarrier
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCarriers(ctx, query)
+	err = s.s().GetCarriers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1350,7 +1350,7 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCarriersByIDs(ctx, query)
+	err = s.s().GetCarriersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1406,7 +1406,7 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 	}
 	query.Context.Actions = strings.Split("shop/carrier:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCarrier(ctx, query)
+	err = s.s().UpdateCarrier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1418,12 +1418,12 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 	return resp, nil
 }
 
-func WrapCategoryService(s *CategoryService) api.CategoryService {
-	return wrapCategoryService{s: s}
+func WrapCategoryService(s func() *CategoryService) func() api.CategoryService {
+	return func() api.CategoryService { return wrapCategoryService{s: s} }
 }
 
 type wrapCategoryService struct {
-	s *CategoryService
+	s func() *CategoryService
 }
 
 type CreateCategoryEndpoint struct {
@@ -1470,7 +1470,7 @@ func (s wrapCategoryService) CreateCategory(ctx context.Context, req *api.Create
 	}
 	query.Context.Actions = strings.Split("shop/category:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCategory(ctx, query)
+	err = s.s().CreateCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1526,7 +1526,7 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 	}
 	query.Context.Actions = strings.Split("shop/category:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCategory(ctx, query)
+	err = s.s().DeleteCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1582,7 +1582,7 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *api.GetCate
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCategories(ctx, query)
+	err = s.s().GetCategories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1638,7 +1638,7 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 	}
 	query.Context.Actions = strings.Split("shop/category:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCategory(ctx, query)
+	err = s.s().GetCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1694,7 +1694,7 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 	}
 	query.Context.Actions = strings.Split("shop/category:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCategory(ctx, query)
+	err = s.s().UpdateCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1706,12 +1706,12 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 	return resp, nil
 }
 
-func WrapCollectionService(s *CollectionService) api.CollectionService {
-	return wrapCollectionService{s: s}
+func WrapCollectionService(s func() *CollectionService) func() api.CollectionService {
+	return func() api.CollectionService { return wrapCollectionService{s: s} }
 }
 
 type wrapCollectionService struct {
-	s *CollectionService
+	s func() *CollectionService
 }
 
 type CreateCollectionEndpoint struct {
@@ -1758,7 +1758,7 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *api.Cr
 	}
 	query.Context.Actions = strings.Split("shop/collection:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCollection(ctx, query)
+	err = s.s().CreateCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1814,7 +1814,7 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCollection(ctx, query)
+	err = s.s().GetCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1870,7 +1870,7 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *api.GetC
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCollections(ctx, query)
+	err = s.s().GetCollections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1926,7 +1926,7 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCollectionsByProductID(ctx, query)
+	err = s.s().GetCollectionsByProductID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1982,7 +1982,7 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 	}
 	query.Context.Actions = strings.Split("shop/collection:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCollection(ctx, query)
+	err = s.s().UpdateCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1994,12 +1994,12 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 	return resp, nil
 }
 
-func WrapConnectionService(s *ConnectionService) api.ConnectionService {
-	return wrapConnectionService{s: s}
+func WrapConnectionService(s func() *ConnectionService) func() api.ConnectionService {
+	return func() api.ConnectionService { return wrapConnectionService{s: s} }
 }
 
 type wrapConnectionService struct {
-	s *ConnectionService
+	s func() *ConnectionService
 }
 
 type DeleteShopConnectionEndpoint struct {
@@ -2036,7 +2036,7 @@ func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *in
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteShopConnection(ctx, query)
+	err = s.s().DeleteShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2082,7 +2082,7 @@ func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetAvailableConnections(ctx, query)
+	err = s.s().GetAvailableConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2128,7 +2128,7 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetConnections(ctx, query)
+	err = s.s().GetConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2174,7 +2174,7 @@ func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.E
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShopConnections(ctx, query)
+	err = s.s().GetShopConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2220,7 +2220,7 @@ func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *int
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.LoginShopConnection(ctx, query)
+	err = s.s().LoginShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2266,7 +2266,7 @@ func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RegisterShopConnection(ctx, query)
+	err = s.s().RegisterShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2312,7 +2312,7 @@ func (s wrapConnectionService) UpdateShopConnection(ctx context.Context, req *in
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShopConnection(ctx, query)
+	err = s.s().UpdateShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2324,12 +2324,12 @@ func (s wrapConnectionService) UpdateShopConnection(ctx context.Context, req *in
 	return resp, nil
 }
 
-func WrapCustomerService(s *CustomerService) api.CustomerService {
-	return wrapCustomerService{s: s}
+func WrapCustomerService(s func() *CustomerService) func() api.CustomerService {
+	return func() api.CustomerService { return wrapCustomerService{s: s} }
 }
 
 type wrapCustomerService struct {
-	s *CustomerService
+	s func() *CustomerService
 }
 
 type AddCustomersToGroupEndpoint struct {
@@ -2376,7 +2376,7 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *api.A
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddCustomersToGroup(ctx, query)
+	err = s.s().AddCustomersToGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2432,7 +2432,7 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.BatchSetCustomersStatus(ctx, query)
+	err = s.s().BatchSetCustomersStatus(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2488,7 +2488,7 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *api.Create
 	}
 	query.Context.Actions = strings.Split("shop/customer:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomer(ctx, query)
+	err = s.s().CreateCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2544,7 +2544,7 @@ func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/customer:create|shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomerAddress(ctx, query)
+	err = s.s().CreateCustomerAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2600,7 +2600,7 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *cm.IDReque
 	}
 	query.Context.Actions = strings.Split("shop/customer:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCustomer(ctx, query)
+	err = s.s().DeleteCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2656,7 +2656,7 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 	}
 	query.Context.Actions = strings.Split("shop/customer:update|shop/customer:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCustomerAddress(ctx, query)
+	err = s.s().DeleteCustomerAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2712,7 +2712,7 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomer(ctx, query)
+	err = s.s().GetCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2768,7 +2768,7 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *api.
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomerAddresses(ctx, query)
+	err = s.s().GetCustomerAddresses(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2824,7 +2824,7 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomerDetails(ctx, query)
+	err = s.s().GetCustomerDetails(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2880,7 +2880,7 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *api.GetCusto
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomers(ctx, query)
+	err = s.s().GetCustomers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2936,7 +2936,7 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomersByIDs(ctx, query)
+	err = s.s().GetCustomersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2992,7 +2992,7 @@ func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/customer:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveCustomersFromGroup(ctx, query)
+	err = s.s().RemoveCustomersFromGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3048,7 +3048,7 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SetDefaultCustomerAddress(ctx, query)
+	err = s.s().SetDefaultCustomerAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3104,7 +3104,7 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *api.Update
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomer(ctx, query)
+	err = s.s().UpdateCustomer(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3160,7 +3160,7 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomerAddress(ctx, query)
+	err = s.s().UpdateCustomerAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3172,12 +3172,12 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 	return resp, nil
 }
 
-func WrapCustomerGroupService(s *CustomerGroupService) api.CustomerGroupService {
-	return wrapCustomerGroupService{s: s}
+func WrapCustomerGroupService(s func() *CustomerGroupService) func() api.CustomerGroupService {
+	return func() api.CustomerGroupService { return wrapCustomerGroupService{s: s} }
 }
 
 type wrapCustomerGroupService struct {
-	s *CustomerGroupService
+	s func() *CustomerGroupService
 }
 
 type CreateCustomerGroupEndpoint struct {
@@ -3224,7 +3224,7 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomerGroup(ctx, query)
+	err = s.s().CreateCustomerGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3280,7 +3280,7 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomerGroup(ctx, query)
+	err = s.s().GetCustomerGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3336,7 +3336,7 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomerGroups(ctx, query)
+	err = s.s().GetCustomerGroups(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3392,7 +3392,7 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomerGroup(ctx, query)
+	err = s.s().UpdateCustomerGroup(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3404,12 +3404,12 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	return resp, nil
 }
 
-func WrapExportService(s *ExportService) api.ExportService {
-	return wrapExportService{s: s}
+func WrapExportService(s func() *ExportService) func() api.ExportService {
+	return func() api.ExportService { return wrapExportService{s: s} }
 }
 
 type wrapExportService struct {
-	s *ExportService
+	s func() *ExportService
 }
 
 type GetExportsEndpoint struct {
@@ -3446,7 +3446,7 @@ func (s wrapExportService) GetExports(ctx context.Context, req *api.GetExportsRe
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetExports(ctx, query)
+	err = s.s().GetExports(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3492,7 +3492,7 @@ func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestEx
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RequestExport(ctx, query)
+	err = s.s().RequestExport(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3504,12 +3504,12 @@ func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestEx
 	return resp, nil
 }
 
-func WrapFulfillmentService(s *FulfillmentService) api.FulfillmentService {
-	return wrapFulfillmentService{s: s}
+func WrapFulfillmentService(s func() *FulfillmentService) func() api.FulfillmentService {
+	return func() api.FulfillmentService { return wrapFulfillmentService{s: s} }
 }
 
 type wrapFulfillmentService struct {
-	s *FulfillmentService
+	s func() *FulfillmentService
 }
 
 type GetExternalShippingServicesEndpoint struct {
@@ -3559,7 +3559,7 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetExternalShippingServices(ctx, query)
+	err = s.s().GetExternalShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3618,7 +3618,7 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillment(ctx, query)
+	err = s.s().GetFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3677,7 +3677,7 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillments(ctx, query)
+	err = s.s().GetFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3736,7 +3736,7 @@ func (s wrapFulfillmentService) GetFulfillmentsByIDs(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillmentsByIDs(ctx, query)
+	err = s.s().GetFulfillmentsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3778,7 +3778,7 @@ func (s wrapFulfillmentService) GetPublicExternalShippingServices(ctx context.Co
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPublicExternalShippingServices(ctx, query)
+	err = s.s().GetPublicExternalShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3820,7 +3820,7 @@ func (s wrapFulfillmentService) GetPublicFulfillment(ctx context.Context, req *a
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPublicFulfillment(ctx, query)
+	err = s.s().GetPublicFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3866,7 +3866,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateFulfillmentsShippingState(ctx, query)
+	err = s.s().UpdateFulfillmentsShippingState(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3878,12 +3878,12 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	return resp, nil
 }
 
-func WrapHistoryService(s *HistoryService) api.HistoryService {
-	return wrapHistoryService{s: s}
+func WrapHistoryService(s func() *HistoryService) func() api.HistoryService {
+	return func() api.HistoryService { return wrapHistoryService{s: s} }
 }
 
 type wrapHistoryService struct {
-	s *HistoryService
+	s func() *HistoryService
 }
 
 type GetFulfillmentHistoryEndpoint struct {
@@ -3923,7 +3923,7 @@ func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillmentHistory(ctx, query)
+	err = s.s().GetFulfillmentHistory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3935,12 +3935,12 @@ func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.
 	return resp, nil
 }
 
-func WrapInventoryService(s *InventoryService) api.InventoryService {
-	return wrapInventoryService{s: s}
+func WrapInventoryService(s func() *InventoryService) func() api.InventoryService {
+	return func() api.InventoryService { return wrapInventoryService{s: s} }
 }
 
 type wrapInventoryService struct {
-	s *InventoryService
+	s func() *InventoryService
 }
 
 type AdjustInventoryQuantityEndpoint struct {
@@ -3987,7 +3987,7 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AdjustInventoryQuantity(ctx, query)
+	err = s.s().AdjustInventoryQuantity(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4043,7 +4043,7 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/inventory:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelInventoryVoucher(ctx, query)
+	err = s.s().CancelInventoryVoucher(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4099,7 +4099,7 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmInventoryVoucher(ctx, query)
+	err = s.s().ConfirmInventoryVoucher(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4155,7 +4155,7 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/inventory:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateInventoryVoucher(ctx, query)
+	err = s.s().CreateInventoryVoucher(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4211,7 +4211,7 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVariant(ctx, query)
+	err = s.s().GetInventoryVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4267,7 +4267,7 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVariants(ctx, query)
+	err = s.s().GetInventoryVariants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4323,7 +4323,7 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVariantsByVariantIDs(ctx, query)
+	err = s.s().GetInventoryVariantsByVariantIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4379,7 +4379,7 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVoucher(ctx, query)
+	err = s.s().GetInventoryVoucher(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4435,7 +4435,7 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVouchers(ctx, query)
+	err = s.s().GetInventoryVouchers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4491,7 +4491,7 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVouchersByIDs(ctx, query)
+	err = s.s().GetInventoryVouchersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4547,7 +4547,7 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 	}
 	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoryVouchersByReference(ctx, query)
+	err = s.s().GetInventoryVouchersByReference(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4603,7 +4603,7 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 	}
 	query.Context.Actions = strings.Split("shop/product/cost_price:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateInventoryVariantCostPrice(ctx, query)
+	err = s.s().UpdateInventoryVariantCostPrice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4659,7 +4659,7 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/inventory:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateInventoryVoucher(ctx, query)
+	err = s.s().UpdateInventoryVoucher(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4671,12 +4671,12 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 	return resp, nil
 }
 
-func WrapLedgerService(s *LedgerService) api.LedgerService {
-	return wrapLedgerService{s: s}
+func WrapLedgerService(s func() *LedgerService) func() api.LedgerService {
+	return func() api.LedgerService { return wrapLedgerService{s: s} }
 }
 
 type wrapLedgerService struct {
-	s *LedgerService
+	s func() *LedgerService
 }
 
 type CreateLedgerEndpoint struct {
@@ -4723,7 +4723,7 @@ func (s wrapLedgerService) CreateLedger(ctx context.Context, req *api.CreateLedg
 	}
 	query.Context.Actions = strings.Split("shop/ledger:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateLedger(ctx, query)
+	err = s.s().CreateLedger(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4779,7 +4779,7 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 	}
 	query.Context.Actions = strings.Split("shop/ledger:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteLedger(ctx, query)
+	err = s.s().DeleteLedger(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4835,7 +4835,7 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetLedger(ctx, query)
+	err = s.s().GetLedger(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4891,7 +4891,7 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *api.GetLedgersRe
 	}
 	query.Context.Actions = strings.Split("shop/ledger:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetLedgers(ctx, query)
+	err = s.s().GetLedgers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4947,7 +4947,7 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 	}
 	query.Context.Actions = strings.Split("shop/ledger:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateLedger(ctx, query)
+	err = s.s().UpdateLedger(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -4959,12 +4959,12 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type VersionInfoEndpoint struct {
@@ -4997,7 +4997,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5009,12 +5009,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
-	return wrapMoneyTransactionService{s: s}
+func WrapMoneyTransactionService(s func() *MoneyTransactionService) func() api.MoneyTransactionService {
+	return func() api.MoneyTransactionService { return wrapMoneyTransactionService{s: s} }
 }
 
 type wrapMoneyTransactionService struct {
-	s *MoneyTransactionService
+	s func() *MoneyTransactionService
 }
 
 type GetMoneyTransactionEndpoint struct {
@@ -5061,7 +5061,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransaction(ctx, query)
+	err = s.s().GetMoneyTransaction(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5117,7 +5117,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	}
 	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactions(ctx, query)
+	err = s.s().GetMoneyTransactions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5129,12 +5129,12 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	return resp, nil
 }
 
-func WrapNotificationService(s *NotificationService) api.NotificationService {
-	return wrapNotificationService{s: s}
+func WrapNotificationService(s func() *NotificationService) func() api.NotificationService {
+	return func() api.NotificationService { return wrapNotificationService{s: s} }
 }
 
 type wrapNotificationService struct {
-	s *NotificationService
+	s func() *NotificationService
 }
 
 type CreateDeviceEndpoint struct {
@@ -5171,7 +5171,7 @@ func (s wrapNotificationService) CreateDevice(ctx context.Context, req *etop.Cre
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateDevice(ctx, query)
+	err = s.s().CreateDevice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5217,7 +5217,7 @@ func (s wrapNotificationService) DeleteDevice(ctx context.Context, req *etop.Del
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteDevice(ctx, query)
+	err = s.s().DeleteDevice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5263,7 +5263,7 @@ func (s wrapNotificationService) GetNotification(ctx context.Context, req *cm.ID
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetNotification(ctx, query)
+	err = s.s().GetNotification(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5309,7 +5309,7 @@ func (s wrapNotificationService) GetNotifications(ctx context.Context, req *etop
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetNotifications(ctx, query)
+	err = s.s().GetNotifications(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5355,7 +5355,7 @@ func (s wrapNotificationService) UpdateNotifications(ctx context.Context, req *e
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateNotifications(ctx, query)
+	err = s.s().UpdateNotifications(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5367,12 +5367,12 @@ func (s wrapNotificationService) UpdateNotifications(ctx context.Context, req *e
 	return resp, nil
 }
 
-func WrapOrderService(s *OrderService) api.OrderService {
-	return wrapOrderService{s: s}
+func WrapOrderService(s func() *OrderService) func() api.OrderService {
+	return func() api.OrderService { return wrapOrderService{s: s} }
 }
 
 type wrapOrderService struct {
-	s *OrderService
+	s func() *OrderService
 }
 
 type CancelOrderEndpoint struct {
@@ -5422,7 +5422,7 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *api.CancelOrderR
 	}
 	query.Context.Actions = strings.Split("shop/order:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelOrder(ctx, query)
+	err = s.s().CancelOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5481,7 +5481,7 @@ func (s wrapOrderService) CompleteOrder(ctx context.Context, req *api.OrderIDReq
 	}
 	query.Context.Actions = strings.Split("shop/order:complete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CompleteOrder(ctx, query)
+	err = s.s().CompleteOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5540,7 +5540,7 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *api.ConfirmOrde
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmOrder(ctx, query)
+	err = s.s().ConfirmOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5599,7 +5599,7 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 	}
 	query.Context.Actions = strings.Split("shop/order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmOrderAndCreateFulfillments(ctx, query)
+	err = s.s().ConfirmOrderAndCreateFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5658,7 +5658,7 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *inttypes.CreateO
 	}
 	query.Context.Actions = strings.Split("shop/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrder(ctx, query)
+	err = s.s().CreateOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5717,7 +5717,7 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrder(ctx, query)
+	err = s.s().GetOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5776,7 +5776,7 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrders(ctx, query)
+	err = s.s().GetOrders(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5835,7 +5835,7 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrdersByIDs(ctx, query)
+	err = s.s().GetOrdersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5894,7 +5894,7 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *api.Get
 	}
 	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrdersByReceiptID(ctx, query)
+	err = s.s().GetOrdersByReceiptID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -5953,7 +5953,7 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *inttypes.UpdateO
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateOrder(ctx, query)
+	err = s.s().UpdateOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6012,7 +6012,7 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateOrderPaymentStatus(ctx, query)
+	err = s.s().UpdateOrderPaymentStatus(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6071,7 +6071,7 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateOrderShippingInfo(ctx, query)
+	err = s.s().UpdateOrderShippingInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6130,7 +6130,7 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 	}
 	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateOrdersStatus(ctx, query)
+	err = s.s().UpdateOrdersStatus(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6142,12 +6142,12 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 	return resp, nil
 }
 
-func WrapPaymentService(s *PaymentService) api.PaymentService {
-	return wrapPaymentService{s: s}
+func WrapPaymentService(s func() *PaymentService) func() api.PaymentService {
+	return func() api.PaymentService { return wrapPaymentService{s: s} }
 }
 
 type wrapPaymentService struct {
-	s *PaymentService
+	s func() *PaymentService
 }
 
 type PaymentCheckReturnDataEndpoint struct {
@@ -6194,7 +6194,7 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.PaymentCheckReturnData(ctx, query)
+	err = s.s().PaymentCheckReturnData(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6250,7 +6250,7 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.PaymentTradingOrder(ctx, query)
+	err = s.s().PaymentTradingOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6262,12 +6262,12 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 	return resp, nil
 }
 
-func WrapProductService(s *ProductService) api.ProductService {
-	return wrapProductService{s: s}
+func WrapProductService(s func() *ProductService) func() api.ProductService {
+	return func() api.ProductService { return wrapProductService{s: s} }
 }
 
 type wrapProductService struct {
-	s *ProductService
+	s func() *ProductService
 }
 
 type AddProductCollectionEndpoint struct {
@@ -6314,7 +6314,7 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *api.A
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AddProductCollection(ctx, query)
+	err = s.s().AddProductCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6370,7 +6370,7 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *api.CreatePr
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateProduct(ctx, query)
+	err = s.s().CreateProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6426,7 +6426,7 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *api.CreateVa
 	}
 	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateVariant(ctx, query)
+	err = s.s().CreateVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6485,7 +6485,7 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProduct(ctx, query)
+	err = s.s().GetProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6544,7 +6544,7 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *api.GetVariant
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProducts(ctx, query)
+	err = s.s().GetProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6603,7 +6603,7 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProductsByIDs(ctx, query)
+	err = s.s().GetProductsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6662,7 +6662,7 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *api.GetVariantR
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetVariant(ctx, query)
+	err = s.s().GetVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6721,7 +6721,7 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetVariantsByIDs(ctx, query)
+	err = s.s().GetVariantsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6777,7 +6777,7 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetVariantsBySupplierID(ctx, query)
+	err = s.s().GetVariantsBySupplierID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6833,7 +6833,7 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProductCategory(ctx, query)
+	err = s.s().RemoveProductCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6889,7 +6889,7 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProductCollection(ctx, query)
+	err = s.s().RemoveProductCollection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -6945,7 +6945,7 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *api.RemoveV
 	}
 	query.Context.Actions = strings.Split("shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProducts(ctx, query)
+	err = s.s().RemoveProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7001,7 +7001,7 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *api.RemoveV
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveVariants(ctx, query)
+	err = s.s().RemoveVariants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7057,7 +7057,7 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *api.UpdatePr
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProduct(ctx, query)
+	err = s.s().UpdateProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7113,7 +7113,7 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *api.
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductCategory(ctx, query)
+	err = s.s().UpdateProductCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7169,7 +7169,7 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *api.Up
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductImages(ctx, query)
+	err = s.s().UpdateProductImages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7225,7 +7225,7 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductMetaFields(ctx, query)
+	err = s.s().UpdateProductMetaFields(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7281,7 +7281,7 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *api.U
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductsStatus(ctx, query)
+	err = s.s().UpdateProductsStatus(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7337,7 +7337,7 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *api.Upd
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductsTags(ctx, query)
+	err = s.s().UpdateProductsTags(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7393,7 +7393,7 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *api.UpdateVa
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateVariant(ctx, query)
+	err = s.s().UpdateVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7449,7 +7449,7 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateVariantAttributes(ctx, query)
+	err = s.s().UpdateVariantAttributes(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7505,7 +7505,7 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *api.Up
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateVariantImages(ctx, query)
+	err = s.s().UpdateVariantImages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7561,7 +7561,7 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateVariantsStatus(ctx, query)
+	err = s.s().UpdateVariantsStatus(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7573,12 +7573,12 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 	return resp, nil
 }
 
-func WrapProductSourceService(s *ProductSourceService) api.ProductSourceService {
-	return wrapProductSourceService{s: s}
+func WrapProductSourceService(s func() *ProductSourceService) func() api.ProductSourceService {
+	return func() api.ProductSourceService { return wrapProductSourceService{s: s} }
 }
 
 type wrapProductSourceService struct {
-	s *ProductSourceService
+	s func() *ProductSourceService
 }
 
 type CreateProductSourceEndpoint struct {
@@ -7625,7 +7625,7 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateProductSource(ctx, query)
+	err = s.s().CreateProductSource(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7681,7 +7681,7 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateProductSourceCategory(ctx, query)
+	err = s.s().CreateProductSourceCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7740,7 +7740,7 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *api.De
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateVariant(ctx, query)
+	err = s.s().CreateVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7799,7 +7799,7 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProductSourceCategories(ctx, query)
+	err = s.s().GetProductSourceCategories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7858,7 +7858,7 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProductSourceCategory(ctx, query)
+	err = s.s().GetProductSourceCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7917,7 +7917,7 @@ func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req
 	}
 	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShopProductSources(ctx, query)
+	err = s.s().GetShopProductSources(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -7973,7 +7973,7 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 	}
 	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveProductSourceCategory(ctx, query)
+	err = s.s().RemoveProductSourceCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8029,7 +8029,7 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductSourceCategory(ctx, query)
+	err = s.s().UpdateProductSourceCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8085,7 +8085,7 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 	}
 	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateProductsPSCategory(ctx, query)
+	err = s.s().UpdateProductsPSCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8097,12 +8097,12 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 	return resp, nil
 }
 
-func WrapPurchaseOrderService(s *PurchaseOrderService) api.PurchaseOrderService {
-	return wrapPurchaseOrderService{s: s}
+func WrapPurchaseOrderService(s func() *PurchaseOrderService) func() api.PurchaseOrderService {
+	return func() api.PurchaseOrderService { return wrapPurchaseOrderService{s: s} }
 }
 
 type wrapPurchaseOrderService struct {
-	s *PurchaseOrderService
+	s func() *PurchaseOrderService
 }
 
 type CancelPurchaseOrderEndpoint struct {
@@ -8149,7 +8149,7 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelPurchaseOrder(ctx, query)
+	err = s.s().CancelPurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8205,7 +8205,7 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmPurchaseOrder(ctx, query)
+	err = s.s().ConfirmPurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8261,7 +8261,7 @@ func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreatePurchaseOrder(ctx, query)
+	err = s.s().CreatePurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8307,7 +8307,7 @@ func (s wrapPurchaseOrderService) DeletePurchaseOrder(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeletePurchaseOrder(ctx, query)
+	err = s.s().DeletePurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8363,7 +8363,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseOrder(ctx, query)
+	err = s.s().GetPurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8419,7 +8419,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseOrders(ctx, query)
+	err = s.s().GetPurchaseOrders(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8475,7 +8475,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseOrdersByIDs(ctx, query)
+	err = s.s().GetPurchaseOrdersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8531,7 +8531,7 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseOrdersByReceiptID(ctx, query)
+	err = s.s().GetPurchaseOrdersByReceiptID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8587,7 +8587,7 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/purchase_order:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdatePurchaseOrder(ctx, query)
+	err = s.s().UpdatePurchaseOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8599,12 +8599,12 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 	return resp, nil
 }
 
-func WrapPurchaseRefundService(s *PurchaseRefundService) api.PurchaseRefundService {
-	return wrapPurchaseRefundService{s: s}
+func WrapPurchaseRefundService(s func() *PurchaseRefundService) func() api.PurchaseRefundService {
+	return func() api.PurchaseRefundService { return wrapPurchaseRefundService{s: s} }
 }
 
 type wrapPurchaseRefundService struct {
-	s *PurchaseRefundService
+	s func() *PurchaseRefundService
 }
 
 type CancelPurchaseRefundEndpoint struct {
@@ -8651,7 +8651,7 @@ func (s wrapPurchaseRefundService) CancelPurchaseRefund(ctx context.Context, req
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelPurchaseRefund(ctx, query)
+	err = s.s().CancelPurchaseRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8707,7 +8707,7 @@ func (s wrapPurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmPurchaseRefund(ctx, query)
+	err = s.s().ConfirmPurchaseRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8763,7 +8763,7 @@ func (s wrapPurchaseRefundService) CreatePurchaseRefund(ctx context.Context, req
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreatePurchaseRefund(ctx, query)
+	err = s.s().CreatePurchaseRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8819,7 +8819,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefund(ctx context.Context, req *c
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseRefund(ctx, query)
+	err = s.s().GetPurchaseRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8875,7 +8875,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefunds(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseRefunds(ctx, query)
+	err = s.s().GetPurchaseRefunds(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8931,7 +8931,7 @@ func (s wrapPurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, 
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPurchaseRefundsByIDs(ctx, query)
+	err = s.s().GetPurchaseRefundsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8987,7 +8987,7 @@ func (s wrapPurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, req
 	}
 	query.Context.Actions = strings.Split("shop/purchaserefund:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdatePurchaseRefund(ctx, query)
+	err = s.s().UpdatePurchaseRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -8999,12 +8999,12 @@ func (s wrapPurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, req
 	return resp, nil
 }
 
-func WrapReceiptService(s *ReceiptService) api.ReceiptService {
-	return wrapReceiptService{s: s}
+func WrapReceiptService(s func() *ReceiptService) func() api.ReceiptService {
+	return func() api.ReceiptService { return wrapReceiptService{s: s} }
 }
 
 type wrapReceiptService struct {
-	s *ReceiptService
+	s func() *ReceiptService
 }
 
 type CancelReceiptEndpoint struct {
@@ -9051,7 +9051,7 @@ func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *api.CancelRe
 	}
 	query.Context.Actions = strings.Split("shop/receipt:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelReceipt(ctx, query)
+	err = s.s().CancelReceipt(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9107,7 +9107,7 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 	}
 	query.Context.Actions = strings.Split("shop/receipt:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmReceipt(ctx, query)
+	err = s.s().ConfirmReceipt(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9163,7 +9163,7 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *api.CreateRe
 	}
 	query.Context.Actions = strings.Split("shop/receipt:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateReceipt(ctx, query)
+	err = s.s().CreateReceipt(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9219,7 +9219,7 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetReceipt(ctx, query)
+	err = s.s().GetReceipt(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9275,7 +9275,7 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *api.GetReceipt
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetReceipts(ctx, query)
+	err = s.s().GetReceipts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9331,7 +9331,7 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *ap
 	}
 	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetReceiptsByLedgerType(ctx, query)
+	err = s.s().GetReceiptsByLedgerType(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9387,7 +9387,7 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 	}
 	query.Context.Actions = strings.Split("shop/receipt:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateReceipt(ctx, query)
+	err = s.s().UpdateReceipt(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9399,12 +9399,12 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 	return resp, nil
 }
 
-func WrapRefundService(s *RefundService) api.RefundService {
-	return wrapRefundService{s: s}
+func WrapRefundService(s func() *RefundService) func() api.RefundService {
+	return func() api.RefundService { return wrapRefundService{s: s} }
 }
 
 type wrapRefundService struct {
-	s *RefundService
+	s func() *RefundService
 }
 
 type CancelRefundEndpoint struct {
@@ -9451,7 +9451,7 @@ func (s wrapRefundService) CancelRefund(ctx context.Context, req *api.CancelRefu
 	}
 	query.Context.Actions = strings.Split("shop/refund:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelRefund(ctx, query)
+	err = s.s().CancelRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9507,7 +9507,7 @@ func (s wrapRefundService) ConfirmRefund(ctx context.Context, req *api.ConfirmRe
 	}
 	query.Context.Actions = strings.Split("shop/refund:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmRefund(ctx, query)
+	err = s.s().ConfirmRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9563,7 +9563,7 @@ func (s wrapRefundService) CreateRefund(ctx context.Context, req *api.CreateRefu
 	}
 	query.Context.Actions = strings.Split("shop/refund:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateRefund(ctx, query)
+	err = s.s().CreateRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9619,7 +9619,7 @@ func (s wrapRefundService) GetRefund(ctx context.Context, req *cm.IDRequest) (re
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetRefund(ctx, query)
+	err = s.s().GetRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9675,7 +9675,7 @@ func (s wrapRefundService) GetRefunds(ctx context.Context, req *api.GetRefundsRe
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetRefunds(ctx, query)
+	err = s.s().GetRefunds(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9731,7 +9731,7 @@ func (s wrapRefundService) GetRefundsByIDs(ctx context.Context, req *cm.IDsReque
 	}
 	query.Context.Actions = strings.Split("shop/refund:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetRefundsByIDs(ctx, query)
+	err = s.s().GetRefundsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9787,7 +9787,7 @@ func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefu
 	}
 	query.Context.Actions = strings.Split("shop/refund:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateRefund(ctx, query)
+	err = s.s().UpdateRefund(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9799,12 +9799,12 @@ func (s wrapRefundService) UpdateRefund(ctx context.Context, req *api.UpdateRefu
 	return resp, nil
 }
 
-func WrapShipmentService(s *ShipmentService) api.ShipmentService {
-	return wrapShipmentService{s: s}
+func WrapShipmentService(s func() *ShipmentService) func() api.ShipmentService {
+	return func() api.ShipmentService { return wrapShipmentService{s: s} }
 }
 
 type wrapShipmentService struct {
-	s *ShipmentService
+	s func() *ShipmentService
 }
 
 type CancelFulfillmentEndpoint struct {
@@ -9851,7 +9851,7 @@ func (s wrapShipmentService) CancelFulfillment(ctx context.Context, req *api.Can
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelFulfillment(ctx, query)
+	err = s.s().CancelFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9907,7 +9907,7 @@ func (s wrapShipmentService) CreateFulfillments(ctx context.Context, req *api.Cr
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateFulfillments(ctx, query)
+	err = s.s().CreateFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9963,7 +9963,7 @@ func (s wrapShipmentService) GetShippingServices(ctx context.Context, req *intty
 	}
 	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShippingServices(ctx, query)
+	err = s.s().GetShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -9975,12 +9975,12 @@ func (s wrapShipmentService) GetShippingServices(ctx context.Context, req *intty
 	return resp, nil
 }
 
-func WrapShipnowService(s *ShipnowService) api.ShipnowService {
-	return wrapShipnowService{s: s}
+func WrapShipnowService(s func() *ShipnowService) func() api.ShipnowService {
+	return func() api.ShipnowService { return wrapShipnowService{s: s} }
 }
 
 type wrapShipnowService struct {
-	s *ShipnowService
+	s func() *ShipnowService
 }
 
 type CancelShipnowFulfillmentEndpoint struct {
@@ -10027,7 +10027,7 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *i
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelShipnowFulfillment(ctx, query)
+	err = s.s().CancelShipnowFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10083,7 +10083,7 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmShipnowFulfillment(ctx, query)
+	err = s.s().ConfirmShipnowFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10139,7 +10139,7 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *i
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateShipnowFulfillment(ctx, query)
+	err = s.s().CreateShipnowFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10195,7 +10195,7 @@ func (s wrapShipnowService) CreateShipnowFulfillmentV2(ctx context.Context, req 
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateShipnowFulfillmentV2(ctx, query)
+	err = s.s().CreateShipnowFulfillmentV2(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10251,7 +10251,7 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipnowFulfillment(ctx, query)
+	err = s.s().GetShipnowFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10307,7 +10307,7 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *int
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipnowFulfillments(ctx, query)
+	err = s.s().GetShipnowFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10363,7 +10363,7 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *inttype
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipnowServices(ctx, query)
+	err = s.s().GetShipnowServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10419,7 +10419,7 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *i
 	}
 	query.Context.Actions = strings.Split("shop/shipnow:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipnowFulfillment(ctx, query)
+	err = s.s().UpdateShipnowFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10431,12 +10431,12 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *i
 	return resp, nil
 }
 
-func WrapStocktakeService(s *StocktakeService) api.StocktakeService {
-	return wrapStocktakeService{s: s}
+func WrapStocktakeService(s func() *StocktakeService) func() api.StocktakeService {
+	return func() api.StocktakeService { return wrapStocktakeService{s: s} }
 }
 
 type wrapStocktakeService struct {
-	s *StocktakeService
+	s func() *StocktakeService
 }
 
 type CancelStocktakeEndpoint struct {
@@ -10483,7 +10483,7 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.Canc
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CancelStocktake(ctx, query)
+	err = s.s().CancelStocktake(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10539,7 +10539,7 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.Con
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmStocktake(ctx, query)
+	err = s.s().ConfirmStocktake(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10598,7 +10598,7 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.Crea
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateStocktake(ctx, query)
+	err = s.s().CreateStocktake(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10654,7 +10654,7 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetStocktake(ctx, query)
+	err = s.s().GetStocktake(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10710,7 +10710,7 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetSto
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetStocktakes(ctx, query)
+	err = s.s().GetStocktakes(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10766,7 +10766,7 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetStocktakesByIDs(ctx, query)
+	err = s.s().GetStocktakesByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10822,7 +10822,7 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 	}
 	query.Context.Actions = strings.Split("shop/stocktake:update|shop/stocktake:self_update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateStocktake(ctx, query)
+	err = s.s().UpdateStocktake(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10834,12 +10834,12 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.Upda
 	return resp, nil
 }
 
-func WrapSummaryService(s *SummaryService) api.SummaryService {
-	return wrapSummaryService{s: s}
+func WrapSummaryService(s func() *SummaryService) func() api.SummaryService {
+	return func() api.SummaryService { return wrapSummaryService{s: s} }
 }
 
 type wrapSummaryService struct {
-	s *SummaryService
+	s func() *SummaryService
 }
 
 type CalcBalanceShopEndpoint struct {
@@ -10889,7 +10889,7 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CalcBalanceShop(ctx, query)
+	err = s.s().CalcBalanceShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -10945,7 +10945,7 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *api.
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SummarizeFulfillments(ctx, query)
+	err = s.s().SummarizeFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11001,7 +11001,7 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.Summarize
 	}
 	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SummarizePOS(ctx, query)
+	err = s.s().SummarizePOS(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11047,7 +11047,7 @@ func (s wrapSummaryService) SummarizeTopShip(ctx context.Context, req *api.Summa
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SummarizeTopShip(ctx, query)
+	err = s.s().SummarizeTopShip(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11059,12 +11059,12 @@ func (s wrapSummaryService) SummarizeTopShip(ctx context.Context, req *api.Summa
 	return resp, nil
 }
 
-func WrapSupplierService(s *SupplierService) api.SupplierService {
-	return wrapSupplierService{s: s}
+func WrapSupplierService(s func() *SupplierService) func() api.SupplierService {
+	return func() api.SupplierService { return wrapSupplierService{s: s} }
 }
 
 type wrapSupplierService struct {
-	s *SupplierService
+	s func() *SupplierService
 }
 
 type CreateSupplierEndpoint struct {
@@ -11111,7 +11111,7 @@ func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *api.Create
 	}
 	query.Context.Actions = strings.Split("shop/supplier:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateSupplier(ctx, query)
+	err = s.s().CreateSupplier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11167,7 +11167,7 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 	}
 	query.Context.Actions = strings.Split("shop/supplier:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteSupplier(ctx, query)
+	err = s.s().DeleteSupplier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11223,7 +11223,7 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetSupplier(ctx, query)
+	err = s.s().GetSupplier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11279,7 +11279,7 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *api.GetSuppl
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetSuppliers(ctx, query)
+	err = s.s().GetSuppliers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11335,7 +11335,7 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetSuppliersByIDs(ctx, query)
+	err = s.s().GetSuppliersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11391,7 +11391,7 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *a
 	}
 	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetSuppliersByVariantID(ctx, query)
+	err = s.s().GetSuppliersByVariantID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11447,7 +11447,7 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 	}
 	query.Context.Actions = strings.Split("shop/supplier:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateSupplier(ctx, query)
+	err = s.s().UpdateSupplier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11459,12 +11459,12 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 	return resp, nil
 }
 
-func WrapTradingService(s *TradingService) api.TradingService {
-	return wrapTradingService{s: s}
+func WrapTradingService(s func() *TradingService) func() api.TradingService {
+	return func() api.TradingService { return wrapTradingService{s: s} }
 }
 
 type wrapTradingService struct {
-	s *TradingService
+	s func() *TradingService
 }
 
 type TradingCreateOrderEndpoint struct {
@@ -11511,7 +11511,7 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *inttype
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingCreateOrder(ctx, query)
+	err = s.s().TradingCreateOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11567,7 +11567,7 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingGetOrder(ctx, query)
+	err = s.s().TradingGetOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11623,7 +11623,7 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *api.GetOr
 	}
 	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingGetOrders(ctx, query)
+	err = s.s().TradingGetOrders(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11679,7 +11679,7 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 	}
 	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingGetProduct(ctx, query)
+	err = s.s().TradingGetProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11735,7 +11735,7 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	}
 	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingGetProducts(ctx, query)
+	err = s.s().TradingGetProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11747,12 +11747,12 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	return resp, nil
 }
 
-func WrapWebServerService(s *WebServerService) api.WebServerService {
-	return wrapWebServerService{s: s}
+func WrapWebServerService(s func() *WebServerService) func() api.WebServerService {
+	return func() api.WebServerService { return wrapWebServerService{s: s} }
 }
 
 type wrapWebServerService struct {
-	s *WebServerService
+	s func() *WebServerService
 }
 
 type CreateOrUpdateWsCategoryEndpoint struct {
@@ -11799,7 +11799,7 @@ func (s wrapWebServerService) CreateOrUpdateWsCategory(ctx context.Context, req 
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wscategory:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateWsCategory(ctx, query)
+	err = s.s().CreateOrUpdateWsCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11855,7 +11855,7 @@ func (s wrapWebServerService) CreateOrUpdateWsProduct(ctx context.Context, req *
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wsproduct:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateWsProduct(ctx, query)
+	err = s.s().CreateOrUpdateWsProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11911,7 +11911,7 @@ func (s wrapWebServerService) CreateWsPage(ctx context.Context, req *api.CreateW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateWsPage(ctx, query)
+	err = s.s().CreateWsPage(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -11967,7 +11967,7 @@ func (s wrapWebServerService) CreateWsWebsite(ctx context.Context, req *api.Crea
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wswebsite:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateWsWebsite(ctx, query)
+	err = s.s().CreateWsWebsite(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12023,7 +12023,7 @@ func (s wrapWebServerService) DeleteWsPage(ctx context.Context, req *api.DeteleW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteWsPage(ctx, query)
+	err = s.s().DeleteWsPage(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12079,7 +12079,7 @@ func (s wrapWebServerService) GetWsCategories(ctx context.Context, req *api.GetW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsCategories(ctx, query)
+	err = s.s().GetWsCategories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12135,7 +12135,7 @@ func (s wrapWebServerService) GetWsCategoriesByIDs(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsCategoriesByIDs(ctx, query)
+	err = s.s().GetWsCategoriesByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12191,7 +12191,7 @@ func (s wrapWebServerService) GetWsCategory(ctx context.Context, req *api.GetWsC
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wscategory:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsCategory(ctx, query)
+	err = s.s().GetWsCategory(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12247,7 +12247,7 @@ func (s wrapWebServerService) GetWsPage(ctx context.Context, req *api.GetWsPageR
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsPage(ctx, query)
+	err = s.s().GetWsPage(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12303,7 +12303,7 @@ func (s wrapWebServerService) GetWsPages(ctx context.Context, req *api.GetWsPage
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsPages(ctx, query)
+	err = s.s().GetWsPages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12359,7 +12359,7 @@ func (s wrapWebServerService) GetWsPagesByIDs(ctx context.Context, req *api.GetW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsPagesByIDs(ctx, query)
+	err = s.s().GetWsPagesByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12415,7 +12415,7 @@ func (s wrapWebServerService) GetWsProduct(ctx context.Context, req *api.GetWsPr
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsProduct(ctx, query)
+	err = s.s().GetWsProduct(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12471,7 +12471,7 @@ func (s wrapWebServerService) GetWsProducts(ctx context.Context, req *api.GetWsP
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsProducts(ctx, query)
+	err = s.s().GetWsProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12527,7 +12527,7 @@ func (s wrapWebServerService) GetWsProductsByIDs(ctx context.Context, req *api.G
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wsproduct:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsProductsByIDs(ctx, query)
+	err = s.s().GetWsProductsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12583,7 +12583,7 @@ func (s wrapWebServerService) GetWsWebsite(ctx context.Context, req *api.GetWsWe
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsWebsite(ctx, query)
+	err = s.s().GetWsWebsite(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12639,7 +12639,7 @@ func (s wrapWebServerService) GetWsWebsites(ctx context.Context, req *api.GetWsW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsWebsites(ctx, query)
+	err = s.s().GetWsWebsites(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12695,7 +12695,7 @@ func (s wrapWebServerService) GetWsWebsitesByIDs(ctx context.Context, req *api.G
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wswebsite:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWsWebsitesByIDs(ctx, query)
+	err = s.s().GetWsWebsitesByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12751,7 +12751,7 @@ func (s wrapWebServerService) UpdateWsPage(ctx context.Context, req *api.UpdateW
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wspage:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateWsPage(ctx, query)
+	err = s.s().UpdateWsPage(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -12807,7 +12807,7 @@ func (s wrapWebServerService) UpdateWsWebsite(ctx context.Context, req *api.Upda
 	}
 	query.Context.Actions = strings.Split("shop/webserver/wswebsite:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateWsWebsite(ctx, query)
+	err = s.s().UpdateWsWebsite(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

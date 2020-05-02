@@ -146,6 +146,11 @@ var connectionService = &ConnectionService{}
 var shipmentPriceService = &ShipmentPriceService{}
 var locationService = &LocationService{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Admin",
@@ -330,6 +335,11 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx con
 	return nil
 }
 
+func (s *ShopService) Clone() *ShopService {
+	res := *s
+	return &res
+}
+
 func (s *ShopService) GetShop(ctx context.Context, q *GetShopEndpoint) error {
 	query := &identitymodelx.GetShopExtendedQuery{
 		ShopID: q.Id,
@@ -369,6 +379,11 @@ func (s *ShopService) GetShopsByIDs(ctx context.Context, q *GetShopsByIDsEndpoin
 		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result),
 	}
 	return nil
+}
+
+func (s *CreditService) Clone() *CreditService {
+	res := *s
+	return &res
 }
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoint) error {
@@ -455,6 +470,11 @@ func (s *CreditService) DeleteCredit(ctx context.Context, q *DeleteCreditEndpoin
 	return nil
 }
 
+func (s *AccountService) Clone() *AccountService {
+	res := *s
+	return &res
+}
+
 func (s *AccountService) CreatePartner(ctx context.Context, q *CreatePartnerEndpoint) error {
 	cmd := &identitymodelx.CreatePartnerCommand{
 		Partner: convertpb.CreatePartnerRequestToModel(q.CreatePartnerRequest),
@@ -464,6 +484,11 @@ func (s *AccountService) CreatePartner(ctx context.Context, q *CreatePartnerEndp
 	}
 	q.Result = convertpb.PbPartner(cmd.Result.Partner)
 	return nil
+}
+
+func (s *FulfillmentService) Clone() *FulfillmentService {
+	res := *s
+	return &res
 }
 
 func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFulfillmentEndpoint) error {
@@ -506,6 +531,11 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *GenerateAPIKeyEn
 		ApiKey:    aa.AuthKey,
 	}
 	return err
+}
+
+func (s *MoneyTransactionService) Clone() *MoneyTransactionService {
+	res := *s
+	return &res
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Context, q *GetMoneyTransactionShippingEtopEndpoint) error {
@@ -588,6 +618,11 @@ func (s *MoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx contex
 	}
 	q.Result = &pbcm.UpdatedResponse{Updated: 1}
 	return nil
+}
+
+func (s *NotificationService) Clone() *NotificationService {
+	res := *s
+	return &res
 }
 
 func (s *NotificationService) CreateNotifications(ctx context.Context, q *CreateNotificationsEndpoint) error {

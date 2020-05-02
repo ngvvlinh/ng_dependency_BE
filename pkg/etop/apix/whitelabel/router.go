@@ -11,7 +11,7 @@ import (
 
 func NewWhiteLabelServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		whitelabel.NewImportServiceServer(WrapImportService(importService)),
+		whitelabel.NewImportServiceServer(WrapImportService(importService.Clone)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

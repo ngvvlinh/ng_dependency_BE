@@ -13,18 +13,28 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() ImportService:
+		return NewImportServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type ImportServiceServer struct {
-	inner ImportService
+	hooks   httprpc.Hooks
+	builder func() ImportService
 }
 
-func NewImportServiceServer(svc ImportService) Server {
+func NewImportServiceServer(builder func() ImportService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &ImportServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -35,18 +45,23 @@ func (s *ImportServiceServer) PathPrefix() string {
 }
 
 func (s *ImportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *ImportServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -54,43 +69,78 @@ func (s *ImportServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 	case "/partner.Import/Brands":
 		msg := &ImportBrandsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Brands(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Brands(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/Categories":
 		msg := &ImportCategoriesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Categories(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Categories(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/Collections":
 		msg := &ImportCollectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Collections(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Collections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/Customers":
 		msg := &ImportCustomersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Customers(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Customers(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/ProductCollections":
 		msg := &ImportProductCollectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ProductCollections(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ProductCollections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/Products":
 		msg := &ImportProductsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Products(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Products(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Import/Variants":
 		msg := &ImportShopVariantsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Variants(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Variants(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

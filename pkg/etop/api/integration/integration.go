@@ -67,12 +67,22 @@ type IntegrationService struct{}
 var integrationService = &IntegrationService{}
 var miscService = &MiscService{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Integration",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *IntegrationService) Clone() *IntegrationService {
+	res := *s
+	return &res
 }
 
 func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {

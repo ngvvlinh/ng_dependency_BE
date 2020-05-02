@@ -36,12 +36,22 @@ func Init(s *pgevent.Service) {
 	pgservice = s
 }
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "pgevent-forwarder",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *EventService) Clone() *EventService {
+	res := *s
+	return &res
 }
 
 func (s *EventService) GenerateEvents(ctx context.Context, q *GenerateEventsEndpoint) error {

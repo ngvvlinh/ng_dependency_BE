@@ -25,12 +25,22 @@ func init() {
 type MiscService struct{}
 type UserService struct{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.SuperAdmin",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *UserService) Clone() *UserService {
+	res := *s
+	return &res
 }
 
 func (s *UserService) CreateUser(ctx context.Context, r *CreateUserEndpoint) error {

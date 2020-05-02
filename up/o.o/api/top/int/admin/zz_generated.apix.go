@@ -15,18 +15,48 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() AccountService:
+		return NewAccountServiceServer(builder, hooks...), true
+	case func() ConnectionService:
+		return NewConnectionServiceServer(builder, hooks...), true
+	case func() CreditService:
+		return NewCreditServiceServer(builder, hooks...), true
+	case func() FulfillmentService:
+		return NewFulfillmentServiceServer(builder, hooks...), true
+	case func() LocationService:
+		return NewLocationServiceServer(builder, hooks...), true
+	case func() MiscService:
+		return NewMiscServiceServer(builder, hooks...), true
+	case func() MoneyTransactionService:
+		return NewMoneyTransactionServiceServer(builder, hooks...), true
+	case func() NotificationService:
+		return NewNotificationServiceServer(builder, hooks...), true
+	case func() OrderService:
+		return NewOrderServiceServer(builder, hooks...), true
+	case func() ShipmentPriceService:
+		return NewShipmentPriceServiceServer(builder, hooks...), true
+	case func() ShopService:
+		return NewShopServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type AccountServiceServer struct {
-	inner AccountService
+	hooks   httprpc.Hooks
+	builder func() AccountService
 }
 
-func NewAccountServiceServer(svc AccountService) Server {
+func NewAccountServiceServer(builder func() AccountService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &AccountServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -37,18 +67,23 @@ func (s *AccountServiceServer) PathPrefix() string {
 }
 
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -56,13 +91,23 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 	case "/admin.Account/CreatePartner":
 		msg := &CreatePartnerRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreatePartner(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreatePartner(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Account/GenerateAPIKey":
 		msg := &GenerateAPIKeyRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GenerateAPIKey(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GenerateAPIKey(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -72,12 +117,14 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 }
 
 type ConnectionServiceServer struct {
-	inner ConnectionService
+	hooks   httprpc.Hooks
+	builder func() ConnectionService
 }
 
-func NewConnectionServiceServer(svc ConnectionService) Server {
+func NewConnectionServiceServer(builder func() ConnectionService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &ConnectionServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -88,18 +135,23 @@ func (s *ConnectionServiceServer) PathPrefix() string {
 }
 
 func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -107,43 +159,78 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 	case "/admin.Connection/ConfirmConnection":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmConnection(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConfirmConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/CreateBuiltinConnection":
 		msg := &inttypes.CreateBuiltinConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateBuiltinConnection(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateBuiltinConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/DisableConnection":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DisableConnection(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DisableConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetBuiltinShopConnections":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetBuiltinShopConnections(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetBuiltinShopConnections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnectionServices":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetConnectionServices(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetConnectionServices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnections":
 		msg := &inttypes.GetConnectionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetConnections(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetConnections(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Connection/UpdateBuiltinShopConnection":
 		msg := &inttypes.UpdateShopConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateBuiltinShopConnection(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateBuiltinShopConnection(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -153,12 +240,14 @@ func (s *ConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, 
 }
 
 type CreditServiceServer struct {
-	inner CreditService
+	hooks   httprpc.Hooks
+	builder func() CreditService
 }
 
-func NewCreditServiceServer(svc CreditService) Server {
+func NewCreditServiceServer(builder func() CreditService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &CreditServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -169,18 +258,23 @@ func (s *CreditServiceServer) PathPrefix() string {
 }
 
 func (s *CreditServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -188,37 +282,67 @@ func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 	case "/admin.Credit/ConfirmCredit":
 		msg := &ConfirmCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmCredit(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConfirmCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/CreateCredit":
 		msg := &CreateCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateCredit(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/DeleteCredit":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteCredit(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredit":
 		msg := &GetCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCredit(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredits":
 		msg := &GetCreditsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCredits(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCredits(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/UpdateCredit":
 		msg := &UpdateCreditRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateCredit(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -228,12 +352,14 @@ func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 }
 
 type FulfillmentServiceServer struct {
-	inner FulfillmentService
+	hooks   httprpc.Hooks
+	builder func() FulfillmentService
 }
 
-func NewFulfillmentServiceServer(svc FulfillmentService) Server {
+func NewFulfillmentServiceServer(builder func() FulfillmentService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &FulfillmentServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -244,18 +370,23 @@ func (s *FulfillmentServiceServer) PathPrefix() string {
 }
 
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -263,31 +394,56 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 	case "/admin.Fulfillment/GetFulfillment":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetFulfillment(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/GetFulfillments":
 		msg := &GetFulfillmentsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetFulfillments(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillment":
 		msg := &UpdateFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateFulfillment(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillmentShippingFee":
 		msg := &UpdateFulfillmentShippingFeeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateFulfillmentShippingFee(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateFulfillmentShippingFee(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillmentShippingState":
 		msg := &UpdateFulfillmentShippingStateRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateFulfillmentShippingState(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateFulfillmentShippingState(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -297,12 +453,14 @@ func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message,
 }
 
 type LocationServiceServer struct {
-	inner LocationService
+	hooks   httprpc.Hooks
+	builder func() LocationService
 }
 
-func NewLocationServiceServer(svc LocationService) Server {
+func NewLocationServiceServer(builder func() LocationService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &LocationServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -313,18 +471,23 @@ func (s *LocationServiceServer) PathPrefix() string {
 }
 
 func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -332,31 +495,56 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 	case "/admin.Location/CreateCustomRegion":
 		msg := &CreateCustomRegionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateCustomRegion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateCustomRegion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Location/DeleteCustomRegion":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteCustomRegion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteCustomRegion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Location/GetCustomRegion":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCustomRegion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCustomRegion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Location/GetCustomRegions":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCustomRegions(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCustomRegions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Location/UpdateCustomRegion":
 		msg := &CustomRegion{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateCustomRegion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateCustomRegion(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -366,12 +554,14 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 }
 
 type MiscServiceServer struct {
-	inner MiscService
+	hooks   httprpc.Hooks
+	builder func() MiscService
 }
 
-func NewMiscServiceServer(svc MiscService) Server {
+func NewMiscServiceServer(builder func() MiscService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &MiscServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -382,18 +572,23 @@ func (s *MiscServiceServer) PathPrefix() string {
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -401,13 +596,23 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/admin.Misc/AdminLoginAsAccount":
 		msg := &LoginAsAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AdminLoginAsAccount(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.AdminLoginAsAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VersionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -417,12 +622,14 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type MoneyTransactionServiceServer struct {
-	inner MoneyTransactionService
+	hooks   httprpc.Hooks
+	builder func() MoneyTransactionService
 }
 
-func NewMoneyTransactionServiceServer(svc MoneyTransactionService) Server {
+func NewMoneyTransactionServiceServer(builder func() MoneyTransactionService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &MoneyTransactionServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -433,18 +640,23 @@ func (s *MoneyTransactionServiceServer) PathPrefix() string {
 }
 
 func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -452,97 +664,177 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 	case "/admin.MoneyTransaction/ConfirmMoneyTransaction":
 		msg := &ConfirmMoneyTransactionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmMoneyTransaction(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConfirmMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":
 		msg := &ConfirmMoneyTransactionShippingEtopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConfirmMoneyTransactionShippingExternals(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConfirmMoneyTransactionShippingExternals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateMoneyTransactionShippingEtop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteMoneyTransactionShippingEtop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteMoneyTransactionShippingExternal(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransaction":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransaction(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransactionShippingEtop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtops":
 		msg := &GetMoneyTransactionShippingEtopsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransactionShippingEtops(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransactionShippingEtops(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransactionShippingExternal(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals":
 		msg := &GetMoneyTransactionShippingExternalsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransactionShippingExternals(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransactionShippingExternals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactions":
 		msg := &GetMoneyTransactionsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetMoneyTransactions(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetMoneyTransactions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines":
 		msg := &RemoveMoneyTransactionShippingExternalLinesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransaction":
 		msg := &UpdateMoneyTransactionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateMoneyTransaction(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":
 		msg := &UpdateMoneyTransactionShippingEtopRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":
 		msg := &UpdateMoneyTransactionShippingExternalRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -552,12 +844,14 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Mes
 }
 
 type NotificationServiceServer struct {
-	inner NotificationService
+	hooks   httprpc.Hooks
+	builder func() NotificationService
 }
 
-func NewNotificationServiceServer(svc NotificationService) Server {
+func NewNotificationServiceServer(builder func() NotificationService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &NotificationServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -568,18 +862,23 @@ func (s *NotificationServiceServer) PathPrefix() string {
 }
 
 func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *NotificationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -587,7 +886,12 @@ func (s *NotificationServiceServer) parseRoute(path string) (reqMsg capi.Message
 	case "/admin.Notification/CreateNotifications":
 		msg := &CreateNotificationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateNotifications(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateNotifications(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -597,12 +901,14 @@ func (s *NotificationServiceServer) parseRoute(path string) (reqMsg capi.Message
 }
 
 type OrderServiceServer struct {
-	inner OrderService
+	hooks   httprpc.Hooks
+	builder func() OrderService
 }
 
-func NewOrderServiceServer(svc OrderService) Server {
+func NewOrderServiceServer(builder func() OrderService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &OrderServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -613,18 +919,23 @@ func (s *OrderServiceServer) PathPrefix() string {
 }
 
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -632,19 +943,34 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 	case "/admin.Order/GetOrder":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetOrder(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrders":
 		msg := &GetOrdersRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetOrders(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetOrders(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrdersByIDs":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetOrdersByIDs(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetOrdersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -654,12 +980,14 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ htt
 }
 
 type ShipmentPriceServiceServer struct {
-	inner ShipmentPriceService
+	hooks   httprpc.Hooks
+	builder func() ShipmentPriceService
 }
 
-func NewShipmentPriceServiceServer(svc ShipmentPriceService) Server {
+func NewShipmentPriceServiceServer(builder func() ShipmentPriceService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &ShipmentPriceServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -670,18 +998,23 @@ func (s *ShipmentPriceServiceServer) PathPrefix() string {
 }
 
 func (s *ShipmentPriceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -689,121 +1022,221 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Messag
 	case "/admin.ShipmentPrice/ActivateShipmentPriceList":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ActivateShipmentPriceList(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ActivateShipmentPriceList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentPrice":
 		msg := &CreateShipmentPriceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateShipmentPrice(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateShipmentPrice(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentPriceList":
 		msg := &CreateShipmentPriceListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateShipmentPriceList(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateShipmentPriceList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentService":
 		msg := &CreateShipmentServiceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateShipmentService(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateShipmentService(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentPrice":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteShipmentPrice(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteShipmentPrice(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentPriceList":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteShipmentPriceList(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteShipmentPriceList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentService":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteShipmentService(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteShipmentService(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPrice":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentPrice(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentPrice(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPriceList":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentPriceList(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentPriceList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPriceLists":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentPriceLists(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentPriceLists(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPrices":
 		msg := &GetShipmentPricesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentPrices(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentPrices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentService":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentService(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentService(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentServices":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShipmentServices(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShipmentServices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShippingServices":
 		msg := &GetShippingServicesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShippingServices(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPrice":
 		msg := &UpdateShipmentPriceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentPrice(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentPrice(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPriceList":
 		msg := &UpdateShipmentPriceListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentPriceList(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentPriceList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint":
 		msg := &UpdateShipmentPricesPriorityPointRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentPricesPriorityPoint(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentPricesPriorityPoint(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentService":
 		msg := &UpdateShipmentServiceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentService(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentService(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations":
 		msg := &UpdateShipmentServicesAvailableLocationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentServicesAvailableLocations(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentServicesAvailableLocations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations":
 		msg := &UpdateShipmentServicesBlacklistLocationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -813,12 +1246,14 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string) (reqMsg capi.Messag
 }
 
 type ShopServiceServer struct {
-	inner ShopService
+	hooks   httprpc.Hooks
+	builder func() ShopService
 }
 
-func NewShopServiceServer(svc ShopService) Server {
+func NewShopServiceServer(builder func() ShopService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &ShopServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -829,18 +1264,23 @@ func (s *ShopServiceServer) PathPrefix() string {
 }
 
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -848,19 +1288,34 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/admin.Shop/GetShop":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShop(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShops":
 		msg := &GetShopsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShops(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShops(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShopsByIDs":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetShopsByIDs(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetShopsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

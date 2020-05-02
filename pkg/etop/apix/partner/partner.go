@@ -90,6 +90,31 @@ type ProductCollectionService struct{}
 type ProductCollectionRelationshipService struct{}
 type VariantService struct{}
 
+func (s *MiscService) Clone() *MiscService                             { res := *s; return &res }
+func (s *ShopService) Clone() *ShopService                             { res := *s; return &res }
+func (s *ShipmentConnectionService) Clone() *ShipmentConnectionService { res := *s; return &res }
+func (s *ShipmentService) Clone() *ShipmentService                     { res := *s; return &res }
+func (s *WebhookService) Clone() *WebhookService                       { res := *s; return &res }
+func (s *HistoryService) Clone() *HistoryService                       { res := *s; return &res }
+func (s *ShippingService) Clone() *ShippingService                     { res := *s; return &res }
+func (s *CustomerService) Clone() *CustomerService                     { res := *s; return &res }
+func (s *CustomerAddressService) Clone() *CustomerAddressService       { res := *s; return &res }
+func (s *CustomerGroupService) Clone() *CustomerGroupService           { res := *s; return &res }
+func (s *CustomerGroupRelationshipService) Clone() *CustomerGroupRelationshipService {
+	res := *s
+	return &res
+}
+func (s *InventoryService) Clone() *InventoryService                 { res := *s; return &res }
+func (s *OrderService) Clone() *OrderService                         { res := *s; return &res }
+func (s *FulfillmentService) Clone() *FulfillmentService             { res := *s; return &res }
+func (s *ProductService) Clone() *ProductService                     { res := *s; return &res }
+func (s *ProductCollectionService) Clone() *ProductCollectionService { res := *s; return &res }
+func (s *ProductCollectionRelationshipService) Clone() *ProductCollectionRelationshipService {
+	res := *s
+	return &res
+}
+func (s *VariantService) Clone() *VariantService { res := *s; return &res }
+
 var miscService = &MiscService{}
 var shopService = &ShopService{}
 var webhookService = &WebhookService{}

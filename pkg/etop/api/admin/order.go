@@ -22,6 +22,11 @@ func init() {
 	bus.AddHandler("api", fulfillmentService.GetFulfillments)
 }
 
+func (s *OrderService) Clone() *OrderService {
+	res := *s
+	return &res
+}
+
 func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,

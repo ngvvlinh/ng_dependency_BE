@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapEventService(s *EventService, secret string) api.EventService {
-	return wrapEventService{s: s, secret: secret}
+func WrapEventService(s func() *EventService, secret string) func() api.EventService {
+	return func() api.EventService { return wrapEventService{s: s, secret: secret} }
 }
 
 type wrapEventService struct {
-	s      *EventService
+	s      func() *EventService
 	secret string
 }
 
@@ -59,7 +59,7 @@ func (s wrapEventService) GenerateEvents(ctx context.Context, req *api.GenerateE
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GenerateEvents(ctx, query)
+	err = s.s().GenerateEvents(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -71,12 +71,12 @@ func (s wrapEventService) GenerateEvents(ctx context.Context, req *api.GenerateE
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService, secret string) api.MiscService {
-	return wrapMiscService{s: s, secret: secret}
+func WrapMiscService(s func() *MiscService, secret string) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s, secret: secret} }
 }
 
 type wrapMiscService struct {
-	s      *MiscService
+	s      func() *MiscService
 	secret string
 }
 
@@ -112,7 +112,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

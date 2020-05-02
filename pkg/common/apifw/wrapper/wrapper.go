@@ -13,7 +13,7 @@ import (
 
 	"go.uber.org/zap/zapcore"
 
-	cmP "o.o/api/top/types/common"
+	typescommon "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
@@ -53,10 +53,10 @@ func Censor(m interface{}) {
 }
 
 type HasErrorsInterface interface {
-	HasErrors() []*cmP.Error
+	HasErrors() []*typescommon.Error
 }
 
-func HasErrors(m interface{}) []*cmP.Error {
+func HasErrors(m interface{}) []*typescommon.Error {
 	me, ok := m.(HasErrorsInterface)
 	if !ok {
 		return nil
@@ -86,7 +86,7 @@ func EncodeTwirpError(w io.Writer, err xerrors.ErrorInterface) {
 	_ = json.NewEncoder(w).Encode(twerr)
 }
 
-func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*cmP.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
+func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*typescommon.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
 	if bot == nil {
 		return
 	}
@@ -220,7 +220,7 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 	bot.SendMessage(buf.String())
 }
 
-func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp capi.Message, recovered interface{}, err error, errs []*cmP.Error, t0 time.Time) (twError xerrors.TwError) {
+func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {
 	var stacktrace []byte
 	if recovered != nil {
 		stacktrace = debug.Stack()

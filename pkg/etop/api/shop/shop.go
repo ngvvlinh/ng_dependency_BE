@@ -351,6 +351,39 @@ type RefundService struct{}
 type PurchaseRefundService struct{}
 type WebServerService struct{}
 
+func (s *MiscService) Clone() *MiscService                         { res := *s; return &res }
+func (s *InventoryService) Clone() *InventoryService               { res := *s; return &res }
+func (s *AccountService) Clone() *AccountService                   { res := *s; return &res }
+func (s *CollectionService) Clone() *CollectionService             { res := *s; return &res }
+func (s *CustomerService) Clone() *CustomerService                 { res := *s; return &res }
+func (s *CustomerGroupService) Clone() *CustomerGroupService       { res := *s; return &res }
+func (s *ProductService) Clone() *ProductService                   { res := *s; return &res }
+func (s *CategoryService) Clone() *CategoryService                 { res := *s; return &res }
+func (s *ProductSourceService) Clone() *ProductSourceService       { res := *s; return &res }
+func (s *OrderService) Clone() *OrderService                       { res := *s; return &res }
+func (s *FulfillmentService) Clone() *FulfillmentService           { res := *s; return &res }
+func (s *ShipnowService) Clone() *ShipnowService                   { res := *s; return &res }
+func (s *HistoryService) Clone() *HistoryService                   { res := *s; return &res }
+func (s *MoneyTransactionService) Clone() *MoneyTransactionService { res := *s; return &res }
+func (s *SummaryService) Clone() *SummaryService                   { res := *s; return &res }
+func (s *ExportService) Clone() *ExportService                     { res := *s; return &res }
+func (s *NotificationService) Clone() *NotificationService         { res := *s; return &res }
+func (s *AuthorizeService) Clone() *AuthorizeService               { res := *s; return &res }
+func (s *TradingService) Clone() *TradingService                   { res := *s; return &res }
+func (s *PaymentService) Clone() *PaymentService                   { res := *s; return &res }
+func (s *ReceiptService) Clone() *ReceiptService                   { res := *s; return &res }
+func (s *SupplierService) Clone() *SupplierService                 { res := *s; return &res }
+func (s *CarrierService) Clone() *CarrierService                   { res := *s; return &res }
+func (s *BrandService) Clone() *BrandService                       { res := *s; return &res }
+func (s *LedgerService) Clone() *LedgerService                     { res := *s; return &res }
+func (s *PurchaseOrderService) Clone() *PurchaseOrderService       { res := *s; return &res }
+func (s *StocktakeService) Clone() *StocktakeService               { res := *s; return &res }
+func (s *ShipmentService) Clone() *ShipmentService                 { res := *s; return &res }
+func (s *ConnectionService) Clone() *ConnectionService             { res := *s; return &res }
+func (s *RefundService) Clone() *RefundService                     { res := *s; return &res }
+func (s *PurchaseRefundService) Clone() *PurchaseRefundService     { res := *s; return &res }
+func (s *WebServerService) Clone() *WebServerService               { res := *s; return &res }
+
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
 var accountService = &AccountService{}

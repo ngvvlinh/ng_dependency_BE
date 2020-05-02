@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapAffiliateService(s *AffiliateService, secret string) api.AffiliateService {
-	return wrapAffiliateService{s: s, secret: secret}
+func WrapAffiliateService(s func() *AffiliateService, secret string) func() api.AffiliateService {
+	return func() api.AffiliateService { return wrapAffiliateService{s: s, secret: secret} }
 }
 
 type wrapAffiliateService struct {
-	s      *AffiliateService
+	s      func() *AffiliateService
 	secret string
 }
 
@@ -61,7 +61,7 @@ func (s wrapAffiliateService) AffiliateGetProducts(ctx context.Context, req *cm.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AffiliateGetProducts(ctx, query)
+	err = s.s().AffiliateGetProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (s wrapAffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx conte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateAffiliateCommissionSetting(ctx, query)
+	err = s.s().CreateOrUpdateAffiliateCommissionSetting(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (s wrapAffiliateService) CreateReferralCode(ctx context.Context, req *api.C
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateReferralCode(ctx, query)
+	err = s.s().CreateReferralCode(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -199,7 +199,7 @@ func (s wrapAffiliateService) GetCommissions(ctx context.Context, req *cm.Common
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCommissions(ctx, query)
+	err = s.s().GetCommissions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -245,7 +245,7 @@ func (s wrapAffiliateService) GetProductPromotionByProductID(ctx context.Context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProductPromotionByProductID(ctx, query)
+	err = s.s().GetProductPromotionByProductID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -291,7 +291,7 @@ func (s wrapAffiliateService) GetReferralCodes(ctx context.Context, req *cm.Comm
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetReferralCodes(ctx, query)
+	err = s.s().GetReferralCodes(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -337,7 +337,7 @@ func (s wrapAffiliateService) GetReferrals(ctx context.Context, req *cm.CommonLi
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetReferrals(ctx, query)
+	err = s.s().GetReferrals(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -383,7 +383,7 @@ func (s wrapAffiliateService) GetTransactions(ctx context.Context, req *cm.Commo
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetTransactions(ctx, query)
+	err = s.s().GetTransactions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -427,7 +427,7 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.NotifyNewShopPurchase(ctx, query)
+	err = s.s().NotifyNewShopPurchase(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -439,12 +439,12 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 	return resp, nil
 }
 
-func WrapShopService(s *ShopService) api.ShopService {
-	return wrapShopService{s: s}
+func WrapShopService(s func() *ShopService) func() api.ShopService {
+	return func() api.ShopService { return wrapShopService{s: s} }
 }
 
 type wrapShopService struct {
-	s *ShopService
+	s func() *ShopService
 }
 
 type CheckReferralCodeValidEndpoint struct {
@@ -481,7 +481,7 @@ func (s wrapShopService) CheckReferralCodeValid(ctx context.Context, req *api.Ch
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CheckReferralCodeValid(ctx, query)
+	err = s.s().CheckReferralCodeValid(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -527,7 +527,7 @@ func (s wrapShopService) GetProductPromotion(ctx context.Context, req *api.GetPr
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProductPromotion(ctx, query)
+	err = s.s().GetProductPromotion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -573,7 +573,7 @@ func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonList
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ShopGetProducts(ctx, query)
+	err = s.s().ShopGetProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -585,12 +585,12 @@ func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonList
 	return resp, nil
 }
 
-func WrapTradingService(s *TradingService) api.TradingService {
-	return wrapTradingService{s: s}
+func WrapTradingService(s func() *TradingService) func() api.TradingService {
+	return func() api.TradingService { return wrapTradingService{s: s} }
 }
 
 type wrapTradingService struct {
-	s *TradingService
+	s func() *TradingService
 }
 
 type CreateOrUpdateTradingCommissionSettingEndpoint struct {
@@ -627,7 +627,7 @@ func (s wrapTradingService) CreateOrUpdateTradingCommissionSetting(ctx context.C
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateTradingCommissionSetting(ctx, query)
+	err = s.s().CreateOrUpdateTradingCommissionSetting(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -673,7 +673,7 @@ func (s wrapTradingService) CreateTradingProductPromotion(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateTradingProductPromotion(ctx, query)
+	err = s.s().CreateTradingProductPromotion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -719,7 +719,7 @@ func (s wrapTradingService) GetTradingProductPromotionByProductIDs(ctx context.C
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetTradingProductPromotionByProductIDs(ctx, query)
+	err = s.s().GetTradingProductPromotionByProductIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -765,7 +765,7 @@ func (s wrapTradingService) GetTradingProductPromotions(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetTradingProductPromotions(ctx, query)
+	err = s.s().GetTradingProductPromotions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -811,7 +811,7 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.TradingGetProducts(ctx, query)
+	err = s.s().TradingGetProducts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -857,7 +857,7 @@ func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateTradingProductPromotion(ctx, query)
+	err = s.s().UpdateTradingProductPromotion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -869,12 +869,12 @@ func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, r
 	return resp, nil
 }
 
-func WrapUserService(s *UserService) api.UserService {
-	return wrapUserService{s: s}
+func WrapUserService(s func() *UserService) func() api.UserService {
+	return func() api.UserService { return wrapUserService{s: s} }
 }
 
 type wrapUserService struct {
-	s *UserService
+	s func() *UserService
 }
 
 type UpdateReferralEndpoint struct {
@@ -909,7 +909,7 @@ func (s wrapUserService) UpdateReferral(ctx context.Context, req *api.UpdateRefe
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateReferral(ctx, query)
+	err = s.s().UpdateReferral(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

@@ -150,6 +150,11 @@ func Init(
 	}
 }
 
+func (s *UserService) Clone() *UserService {
+	res := *s
+	return &res
+}
+
 func (s *UserService) UpdateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) error {
 	key := fmt.Sprintf("UpdateUserEmail %v-%v-%v-%v", r.Email, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
 	res, _, err := idempgroup.DoAndWrap(

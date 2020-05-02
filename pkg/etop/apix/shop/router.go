@@ -11,21 +11,21 @@ import (
 
 func NewShopServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService)),
-		service.NewWebhookServiceServer(WrapWebhookService(webhookService)),
-		service.NewHistoryServiceServer(WrapHistoryService(historyService)),
-		service.NewShippingServiceServer(WrapShippingService(shippingService)),
-		service.NewOrderServiceServer(WrapOrderService(orderService)),
-		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService)),
-		service.NewCustomerServiceServer(WrapCustomerService(customerService)),
-		service.NewCustomerAddressServiceServer(WrapCustomerAddressService(customerAddressService)),
-		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService)),
-		service.NewCustomerGroupRelationshipServiceServer(WrapCustomerGroupRelationshipService(customerGroupRelationshipService)),
-		service.NewInventoryServiceServer(WrapInventoryService(inventoryService)),
-		service.NewVariantServiceServer(WrapVariantService(variantService)),
-		service.NewProductServiceServer(WrapProductService(productService)),
-		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService)),
-		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
+		service.NewWebhookServiceServer(WrapWebhookService(webhookService.Clone)),
+		service.NewHistoryServiceServer(WrapHistoryService(historyService.Clone)),
+		service.NewShippingServiceServer(WrapShippingService(shippingService.Clone)),
+		service.NewOrderServiceServer(WrapOrderService(orderService.Clone)),
+		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService.Clone)),
+		service.NewCustomerServiceServer(WrapCustomerService(customerService.Clone)),
+		service.NewCustomerAddressServiceServer(WrapCustomerAddressService(customerAddressService.Clone)),
+		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService.Clone)),
+		service.NewCustomerGroupRelationshipServiceServer(WrapCustomerGroupRelationshipService(customerGroupRelationshipService.Clone)),
+		service.NewInventoryServiceServer(WrapInventoryService(inventoryService.Clone)),
+		service.NewVariantServiceServer(WrapVariantService(variantService.Clone)),
+		service.NewProductServiceServer(WrapProductService(productService.Clone)),
+		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
+		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

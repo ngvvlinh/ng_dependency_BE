@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapCrmService(s *CrmService, secret string) api.CrmService {
-	return wrapCrmService{s: s, secret: secret}
+func WrapCrmService(s func() *CrmService, secret string) func() api.CrmService {
+	return func() api.CrmService { return wrapCrmService{s: s, secret: secret} }
 }
 
 type wrapCrmService struct {
-	s      *CrmService
+	s      func() *CrmService
 	secret string
 }
 
@@ -59,7 +59,7 @@ func (s wrapCrmService) RefreshFulfillmentFromCarrier(ctx context.Context, req *
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RefreshFulfillmentFromCarrier(ctx, query)
+	err = s.s().RefreshFulfillmentFromCarrier(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SendNotification(ctx, query)
+	err = s.s().SendNotification(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -115,12 +115,12 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService, secret string) api.MiscService {
-	return wrapMiscService{s: s, secret: secret}
+func WrapMiscService(s func() *MiscService, secret string) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s, secret: secret} }
 }
 
 type wrapMiscService struct {
-	s      *MiscService
+	s      func() *MiscService
 	secret string
 }
 
@@ -156,7 +156,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -168,12 +168,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapVhtService(s *VhtService) api.VhtService {
-	return wrapVhtService{s: s}
+func WrapVhtService(s func() *VhtService) func() api.VhtService {
+	return func() api.VhtService { return wrapVhtService{s: s} }
 }
 
 type wrapVhtService struct {
-	s *VhtService
+	s func() *VhtService
 }
 
 type CreateOrUpdateCallHistoryByCallIDEndpoint struct {
@@ -210,7 +210,7 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateCallHistoryByCallID(ctx, query)
+	err = s.s().CreateOrUpdateCallHistoryByCallID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -256,7 +256,7 @@ func (s wrapVhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateCallHistoryBySDKCallID(ctx, query)
+	err = s.s().CreateOrUpdateCallHistoryBySDKCallID(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -302,7 +302,7 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCallHistories(ctx, query)
+	err = s.s().GetCallHistories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -314,12 +314,12 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	return resp, nil
 }
 
-func WrapVtigerService(s *VtigerService) api.VtigerService {
-	return wrapVtigerService{s: s}
+func WrapVtigerService(s func() *VtigerService) func() api.VtigerService {
+	return func() api.VtigerService { return wrapVtigerService{s: s} }
 }
 
 type wrapVtigerService struct {
-	s *VtigerService
+	s func() *VtigerService
 }
 
 type CreateOrUpdateContactEndpoint struct {
@@ -356,7 +356,7 @@ func (s wrapVtigerService) CreateOrUpdateContact(ctx context.Context, req *api.C
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateContact(ctx, query)
+	err = s.s().CreateOrUpdateContact(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -402,7 +402,7 @@ func (s wrapVtigerService) CreateOrUpdateLead(ctx context.Context, req *api.Lead
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateOrUpdateLead(ctx, query)
+	err = s.s().CreateOrUpdateLead(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -448,7 +448,7 @@ func (s wrapVtigerService) CreateTicket(ctx context.Context, req *api.CreateOrUp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateTicket(ctx, query)
+	err = s.s().CreateTicket(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -494,7 +494,7 @@ func (s wrapVtigerService) GetCategories(ctx context.Context, req *cm.Empty) (re
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCategories(ctx, query)
+	err = s.s().GetCategories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -540,7 +540,7 @@ func (s wrapVtigerService) GetContacts(ctx context.Context, req *api.GetContacts
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetContacts(ctx, query)
+	err = s.s().GetContacts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -586,7 +586,7 @@ func (s wrapVtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Emp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetTicketStatusCount(ctx, query)
+	err = s.s().GetTicketStatusCount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -632,7 +632,7 @@ func (s wrapVtigerService) GetTickets(ctx context.Context, req *api.GetTicketsRe
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetTickets(ctx, query)
+	err = s.s().GetTickets(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -678,7 +678,7 @@ func (s wrapVtigerService) UpdateTicket(ctx context.Context, req *api.CreateOrUp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateTicket(ctx, query)
+	err = s.s().UpdateTicket(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

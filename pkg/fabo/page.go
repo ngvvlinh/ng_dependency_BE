@@ -16,6 +16,11 @@ import (
 	"o.o/capi/dot"
 )
 
+func (s *PageService) Clone() *PageService {
+	res := *s
+	return &res
+}
+
 func (s *PageService) RemovePages(ctx context.Context, r *RemovePagesEndpoint) error {
 	if len(r.IDs) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "ids must not be null")

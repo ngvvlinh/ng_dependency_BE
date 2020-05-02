@@ -33,12 +33,22 @@ type AccountService struct{}
 var miscService = &MiscService{}
 var accountService = &AccountService{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.affiliate",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *AccountService) Clone() *AccountService {
+	res := *s
+	return &res
 }
 
 func (s *AccountService) RegisterAffiliate(ctx context.Context, r *RegisterAffiliateEndpoint) error {

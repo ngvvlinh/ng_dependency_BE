@@ -19,12 +19,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapAccountService(s *AccountService) api.AccountService {
-	return wrapAccountService{s: s}
+func WrapAccountService(s func() *AccountService) func() api.AccountService {
+	return func() api.AccountService { return wrapAccountService{s: s} }
 }
 
 type wrapAccountService struct {
-	s *AccountService
+	s func() *AccountService
 }
 
 type CreatePartnerEndpoint struct {
@@ -61,7 +61,7 @@ func (s wrapAccountService) CreatePartner(ctx context.Context, req *api.CreatePa
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreatePartner(ctx, query)
+	err = s.s().CreatePartner(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GenerateAPIKey(ctx, query)
+	err = s.s().GenerateAPIKey(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -119,12 +119,12 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	return resp, nil
 }
 
-func WrapConnectionService(s *ConnectionService) api.ConnectionService {
-	return wrapConnectionService{s: s}
+func WrapConnectionService(s func() *ConnectionService) func() api.ConnectionService {
+	return func() api.ConnectionService { return wrapConnectionService{s: s} }
 }
 
 type wrapConnectionService struct {
-	s *ConnectionService
+	s func() *ConnectionService
 }
 
 type ConfirmConnectionEndpoint struct {
@@ -161,7 +161,7 @@ func (s wrapConnectionService) ConfirmConnection(ctx context.Context, req *cm.ID
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmConnection(ctx, query)
+	err = s.s().ConfirmConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -207,7 +207,7 @@ func (s wrapConnectionService) CreateBuiltinConnection(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateBuiltinConnection(ctx, query)
+	err = s.s().CreateBuiltinConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -253,7 +253,7 @@ func (s wrapConnectionService) DisableConnection(ctx context.Context, req *cm.ID
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DisableConnection(ctx, query)
+	err = s.s().DisableConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ func (s wrapConnectionService) GetBuiltinShopConnections(ctx context.Context, re
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBuiltinShopConnections(ctx, query)
+	err = s.s().GetBuiltinShopConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -345,7 +345,7 @@ func (s wrapConnectionService) GetConnectionServices(ctx context.Context, req *c
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetConnectionServices(ctx, query)
+	err = s.s().GetConnectionServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -391,7 +391,7 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *inttypes
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetConnections(ctx, query)
+	err = s.s().GetConnections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -437,7 +437,7 @@ func (s wrapConnectionService) UpdateBuiltinShopConnection(ctx context.Context, 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateBuiltinShopConnection(ctx, query)
+	err = s.s().UpdateBuiltinShopConnection(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -449,12 +449,12 @@ func (s wrapConnectionService) UpdateBuiltinShopConnection(ctx context.Context, 
 	return resp, nil
 }
 
-func WrapCreditService(s *CreditService) api.CreditService {
-	return wrapCreditService{s: s}
+func WrapCreditService(s func() *CreditService) func() api.CreditService {
+	return func() api.CreditService { return wrapCreditService{s: s} }
 }
 
 type wrapCreditService struct {
-	s *CreditService
+	s func() *CreditService
 }
 
 type ConfirmCreditEndpoint struct {
@@ -491,7 +491,7 @@ func (s wrapCreditService) ConfirmCredit(ctx context.Context, req *api.ConfirmCr
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmCredit(ctx, query)
+	err = s.s().ConfirmCredit(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -537,7 +537,7 @@ func (s wrapCreditService) CreateCredit(ctx context.Context, req *api.CreateCred
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCredit(ctx, query)
+	err = s.s().CreateCredit(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -583,7 +583,7 @@ func (s wrapCreditService) DeleteCredit(ctx context.Context, req *cm.IDRequest) 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCredit(ctx, query)
+	err = s.s().DeleteCredit(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -629,7 +629,7 @@ func (s wrapCreditService) GetCredit(ctx context.Context, req *api.GetCreditRequ
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCredit(ctx, query)
+	err = s.s().GetCredit(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -675,7 +675,7 @@ func (s wrapCreditService) GetCredits(ctx context.Context, req *api.GetCreditsRe
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCredits(ctx, query)
+	err = s.s().GetCredits(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -721,7 +721,7 @@ func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCred
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCredit(ctx, query)
+	err = s.s().UpdateCredit(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -733,12 +733,12 @@ func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCred
 	return resp, nil
 }
 
-func WrapFulfillmentService(s *FulfillmentService) api.FulfillmentService {
-	return wrapFulfillmentService{s: s}
+func WrapFulfillmentService(s func() *FulfillmentService) func() api.FulfillmentService {
+	return func() api.FulfillmentService { return wrapFulfillmentService{s: s} }
 }
 
 type wrapFulfillmentService struct {
-	s *FulfillmentService
+	s func() *FulfillmentService
 }
 
 type GetFulfillmentEndpoint struct {
@@ -775,7 +775,7 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillment(ctx, query)
+	err = s.s().GetFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -821,7 +821,7 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *api.Ge
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetFulfillments(ctx, query)
+	err = s.s().GetFulfillments(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -867,7 +867,7 @@ func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateFulfillment(ctx, query)
+	err = s.s().UpdateFulfillment(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -913,7 +913,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateFulfillmentShippingFee(ctx, query)
+	err = s.s().UpdateFulfillmentShippingFee(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -959,7 +959,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingState(ctx context.Conte
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateFulfillmentShippingState(ctx, query)
+	err = s.s().UpdateFulfillmentShippingState(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -971,12 +971,12 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingState(ctx context.Conte
 	return resp, nil
 }
 
-func WrapLocationService(s *LocationService) api.LocationService {
-	return wrapLocationService{s: s}
+func WrapLocationService(s func() *LocationService) func() api.LocationService {
+	return func() api.LocationService { return wrapLocationService{s: s} }
 }
 
 type wrapLocationService struct {
-	s *LocationService
+	s func() *LocationService
 }
 
 type CreateCustomRegionEndpoint struct {
@@ -1013,7 +1013,7 @@ func (s wrapLocationService) CreateCustomRegion(ctx context.Context, req *api.Cr
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateCustomRegion(ctx, query)
+	err = s.s().CreateCustomRegion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1059,7 +1059,7 @@ func (s wrapLocationService) DeleteCustomRegion(ctx context.Context, req *cm.IDR
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteCustomRegion(ctx, query)
+	err = s.s().DeleteCustomRegion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1105,7 +1105,7 @@ func (s wrapLocationService) GetCustomRegion(ctx context.Context, req *cm.IDRequ
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomRegion(ctx, query)
+	err = s.s().GetCustomRegion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1151,7 +1151,7 @@ func (s wrapLocationService) GetCustomRegions(ctx context.Context, req *cm.Empty
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetCustomRegions(ctx, query)
+	err = s.s().GetCustomRegions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1197,7 +1197,7 @@ func (s wrapLocationService) UpdateCustomRegion(ctx context.Context, req *api.Cu
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateCustomRegion(ctx, query)
+	err = s.s().UpdateCustomRegion(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1209,12 +1209,12 @@ func (s wrapLocationService) UpdateCustomRegion(ctx context.Context, req *api.Cu
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type AdminLoginAsAccountEndpoint struct {
@@ -1251,7 +1251,7 @@ func (s wrapMiscService) AdminLoginAsAccount(ctx context.Context, req *api.Login
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AdminLoginAsAccount(ctx, query)
+	err = s.s().AdminLoginAsAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1293,7 +1293,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1305,12 +1305,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
-	return wrapMoneyTransactionService{s: s}
+func WrapMoneyTransactionService(s func() *MoneyTransactionService) func() api.MoneyTransactionService {
+	return func() api.MoneyTransactionService { return wrapMoneyTransactionService{s: s} }
 }
 
 type wrapMoneyTransactionService struct {
-	s *MoneyTransactionService
+	s func() *MoneyTransactionService
 }
 
 type ConfirmMoneyTransactionEndpoint struct {
@@ -1347,7 +1347,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransaction(ctx context.Context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmMoneyTransaction(ctx, query)
+	err = s.s().ConfirmMoneyTransaction(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1393,7 +1393,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingEtop(ctx con
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmMoneyTransactionShippingEtop(ctx, query)
+	err = s.s().ConfirmMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1439,7 +1439,7 @@ func (s wrapMoneyTransactionService) ConfirmMoneyTransactionShippingExternals(ct
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConfirmMoneyTransactionShippingExternals(ctx, query)
+	err = s.s().ConfirmMoneyTransactionShippingExternals(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1485,7 +1485,7 @@ func (s wrapMoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx cont
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateMoneyTransactionShippingEtop(ctx, query)
+	err = s.s().CreateMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1531,7 +1531,7 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingEtop(ctx cont
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteMoneyTransactionShippingEtop(ctx, query)
+	err = s.s().DeleteMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1577,7 +1577,7 @@ func (s wrapMoneyTransactionService) DeleteMoneyTransactionShippingExternal(ctx 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteMoneyTransactionShippingExternal(ctx, query)
+	err = s.s().DeleteMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1623,7 +1623,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransaction(ctx, query)
+	err = s.s().GetMoneyTransaction(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1669,7 +1669,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactionShippingEtop(ctx, query)
+	err = s.s().GetMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1715,7 +1715,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingEtops(ctx contex
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactionShippingEtops(ctx, query)
+	err = s.s().GetMoneyTransactionShippingEtops(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1761,7 +1761,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternal(ctx con
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactionShippingExternal(ctx, query)
+	err = s.s().GetMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1807,7 +1807,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactionShippingExternals(ctx co
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactionShippingExternals(ctx, query)
+	err = s.s().GetMoneyTransactionShippingExternals(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1853,7 +1853,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetMoneyTransactions(ctx, query)
+	err = s.s().GetMoneyTransactions(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1899,7 +1899,7 @@ func (s wrapMoneyTransactionService) RemoveMoneyTransactionShippingExternalLines
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveMoneyTransactionShippingExternalLines(ctx, query)
+	err = s.s().RemoveMoneyTransactionShippingExternalLines(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1945,7 +1945,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransaction(ctx context.Context,
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateMoneyTransaction(ctx, query)
+	err = s.s().UpdateMoneyTransaction(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1991,7 +1991,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx cont
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateMoneyTransactionShippingEtop(ctx, query)
+	err = s.s().UpdateMoneyTransactionShippingEtop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2037,7 +2037,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateMoneyTransactionShippingExternal(ctx, query)
+	err = s.s().UpdateMoneyTransactionShippingExternal(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2049,12 +2049,12 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx 
 	return resp, nil
 }
 
-func WrapNotificationService(s *NotificationService) api.NotificationService {
-	return wrapNotificationService{s: s}
+func WrapNotificationService(s func() *NotificationService) func() api.NotificationService {
+	return func() api.NotificationService { return wrapNotificationService{s: s} }
 }
 
 type wrapNotificationService struct {
-	s *NotificationService
+	s func() *NotificationService
 }
 
 type CreateNotificationsEndpoint struct {
@@ -2091,7 +2091,7 @@ func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *a
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateNotifications(ctx, query)
+	err = s.s().CreateNotifications(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2103,12 +2103,12 @@ func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *a
 	return resp, nil
 }
 
-func WrapOrderService(s *OrderService) api.OrderService {
-	return wrapOrderService{s: s}
+func WrapOrderService(s func() *OrderService) func() api.OrderService {
+	return func() api.OrderService { return wrapOrderService{s: s} }
 }
 
 type wrapOrderService struct {
-	s *OrderService
+	s func() *OrderService
 }
 
 type GetOrderEndpoint struct {
@@ -2145,7 +2145,7 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrder(ctx, query)
+	err = s.s().GetOrder(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2191,7 +2191,7 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *api.GetOrdersReque
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrders(ctx, query)
+	err = s.s().GetOrders(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2237,7 +2237,7 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetOrdersByIDs(ctx, query)
+	err = s.s().GetOrdersByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2249,12 +2249,12 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest
 	return resp, nil
 }
 
-func WrapShipmentPriceService(s *ShipmentPriceService) api.ShipmentPriceService {
-	return wrapShipmentPriceService{s: s}
+func WrapShipmentPriceService(s func() *ShipmentPriceService) func() api.ShipmentPriceService {
+	return func() api.ShipmentPriceService { return wrapShipmentPriceService{s: s} }
 }
 
 type wrapShipmentPriceService struct {
-	s *ShipmentPriceService
+	s func() *ShipmentPriceService
 }
 
 type ActivateShipmentPriceListEndpoint struct {
@@ -2291,7 +2291,7 @@ func (s wrapShipmentPriceService) ActivateShipmentPriceList(ctx context.Context,
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ActivateShipmentPriceList(ctx, query)
+	err = s.s().ActivateShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2337,7 +2337,7 @@ func (s wrapShipmentPriceService) CreateShipmentPrice(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateShipmentPrice(ctx, query)
+	err = s.s().CreateShipmentPrice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2383,7 +2383,7 @@ func (s wrapShipmentPriceService) CreateShipmentPriceList(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateShipmentPriceList(ctx, query)
+	err = s.s().CreateShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2429,7 +2429,7 @@ func (s wrapShipmentPriceService) CreateShipmentService(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateShipmentService(ctx, query)
+	err = s.s().CreateShipmentService(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2475,7 +2475,7 @@ func (s wrapShipmentPriceService) DeleteShipmentPrice(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteShipmentPrice(ctx, query)
+	err = s.s().DeleteShipmentPrice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2521,7 +2521,7 @@ func (s wrapShipmentPriceService) DeleteShipmentPriceList(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteShipmentPriceList(ctx, query)
+	err = s.s().DeleteShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2567,7 +2567,7 @@ func (s wrapShipmentPriceService) DeleteShipmentService(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteShipmentService(ctx, query)
+	err = s.s().DeleteShipmentService(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2613,7 +2613,7 @@ func (s wrapShipmentPriceService) GetShipmentPrice(ctx context.Context, req *cm.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentPrice(ctx, query)
+	err = s.s().GetShipmentPrice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2659,7 +2659,7 @@ func (s wrapShipmentPriceService) GetShipmentPriceList(ctx context.Context, req 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentPriceList(ctx, query)
+	err = s.s().GetShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2705,7 +2705,7 @@ func (s wrapShipmentPriceService) GetShipmentPriceLists(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentPriceLists(ctx, query)
+	err = s.s().GetShipmentPriceLists(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2751,7 +2751,7 @@ func (s wrapShipmentPriceService) GetShipmentPrices(ctx context.Context, req *ap
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentPrices(ctx, query)
+	err = s.s().GetShipmentPrices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2797,7 +2797,7 @@ func (s wrapShipmentPriceService) GetShipmentService(ctx context.Context, req *c
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentService(ctx, query)
+	err = s.s().GetShipmentService(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2843,7 +2843,7 @@ func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShipmentServices(ctx, query)
+	err = s.s().GetShipmentServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2889,7 +2889,7 @@ func (s wrapShipmentPriceService) GetShippingServices(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShippingServices(ctx, query)
+	err = s.s().GetShippingServices(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2935,7 +2935,7 @@ func (s wrapShipmentPriceService) UpdateShipmentPrice(ctx context.Context, req *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentPrice(ctx, query)
+	err = s.s().UpdateShipmentPrice(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2981,7 +2981,7 @@ func (s wrapShipmentPriceService) UpdateShipmentPriceList(ctx context.Context, r
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentPriceList(ctx, query)
+	err = s.s().UpdateShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3027,7 +3027,7 @@ func (s wrapShipmentPriceService) UpdateShipmentPricesPriorityPoint(ctx context.
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentPricesPriorityPoint(ctx, query)
+	err = s.s().UpdateShipmentPricesPriorityPoint(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3073,7 +3073,7 @@ func (s wrapShipmentPriceService) UpdateShipmentService(ctx context.Context, req
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentService(ctx, query)
+	err = s.s().UpdateShipmentService(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3119,7 +3119,7 @@ func (s wrapShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx c
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentServicesAvailableLocations(ctx, query)
+	err = s.s().UpdateShipmentServicesAvailableLocations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3165,7 +3165,7 @@ func (s wrapShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx c
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateShipmentServicesBlacklistLocations(ctx, query)
+	err = s.s().UpdateShipmentServicesBlacklistLocations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3177,12 +3177,12 @@ func (s wrapShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx c
 	return resp, nil
 }
 
-func WrapShopService(s *ShopService) api.ShopService {
-	return wrapShopService{s: s}
+func WrapShopService(s func() *ShopService) func() api.ShopService {
+	return func() api.ShopService { return wrapShopService{s: s} }
 }
 
 type wrapShopService struct {
-	s *ShopService
+	s func() *ShopService
 }
 
 type GetShopEndpoint struct {
@@ -3219,7 +3219,7 @@ func (s wrapShopService) GetShop(ctx context.Context, req *cm.IDRequest) (resp *
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShop(ctx, query)
+	err = s.s().GetShop(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3265,7 +3265,7 @@ func (s wrapShopService) GetShops(ctx context.Context, req *api.GetShopsRequest)
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShops(ctx, query)
+	err = s.s().GetShops(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3311,7 +3311,7 @@ func (s wrapShopService) GetShopsByIDs(ctx context.Context, req *cm.IDsRequest) 
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetShopsByIDs(ctx, query)
+	err = s.s().GetShopsByIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

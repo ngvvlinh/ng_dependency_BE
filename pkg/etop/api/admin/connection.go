@@ -11,6 +11,11 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+func (s *ConnectionService) Clone() *ConnectionService {
+	res := *s
+	return &res
+}
+
 func (s *ConnectionService) GetConnections(ctx context.Context, r *GetConnectionsEndpoint) error {
 	query := &connectioning.ListConnectionsQuery{
 		ConnectionType:   connection_type.Shipping,

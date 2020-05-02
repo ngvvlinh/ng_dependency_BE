@@ -17,12 +17,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapImportService(s *ImportService) api.ImportService {
-	return wrapImportService{s: s}
+func WrapImportService(s func() *ImportService) func() api.ImportService {
+	return func() api.ImportService { return wrapImportService{s: s} }
 }
 
 type wrapImportService struct {
-	s *ImportService
+	s func() *ImportService
 }
 
 type BrandsEndpoint struct {
@@ -60,7 +60,7 @@ func (s wrapImportService) Brands(ctx context.Context, req *api.ImportBrandsRequ
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Brands(ctx, query)
+	err = s.s().Brands(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (s wrapImportService) Categories(ctx context.Context, req *api.ImportCatego
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Categories(ctx, query)
+	err = s.s().Categories(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func (s wrapImportService) Collections(ctx context.Context, req *api.ImportColle
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Collections(ctx, query)
+	err = s.s().Collections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -201,7 +201,7 @@ func (s wrapImportService) Customers(ctx context.Context, req *api.ImportCustome
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Customers(ctx, query)
+	err = s.s().Customers(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -248,7 +248,7 @@ func (s wrapImportService) ProductCollections(ctx context.Context, req *api.Impo
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ProductCollections(ctx, query)
+	err = s.s().ProductCollections(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -295,7 +295,7 @@ func (s wrapImportService) Products(ctx context.Context, req *api.ImportProducts
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Products(ctx, query)
+	err = s.s().Products(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -342,7 +342,7 @@ func (s wrapImportService) Variants(ctx context.Context, req *api.ImportShopVari
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Variants(ctx, query)
+	err = s.s().Variants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

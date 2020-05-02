@@ -73,12 +73,22 @@ var crmService = &CrmService{}
 var vtigerService = &VtigerService{}
 var vhtService = &VhtService{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop-crm",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *CrmService) Clone() *CrmService {
+	res := *s
+	return &res
 }
 
 func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *RefreshFulfillmentFromCarrierEndpoint) error {
@@ -143,6 +153,11 @@ func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEn
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Create successful"))
 	return nil
+}
+
+func (s *VtigerService) Clone() *VtigerService {
+	res := *s
+	return &res
 }
 
 func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoint) error {
@@ -347,6 +362,7 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUp
 	}
 	return nil
 }
+
 func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdateLeadEndpoint) error {
 	cmd := &vtiger.CreateOrUpdateLeadCommand{
 		ID:                   r.Id,
@@ -400,6 +416,11 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdat
 		Firstname:            cmd.Result.Firstname,
 	}
 	return nil
+}
+
+func (s *VhtService) Clone() *VhtService {
+	res := *s
+	return &res
 }
 
 func (s *VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *CreateOrUpdateCallHistoryBySDKCallIDEndpoint) error {

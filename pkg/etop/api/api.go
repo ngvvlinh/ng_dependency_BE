@@ -67,6 +67,11 @@ var addressService = &AddressService{}
 var userRelationshipService = &UserRelationshipService{}
 var accountRelationshipService = &AccountRelationshipService{}
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop",
@@ -78,6 +83,11 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) e
 		},
 	}
 	return nil
+}
+
+func (s *LocationService) Clone() *LocationService {
+	res := *s
+	return &res
 }
 
 func (s *LocationService) GetProvinces(ctx context.Context, q *GetProvincesEndpoint) error {
@@ -159,6 +169,11 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEnd
 	return nil
 }
 
+func (s *BankService) Clone() *BankService {
+	res := *s
+	return &res
+}
+
 func (s *BankService) GetBanks(ctx context.Context, q *GetBanksEndpoint) error {
 	q.Result = &apietop.GetBanksResponse{
 		Banks: convertpb.PbBanks(bank.Banks),
@@ -194,6 +209,11 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranc
 		Branches: convertpb.PbBankBranches(branches),
 	}
 	return nil
+}
+
+func (s *AddressService) Clone() *AddressService {
+	res := *s
+	return &res
 }
 
 func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndpoint) error {
@@ -253,6 +273,11 @@ func (s *AddressService) RemoveAddress(ctx context.Context, q *RemoveAddressEndp
 	}
 	q.Result = &pbcm.Empty{}
 	return nil
+}
+
+func (s *UserRelationshipService) Clone() *UserRelationshipService {
+	res := *s
+	return &res
 }
 
 func (s *UserRelationshipService) AcceptInvitation(ctx context.Context, q *UserRelationshipAcceptInvitationEndpoint) error {
@@ -391,6 +416,11 @@ func (s *UserRelationshipService) LeaveAccount(ctx context.Context, q *UserRelat
 	}
 	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
 	return nil
+}
+
+func (s *AccountRelationshipService) Clone() *AccountRelationshipService {
+	res := *s
+	return &res
 }
 
 func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *AccountRelationshipCreateInvitationEndpoint) error {

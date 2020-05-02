@@ -10,8 +10,8 @@ import (
 
 func NewIntegrationServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService)),
-		service.NewIntegrationServiceServer(WrapIntegrationService(integrationService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
+		service.NewIntegrationServiceServer(WrapIntegrationService(integrationService.Clone)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

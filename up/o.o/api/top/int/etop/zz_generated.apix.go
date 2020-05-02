@@ -14,18 +14,42 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() AccountRelationshipService:
+		return NewAccountRelationshipServiceServer(builder, hooks...), true
+	case func() AccountService:
+		return NewAccountServiceServer(builder, hooks...), true
+	case func() AddressService:
+		return NewAddressServiceServer(builder, hooks...), true
+	case func() BankService:
+		return NewBankServiceServer(builder, hooks...), true
+	case func() LocationService:
+		return NewLocationServiceServer(builder, hooks...), true
+	case func() MiscService:
+		return NewMiscServiceServer(builder, hooks...), true
+	case func() UserRelationshipService:
+		return NewUserRelationshipServiceServer(builder, hooks...), true
+	case func() UserService:
+		return NewUserServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type AccountRelationshipServiceServer struct {
-	inner AccountRelationshipService
+	hooks   httprpc.Hooks
+	builder func() AccountRelationshipService
 }
 
-func NewAccountRelationshipServiceServer(svc AccountRelationshipService) Server {
+func NewAccountRelationshipServiceServer(builder func() AccountRelationshipService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &AccountRelationshipServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -36,18 +60,23 @@ func (s *AccountRelationshipServiceServer) PathPrefix() string {
 }
 
 func (s *AccountRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *AccountRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -55,43 +84,78 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string) (reqMsg capi.
 	case "/etop.AccountRelationship/CreateInvitation":
 		msg := &CreateInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateInvitation(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/DeleteInvitation":
 		msg := &DeleteInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.DeleteInvitation(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.DeleteInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetInvitations":
 		msg := &GetInvitationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetInvitations(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetInvitations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetRelationships":
 		msg := &GetRelationshipsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetRelationships(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetRelationships(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/RemoveUser":
 		msg := &RemoveUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveUser(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RemoveUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdatePermission":
 		msg := &UpdateAccountUserPermissionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdatePermission(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdatePermission(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdateRelationship":
 		msg := &UpdateRelationshipRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateRelationship(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateRelationship(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -101,12 +165,14 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string) (reqMsg capi.
 }
 
 type AccountServiceServer struct {
-	inner AccountService
+	hooks   httprpc.Hooks
+	builder func() AccountService
 }
 
-func NewAccountServiceServer(svc AccountService) Server {
+func NewAccountServiceServer(builder func() AccountService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &AccountServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -117,18 +183,23 @@ func (s *AccountServiceServer) PathPrefix() string {
 }
 
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -136,19 +207,34 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 	case "/etop.Account/GetPublicPartnerInfo":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetPublicPartnerInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetPublicPartnerInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Account/GetPublicPartners":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetPublicPartners(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetPublicPartners(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Account/UpdateURLSlug":
 		msg := &UpdateURLSlugRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateURLSlug(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateURLSlug(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -158,12 +244,14 @@ func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 }
 
 type AddressServiceServer struct {
-	inner AddressService
+	hooks   httprpc.Hooks
+	builder func() AddressService
 }
 
-func NewAddressServiceServer(svc AddressService) Server {
+func NewAddressServiceServer(builder func() AddressService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &AddressServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -174,18 +262,23 @@ func (s *AddressServiceServer) PathPrefix() string {
 }
 
 func (s *AddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *AddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -193,25 +286,45 @@ func (s *AddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 	case "/etop.Address/CreateAddress":
 		msg := &CreateAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateAddress(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/GetAddresses":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetAddresses(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetAddresses(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/RemoveAddress":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemoveAddress(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RemoveAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/UpdateAddress":
 		msg := &UpdateAddressRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateAddress(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -221,12 +334,14 @@ func (s *AddressServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 }
 
 type BankServiceServer struct {
-	inner BankService
+	hooks   httprpc.Hooks
+	builder func() BankService
 }
 
-func NewBankServiceServer(svc BankService) Server {
+func NewBankServiceServer(builder func() BankService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &BankServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -237,18 +352,23 @@ func (s *BankServiceServer) PathPrefix() string {
 }
 
 func (s *BankServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *BankServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -256,19 +376,34 @@ func (s *BankServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/etop.Bank/GetBanks":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetBanks(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetBanks(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetBranchesByBankProvince":
 		msg := &GetBranchesByBankProvinceResquest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetBranchesByBankProvince(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetBranchesByBankProvince(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetProvincesByBank":
 		msg := &GetProvincesByBankResquest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetProvincesByBank(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetProvincesByBank(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -278,12 +413,14 @@ func (s *BankServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type LocationServiceServer struct {
-	inner LocationService
+	hooks   httprpc.Hooks
+	builder func() LocationService
 }
 
-func NewLocationServiceServer(svc LocationService) Server {
+func NewLocationServiceServer(builder func() LocationService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &LocationServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -294,18 +431,23 @@ func (s *LocationServiceServer) PathPrefix() string {
 }
 
 func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -313,37 +455,67 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 	case "/etop.Location/GetDistricts":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetDistricts(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetDistricts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetDistrictsByProvince":
 		msg := &GetDistrictsByProvinceRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetDistrictsByProvince(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetDistrictsByProvince(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetProvinces":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetProvinces(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetProvinces(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWards":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetWards(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetWards(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWardsByDistrict":
 		msg := &GetWardsByDistrictRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetWardsByDistrict(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetWardsByDistrict(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/ParseLocation":
 		msg := &ParseLocationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ParseLocation(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ParseLocation(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -353,12 +525,14 @@ func (s *LocationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ 
 }
 
 type MiscServiceServer struct {
-	inner MiscService
+	hooks   httprpc.Hooks
+	builder func() MiscService
 }
 
-func NewMiscServiceServer(svc MiscService) Server {
+func NewMiscServiceServer(builder func() MiscService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &MiscServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -369,18 +543,23 @@ func (s *MiscServiceServer) PathPrefix() string {
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -388,7 +567,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/etop.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VersionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -398,12 +582,14 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type UserRelationshipServiceServer struct {
-	inner UserRelationshipService
+	hooks   httprpc.Hooks
+	builder func() UserRelationshipService
 }
 
-func NewUserRelationshipServiceServer(svc UserRelationshipService) Server {
+func NewUserRelationshipServiceServer(builder func() UserRelationshipService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &UserRelationshipServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -414,18 +600,23 @@ func (s *UserRelationshipServiceServer) PathPrefix() string {
 }
 
 func (s *UserRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *UserRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -433,31 +624,56 @@ func (s *UserRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Mes
 	case "/etop.UserRelationship/AcceptInvitation":
 		msg := &AcceptInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AcceptInvitation(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.AcceptInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitationByToken":
 		msg := &GetInvitationByTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetInvitationByToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetInvitationByToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitations":
 		msg := &GetInvitationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetInvitations(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetInvitations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/LeaveAccount":
 		msg := &UserRelationshipLeaveAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.LeaveAccount(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.LeaveAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/RejectInvitation":
 		msg := &RejectInvitationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RejectInvitation(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RejectInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -467,12 +683,14 @@ func (s *UserRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Mes
 }
 
 type UserServiceServer struct {
-	inner UserService
+	hooks   httprpc.Hooks
+	builder func() UserService
 }
 
-func NewUserServiceServer(svc UserService) Server {
+func NewUserServiceServer(builder func() UserService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &UserServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -483,18 +701,23 @@ func (s *UserServiceServer) PathPrefix() string {
 }
 
 func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -502,145 +725,265 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/etop.User/ChangePassword":
 		msg := &ChangePasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ChangePassword(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ChangePassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ChangePasswordUsingToken":
 		msg := &ChangePasswordUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ChangePasswordUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ChangePasswordUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/CheckUserRegistration":
 		msg := &GetUserByPhoneRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CheckUserRegistration(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CheckUserRegistration(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/InitSession":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.InitSession(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.InitSession(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Login":
 		msg := &LoginRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Login(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Login(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Register":
 		msg := &CreateUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.Register(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/RegisterUsingToken":
 		msg := &CreateUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RegisterUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RegisterUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ResetPassword":
 		msg := &ResetPasswordRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ResetPassword(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ResetPassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerification":
 		msg := &SendEmailVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SendEmailVerification(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SendEmailVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerificationUsingOTP":
 		msg := &SendEmailVerificationUsingOTPRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SendEmailVerificationUsingOTP(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SendEmailVerificationUsingOTP(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendPhoneVerification":
 		msg := &SendPhoneVerificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SendPhoneVerification(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SendPhoneVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendSTokenEmail":
 		msg := &SendSTokenEmailRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SendSTokenEmail(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SendSTokenEmail(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SessionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SessionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SessionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SwitchAccount":
 		msg := &SwitchAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SwitchAccount(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SwitchAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdatePermission":
 		msg := &UpdatePermissionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdatePermission(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdatePermission(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceSale":
 		msg := &UpdateReferenceSaleRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateReferenceSale(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateReferenceSale(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceUser":
 		msg := &UpdateReferenceUserRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateReferenceUser(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateReferenceUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateUserEmail":
 		msg := &UpdateUserEmailRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateUserEmail(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateUserEmail(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateUserPhone":
 		msg := &UpdateUserPhoneRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateUserPhone(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateUserPhone(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpgradeAccessToken":
 		msg := &UpgradeAccessTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpgradeAccessToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpgradeAccessToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingOTP":
 		msg := &VerifyEmailUsingOTPRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VerifyEmailUsingOTP(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VerifyEmailUsingOTP(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingToken":
 		msg := &VerifyEmailUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VerifyEmailUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VerifyEmailUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneResetPasswordUsingToken":
 		msg := &VerifyPhoneResetPasswordUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneUsingToken":
 		msg := &VerifyPhoneUsingTokenRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VerifyPhoneUsingToken(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VerifyPhoneUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

@@ -9,6 +9,11 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+func (s *LocationService) Clone() *LocationService {
+	res := *s
+	return &res
+}
+
 func (s *LocationService) GetCustomRegion(ctx context.Context, r *GetCustomRegionEndpoint) error {
 	query := &location.GetCustomRegionQuery{
 		ID: r.Id,

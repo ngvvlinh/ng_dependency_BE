@@ -20,12 +20,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapAccountService(s *AccountService) api.AccountService {
-	return wrapAccountService{s: s}
+func WrapAccountService(s func() *AccountService) func() api.AccountService {
+	return func() api.AccountService { return wrapAccountService{s: s} }
 }
 
 type wrapAccountService struct {
-	s *AccountService
+	s func() *AccountService
 }
 
 type GetPublicPartnerInfoEndpoint struct {
@@ -57,7 +57,7 @@ func (s wrapAccountService) GetPublicPartnerInfo(ctx context.Context, req *cm.ID
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPublicPartnerInfo(ctx, query)
+	err = s.s().GetPublicPartnerInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (s wrapAccountService) GetPublicPartners(ctx context.Context, req *cm.IDsRe
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetPublicPartners(ctx, query)
+	err = s.s().GetPublicPartners(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -142,7 +142,7 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateURLSlug(ctx, query)
+	err = s.s().UpdateURLSlug(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -154,12 +154,12 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	return resp, nil
 }
 
-func WrapAccountRelationshipService(s *AccountRelationshipService) api.AccountRelationshipService {
-	return wrapAccountRelationshipService{s: s}
+func WrapAccountRelationshipService(s func() *AccountRelationshipService) func() api.AccountRelationshipService {
+	return func() api.AccountRelationshipService { return wrapAccountRelationshipService{s: s} }
 }
 
 type wrapAccountRelationshipService struct {
-	s *AccountRelationshipService
+	s func() *AccountRelationshipService
 }
 
 type AccountRelationshipCreateInvitationEndpoint struct {
@@ -206,7 +206,7 @@ func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:create", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateInvitation(ctx, query)
+	err = s.s().CreateInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -262,7 +262,7 @@ func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:delete", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.DeleteInvitation(ctx, query)
+	err = s.s().DeleteInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -318,7 +318,7 @@ func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req 
 	}
 	query.Context.Actions = strings.Split("relationship/invitation:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitations(ctx, query)
+	err = s.s().GetInvitations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -374,7 +374,7 @@ func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:view", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetRelationships(ctx, query)
+	err = s.s().GetRelationships(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -430,7 +430,7 @@ func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *api
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:remove", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveUser(ctx, query)
+	err = s.s().RemoveUser(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -486,7 +486,7 @@ func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, re
 	}
 	query.Context.Actions = strings.Split("relationship/permission:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdatePermission(ctx, query)
+	err = s.s().UpdatePermission(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -542,7 +542,7 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 	}
 	query.Context.Actions = strings.Split("relationship/relationship:update", "|")
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateRelationship(ctx, query)
+	err = s.s().UpdateRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -554,12 +554,12 @@ func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, 
 	return resp, nil
 }
 
-func WrapAddressService(s *AddressService) api.AddressService {
-	return wrapAddressService{s: s}
+func WrapAddressService(s func() *AddressService) func() api.AddressService {
+	return func() api.AddressService { return wrapAddressService{s: s} }
 }
 
 type wrapAddressService struct {
-	s *AddressService
+	s func() *AddressService
 }
 
 type CreateAddressEndpoint struct {
@@ -594,7 +594,7 @@ func (s wrapAddressService) CreateAddress(ctx context.Context, req *api.CreateAd
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateAddress(ctx, query)
+	err = s.s().CreateAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -641,7 +641,7 @@ func (s wrapAddressService) GetAddresses(ctx context.Context, req *cm.Empty) (re
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetAddresses(ctx, query)
+	err = s.s().GetAddresses(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -685,7 +685,7 @@ func (s wrapAddressService) RemoveAddress(ctx context.Context, req *cm.IDRequest
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemoveAddress(ctx, query)
+	err = s.s().RemoveAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -729,7 +729,7 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateAddress(ctx, query)
+	err = s.s().UpdateAddress(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -741,12 +741,12 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	return resp, nil
 }
 
-func WrapBankService(s *BankService) api.BankService {
-	return wrapBankService{s: s}
+func WrapBankService(s func() *BankService) func() api.BankService {
+	return func() api.BankService { return wrapBankService{s: s} }
 }
 
 type wrapBankService struct {
-	s *BankService
+	s func() *BankService
 }
 
 type GetBanksEndpoint struct {
@@ -781,7 +781,7 @@ func (s wrapBankService) GetBanks(ctx context.Context, req *cm.Empty) (resp *api
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBanks(ctx, query)
+	err = s.s().GetBanks(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -825,7 +825,7 @@ func (s wrapBankService) GetBranchesByBankProvince(ctx context.Context, req *api
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetBranchesByBankProvince(ctx, query)
+	err = s.s().GetBranchesByBankProvince(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -869,7 +869,7 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProvincesByBank(ctx, query)
+	err = s.s().GetProvincesByBank(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -881,12 +881,12 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	return resp, nil
 }
 
-func WrapLocationService(s *LocationService) api.LocationService {
-	return wrapLocationService{s: s}
+func WrapLocationService(s func() *LocationService) func() api.LocationService {
+	return func() api.LocationService { return wrapLocationService{s: s} }
 }
 
 type wrapLocationService struct {
-	s *LocationService
+	s func() *LocationService
 }
 
 type GetDistrictsEndpoint struct {
@@ -919,7 +919,7 @@ func (s wrapLocationService) GetDistricts(ctx context.Context, req *cm.Empty) (r
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetDistricts(ctx, query)
+	err = s.s().GetDistricts(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -961,7 +961,7 @@ func (s wrapLocationService) GetDistrictsByProvince(ctx context.Context, req *ap
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetDistrictsByProvince(ctx, query)
+	err = s.s().GetDistrictsByProvince(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1003,7 +1003,7 @@ func (s wrapLocationService) GetProvinces(ctx context.Context, req *cm.Empty) (r
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetProvinces(ctx, query)
+	err = s.s().GetProvinces(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1045,7 +1045,7 @@ func (s wrapLocationService) GetWards(ctx context.Context, req *cm.Empty) (resp 
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWards(ctx, query)
+	err = s.s().GetWards(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1087,7 +1087,7 @@ func (s wrapLocationService) GetWardsByDistrict(ctx context.Context, req *api.Ge
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetWardsByDistrict(ctx, query)
+	err = s.s().GetWardsByDistrict(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1128,7 +1128,7 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ParseLocation(ctx, query)
+	err = s.s().ParseLocation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1140,12 +1140,12 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type VersionInfoEndpoint struct {
@@ -1178,7 +1178,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1190,12 +1190,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapUserService(s *UserService) api.UserService {
-	return wrapUserService{s: s}
+func WrapUserService(s func() *UserService) func() api.UserService {
+	return func() api.UserService { return wrapUserService{s: s} }
 }
 
 type wrapUserService struct {
-	s *UserService
+	s func() *UserService
 }
 
 type ChangePasswordEndpoint struct {
@@ -1230,7 +1230,7 @@ func (s wrapUserService) ChangePassword(ctx context.Context, req *api.ChangePass
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ChangePassword(ctx, query)
+	err = s.s().ChangePassword(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1272,7 +1272,7 @@ func (s wrapUserService) ChangePasswordUsingToken(ctx context.Context, req *api.
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ChangePasswordUsingToken(ctx, query)
+	err = s.s().ChangePasswordUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1318,7 +1318,7 @@ func (s wrapUserService) CheckUserRegistration(ctx context.Context, req *api.Get
 		return nil, err
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.CheckUserRegistration(ctx, query)
+	err = s.s().CheckUserRegistration(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1360,7 +1360,7 @@ func (s wrapUserService) InitSession(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.InitSession(ctx, query)
+	err = s.s().InitSession(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1402,7 +1402,7 @@ func (s wrapUserService) Login(ctx context.Context, req *api.LoginRequest) (resp
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Login(ctx, query)
+	err = s.s().Login(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1444,7 +1444,7 @@ func (s wrapUserService) Register(ctx context.Context, req *api.CreateUserReques
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Register(ctx, query)
+	err = s.s().Register(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1486,7 +1486,7 @@ func (s wrapUserService) RegisterUsingToken(ctx context.Context, req *api.Create
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RegisterUsingToken(ctx, query)
+	err = s.s().RegisterUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1534,7 +1534,7 @@ func (s wrapUserService) ResetPassword(ctx context.Context, req *api.ResetPasswo
 		}
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ResetPassword(ctx, query)
+	err = s.s().ResetPassword(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1578,7 +1578,7 @@ func (s wrapUserService) SendEmailVerification(ctx context.Context, req *api.Sen
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SendEmailVerification(ctx, query)
+	err = s.s().SendEmailVerification(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1622,7 +1622,7 @@ func (s wrapUserService) SendEmailVerificationUsingOTP(ctx context.Context, req 
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SendEmailVerificationUsingOTP(ctx, query)
+	err = s.s().SendEmailVerificationUsingOTP(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1664,7 +1664,7 @@ func (s wrapUserService) SendPhoneVerification(ctx context.Context, req *api.Sen
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SendPhoneVerification(ctx, query)
+	err = s.s().SendPhoneVerification(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1708,7 +1708,7 @@ func (s wrapUserService) SendSTokenEmail(ctx context.Context, req *api.SendSToke
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SendSTokenEmail(ctx, query)
+	err = s.s().SendSTokenEmail(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1752,7 +1752,7 @@ func (s wrapUserService) SessionInfo(ctx context.Context, req *cm.Empty) (resp *
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SessionInfo(ctx, query)
+	err = s.s().SessionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1796,7 +1796,7 @@ func (s wrapUserService) SwitchAccount(ctx context.Context, req *api.SwitchAccou
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SwitchAccount(ctx, query)
+	err = s.s().SwitchAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1840,7 +1840,7 @@ func (s wrapUserService) UpdatePermission(ctx context.Context, req *api.UpdatePe
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdatePermission(ctx, query)
+	err = s.s().UpdatePermission(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1884,7 +1884,7 @@ func (s wrapUserService) UpdateReferenceSale(ctx context.Context, req *api.Updat
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateReferenceSale(ctx, query)
+	err = s.s().UpdateReferenceSale(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1928,7 +1928,7 @@ func (s wrapUserService) UpdateReferenceUser(ctx context.Context, req *api.Updat
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateReferenceUser(ctx, query)
+	err = s.s().UpdateReferenceUser(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1972,7 +1972,7 @@ func (s wrapUserService) UpdateUserEmail(ctx context.Context, req *api.UpdateUse
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateUserEmail(ctx, query)
+	err = s.s().UpdateUserEmail(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2016,7 +2016,7 @@ func (s wrapUserService) UpdateUserPhone(ctx context.Context, req *api.UpdateUse
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpdateUserPhone(ctx, query)
+	err = s.s().UpdateUserPhone(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2060,7 +2060,7 @@ func (s wrapUserService) UpgradeAccessToken(ctx context.Context, req *api.Upgrad
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.UpgradeAccessToken(ctx, query)
+	err = s.s().UpgradeAccessToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2104,7 +2104,7 @@ func (s wrapUserService) VerifyEmailUsingOTP(ctx context.Context, req *api.Verif
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VerifyEmailUsingOTP(ctx, query)
+	err = s.s().VerifyEmailUsingOTP(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2148,7 +2148,7 @@ func (s wrapUserService) VerifyEmailUsingToken(ctx context.Context, req *api.Ver
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VerifyEmailUsingToken(ctx, query)
+	err = s.s().VerifyEmailUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2190,7 +2190,7 @@ func (s wrapUserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context,
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VerifyPhoneResetPasswordUsingToken(ctx, query)
+	err = s.s().VerifyPhoneResetPasswordUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2232,7 +2232,7 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VerifyPhoneUsingToken(ctx, query)
+	err = s.s().VerifyPhoneUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2244,12 +2244,12 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *api.Ver
 	return resp, nil
 }
 
-func WrapUserRelationshipService(s *UserRelationshipService) api.UserRelationshipService {
-	return wrapUserRelationshipService{s: s}
+func WrapUserRelationshipService(s func() *UserRelationshipService) func() api.UserRelationshipService {
+	return func() api.UserRelationshipService { return wrapUserRelationshipService{s: s} }
 }
 
 type wrapUserRelationshipService struct {
-	s *UserRelationshipService
+	s func() *UserRelationshipService
 }
 
 type UserRelationshipAcceptInvitationEndpoint struct {
@@ -2284,7 +2284,7 @@ func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.AcceptInvitation(ctx, query)
+	err = s.s().AcceptInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2326,7 +2326,7 @@ func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, r
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitationByToken(ctx, query)
+	err = s.s().GetInvitationByToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2370,7 +2370,7 @@ func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *ap
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitations(ctx, query)
+	err = s.s().GetInvitations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2414,7 +2414,7 @@ func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *api.
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.LeaveAccount(ctx, query)
+	err = s.s().LeaveAccount(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2458,7 +2458,7 @@ func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RejectInvitation(ctx, query)
+	err = s.s().RejectInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

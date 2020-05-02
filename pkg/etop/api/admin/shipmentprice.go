@@ -16,6 +16,11 @@ import (
 
 //-- ShipmentService --//
 
+func (s *ShipmentPriceService) Clone() *ShipmentPriceService {
+	res := *s
+	return &res
+}
+
 func (s *ShipmentPriceService) GetShipmentService(ctx context.Context, r *GetShipmentServiceEndpoint) error {
 	query := &shipmentservice.GetShipmentServiceQuery{
 		ID: r.Id,

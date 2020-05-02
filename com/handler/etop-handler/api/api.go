@@ -28,12 +28,22 @@ func Init(s *sender.WebhookSender) {
 	whsender = s
 }
 
+func (s *MiscService) Clone() *MiscService {
+	res := *s
+	return &res
+}
+
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop-event-handler",
 		Version: "0.1",
 	}
 	return nil
+}
+
+func (s *WebhookService) Clone() *WebhookService {
+	res := *s
+	return &res
 }
 
 func (s *WebhookService) ResetState(ctx context.Context, q *ResetStateEndpoint) error {

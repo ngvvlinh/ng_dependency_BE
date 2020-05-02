@@ -61,6 +61,11 @@ type TradingService struct{}
 type ShopService struct{}
 type AffiliateService struct{}
 
+func (s *UserService) Clone() *UserService           { res := *s; return &res }
+func (s *TradingService) Clone() *TradingService     { res := *s; return &res }
+func (s *ShopService) Clone() *ShopService           { res := *s; return &res }
+func (s *AffiliateService) Clone() *AffiliateService { res := *s; return &res }
+
 var userService = &UserService{}
 var tradingService = &TradingService{}
 var shopService = &ShopService{}

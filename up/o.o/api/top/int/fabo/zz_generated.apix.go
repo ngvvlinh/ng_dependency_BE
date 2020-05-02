@@ -13,18 +13,28 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() PageService:
+		return NewPageServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type PageServiceServer struct {
-	inner PageService
+	hooks   httprpc.Hooks
+	builder func() PageService
 }
 
-func NewPageServiceServer(svc PageService) Server {
+func NewPageServiceServer(builder func() PageService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &PageServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -35,18 +45,23 @@ func (s *PageServiceServer) PathPrefix() string {
 }
 
 func (s *PageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -54,19 +69,34 @@ func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/fabo.Page/ConnectPages":
 		msg := &ConnectPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ConnectPages(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ConnectPages(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/fabo.Page/ListPages":
 		msg := &ListPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ListPages(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ListPages(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/fabo.Page/RemovePages":
 		msg := &RemovePagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RemovePages(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RemovePages(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

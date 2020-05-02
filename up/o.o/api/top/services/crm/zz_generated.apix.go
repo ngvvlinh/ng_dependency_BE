@@ -14,18 +14,34 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() CrmService:
+		return NewCrmServiceServer(builder, hooks...), true
+	case func() MiscService:
+		return NewMiscServiceServer(builder, hooks...), true
+	case func() VhtService:
+		return NewVhtServiceServer(builder, hooks...), true
+	case func() VtigerService:
+		return NewVtigerServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type CrmServiceServer struct {
-	inner CrmService
+	hooks   httprpc.Hooks
+	builder func() CrmService
 }
 
-func NewCrmServiceServer(svc CrmService) Server {
+func NewCrmServiceServer(builder func() CrmService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &CrmServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -36,18 +52,23 @@ func (s *CrmServiceServer) PathPrefix() string {
 }
 
 func (s *CrmServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *CrmServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -55,13 +76,23 @@ func (s *CrmServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httpr
 	case "/crm.Crm/RefreshFulfillmentFromCarrier":
 		msg := &RefreshFulfillmentFromCarrierRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RefreshFulfillmentFromCarrier(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.RefreshFulfillmentFromCarrier(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Crm/SendNotification":
 		msg := &SendNotificationRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.SendNotification(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.SendNotification(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -71,12 +102,14 @@ func (s *CrmServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httpr
 }
 
 type MiscServiceServer struct {
-	inner MiscService
+	hooks   httprpc.Hooks
+	builder func() MiscService
 }
 
-func NewMiscServiceServer(svc MiscService) Server {
+func NewMiscServiceServer(builder func() MiscService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &MiscServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -87,18 +120,23 @@ func (s *MiscServiceServer) PathPrefix() string {
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -106,7 +144,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/crm.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.VersionInfo(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -116,12 +159,14 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type VhtServiceServer struct {
-	inner VhtService
+	hooks   httprpc.Hooks
+	builder func() VhtService
 }
 
-func NewVhtServiceServer(svc VhtService) Server {
+func NewVhtServiceServer(builder func() VhtService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &VhtServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -132,18 +177,23 @@ func (s *VhtServiceServer) PathPrefix() string {
 }
 
 func (s *VhtServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *VhtServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -151,19 +201,34 @@ func (s *VhtServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httpr
 	case "/crm.Vht/CreateOrUpdateCallHistoryByCallID":
 		msg := &VHTCallLog{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID":
 		msg := &VHTCallLog{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vht/GetCallHistories":
 		msg := &GetCallHistoriesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCallHistories(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCallHistories(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -173,12 +238,14 @@ func (s *VhtServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httpr
 }
 
 type VtigerServiceServer struct {
-	inner VtigerService
+	hooks   httprpc.Hooks
+	builder func() VtigerService
 }
 
-func NewVtigerServiceServer(svc VtigerService) Server {
+func NewVtigerServiceServer(builder func() VtigerService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &VtigerServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -189,18 +256,23 @@ func (s *VtigerServiceServer) PathPrefix() string {
 }
 
 func (s *VtigerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *VtigerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -208,49 +280,89 @@ func (s *VtigerServiceServer) parseRoute(path string) (reqMsg capi.Message, _ ht
 	case "/crm.Vtiger/CreateOrUpdateContact":
 		msg := &ContactRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateContact(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateContact(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateOrUpdateLead":
 		msg := &LeadRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateLead(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateLead(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateTicket":
 		msg := &CreateOrUpdateTicketRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateTicket(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateTicket(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetCategories":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCategories(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCategories(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetContacts":
 		msg := &GetContactsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetContacts(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetContacts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTicketStatusCount":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetTicketStatusCount(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetTicketStatusCount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTickets":
 		msg := &GetTicketsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetTickets(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetTickets(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/UpdateTicket":
 		msg := &CreateOrUpdateTicketRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateTicket(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateTicket(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

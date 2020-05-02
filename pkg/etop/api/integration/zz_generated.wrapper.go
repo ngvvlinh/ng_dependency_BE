@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapIntegrationService(s *IntegrationService) api.IntegrationService {
-	return wrapIntegrationService{s: s}
+func WrapIntegrationService(s func() *IntegrationService) func() api.IntegrationService {
+	return func() api.IntegrationService { return wrapIntegrationService{s: s} }
 }
 
 type wrapIntegrationService struct {
-	s *IntegrationService
+	s func() *IntegrationService
 }
 
 type GrantAccessEndpoint struct {
@@ -61,7 +61,7 @@ func (s wrapIntegrationService) GrantAccess(ctx context.Context, req *api.GrantA
 	query.Context.Admin = session.Admin
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GrantAccess(ctx, query)
+	err = s.s().GrantAccess(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (s wrapIntegrationService) Init(ctx context.Context, req *api.InitRequest) 
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Init(ctx, query)
+	err = s.s().Init(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -147,7 +147,7 @@ func (s wrapIntegrationService) LoginUsingToken(ctx context.Context, req *api.Lo
 	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.LoginUsingToken(ctx, query)
+	err = s.s().LoginUsingToken(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (s wrapIntegrationService) LoginUsingTokenWL(ctx context.Context, req *api.
 	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.LoginUsingTokenWL(ctx, query)
+	err = s.s().LoginUsingTokenWL(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -235,7 +235,7 @@ func (s wrapIntegrationService) Register(ctx context.Context, req *api.RegisterR
 	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.Register(ctx, query)
+	err = s.s().Register(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -283,7 +283,7 @@ func (s wrapIntegrationService) RequestLogin(ctx context.Context, req *api.Reque
 		return nil, err
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RequestLogin(ctx, query)
+	err = s.s().RequestLogin(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -327,7 +327,7 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 	}
 	query.CtxPartner = session.CtxPartner
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.SessionInfo(ctx, query)
+	err = s.s().SessionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -339,12 +339,12 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 	return resp, nil
 }
 
-func WrapMiscService(s *MiscService) api.MiscService {
-	return wrapMiscService{s: s}
+func WrapMiscService(s func() *MiscService) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s} }
 }
 
 type wrapMiscService struct {
-	s *MiscService
+	s func() *MiscService
 }
 
 type VersionInfoEndpoint struct {
@@ -377,7 +377,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		query.Context.Claim = session.Claim
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

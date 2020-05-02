@@ -18,12 +18,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapMiscService(s *MiscService, secret string) api.MiscService {
-	return wrapMiscService{s: s, secret: secret}
+func WrapMiscService(s func() *MiscService, secret string) func() api.MiscService {
+	return func() api.MiscService { return wrapMiscService{s: s, secret: secret} }
 }
 
 type wrapMiscService struct {
-	s      *MiscService
+	s      func() *MiscService
 	secret string
 }
 
@@ -59,7 +59,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.VersionInfo(ctx, query)
+	err = s.s().VersionInfo(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -71,12 +71,12 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func WrapWebhookService(s *WebhookService, secret string) api.WebhookService {
-	return wrapWebhookService{s: s, secret: secret}
+func WrapWebhookService(s func() *WebhookService, secret string) func() api.WebhookService {
+	return func() api.WebhookService { return wrapWebhookService{s: s, secret: secret} }
 }
 
 type wrapWebhookService struct {
-	s      *WebhookService
+	s      func() *WebhookService
 	secret string
 }
 
@@ -112,7 +112,7 @@ func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateR
 		return nil, common.ErrUnauthenticated
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ResetState(ctx, query)
+	err = s.s().ResetState(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

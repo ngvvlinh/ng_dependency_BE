@@ -17,12 +17,12 @@ import (
 	middleware "o.o/backend/pkg/etop/authorize/middleware"
 )
 
-func WrapPageService(s *PageService) api.PageService {
-	return wrapPageService{s: s}
+func WrapPageService(s func() *PageService) func() api.PageService {
+	return func() api.PageService { return wrapPageService{s: s} }
 }
 
 type wrapPageService struct {
-	s *PageService
+	s func() *PageService
 }
 
 type ConnectPagesEndpoint struct {
@@ -59,7 +59,7 @@ func (s wrapPageService) ConnectPages(ctx context.Context, req *api.ConnectPages
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ConnectPages(ctx, query)
+	err = s.s().ConnectPages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (s wrapPageService) ListPages(ctx context.Context, req *api.ListPagesReques
 		query.Context.FaboInfo = faboInfo
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.ListPages(ctx, query)
+	err = s.s().ListPages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -175,7 +175,7 @@ func (s wrapPageService) RemovePages(ctx context.Context, req *api.RemovePagesRe
 		query.Context.FaboInfo = faboInfo
 	}
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.RemovePages(ctx, query)
+	err = s.s().RemovePages(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

@@ -27,6 +27,11 @@ type AccountService struct{}
 
 var accountService = &AccountService{}
 
+func (s *AccountService) Clone() *AccountService {
+	res := *s
+	return &res
+}
+
 func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndpoint) error {
 	if r.AccountId == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)

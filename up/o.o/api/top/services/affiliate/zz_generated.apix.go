@@ -14,18 +14,34 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-type Server interface {
-	http.Handler
-	PathPrefix() string
+func RegisterServers() {
+	httprpc.Register(NewServer)
+}
+
+func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+	switch builder := builder.(type) {
+	case func() AffiliateService:
+		return NewAffiliateServiceServer(builder, hooks...), true
+	case func() ShopService:
+		return NewShopServiceServer(builder, hooks...), true
+	case func() TradingService:
+		return NewTradingServiceServer(builder, hooks...), true
+	case func() UserService:
+		return NewUserServiceServer(builder, hooks...), true
+	default:
+		return nil, false
+	}
 }
 
 type AffiliateServiceServer struct {
-	inner AffiliateService
+	hooks   httprpc.Hooks
+	builder func() AffiliateService
 }
 
-func NewAffiliateServiceServer(svc AffiliateService) Server {
+func NewAffiliateServiceServer(builder func() AffiliateService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &AffiliateServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -36,18 +52,23 @@ func (s *AffiliateServiceServer) PathPrefix() string {
 }
 
 func (s *AffiliateServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -55,55 +76,100 @@ func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 	case "/affiliate.Affiliate/AffiliateGetProducts":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AffiliateGetProducts(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.AffiliateGetProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting":
 		msg := &CreateOrUpdateCommissionSettingRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateReferralCode":
 		msg := &CreateReferralCodeRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateReferralCode(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateReferralCode(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetCommissions":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetCommissions(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetCommissions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetProductPromotionByProductID":
 		msg := &GetProductPromotionByProductIDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetProductPromotionByProductID(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetProductPromotionByProductID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferralCodes":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetReferralCodes(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetReferralCodes(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferrals":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetReferrals(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetReferrals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetTransactions":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetTransactions(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetTransactions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/NotifyNewShopPurchase":
 		msg := &NotifyNewShopPurchaseRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.NotifyNewShopPurchase(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.NotifyNewShopPurchase(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -113,12 +179,14 @@ func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg capi.Message, _
 }
 
 type ShopServiceServer struct {
-	inner ShopService
+	hooks   httprpc.Hooks
+	builder func() ShopService
 }
 
-func NewShopServiceServer(svc ShopService) Server {
+func NewShopServiceServer(builder func() ShopService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &ShopServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -129,18 +197,23 @@ func (s *ShopServiceServer) PathPrefix() string {
 }
 
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -148,19 +221,34 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/affiliate.Shop/CheckReferralCodeValid":
 		msg := &CheckReferralCodeValidRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CheckReferralCodeValid(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CheckReferralCodeValid(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/GetProductPromotion":
 		msg := &GetProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetProductPromotion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/ShopGetProducts":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.ShopGetProducts(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ShopGetProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -170,12 +258,14 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type TradingServiceServer struct {
-	inner TradingService
+	hooks   httprpc.Hooks
+	builder func() TradingService
 }
 
-func NewTradingServiceServer(svc TradingService) Server {
+func NewTradingServiceServer(builder func() TradingService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &TradingServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -186,18 +276,23 @@ func (s *TradingServiceServer) PathPrefix() string {
 }
 
 func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -205,37 +300,67 @@ func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 	case "/affiliate.Trading/CreateOrUpdateTradingCommissionSetting":
 		msg := &CreateOrUpdateTradingCommissionSettingRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/CreateTradingProductPromotion":
 		msg := &CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.CreateTradingProductPromotion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.CreateTradingProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotionByProductIDs":
 		msg := &GetTradingProductPromotionByIDsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetTradingProductPromotionByProductIDs(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetTradingProductPromotionByProductIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotions":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetTradingProductPromotions(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.GetTradingProductPromotions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/TradingGetProducts":
 		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.TradingGetProducts(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.TradingGetProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/UpdateTradingProductPromotion":
 		msg := &CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateTradingProductPromotion(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateTradingProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -245,12 +370,14 @@ func (s *TradingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ h
 }
 
 type UserServiceServer struct {
-	inner UserService
+	hooks   httprpc.Hooks
+	builder func() UserService
 }
 
-func NewUserServiceServer(svc UserService) Server {
+func NewUserServiceServer(builder func() UserService, hooks ...*httprpc.Hooks) httprpc.Server {
 	return &UserServiceServer{
-		inner: svc,
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
 	}
 }
 
@@ -261,18 +388,23 @@ func (s *UserServiceServer) PathPrefix() string {
 }
 
 func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
 	reqMsg, exec, err := s.parseRoute(req.URL.Path)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
 		return
 	}
-	serve(ctx, resp, req, reqMsg, exec)
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
 }
 
 func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
@@ -280,7 +412,12 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 	case "/affiliate.User/UpdateReferral":
 		msg := &UpdateReferralRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.UpdateReferral(ctx, msg)
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateReferral(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
