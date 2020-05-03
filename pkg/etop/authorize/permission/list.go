@@ -33,8 +33,11 @@ const (
 	Required
 )
 
-// PermissionDecl ...
-type PermissionDecl struct {
+func (a AuthOpt) AuthPartner() bool {
+	return a != Default
+}
+
+type Decl struct {
 	Type            PermType
 	Auth            AuthType
 	Permissions     string

@@ -39,7 +39,7 @@ var funcs = map[string]interface{}{
 	"requireIncludeFaboInfo":   requireIncludeFaboInfo,
 }
 
-func getPermission(m *Method) *permission.PermissionDecl {
+func getPermission(m *Method) *permission.Decl {
 	p := acl.ACL[acl.ConvertKey(m.FullPath())]
 	if p == nil {
 		gen.Fatalf("Method %v does not exist in ACL map", m.FullPath())

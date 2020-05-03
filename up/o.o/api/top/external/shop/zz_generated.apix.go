@@ -15,7 +15,7 @@ import (
 	httprpc "o.o/capi/httprpc"
 )
 
-func RegisterServers() {
+func init() {
 	httprpc.Register(NewServer)
 }
 

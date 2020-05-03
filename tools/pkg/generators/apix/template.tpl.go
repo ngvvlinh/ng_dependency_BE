@@ -1,7 +1,7 @@
 package apix
 
 const tplText = `
-func RegisterServers() {
+func init() {
 	httprpc.Register(NewServer)
 }
 

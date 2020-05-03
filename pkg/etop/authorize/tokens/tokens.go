@@ -30,6 +30,10 @@ func init() {
 	)
 }
 
+type Validator interface {
+	Validate(tokenStr string) (*claims.Claim, error)
+}
+
 // InitTokenStore ...
 func Init(r redis.Store) {
 	Store = TokenStore{
@@ -40,6 +44,10 @@ func Init(r redis.Store) {
 // TokenStore ...
 type TokenStore struct {
 	auth auth.Generator
+}
+
+func NewTokenStore(r redis.Store) TokenStore {
+	return TokenStore{auth: auth.NewGenerator(r)}
 }
 
 type GenerateTokenCommand struct {

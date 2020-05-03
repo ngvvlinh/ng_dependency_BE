@@ -6,14 +6,27 @@ import (
 	"o.o/backend/pkg/etop/authorize/permission"
 )
 
+var ACL map[string]*permission.Decl
+
 func init() {
-	ACL2 := make(map[string]*permission.PermissionDecl)
-	for key, p := range ACL {
+	ACL = make(map[string]*permission.Decl)
+	for key, p := range _acl {
 		key2 := ConvertKey(key)
-		delete(ACL, key)
-		ACL2[key2] = p
+		ACL[key2] = p
 	}
-	ACL = ACL2
+}
+
+// GetACL is a slightly different function which append / to key to make it
+// compatible with authroize/session
+//
+// TODO(vu): handle ext/
+func GetACL() map[string]*permission.Decl {
+	res := make(map[string]*permission.Decl)
+	for key, p := range _acl {
+		key2 := "/" + strings.TrimSpace(key)
+		res[key2] = p
+	}
+	return res
 }
 
 func ConvertKey(key string) string {
@@ -198,7 +211,7 @@ const (
 )
 
 // ACL declares access control list
-var ACL = map[string]*permission.PermissionDecl{
+var _acl = map[string]*permission.Decl{
 	//-- sadmin --//
 
 	"sadmin.User/CreateUser":     {Type: SuperAdmin},

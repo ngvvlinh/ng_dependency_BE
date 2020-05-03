@@ -86,7 +86,7 @@ func startEtopServer() *http.Server {
 			headers.ForwardHeaders(apiMux)))
 
 		api.NewEtopServer(apiMux)
-		sadmin.NewSadminServer(apiMux)
+		sadmin.NewSadminServer(apiMux, ss, hooks)
 		admin.NewAdminServer(apiMux)
 		shop.NewShopServer(apiMux)
 		affiliate.NewAffiliateServer(apiMux)

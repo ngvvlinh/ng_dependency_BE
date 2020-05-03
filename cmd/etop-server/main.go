@@ -116,6 +116,7 @@ import (
 	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
 	authorizeauth "o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
 	orderS "o.o/backend/pkg/etop/logic/orders"
@@ -136,6 +137,8 @@ import (
 	"o.o/backend/pkg/integration/sms"
 	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
 	apiaff "o.o/backend/pkg/services/affiliate/api"
+	"o.o/backend/tools/pkg/acl"
+	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
 
@@ -177,6 +180,9 @@ var (
 	shipmentManager *shippingcarrier.ShipmentManager
 	moneyTxQuery    moneytx.QueryBus
 	moneyTxAggr     moneytx.CommandBus
+
+	ss    *session.Session
+	hooks *httprpc.Hooks
 )
 
 func main() {
@@ -600,6 +606,12 @@ func main() {
 		// should move struct `callback` out of etop/model before change to ll.Fatal
 		ll.Error("Fail to verify Database", l.Error(err))
 	}
+
+	ss = session.New(
+		session.OptValidator(tokens.NewTokenStore(redisStore)),
+		session.OptSuperAdmin(cfg.SAdminToken),
+	)
+	hooks = session.NewHook(acl.GetACL()).Build()
 
 	svrs := startServers(webServerQuery)
 	if bot != nil {

@@ -144,14 +144,14 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 		default:
 			ll.Panic("unexpected account type")
 		}
-		claim, account, err = verifyAPIKey(ctx, token, expectType)
+		claim, account, err = VerifyAPIKey(ctx, token, expectType)
 		if err != nil {
 			return ctx, err
 		}
 		wlPartnerID = account.GetAccount().ID
 
 	} else if q.RequireAPIPartnerShopKey {
-		claim, account, err = verifyAPIPartnerShopKey(ctx, token)
+		claim, account, err = VerifyAPIPartnerShopKey(ctx, token)
 		if err != nil {
 			return ctx, err
 		}
@@ -186,46 +186,49 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 	}
 
 	session.Claim = claim
-	ok := startSessionUser(ctx, q.RequireUser, session) &&
-		startSessionPartner(ctx, q.RequirePartner, session, account) &&
-		startSessionShop(ctx, q.RequireShop, session, account) &&
-		startSessionAffiliate(ctx, q.RequireAffiliate, session, account) &&
-		startSessionEtopAdmin(ctx, q.RequireEtopAdmin, session) &&
-		startSessionAuthPartner(ctx, q.AuthPartner, session)
+	ok := StartSessionUser(ctx, q.RequireUser, claim, &session.User) &&
+		StartSessionPartner(ctx, q.RequirePartner, claim, account, &session.Partner) &&
+		StartSessionShop(ctx, q.RequireShop, claim, account, &session.Shop, &session.Permission) &&
+		StartSessionAffiliate(ctx, q.RequireAffiliate, claim, account, &session.Affiliate, &session.Permission) &&
+		StartSessionEtopAdmin(ctx, q.RequireEtopAdmin, claim, &session.Permission) &&
+		StartSessionAuthPartner(ctx, q.AuthPartner, claim, &session.CtxPartner)
 	if !ok {
 		return ctx, cm.ErrPermissionDenied
+	}
+	if account != nil {
+		session.IsOwner = account.GetAccount().OwnerID == claim.UserID
 	}
 	q.Result = session
 	return ctx, nil
 }
 
-func startSessionUser(ctx context.Context, require bool, s *Session) bool {
+func StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, user **identitymodelx.SignedInUser) bool {
 	if require {
-		if s.Claim.UserID == 0 {
+		if claim.UserID == 0 {
 			return false
 		}
 		query := &identitymodelx.GetSignedInUserQuery{
-			UserID: s.Claim.UserID,
+			UserID: claim.UserID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid UserID", l.Error(err))
 			return false
 		}
-		s.User = query.Result
+		*user = query.Result
 	}
 	return true
 }
 
-func startSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, s *Session) bool {
+func StartSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, claim *claims.Claim, ctxPartner **identitymodel.Partner) bool {
 	if authOpt == 0 {
 		return true
 	}
-	if authOpt == permission.Required && s.Claim.AuthPartnerID == 0 {
+	if authOpt == permission.Required && claim.AuthPartnerID == 0 {
 		return false
 	}
 
 	var partner *identitymodel.Partner
-	partnerID := s.Claim.AuthPartnerID
+	partnerID := claim.AuthPartnerID
 	if partnerID != 0 {
 		query := &identitymodelx.GetPartner{
 			PartnerID: partnerID,
@@ -237,125 +240,122 @@ func startSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, s 
 		partner = query.Result.Partner
 	}
 
-	s.CtxPartner = partner
+	*ctxPartner = partner
 	return true
 }
 
-func startSessionPartner(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
-	if partner, ok := account.(*identitymodel.Partner); ok && s.Claim.AccountID == partner.ID {
-		s.Partner = partner
+func StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _partner **identitymodel.Partner) bool {
+	if partner, ok := account.(*identitymodel.Partner); ok && claim.AccountID == partner.ID {
+		*_partner = partner
 		return true
 	}
 	if require {
-		if !model.IsPartnerID(s.Claim.AccountID) {
+		if !model.IsPartnerID(claim.AccountID) {
 			return false
 		}
 		query := &identitymodelx.GetPartner{
-			PartnerID: s.Claim.AccountID,
+			PartnerID: claim.AccountID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid Name", l.Error(err))
 			return false
 		}
-		s.Partner = query.Result.Partner
+		*_partner = query.Result.Partner
 	}
 	return true
 }
 
-func startSessionShop(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
-	if shop, ok := account.(*identitymodel.Shop); ok && s.Claim.AccountID == shop.ID {
-		s.Shop = shop
+func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _shop **identitymodel.Shop, _permission *identitymodel.Permission) bool {
+	if shop, ok := account.(*identitymodel.Shop); ok && claim.AccountID == shop.ID {
+		*_shop = shop
 		return true
 	}
 	if require {
-		if !model.IsShopID(s.Claim.AccountID) {
+		if !model.IsShopID(claim.AccountID) {
 			return false
 		}
 
-		if s.Claim.UserID != 0 {
+		if claim.UserID != 0 {
 			query := &identitymodelx.GetShopWithPermissionQuery{
-				ShopID: s.Claim.AccountID,
-				UserID: s.Claim.UserID,
+				ShopID: claim.AccountID,
+				UserID: claim.UserID,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
 
-			s.Shop = query.Result.Shop
-			s.Permission = query.Result.Permission
-			s.IsOwner = s.Shop.OwnerID == s.Claim.UserID
+			*_shop = query.Result.Shop
+			*_permission = query.Result.Permission
 		} else {
 			query := &identitymodelx.GetShopQuery{
-				ShopID: s.Claim.AccountID,
+				ShopID: claim.AccountID,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
-			s.Shop = query.Result
+			*_shop = query.Result
 		}
 	}
 	return true
 }
 
-func startSessionAffiliate(ctx context.Context, require bool, s *Session, account identitymodel.AccountInterface) bool {
-	if affiliate, ok := account.(*identitymodel.Affiliate); ok && s.Claim.AccountID == affiliate.ID {
-		s.Affiliate = affiliate
+func StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _affiliate **identitymodel.Affiliate, _permission *identitymodel.Permission) bool {
+	if affiliate, ok := account.(*identitymodel.Affiliate); ok && claim.AccountID == affiliate.ID {
+		*_affiliate = affiliate
 		return true
 	}
 	if require {
-		if !model.IsAffiliateID(s.Claim.AccountID) {
+		if !model.IsAffiliateID(claim.AccountID) {
 			return false
 		}
 
-		if s.Claim.UserID != 0 {
+		if claim.UserID != 0 {
 			query := &identity.GetAffiliateWithPermissionQuery{
-				AffiliateID: s.Claim.AccountID,
-				UserID:      s.Claim.UserID,
+				AffiliateID: claim.AccountID,
+				UserID:      claim.UserID,
 			}
 			if err := identityQS.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
 
-			s.Affiliate = identityconvert.AffiliateDB(query.Result.Affiliate)
-			s.Permission = identityconvert.PermissionToModel(query.Result.Permission)
-			s.IsOwner = s.Affiliate.OwnerID == s.Claim.UserID
+			*_affiliate = identityconvert.AffiliateDB(query.Result.Affiliate)
+			*_permission = identityconvert.PermissionToModel(query.Result.Permission)
 		} else {
 			query := &identity.GetAffiliateByIDQuery{
-				ID: s.Claim.AccountID,
+				ID: claim.AccountID,
 			}
 			if err := identityQS.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
-			s.Affiliate = identityconvert.AffiliateDB(query.Result)
+			*_affiliate = identityconvert.AffiliateDB(query.Result)
 		}
 	}
 	return true
 }
 
-func startSessionEtopAdmin(ctx context.Context, require bool, s *Session) bool {
+func StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Claim, _permission *identitymodel.Permission) bool {
 	if require {
-		if !model.IsEtopAccountID(s.Claim.AccountID) {
+		if !model.IsEtopAccountID(claim.AccountID) {
 			return false
 		}
 		query := &identitymodelx.GetAccountRolesQuery{
 			AccountID: model.EtopAccountID,
-			UserID:    s.Claim.UserID,
+			UserID:    claim.UserID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
 			ll.Error("Invalid GetAccountRolesQuery", l.Error(err))
 			return false
 		}
-		s.Permission = query.Result.AccountUser.Permission
-		s.IsEtopAdmin = len(s.Roles) > 0 || len(s.Permissions) > 0
+		*_permission = query.Result.AccountUser.Permission
 	}
 	return true
 }
 
-func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, identitymodel.AccountInterface, error) {
+func VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, identitymodel.AccountInterface, error) {
 	info, ok := authkey.ValidateAuthKeyWithType(authkey.TypeAPIKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
@@ -408,7 +408,7 @@ func verifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 	panic("unexpected")
 }
 
-func verifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, identitymodel.AccountInterface, error) {
+func VerifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, identitymodel.AccountInterface, error) {
 	_, ok := authkey.ValidateAuthKeyWithType(authkey.TypePartnerShopKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
