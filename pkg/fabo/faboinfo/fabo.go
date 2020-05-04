@@ -1,4 +1,4 @@
-package middleware
+package faboinfo
 
 import (
 	"context"
@@ -6,18 +6,25 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/meta"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/capi/dot"
 )
 
-var (
+type Info struct {
+	FbUserID  dot.ID
+	FbPageIDs []dot.ID
+}
+
+type FaboInfo struct {
 	fbPageQuery fbpaging.QueryBus
 	fbUserQuery fbusering.QueryBus
-)
+}
 
-func NewFabo(fbPageQ fbpaging.QueryBus, fbUserQ fbusering.QueryBus) {
-	fbPageQuery = fbPageQ
-	fbUserQuery = fbUserQ
+func New(fbPageQuery fbpaging.QueryBus, fbUserQuery fbusering.QueryBus) *FaboInfo {
+	fi := &FaboInfo{
+		fbPageQuery: fbPageQuery,
+		fbUserQuery: fbUserQuery,
+	}
+	return fi
 }
 
 type GetFaboInfoQuery struct {
@@ -25,18 +32,18 @@ type GetFaboInfoQuery struct {
 	UserID dot.ID
 }
 
-func GetFaboInfo(ctx context.Context, r *GetFaboInfoQuery) (*claims.FaboInfo, error) {
+func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*Info, error) {
 	getFbUserByIDQuery := &fbusering.GetFbUserByUserIDQuery{
-		UserID: r.UserID,
+		UserID: userID,
 	}
-	if err := fbUserQuery.Dispatch(ctx, getFbUserByIDQuery); err != nil {
+	if err := fi.fbUserQuery.Dispatch(ctx, getFbUserByIDQuery); err != nil {
 		return nil, err
 	}
 	fbUserID := getFbUserByIDQuery.Result.ID
 
 	listFbPagesQuery := &fbpaging.ListFbPagesQuery{
-		ShopID:   r.ShopID,
-		UserID:   r.UserID,
+		ShopID:   shopID,
+		UserID:   userID,
 		FbUserID: dot.WrapID(fbUserID),
 		Filters: []meta.Filter{
 			{
@@ -46,17 +53,16 @@ func GetFaboInfo(ctx context.Context, r *GetFaboInfoQuery) (*claims.FaboInfo, er
 			},
 		},
 	}
-	if err := fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
+	if err := fi.fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
 		return nil, err
 	}
 
 	fbPageIDs := make([]dot.ID, 0, len(listFbPagesQuery.Result.FbPages))
-
 	for _, fbPage := range listFbPagesQuery.Result.FbPages {
 		fbPageIDs = append(fbPageIDs, fbPage.ID)
 	}
 
-	return &claims.FaboInfo{
+	return &Info{
 		FbUserID:  fbUserID,
 		FbPageIDs: fbPageIDs,
 	}, nil

@@ -26,9 +26,12 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
+	"o.o/backend/tools/pkg/acl"
+	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
 
@@ -107,25 +110,15 @@ func main() {
 	sqlstore.AddEventBus(eventBus)
 
 	_ = serviceidentity.NewQueryService(db).MessageBus()
-	fbpageaggregate := servicefbpage.NewFbPageAggregate(db).MessageBus()
-	fbpagequery := servicefbpage.NewFbPageQuery(db).MessageBus()
-	fbuseraggregate := servicefbuser.NewFbUserAggregate(db, fbpageaggregate).MessageBus()
-	fbuserquery := servicefbuser.NewFbUserQuery(db).MessageBus()
+	fbPageAggr := servicefbpage.NewFbPageAggregate(db).MessageBus()
+	fbPageQuery := servicefbpage.NewFbPageQuery(db).MessageBus()
+	fbUserAggr := servicefbuser.NewFbUserAggregate(db, fbPageAggr).MessageBus()
+	fbUserQuery := servicefbuser.NewFbUserQuery(db).MessageBus()
 
 	fbClient := fbclient.New(cfg.FacebookApp, bot)
 	if err := fbClient.Ping(); err != nil {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
-	middleware.NewFabo(fbpagequery, fbuserquery)
-
-	fabo.Init(
-		fbuserquery,
-		fbuseraggregate,
-		fbpagequery,
-		fbpageaggregate,
-		fbClient,
-		appScopes,
-	)
 
 	healthservice.MarkReady()
 
@@ -135,6 +128,18 @@ func main() {
 		Addr:    cfg.HTTP.Address(),
 		Handler: mux,
 	}
+
+	ss := session.New(
+		session.OptValidator(tokens.NewTokenStore(redisStore)),
+	)
+	hooks := session.NewHook(acl.GetACL()).Build()
+
+	var servers []httprpc.Server
+	servers = append(servers, fabo.NewFaboServer(
+		hooks, ss,
+		fbUserQuery, fbUserAggr, fbPageQuery, fbPageAggr,
+		appScopes, fbClient,
+	)...)
 
 	mux.Handle("/", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
 	mux.Handle("/doc", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
@@ -147,7 +152,9 @@ func main() {
 	mux.Handle("/api/", http.StripPrefix("/api",
 		middleware.CORS(headers.ForwardHeaders(apiMux))))
 
-	fabo.NewFaboServer(apiMux)
+	for _, s := range servers {
+		apiMux.Handle(s.PathPrefix(), s)
+	}
 
 	go func() {
 		defer ctxCancel()

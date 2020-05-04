@@ -28,6 +28,7 @@ type Sessioner interface {
 
 type Session struct {
 	init        bool
+	ctx         context.Context
 	sadminToken string
 	validator   tokens.Validator
 
@@ -102,6 +103,7 @@ func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenS
 		panic("already init")
 	}
 	s.init = true
+	s.ctx = ctx
 
 	if tokenStr == "" && perm.Type != permission.Public {
 		return ctx, cm.Errorf(cm.Unauthenticated, nil, "")

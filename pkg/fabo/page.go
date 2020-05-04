@@ -12,81 +12,123 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
-	"o.o/capi/dot"
+	"o.o/backend/pkg/fabo/faboinfo"
 )
 
-func (s *PageService) Clone() *PageService {
+type PageService struct {
+	session.Sessioner
+	ss *session.Session
+
+	faboInfo    *faboinfo.FaboInfo
+	fbUserQuery fbusering.QueryBus
+	fbUserAggr  fbusering.CommandBus
+	fbPageQuery fbpaging.QueryBus
+	fbPageAggr  fbpaging.CommandBus
+	appScopes   map[string]string
+	fbClient    *fbclient.FbClient
+}
+
+func NewPageService(
+	ss *session.Session,
+	faboInfo *faboinfo.FaboInfo,
+	fbUserQuery fbusering.QueryBus,
+	fbUserAggr fbusering.CommandBus,
+	fbPageQuery fbpaging.QueryBus,
+	fbPageAggr fbpaging.CommandBus,
+	appScopes map[string]string,
+	fbClient *fbclient.FbClient,
+) *PageService {
+	s := &PageService{
+		ss:          ss,
+		faboInfo:    faboInfo,
+		fbUserQuery: fbUserQuery,
+		fbUserAggr:  fbUserAggr,
+		fbPageQuery: fbPageQuery,
+		fbPageAggr:  fbPageAggr,
+		appScopes:   appScopes,
+		fbClient:    fbClient,
+	}
+	return s
+}
+
+func (s *PageService) Clone() fabo.PageService {
 	res := *s
+	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
-func (s *PageService) RemovePages(ctx context.Context, r *RemovePagesEndpoint) error {
+func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesRequest) (*common.Empty, error) {
 	if len(r.IDs) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "ids must not be null")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "ids must not be null")
 	}
 	disablePagesByIDsCmd := &fbpaging.DisableFbPagesByIDsCommand{
 		IDs:    r.IDs,
-		ShopID: r.Context.Shop.ID,
-		UserID: r.Context.UserID,
+		ShopID: s.ss.Shop().ID,
+		UserID: s.ss.Claim().UserID,
 	}
-	if err := fbPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
-		return err
+	if err := s.fbPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
+		return nil, err
 	}
 
-	r.Result = &common.Empty{}
-	return nil
+	return &common.Empty{}, nil
 }
 
-func (s *PageService) ListPages(ctx context.Context, r *ListPagesEndpoint) error {
+func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (*fabo.ListPagesResponse, error) {
+	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+	if err != nil {
+		return nil, err
+	}
+
 	paging := cmapi.CMPaging(r.Paging)
 	listFbPagesQuery := &fbpaging.ListFbPagesQuery{
-		ShopID:   r.Context.Shop.ID,
-		UserID:   r.Context.UserID,
-		FbUserID: dot.WrapID(r.Context.FaboInfo.FbUserID),
+		ShopID:   s.ss.Shop().ID,
+		UserID:   s.ss.Claim().UserID,
+		FbUserID: faboInfo.FbUserID.Wrap(),
 		Paging:   *paging,
 		Filters:  cmapi.ToFilters(r.Filters),
 	}
-	if err := fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
-		return err
+	if err := s.fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
+		return nil, err
 	}
-	r.Result = &fabo.ListPagesResponse{
+	resp := &fabo.ListPagesResponse{
 		FbPages: convertpb.PbFbPages(listFbPagesQuery.Result.FbPages),
 		Paging:  cmapi.PbPageInfo(paging),
 	}
-	return nil
+	return resp, nil
 }
 
-func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint) error {
-	shopID := r.Context.Shop.ID
-	userID := r.Context.UserID
+func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequest) (*fabo.ConnectPagesResponse, error) {
+	shopID := s.ss.Shop().ID
+	userID := s.ss.Claim().UserID
 
-	userToken, err := fbClient.CallAPICheckAccessToken(r.AccessToken)
+	userToken, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// verify permissions
-	if err := verifyScopes(userToken.Data.Scopes); err != nil {
-		return err
+	if err := verifyScopes(s.appScopes, userToken.Data.Scopes); err != nil {
+		return nil, err
 	}
 
 	if r.AccessToken == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
 	}
-	longLivedAccessToken, err := fbClient.CallAPIGetLongLivedAccessToken(r.AccessToken)
+	longLivedAccessToken, err := s.fbClient.CallAPIGetLongLivedAccessToken(r.AccessToken)
 	if err != nil {
-		return err
-	}
-
-	me, err := fbClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
-	if err != nil {
-		return err
+		return nil, err
 	}
 
-	accounts, err := fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
+	me, err := s.fbClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	accounts, err := s.fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
+	if err != nil {
+		return nil, err
 	}
 
 	fbUserID := cm.NewID()
@@ -113,8 +155,8 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 			ExpiresIn: fbclient.ExpiresInUserToken, // 60 days
 		},
 	}
-	if err := fbUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
-		return err
+	if err := s.fbUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
+		return nil, err
 	}
 	fbUserID = createFbUserCombinedCmd.Result.FbUser.ID
 
@@ -173,22 +215,22 @@ func (s *PageService) ConnectPages(ctx context.Context, r *ConnectPagesEndpoint)
 			FbPageCombineds: listCreateFbPageCombinedCmd,
 			Result:          nil,
 		}
-		if err := fbPageAggr.Dispatch(ctx, createFbPageCombinedsCmd); err != nil {
-			return err
+		if err := s.fbPageAggr.Dispatch(ctx, createFbPageCombinedsCmd); err != nil {
+			return nil, err
 		}
 
 		fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbPageCombinedsCmd.Result)
 	}
 
-	r.Result = &fabo.ConnectPagesResponse{
+	resp := &fabo.ConnectPagesResponse{
 		FbUser:       convertpb.PbFbUserCombined(createFbUserCombinedCmd.Result),
 		FbPages:      fbPageCombinedsResult,
 		FbErrorPages: fbErrorPages,
 	}
-	return nil
+	return resp, nil
 }
 
-func verifyScopes(scopes []string) error {
+func verifyScopes(appScopes map[string]string, scopes []string) error {
 	mapScope := make(map[string]bool)
 	for _, scope := range scopes {
 		mapScope[scope] = true
