@@ -42,11 +42,17 @@ var _ WithValuer = &NodeContext{}
 
 // Ctx is shorthand for NewRootContext(context.Background()) for quickly insert
 // context to code.
-func Ctx() *NodeContext {
+func Ctx() context.Context {
 	return NewRootContext(context.Background())
 }
 
-func NewRootContext(ctx context.Context) *NodeContext {
+type ctxKey struct{}
+
+func NewRootContext(ctx context.Context) context.Context {
+	if node := GetContext(ctx); node != nil {
+		return ctx
+	}
+
 	nodes := make([]*NodeContext, 1, 16)
 	values := make([]KV, 0, 16)
 	node := &NodeContext{
@@ -59,22 +65,50 @@ func NewRootContext(ctx context.Context) *NodeContext {
 	return node
 }
 
-func (n *NodeContext) WithMessage(msg interface{}) *NodeContext {
-	node := &NodeContext{
-		Context:     n.Context,
-		Values:      n.Values,
-		Nodes:       n.Nodes,
-		Parent:      n,
-		Message:     msg,
-		Index:       len(*n.Nodes),
-		ParentIndex: n.Index,
-		Start:       time.Now(),
-	}
-	*node.Nodes = append(*node.Nodes, node)
+func GetContext(ctx context.Context) *NodeContext {
+	node, _ := ctx.Value(ctxKey{}).(*NodeContext)
 	return node
 }
 
+func WithMessage(ctx context.Context, msg interface{}) *NodeContext {
+	node := GetContext(ctx)
+	if node == nil {
+		panic("must be bus.NodeContext")
+	}
+	newNode := &NodeContext{
+		Context:     ctx,
+		Values:      node.Values,
+		Nodes:       node.Nodes,
+		Parent:      node,
+		Message:     msg,
+		Index:       len(*node.Nodes),
+		ParentIndex: node.Index,
+		Start:       time.Now(),
+	}
+	*node.Nodes = append(*node.Nodes, newNode)
+	return newNode
+}
+
+func WithValue(ctx context.Context, key, val interface{}) {
+	node := GetContext(ctx)
+	if node == nil {
+		panic("must be bus.NodeContext")
+	}
+	*node.Values = append(*node.Values, KV{key, val})
+}
+
+func ResetValue(ctx context.Context, key interface{}) {
+	node := GetContext(ctx)
+	if node == nil {
+		panic("must be bus.NodeContext")
+	}
+	node.ResetValue(key)
+}
+
 func (n *NodeContext) Value(key interface{}) interface{} {
+	if key == (ctxKey{}) {
+		return n
+	}
 	values := *n.Values
 	for i := len(values) - 1; i >= 0; i-- {
 		kv := values[i]
@@ -103,8 +137,8 @@ func (n *NodeContext) AppendLog(line logline.LogLine) {
 }
 
 func GetStack(ctx context.Context) []*NodeContext {
-	node, ok := ctx.(*NodeContext)
-	if !ok {
+	node := GetContext(ctx)
+	if node == nil {
 		return nil
 	}
 
@@ -117,16 +151,16 @@ func GetStack(ctx context.Context) []*NodeContext {
 }
 
 func GetAllStack(ctx context.Context) []*NodeContext {
-	node, ok := ctx.(*NodeContext)
-	if !ok {
+	node := GetContext(ctx)
+	if node == nil {
 		return nil
 	}
 	return *node.Nodes
 }
 
 func PrintStack(ctx context.Context) {
-	node, ok := ctx.(*NodeContext)
-	if !ok {
+	node := GetContext(ctx)
+	if node == nil {
 		debug.PrintStack()
 		log.Println("Must be bus.Context")
 		return
@@ -143,8 +177,8 @@ func PrintStack(ctx context.Context) {
 }
 
 func PrintErrorStack(ctx context.Context) {
-	node, ok := ctx.(*NodeContext)
-	if !ok {
+	node := GetContext(ctx)
+	if node == nil {
 		debug.PrintStack()
 		log.Println("Must be bus.Context")
 		return
@@ -162,8 +196,8 @@ func PrintErrorStack(ctx context.Context) {
 }
 
 func PrintAllStack(ctx context.Context, expanded bool) {
-	node, ok := ctx.(*NodeContext)
-	if !ok {
+	node := GetContext(ctx)
+	if node == nil {
 		debug.PrintStack()
 		log.Println("Must be bus.Context")
 		return
@@ -192,10 +226,11 @@ func PrintAllStack(ctx context.Context, expanded bool) {
 				_, _ = pp.Println("error = "+n.Error.Error(), n.Message)
 			}
 		} else {
+			msgName := reflect.TypeOf(n.Message).Elem().Name()
 			if n.Error == nil {
-				fmt.Println(reflect.TypeOf(n.Message).Elem().Name())
+				fmt.Println(msgName)
 			} else {
-				fmt.Println(reflect.TypeOf(n.Message).Elem().Name(), "error="+n.Error.Error())
+				fmt.Println(msgName, "error="+n.Error.Error())
 			}
 		}
 	}

@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
@@ -83,7 +84,7 @@ func startEtopServer() *http.Server {
 		apiMux := http.NewServeMux()
 		apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
 		mux.Handle("/api/", http.StripPrefix("/api",
-			headers.ForwardHeaders(apiMux)))
+			headers.ForwardHeaders(bus.Middleware(apiMux))))
 
 		api.NewEtopServer(apiMux)
 		sadmin.NewSadminServer(apiMux, ss, hooks)

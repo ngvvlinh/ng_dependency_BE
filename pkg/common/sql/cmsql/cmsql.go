@@ -388,8 +388,8 @@ func (tx tx) Rollback() error {
 
 // DefaultLogger ...
 func DefaultLogger(entry *sq.LogEntry) {
-	if ctx, ok := entry.Ctx.(*bus.NodeContext); ok {
-		ctx.WithMessage(entry)
+	if node := bus.GetContext(entry.Ctx); node != nil {
+		bus.WithMessage(entry.Ctx, entry)
 	}
 	monitorQuery(entry)
 	if entry.IsTx() {
@@ -444,11 +444,7 @@ func (db Database) InTransaction(ctx context.Context, callback func(QueryInterfa
 	if err != nil {
 		return err
 	}
-	ctx2, ok := ctx.(bus.WithValuer)
-	if !ok {
-		panic("cmsql: InTransaction only accepts bus.NodeContext")
-	}
-	ctx2.WithValue(txKey, tx)
+	bus.WithValue(ctx, txKey, tx)
 
 	defer func() {
 		e := recover()
@@ -461,7 +457,7 @@ func (db Database) InTransaction(ctx context.Context, callback func(QueryInterfa
 		} else {
 			err = tx.Commit()
 		}
-		ctx2.ResetValue(txKey)
+		bus.ResetValue(ctx, txKey)
 	}()
 	return callback(tx)
 }

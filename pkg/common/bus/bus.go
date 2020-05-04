@@ -84,8 +84,7 @@ func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) (_err error) {
 	params[0] = reflect.ValueOf(ctx)
 	params[1] = reflect.ValueOf(msg)
 
-	node, _ := ctx.(*NodeContext)
-	return call(node, msg, params, handler)
+	return call(ctx, msg, params, handler)
 }
 
 func (b *InProcBus) Publish(ctx context.Context, msg Event) (_err error) {
@@ -95,36 +94,23 @@ func (b *InProcBus) Publish(ctx context.Context, msg Event) (_err error) {
 	params[0] = reflect.ValueOf(ctx)
 	params[1] = reflect.ValueOf(msg)
 
-	node, _ := ctx.(*NodeContext)
 	for _, listenerHandler := range listeners {
-		if err := call(node, msg, params, listenerHandler); err != nil {
+		if err := call(ctx, msg, params, listenerHandler); err != nil {
 			return err
 		}
 	}
 	for _, listenerHandler := range b.wildcardListeners {
-		if err := call(node, msg, params, listenerHandler); err != nil {
+		if err := call(ctx, msg, params, listenerHandler); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func Call(ctx context.Context, msg Msg, fn func() error) (_err error) {
-	node, _ := ctx.(*NodeContext)
+func call(ctx context.Context, msg Msg, params []reflect.Value, handler HandlerFunc) (_err error) {
+	node := GetContext(ctx)
 	if node != nil {
-		newNode := node.WithMessage(msg)
-		ctx = newNode
-		defer func() {
-			newNode.Error = _err
-			newNode.Time = time.Since(newNode.Start)
-		}()
-	}
-	return fn()
-}
-
-func call(node *NodeContext, msg Msg, params []reflect.Value, handler HandlerFunc) (_err error) {
-	if node != nil {
-		newNode := node.WithMessage(msg)
+		newNode := WithMessage(ctx, msg)
 		params[0] = reflect.ValueOf(newNode)
 		defer func() {
 			newNode.Error = _err

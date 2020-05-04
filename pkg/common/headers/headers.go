@@ -13,6 +13,7 @@ import (
 type authKey struct{}
 type debugKey struct{}
 type headerKey struct{}
+type CookieKey struct{}
 
 func ForwardHeaders(next http.Handler, configs ...Config) http.HandlerFunc {
 	var cfg Config
