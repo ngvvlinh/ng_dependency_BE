@@ -141,7 +141,10 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
 		}
 	}
-	resp = convertpb.PbOrder(order, nil, model.TagShop)
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	resp = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
 	if autoCreateFfm {
 		req := &apishop.OrderIDRequest{
 			OrderId: r.OrderId,

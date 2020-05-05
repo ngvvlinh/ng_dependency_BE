@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/lib/pq"
 
@@ -448,9 +449,15 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 	}
 	if cmd.ConfirmStatus.Valid {
 		m["confirm_status"] = cmd.ConfirmStatus
+		if cmd.ConfirmStatus.Enum == status3.P {
+			m["confirmed_at"] = time.Now()
+		}
 	}
 	if cmd.Status.Valid {
 		m["status"] = cmd.Status
+		if cmd.Status.Enum == status5.N {
+			m["cancelled_at"] = time.Now()
+		}
 	}
 	if len(m) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing status", nil)
