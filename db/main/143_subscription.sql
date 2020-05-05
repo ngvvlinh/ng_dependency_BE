@@ -77,7 +77,6 @@ CREATE TABLE subscription_bill_line (
     , period_end_at TIMESTAMPTZ
     , subscription_bill_id INT8 REFERENCES subscription_bill(id)
     , subscription_id INT8 REFERENCES subscription(id)
-    , subscription_line_id INT8 REFERENCES subscription_line(id)
     , created_at TIMESTAMPTZ
     , updated_at TIMESTAMPTZ
 );
@@ -88,3 +87,8 @@ SELECT init_history('subscription', '{id,account_id}');
 SELECT init_history('subscription_line', '{id,subscription_id}');
 SELECT init_history('subscription_bill', '{id,account_id}');
 SELECT init_history('subscription_bill_line', '{id,subscription_bill_id,subscription_id}');
+
+ALTER TABLE subscription ADD COLUMN plan_ids INT8[];
+ALTER TABLE history.subscription ADD COLUMN plan_ids INT8[];
+
+CREATE UNIQUE INDEX ON subscription_product(type);

@@ -59,6 +59,7 @@ type BankService struct{}
 type AddressService struct{}
 type UserRelationshipService struct{}
 type AccountRelationshipService struct{}
+type EcomService struct{}
 
 var miscService = &MiscService{}
 var locationService = &LocationService{}
@@ -66,11 +67,10 @@ var bankService = &BankService{}
 var addressService = &AddressService{}
 var userRelationshipService = &UserRelationshipService{}
 var accountRelationshipService = &AccountRelationshipService{}
+var ecomService = &EcomService{}
 
-func (s *MiscService) Clone() *MiscService {
-	res := *s
-	return &res
-}
+func (s *MiscService) Clone() *MiscService { res := *s; return &res }
+func (s *EcomService) Clone() *EcomService { res := *s; return &res }
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

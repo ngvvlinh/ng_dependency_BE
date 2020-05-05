@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/main/location"
+	"o.o/api/meta"
 	"o.o/api/webserver"
 	servicelocation "o.o/backend/com/main/location"
 	"o.o/backend/com/web/webserver/convert"
@@ -258,13 +259,27 @@ func (w WebserverAggregate) CreateWsWebsite(ctx context.Context, args *webserver
 	if err != nil {
 		return nil, err
 	}
-	err = w.wsWebsiteStore(ctx).Create(wsWebsite)
-	if err != nil {
-		if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+
+	err = w.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err = w.wsWebsiteStore(ctx).Create(wsWebsite)
+		if err != nil {
+			if strings.Contains(err.Error(), "ws_website_site_subdomain_idx") {
+				return cm.Errorf(cm.InvalidArgument, err, "Tên miền đã được sử dụng. Nếu có thắc mắc vui lòng liên hệ %v", wl.X(ctx).CSEmail)
+			}
+			return err
 		}
+
+		event := &webserver.WsWebsiteCreatedEvent{
+			EventMeta: meta.NewEvent(),
+			ID:        wsWebsite.ID,
+			ShopID:    wsWebsite.ShopID,
+		}
+		return w.eventBus.Publish(ctx, event)
+	})
+	if err != nil {
 		return nil, err
 	}
+
 	return wsWebsite, nil
 }
 

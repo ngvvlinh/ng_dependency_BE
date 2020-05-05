@@ -151,3 +151,9 @@ type AccountRelationshipService interface {
 	GetRelationships(context.Context, *GetRelationshipsRequest) (*RelationshipsResponse, error)
 	RemoveUser(context.Context, *RemoveUserRequest) (*cm.UpdatedResponse, error)
 }
+
+// +apix:path=/etop.Ecom
+// +wrapper:endpoint-prefix=Ecom
+type EcomService interface {
+	SessionInfo(context.Context, *cm.Empty) (*EcomSessionInfoResponse, error)
+}

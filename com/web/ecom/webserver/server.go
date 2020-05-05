@@ -9,6 +9,7 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/main/location"
+	"o.o/api/subscripting/subscription"
 	"o.o/api/webserver"
 	"o.o/backend/com/web/ecom/middlewares"
 	cm "o.o/backend/pkg/common"
@@ -17,11 +18,15 @@ import (
 
 var webserverQueryBus webserver.QueryBus
 var catelogQueryBus catalog.QueryBus
+var subscriptionQuery subscription.QueryBus
 
 type Config struct {
 	MainSite string
+	CoreSite string
 	RootPath string
 }
+
+var config Config
 
 type Server struct {
 	echo *echo.Echo
@@ -31,17 +36,22 @@ type Server struct {
 
 var locationBus location.QueryBus
 
-func New(cfg Config, query webserver.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) (*Server, error) {
+func New(cfg Config, query webserver.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus, subrQuery subscription.QueryBus) (*Server, error) {
 	locationBus = locationQueryBus
 	redisStore = rd
 	webserverQueryBus = query
 	catelogQueryBus = catalogQuery
+	subscriptionQuery = subrQuery
 	if cfg.MainSite == "" {
 		return nil, cm.Errorf(cm.Internal, nil, "missing main_site")
 	}
 	if cfg.RootPath == "" {
 		return nil, cm.Errorf(cm.Internal, nil, "missing root_path")
 	}
+	if cfg.CoreSite == "" {
+		return nil, cm.Errorf(cm.Internal, nil, "missing core_site")
+	}
+	config = cfg
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -99,4 +109,8 @@ func (s *Server) registerHandlers(e *echo.Echo) {
 	e.POST("/provinces", s.Provinces)
 	e.POST("/districts", s.Districts)
 	e.POST("/wards", s.Wards)
+
+	e.GET("/subscription-outdated", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "subscription-outdated.html", nil)
+	})
 }

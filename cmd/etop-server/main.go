@@ -17,6 +17,7 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/main/shipnow"
+	subscriptioncore "o.o/api/subscripting/subscription"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/cmd/etop-server/config"
 	smsAgg "o.o/backend/com/etc/logging/smslog/aggregate"
@@ -183,10 +184,11 @@ var (
 
 	vtpayClient *vtpayclient.Client
 
-	receiptQuery    receipting.QueryBus
-	shipmentManager *shippingcarrier.ShipmentManager
-	moneyTxQuery    moneytx.QueryBus
-	moneyTxAggr     moneytx.CommandBus
+	receiptQuery      receipting.QueryBus
+	shipmentManager   *shippingcarrier.ShipmentManager
+	moneyTxQuery      moneytx.QueryBus
+	moneyTxAggr       moneytx.CommandBus
+	subscriptionQuery subscriptioncore.QueryBus
 
 	ss    *session.Session
 	hooks *httprpc.Hooks
@@ -499,12 +501,17 @@ func main() {
 	subrProductAggr := subscriptionproduct.NewSubrProductAggregate(db).MessageBus()
 	subrProductQuery := subscriptionproduct.NewSubrProductQuery(db).MessageBus()
 	subrPlanAggr := subscriptionplan.NewSubrPlanAggregate(db).MessageBus()
-	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(db).MessageBus()
-	subscriptionQuery := subscription.NewSubscriptionQuery(db).MessageBus()
+	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(db, subrProductQuery).MessageBus()
+	subscriptionQuery = subscription.NewSubscriptionQuery(db, subrPlanQuery, subrProductQuery).MessageBus()
 	subscriptionAggr := subscription.NewSubscriptionAggregate(db).MessageBus()
 	subrBillAggr := subscriptionbill.NewSubrBillAggregate(db, eventBus, paymentAggr, subscriptionQuery, subrPlanQuery).MessageBus()
 	subrBillQuery := subscriptionbill.NewSubrBillQuery(db).MessageBus()
-	subscriptionPM := subscriptionpm.New(subrBillQuery, subscriptionQuery, subscriptionAggr)
+	subscriptionPM := subscriptionpm.New(
+		subrBillQuery, subrBillAggr,
+		subscriptionQuery, subscriptionAggr,
+		subrPlanQuery,
+		identityQuery,
+	)
 	subscriptionPM.RegisterEventHandlers(eventBus)
 
 	middleware.Init(cfg.SAdminToken, identityQuery)

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscriptionproduct"
-	"o.o/api/top/types/common"
 	"o.o/backend/com/subscripting/subscriptionproduct/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -32,6 +31,6 @@ func (q *SubrProductQuery) GetSubrProductByID(ctx context.Context, id dot.ID) (*
 	return q.subrProductStore(ctx).ID(id).GetSubrProduct()
 }
 
-func (q *SubrProductQuery) ListSubrProducts(ctx context.Context, _ *common.Empty) ([]*subscriptionproduct.SubscriptionProduct, error) {
-	return q.subrProductStore(ctx).ListSubscriptions()
+func (q *SubrProductQuery) ListSubrProducts(ctx context.Context, args *subscriptionproduct.ListSubrProductsArgs) ([]*subscriptionproduct.SubscriptionProduct, error) {
+	return q.subrProductStore(ctx).OptionalProductType(args.Type).ListSubscriptions()
 }

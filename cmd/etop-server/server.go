@@ -251,9 +251,10 @@ func startWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery cata
 	ecom := cfg.Ecom
 	c := webserver.Config{
 		MainSite: ecom.MainSite,
+		CoreSite: cfg.URL.MainSite,
 		RootPath: projectpath.GetPath(),
 	}
-	handler, err := webserver.New(c, webServerQuery, catalogQuery, rd, locationQueryBus)
+	handler, err := webserver.New(c, webServerQuery, catalogQuery, rd, locationQueryBus, subscriptionQuery)
 	if err != nil {
 		ll.S.Panicf("error starting web server: %v", err)
 	}

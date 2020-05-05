@@ -439,25 +439,6 @@ func (ft *SubscriptionBillLineFilters) BySubscriptionIDPtr(SubscriptionID *dot.I
 	}
 }
 
-func (ft *SubscriptionBillLineFilters) BySubscriptionLineID(SubscriptionLineID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "subscription_line_id",
-		Value:  SubscriptionLineID,
-		IsNil:  SubscriptionLineID == 0,
-	}
-}
-
-func (ft *SubscriptionBillLineFilters) BySubscriptionLineIDPtr(SubscriptionLineID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "subscription_line_id",
-		Value:  SubscriptionLineID,
-		IsNil:  SubscriptionLineID == nil,
-		IsZero: SubscriptionLineID != nil && (*SubscriptionLineID) == 0,
-	}
-}
-
 func (ft *SubscriptionBillLineFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

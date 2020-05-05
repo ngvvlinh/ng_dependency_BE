@@ -53,8 +53,19 @@ func (s *SubrPlanStore) ID(id dot.ID) *SubrPlanStore {
 	return s
 }
 
+func (s *SubrPlanStore) ProductIDs(ids ...dot.ID) *SubrPlanStore {
+	s.preds = append(s.preds, sq.In("product_id", ids))
+	return s
+}
+
+func (s *SubrPlanStore) FreePlan() *SubrPlanStore {
+	freePrice := 0
+	s.preds = append(s.preds, s.ft.ByPricePtr(&freePrice))
+	return s
+}
+
 func (s *SubrPlanStore) GetSubrPlanDB() (*model.SubscriptionPlan, error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	var res model.SubscriptionPlan
 	if err := query.ShouldGet(&res); err != nil {
@@ -143,9 +154,10 @@ func (s *SubrPlanStore) SoftDelete() (int, error) {
 }
 
 func (s *SubrPlanStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
-	partner := wl.X(ctx)
-	if partner.IsWhiteLabel() {
-		return query.Where(s.ft.ByWLPartnerID(partner.ID))
-	}
-	return query.Where(s.ft.NotBelongWLPartner())
+	// partner := wl.X(ctx)
+	// if partner.IsWhiteLabel() {
+	// 	return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	// }
+	// return query.Where(s.ft.NotBelongWLPartner())
+	return query
 }

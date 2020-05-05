@@ -3,7 +3,6 @@ package subscriptionproduct
 import (
 	"context"
 
-	cm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/capi/dot"
 )
@@ -18,7 +17,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetSubrProductByID(ctx context.Context, ID dot.ID) (*SubscriptionProduct, error)
-	ListSubrProducts(context.Context, *cm.Empty) ([]*SubscriptionProduct, error)
+	ListSubrProducts(context.Context, *ListSubrProductsArgs) ([]*SubscriptionProduct, error)
 }
 
 // +convert:create=SubscriptionProduct
@@ -35,4 +34,8 @@ type UpdateSubrProductArgs struct {
 	Name        string
 	Description string
 	ImageURL    string
+}
+
+type ListSubrProductsArgs struct {
+	Type subscription_product_type.ProductSubscriptionType
 }

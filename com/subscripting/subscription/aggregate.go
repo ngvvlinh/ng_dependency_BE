@@ -44,9 +44,13 @@ func (a *SubscriptionAggregate) CreateSubscription(ctx context.Context, args *su
 	if len(args.Lines) == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing subscription lines")
 	}
+	var planIDs []dot.ID
 	for _, line := range args.Lines {
 		if err := verifySubscriptionLine(line); err != nil {
 			return nil, err
+		}
+		if !cm.IDsContain(planIDs, line.PlanID) {
+			planIDs = append(planIDs, line.PlanID)
 		}
 	}
 
@@ -54,6 +58,7 @@ func (a *SubscriptionAggregate) CreateSubscription(ctx context.Context, args *su
 	if err := scheme.Convert(args, &subr); err != nil {
 		return nil, err
 	}
+	subr.PlanIDs = planIDs
 
 	subrID := cm.NewID()
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
@@ -116,10 +121,22 @@ func (a *SubscriptionAggregate) UpdateSubscriptionInfo(ctx context.Context, args
 	for i, line := range subr.Lines {
 		lineIDs[i] = line.ID
 	}
+
+	var planIDs []dot.ID
+	for _, line := range args.Lines {
+		if err := verifySubscriptionLine(line); err != nil {
+			return err
+		}
+		if !cm.IDsContain(planIDs, line.PlanID) {
+			planIDs = append(planIDs, line.PlanID)
+		}
+	}
+
 	update := &model.Subscription{
 		CancelAtPeriodEnd:    args.CancelAtPeriodEnd,
 		BillingCycleAnchorAt: args.BillingCycleAnchorAt,
 		Customer:             convert.Convert_subscriptingtypes_CustomerInfo_sharemodel_CustomerInfo(args.Customer, nil),
+		PlanIDs:              planIDs,
 	}
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		if err := a.subscriptionStore(ctx).ID(args.ID).AccountID(args.AccountID).UpdateSubscriptionDB(update); err != nil {
@@ -131,9 +148,6 @@ func (a *SubscriptionAggregate) UpdateSubscriptionInfo(ctx context.Context, args
 
 		// update subscription line
 		for i, line := range args.Lines {
-			if err := verifySubscriptionLine(line); err != nil {
-				return err
-			}
 			if line.ID != 0 {
 				if err := a.subscriptionLineStore(ctx).SubscriptionID(subr.ID).ID(line.ID).UpdateSubscriptionLine(line); err != nil {
 					return err

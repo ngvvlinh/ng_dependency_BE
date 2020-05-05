@@ -1188,3 +1188,9 @@ func (m *ChangePasswordUsingTokenRequest) Censor() {
 		m.ConfirmPassword = "..."
 	}
 }
+
+type EcomSessionInfoResponse struct {
+	AllowAccess bool `json:"allow_access"`
+}
+
+func (m *EcomSessionInfoResponse) String() string { return jsonx.MustMarshalToString(m) }

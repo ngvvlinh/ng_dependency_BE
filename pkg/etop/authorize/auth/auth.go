@@ -182,6 +182,10 @@ var (
 	mode string
 )
 
+const (
+	EcomAuthorization = "e-authorization"
+)
+
 type Authorization struct {
 	*casbin.Enforcer
 }

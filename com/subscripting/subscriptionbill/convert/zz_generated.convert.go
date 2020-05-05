@@ -272,7 +272,6 @@ func convert_subscriptionbillmodel_SubscriptionBillLine_subscriptionbill_Subscri
 	out.PeriodEndAt = arg.PeriodEndAt               // simple assign
 	out.SubscriptionBillID = arg.SubscriptionBillID // simple assign
 	out.SubscriptionID = arg.SubscriptionID         // simple assign
-	out.SubscriptionLineID = arg.SubscriptionLineID // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 }
@@ -310,7 +309,6 @@ func convert_subscriptionbill_SubscriptionBillLine_subscriptionbillmodel_Subscri
 	out.PeriodEndAt = arg.PeriodEndAt               // simple assign
 	out.SubscriptionBillID = arg.SubscriptionBillID // simple assign
 	out.SubscriptionID = arg.SubscriptionID         // simple assign
-	out.SubscriptionLineID = arg.SubscriptionLineID // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 }

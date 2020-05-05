@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Subscriptions []*Subscription
 
 const __sqlSubscription_Table = "subscription"
-const __sqlSubscription_ListCols = "\"id\",\"account_id\",\"cancel_at_period_end\",\"current_period_end_at\",\"current_period_start_at\",\"status\",\"billing_cycle_anchor_at\",\"started_at\",\"customer\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\""
-const __sqlSubscription_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"cancel_at_period_end\" = EXCLUDED.\"cancel_at_period_end\",\"current_period_end_at\" = EXCLUDED.\"current_period_end_at\",\"current_period_start_at\" = EXCLUDED.\"current_period_start_at\",\"status\" = EXCLUDED.\"status\",\"billing_cycle_anchor_at\" = EXCLUDED.\"billing_cycle_anchor_at\",\"started_at\" = EXCLUDED.\"started_at\",\"customer\" = EXCLUDED.\"customer\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
+const __sqlSubscription_ListCols = "\"id\",\"account_id\",\"cancel_at_period_end\",\"current_period_end_at\",\"current_period_start_at\",\"status\",\"billing_cycle_anchor_at\",\"started_at\",\"customer\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"plan_ids\""
+const __sqlSubscription_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"cancel_at_period_end\" = EXCLUDED.\"cancel_at_period_end\",\"current_period_end_at\" = EXCLUDED.\"current_period_end_at\",\"current_period_start_at\" = EXCLUDED.\"current_period_start_at\",\"status\" = EXCLUDED.\"status\",\"billing_cycle_anchor_at\" = EXCLUDED.\"billing_cycle_anchor_at\",\"started_at\" = EXCLUDED.\"started_at\",\"customer\" = EXCLUDED.\"customer\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"plan_ids\" = EXCLUDED.\"plan_ids\""
 const __sqlSubscription_Insert = "INSERT INTO \"subscription\" (" + __sqlSubscription_ListCols + ") VALUES"
 const __sqlSubscription_Select = "SELECT " + __sqlSubscription_ListCols + " FROM \"subscription\""
 const __sqlSubscription_Select_history = "SELECT " + __sqlSubscription_ListCols + " FROM history.\"subscription\""
@@ -149,6 +149,13 @@ func (m *Subscription) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"plan_ids": {
+			ColumnName:       "plan_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "subscription", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -175,6 +182,7 @@ func (m *Subscription) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
 		m.WLPartnerID,
+		core.Array{m.PlanIDs, opts},
 	}
 }
 
@@ -193,6 +201,7 @@ func (m *Subscription) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
 		&m.WLPartnerID,
+		core.Array{&m.PlanIDs, opts},
 	}
 }
 
@@ -230,7 +239,7 @@ func (_ *Subscriptions) SQLSelect(w SQLWriter) error {
 func (m *Subscription) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSubscription_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -240,7 +249,7 @@ func (ms Subscriptions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSubscription_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(13)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -375,6 +384,14 @@ func (m *Subscription) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.WLPartnerID)
 	}
+	if m.PlanIDs != nil {
+		flag = true
+		w.WriteName("plan_ids")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.PlanIDs, opts})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -385,7 +402,7 @@ func (m *Subscription) SQLUpdate(w SQLWriter) error {
 func (m *Subscription) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlSubscription_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -428,17 +445,18 @@ func (m SubscriptionHistory) CreatedAt() core.Interface   { return core.Interfac
 func (m SubscriptionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m SubscriptionHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 func (m SubscriptionHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
+func (m SubscriptionHistory) PlanIDs() core.Interface     { return core.Interface{m["plan_ids"]} }
 
 func (m *SubscriptionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(SubscriptionHistory, 13)
+	res := make(SubscriptionHistory, 14)
 	res["id"] = data[0]
 	res["account_id"] = data[1]
 	res["cancel_at_period_end"] = data[2]
@@ -452,14 +470,15 @@ func (m *SubscriptionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["updated_at"] = data[10]
 	res["deleted_at"] = data[11]
 	res["wl_partner_id"] = data[12]
+	res["plan_ids"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *SubscriptionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(SubscriptionHistories, 0, 128)
@@ -481,6 +500,7 @@ func (ms *SubscriptionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["updated_at"] = data[10]
 		m["deleted_at"] = data[11]
 		m["wl_partner_id"] = data[12]
+		m["plan_ids"] = data[13]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

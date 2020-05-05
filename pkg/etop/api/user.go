@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -28,6 +29,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -861,11 +863,13 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 	user := query.Result.User
 	resp, err := s.CreateLoginResponse(
 		ctx, nil, "", user.ID, user,
-		r.AccountId, int(r.AccountType),
+		r.AccountId, r.AccountType.Enum(),
 		true, // Generate tokens for all accounts
 		0,
 	)
 	r.Result = resp
+
+	setCookieForEcomify(ctx, resp.Account)
 	return err
 }
 
@@ -1153,7 +1157,27 @@ func (s *UserService) SwitchAccount(ctx context.Context, r *SwitchAccountEndpoin
 		return cm.Error(cm.PermissionDenied, "Tài khoản không hợp lệ.", nil)
 	}
 	r.Result = resp
+
+	// set cookie for ecomify
+	setCookieForEcomify(ctx, resp.Account)
 	return err
+}
+
+func setCookieForEcomify(ctx context.Context, account *etop.LoginAccount) {
+	if account == nil {
+		return
+	}
+	cookie := &http.Cookie{
+		Name:     authservice.EcomAuthorization,
+		Value:    account.AccessToken,
+		Domain:   "",
+		Expires:  time.Now().Add(24 * 60 * 60 * time.Second),
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+	}
+	bus.GetContext(ctx).WithValue(headers.CookieKey{}, []*http.Cookie{cookie})
+	return
 }
 
 func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *identitymodel.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*etop.AccessTokenResponse, error) {

@@ -47,6 +47,24 @@ func (h AggregateHandler) HandleCreateOrUpdatePayment(ctx context.Context, msg *
 	return err
 }
 
+type CreatePaymentCommand struct {
+	Amount          int
+	Status          status4.Status
+	State           payment_state.PaymentState
+	PaymentProvider payment_provider.PaymentProvider
+	ExternalTransID string
+	ExternalData    json.RawMessage
+	CreatedAt       time.Time `sq:"create"`
+	UpdatedAt       time.Time `sq:"update"`
+
+	Result *Payment `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreatePayment(ctx context.Context, msg *CreatePaymentCommand) (err error) {
+	msg.Result, err = h.inner.CreatePayment(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateExternalPaymentInfoCommand struct {
 	ID              dot.ID
 	Amount          int
@@ -88,6 +106,7 @@ func (h QueryServiceHandler) HandleGetPaymentByID(ctx context.Context, msg *GetP
 // implement interfaces
 
 func (q *CreateOrUpdatePaymentCommand) command()     {}
+func (q *CreatePaymentCommand) command()             {}
 func (q *UpdateExternalPaymentInfoCommand) command() {}
 
 func (q *GetPaymentByExternalTransIDQuery) query() {}
@@ -110,6 +129,31 @@ func (q *CreateOrUpdatePaymentCommand) GetArgs(ctx context.Context) (_ context.C
 }
 
 func (q *CreateOrUpdatePaymentCommand) SetCreatePaymentArgs(args *CreatePaymentArgs) {
+	q.Amount = args.Amount
+	q.Status = args.Status
+	q.State = args.State
+	q.PaymentProvider = args.PaymentProvider
+	q.ExternalTransID = args.ExternalTransID
+	q.ExternalData = args.ExternalData
+	q.CreatedAt = args.CreatedAt
+	q.UpdatedAt = args.UpdatedAt
+}
+
+func (q *CreatePaymentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreatePaymentArgs) {
+	return ctx,
+		&CreatePaymentArgs{
+			Amount:          q.Amount,
+			Status:          q.Status,
+			State:           q.State,
+			PaymentProvider: q.PaymentProvider,
+			ExternalTransID: q.ExternalTransID,
+			ExternalData:    q.ExternalData,
+			CreatedAt:       q.CreatedAt,
+			UpdatedAt:       q.UpdatedAt,
+		}
+}
+
+func (q *CreatePaymentCommand) SetCreatePaymentArgs(args *CreatePaymentArgs) {
 	q.Amount = args.Amount
 	q.Status = args.Status
 	q.State = args.State
@@ -164,6 +208,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCreateOrUpdatePayment)
+	b.AddHandler(h.HandleCreatePayment)
 	b.AddHandler(h.HandleUpdateExternalPaymentInfo)
 	return CommandBus{b}
 }

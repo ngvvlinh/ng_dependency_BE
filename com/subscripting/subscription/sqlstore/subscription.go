@@ -10,10 +10,10 @@ import (
 	"o.o/backend/com/subscripting/subscription/convert"
 	"o.o/backend/com/subscripting/subscription/model"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -73,6 +73,11 @@ func (s *SubscriptionStore) ID(id dot.ID) *SubscriptionStore {
 	return s
 }
 
+func (s *SubscriptionStore) Status(status status3.Status) *SubscriptionStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
+	return s
+}
+
 func (s *SubscriptionStore) AccountID(id dot.ID) *SubscriptionStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
@@ -83,8 +88,15 @@ func (s *SubscriptionStore) OptionalAccountID(id dot.ID) *SubscriptionStore {
 	return s
 }
 
+func (s *SubscriptionStore) PlanIDs(ids ...dot.ID) *SubscriptionStore {
+	s.preds = append(s.preds, sq.NewExpr("plan_ids <@ ?", core.Array{
+		V: ids,
+	}))
+	return s
+}
+
 func (s *SubscriptionStore) GetSubscriptionFtLineDB() (*model.SubscriptionFtLine, error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
@@ -221,9 +233,10 @@ func (s *SubscriptionStore) SoftDelete() (int, error) {
 }
 
 func (s *SubscriptionStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
-	partner := wl.X(ctx)
-	if partner.IsWhiteLabel() {
-		return query.Where(s.ft.ByWLPartnerID(partner.ID))
-	}
-	return query.Where(s.ft.NotBelongWLPartner())
+	// partner := wl.X(ctx)
+	// if partner.IsWhiteLabel() {
+	// 	return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	// }
+	// return query.Where(s.ft.NotBelongWLPartner())
+	return query
 }

@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-
 	"o.o/api/main/catalog"
+	"o.o/api/subscripting/subscription"
+	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/api/webserver"
 	"o.o/backend/com/web/ecom/middlewares"
 	cm "o.o/backend/pkg/common"
@@ -16,28 +17,30 @@ import (
 )
 
 type IndexData struct {
-	Site               string
-	Title              string
-	Categories         []*WsCategoriesWithProducstWithVariants
-	Pages              []*webserver.WsPage
-	Items              []map[string]interface{}
-	FaviconImage       string
-	MainColor          string
-	Banner             *webserver.Banner
-	OutstandingProduct *webserver.SpecialProduct
-	NewProduct         *webserver.SpecialProduct
-	SEOConfig          *webserver.WsGeneralSEO
-	Facebook           *webserver.Facebook
-	GoogleAnalyticsID  string
-	DomainName         string
-	OverStock          bool
-	ShopInfo           *webserver.ShopInfo
-	Description        string
-	LogoImage          string
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	Cart               *SessionCart
-	SearchKey          string
+	Site                 string
+	CoreSite             string
+	Title                string
+	Categories           []*WsCategoriesWithProducstWithVariants
+	Pages                []*webserver.WsPage
+	Items                []map[string]interface{}
+	FaviconImage         string
+	MainColor            string
+	Banner               *webserver.Banner
+	OutstandingProduct   *webserver.SpecialProduct
+	NewProduct           *webserver.SpecialProduct
+	SEOConfig            *webserver.WsGeneralSEO
+	Facebook             *webserver.Facebook
+	GoogleAnalyticsID    string
+	DomainName           string
+	OverStock            bool
+	ShopInfo             *webserver.ShopInfo
+	Description          string
+	LogoImage            string
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	Cart                 *SessionCart
+	SearchKey            string
+	SubscriptionOutdated bool
 }
 
 type WsCategoriesWithProducstWithVariants struct {
@@ -201,10 +204,22 @@ func GetIndexData(c echo.Context) (*IndexData, error) {
 		return nil, err
 	}
 
+	// check subscription
+	ctx := c.Request().Context()
+	var subscriptionOutdated bool
+	subrQuery := &subscription.GetLastestSubscriptionByProductTypeQuery{
+		AccountID:   shopID,
+		ProductType: subscription_product_type.Ecomify,
+	}
+	if err := subscriptionQuery.Dispatch(ctx, subrQuery); err == nil {
+		subscriptionOutdated = subrQuery.Result.CurrentPeriodEndAt.Before(time.Now())
+	}
+
 	data := &IndexData{
 		Cart:       cart,
 		Pages:      pages,
 		Site:       site,
+		CoreSite:   config.CoreSite,
 		Title:      "sample page",
 		Categories: categories,
 		Items: []map[string]interface{}{
@@ -215,19 +230,20 @@ func GetIndexData(c echo.Context) (*IndexData, error) {
 				"Label": "Bob",
 			},
 		},
-		FaviconImage:       wsWebSiteDefault.FaviconImage,
-		MainColor:          wsWebSiteDefault.MainColor,
-		Banner:             wsWebSiteDefault.Banner,
-		OutstandingProduct: wsWebSiteDefault.OutstandingProduct,
-		NewProduct:         wsWebSiteDefault.NewProduct,
-		SEOConfig:          wsWebSiteDefault.SEOConfig,
-		Facebook:           wsWebSiteDefault.Facebook,
-		GoogleAnalyticsID:  wsWebSiteDefault.GoogleAnalyticsID,
-		DomainName:         wsWebSiteDefault.DomainName,
-		OverStock:          wsWebSiteDefault.OverStock,
-		ShopInfo:           wsWebSiteDefault.ShopInfo,
-		Description:        wsWebSiteDefault.Description,
-		LogoImage:          wsWebSiteDefault.LogoImage,
+		FaviconImage:         wsWebSiteDefault.FaviconImage,
+		MainColor:            wsWebSiteDefault.MainColor,
+		Banner:               wsWebSiteDefault.Banner,
+		OutstandingProduct:   wsWebSiteDefault.OutstandingProduct,
+		NewProduct:           wsWebSiteDefault.NewProduct,
+		SEOConfig:            wsWebSiteDefault.SEOConfig,
+		Facebook:             wsWebSiteDefault.Facebook,
+		GoogleAnalyticsID:    wsWebSiteDefault.GoogleAnalyticsID,
+		DomainName:           wsWebSiteDefault.DomainName,
+		OverStock:            wsWebSiteDefault.OverStock,
+		ShopInfo:             wsWebSiteDefault.ShopInfo,
+		Description:          wsWebSiteDefault.Description,
+		LogoImage:            wsWebSiteDefault.LogoImage,
+		SubscriptionOutdated: subscriptionOutdated,
 	}
 	return data, nil
 }

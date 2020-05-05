@@ -7,7 +7,6 @@ package subscriptionproduct
 import (
 	context "context"
 
-	common "o.o/api/top/types/common"
 	subscription_product_type "o.o/api/top/types/etc/subscription_product_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -77,6 +76,8 @@ func (h QueryServiceHandler) HandleGetSubrProductByID(ctx context.Context, msg *
 }
 
 type ListSubrProductsQuery struct {
+	Type subscription_product_type.ProductSubscriptionType
+
 	Result []*SubscriptionProduct `json:"-"`
 }
 
@@ -140,12 +141,15 @@ func (q *GetSubrProductByIDQuery) GetArgs(ctx context.Context) (_ context.Contex
 		q.ID
 }
 
-func (q *ListSubrProductsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *common.Empty) {
+func (q *ListSubrProductsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListSubrProductsArgs) {
 	return ctx,
-		&common.Empty{}
+		&ListSubrProductsArgs{
+			Type: q.Type,
+		}
 }
 
-func (q *ListSubrProductsQuery) SetEmpty(args *common.Empty) {
+func (q *ListSubrProductsQuery) SetListSubrProductsArgs(args *ListSubrProductsArgs) {
+	q.Type = args.Type
 }
 
 // implement dispatching

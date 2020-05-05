@@ -7,8 +7,8 @@ package subscriptionplan
 import (
 	context "context"
 
-	common "o.o/api/top/types/common"
 	subscription_plan_interval "o.o/api/top/types/etc/subscription_plan_interval"
+	subscription_product_type "o.o/api/top/types/etc/subscription_product_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -70,6 +70,17 @@ func (h AggregateHandler) HandleUpdateSubrPlan(ctx context.Context, msg *UpdateS
 	return h.inner.UpdateSubrPlan(msg.GetArgs(ctx))
 }
 
+type GetFreeSubrPlanByProductTypeQuery struct {
+	ProductType subscription_product_type.ProductSubscriptionType
+
+	Result *SubscriptionPlan `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFreeSubrPlanByProductType(ctx context.Context, msg *GetFreeSubrPlanByProductTypeQuery) (err error) {
+	msg.Result, err = h.inner.GetFreeSubrPlanByProductType(msg.GetArgs(ctx))
+	return err
+}
+
 type GetSubrPlanByIDQuery struct {
 	ID dot.ID
 
@@ -82,6 +93,8 @@ func (h QueryServiceHandler) HandleGetSubrPlanByID(ctx context.Context, msg *Get
 }
 
 type ListSubrPlansQuery struct {
+	ProductIDs []dot.ID
+
 	Result []*SubscriptionPlan `json:"-"`
 }
 
@@ -96,8 +109,9 @@ func (q *CreateSubrPlanCommand) command() {}
 func (q *DeleteSubrPlanCommand) command() {}
 func (q *UpdateSubrPlanCommand) command() {}
 
-func (q *GetSubrPlanByIDQuery) query() {}
-func (q *ListSubrPlansQuery) query()   {}
+func (q *GetFreeSubrPlanByProductTypeQuery) query() {}
+func (q *GetSubrPlanByIDQuery) query()              {}
+func (q *ListSubrPlansQuery) query()                {}
 
 // implement conversion
 
@@ -150,17 +164,25 @@ func (q *UpdateSubrPlanCommand) SetUpdateSubrPlanArgs(args *UpdateSubrPlanArgs) 
 	q.IntervalCount = args.IntervalCount
 }
 
+func (q *GetFreeSubrPlanByProductTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ProductType subscription_product_type.ProductSubscriptionType) {
+	return ctx,
+		q.ProductType
+}
+
 func (q *GetSubrPlanByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
 
-func (q *ListSubrPlansQuery) GetArgs(ctx context.Context) (_ context.Context, _ *common.Empty) {
+func (q *ListSubrPlansQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListSubrPlansArgs) {
 	return ctx,
-		&common.Empty{}
+		&ListSubrPlansArgs{
+			ProductIDs: q.ProductIDs,
+		}
 }
 
-func (q *ListSubrPlansQuery) SetEmpty(args *common.Empty) {
+func (q *ListSubrPlansQuery) SetListSubrPlansArgs(args *ListSubrPlansArgs) {
+	q.ProductIDs = args.ProductIDs
 }
 
 // implement dispatching
@@ -193,6 +215,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetFreeSubrPlanByProductType)
 	b.AddHandler(h.HandleGetSubrPlanByID)
 	b.AddHandler(h.HandleListSubrPlans)
 	return QueryBus{b}

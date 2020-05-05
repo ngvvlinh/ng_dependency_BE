@@ -28,6 +28,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
+        handleSubscription({{.SubscriptionOutdated}});
+
         function searchProduct() {
             var nameProduct = $('input[name="search_product"]').val();
             if (!nameProduct) {
@@ -69,6 +71,28 @@
             }
         })
 
+        function handleSubscription(outdated) {
+            if (!outdated) {
+                return
+            }
+            $.ajax({
+                type: "POST",
+                url: "{{.CoreSite}}/api/etop.Ecom/SessionInfo",
+                xhrFields: {
+                    withCredentials: true
+                },
+                data: JSON.stringify({}),
+                contentType: "application/json",
+                error: function(err) {
+                    window.location.href = "/subscription-outdated";
+                },
+                success: function(data) {
+                    if (data && !data.allow_access) {
+                        window.location.href = "/subscription-outdated";
+                    }
+                },
+            });
+        }
     </script>
 </head>
 

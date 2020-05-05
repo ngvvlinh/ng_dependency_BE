@@ -36,7 +36,6 @@ type SubscriptionBillLine struct {
 	PeriodEndAt        time.Time
 	SubscriptionBillID dot.ID
 	SubscriptionID     dot.ID
-	SubscriptionLineID dot.ID
 	CreatedAt          time.Time `sq:"create"`
 	UpdatedAt          time.Time `sq:"update"`
 }

@@ -7,6 +7,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/subscripting/types"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/capi/dot"
 )
 
@@ -25,6 +26,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetSubscriptionByID(ctx context.Context, ID dot.ID, AccountID dot.ID) (*SubscriptionFtLine, error)
 	ListSubscriptions(context.Context, *ListSubscriptionsArgs) (*ListSubscriptionsResponse, error)
+	GetLastestSubscriptionByProductType(ctx context.Context, AccountID dot.ID, ProductType subscription_product_type.ProductSubscriptionType) (*SubscriptionFtLine, error)
 }
 
 // +convert:create=Subscription

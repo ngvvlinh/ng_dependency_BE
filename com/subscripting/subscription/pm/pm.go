@@ -4,29 +4,48 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionbill"
+	"o.o/api/subscripting/subscriptionplan"
+	subscriptingtypes "o.o/api/subscripting/types"
 	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/subscription_product_type"
+	"o.o/api/webserver"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 )
 
 type ProcessManager struct {
 	subrBillQuery subscriptionbill.QueryBus
+	subrBillAggr  subscriptionbill.CommandBus
 	subrQuery     subscription.QueryBus
 	subrAggr      subscription.CommandBus
+	subrPlanQuery subscriptionplan.QueryBus
+	identityQuery identity.QueryBus
 }
 
-func New(subrBillQuery subscriptionbill.QueryBus, subrQuery subscription.QueryBus, subrAggr subscription.CommandBus) *ProcessManager {
+func New(
+	subrBillQuery subscriptionbill.QueryBus,
+	subrBillAggr subscriptionbill.CommandBus,
+	subrQuery subscription.QueryBus,
+	subrAggr subscription.CommandBus,
+	subrPlanQuery subscriptionplan.QueryBus,
+	identityQuery identity.QueryBus,
+) *ProcessManager {
 	return &ProcessManager{
 		subrBillQuery: subrBillQuery,
+		subrBillAggr:  subrBillAggr,
 		subrQuery:     subrQuery,
 		subrAggr:      subrAggr,
+		subrPlanQuery: subrPlanQuery,
+		identityQuery: identityQuery,
 	}
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.SubscriptionBillPaid)
+	eventBus.AddEventListener(m.WsWebsiteCreated)
 }
 
 func (m *ProcessManager) SubscriptionBillPaid(ctx context.Context, event *subscriptionbill.SubscriptionBillPaidEvent) error {
@@ -73,4 +92,80 @@ func (m *ProcessManager) SubscriptionBillPaid(ctx context.Context, event *subscr
 		update.StartedAt = periodStartAt
 	}
 	return m.subrAggr.Dispatch(ctx, update)
+}
+
+/*
+	WsWebsiteCreatedEvent
+
+	Create subscription with 1 month free plan
+*/
+
+func (m *ProcessManager) WsWebsiteCreated(ctx context.Context, event *webserver.WsWebsiteCreatedEvent) error {
+	query := &identity.GetShopByIDQuery{
+		ID: event.ShopID,
+	}
+	if err := m.identityQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	shop := query.Result
+
+	userQuery := &identity.GetUserByIDQuery{
+		UserID: shop.OwnerID,
+	}
+	if err := m.identityQuery.Dispatch(ctx, userQuery); err != nil {
+		return err
+	}
+	user := userQuery.Result
+
+	planQuery := &subscriptionplan.GetFreeSubrPlanByProductTypeQuery{
+		ProductType: subscription_product_type.Ecomify,
+	}
+	if err := m.subrPlanQuery.Dispatch(ctx, planQuery); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return cm.Errorf(cm.NotFound, nil, "Vui lòng tạo gói dùng thử cho ecomify")
+		}
+		return err
+	}
+	plan := planQuery.Result
+
+	cmd := &subscription.CreateSubscriptionCommand{
+		AccountID: event.ShopID,
+		Lines: []*subscription.SubscriptionLine{
+			{
+				PlanID:   plan.ID,
+				Quantity: 1,
+			},
+		},
+		Customer: &subscriptingtypes.CustomerInfo{
+			FullName: user.FullName,
+			Email:    user.Email,
+			Phone:    user.Phone,
+		},
+	}
+	if err := m.subrAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	subr := cmd.Result
+
+	// create subr bill & confirm to active trial product
+	billCmd := &subscriptionbill.CreateSubscriptionBillBySubrIDCommand{
+		SubscriptionID: subr.ID,
+		AccountID:      shop.ID,
+		TotalAmount:    0,
+		Description:    "Trial",
+	}
+	if err := m.subrBillAggr.Dispatch(ctx, billCmd); err != nil {
+		return err
+	}
+
+	billConfirmCmd := &subscriptionbill.ManualPaymentSubscriptionBillCommand{
+		ID:          billCmd.Result.ID,
+		AccountID:   shop.ID,
+		TotalAmount: 0,
+	}
+	if err := m.subrBillAggr.Dispatch(ctx, billConfirmCmd); err != nil {
+		return err
+	}
+
+	return nil
 }

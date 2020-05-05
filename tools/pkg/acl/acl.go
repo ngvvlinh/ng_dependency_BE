@@ -283,6 +283,8 @@ var _acl = map[string]*permission.Decl{
 	"etop.Address/UpdateAddress": {Type: CurUsr},
 	"etop.Address/RemoveAddress": {Type: CurUsr},
 
+	"etop.Ecom/SessionInfo": {Type: Public},
+
 	//-- external: partner --//
 
 	"ext/partner.Misc/CurrentAccount":                 {Type: Partner, Auth: APIKey},

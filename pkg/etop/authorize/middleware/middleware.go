@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
@@ -17,7 +18,10 @@ func CORS(next http.Handler) http.HandlerFunc {
 			origin == "capacitor://localhost",
 			origin == "http://localhost",
 			origin == "http://localhost:8080",
-			origin == "http://localhost:8100":
+			origin == "http://localhost:8100",
+			strings.HasSuffix(origin, ".localhost:8100"),
+			strings.HasSuffix(origin, ".ecomify.vn"),
+			strings.HasSuffix(origin, ".ecom.d.etop.vn"):
 			w.Header().Add("Access-Control-Allow-Origin", origin)
 
 		case cmenv.IsDev():

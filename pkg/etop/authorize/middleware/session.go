@@ -92,6 +92,11 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 
 // StartSession ...
 func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Context, _err error) {
+	token := getToken(ctx, q)
+	return StartSessionWithToken(ctx, token, q)
+}
+
+func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQuery) (newCtx context.Context, _err error) {
 	var wlPartnerID dot.ID
 	defer func() {
 		if wlPartnerID == 0 {
@@ -102,7 +107,6 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 	// TODO: check UserID, ShopID, etc. correctly. Because InitSession now
 	// responses token without any credential.
 	if !q.RequireAuth {
-		token := getToken(ctx, q)
 		if token != "" {
 			claim, err := tokens.Store.Validate(token)
 			if err != nil {
@@ -115,7 +119,6 @@ func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Con
 		return ctx, nil
 	}
 
-	token := getToken(ctx, q)
 	if token == "" {
 		return ctx, cm.ErrUnauthenticated
 	}

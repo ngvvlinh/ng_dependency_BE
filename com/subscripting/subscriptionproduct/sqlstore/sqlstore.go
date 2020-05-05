@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/subscripting/subscriptionproduct"
+	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/backend/com/subscripting/subscriptionproduct/convert"
 	"o.o/backend/com/subscripting/subscriptionproduct/model"
 	cm "o.o/backend/pkg/common"
@@ -50,6 +51,11 @@ func (ft *SubscriptionProductFilters) NotBelongWLPartner() sq.WriterTo {
 
 func (s *SubrProductStore) ID(id dot.ID) *SubrProductStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *SubrProductStore) OptionalProductType(_type subscription_product_type.ProductSubscriptionType) *SubrProductStore {
+	s.preds = append(s.preds, s.ft.ByType(_type).Optional())
 	return s
 }
 
@@ -144,9 +150,10 @@ func (s *SubrProductStore) SoftDelete() (int, error) {
 }
 
 func (s *SubrProductStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
-	partner := wl.X(ctx)
-	if partner.IsWhiteLabel() {
-		return query.Where(s.ft.ByWLPartnerID(partner.ID))
-	}
-	return query.Where(s.ft.NotBelongWLPartner())
+	// partner := wl.X(ctx)
+	// if partner.IsWhiteLabel() {
+	// 	return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	// }
+	// return query.Where(s.ft.NotBelongWLPartner())
+	return query
 }

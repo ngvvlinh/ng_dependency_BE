@@ -476,6 +476,33 @@
         }
       }
     },
+    "/api/etop.Ecom/SessionInfo": {
+      "post": {
+        "tags": [
+          "Ecom"
+        ],
+        "summary": "SessionInfo",
+        "operationId": "etop.Ecom-SessionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baEcomSessionInfoResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.Location/GetDistricts": {
       "post": {
         "tags": [
@@ -1950,6 +1977,14 @@
         }
       }
     },
+    "baEcomSessionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "allow_access": {
+          "type": "boolean"
+        }
+      }
+    },
     "baGetAddressResponse": {
       "type": "object",
       "properties": {
@@ -3406,6 +3441,9 @@
     },
     {
       "name": "Bank"
+    },
+    {
+      "name": "Ecom"
     },
     {
       "name": "Location"

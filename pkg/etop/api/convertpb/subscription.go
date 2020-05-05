@@ -196,7 +196,6 @@ func PbSubrBillLine(in *subscriptionbill.SubscriptionBillLine) *types.SubrBillLi
 		PeriodEndAt:        cmapi.PbTime(in.PeriodEndAt),
 		SubscriptionID:     in.SubscriptionID,
 		SubscriptionBillID: in.SubscriptionBillID,
-		SubscriptionLineID: in.SubscriptionLineID,
 		CreatedAt:          cmapi.PbTime(in.CreatedAt),
 		UpdatedAt:          cmapi.PbTime(in.UpdatedAt),
 	}
@@ -224,7 +223,6 @@ func Convert_api_SubrBillLine_To_core_SubrBillLine(in *types.SubrBillLine) *subs
 		PeriodEndAt:        in.PeriodEndAt.ToTime(),
 		SubscriptionBillID: in.SubscriptionBillID,
 		SubscriptionID:     in.SubscriptionID,
-		SubscriptionLineID: in.SubscriptionLineID,
 		CreatedAt:          in.CreatedAt.ToTime(),
 		UpdatedAt:          in.UpdatedAt.ToTime(),
 	}

@@ -4,10 +4,13 @@ import (
 	"time"
 
 	"o.o/api/main/catalog"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
 	"o.o/capi/dot"
 )
+
+// +gen:event:topic=event/webserver
 
 const MaxSlide = 5
 
@@ -129,4 +132,11 @@ type SpecialProduct struct {
 	ProductIDs []dot.ID
 	Style      ws_list_product_show_style.WsListProductShowStyle
 	Products   []*WsProduct
+}
+
+type WsWebsiteCreatedEvent struct {
+	meta.EventMeta
+
+	ID     dot.ID
+	ShopID dot.ID
 }

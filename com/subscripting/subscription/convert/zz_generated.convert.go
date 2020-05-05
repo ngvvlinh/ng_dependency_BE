@@ -134,6 +134,7 @@ func convert_subscriptionmodel_Subscription_subscription_Subscription(arg *subsc
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = arg.DeletedAt     // simple assign
 	out.WLPartnerID = arg.WLPartnerID // simple assign
+	out.PlanIDs = arg.PlanIDs         // simple assign
 }
 
 func Convert_subscriptionmodel_Subscriptions_subscription_Subscriptions(args []*subscriptionmodel.Subscription) (outs []*subscription.Subscription) {
@@ -173,6 +174,7 @@ func convert_subscription_Subscription_subscriptionmodel_Subscription(arg *subsc
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = arg.DeletedAt     // simple assign
 	out.WLPartnerID = arg.WLPartnerID // simple assign
+	out.PlanIDs = arg.PlanIDs         // simple assign
 }
 
 func Convert_subscription_Subscriptions_subscriptionmodel_Subscriptions(args []*subscription.Subscription) (outs []*subscriptionmodel.Subscription) {
@@ -212,6 +214,7 @@ func apply_subscription_CreateSubscriptionArgs_subscription_Subscription(arg *su
 	out.UpdatedAt = time.Time{}                         // zero value
 	out.DeletedAt = time.Time{}                         // zero value
 	out.WLPartnerID = 0                                 // zero value
+	out.PlanIDs = nil                                   // zero value
 }
 
 func Apply_subscription_UpdateSubscriptionPeriodArgs_subscription_Subscription(arg *subscription.UpdateSubscriptionPeriodArgs, out *subscription.Subscription) *subscription.Subscription {
@@ -239,6 +242,7 @@ func apply_subscription_UpdateSubscriptionPeriodArgs_subscription_Subscription(a
 	out.UpdatedAt = out.UpdatedAt                       // no change
 	out.DeletedAt = out.DeletedAt                       // no change
 	out.WLPartnerID = out.WLPartnerID                   // no change
+	out.PlanIDs = out.PlanIDs                           // no change
 }
 
 //-- convert o.o/api/subscripting/subscription.SubscriptionFtLine --//

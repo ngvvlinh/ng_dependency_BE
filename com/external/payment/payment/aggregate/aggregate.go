@@ -29,19 +29,23 @@ func (a *Aggregate) MessageBus() payment.CommandBus {
 	return payment.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
+func (a *Aggregate) CreatePayment(ctx context.Context, args *payment.CreatePaymentArgs) (*payment.Payment, error) {
+	cmd := &sqlstore.CreatePaymentArgs{
+		Amount:          args.Amount,
+		Status:          args.Status,
+		State:           args.State,
+		PaymentProvider: args.PaymentProvider,
+		ExternalTransID: args.ExternalTransID,
+		ExternalData:    args.ExternalData,
+	}
+	return a.store(ctx).CreatePayment(cmd)
+}
+
 func (a *Aggregate) CreateOrUpdatePayment(ctx context.Context, args *payment.CreatePaymentArgs) (*payment.Payment, error) {
 	_payment, err := a.store(ctx).OptionalExternalTransactionID(args.ExternalTransID).PaymentProvider(args.PaymentProvider).GetPayment()
 	if cm.ErrorCode(err) == cm.NotFound {
 		// create
-		cmd := &sqlstore.CreatePaymentArgs{
-			Amount:          args.Amount,
-			Status:          args.Status,
-			State:           args.State,
-			PaymentProvider: args.PaymentProvider,
-			ExternalTransID: args.ExternalTransID,
-			ExternalData:    args.ExternalData,
-		}
-		return a.store(ctx).CreatePayment(cmd)
+		return a.CreatePayment(ctx, args)
 	}
 	if err != nil {
 		return nil, err

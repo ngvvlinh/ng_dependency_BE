@@ -23,6 +23,7 @@ type Subscription struct {
 	UpdatedAt            time.Time
 	DeletedAt            time.Time
 	WLPartnerID          dot.ID
+	PlanIDs              []dot.ID
 }
 
 type SubscriptionLine struct {

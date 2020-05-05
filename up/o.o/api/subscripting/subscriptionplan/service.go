@@ -3,8 +3,8 @@ package subscriptionplan
 import (
 	"context"
 
-	cm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/subscription_plan_interval"
+	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/capi/dot"
 )
 
@@ -18,7 +18,8 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetSubrPlanByID(ctx context.Context, ID dot.ID) (*SubscriptionPlan, error)
-	ListSubrPlans(context.Context, *cm.Empty) ([]*SubscriptionPlan, error)
+	ListSubrPlans(context.Context, *ListSubrPlansArgs) ([]*SubscriptionPlan, error)
+	GetFreeSubrPlanByProductType(ctx context.Context, ProductType subscription_product_type.ProductSubscriptionType) (*SubscriptionPlan, error)
 }
 
 // +convert:create=SubscriptionPlan
@@ -40,4 +41,8 @@ type UpdateSubrPlanArgs struct {
 	ProductID     dot.ID
 	Interval      subscription_plan_interval.SubscriptionPlanInterval
 	IntervalCount int
+}
+
+type ListSubrPlansArgs struct {
+	ProductIDs []dot.ID
 }

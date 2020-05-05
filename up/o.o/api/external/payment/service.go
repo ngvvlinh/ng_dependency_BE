@@ -14,6 +14,8 @@ import (
 // +gen:api
 
 type Aggregate interface {
+	CreatePayment(context.Context, *CreatePaymentArgs) (*Payment, error)
+
 	CreateOrUpdatePayment(context.Context, *CreatePaymentArgs) (*Payment, error)
 
 	UpdateExternalPaymentInfo(context.Context, *UpdateExternalPaymentInfoArgs) (*Payment, error)

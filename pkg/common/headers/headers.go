@@ -39,6 +39,9 @@ func ForwardHeaders(next http.Handler, configs ...Config) http.HandlerFunc {
 			ctx = context.WithValue(ctx, debugKey{}, debug)
 		}
 
+		cookies := r.Cookies()
+		ctx = context.WithValue(ctx, CookieKey{}, cookies)
+
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	}
@@ -113,4 +116,9 @@ func authFromHeaderString(s string) (string, error) {
 		return "", errors.New("request unauthenticated with Bearer")
 	}
 	return splits[1], nil
+}
+
+func GetCookiesFromCtx(ctx context.Context) []*http.Cookie {
+	cookies, _ := ctx.Value(CookieKey{}).([]*http.Cookie)
+	return cookies
 }

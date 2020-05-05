@@ -11,6 +11,7 @@ import (
 	meta "o.o/api/meta"
 	subscriptingtypes "o.o/api/subscripting/types"
 	status3 "o.o/api/top/types/etc/status3"
+	subscription_product_type "o.o/api/top/types/etc/subscription_product_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -127,6 +128,18 @@ func (h AggregateHandler) HandleUpdateSubscriptionPeriod(ctx context.Context, ms
 	return h.inner.UpdateSubscriptionPeriod(msg.GetArgs(ctx))
 }
 
+type GetLastestSubscriptionByProductTypeQuery struct {
+	AccountID   dot.ID
+	ProductType subscription_product_type.ProductSubscriptionType
+
+	Result *SubscriptionFtLine `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetLastestSubscriptionByProductType(ctx context.Context, msg *GetLastestSubscriptionByProductTypeQuery) (err error) {
+	msg.Result, err = h.inner.GetLastestSubscriptionByProductType(msg.GetArgs(ctx))
+	return err
+}
+
 type GetSubscriptionByIDQuery struct {
 	ID        dot.ID
 	AccountID dot.ID
@@ -162,8 +175,9 @@ func (q *UpdateSubscripionStatusCommand) command()  {}
 func (q *UpdateSubscriptionInfoCommand) command()   {}
 func (q *UpdateSubscriptionPeriodCommand) command() {}
 
-func (q *GetSubscriptionByIDQuery) query() {}
-func (q *ListSubscriptionsQuery) query()   {}
+func (q *GetLastestSubscriptionByProductTypeQuery) query() {}
+func (q *GetSubscriptionByIDQuery) query()                 {}
+func (q *ListSubscriptionsQuery) query()                   {}
 
 // implement conversion
 
@@ -267,6 +281,12 @@ func (q *UpdateSubscriptionPeriodCommand) SetUpdateSubscriptionPeriodArgs(args *
 	q.StartedAt = args.StartedAt
 }
 
+func (q *GetLastestSubscriptionByProductTypeQuery) GetArgs(ctx context.Context) (_ context.Context, AccountID dot.ID, ProductType subscription_product_type.ProductSubscriptionType) {
+	return ctx,
+		q.AccountID,
+		q.ProductType
+}
+
 func (q *GetSubscriptionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, AccountID dot.ID) {
 	return ctx,
 		q.ID,
@@ -322,6 +342,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetLastestSubscriptionByProductType)
 	b.AddHandler(h.HandleGetSubscriptionByID)
 	b.AddHandler(h.HandleListSubscriptions)
 	return QueryBus{b}

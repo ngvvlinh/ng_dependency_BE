@@ -25,6 +25,7 @@ type Subscription struct {
 	UpdatedAt   time.Time `sq:"update"`
 	DeletedAt   time.Time
 	WLPartnerID dot.ID
+	PlanIDs     []dot.ID
 }
 
 // +sqlgen

@@ -118,9 +118,6 @@ func verifySubrBillLine(line *subscriptionbill.SubscriptionBillLine) error {
 	if line.Quantity <= 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Quantity does not valid in subscription bill line")
 	}
-	if line.SubscriptionLineID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing subscription line ID in subscription bill line")
-	}
 	if line.PeriodStartAt.IsZero() {
 		return cm.Errorf(cm.InvalidArgument, nil, "Period start at is not valid in subscription bill line")
 	}
@@ -177,15 +174,14 @@ func (a *SubrBillAggregate) CreateSubscriptionBillBySubrID(ctx context.Context, 
 		totalAmount += lineAmount
 		now := time.Now()
 		bLine := &subscriptionbill.SubscriptionBillLine{
-			ID:                 cm.NewID(),
-			LineAmount:         lineAmount,
-			Price:              plan.Price,
-			Quantity:           line.Quantity,
-			Description:        "",
-			PeriodStartAt:      time.Time{},
-			PeriodEndAt:        time.Time{},
-			SubscriptionID:     subr.ID,
-			SubscriptionLineID: line.ID,
+			ID:             cm.NewID(),
+			LineAmount:     lineAmount,
+			Price:          plan.Price,
+			Quantity:       line.Quantity,
+			Description:    "",
+			PeriodStartAt:  time.Time{},
+			PeriodEndAt:    time.Time{},
+			SubscriptionID: subr.ID,
 		}
 		if subr.CurrentPeriodEndAt.IsZero() {
 			bLine.PeriodStartAt = now
@@ -263,7 +259,7 @@ func (a *SubrBillAggregate) ManualPaymentSubscriptionBill(ctx context.Context, a
 
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		// Create manual payment and assign payment ID to bill
-		cmd := &payment.CreateOrUpdatePaymentCommand{
+		cmd := &payment.CreatePaymentCommand{
 			Amount:          args.TotalAmount,
 			Status:          status4.P,
 			State:           payment_state.Success,
