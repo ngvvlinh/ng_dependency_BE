@@ -4,7 +4,7 @@ import "time"
 
 type FacebookTime int
 
-func (t *FacebookTime) toTime() time.Time {
+func (t *FacebookTime) ToTime() time.Time {
 	if t == nil {
 		return time.Time{}
 	}

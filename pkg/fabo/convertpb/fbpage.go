@@ -5,12 +5,12 @@ import (
 	"o.o/api/top/int/fabo"
 )
 
-func PbFbPageCombined(m *fbpaging.FbPageCombined) *fabo.FbPageCombined {
-	if m == nil || m.FbPage == nil {
+func PbFbPageCombined(m *fbpaging.FbExternalPageCombined) *fabo.FbPageCombined {
+	if m == nil || m.FbExternalPage == nil {
 		return nil
 	}
-	externalCategoryList := make([]*fabo.ExternalCategory, 0, len(m.FbPage.ExternalCategoryList))
-	for _, category := range m.FbPage.ExternalCategoryList {
+	externalCategoryList := make([]*fabo.ExternalCategory, 0, len(m.FbExternalPage.ExternalCategoryList))
+	for _, category := range m.FbExternalPage.ExternalCategoryList {
 		externalCategoryList = append(externalCategoryList, &fabo.ExternalCategory{
 			ID:   category.ID,
 			Name: category.Name,
@@ -18,25 +18,25 @@ func PbFbPageCombined(m *fbpaging.FbPageCombined) *fabo.FbPageCombined {
 	}
 
 	return &fabo.FbPageCombined{
-		ID:                   m.FbPage.ID,
-		ExternalID:           m.FbPage.ExternalID,
-		FbUserID:             m.FbPage.FbUserID,
-		ShopID:               m.FbPage.ShopID,
-		UserID:               m.FbPage.UserID,
-		ExternalName:         m.FbPage.ExternalName,
-		ExternalCategory:     m.FbPage.ExternalCategory,
+		ID:                   m.FbExternalPage.ID,
+		ExternalID:           m.FbExternalPage.ExternalID,
+		FbUserID:             m.FbExternalPage.FbUserID,
+		ShopID:               m.FbExternalPage.ShopID,
+		UserID:               m.FbExternalPage.UserID,
+		ExternalName:         m.FbExternalPage.ExternalName,
+		ExternalCategory:     m.FbExternalPage.ExternalCategory,
 		ExternalCategoryList: externalCategoryList,
-		ExternalTasks:        m.FbPage.ExternalTasks,
-		ExternalPermissions:  m.FbPage.ExternalPermissions,
-		ExternalImageURL:     m.FbPage.ExternalImageURL,
-		Status:               m.FbPage.Status,
-		ConnectionStatus:     m.FbPage.ConnectionStatus,
-		CreatedAt:            m.FbPage.CreatedAt,
-		UpdatedAt:            m.FbPage.UpdatedAt,
+		ExternalTasks:        m.FbExternalPage.ExternalTasks,
+		ExternalPermissions:  m.FbExternalPage.ExternalPermissions,
+		ExternalImageURL:     m.FbExternalPage.ExternalImageURL,
+		Status:               m.FbExternalPage.Status,
+		ConnectionStatus:     m.FbExternalPage.ConnectionStatus,
+		CreatedAt:            m.FbExternalPage.CreatedAt,
+		UpdatedAt:            m.FbExternalPage.UpdatedAt,
 	}
 }
 
-func PbFbPageCombineds(ms []*fbpaging.FbPageCombined) []*fabo.FbPageCombined {
+func PbFbPageCombineds(ms []*fbpaging.FbExternalPageCombined) []*fabo.FbPageCombined {
 	res := make([]*fabo.FbPageCombined, len(ms))
 	for i, m := range ms {
 		res[i] = PbFbPageCombined(m)
@@ -44,7 +44,7 @@ func PbFbPageCombineds(ms []*fbpaging.FbPageCombined) []*fabo.FbPageCombined {
 	return res
 }
 
-func PbFbPage(m *fbpaging.FbPage) *fabo.FbPage {
+func PbFbPage(m *fbpaging.FbExternalPage) *fabo.FbPage {
 	categoryList := make([]*fabo.ExternalCategory, 0, len(m.ExternalCategoryList))
 	for _, category := range m.ExternalCategoryList {
 		categoryList = append(categoryList, &fabo.ExternalCategory{
@@ -71,7 +71,7 @@ func PbFbPage(m *fbpaging.FbPage) *fabo.FbPage {
 	}
 }
 
-func PbFbPages(ms []*fbpaging.FbPage) []*fabo.FbPage {
+func PbFbPages(ms []*fbpaging.FbExternalPage) []*fabo.FbPage {
 	res := make([]*fabo.FbPage, len(ms))
 	for i, m := range ms {
 		res[i] = PbFbPage(m)

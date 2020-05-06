@@ -25,7 +25,13 @@ const (
 	// +enum=updated_at
 	PagingUpdatedAt PagingField = 2
 
-	NumPagingField = int(PagingUpdatedAt) + 1
+	// +enum=external_created_time
+	PagingExternalCreatedTime PagingField = 3
+
+	// +enum=last_message_at
+	PagingLastMessageAt PagingField = 4
+
+	NumPagingField = int(PagingLastMessageAt) + 1
 )
 
 var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
@@ -35,6 +41,22 @@ var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
 		Encode:    func(w io.Writer, v interface{}) error { return writeInt64(w, v.(int64)) },
 	},
 	PagingUpdatedAt: {
+		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
+		Decode: func(r io.Reader) (interface{}, error) {
+			v, err := readInt64(r)
+			return timex.FromMicros(v).In(time.UTC), err
+		},
+		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, timex.Micros(v.(time.Time))) },
+	},
+	PagingExternalCreatedTime: {
+		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
+		Decode: func(r io.Reader) (interface{}, error) {
+			v, err := readInt64(r)
+			return timex.FromMicros(v).In(time.UTC), err
+		},
+		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, timex.Micros(v.(time.Time))) },
+	},
+	PagingLastMessageAt: {
 		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
 		Decode: func(r io.Reader) (interface{}, error) {
 			v, err := readInt64(r)

@@ -19,10 +19,80 @@ func init() {
 
 func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
 	switch builder := builder.(type) {
+	case func() CustomerConversationService:
+		return NewCustomerConversationServiceServer(builder, hooks...), true
 	case func() PageService:
 		return NewPageServiceServer(builder, hooks...), true
 	default:
 		return nil, false
+	}
+}
+
+type CustomerConversationServiceServer struct {
+	hooks   httprpc.Hooks
+	builder func() CustomerConversationService
+}
+
+func NewCustomerConversationServiceServer(builder func() CustomerConversationService, hooks ...*httprpc.Hooks) httprpc.Server {
+	return &CustomerConversationServiceServer{
+		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		builder: builder,
+	}
+}
+
+const CustomerConversationServicePathPrefix = "/fabo.CustomerConversation/"
+
+func (s *CustomerConversationServiceServer) PathPrefix() string {
+	return CustomerConversationServicePathPrefix
+}
+
+func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		return
+	}
+	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+}
+
+func (s *CustomerConversationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/fabo.CustomerConversation/ListCustomerConversations":
+		msg := &ListCustomerConversationsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ListCustomerConversations(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/ListMessages":
+		msg := &ListMessagesRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ListMessages(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
 	}
 }
 

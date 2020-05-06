@@ -25,130 +25,130 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
-type CreateFbUserCommand struct {
+type CreateFbExternalUserCommand struct {
 	ID           dot.ID
-	ExternalID   string
 	UserID       dot.ID
-	ExternalInfo *ExternalFBUserInfo
+	ExternalID   string
+	ExternalInfo *FbExternalUserInfo
 	Token        string
 	Status       status3.Status
 
-	Result *FbUser `json:"-"`
+	Result *FbExternalUser `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbUser(ctx context.Context, msg *CreateFbUserCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbUser(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalUser(ctx context.Context, msg *CreateFbExternalUserCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalUser(msg.GetArgs(ctx))
 	return err
 }
 
-type CreateFbUserCombinedCommand struct {
+type CreateFbExternalUserCombinedCommand struct {
 	UserID         dot.ID
 	ShopID         dot.ID
-	FbUser         *CreateFbUserArgs
-	FbUserInternal *CreateFbUserInternalArgs
+	FbUser         *CreateFbExternalUserArgs
+	FbUserInternal *CreateFbExternalUserInternalArgs
 
-	Result *FbUserCombined `json:"-"`
+	Result *FbExternalUserCombined `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbUserCombined(ctx context.Context, msg *CreateFbUserCombinedCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbUserCombined(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalUserCombined(ctx context.Context, msg *CreateFbExternalUserCombinedCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalUserCombined(msg.GetArgs(ctx))
 	return err
 }
 
-type CreateFbUserInternalCommand struct {
+type CreateFbExternalUserInternalCommand struct {
 	ID        dot.ID
 	Token     string
 	ExpiresIn int
 
-	Result *FbUserInternal `json:"-"`
+	Result *FbExternalUserInternal `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbUserInternal(ctx context.Context, msg *CreateFbUserInternalCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbUserInternal(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalUserInternal(ctx context.Context, msg *CreateFbExternalUserInternalCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalUserInternal(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbUserByExternalIDQuery struct {
+type GetFbExternalUserByExternalIDQuery struct {
 	ExternalID string
 
-	Result *FbUser `json:"-"`
+	Result *FbExternalUser `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbUserByExternalID(ctx context.Context, msg *GetFbUserByExternalIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbUserByExternalID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalUserByExternalID(ctx context.Context, msg *GetFbExternalUserByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserByExternalID(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbUserByIDQuery struct {
+type GetFbExternalUserByIDQuery struct {
 	ID dot.ID
 
-	Result *FbUser `json:"-"`
+	Result *FbExternalUser `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbUserByID(ctx context.Context, msg *GetFbUserByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbUserByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalUserByID(ctx context.Context, msg *GetFbExternalUserByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserByID(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbUserByUserIDQuery struct {
+type GetFbExternalUserByUserIDQuery struct {
 	UserID dot.ID
 
-	Result *FbUser `json:"-"`
+	Result *FbExternalUser `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbUserByUserID(ctx context.Context, msg *GetFbUserByUserIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbUserByUserID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalUserByUserID(ctx context.Context, msg *GetFbExternalUserByUserIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserByUserID(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbUserInternalByIDQuery struct {
+type GetFbExternalUserInternalByIDQuery struct {
 	ID dot.ID
 
-	Result *FbUserInternal `json:"-"`
+	Result *FbExternalUserInternal `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbUserInternalByID(ctx context.Context, msg *GetFbUserInternalByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbUserInternalByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalUserInternalByID(ctx context.Context, msg *GetFbExternalUserInternalByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserInternalByID(msg.GetArgs(ctx))
 	return err
 }
 
 // implement interfaces
 
-func (q *CreateFbUserCommand) command()         {}
-func (q *CreateFbUserCombinedCommand) command() {}
-func (q *CreateFbUserInternalCommand) command() {}
+func (q *CreateFbExternalUserCommand) command()         {}
+func (q *CreateFbExternalUserCombinedCommand) command() {}
+func (q *CreateFbExternalUserInternalCommand) command() {}
 
-func (q *GetFbUserByExternalIDQuery) query() {}
-func (q *GetFbUserByIDQuery) query()         {}
-func (q *GetFbUserByUserIDQuery) query()     {}
-func (q *GetFbUserInternalByIDQuery) query() {}
+func (q *GetFbExternalUserByExternalIDQuery) query() {}
+func (q *GetFbExternalUserByIDQuery) query()         {}
+func (q *GetFbExternalUserByUserIDQuery) query()     {}
+func (q *GetFbExternalUserInternalByIDQuery) query() {}
 
 // implement conversion
 
-func (q *CreateFbUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbUserArgs) {
+func (q *CreateFbExternalUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserArgs) {
 	return ctx,
-		&CreateFbUserArgs{
+		&CreateFbExternalUserArgs{
 			ID:           q.ID,
-			ExternalID:   q.ExternalID,
 			UserID:       q.UserID,
+			ExternalID:   q.ExternalID,
 			ExternalInfo: q.ExternalInfo,
 			Token:        q.Token,
 			Status:       q.Status,
 		}
 }
 
-func (q *CreateFbUserCommand) SetCreateFbUserArgs(args *CreateFbUserArgs) {
+func (q *CreateFbExternalUserCommand) SetCreateFbExternalUserArgs(args *CreateFbExternalUserArgs) {
 	q.ID = args.ID
-	q.ExternalID = args.ExternalID
 	q.UserID = args.UserID
+	q.ExternalID = args.ExternalID
 	q.ExternalInfo = args.ExternalInfo
 	q.Token = args.Token
 	q.Status = args.Status
 }
 
-func (q *CreateFbUserCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbUserCombinedArgs) {
+func (q *CreateFbExternalUserCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserCombinedArgs) {
 	return ctx,
-		&CreateFbUserCombinedArgs{
+		&CreateFbExternalUserCombinedArgs{
 			UserID:         q.UserID,
 			ShopID:         q.ShopID,
 			FbUser:         q.FbUser,
@@ -156,44 +156,44 @@ func (q *CreateFbUserCombinedCommand) GetArgs(ctx context.Context) (_ context.Co
 		}
 }
 
-func (q *CreateFbUserCombinedCommand) SetCreateFbUserCombinedArgs(args *CreateFbUserCombinedArgs) {
+func (q *CreateFbExternalUserCombinedCommand) SetCreateFbExternalUserCombinedArgs(args *CreateFbExternalUserCombinedArgs) {
 	q.UserID = args.UserID
 	q.ShopID = args.ShopID
 	q.FbUser = args.FbUser
 	q.FbUserInternal = args.FbUserInternal
 }
 
-func (q *CreateFbUserInternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbUserInternalArgs) {
+func (q *CreateFbExternalUserInternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserInternalArgs) {
 	return ctx,
-		&CreateFbUserInternalArgs{
+		&CreateFbExternalUserInternalArgs{
 			ID:        q.ID,
 			Token:     q.Token,
 			ExpiresIn: q.ExpiresIn,
 		}
 }
 
-func (q *CreateFbUserInternalCommand) SetCreateFbUserInternalArgs(args *CreateFbUserInternalArgs) {
+func (q *CreateFbExternalUserInternalCommand) SetCreateFbExternalUserInternalArgs(args *CreateFbExternalUserInternalArgs) {
 	q.ID = args.ID
 	q.Token = args.Token
 	q.ExpiresIn = args.ExpiresIn
 }
 
-func (q *GetFbUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+func (q *GetFbExternalUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
 }
 
-func (q *GetFbUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *GetFbExternalUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
 
-func (q *GetFbUserByUserIDQuery) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
+func (q *GetFbExternalUserByUserIDQuery) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
 	return ctx,
 		q.UserID
 }
 
-func (q *GetFbUserInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *GetFbExternalUserInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
@@ -210,9 +210,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleCreateFbUser)
-	b.AddHandler(h.HandleCreateFbUserCombined)
-	b.AddHandler(h.HandleCreateFbUserInternal)
+	b.AddHandler(h.HandleCreateFbExternalUser)
+	b.AddHandler(h.HandleCreateFbExternalUserCombined)
+	b.AddHandler(h.HandleCreateFbExternalUserInternal)
 	return CommandBus{b}
 }
 
@@ -228,9 +228,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetFbUserByExternalID)
-	b.AddHandler(h.HandleGetFbUserByID)
-	b.AddHandler(h.HandleGetFbUserByUserID)
-	b.AddHandler(h.HandleGetFbUserInternalByID)
+	b.AddHandler(h.HandleGetFbExternalUserByExternalID)
+	b.AddHandler(h.HandleGetFbExternalUserByID)
+	b.AddHandler(h.HandleGetFbExternalUserByUserID)
+	b.AddHandler(h.HandleGetFbExternalUserInternalByID)
 	return QueryBus{b}
 }

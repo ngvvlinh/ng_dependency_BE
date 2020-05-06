@@ -71,6 +71,29 @@ func CMPaging(p *common.Paging, sorts ...string) *cm.Paging {
 	return res
 }
 
+func PbCursorPageInfo(arg *cm.Paging, metaPageInfo *meta.PageInfo) *common.CursorPageInfo {
+	if metaPageInfo == nil {
+		return nil
+	}
+	if arg == nil {
+		return nil
+	}
+	sort := ""
+	if len(arg.Sort) > 0 {
+		sort = arg.Sort[0]
+	}
+	return &common.CursorPageInfo{
+		Before: arg.Before,
+		After:  arg.After,
+
+		Limit: metaPageInfo.Limit,
+		Sort:  sort,
+
+		Prev: metaPageInfo.Prev,
+		Next: metaPageInfo.Next,
+	}
+}
+
 func PbPageInfo(p *cm.Paging) *common.PageInfo {
 	return &common.PageInfo{
 		Limit: p.Limit,

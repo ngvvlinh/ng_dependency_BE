@@ -5,7 +5,22 @@ type Token struct {
 	TokenType   string `json:"token_type"`
 }
 
-type From struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
+type ObjectTo struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	ID    string `json:"id"`
+}
+
+type ObjectsTo struct {
+	Data []*ObjectTo `json:"data"`
+}
+
+type ObjectFrom struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type ObjectsFrom struct {
+	Data []*ObjectFrom `json:"data"`
 }

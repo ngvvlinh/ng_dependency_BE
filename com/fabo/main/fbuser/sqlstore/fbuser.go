@@ -14,23 +14,23 @@ import (
 	"o.o/capi/dot"
 )
 
-type FbUserStoreFactory func(ctx context.Context) *FbUserStore
+type FbExternalUserStoreFactory func(ctx context.Context) *FbExternalUserStore
 
 var scheme = conversion.Build(convert.RegisterConversions)
 
-func NewFbUserStore(db *cmsql.Database) FbUserStoreFactory {
+func NewFbExternalUserStore(db *cmsql.Database) FbExternalUserStoreFactory {
 	model.SQLVerifySchema(db)
-	return func(ctx context.Context) *FbUserStore {
-		return &FbUserStore{
+	return func(ctx context.Context) *FbExternalUserStore {
+		return &FbExternalUserStore{
 			db:    db,
 			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
-type FbUserStore struct {
+type FbExternalUserStore struct {
 	db *cmsql.Database
-	ft FbUserFilters
+	ft FbExternalUserFilters
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
@@ -40,22 +40,22 @@ type FbUserStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *FbUserStore) ExternalID(externalID string) *FbUserStore {
+func (s *FbExternalUserStore) ExternalID(externalID string) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
 	return s
 }
 
-func (s *FbUserStore) UserID(userID dot.ID) *FbUserStore {
+func (s *FbExternalUserStore) UserID(userID dot.ID) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByUserID(userID))
 	return s
 }
 
-func (s *FbUserStore) Status(status status3.Status) *FbUserStore {
+func (s *FbExternalUserStore) Status(status status3.Status) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
 
-func (s *FbUserStore) UpdateStatus(status int) (int, error) {
+func (s *FbExternalUserStore) UpdateStatus(status int) (int, error) {
 	query := s.query().Where(s.preds)
 	updateStatus, err := query.Table("fb_user").UpdateMap(map[string]interface{}{
 		"status": status,
@@ -63,42 +63,42 @@ func (s *FbUserStore) UpdateStatus(status int) (int, error) {
 	return updateStatus, err
 }
 
-func (s *FbUserStore) CreateFbUser(fbUser *fbusering.FbUser) error {
+func (s *FbExternalUserStore) CreateFbExternalUser(fbExternalUser *fbusering.FbExternalUser) error {
 	sqlstore.MustNoPreds(s.preds)
-	fbUserDB := new(model.FbUser)
-	if err := scheme.Convert(fbUser, fbUserDB); err != nil {
+	fbExternalUserDB := new(model.FbExternalUser)
+	if err := scheme.Convert(fbExternalUser, fbExternalUserDB); err != nil {
 		return err
 	}
-	_, err := s.query().Upsert(fbUserDB)
+	_, err := s.query().Upsert(fbExternalUserDB)
 	if err != nil {
 		return err
 	}
 
-	var tempFbUser model.FbUser
-	if err := s.query().Where(s.ft.ByID(fbUser.ID)).ShouldGet(&tempFbUser); err != nil {
+	var tempFbExternalUser model.FbExternalUser
+	if err := s.query().Where(s.ft.ByID(fbExternalUser.ID)).ShouldGet(&tempFbExternalUser); err != nil {
 		return err
 	}
-	fbUser.CreatedAt = tempFbUser.CreatedAt
-	fbUser.UpdatedAt = tempFbUser.UpdatedAt
+	fbExternalUser.CreatedAt = tempFbExternalUser.CreatedAt
+	fbExternalUser.UpdatedAt = tempFbExternalUser.UpdatedAt
 
 	return nil
 }
 
-func (s *FbUserStore) GetFbUserDB() (*model.FbUser, error) {
+func (s *FbExternalUserStore) GetFbExternalUserDB() (*model.FbExternalUser, error) {
 	query := s.query().Where(s.preds)
 
-	var fbUser model.FbUser
-	err := query.ShouldGet(&fbUser)
-	return &fbUser, err
+	var fbExternalUser model.FbExternalUser
+	err := query.ShouldGet(&fbExternalUser)
+	return &fbExternalUser, err
 }
 
-func (s *FbUserStore) GetFbUser() (*fbusering.FbUser, error) {
-	fbuser, err := s.GetFbUserDB()
+func (s *FbExternalUserStore) GetFbExternalUser() (*fbusering.FbExternalUser, error) {
+	fbExternalUser, err := s.GetFbExternalUserDB()
 	if err != nil {
 		return nil, err
 	}
-	result := &fbusering.FbUser{}
-	err = scheme.Convert(fbuser, result)
+	result := &fbusering.FbExternalUser{}
+	err = scheme.Convert(fbExternalUser, result)
 	if err != nil {
 		return nil, err
 	}

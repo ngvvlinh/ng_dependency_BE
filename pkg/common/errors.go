@@ -35,6 +35,7 @@ const (
 	SkipSync = xerrors.SkipSync
 
 	FacebookPermissionDenied = xerrors.FacebookPermissionDenied
+	FacebookError            = xerrors.Facebook
 )
 
 var (

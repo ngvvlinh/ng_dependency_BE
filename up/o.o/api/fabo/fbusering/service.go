@@ -10,41 +10,41 @@ import (
 // +gen:api
 
 type Aggregate interface {
-	CreateFbUser(context.Context, *CreateFbUserArgs) (*FbUser, error)
+	CreateFbExternalUser(context.Context, *CreateFbExternalUserArgs) (*FbExternalUser, error)
 
-	CreateFbUserInternal(context.Context, *CreateFbUserInternalArgs) (*FbUserInternal, error)
+	CreateFbExternalUserInternal(context.Context, *CreateFbExternalUserInternalArgs) (*FbExternalUserInternal, error)
 
-	CreateFbUserCombined(context.Context, *CreateFbUserCombinedArgs) (*FbUserCombined, error)
+	CreateFbExternalUserCombined(context.Context, *CreateFbExternalUserCombinedArgs) (*FbExternalUserCombined, error)
 }
 
 type QueryService interface {
-	GetFbUserByID(_ context.Context, ID dot.ID) (*FbUser, error)
-	GetFbUserByExternalID(_ context.Context, externalID string) (*FbUser, error)
-	GetFbUserByUserID(_ context.Context, userID dot.ID) (*FbUser, error)
+	GetFbExternalUserByID(_ context.Context, ID dot.ID) (*FbExternalUser, error)
+	GetFbExternalUserByExternalID(_ context.Context, externalID string) (*FbExternalUser, error)
+	GetFbExternalUserByUserID(_ context.Context, userID dot.ID) (*FbExternalUser, error)
 
-	GetFbUserInternalByID(_ context.Context, ID dot.ID) (*FbUserInternal, error)
+	GetFbExternalUserInternalByID(_ context.Context, ID dot.ID) (*FbExternalUserInternal, error)
 }
 
-// +convert:create=FbUser
-type CreateFbUserArgs struct {
+// +convert:create=FbExternalUser
+type CreateFbExternalUserArgs struct {
 	ID           dot.ID
-	ExternalID   string
 	UserID       dot.ID
-	ExternalInfo *ExternalFBUserInfo
+	ExternalID   string
+	ExternalInfo *FbExternalUserInfo
 	Token        string
 	Status       status3.Status
 }
 
-// +convert:create=FbUserInternal
-type CreateFbUserInternalArgs struct {
+// +convert:create=FbExternalUserInternal
+type CreateFbExternalUserInternalArgs struct {
 	ID        dot.ID
 	Token     string
 	ExpiresIn int
 }
 
-type CreateFbUserCombinedArgs struct {
+type CreateFbExternalUserCombinedArgs struct {
 	UserID         dot.ID
 	ShopID         dot.ID
-	FbUser         *CreateFbUserArgs
-	FbUserInternal *CreateFbUserInternalArgs
+	FbUser         *CreateFbExternalUserArgs
+	FbUserInternal *CreateFbExternalUserInternalArgs
 }

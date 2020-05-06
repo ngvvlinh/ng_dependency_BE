@@ -16,15 +16,15 @@ var _ fbpaging.QueryService = &FbPageQuery{}
 
 type FbPageQuery struct {
 	db                  *cmsql.Database
-	fbPageStore         sqlstore.FbPageStoreFactory
-	fbPageInternalStore sqlstore.FbPageInternalStoreFactory
+	fbPageStore         sqlstore.FbExternalPageStoreFactory
+	fbPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
 }
 
 func NewFbPageQuery(database *cmsql.Database) *FbPageQuery {
 	return &FbPageQuery{
 		db:                  database,
-		fbPageStore:         sqlstore.NewFbPageStore(database),
-		fbPageInternalStore: sqlstore.NewFbPageInternalStore(database),
+		fbPageStore:         sqlstore.NewFbExternalPageStore(database),
+		fbPageInternalStore: sqlstore.NewFbExternalPageInternalStore(database),
 	}
 }
 
@@ -33,34 +33,34 @@ func (q *FbPageQuery) MessageBus() fbpaging.QueryBus {
 	return fbpaging.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (f FbPageQuery) GetFbPageByID(
+func (f FbPageQuery) GetFbExternalPageByID(
 	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbPage, error) {
+) (*fbpaging.FbExternalPage, error) {
 	panic("implement me")
 }
 
-func (f FbPageQuery) GetFbPageByExternalID(
+func (f FbPageQuery) GetFbExternalPageByExternalID(
 	ctx context.Context, externalID string,
-) (*fbpaging.FbPage, error) {
+) (*fbpaging.FbExternalPage, error) {
 	panic("implement me")
 }
 
-func (f FbPageQuery) GetFbPageInternalByID(
+func (f FbPageQuery) GetFbExternalPageInternalByID(
 	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbPageInternal, error) {
+) (*fbpaging.FbExternalPageInternal, error) {
 	panic("implement me")
 }
 
-func (q *FbPageQuery) ListFbPagesByIDs(
+func (q *FbPageQuery) ListFbExternalPagesByIDs(
 	ctx context.Context, IDs filter.IDs,
-) ([]*fbpaging.FbPage, error) {
+) ([]*fbpaging.FbExternalPage, error) {
 	panic("implement me")
 }
 
-func (q *FbPageQuery) ListFbPages(
-	ctx context.Context, args *fbpaging.ListFbPagesArgs,
+func (q *FbPageQuery) ListFbExternalPages(
+	ctx context.Context, args *fbpaging.ListFbExternalPagesArgs,
 ) (*fbpaging.FbPagesResponse, error) {
-	query := q.fbPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).
+	query := q.fbPageStore(ctx).OptionalShopID(args.ShopID).UserID(args.UserID).
 		WithPaging(args.Paging).Filters(args.Filters)
 	if args.FbUserID.Valid {
 		query = query.FbUserID(args.FbUserID.ID)
@@ -75,9 +75,9 @@ func (q *FbPageQuery) ListFbPages(
 	}, nil
 }
 
-func (q *FbPageQuery) ListFbPagesActiveByExternalIDs(
+func (q *FbPageQuery) ListFbExternalPagesActiveByExternalIDs(
 	ctx context.Context, externalIDs []string,
-) ([]*fbpaging.FbPage, error) {
+) ([]*fbpaging.FbExternalPage, error) {
 	fbPages, err := q.fbPageStore(ctx).ExternalIDs(externalIDs).Status(status3.P).ListFbPages()
 	if err != nil {
 		return nil, err

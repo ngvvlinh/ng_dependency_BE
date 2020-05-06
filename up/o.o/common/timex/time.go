@@ -1,7 +1,6 @@
 package timex
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -61,7 +60,6 @@ func Micros(t time.Time) int64 {
 	if IsZeroTime(t) {
 		return 0
 	}
-	fmt.Println("--nano", t.UnixNano(), t.UnixNano()/e3)
 	return t.UnixNano() / e3
 }
 

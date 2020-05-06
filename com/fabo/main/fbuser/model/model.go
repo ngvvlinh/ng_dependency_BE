@@ -8,17 +8,17 @@ import (
 )
 
 // +sqlgen
-type FbUser struct {
+type FbExternalUser struct {
 	ID           dot.ID
-	ExternalID   string
 	UserID       dot.ID
-	ExternalInfo *ExternalFBUserInfo
+	ExternalID   string
+	ExternalInfo *FbExternalUserInfo
 	Status       status3.Status
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 }
 
-type ExternalFBUserInfo struct {
+type FbExternalUserInfo struct {
 	Name      string `json:"name"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -27,7 +27,7 @@ type ExternalFBUserInfo struct {
 }
 
 // +sqlgen
-type FbUserInternal struct {
+type FbExternalUserInternal struct {
 	ID        dot.ID
 	Token     string
 	ExpiresIn int

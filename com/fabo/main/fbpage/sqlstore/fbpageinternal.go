@@ -11,19 +11,19 @@ import (
 	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
-type FbPageInternalStoreFactory func(ctx context.Context) *FbPageInternalStore
+type FbExternalPageInternalStoreFactory func(ctx context.Context) *FbExternalPageInternalStore
 
-func NewFbPageInternalStore(db *cmsql.Database) FbPageInternalStoreFactory {
+func NewFbExternalPageInternalStore(db *cmsql.Database) FbExternalPageInternalStoreFactory {
 	model.SQLVerifySchema(db)
-	return func(ctx context.Context) *FbPageInternalStore {
-		return &FbPageInternalStore{
+	return func(ctx context.Context) *FbExternalPageInternalStore {
+		return &FbExternalPageInternalStore{
 			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
-type FbPageInternalStore struct {
-	ft FbPageInternalFilters
+type FbExternalPageInternalStore struct {
+	ft FbExternalPageInternalFilters
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
@@ -33,32 +33,32 @@ type FbPageInternalStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *FbPageInternalStore) CreateFbPageInternal(fbPageInternal *fbpaging.FbPageInternal) error {
+func (s *FbExternalPageInternalStore) CreateFbExternalPageInternal(fbExternalPageInternal *fbpaging.FbExternalPageInternal) error {
 	sqlstore.MustNoPreds(s.preds)
-	fbPageInternalDB := new(model.FbPageInternal)
-	if err := scheme.Convert(fbPageInternal, fbPageInternalDB); err != nil {
+	fbExternalPageInternalDB := new(model.FbExternalPageInternal)
+	if err := scheme.Convert(fbExternalPageInternal, fbExternalPageInternalDB); err != nil {
 		return err
 	}
 
-	_, err := s.query().Insert(fbPageInternalDB)
+	_, err := s.query().Insert(fbExternalPageInternalDB)
 	if err != nil {
 		return err
 	}
 
-	var tempFbPageInternal model.FbPageInternal
-	if err := s.query().Where(s.ft.ByID(fbPageInternal.ID)).ShouldGet(&tempFbPageInternal); err != nil {
+	var tempFbPageInternal model.FbExternalPageInternal
+	if err := s.query().Where(s.ft.ByID(fbExternalPageInternal.ID)).ShouldGet(&tempFbPageInternal); err != nil {
 		return err
 	}
-	fbPageInternal.UpdatedAt = tempFbPageInternal.UpdatedAt
+	fbExternalPageInternal.UpdatedAt = tempFbPageInternal.UpdatedAt
 
 	return nil
 }
 
-func (s *FbPageInternalStore) CreateFbPageInternals(fbPageInternals []*fbpaging.FbPageInternal) error {
+func (s *FbExternalPageInternalStore) CreateFbExternalPageInternals(fbExternalPageInternals []*fbpaging.FbExternalPageInternal) error {
 	sqlstore.MustNoPreds(s.preds)
-	fbPageInternalsDB := model.FbPageInternals(convert.Convert_fbpaging_FbPageInternals_fbpagemodel_FbPageInternals(fbPageInternals))
+	fbExternalPageInternalsDB := model.FbExternalPageInternals(convert.Convert_fbpaging_FbExternalPageInternals_fbpagemodel_FbExternalPageInternals(fbExternalPageInternals))
 
-	_, err := s.query().Upsert(&fbPageInternalsDB)
+	_, err := s.query().Upsert(&fbExternalPageInternalsDB)
 	if err != nil {
 		return err
 	}
@@ -66,32 +66,32 @@ func (s *FbPageInternalStore) CreateFbPageInternals(fbPageInternals []*fbpaging.
 	return nil
 }
 
-func (s *FbPageInternalStore) ListFbPageInternalsDB() ([]*model.FbPageInternal, error) {
+func (s *FbExternalPageInternalStore) ListFbPageInternalsDB() ([]*model.FbExternalPageInternal, error) {
 	query := s.query().Where(s.preds)
-	query, err := sqlstore.LimitSort(query, &s.Paging, SortFbPageInternal, s.ft.prefix)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFbExternalPageInternal, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}
-	query, _, err = sqlstore.Filters(query, s.filters, FilterFbPageInternal)
+	query, _, err = sqlstore.Filters(query, s.filters, FilterFbExternalPageInternal)
 	if err != nil {
 		return nil, err
 	}
 
-	var fbPageInternals model.FbPageInternals
-	err = query.Find(&fbPageInternals)
+	var fbExternalPageInternals model.FbExternalPageInternals
+	err = query.Find(&fbExternalPageInternals)
 	if err != nil {
 		return nil, err
 	}
-	s.Paging.Apply(fbPageInternals)
-	return fbPageInternals, nil
+	s.Paging.Apply(fbExternalPageInternals)
+	return fbExternalPageInternals, nil
 }
 
-func (s *FbPageInternalStore) ListFbPageInternals() (result []*fbpaging.FbPageInternal, err error) {
-	fbPageInternals, err := s.ListFbPageInternalsDB()
+func (s *FbExternalPageInternalStore) ListFbPageInternals() (result []*fbpaging.FbExternalPageInternal, err error) {
+	fbExternalPageInternals, err := s.ListFbPageInternalsDB()
 	if err != nil {
 		return nil, err
 	}
-	if err = scheme.Convert(fbPageInternals, &result); err != nil {
+	if err = scheme.Convert(fbExternalPageInternals, &result); err != nil {
 		return nil, err
 	}
 	return

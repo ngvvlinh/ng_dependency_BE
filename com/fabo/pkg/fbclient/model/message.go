@@ -6,27 +6,17 @@ type MessagesResponse struct {
 }
 
 type Messages struct {
-	MessagesData []*MessageData         `json:"data"`
-	Paging       *FacebookPagingRequest `json:"paging"`
+	MessagesData []*MessageData          `json:"data"`
+	Paging       *FacebookPagingResponse `json:"paging"`
 }
 
 type MessageData struct {
 	ID          string                  `json:"id"`
 	CreatedTime *FacebookTime           `json:"created_time"`
 	Message     string                  `json:"message"`
-	To          *MessageDataTo          `json:"to"`
-	From        *From                   `json:"from"`
+	To          *ObjectsTo              `json:"to"`
+	From        *ObjectFrom             `json:"from"`
 	Attachments *MessageDataAttachments `json:"attachments"`
-}
-
-type MessageDataTo struct {
-	Data []*MessageDataToData `json:"data"`
-}
-
-type MessageDataToData struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	ID    string `json:"id"`
 }
 
 type MessageDataAttachments struct {

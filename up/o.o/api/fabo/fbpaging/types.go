@@ -7,7 +7,7 @@ import (
 	"o.o/capi/dot"
 )
 
-type FbPage struct {
+type FbExternalPage struct {
 	ID                   dot.ID
 	ExternalID           string
 	FbUserID             dot.ID
@@ -30,13 +30,15 @@ type ExternalCategory struct {
 	Name string
 }
 
-type FbPageInternal struct {
+type FbExternalPageInternal struct {
 	ID        dot.ID
 	Token     string
 	UpdatedAt time.Time
 }
 
-type FbPageCombined struct {
-	FbPage         *FbPage
-	FbPageInternal *FbPageInternal
+type FbExternalPageCombineds []*FbExternalPageCombined
+
+type FbExternalPageCombined struct {
+	FbExternalPage         *FbExternalPage
+	FbExternalPageInternal *FbExternalPageInternal
 }

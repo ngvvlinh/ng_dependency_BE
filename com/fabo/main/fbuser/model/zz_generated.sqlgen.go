@@ -27,31 +27,31 @@ func SQLVerifySchema(db *cmsql.Database) {
 
 type SQLWriter = core.SQLWriter
 
-type FbUsers []*FbUser
+type FbExternalUsers []*FbExternalUser
 
-const __sqlFbUser_Table = "fb_user"
-const __sqlFbUser_ListCols = "\"id\",\"external_id\",\"user_id\",\"external_info\",\"status\",\"created_at\",\"updated_at\""
-const __sqlFbUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"user_id\" = EXCLUDED.\"user_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
-const __sqlFbUser_Insert = "INSERT INTO \"fb_user\" (" + __sqlFbUser_ListCols + ") VALUES"
-const __sqlFbUser_Select = "SELECT " + __sqlFbUser_ListCols + " FROM \"fb_user\""
-const __sqlFbUser_Select_history = "SELECT " + __sqlFbUser_ListCols + " FROM history.\"fb_user\""
-const __sqlFbUser_UpdateAll = "UPDATE \"fb_user\" SET (" + __sqlFbUser_ListCols + ")"
-const __sqlFbUser_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_user_pkey DO UPDATE SET"
+const __sqlFbExternalUser_Table = "fb_external_user"
+const __sqlFbExternalUser_ListCols = "\"id\",\"user_id\",\"external_id\",\"external_info\",\"status\",\"created_at\",\"updated_at\""
+const __sqlFbExternalUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUser_Insert = "INSERT INTO \"fb_external_user\" (" + __sqlFbExternalUser_ListCols + ") VALUES"
+const __sqlFbExternalUser_Select = "SELECT " + __sqlFbExternalUser_ListCols + " FROM \"fb_external_user\""
+const __sqlFbExternalUser_Select_history = "SELECT " + __sqlFbExternalUser_ListCols + " FROM history.\"fb_external_user\""
+const __sqlFbExternalUser_UpdateAll = "UPDATE \"fb_external_user\" SET (" + __sqlFbExternalUser_ListCols + ")"
+const __sqlFbExternalUser_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_external_user_pkey DO UPDATE SET"
 
-func (m *FbUser) SQLTableName() string  { return "fb_user" }
-func (m *FbUsers) SQLTableName() string { return "fb_user" }
-func (m *FbUser) SQLListCols() string   { return __sqlFbUser_ListCols }
+func (m *FbExternalUser) SQLTableName() string  { return "fb_external_user" }
+func (m *FbExternalUsers) SQLTableName() string { return "fb_external_user" }
+func (m *FbExternalUser) SQLListCols() string   { return __sqlFbExternalUser_ListCols }
 
-func (m *FbUser) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlFbUser_ListCols + " FROM \"fb_user\" WHERE false"
+func (m *FbExternalUser) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFbExternalUser_ListCols + " FROM \"fb_external_user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
 }
 
-func (m *FbUser) Migration(db *cmsql.Database) {
+func (m *FbExternalUser) Migration(db *cmsql.Database) {
 	var mDBColumnNameAndType map[string]string
-	if val, err := migration.GetColumnNamesAndTypes(db, "fb_user"); err != nil {
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_external_user"); err != nil {
 		db.RecordError(err)
 		return
 	} else {
@@ -65,13 +65,6 @@ func (m *FbUser) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"external_id": {
-			ColumnName:       "external_id",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
 		"user_id": {
 			ColumnName:       "user_id",
 			ColumnType:       "dot.ID",
@@ -79,9 +72,16 @@ func (m *FbUser) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"external_info": {
 			ColumnName:       "external_info",
-			ColumnType:       "*ExternalFBUserInfo",
+			ColumnType:       "*FbExternalUserInfo",
 			ColumnDBType:     "*struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
@@ -108,21 +108,21 @@ func (m *FbUser) Migration(db *cmsql.Database) {
 			ColumnEnumValues: []string{},
 		},
 	}
-	if err := migration.Compare(db, "fb_user", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+	if err := migration.Compare(db, "fb_external_user", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }
 
 func init() {
-	__sqlModels = append(__sqlModels, (*FbUser)(nil))
+	__sqlModels = append(__sqlModels, (*FbExternalUser)(nil))
 }
 
-func (m *FbUser) SQLArgs(opts core.Opts, create bool) []interface{} {
+func (m *FbExternalUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
-		core.String(m.ExternalID),
 		m.UserID,
+		core.String(m.ExternalID),
 		core.JSON{m.ExternalInfo},
 		m.Status,
 		core.Now(m.CreatedAt, now, create),
@@ -130,11 +130,11 @@ func (m *FbUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 	}
 }
 
-func (m *FbUser) SQLScanArgs(opts core.Opts) []interface{} {
+func (m *FbExternalUser) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
-		(*core.String)(&m.ExternalID),
 		&m.UserID,
+		(*core.String)(&m.ExternalID),
 		core.JSON{&m.ExternalInfo},
 		&m.Status,
 		(*core.Time)(&m.CreatedAt),
@@ -142,14 +142,14 @@ func (m *FbUser) SQLScanArgs(opts core.Opts) []interface{} {
 	}
 }
 
-func (m *FbUser) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *FbExternalUser) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
 }
 
-func (ms *FbUsers) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(FbUsers, 0, 128)
+func (ms *FbExternalUsers) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(FbExternalUsers, 0, 128)
 	for rows.Next() {
-		m := new(FbUser)
+		m := new(FbExternalUser)
 		args := m.SQLScanArgs(opts)
 		if err := rows.Scan(args...); err != nil {
 			return err
@@ -163,18 +163,18 @@ func (ms *FbUsers) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-func (_ *FbUser) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Select)
+func (_ *FbExternalUser) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Select)
 	return nil
 }
 
-func (_ *FbUsers) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Select)
+func (_ *FbExternalUsers) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Select)
 	return nil
 }
 
-func (m *FbUser) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Insert)
+func (m *FbExternalUser) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
 	w.WriteMarkers(7)
 	w.WriteByte(')')
@@ -182,8 +182,8 @@ func (m *FbUser) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (ms FbUsers) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Insert)
+func (ms FbExternalUsers) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
 		w.WriteMarkers(7)
@@ -194,28 +194,28 @@ func (ms FbUsers) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (m *FbUser) SQLUpsert(w SQLWriter) error {
+func (m *FbExternalUser) SQLUpsert(w SQLWriter) error {
 	m.SQLInsert(w)
-	w.WriteQueryString(__sqlFbUser_UpdateOnConflict)
+	w.WriteQueryString(__sqlFbExternalUser_UpdateOnConflict)
 	w.WriteQueryString(" ")
-	w.WriteQueryString(__sqlFbUser_ListColsOnConflict)
+	w.WriteQueryString(__sqlFbExternalUser_ListColsOnConflict)
 	return nil
 }
 
-func (ms FbUsers) SQLUpsert(w SQLWriter) error {
+func (ms FbExternalUsers) SQLUpsert(w SQLWriter) error {
 	ms.SQLInsert(w)
-	w.WriteQueryString(__sqlFbUser_UpdateOnConflict)
+	w.WriteQueryString(__sqlFbExternalUser_UpdateOnConflict)
 	w.WriteQueryString(" ")
-	w.WriteQueryString(__sqlFbUser_ListColsOnConflict)
+	w.WriteQueryString(__sqlFbExternalUser_ListColsOnConflict)
 	return nil
 }
 
-func (m *FbUser) SQLUpdate(w SQLWriter) error {
+func (m *FbExternalUser) SQLUpdate(w SQLWriter) error {
 	now, opts := time.Now(), w.Opts()
 	_, _ = now, opts // suppress unuse error
 	var flag bool
 	w.WriteRawString("UPDATE ")
-	w.WriteName("fb_user")
+	w.WriteName("fb_external_user")
 	w.WriteRawString(" SET ")
 	if m.ID != 0 {
 		flag = true
@@ -225,14 +225,6 @@ func (m *FbUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
 	}
-	if m.ExternalID != "" {
-		flag = true
-		w.WriteName("external_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ExternalID)
-	}
 	if m.UserID != 0 {
 		flag = true
 		w.WriteName("user_id")
@@ -240,6 +232,14 @@ func (m *FbUser) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.UserID)
+	}
+	if m.ExternalID != "" {
+		flag = true
+		w.WriteName("external_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalID)
 	}
 	if m.ExternalInfo != nil {
 		flag = true
@@ -280,8 +280,8 @@ func (m *FbUser) SQLUpdate(w SQLWriter) error {
 	return nil
 }
 
-func (m *FbUser) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_UpdateAll)
+func (m *FbExternalUser) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_UpdateAll)
 	w.WriteRawString(" = (")
 	w.WriteMarkers(7)
 	w.WriteByte(')')
@@ -289,31 +289,33 @@ func (m *FbUser) SQLUpdateAll(w SQLWriter) error {
 	return nil
 }
 
-type FbUserHistory map[string]interface{}
-type FbUserHistories []map[string]interface{}
+type FbExternalUserHistory map[string]interface{}
+type FbExternalUserHistories []map[string]interface{}
 
-func (m *FbUserHistory) SQLTableName() string  { return "history.\"fb_user\"" }
-func (m FbUserHistories) SQLTableName() string { return "history.\"fb_user\"" }
+func (m *FbExternalUserHistory) SQLTableName() string  { return "history.\"fb_external_user\"" }
+func (m FbExternalUserHistories) SQLTableName() string { return "history.\"fb_external_user\"" }
 
-func (m *FbUserHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Select_history)
+func (m *FbExternalUserHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Select_history)
 	return nil
 }
 
-func (m FbUserHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUser_Select_history)
+func (m FbExternalUserHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUser_Select_history)
 	return nil
 }
 
-func (m FbUserHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m FbUserHistory) ExternalID() core.Interface   { return core.Interface{m["external_id"]} }
-func (m FbUserHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
-func (m FbUserHistory) ExternalInfo() core.Interface { return core.Interface{m["external_info"]} }
-func (m FbUserHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m FbUserHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m FbUserHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m FbExternalUserHistory) ID() core.Interface         { return core.Interface{m["id"]} }
+func (m FbExternalUserHistory) UserID() core.Interface     { return core.Interface{m["user_id"]} }
+func (m FbExternalUserHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
+func (m FbExternalUserHistory) ExternalInfo() core.Interface {
+	return core.Interface{m["external_info"]}
+}
+func (m FbExternalUserHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m FbExternalUserHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m FbExternalUserHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
-func (m *FbUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *FbExternalUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 7)
 	args := make([]interface{}, 7)
 	for i := 0; i < 7; i++ {
@@ -322,10 +324,10 @@ func (m *FbUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbUserHistory, 7)
+	res := make(FbExternalUserHistory, 7)
 	res["id"] = data[0]
-	res["external_id"] = data[1]
-	res["user_id"] = data[2]
+	res["user_id"] = data[1]
+	res["external_id"] = data[2]
 	res["external_info"] = data[3]
 	res["status"] = data[4]
 	res["created_at"] = data[5]
@@ -334,21 +336,21 @@ func (m *FbUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	return nil
 }
 
-func (ms *FbUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	data := make([]interface{}, 7)
 	args := make([]interface{}, 7)
 	for i := 0; i < 7; i++ {
 		args[i] = &data[i]
 	}
-	res := make(FbUserHistories, 0, 128)
+	res := make(FbExternalUserHistories, 0, 128)
 	for rows.Next() {
 		if err := rows.Scan(args...); err != nil {
 			return err
 		}
-		m := make(FbUserHistory)
+		m := make(FbExternalUserHistory)
 		m["id"] = data[0]
-		m["external_id"] = data[1]
-		m["user_id"] = data[2]
+		m["user_id"] = data[1]
+		m["external_id"] = data[2]
 		m["external_info"] = data[3]
 		m["status"] = data[4]
 		m["created_at"] = data[5]
@@ -362,31 +364,31 @@ func (ms *FbUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-type FbUserInternals []*FbUserInternal
+type FbExternalUserInternals []*FbExternalUserInternal
 
-const __sqlFbUserInternal_Table = "fb_user_internal"
-const __sqlFbUserInternal_ListCols = "\"id\",\"token\",\"expires_in\",\"updated_at\""
-const __sqlFbUserInternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"token\" = EXCLUDED.\"token\",\"expires_in\" = EXCLUDED.\"expires_in\",\"updated_at\" = EXCLUDED.\"updated_at\""
-const __sqlFbUserInternal_Insert = "INSERT INTO \"fb_user_internal\" (" + __sqlFbUserInternal_ListCols + ") VALUES"
-const __sqlFbUserInternal_Select = "SELECT " + __sqlFbUserInternal_ListCols + " FROM \"fb_user_internal\""
-const __sqlFbUserInternal_Select_history = "SELECT " + __sqlFbUserInternal_ListCols + " FROM history.\"fb_user_internal\""
-const __sqlFbUserInternal_UpdateAll = "UPDATE \"fb_user_internal\" SET (" + __sqlFbUserInternal_ListCols + ")"
-const __sqlFbUserInternal_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_user_internal_pkey DO UPDATE SET"
+const __sqlFbExternalUserInternal_Table = "fb_external_user_internal"
+const __sqlFbExternalUserInternal_ListCols = "\"id\",\"token\",\"expires_in\",\"updated_at\""
+const __sqlFbExternalUserInternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"token\" = EXCLUDED.\"token\",\"expires_in\" = EXCLUDED.\"expires_in\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUserInternal_Insert = "INSERT INTO \"fb_external_user_internal\" (" + __sqlFbExternalUserInternal_ListCols + ") VALUES"
+const __sqlFbExternalUserInternal_Select = "SELECT " + __sqlFbExternalUserInternal_ListCols + " FROM \"fb_external_user_internal\""
+const __sqlFbExternalUserInternal_Select_history = "SELECT " + __sqlFbExternalUserInternal_ListCols + " FROM history.\"fb_external_user_internal\""
+const __sqlFbExternalUserInternal_UpdateAll = "UPDATE \"fb_external_user_internal\" SET (" + __sqlFbExternalUserInternal_ListCols + ")"
+const __sqlFbExternalUserInternal_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_external_user_internal_pkey DO UPDATE SET"
 
-func (m *FbUserInternal) SQLTableName() string  { return "fb_user_internal" }
-func (m *FbUserInternals) SQLTableName() string { return "fb_user_internal" }
-func (m *FbUserInternal) SQLListCols() string   { return __sqlFbUserInternal_ListCols }
+func (m *FbExternalUserInternal) SQLTableName() string  { return "fb_external_user_internal" }
+func (m *FbExternalUserInternals) SQLTableName() string { return "fb_external_user_internal" }
+func (m *FbExternalUserInternal) SQLListCols() string   { return __sqlFbExternalUserInternal_ListCols }
 
-func (m *FbUserInternal) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlFbUserInternal_ListCols + " FROM \"fb_user_internal\" WHERE false"
+func (m *FbExternalUserInternal) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFbExternalUserInternal_ListCols + " FROM \"fb_external_user_internal\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
 }
 
-func (m *FbUserInternal) Migration(db *cmsql.Database) {
+func (m *FbExternalUserInternal) Migration(db *cmsql.Database) {
 	var mDBColumnNameAndType map[string]string
-	if val, err := migration.GetColumnNamesAndTypes(db, "fb_user_internal"); err != nil {
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_external_user_internal"); err != nil {
 		db.RecordError(err)
 		return
 	} else {
@@ -422,16 +424,16 @@ func (m *FbUserInternal) Migration(db *cmsql.Database) {
 			ColumnEnumValues: []string{},
 		},
 	}
-	if err := migration.Compare(db, "fb_user_internal", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+	if err := migration.Compare(db, "fb_external_user_internal", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
 	}
 }
 
 func init() {
-	__sqlModels = append(__sqlModels, (*FbUserInternal)(nil))
+	__sqlModels = append(__sqlModels, (*FbExternalUserInternal)(nil))
 }
 
-func (m *FbUserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
+func (m *FbExternalUserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
@@ -441,7 +443,7 @@ func (m *FbUserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	}
 }
 
-func (m *FbUserInternal) SQLScanArgs(opts core.Opts) []interface{} {
+func (m *FbExternalUserInternal) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
 		(*core.String)(&m.Token),
@@ -450,14 +452,14 @@ func (m *FbUserInternal) SQLScanArgs(opts core.Opts) []interface{} {
 	}
 }
 
-func (m *FbUserInternal) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *FbExternalUserInternal) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
 }
 
-func (ms *FbUserInternals) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(FbUserInternals, 0, 128)
+func (ms *FbExternalUserInternals) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(FbExternalUserInternals, 0, 128)
 	for rows.Next() {
-		m := new(FbUserInternal)
+		m := new(FbExternalUserInternal)
 		args := m.SQLScanArgs(opts)
 		if err := rows.Scan(args...); err != nil {
 			return err
@@ -471,18 +473,18 @@ func (ms *FbUserInternals) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-func (_ *FbUserInternal) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Select)
+func (_ *FbExternalUserInternal) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Select)
 	return nil
 }
 
-func (_ *FbUserInternals) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Select)
+func (_ *FbExternalUserInternals) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Select)
 	return nil
 }
 
-func (m *FbUserInternal) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Insert)
+func (m *FbExternalUserInternal) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Insert)
 	w.WriteRawString(" (")
 	w.WriteMarkers(4)
 	w.WriteByte(')')
@@ -490,8 +492,8 @@ func (m *FbUserInternal) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (ms FbUserInternals) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Insert)
+func (ms FbExternalUserInternals) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
 		w.WriteMarkers(4)
@@ -502,28 +504,28 @@ func (ms FbUserInternals) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (m *FbUserInternal) SQLUpsert(w SQLWriter) error {
+func (m *FbExternalUserInternal) SQLUpsert(w SQLWriter) error {
 	m.SQLInsert(w)
-	w.WriteQueryString(__sqlFbUserInternal_UpdateOnConflict)
+	w.WriteQueryString(__sqlFbExternalUserInternal_UpdateOnConflict)
 	w.WriteQueryString(" ")
-	w.WriteQueryString(__sqlFbUserInternal_ListColsOnConflict)
+	w.WriteQueryString(__sqlFbExternalUserInternal_ListColsOnConflict)
 	return nil
 }
 
-func (ms FbUserInternals) SQLUpsert(w SQLWriter) error {
+func (ms FbExternalUserInternals) SQLUpsert(w SQLWriter) error {
 	ms.SQLInsert(w)
-	w.WriteQueryString(__sqlFbUserInternal_UpdateOnConflict)
+	w.WriteQueryString(__sqlFbExternalUserInternal_UpdateOnConflict)
 	w.WriteQueryString(" ")
-	w.WriteQueryString(__sqlFbUserInternal_ListColsOnConflict)
+	w.WriteQueryString(__sqlFbExternalUserInternal_ListColsOnConflict)
 	return nil
 }
 
-func (m *FbUserInternal) SQLUpdate(w SQLWriter) error {
+func (m *FbExternalUserInternal) SQLUpdate(w SQLWriter) error {
 	now, opts := time.Now(), w.Opts()
 	_, _ = now, opts // suppress unuse error
 	var flag bool
 	w.WriteRawString("UPDATE ")
-	w.WriteName("fb_user_internal")
+	w.WriteName("fb_external_user_internal")
 	w.WriteRawString(" SET ")
 	if m.ID != 0 {
 		flag = true
@@ -564,8 +566,8 @@ func (m *FbUserInternal) SQLUpdate(w SQLWriter) error {
 	return nil
 }
 
-func (m *FbUserInternal) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_UpdateAll)
+func (m *FbExternalUserInternal) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_UpdateAll)
 	w.WriteRawString(" = (")
 	w.WriteMarkers(4)
 	w.WriteByte(')')
@@ -573,28 +575,36 @@ func (m *FbUserInternal) SQLUpdateAll(w SQLWriter) error {
 	return nil
 }
 
-type FbUserInternalHistory map[string]interface{}
-type FbUserInternalHistories []map[string]interface{}
+type FbExternalUserInternalHistory map[string]interface{}
+type FbExternalUserInternalHistories []map[string]interface{}
 
-func (m *FbUserInternalHistory) SQLTableName() string  { return "history.\"fb_user_internal\"" }
-func (m FbUserInternalHistories) SQLTableName() string { return "history.\"fb_user_internal\"" }
+func (m *FbExternalUserInternalHistory) SQLTableName() string {
+	return "history.\"fb_external_user_internal\""
+}
+func (m FbExternalUserInternalHistories) SQLTableName() string {
+	return "history.\"fb_external_user_internal\""
+}
 
-func (m *FbUserInternalHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Select_history)
+func (m *FbExternalUserInternalHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Select_history)
 	return nil
 }
 
-func (m FbUserInternalHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlFbUserInternal_Select_history)
+func (m FbExternalUserInternalHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserInternal_Select_history)
 	return nil
 }
 
-func (m FbUserInternalHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m FbUserInternalHistory) Token() core.Interface     { return core.Interface{m["token"]} }
-func (m FbUserInternalHistory) ExpiresIn() core.Interface { return core.Interface{m["expires_in"]} }
-func (m FbUserInternalHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m FbExternalUserInternalHistory) ID() core.Interface    { return core.Interface{m["id"]} }
+func (m FbExternalUserInternalHistory) Token() core.Interface { return core.Interface{m["token"]} }
+func (m FbExternalUserInternalHistory) ExpiresIn() core.Interface {
+	return core.Interface{m["expires_in"]}
+}
+func (m FbExternalUserInternalHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
 
-func (m *FbUserInternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *FbExternalUserInternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 4)
 	args := make([]interface{}, 4)
 	for i := 0; i < 4; i++ {
@@ -603,7 +613,7 @@ func (m *FbUserInternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbUserInternalHistory, 4)
+	res := make(FbExternalUserInternalHistory, 4)
 	res["id"] = data[0]
 	res["token"] = data[1]
 	res["expires_in"] = data[2]
@@ -612,18 +622,18 @@ func (m *FbUserInternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	return nil
 }
 
-func (ms *FbUserInternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+func (ms *FbExternalUserInternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	data := make([]interface{}, 4)
 	args := make([]interface{}, 4)
 	for i := 0; i < 4; i++ {
 		args[i] = &data[i]
 	}
-	res := make(FbUserInternalHistories, 0, 128)
+	res := make(FbExternalUserInternalHistories, 0, 128)
 	for rows.Next() {
 		if err := rows.Scan(args...); err != nil {
 			return err
 		}
-		m := make(FbUserInternalHistory)
+		m := make(FbExternalUserInternalHistory)
 		m["id"] = data[0]
 		m["token"] = data[1]
 		m["expires_in"] = data[2]

@@ -2,10 +2,14 @@ package fbclient
 
 const (
 	AccessToken              = "access_token"
+	IDs                      = "ids"
 	ClientIDKey              = "client_id"
 	ClientSecret             = "client_secret"
 	GrantType                = "grant_type"
 	Fields                   = "fields"
+	Filter                   = "filter"
+	Summary                  = "summary"
+	Limit                    = "limit"
 	InputToken               = "input_token"
 	GrantTypeFBExchangeToken = "fb_exchange_token"
 	FBExchangeToken          = "fb_exchange_token"
@@ -17,6 +21,12 @@ const (
 
 	PermissionGranted  = "granted"
 	PermissionDeclined = "declined"
+
+	DefaultLimitGetPosts         = 100
+	DefaultLimitGetComments      = 100
+	DefaultLimitGetConversations = 100
+	DefaultLimitGetMessages      = 100
+	MaximumIDs                   = 1
 )
 
 type FacebookRole int
@@ -28,4 +38,11 @@ const (
 	ANALYST    FacebookRole = 3
 	EDITOR     FacebookRole = 4
 	MODERATOR  FacebookRole = 5
+)
+
+// TODO: Ngoc create enum
+type PostAttachmentType string
+
+const (
+	Album PostAttachmentType = "album"
 )

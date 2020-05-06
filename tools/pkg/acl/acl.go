@@ -965,9 +965,11 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 
 	// -- Fabo --
-	"fabo.Page/ConnectPages": {Type: Shop},
-	"fabo.Page/RemovePages":  {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.Page/ListPages":    {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.Page/ConnectPages":                              {Type: Shop},
+	"fabo.Page/RemovePages":                               {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.Page/ListPages":                                 {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/ListCustomerConversations": {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/ListMessages":              {Type: Shop, Auth: User, IncludeFaboInfo: true},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

@@ -15,3 +15,9 @@ type PageService interface {
 	RemovePages(context.Context, *RemovePagesRequest) (*cm.Empty, error)
 	ListPages(context.Context, *ListPagesRequest) (*ListPagesResponse, error)
 }
+
+// +apix:path=/fabo.CustomerConversation
+type CustomerConversationService interface {
+	ListCustomerConversations(context.Context, *ListCustomerConversationsRequest) (*FbCustomerConversationsResponse, error)
+	ListMessages(context.Context, *ListMessagesRequest) (*FbMessagesResponse, error)
+}

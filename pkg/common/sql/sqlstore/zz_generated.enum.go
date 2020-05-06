@@ -17,12 +17,16 @@ var enumPagingFieldName = map[int]string{
 	0: "unknown",
 	1: "id",
 	2: "updated_at",
+	3: "external_created_time",
+	4: "last_message_at",
 }
 
 var enumPagingFieldValue = map[string]int{
-	"unknown":    0,
-	"id":         1,
-	"updated_at": 2,
+	"unknown":               0,
+	"id":                    1,
+	"updated_at":            2,
+	"external_created_time": 3,
+	"last_message_at":       4,
 }
 
 func ParsePagingField(s string) (PagingField, bool) {

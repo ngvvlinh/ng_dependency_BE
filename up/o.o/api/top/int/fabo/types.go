@@ -3,9 +3,11 @@ package fabo
 import (
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
 
@@ -36,6 +38,7 @@ type FbUserCombined struct {
 	ID           dot.ID              `json:"id"`
 	ExternalID   string              `json:"external_id"`
 	UserID       dot.ID              `json:"user_id"`
+	ShopID       dot.ID              `json:"shop_id"`
 	ExternalInfo *ExternalFbUserInfo `json:"external_info"`
 	Status       status3.Status      `json:"status"`
 	CreatedAt    time.Time           `json:"created_at"`
@@ -48,6 +51,7 @@ type FbUser struct {
 	ID           dot.ID              `json:"id"`
 	ExternalID   string              `json:"external_id"`
 	UserID       dot.ID              `json:"user_id"`
+	ShopID       dot.ID              `json:"shop_id"`
 	ExternalInfo *ExternalFbUserInfo `json:"external_info"`
 	Status       status3.Status      `json:"status"`
 	CreatedAt    time.Time           `json:"created_at"`
@@ -128,3 +132,114 @@ type ListPagesResponse struct {
 }
 
 func (m *ListPagesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCustomerConversationsRequest struct {
+	Paging *common.CursorPaging        `json:"paging"`
+	Filter *CustomerConversationFilter `json:"filter"`
+}
+
+func (m *ListCustomerConversationsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CustomerConversationFilter struct {
+	FbPageIDs        filter.IDs                                                   `json:"fb_page_ids"`
+	FbExternalUserID dot.NullString                                               `json:"fb_external_user_id"`
+	IsRead           dot.NullBool                                                 `json:"is_read"`
+	Type             fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`
+}
+
+type FbCustomerConversation struct {
+	ID                     dot.ID                                                   `json:"id"`
+	FbPageID               dot.ID                                                   `json:"fb_page_id"`
+	ExternalID             string                                                   `json:"external_id"`
+	ExternalUserID         string                                                   `json:"external_user_id"`
+	ExternalUserName       string                                                   `json:"external_user_name"`
+	IsRead                 bool                                                     `json:"is_read"`
+	Type                   fb_customer_conversation_type.FbCustomerConversationType `json:"type"`
+	PostAttachments        []*PostAttachment                                        `json:"post_attachments"`
+	ExternalUserPictureURL string                                                   `json:"external_user_picture_url"`
+	LastMessage            string                                                   `json:"last_message"`
+	LastMessageAt          time.Time                                                `json:"last_message_at"`
+	CreatedAt              time.Time                                                `json:"created_at"`
+	UpdatedAt              time.Time                                                `json:"updated_at"`
+}
+
+type PostAttachment struct {
+	Media *PostAttachmentMedia `json:"media"`
+	Type  string               `json:"type"`
+}
+
+type PostAttachmentMedia struct {
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+	Src    string `json:"src"`
+}
+
+type FbCustomerConversationsResponse struct {
+	CustomerConversations []*FbCustomerConversation `json:"fb_customer_conversations"`
+	Paging                *common.CursorPageInfo    `json:"paging"`
+}
+
+func (m *FbCustomerConversationsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListMessagesRequest struct {
+	Paging *common.CursorPaging `json:"paging"`
+	Filter *MessageFilter       `json:"filter"`
+}
+
+func (m *ListMessagesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type MessageFilter struct {
+	FbExternalConversationIDs []string `json:"fb_external_conversation_ids"`
+}
+
+type FbMessagesResponse struct {
+	FbMessages []*FbExternalMessage   `json:"fb_messages"`
+	Paging     *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *FbMessagesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type FbExternalMessage struct {
+	ID                     dot.ID                 `json:"id"`
+	FbConversationID       dot.ID                 `json:"fb_conversation_id"`
+	ExternalConversationID string                 `json:"external_conversation_id"`
+	FbPageID               dot.ID                 `json:"fb_page_id"`
+	ExternalID             string                 `json:"external_id"`
+	ExternalMessage        string                 `json:"external_message"`
+	ExternalTo             []*FbObjectTo          `json:"external_to"`
+	ExternalFrom           *FbObjectFrom          `json:"external_from"`
+	ExternalAttachments    []*FbMessageAttachment `json:"external_attachments"`
+	ExternalCreatedTime    time.Time              `json:"external_created_time"`
+	CreatedAt              time.Time              `json:"created_at"`
+	UpdatedAt              time.Time              `json:"updated_at"`
+}
+
+type FbObjectTo struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type FbObjectFrom struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+type FbMessageAttachment struct {
+	ID        string                        `json:"id"`
+	ImageData *FbMessageAttachmentImageData `json:"image_data"`
+	MimeType  string                        `json:"mime_type"`
+	Name      string                        `json:"name"`
+	Size      int                           `json:"size"`
+}
+
+type FbMessageAttachmentImageData struct {
+	Width           int    `json:"width"`
+	Height          int    `json:"height"`
+	MaxWidth        int    `json:"max_width"`
+	MaxHeight       int    `json:"max_height"`
+	URL             string `json:"url"`
+	PreviewURL      string `json:"preview_url"`
+	ImageType       int    `json:"image_type"`
+	RenderAsSticker bool   `json:"render_as_sticker"`
+}

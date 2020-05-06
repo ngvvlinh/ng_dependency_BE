@@ -5,28 +5,28 @@ import (
 	"o.o/api/top/int/fabo"
 )
 
-func PbFbUserCombined(m *fbusering.FbUserCombined) *fabo.FbUserCombined {
+func PbFbUserCombined(m *fbusering.FbExternalUserCombined) *fabo.FbUserCombined {
 	if m == nil {
 		return nil
 	}
 	return &fabo.FbUserCombined{
-		ID:         m.FbUser.ID,
-		ExternalID: m.FbUser.ExternalID,
-		UserID:     m.FbUser.UserID,
+		ID:         m.FbExternalUser.ID,
+		ExternalID: m.FbExternalUser.ExternalID,
+		UserID:     m.FbExternalUser.UserID,
 		ExternalInfo: &fabo.ExternalFbUserInfo{
-			Name:      m.FbUser.ExternalInfo.Name,
-			FirstName: m.FbUser.ExternalInfo.FirstName,
-			LastName:  m.FbUser.ExternalInfo.LastName,
-			ShortName: m.FbUser.ExternalInfo.ShortName,
-			ImageURL:  m.FbUser.ExternalInfo.ImageURL,
+			Name:      m.FbExternalUser.ExternalInfo.Name,
+			FirstName: m.FbExternalUser.ExternalInfo.FirstName,
+			LastName:  m.FbExternalUser.ExternalInfo.LastName,
+			ShortName: m.FbExternalUser.ExternalInfo.ShortName,
+			ImageURL:  m.FbExternalUser.ExternalInfo.ImageURL,
 		},
-		Status:    m.FbUser.Status,
-		CreatedAt: m.FbUser.CreatedAt,
-		UpdatedAt: m.FbUser.UpdatedAt,
+		Status:    m.FbExternalUser.Status,
+		CreatedAt: m.FbExternalUser.CreatedAt,
+		UpdatedAt: m.FbExternalUser.UpdatedAt,
 	}
 }
 
-func PbFbUserCombineds(ms []*fbusering.FbUserCombined) []*fabo.FbUserCombined {
+func PbFbUserCombineds(ms []*fbusering.FbExternalUserCombined) []*fabo.FbUserCombined {
 	res := make([]*fabo.FbUserCombined, len(ms))
 	for i, m := range ms {
 		res[i] = PbFbUserCombined(m)
@@ -34,7 +34,7 @@ func PbFbUserCombineds(ms []*fbusering.FbUserCombined) []*fabo.FbUserCombined {
 	return res
 }
 
-func PbFbUser(m *fbusering.FbUser) *fabo.FbUser {
+func PbFbUser(m *fbusering.FbExternalUser) *fabo.FbUser {
 	if m == nil {
 		return nil
 	}
@@ -55,7 +55,7 @@ func PbFbUser(m *fbusering.FbUser) *fabo.FbUser {
 	}
 }
 
-func PbFbUsers(ms []*fbusering.FbUser) []*fabo.FbUser {
+func PbFbUsers(ms []*fbusering.FbExternalUser) []*fabo.FbUser {
 	res := make([]*fabo.FbUser, len(ms))
 	for i, m := range ms {
 		res[i] = PbFbUser(m)

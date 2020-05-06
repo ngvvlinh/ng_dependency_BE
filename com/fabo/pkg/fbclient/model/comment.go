@@ -1,11 +1,10 @@
 package model
 
-type CommentsResponse struct {
-	Comments *Comments `json:"comments"`
-	ID       string    `json:"id"`
+type CommentsByPostIDsResponse struct {
+	Data map[string]*Comment
 }
 
-type Comments struct {
+type CommentsResponse struct {
 	CommentData []*Comment              `json:"data"`
 	Paging      *FacebookPagingResponse `json:"paging"`
 }
@@ -14,7 +13,7 @@ type Comment struct {
 	ID           string             `json:"id"`
 	Message      string             `json:"message"`
 	CommentCount int                `json:"comment_count"`
-	From         *From              `json:"from"`
+	From         *ObjectFrom        `json:"from"`
 	Attachment   *CommentAttachment `json:"attachment"`
 	Parent       *CommentParent     `json:"parent"`
 }
@@ -48,7 +47,7 @@ type CommentAttachmentTarget struct {
 
 type CommentParent struct {
 	CreatedTime *FacebookTime `json:"created_time"`
-	From        *From         `json:"from"`
+	From        *ObjectFrom   `json:"from"`
 	Message     string        `json:"message"`
 	ID          string        `json:"id"`
 }

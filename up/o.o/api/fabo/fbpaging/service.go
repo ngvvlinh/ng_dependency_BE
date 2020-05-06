@@ -12,28 +12,28 @@ import (
 // +gen:api
 
 type Aggregate interface {
-	CreateFbPage(context.Context, *CreateFbPageArgs) (*FbPage, error)
-	DisableFbPagesByIDs(context.Context, *DisableFbPagesByIDsArgs) (int, error)
-	DisableAllFbPages(context.Context, *DisableAllFbPagesArgs) (int, error)
+	CreateFbExternalPage(context.Context, *CreateFbExternalPageArgs) (*FbExternalPage, error)
+	DisableFbExternalPagesByIDs(context.Context, *DisableFbExternalPagesByIDsArgs) (int, error)
+	DisableAllFbExternalPages(context.Context, *DisableAllFbExternalPagesArgs) (int, error)
 
-	CreateFbPageInternal(context.Context, *CreateFbPageInternalArgs) (*FbPageInternal, error)
+	CreateFbExternalPageInternal(context.Context, *CreateFbExternalPageInternalArgs) (*FbExternalPageInternal, error)
 
-	CreateFbPageCombined(context.Context, *CreateFbPageCombinedArgs) (*FbPageCombined, error)
-	CreateFbPageCombineds(context.Context, *CreateFbPageCombinedsArgs) ([]*FbPageCombined, error)
+	CreateFbExternalPageCombined(context.Context, *CreateFbExternalPageCombinedArgs) (*FbExternalPageCombined, error)
+	CreateFbExternalPageCombineds(context.Context, *CreateFbExternalPageCombinedsArgs) ([]*FbExternalPageCombined, error)
 }
 
 type QueryService interface {
-	GetFbPageByID(_ context.Context, ID dot.ID) (*FbPage, error)
-	GetFbPageByExternalID(_ context.Context, externalID string) (*FbPage, error)
-	ListFbPagesByIDs(_ context.Context, IDs filter.IDs) ([]*FbPage, error)
-	ListFbPages(context.Context, *ListFbPagesArgs) (*FbPagesResponse, error)
-	ListFbPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbPage, error)
+	GetFbExternalPageByID(_ context.Context, ID dot.ID) (*FbExternalPage, error)
+	GetFbExternalPageByExternalID(_ context.Context, externalID string) (*FbExternalPage, error)
+	ListFbExternalPagesByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPage, error)
+	ListFbExternalPages(context.Context, *ListFbExternalPagesArgs) (*FbPagesResponse, error)
+	ListFbExternalPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
 
-	GetFbPageInternalByID(_ context.Context, ID dot.ID) (*FbPageInternal, error)
+	GetFbExternalPageInternalByID(_ context.Context, ID dot.ID) (*FbExternalPageInternal, error)
 }
 
-// +convert:create=FbPage
-type CreateFbPageArgs struct {
+// +convert:create=FbExternalPage
+type CreateFbExternalPageArgs struct {
 	ID                   dot.ID
 	ExternalID           string
 	FbUserID             dot.ID
@@ -49,35 +49,35 @@ type CreateFbPageArgs struct {
 	ConnectionStatus     status3.Status
 }
 
-// +convert:create=FbPageInternal
-type CreateFbPageInternalArgs struct {
+// +convert:create=FbExternalPageInternal
+type CreateFbExternalPageInternalArgs struct {
 	ID    dot.ID
 	Token string
 }
 
-type CreateFbPageCombinedArgs struct {
-	FbPage         *CreateFbPageArgs
-	FbPageInternal *CreateFbPageInternalArgs
+type CreateFbExternalPageCombinedArgs struct {
+	FbPage         *CreateFbExternalPageArgs
+	FbPageInternal *CreateFbExternalPageInternalArgs
 }
 
-type CreateFbPageCombinedsArgs struct {
+type CreateFbExternalPageCombinedsArgs struct {
 	ShopID          dot.ID
 	UserID          dot.ID
-	FbPageCombineds []*CreateFbPageCombinedArgs
+	FbPageCombineds []*CreateFbExternalPageCombinedArgs
 }
 
-type DisableFbPagesByIDsArgs struct {
+type DisableFbExternalPagesByIDsArgs struct {
 	IDs    []dot.ID
 	ShopID dot.ID
 	UserID dot.ID
 }
 
-type DisableAllFbPagesArgs struct {
+type DisableAllFbExternalPagesArgs struct {
 	ShopID dot.ID
 	UserID dot.ID
 }
 
-type ListFbPagesArgs struct {
+type ListFbExternalPagesArgs struct {
 	ShopID   dot.ID
 	UserID   dot.ID
 	FbUserID dot.NullID
@@ -87,6 +87,6 @@ type ListFbPagesArgs struct {
 }
 
 type FbPagesResponse struct {
-	FbPages []*FbPage
+	FbPages []*FbExternalPage
 	Paging  meta.PageInfo
 }

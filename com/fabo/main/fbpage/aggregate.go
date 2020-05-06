@@ -18,62 +18,62 @@ import (
 var ll = l.New()
 var scheme = conversion.Build(convert.RegisterConversions)
 
-type FbPageAggregate struct {
-	db                  *cmsql.Database
-	fbPageStore         sqlstore.FbPageStoreFactory
-	fbPageInternalStore sqlstore.FbPageInternalStoreFactory
+type FbExternalPageAggregate struct {
+	db                          *cmsql.Database
+	fbExternalPageStore         sqlstore.FbExternalPageStoreFactory
+	fbExternalPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
 }
 
-func NewFbPageAggregate(db *cmsql.Database) *FbPageAggregate {
-	return &FbPageAggregate{
-		db:                  db,
-		fbPageStore:         sqlstore.NewFbPageStore(db),
-		fbPageInternalStore: sqlstore.NewFbPageInternalStore(db),
+func NewExternalFbPageAggregate(db *cmsql.Database) *FbExternalPageAggregate {
+	return &FbExternalPageAggregate{
+		db:                          db,
+		fbExternalPageStore:         sqlstore.NewFbExternalPageStore(db),
+		fbExternalPageInternalStore: sqlstore.NewFbExternalPageInternalStore(db),
 	}
 }
 
-func (a *FbPageAggregate) MessageBus() fbpaging.CommandBus {
+func (a *FbExternalPageAggregate) MessageBus() fbpaging.CommandBus {
 	b := bus.New()
 	return fbpaging.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
-func (a *FbPageAggregate) CreateFbPage(
-	ctx context.Context, args *fbpaging.CreateFbPageArgs,
-) (*fbpaging.FbPage, error) {
-	fbPageResult := new(fbpaging.FbPage)
+func (a *FbExternalPageAggregate) CreateFbExternalPage(
+	ctx context.Context, args *fbpaging.CreateFbExternalPageArgs,
+) (*fbpaging.FbExternalPage, error) {
+	fbPageResult := new(fbpaging.FbExternalPage)
 	if err := scheme.Convert(args, fbPageResult); err != nil {
 		return nil, err
 	}
-	if err := a.fbPageStore(ctx).CreateFbPage(fbPageResult); err != nil {
+	if err := a.fbExternalPageStore(ctx).CreateFbExternalPage(fbPageResult); err != nil {
 		return nil, err
 	}
 	return fbPageResult, nil
 }
 
-func (a *FbPageAggregate) CreateFbPageInternal(
-	ctx context.Context, args *fbpaging.CreateFbPageInternalArgs,
-) (*fbpaging.FbPageInternal, error) {
-	fbPageInternalResult := new(fbpaging.FbPageInternal)
+func (a *FbExternalPageAggregate) CreateFbExternalPageInternal(
+	ctx context.Context, args *fbpaging.CreateFbExternalPageInternalArgs,
+) (*fbpaging.FbExternalPageInternal, error) {
+	fbPageInternalResult := new(fbpaging.FbExternalPageInternal)
 	if err := scheme.Convert(args, fbPageInternalResult); err != nil {
 		return nil, err
 	}
-	if err := a.fbPageInternalStore(ctx).CreateFbPageInternal(fbPageInternalResult); err != nil {
+	if err := a.fbExternalPageInternalStore(ctx).CreateFbExternalPageInternal(fbPageInternalResult); err != nil {
 		return nil, err
 	}
 	return fbPageInternalResult, nil
 }
 
-func (a *FbPageAggregate) CreateFbPageCombined(
-	ctx context.Context, args *fbpaging.CreateFbPageCombinedArgs,
-) (*fbpaging.FbPageCombined, error) {
+func (a *FbExternalPageAggregate) CreateFbExternalPageCombined(
+	ctx context.Context, args *fbpaging.CreateFbExternalPageCombinedArgs,
+) (*fbpaging.FbExternalPageCombined, error) {
 	panic("implement me")
 }
 
-func (a *FbPageAggregate) CreateFbPageCombineds(
-	ctx context.Context, args *fbpaging.CreateFbPageCombinedsArgs,
-) ([]*fbpaging.FbPageCombined, error) {
+func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
+	ctx context.Context, args *fbpaging.CreateFbExternalPageCombinedsArgs,
+) ([]*fbpaging.FbExternalPageCombined, error) {
 	// create map arguments with external_id
-	mapExternalIDAndFbPageCombined := make(map[string]*fbpaging.CreateFbPageCombinedArgs)
+	mapExternalIDAndFbPageCombined := make(map[string]*fbpaging.CreateFbExternalPageCombinedArgs)
 
 	for _, fbPageCombined := range args.FbPageCombineds {
 		mapExternalIDAndFbPageCombined[fbPageCombined.FbPage.ExternalID] = fbPageCombined
@@ -81,12 +81,12 @@ func (a *FbPageAggregate) CreateFbPageCombineds(
 
 	// get all oldFbPages by (user_id, shop_id) from DB
 	// create map fbPageDisabled (oldFbPages don't appear into arg)
-	oldFbPages, err := a.fbPageStore(ctx).UserID(args.UserID).ShopID(args.ShopID).ListFbPagesDB()
+	oldFbPages, err := a.fbExternalPageStore(ctx).UserID(args.UserID).ShopID(args.ShopID).ListFbExternalPagesDB()
 	if err != nil {
 		return nil, err
 	}
 
-	mapFbPageDisabled := make(map[string]*model.FbPage)
+	mapFbPageDisabled := make(map[string]*model.FbExternalPage)
 	for _, oldFbPage := range oldFbPages {
 		if _, ok := mapExternalIDAndFbPageCombined[oldFbPage.ExternalID]; !ok {
 			mapFbPageDisabled[oldFbPage.ExternalID] = oldFbPage
@@ -98,30 +98,30 @@ func (a *FbPageAggregate) CreateFbPageCombineds(
 		}
 	}
 
-	mapFbPages := make(map[dot.ID]*fbpaging.FbPage)
-	mapFbPageInternals := make(map[dot.ID]*fbpaging.FbPageInternal)
+	mapFbPages := make(map[dot.ID]*fbpaging.FbExternalPage)
+	mapFbPageInternals := make(map[dot.ID]*fbpaging.FbExternalPageInternal)
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		// Disable fbPages (mapFbPagesDisabled)
-		{
-			externalIDs := make([]string, 0, len(mapFbPageDisabled))
-			for externalID := range mapFbPageDisabled {
-				externalIDs = append(externalIDs, externalID)
-			}
-
-			if len(externalIDs) > 0 {
-				if _, err := a.fbPageStore(ctx).ExternalIDs(externalIDs).UpdateConnectionStatus(int(status3.N)); err != nil {
-					return err
-				}
-			}
-		}
+		//// Disable fbPages (mapFbPagesDisabled)
+		//{
+		//	externalIDs := make([]string, 0, len(mapFbPageDisabled))
+		//	for externalID := range mapFbPageDisabled {
+		//		externalIDs = append(externalIDs, externalID)
+		//	}
+		//
+		//	if len(externalIDs) > 0 {
+		//		if _, err := a.fbExternalPageStore(ctx).ExternalIDs(externalIDs).UpdateConnectionStatus(int(status3.N)); err != nil {
+		//			return err
+		//		}
+		//	}
+		//}
 
 		// Create newfbPages (mapFbPagesEnabled)
 		{
-			newFbPageModels := make([]*fbpaging.FbPage, 0, len(args.FbPageCombineds))
-			newFbPageInternalModels := make([]*fbpaging.FbPageInternal, 0, len(args.FbPageCombineds))
+			newFbPageModels := make([]*fbpaging.FbExternalPage, 0, len(args.FbPageCombineds))
+			newFbPageInternalModels := make([]*fbpaging.FbExternalPageInternal, 0, len(args.FbPageCombineds))
 			for _, fbPageCombined := range args.FbPageCombineds {
-				newFbPage := new(fbpaging.FbPage)
-				newFbPageInternal := new(fbpaging.FbPageInternal)
+				newFbPage := new(fbpaging.FbExternalPage)
+				newFbPageInternal := new(fbpaging.FbExternalPageInternal)
 				if err := scheme.Convert(fbPageCombined.FbPage, newFbPage); err != nil {
 					return err
 				}
@@ -132,14 +132,14 @@ func (a *FbPageAggregate) CreateFbPageCombineds(
 				newFbPageInternalModels = append(newFbPageInternalModels, newFbPageInternal)
 			}
 
-			if err := a.fbPageStore(ctx).CreateFbPages(newFbPageModels); err != nil {
+			if err := a.fbExternalPageStore(ctx).CreateFbExternalPages(newFbPageModels); err != nil {
 				return err
 			}
 			for _, newFbPage := range newFbPageModels {
 				mapFbPages[newFbPage.ID] = newFbPage
 			}
 
-			if err := a.fbPageInternalStore(ctx).CreateFbPageInternals(newFbPageInternalModels); err != nil {
+			if err := a.fbExternalPageInternalStore(ctx).CreateFbExternalPageInternals(newFbPageInternalModels); err != nil {
 				return err
 			}
 			for _, newFbPageInternal := range newFbPageInternalModels {
@@ -152,24 +152,24 @@ func (a *FbPageAggregate) CreateFbPageCombineds(
 		return nil, err
 	}
 
-	fbPageCombineds := make([]*fbpaging.FbPageCombined, 0, len(args.FbPageCombineds))
+	fbPageCombineds := make([]*fbpaging.FbExternalPageCombined, 0, len(args.FbPageCombineds))
 	for fbPageID := range mapFbPages {
-		fbPageCombineds = append(fbPageCombineds, &fbpaging.FbPageCombined{
-			FbPage:         mapFbPages[fbPageID],
-			FbPageInternal: mapFbPageInternals[fbPageID],
+		fbPageCombineds = append(fbPageCombineds, &fbpaging.FbExternalPageCombined{
+			FbExternalPage:         mapFbPages[fbPageID],
+			FbExternalPageInternal: mapFbPageInternals[fbPageID],
 		})
 	}
 	return fbPageCombineds, err
 }
 
-func (a *FbPageAggregate) DisableFbPagesByIDs(
-	ctx context.Context, args *fbpaging.DisableFbPagesByIDsArgs,
+func (a *FbExternalPageAggregate) DisableFbExternalPagesByIDs(
+	ctx context.Context, args *fbpaging.DisableFbExternalPagesByIDsArgs,
 ) (int, error) {
-	return a.fbPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).IDs(args.IDs).UpdateStatus(int(status3.N))
+	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).IDs(args.IDs).UpdateStatus(int(status3.N))
 }
 
-func (a *FbPageAggregate) DisableAllFbPages(
-	ctx context.Context, args *fbpaging.DisableAllFbPagesArgs,
+func (a *FbExternalPageAggregate) DisableAllFbExternalPages(
+	ctx context.Context, args *fbpaging.DisableAllFbExternalPagesArgs,
 ) (int, error) {
-	return a.fbPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).Status(status3.P).UpdateStatus(int(status3.N))
+	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).Status(status3.P).UpdateStatus(int(status3.N))
 }

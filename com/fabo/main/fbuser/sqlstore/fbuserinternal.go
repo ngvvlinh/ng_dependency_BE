@@ -10,19 +10,19 @@ import (
 	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
-type FbUserInternalFactory func(ctx context.Context) *FbUserInternalStore
+type FbExternalUserInternalFactory func(ctx context.Context) *FbExternalUserInternalStore
 
-func NewFbUserInternalStore(db *cmsql.Database) FbUserInternalFactory {
+func NewFbExternalUserInternalStore(db *cmsql.Database) FbExternalUserInternalFactory {
 	model.SQLVerifySchema(db)
-	return func(ctx context.Context) *FbUserInternalStore {
-		return &FbUserInternalStore{
+	return func(ctx context.Context) *FbExternalUserInternalStore {
+		return &FbExternalUserInternalStore{
 			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
-type FbUserInternalStore struct {
-	ft FbUserInternalFilters
+type FbExternalUserInternalStore struct {
+	ft FbExternalUserInternalFilters
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
@@ -32,22 +32,22 @@ type FbUserInternalStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *FbUserInternalStore) CreateFbUserInternal(fbUserInternal *fbusering.FbUserInternal) error {
+func (s *FbExternalUserInternalStore) CreateFbExternalUserInternal(fbExternalUserInternal *fbusering.FbExternalUserInternal) error {
 	sqlstore.MustNoPreds(s.preds)
-	fbUserInternalDB := new(model.FbUserInternal)
-	if err := scheme.Convert(fbUserInternal, fbUserInternalDB); err != nil {
+	fbExternalUserInternalDB := new(model.FbExternalUserInternal)
+	if err := scheme.Convert(fbExternalUserInternal, fbExternalUserInternalDB); err != nil {
 		return err
 	}
-	_, err := s.query().Upsert(fbUserInternalDB)
+	_, err := s.query().Upsert(fbExternalUserInternalDB)
 	if err != nil {
 		return err
 	}
 
-	var tempFbUserInternal model.FbUserInternal
-	if err := s.query().Where(s.ft.ByID(fbUserInternal.ID)).ShouldGet(&tempFbUserInternal); err != nil {
+	var tempFbUserInternal model.FbExternalUserInternal
+	if err := s.query().Where(s.ft.ByID(fbExternalUserInternal.ID)).ShouldGet(&tempFbUserInternal); err != nil {
 		return err
 	}
-	fbUserInternal.UpdatedAt = tempFbUserInternal.UpdatedAt
+	fbExternalUserInternal.UpdatedAt = tempFbUserInternal.UpdatedAt
 
 	return nil
 }

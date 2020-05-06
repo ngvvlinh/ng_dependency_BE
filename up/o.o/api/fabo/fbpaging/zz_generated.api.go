@@ -27,7 +27,7 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
-type CreateFbPageCommand struct {
+type CreateFbExternalPageCommand struct {
 	ID                   dot.ID
 	ExternalID           string
 	FbUserID             dot.ID
@@ -42,64 +42,64 @@ type CreateFbPageCommand struct {
 	Status               status3.Status
 	ConnectionStatus     status3.Status
 
-	Result *FbPage `json:"-"`
+	Result *FbExternalPage `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbPage(ctx context.Context, msg *CreateFbPageCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbPage(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalPage(ctx context.Context, msg *CreateFbExternalPageCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalPage(msg.GetArgs(ctx))
 	return err
 }
 
-type CreateFbPageCombinedCommand struct {
-	FbPage         *CreateFbPageArgs
-	FbPageInternal *CreateFbPageInternalArgs
+type CreateFbExternalPageCombinedCommand struct {
+	FbPage         *CreateFbExternalPageArgs
+	FbPageInternal *CreateFbExternalPageInternalArgs
 
-	Result *FbPageCombined `json:"-"`
+	Result *FbExternalPageCombined `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbPageCombined(ctx context.Context, msg *CreateFbPageCombinedCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbPageCombined(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalPageCombined(ctx context.Context, msg *CreateFbExternalPageCombinedCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalPageCombined(msg.GetArgs(ctx))
 	return err
 }
 
-type CreateFbPageCombinedsCommand struct {
+type CreateFbExternalPageCombinedsCommand struct {
 	ShopID          dot.ID
 	UserID          dot.ID
-	FbPageCombineds []*CreateFbPageCombinedArgs
+	FbPageCombineds []*CreateFbExternalPageCombinedArgs
 
-	Result []*FbPageCombined `json:"-"`
+	Result []*FbExternalPageCombined `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbPageCombineds(ctx context.Context, msg *CreateFbPageCombinedsCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbPageCombineds(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalPageCombineds(ctx context.Context, msg *CreateFbExternalPageCombinedsCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalPageCombineds(msg.GetArgs(ctx))
 	return err
 }
 
-type CreateFbPageInternalCommand struct {
+type CreateFbExternalPageInternalCommand struct {
 	ID    dot.ID
 	Token string
 
-	Result *FbPageInternal `json:"-"`
+	Result *FbExternalPageInternal `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbPageInternal(ctx context.Context, msg *CreateFbPageInternalCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbPageInternal(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalPageInternal(ctx context.Context, msg *CreateFbExternalPageInternalCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalPageInternal(msg.GetArgs(ctx))
 	return err
 }
 
-type DisableAllFbPagesCommand struct {
+type DisableAllFbExternalPagesCommand struct {
 	ShopID dot.ID
 	UserID dot.ID
 
 	Result int `json:"-"`
 }
 
-func (h AggregateHandler) HandleDisableAllFbPages(ctx context.Context, msg *DisableAllFbPagesCommand) (err error) {
-	msg.Result, err = h.inner.DisableAllFbPages(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleDisableAllFbExternalPages(ctx context.Context, msg *DisableAllFbExternalPagesCommand) (err error) {
+	msg.Result, err = h.inner.DisableAllFbExternalPages(msg.GetArgs(ctx))
 	return err
 }
 
-type DisableFbPagesByIDsCommand struct {
+type DisableFbExternalPagesByIDsCommand struct {
 	IDs    []dot.ID
 	ShopID dot.ID
 	UserID dot.ID
@@ -107,45 +107,45 @@ type DisableFbPagesByIDsCommand struct {
 	Result int `json:"-"`
 }
 
-func (h AggregateHandler) HandleDisableFbPagesByIDs(ctx context.Context, msg *DisableFbPagesByIDsCommand) (err error) {
-	msg.Result, err = h.inner.DisableFbPagesByIDs(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleDisableFbExternalPagesByIDs(ctx context.Context, msg *DisableFbExternalPagesByIDsCommand) (err error) {
+	msg.Result, err = h.inner.DisableFbExternalPagesByIDs(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbPageByExternalIDQuery struct {
+type GetFbExternalPageByExternalIDQuery struct {
 	ExternalID string
 
-	Result *FbPage `json:"-"`
+	Result *FbExternalPage `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbPageByExternalID(ctx context.Context, msg *GetFbPageByExternalIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbPageByExternalID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalPageByExternalID(ctx context.Context, msg *GetFbExternalPageByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalPageByExternalID(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbPageByIDQuery struct {
+type GetFbExternalPageByIDQuery struct {
 	ID dot.ID
 
-	Result *FbPage `json:"-"`
+	Result *FbExternalPage `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbPageByID(ctx context.Context, msg *GetFbPageByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbPageByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalPageByID(ctx context.Context, msg *GetFbExternalPageByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalPageByID(msg.GetArgs(ctx))
 	return err
 }
 
-type GetFbPageInternalByIDQuery struct {
+type GetFbExternalPageInternalByIDQuery struct {
 	ID dot.ID
 
-	Result *FbPageInternal `json:"-"`
+	Result *FbExternalPageInternal `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetFbPageInternalByID(ctx context.Context, msg *GetFbPageInternalByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetFbPageInternalByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetFbExternalPageInternalByID(ctx context.Context, msg *GetFbExternalPageInternalByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalPageInternalByID(msg.GetArgs(ctx))
 	return err
 }
 
-type ListFbPagesQuery struct {
+type ListFbExternalPagesQuery struct {
 	ShopID   dot.ID
 	UserID   dot.ID
 	FbUserID dot.NullID
@@ -155,54 +155,54 @@ type ListFbPagesQuery struct {
 	Result *FbPagesResponse `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListFbPages(ctx context.Context, msg *ListFbPagesQuery) (err error) {
-	msg.Result, err = h.inner.ListFbPages(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListFbExternalPages(ctx context.Context, msg *ListFbExternalPagesQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalPages(msg.GetArgs(ctx))
 	return err
 }
 
-type ListFbPagesActiveByExternalIDsQuery struct {
+type ListFbExternalPagesActiveByExternalIDsQuery struct {
 	ExternalIDs []string
 
-	Result []*FbPage `json:"-"`
+	Result []*FbExternalPage `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListFbPagesActiveByExternalIDs(ctx context.Context, msg *ListFbPagesActiveByExternalIDsQuery) (err error) {
-	msg.Result, err = h.inner.ListFbPagesActiveByExternalIDs(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListFbExternalPagesActiveByExternalIDs(ctx context.Context, msg *ListFbExternalPagesActiveByExternalIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalPagesActiveByExternalIDs(msg.GetArgs(ctx))
 	return err
 }
 
-type ListFbPagesByIDsQuery struct {
+type ListFbExternalPagesByIDsQuery struct {
 	IDs filter.IDs
 
-	Result []*FbPage `json:"-"`
+	Result []*FbExternalPage `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListFbPagesByIDs(ctx context.Context, msg *ListFbPagesByIDsQuery) (err error) {
-	msg.Result, err = h.inner.ListFbPagesByIDs(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListFbExternalPagesByIDs(ctx context.Context, msg *ListFbExternalPagesByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalPagesByIDs(msg.GetArgs(ctx))
 	return err
 }
 
 // implement interfaces
 
-func (q *CreateFbPageCommand) command()          {}
-func (q *CreateFbPageCombinedCommand) command()  {}
-func (q *CreateFbPageCombinedsCommand) command() {}
-func (q *CreateFbPageInternalCommand) command()  {}
-func (q *DisableAllFbPagesCommand) command()     {}
-func (q *DisableFbPagesByIDsCommand) command()   {}
+func (q *CreateFbExternalPageCommand) command()          {}
+func (q *CreateFbExternalPageCombinedCommand) command()  {}
+func (q *CreateFbExternalPageCombinedsCommand) command() {}
+func (q *CreateFbExternalPageInternalCommand) command()  {}
+func (q *DisableAllFbExternalPagesCommand) command()     {}
+func (q *DisableFbExternalPagesByIDsCommand) command()   {}
 
-func (q *GetFbPageByExternalIDQuery) query()          {}
-func (q *GetFbPageByIDQuery) query()                  {}
-func (q *GetFbPageInternalByIDQuery) query()          {}
-func (q *ListFbPagesQuery) query()                    {}
-func (q *ListFbPagesActiveByExternalIDsQuery) query() {}
-func (q *ListFbPagesByIDsQuery) query()               {}
+func (q *GetFbExternalPageByExternalIDQuery) query()          {}
+func (q *GetFbExternalPageByIDQuery) query()                  {}
+func (q *GetFbExternalPageInternalByIDQuery) query()          {}
+func (q *ListFbExternalPagesQuery) query()                    {}
+func (q *ListFbExternalPagesActiveByExternalIDsQuery) query() {}
+func (q *ListFbExternalPagesByIDsQuery) query()               {}
 
 // implement conversion
 
-func (q *CreateFbPageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbPageArgs) {
+func (q *CreateFbExternalPageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalPageArgs) {
 	return ctx,
-		&CreateFbPageArgs{
+		&CreateFbExternalPageArgs{
 			ID:                   q.ID,
 			ExternalID:           q.ExternalID,
 			FbUserID:             q.FbUserID,
@@ -219,7 +219,7 @@ func (q *CreateFbPageCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
-func (q *CreateFbPageCommand) SetCreateFbPageArgs(args *CreateFbPageArgs) {
+func (q *CreateFbExternalPageCommand) SetCreateFbExternalPageArgs(args *CreateFbExternalPageArgs) {
 	q.ID = args.ID
 	q.ExternalID = args.ExternalID
 	q.FbUserID = args.FbUserID
@@ -235,93 +235,93 @@ func (q *CreateFbPageCommand) SetCreateFbPageArgs(args *CreateFbPageArgs) {
 	q.ConnectionStatus = args.ConnectionStatus
 }
 
-func (q *CreateFbPageCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbPageCombinedArgs) {
+func (q *CreateFbExternalPageCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalPageCombinedArgs) {
 	return ctx,
-		&CreateFbPageCombinedArgs{
+		&CreateFbExternalPageCombinedArgs{
 			FbPage:         q.FbPage,
 			FbPageInternal: q.FbPageInternal,
 		}
 }
 
-func (q *CreateFbPageCombinedCommand) SetCreateFbPageCombinedArgs(args *CreateFbPageCombinedArgs) {
+func (q *CreateFbExternalPageCombinedCommand) SetCreateFbExternalPageCombinedArgs(args *CreateFbExternalPageCombinedArgs) {
 	q.FbPage = args.FbPage
 	q.FbPageInternal = args.FbPageInternal
 }
 
-func (q *CreateFbPageCombinedsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbPageCombinedsArgs) {
+func (q *CreateFbExternalPageCombinedsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalPageCombinedsArgs) {
 	return ctx,
-		&CreateFbPageCombinedsArgs{
+		&CreateFbExternalPageCombinedsArgs{
 			ShopID:          q.ShopID,
 			UserID:          q.UserID,
 			FbPageCombineds: q.FbPageCombineds,
 		}
 }
 
-func (q *CreateFbPageCombinedsCommand) SetCreateFbPageCombinedsArgs(args *CreateFbPageCombinedsArgs) {
+func (q *CreateFbExternalPageCombinedsCommand) SetCreateFbExternalPageCombinedsArgs(args *CreateFbExternalPageCombinedsArgs) {
 	q.ShopID = args.ShopID
 	q.UserID = args.UserID
 	q.FbPageCombineds = args.FbPageCombineds
 }
 
-func (q *CreateFbPageInternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbPageInternalArgs) {
+func (q *CreateFbExternalPageInternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalPageInternalArgs) {
 	return ctx,
-		&CreateFbPageInternalArgs{
+		&CreateFbExternalPageInternalArgs{
 			ID:    q.ID,
 			Token: q.Token,
 		}
 }
 
-func (q *CreateFbPageInternalCommand) SetCreateFbPageInternalArgs(args *CreateFbPageInternalArgs) {
+func (q *CreateFbExternalPageInternalCommand) SetCreateFbExternalPageInternalArgs(args *CreateFbExternalPageInternalArgs) {
 	q.ID = args.ID
 	q.Token = args.Token
 }
 
-func (q *DisableAllFbPagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DisableAllFbPagesArgs) {
+func (q *DisableAllFbExternalPagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DisableAllFbExternalPagesArgs) {
 	return ctx,
-		&DisableAllFbPagesArgs{
+		&DisableAllFbExternalPagesArgs{
 			ShopID: q.ShopID,
 			UserID: q.UserID,
 		}
 }
 
-func (q *DisableAllFbPagesCommand) SetDisableAllFbPagesArgs(args *DisableAllFbPagesArgs) {
+func (q *DisableAllFbExternalPagesCommand) SetDisableAllFbExternalPagesArgs(args *DisableAllFbExternalPagesArgs) {
 	q.ShopID = args.ShopID
 	q.UserID = args.UserID
 }
 
-func (q *DisableFbPagesByIDsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DisableFbPagesByIDsArgs) {
+func (q *DisableFbExternalPagesByIDsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DisableFbExternalPagesByIDsArgs) {
 	return ctx,
-		&DisableFbPagesByIDsArgs{
+		&DisableFbExternalPagesByIDsArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 			UserID: q.UserID,
 		}
 }
 
-func (q *DisableFbPagesByIDsCommand) SetDisableFbPagesByIDsArgs(args *DisableFbPagesByIDsArgs) {
+func (q *DisableFbExternalPagesByIDsCommand) SetDisableFbExternalPagesByIDsArgs(args *DisableFbExternalPagesByIDsArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
 	q.UserID = args.UserID
 }
 
-func (q *GetFbPageByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+func (q *GetFbExternalPageByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
 }
 
-func (q *GetFbPageByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *GetFbExternalPageByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
 
-func (q *GetFbPageInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *GetFbExternalPageInternalByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
 
-func (q *ListFbPagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbPagesArgs) {
+func (q *ListFbExternalPagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalPagesArgs) {
 	return ctx,
-		&ListFbPagesArgs{
+		&ListFbExternalPagesArgs{
 			ShopID:   q.ShopID,
 			UserID:   q.UserID,
 			FbUserID: q.FbUserID,
@@ -330,7 +330,7 @@ func (q *ListFbPagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *L
 		}
 }
 
-func (q *ListFbPagesQuery) SetListFbPagesArgs(args *ListFbPagesArgs) {
+func (q *ListFbExternalPagesQuery) SetListFbExternalPagesArgs(args *ListFbExternalPagesArgs) {
 	q.ShopID = args.ShopID
 	q.UserID = args.UserID
 	q.FbUserID = args.FbUserID
@@ -338,12 +338,12 @@ func (q *ListFbPagesQuery) SetListFbPagesArgs(args *ListFbPagesArgs) {
 	q.Filters = args.Filters
 }
 
-func (q *ListFbPagesActiveByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs []string) {
+func (q *ListFbExternalPagesActiveByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs []string) {
 	return ctx,
 		q.ExternalIDs
 }
 
-func (q *ListFbPagesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs filter.IDs) {
+func (q *ListFbExternalPagesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs filter.IDs) {
 	return ctx,
 		q.IDs
 }
@@ -360,12 +360,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleCreateFbPage)
-	b.AddHandler(h.HandleCreateFbPageCombined)
-	b.AddHandler(h.HandleCreateFbPageCombineds)
-	b.AddHandler(h.HandleCreateFbPageInternal)
-	b.AddHandler(h.HandleDisableAllFbPages)
-	b.AddHandler(h.HandleDisableFbPagesByIDs)
+	b.AddHandler(h.HandleCreateFbExternalPage)
+	b.AddHandler(h.HandleCreateFbExternalPageCombined)
+	b.AddHandler(h.HandleCreateFbExternalPageCombineds)
+	b.AddHandler(h.HandleCreateFbExternalPageInternal)
+	b.AddHandler(h.HandleDisableAllFbExternalPages)
+	b.AddHandler(h.HandleDisableFbExternalPagesByIDs)
 	return CommandBus{b}
 }
 
@@ -381,11 +381,11 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetFbPageByExternalID)
-	b.AddHandler(h.HandleGetFbPageByID)
-	b.AddHandler(h.HandleGetFbPageInternalByID)
-	b.AddHandler(h.HandleListFbPages)
-	b.AddHandler(h.HandleListFbPagesActiveByExternalIDs)
-	b.AddHandler(h.HandleListFbPagesByIDs)
+	b.AddHandler(h.HandleGetFbExternalPageByExternalID)
+	b.AddHandler(h.HandleGetFbExternalPageByID)
+	b.AddHandler(h.HandleGetFbExternalPageInternalByID)
+	b.AddHandler(h.HandleListFbExternalPages)
+	b.AddHandler(h.HandleListFbExternalPagesActiveByExternalIDs)
+	b.AddHandler(h.HandleListFbExternalPagesByIDs)
 	return QueryBus{b}
 }

@@ -49,20 +49,20 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL strin
 	}
 	if facebookError.Code.Valid {
 		if 200 <= facebookError.Code.Int && facebookError.Code.Int <= 299 {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Facebook API error").
+			return cm.Errorf(cm.FacebookPermissionDenied, nil, "Facebook API error").
 				WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
 				WithMeta("msg", mapErrorCodeMessage[MissingPermission][VI]).
 				WithMeta("orig_msg", mapErrorCodeMessage[MissingPermission][EN]).
 				WithMeta("url", currentURL)
 		}
-		return cm.Errorf(cm.FailedPrecondition, nil, "Facebook API error").
+		return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
 			WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
 			WithMeta("msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][VI]).
 			WithMeta("orig_msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][EN]).
 			WithMeta("url", currentURL)
 	}
 	if facebookError.ErrorSubcode.Valid {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Facebook API error").
+		return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
 			WithMeta("sub_code", fmt.Sprintf("%v", facebookError.ErrorSubcode.Int)).
 			WithMeta("msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][VI]).
 			WithMeta("orig_msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][EN]).
@@ -70,7 +70,7 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL strin
 	}
 	if facebookError.Type.Valid {
 		if facebookError.Type.String == "OAuthException" {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Facebook API error").
+			return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
 				WithMeta("code", "OAuthException").
 				WithMeta("msg", "Trạng thái đăng nhập hoặc Access token đã hết hạn, xoá bỏ, mặt khác có thể không hợp lệ.").
 				WithMeta("orig_msg", "The login status or access token has expired, been revoked, or is otherwise invalid.").

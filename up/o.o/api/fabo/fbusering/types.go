@@ -7,17 +7,17 @@ import (
 	"o.o/capi/dot"
 )
 
-type FbUser struct {
+type FbExternalUser struct {
 	ID           dot.ID
-	ExternalID   string
 	UserID       dot.ID
-	ExternalInfo *ExternalFBUserInfo
+	ExternalID   string
+	ExternalInfo *FbExternalUserInfo
 	Status       status3.Status
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
 
-type ExternalFBUserInfo struct {
+type FbExternalUserInfo struct {
 	Name      string
 	FirstName string
 	LastName  string
@@ -25,14 +25,14 @@ type ExternalFBUserInfo struct {
 	ImageURL  string
 }
 
-type FbUserInternal struct {
+type FbExternalUserInternal struct {
 	ID        dot.ID
 	Token     string
 	ExpiresIn int
 	UpdatedAt time.Time
 }
 
-type FbUserCombined struct {
-	FbUser         *FbUser
-	FbUserInternal *FbUserInternal
+type FbExternalUserCombined struct {
+	FbExternalUser         *FbExternalUser
+	FbExternalUserInternal *FbExternalUserInternal
 }

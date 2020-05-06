@@ -22,13 +22,13 @@ type PageService struct {
 	session.Sessioner
 	ss *session.Session
 
-	faboInfo    *faboinfo.FaboInfo
-	fbUserQuery fbusering.QueryBus
-	fbUserAggr  fbusering.CommandBus
-	fbPageQuery fbpaging.QueryBus
-	fbPageAggr  fbpaging.CommandBus
-	appScopes   map[string]string
-	fbClient    *fbclient.FbClient
+	faboInfo            *faboinfo.FaboInfo
+	fbExternalUserQuery fbusering.QueryBus
+	fbExternalUserAggr  fbusering.CommandBus
+	fbExternalPageQuery fbpaging.QueryBus
+	fbExternalPageAggr  fbpaging.CommandBus
+	appScopes           map[string]string
+	fbClient            *fbclient.FbClient
 }
 
 func NewPageService(
@@ -42,14 +42,14 @@ func NewPageService(
 	fbClient *fbclient.FbClient,
 ) *PageService {
 	s := &PageService{
-		ss:          ss,
-		faboInfo:    faboInfo,
-		fbUserQuery: fbUserQuery,
-		fbUserAggr:  fbUserAggr,
-		fbPageQuery: fbPageQuery,
-		fbPageAggr:  fbPageAggr,
-		appScopes:   appScopes,
-		fbClient:    fbClient,
+		ss:                  ss,
+		faboInfo:            faboInfo,
+		fbExternalUserQuery: fbUserQuery,
+		fbExternalUserAggr:  fbUserAggr,
+		fbExternalPageQuery: fbPageQuery,
+		fbExternalPageAggr:  fbPageAggr,
+		appScopes:           appScopes,
+		fbClient:            fbClient,
 	}
 	return s
 }
@@ -64,12 +64,12 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 	if len(r.IDs) == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ids must not be null")
 	}
-	disablePagesByIDsCmd := &fbpaging.DisableFbPagesByIDsCommand{
+	disablePagesByIDsCmd := &fbpaging.DisableFbExternalPagesByIDsCommand{
 		IDs:    r.IDs,
 		ShopID: s.ss.Shop().ID,
 		UserID: s.ss.Claim().UserID,
 	}
-	if err := s.fbPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
+	if err := s.fbExternalPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
 		return nil, err
 	}
 
@@ -77,24 +77,22 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 }
 
 func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (*fabo.ListPagesResponse, error) {
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
-	if err != nil {
-		return nil, err
-	}
+	//faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	paging := cmapi.CMPaging(r.Paging)
-	listFbPagesQuery := &fbpaging.ListFbPagesQuery{
-		ShopID:   s.ss.Shop().ID,
-		UserID:   s.ss.Claim().UserID,
-		FbUserID: faboInfo.FbUserID.Wrap(),
-		Paging:   *paging,
-		Filters:  cmapi.ToFilters(r.Filters),
+	listFbExternalPagesQuery := &fbpaging.ListFbExternalPagesQuery{
+		UserID:  s.ss.Claim().UserID,
+		Paging:  *paging,
+		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := s.fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
+	if err := s.fbExternalPageQuery.Dispatch(ctx, listFbExternalPagesQuery); err != nil {
 		return nil, err
 	}
 	resp := &fabo.ListPagesResponse{
-		FbPages: convertpb.PbFbPages(listFbPagesQuery.Result.FbPages),
+		FbPages: convertpb.PbFbPages(listFbExternalPagesQuery.Result.FbPages),
 		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return resp, nil
@@ -137,29 +135,29 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		externalIDs = append(externalIDs, account.Id)
 	}
 
-	listFbPagesActiveQuery := &fbpaging.ListFbPagesActiveByExternalIDsQuery{
+	listFbPagesActiveQuery := &fbpaging.ListFbExternalPagesActiveByExternalIDsQuery{
 		ExternalIDs: externalIDs,
 	}
 
-	if err := s.fbPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
+	if err := s.fbExternalPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
 		return nil, err
 	}
 
 	// key externalID
-	mapFbPageActive := make(map[string]*fbpaging.FbPage)
+	mapFbPageActive := make(map[string]*fbpaging.FbExternalPage)
 	for _, fbPage := range listFbPagesActiveQuery.Result {
 		mapFbPageActive[fbPage.ExternalID] = fbPage
 	}
 
 	fbUserID := cm.NewID()
-	createFbUserCombinedCmd := &fbusering.CreateFbUserCombinedCommand{
+	createFbUserCombinedCmd := &fbusering.CreateFbExternalUserCombinedCommand{
 		UserID: userID,
 		ShopID: shopID,
-		FbUser: &fbusering.CreateFbUserArgs{
+		FbUser: &fbusering.CreateFbExternalUserArgs{
 			ID:         fbUserID,
 			ExternalID: me.ID,
 			UserID:     userID,
-			ExternalInfo: &fbusering.ExternalFBUserInfo{
+			ExternalInfo: &fbusering.FbExternalUserInfo{
 				Name:      me.Name,
 				FirstName: me.FirstName,
 				LastName:  me.LastName,
@@ -169,22 +167,22 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			Token:  longLivedAccessToken.AccessToken,
 			Status: status3.P,
 		},
-		FbUserInternal: &fbusering.CreateFbUserInternalArgs{
+		FbUserInternal: &fbusering.CreateFbExternalUserInternalArgs{
 			ID:        fbUserID,
 			Token:     longLivedAccessToken.AccessToken,
 			ExpiresIn: fbclient.ExpiresInUserToken, // 60 days
 		},
 	}
-	if err := s.fbUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
+	if err := s.fbExternalUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
 		return nil, err
 	}
-	fbUserID = createFbUserCombinedCmd.Result.FbUser.ID
+	fbUserID = createFbUserCombinedCmd.Result.FbExternalUser.ID
 
 	var fbErrorPages []*fabo.FbErrorPage
 
 	permissionsGranted := getPermissionsGranted(accounts.Permissions)
 
-	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbPageCombinedArgs, 0, len(accounts.Accounts.Data))
+	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbExternalPageCombinedArgs, 0, len(accounts.Accounts.Data))
 	for _, account := range accounts.Accounts.Data {
 		// Verify role (Admin)
 		if fbclient.GetRole(account.Tasks) != fbclient.ADMIN {
@@ -215,7 +213,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 				Name: category.Name,
 			})
 		}
-		createFbPageCmd := &fbpaging.CreateFbPageArgs{
+		createFbPageCmd := &fbpaging.CreateFbExternalPageArgs{
 			ID:                   fbPageID,
 			ExternalID:           account.Id,
 			FbUserID:             fbUserID,
@@ -230,11 +228,11 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			Status:               status3.P,
 			ConnectionStatus:     status3.P,
 		}
-		createFbPageInternalCmd := &fbpaging.CreateFbPageInternalArgs{
+		createFbPageInternalCmd := &fbpaging.CreateFbExternalPageInternalArgs{
 			ID:    fbPageID,
 			Token: account.AccessToken,
 		}
-		listCreateFbPageCombinedCmd = append(listCreateFbPageCombinedCmd, &fbpaging.CreateFbPageCombinedArgs{
+		listCreateFbPageCombinedCmd = append(listCreateFbPageCombinedCmd, &fbpaging.CreateFbExternalPageCombinedArgs{
 			FbPage:         createFbPageCmd,
 			FbPageInternal: createFbPageInternalCmd,
 		})
@@ -242,17 +240,17 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	var fbPageCombinedsResult []*fabo.FbPageCombined
 
 	if len(listCreateFbPageCombinedCmd) > 0 {
-		createFbPageCombinedsCmd := &fbpaging.CreateFbPageCombinedsCommand{
+		createFbExternalPageCombinedsCmd := &fbpaging.CreateFbExternalPageCombinedsCommand{
 			ShopID:          shopID,
 			UserID:          userID,
 			FbPageCombineds: listCreateFbPageCombinedCmd,
 			Result:          nil,
 		}
-		if err := s.fbPageAggr.Dispatch(ctx, createFbPageCombinedsCmd); err != nil {
+		if err := s.fbExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
 			return nil, err
 		}
 
-		fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbPageCombinedsCmd.Result)
+		fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbExternalPageCombinedsCmd.Result)
 	}
 
 	resp := &fabo.ConnectPagesResponse{

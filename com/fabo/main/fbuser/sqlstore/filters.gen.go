@@ -12,21 +12,21 @@ import (
 	dot "o.o/capi/dot"
 )
 
-type FbUserFilters struct{ prefix string }
+type FbExternalUserFilters struct{ prefix string }
 
-func NewFbUserFilters(prefix string) FbUserFilters {
-	return FbUserFilters{prefix}
+func NewFbExternalUserFilters(prefix string) FbExternalUserFilters {
+	return FbExternalUserFilters{prefix}
 }
 
-func (ft *FbUserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *FbExternalUserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft FbUserFilters) Prefix() string {
+func (ft FbExternalUserFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbUserFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalUserFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -35,7 +35,7 @@ func (ft *FbUserFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -45,26 +45,7 @@ func (ft *FbUserFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbUserFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "external_id",
-		Value:  ExternalID,
-		IsNil:  ExternalID == "",
-	}
-}
-
-func (ft *FbUserFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "external_id",
-		Value:  ExternalID,
-		IsNil:  ExternalID == nil,
-		IsZero: ExternalID != nil && (*ExternalID) == "",
-	}
-}
-
-func (ft *FbUserFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalUserFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -73,7 +54,7 @@ func (ft *FbUserFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -83,7 +64,26 @@ func (ft *FbUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbUserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
+func (ft *FbExternalUserFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *FbExternalUserFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *FbExternalUserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -92,7 +92,7 @@ func (ft *FbUserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -102,7 +102,7 @@ func (ft *FbUserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *FbUserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalUserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -111,7 +111,7 @@ func (ft *FbUserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -121,7 +121,7 @@ func (ft *FbUserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *FbUserFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalUserFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -130,7 +130,7 @@ func (ft *FbUserFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -140,21 +140,21 @@ func (ft *FbUserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-type FbUserInternalFilters struct{ prefix string }
+type FbExternalUserInternalFilters struct{ prefix string }
 
-func NewFbUserInternalFilters(prefix string) FbUserInternalFilters {
-	return FbUserInternalFilters{prefix}
+func NewFbExternalUserInternalFilters(prefix string) FbExternalUserInternalFilters {
+	return FbExternalUserInternalFilters{prefix}
 }
 
-func (ft *FbUserInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *FbExternalUserInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft FbUserInternalFilters) Prefix() string {
+func (ft FbExternalUserInternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbUserInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalUserInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -163,7 +163,7 @@ func (ft *FbUserInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -173,7 +173,7 @@ func (ft *FbUserInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbUserInternalFilters) ByToken(Token string) *sq.ColumnFilter {
+func (ft *FbExternalUserInternalFilters) ByToken(Token string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "token",
@@ -182,7 +182,7 @@ func (ft *FbUserInternalFilters) ByToken(Token string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "token",
@@ -192,7 +192,7 @@ func (ft *FbUserInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbUserInternalFilters) ByExpiresIn(ExpiresIn int) *sq.ColumnFilter {
+func (ft *FbExternalUserInternalFilters) ByExpiresIn(ExpiresIn int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "expires_in",
@@ -201,7 +201,7 @@ func (ft *FbUserInternalFilters) ByExpiresIn(ExpiresIn int) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbUserInternalFilters) ByExpiresInPtr(ExpiresIn *int) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserInternalFilters) ByExpiresInPtr(ExpiresIn *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "expires_in",
@@ -211,7 +211,7 @@ func (ft *FbUserInternalFilters) ByExpiresInPtr(ExpiresIn *int) *sq.ColumnFilter
 	}
 }
 
-func (ft *FbUserInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalUserInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -220,7 +220,7 @@ func (ft *FbUserInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft *FbUserInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",

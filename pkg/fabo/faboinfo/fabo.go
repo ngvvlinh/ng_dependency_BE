@@ -33,7 +33,7 @@ type GetFaboInfoQuery struct {
 }
 
 func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*Info, error) {
-	getFbUserByIDQuery := &fbusering.GetFbUserByUserIDQuery{
+	getFbUserByIDQuery := &fbusering.GetFbExternalUserByUserIDQuery{
 		UserID: userID,
 	}
 	if err := fi.fbUserQuery.Dispatch(ctx, getFbUserByIDQuery); err != nil {
@@ -41,7 +41,7 @@ func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*In
 	}
 	fbUserID := getFbUserByIDQuery.Result.ID
 
-	listFbPagesQuery := &fbpaging.ListFbPagesQuery{
+	listFbPagesQuery := &fbpaging.ListFbExternalPagesQuery{
 		ShopID:   shopID,
 		UserID:   userID,
 		FbUserID: dot.WrapID(fbUserID),

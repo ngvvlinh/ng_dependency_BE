@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"o.o/backend/cmd/fabo-server/config"
+	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
@@ -110,10 +111,12 @@ func main() {
 	sqlstore.AddEventBus(eventBus)
 
 	_ = serviceidentity.NewQueryService(db).MessageBus()
-	fbPageAggr := servicefbpage.NewFbPageAggregate(db).MessageBus()
+	fbPageAggr := servicefbpage.NewExternalFbPageAggregate(db).MessageBus()
 	fbPageQuery := servicefbpage.NewFbPageQuery(db).MessageBus()
 	fbUserAggr := servicefbuser.NewFbUserAggregate(db, fbPageAggr).MessageBus()
 	fbUserQuery := servicefbuser.NewFbUserQuery(db).MessageBus()
+	fbMessagingAggr := servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus).MessageBus()
+	fbMessagingQuery := servicefbmessaging.NewFbMessagingQuery(db).MessageBus()
 
 	fbClient := fbclient.New(cfg.FacebookApp, bot)
 	if err := fbClient.Ping(); err != nil {
@@ -137,7 +140,9 @@ func main() {
 	var servers []httprpc.Server
 	servers = append(servers, fabo.NewFaboServer(
 		hooks, ss,
-		fbUserQuery, fbUserAggr, fbPageQuery, fbPageAggr,
+		fbUserQuery, fbUserAggr,
+		fbPageQuery, fbPageAggr,
+		fbMessagingQuery, fbMessagingAggr,
 		appScopes, fbClient,
 	)...)
 

@@ -12,21 +12,21 @@ import (
 	dot "o.o/capi/dot"
 )
 
-type FbPageFilters struct{ prefix string }
+type FbExternalPageFilters struct{ prefix string }
 
-func NewFbPageFilters(prefix string) FbPageFilters {
-	return FbPageFilters{prefix}
+func NewFbExternalPageFilters(prefix string) FbExternalPageFilters {
+	return FbExternalPageFilters{prefix}
 }
 
-func (ft *FbPageFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *FbExternalPageFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft FbPageFilters) Prefix() string {
+func (ft FbExternalPageFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbPageFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -35,7 +35,7 @@ func (ft *FbPageFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -45,26 +45,7 @@ func (ft *FbPageFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "external_id",
-		Value:  ExternalID,
-		IsNil:  ExternalID == "",
-	}
-}
-
-func (ft *FbPageFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "external_id",
-		Value:  ExternalID,
-		IsNil:  ExternalID == nil,
-		IsZero: ExternalID != nil && (*ExternalID) == "",
-	}
-}
-
-func (ft *FbPageFilters) ByFbUserID(FbUserID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByFbUserID(FbUserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "fb_user_id",
@@ -73,7 +54,7 @@ func (ft *FbPageFilters) ByFbUserID(FbUserID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByFbUserIDPtr(FbUserID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByFbUserIDPtr(FbUserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "fb_user_id",
@@ -83,7 +64,7 @@ func (ft *FbPageFilters) ByFbUserIDPtr(FbUserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -92,7 +73,7 @@ func (ft *FbPageFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -102,7 +83,7 @@ func (ft *FbPageFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -111,7 +92,7 @@ func (ft *FbPageFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -121,7 +102,26 @@ func (ft *FbPageFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *FbExternalPageFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *FbExternalPageFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_name",
@@ -130,7 +130,7 @@ func (ft *FbPageFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByExternalNamePtr(ExternalName *string) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByExternalNamePtr(ExternalName *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_name",
@@ -140,7 +140,7 @@ func (ft *FbPageFilters) ByExternalNamePtr(ExternalName *string) *sq.ColumnFilte
 	}
 }
 
-func (ft *FbPageFilters) ByExternalCategory(ExternalCategory string) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByExternalCategory(ExternalCategory string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_category",
@@ -149,7 +149,7 @@ func (ft *FbPageFilters) ByExternalCategory(ExternalCategory string) *sq.ColumnF
 	}
 }
 
-func (ft *FbPageFilters) ByExternalCategoryPtr(ExternalCategory *string) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByExternalCategoryPtr(ExternalCategory *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_category",
@@ -159,7 +159,7 @@ func (ft *FbPageFilters) ByExternalCategoryPtr(ExternalCategory *string) *sq.Col
 	}
 }
 
-func (ft *FbPageFilters) ByExternalImageURL(ExternalImageURL string) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByExternalImageURL(ExternalImageURL string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_image_url",
@@ -168,7 +168,7 @@ func (ft *FbPageFilters) ByExternalImageURL(ExternalImageURL string) *sq.ColumnF
 	}
 }
 
-func (ft *FbPageFilters) ByExternalImageURLPtr(ExternalImageURL *string) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByExternalImageURLPtr(ExternalImageURL *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_image_url",
@@ -178,26 +178,7 @@ func (ft *FbPageFilters) ByExternalImageURLPtr(ExternalImageURL *string) *sq.Col
 	}
 }
 
-func (ft *FbPageFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == 0,
-	}
-}
-
-func (ft *FbPageFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == nil,
-		IsZero: Status != nil && (*Status) == 0,
-	}
-}
-
-func (ft *FbPageFilters) ByConnectionStatus(ConnectionStatus status3.Status) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByConnectionStatus(ConnectionStatus status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "connection_status",
@@ -206,7 +187,7 @@ func (ft *FbPageFilters) ByConnectionStatus(ConnectionStatus status3.Status) *sq
 	}
 }
 
-func (ft *FbPageFilters) ByConnectionStatusPtr(ConnectionStatus *status3.Status) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByConnectionStatusPtr(ConnectionStatus *status3.Status) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "connection_status",
@@ -216,7 +197,26 @@ func (ft *FbPageFilters) ByConnectionStatusPtr(ConnectionStatus *status3.Status)
 	}
 }
 
-func (ft *FbPageFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *FbExternalPageFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *FbExternalPageFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -225,7 +225,7 @@ func (ft *FbPageFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -235,7 +235,7 @@ func (ft *FbPageFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *FbPageFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -244,7 +244,7 @@ func (ft *FbPageFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -254,7 +254,7 @@ func (ft *FbPageFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *FbPageFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalPageFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",
@@ -263,7 +263,7 @@ func (ft *FbPageFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",
@@ -273,21 +273,21 @@ func (ft *FbPageFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-type FbPageInternalFilters struct{ prefix string }
+type FbExternalPageInternalFilters struct{ prefix string }
 
-func NewFbPageInternalFilters(prefix string) FbPageInternalFilters {
-	return FbPageInternalFilters{prefix}
+func NewFbExternalPageInternalFilters(prefix string) FbExternalPageInternalFilters {
+	return FbExternalPageInternalFilters{prefix}
 }
 
-func (ft *FbPageInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *FbExternalPageInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft FbPageInternalFilters) Prefix() string {
+func (ft FbExternalPageInternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbPageInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalPageInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -296,7 +296,7 @@ func (ft *FbPageInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -306,7 +306,7 @@ func (ft *FbPageInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageInternalFilters) ByToken(Token string) *sq.ColumnFilter {
+func (ft *FbExternalPageInternalFilters) ByToken(Token string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "token",
@@ -315,7 +315,7 @@ func (ft *FbPageInternalFilters) ByToken(Token string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbPageInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "token",
@@ -325,7 +325,7 @@ func (ft *FbPageInternalFilters) ByTokenPtr(Token *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbPageInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbExternalPageInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -334,7 +334,7 @@ func (ft *FbPageInternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft *FbPageInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbExternalPageInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",

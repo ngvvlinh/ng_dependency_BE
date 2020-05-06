@@ -23,6 +23,52 @@ type FacebookPagingResponse struct {
 	Next     string                    `json:"next"`
 }
 
+func (f *FacebookPagingResponse) ToPagingRequestAfter(limit int) *FacebookPagingRequest {
+	if f == nil {
+		return &FacebookPagingRequest{}
+	}
+	return &FacebookPagingRequest{
+		Limit: dot.Int(limit),
+		CursorPagination: &CursorPaginationRequest{
+			After: f.Cursors.After,
+		},
+	}
+}
+
+func (f *FacebookPagingResponse) ToPagingRequestBefore(limit int) *FacebookPagingRequest {
+	if f == nil {
+		return &FacebookPagingRequest{}
+	}
+	return &FacebookPagingRequest{
+		Limit: dot.Int(limit),
+		CursorPagination: &CursorPaginationRequest{
+			Before: f.Cursors.Before,
+		},
+	}
+}
+
+func (res *FacebookPagingResponse) CompareFacebookPagingRequest(req *FacebookPagingRequest) bool {
+	if res == nil && req == nil {
+		return true
+	}
+	if res != nil && req == nil {
+		return false
+	}
+	if res == nil && req != nil {
+		return false
+	}
+
+	if req.CursorPagination == nil {
+		return false
+	}
+
+	if (req.CursorPagination.After != "" && req.CursorPagination.After != res.Cursors.After) ||
+		(req.CursorPagination.Before != "" && req.CursorPagination.Before != res.Cursors.Before) {
+		return false
+	}
+	return true
+}
+
 type CursorPaginationResponse struct {
 	Before string `json:"before"`
 	After  string `json:"after"`

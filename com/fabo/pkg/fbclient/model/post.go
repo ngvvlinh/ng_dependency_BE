@@ -1,17 +1,17 @@
 package model
 
-type PublishedPostsResponse struct {
-	PublishedPosts PublishedPosts `json:"published_posts"`
+type PublishedPostsByIDsResponse struct {
+	Data map[string]*Post
 }
 
-type PublishedPosts struct {
+type PublishedPostsResponse struct {
 	Data   []*Post                 `json:"data"`
 	Paging *FacebookPagingResponse `json:"paging"`
 }
 
 type Post struct {
 	ID           string       `json:"id"`
-	From         *From        `json:"from"`
+	From         *ObjectFrom  `json:"from"`
 	FullPicture  string       `json:"full_picture"`
 	Icon         string       `json:"icon"`
 	IsExpired    bool         `json:"is_expired"`
@@ -19,6 +19,7 @@ type Post struct {
 	IsPopular    bool         `json:"is_popular"`
 	IsPublished  bool         `json:"is_published"`
 	Message      string       `json:"message"`
+	Story        string       `json:"story"`
 	PermalinkURL string       `json:"permalink_url"`
 	Shares       *Shares      `json:"shares"`
 	StatusType   string       `json:"status_type"`

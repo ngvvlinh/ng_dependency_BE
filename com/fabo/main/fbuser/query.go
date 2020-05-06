@@ -15,20 +15,20 @@ var _ fbusering.QueryService = &FbUserQuery{}
 
 type FbUserQuery struct {
 	db                  *cmsql.Database
-	fbUserStore         sqlstore.FbUserStoreFactory
-	fbUserInternalStore sqlstore.FbUserInternalFactory
+	fbUserStore         sqlstore.FbExternalUserStoreFactory
+	fbUserInternalStore sqlstore.FbExternalUserInternalFactory
 }
 
-func (q *FbUserQuery) GetFbUserInternalByID(
+func (q *FbUserQuery) GetFbExternalUserInternalByID(
 	ctx context.Context, ID dot.ID,
-) (*fbusering.FbUserInternal, error) {
+) (*fbusering.FbExternalUserInternal, error) {
 	panic("implement me")
 }
 
 func NewFbUserQuery(database *cmsql.Database) *FbUserQuery {
 	return &FbUserQuery{
 		db:          database,
-		fbUserStore: sqlstore.NewFbUserStore(database),
+		fbUserStore: sqlstore.NewFbExternalUserStore(database),
 	}
 }
 
@@ -37,20 +37,20 @@ func (q *FbUserQuery) MessageBus() fbusering.QueryBus {
 	return fbusering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (f FbUserQuery) GetFbUserByID(
+func (f FbUserQuery) GetFbExternalUserByID(
 	ctx context.Context, ID dot.ID,
-) (*fbusering.FbUser, error) {
+) (*fbusering.FbExternalUser, error) {
 	panic("implement me")
 }
 
-func (f FbUserQuery) GetFbUserByExternalID(
+func (f FbUserQuery) GetFbExternalUserByExternalID(
 	ctx context.Context, externalID string,
-) (*fbusering.FbUser, error) {
+) (*fbusering.FbExternalUser, error) {
 	panic("implement me")
 }
 
-func (q *FbUserQuery) GetFbUserByUserID(
+func (q *FbUserQuery) GetFbExternalUserByUserID(
 	ctx context.Context, userID dot.ID,
-) (*fbusering.FbUser, error) {
-	return q.fbUserStore(ctx).UserID(userID).Status(status3.P).GetFbUser()
+) (*fbusering.FbExternalUser, error) {
+	return q.fbUserStore(ctx).UserID(userID).Status(status3.P).GetFbExternalUser()
 }

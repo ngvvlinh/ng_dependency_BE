@@ -23,297 +23,297 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*fbusermodel.ExternalFBUserInfo)(nil), (*fbusering.ExternalFBUserInfo)(nil), func(arg, out interface{}) error {
-		Convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg.(*fbusermodel.ExternalFBUserInfo), out.(*fbusering.ExternalFBUserInfo))
+	s.Register((*fbusermodel.FbExternalUser)(nil), (*fbusering.FbExternalUser)(nil), func(arg, out interface{}) error {
+		Convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg.(*fbusermodel.FbExternalUser), out.(*fbusering.FbExternalUser))
 		return nil
 	})
-	s.Register(([]*fbusermodel.ExternalFBUserInfo)(nil), (*[]*fbusering.ExternalFBUserInfo)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusermodel_ExternalFBUserInfoes_fbusering_ExternalFBUserInfoes(arg.([]*fbusermodel.ExternalFBUserInfo))
-		*out.(*[]*fbusering.ExternalFBUserInfo) = out0
+	s.Register(([]*fbusermodel.FbExternalUser)(nil), (*[]*fbusering.FbExternalUser)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusermodel_FbExternalUsers_fbusering_FbExternalUsers(arg.([]*fbusermodel.FbExternalUser))
+		*out.(*[]*fbusering.FbExternalUser) = out0
 		return nil
 	})
-	s.Register((*fbusering.ExternalFBUserInfo)(nil), (*fbusermodel.ExternalFBUserInfo)(nil), func(arg, out interface{}) error {
-		Convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(arg.(*fbusering.ExternalFBUserInfo), out.(*fbusermodel.ExternalFBUserInfo))
+	s.Register((*fbusering.FbExternalUser)(nil), (*fbusermodel.FbExternalUser)(nil), func(arg, out interface{}) error {
+		Convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg.(*fbusering.FbExternalUser), out.(*fbusermodel.FbExternalUser))
 		return nil
 	})
-	s.Register(([]*fbusering.ExternalFBUserInfo)(nil), (*[]*fbusermodel.ExternalFBUserInfo)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusering_ExternalFBUserInfoes_fbusermodel_ExternalFBUserInfoes(arg.([]*fbusering.ExternalFBUserInfo))
-		*out.(*[]*fbusermodel.ExternalFBUserInfo) = out0
+	s.Register(([]*fbusering.FbExternalUser)(nil), (*[]*fbusermodel.FbExternalUser)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusering_FbExternalUsers_fbusermodel_FbExternalUsers(arg.([]*fbusering.FbExternalUser))
+		*out.(*[]*fbusermodel.FbExternalUser) = out0
 		return nil
 	})
-	s.Register((*fbusermodel.FbUser)(nil), (*fbusering.FbUser)(nil), func(arg, out interface{}) error {
-		Convert_fbusermodel_FbUser_fbusering_FbUser(arg.(*fbusermodel.FbUser), out.(*fbusering.FbUser))
+	s.Register((*fbusering.CreateFbExternalUserArgs)(nil), (*fbusering.FbExternalUser)(nil), func(arg, out interface{}) error {
+		Apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg.(*fbusering.CreateFbExternalUserArgs), out.(*fbusering.FbExternalUser))
 		return nil
 	})
-	s.Register(([]*fbusermodel.FbUser)(nil), (*[]*fbusering.FbUser)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusermodel_FbUsers_fbusering_FbUsers(arg.([]*fbusermodel.FbUser))
-		*out.(*[]*fbusering.FbUser) = out0
+	s.Register((*fbusermodel.FbExternalUserInfo)(nil), (*fbusering.FbExternalUserInfo)(nil), func(arg, out interface{}) error {
+		Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.(*fbusermodel.FbExternalUserInfo), out.(*fbusering.FbExternalUserInfo))
 		return nil
 	})
-	s.Register((*fbusering.FbUser)(nil), (*fbusermodel.FbUser)(nil), func(arg, out interface{}) error {
-		Convert_fbusering_FbUser_fbusermodel_FbUser(arg.(*fbusering.FbUser), out.(*fbusermodel.FbUser))
+	s.Register(([]*fbusermodel.FbExternalUserInfo)(nil), (*[]*fbusering.FbExternalUserInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusermodel_FbExternalUserInfoes_fbusering_FbExternalUserInfoes(arg.([]*fbusermodel.FbExternalUserInfo))
+		*out.(*[]*fbusering.FbExternalUserInfo) = out0
 		return nil
 	})
-	s.Register(([]*fbusering.FbUser)(nil), (*[]*fbusermodel.FbUser)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusering_FbUsers_fbusermodel_FbUsers(arg.([]*fbusering.FbUser))
-		*out.(*[]*fbusermodel.FbUser) = out0
+	s.Register((*fbusering.FbExternalUserInfo)(nil), (*fbusermodel.FbExternalUserInfo)(nil), func(arg, out interface{}) error {
+		Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg.(*fbusering.FbExternalUserInfo), out.(*fbusermodel.FbExternalUserInfo))
 		return nil
 	})
-	s.Register((*fbusering.CreateFbUserArgs)(nil), (*fbusering.FbUser)(nil), func(arg, out interface{}) error {
-		Apply_fbusering_CreateFbUserArgs_fbusering_FbUser(arg.(*fbusering.CreateFbUserArgs), out.(*fbusering.FbUser))
+	s.Register(([]*fbusering.FbExternalUserInfo)(nil), (*[]*fbusermodel.FbExternalUserInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusering_FbExternalUserInfoes_fbusermodel_FbExternalUserInfoes(arg.([]*fbusering.FbExternalUserInfo))
+		*out.(*[]*fbusermodel.FbExternalUserInfo) = out0
 		return nil
 	})
-	s.Register((*fbusermodel.FbUserInternal)(nil), (*fbusering.FbUserInternal)(nil), func(arg, out interface{}) error {
-		Convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(arg.(*fbusermodel.FbUserInternal), out.(*fbusering.FbUserInternal))
+	s.Register((*fbusermodel.FbExternalUserInternal)(nil), (*fbusering.FbExternalUserInternal)(nil), func(arg, out interface{}) error {
+		Convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(arg.(*fbusermodel.FbExternalUserInternal), out.(*fbusering.FbExternalUserInternal))
 		return nil
 	})
-	s.Register(([]*fbusermodel.FbUserInternal)(nil), (*[]*fbusering.FbUserInternal)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusermodel_FbUserInternals_fbusering_FbUserInternals(arg.([]*fbusermodel.FbUserInternal))
-		*out.(*[]*fbusering.FbUserInternal) = out0
+	s.Register(([]*fbusermodel.FbExternalUserInternal)(nil), (*[]*fbusering.FbExternalUserInternal)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusermodel_FbExternalUserInternals_fbusering_FbExternalUserInternals(arg.([]*fbusermodel.FbExternalUserInternal))
+		*out.(*[]*fbusering.FbExternalUserInternal) = out0
 		return nil
 	})
-	s.Register((*fbusering.FbUserInternal)(nil), (*fbusermodel.FbUserInternal)(nil), func(arg, out interface{}) error {
-		Convert_fbusering_FbUserInternal_fbusermodel_FbUserInternal(arg.(*fbusering.FbUserInternal), out.(*fbusermodel.FbUserInternal))
+	s.Register((*fbusering.FbExternalUserInternal)(nil), (*fbusermodel.FbExternalUserInternal)(nil), func(arg, out interface{}) error {
+		Convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(arg.(*fbusering.FbExternalUserInternal), out.(*fbusermodel.FbExternalUserInternal))
 		return nil
 	})
-	s.Register(([]*fbusering.FbUserInternal)(nil), (*[]*fbusermodel.FbUserInternal)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusering_FbUserInternals_fbusermodel_FbUserInternals(arg.([]*fbusering.FbUserInternal))
-		*out.(*[]*fbusermodel.FbUserInternal) = out0
+	s.Register(([]*fbusering.FbExternalUserInternal)(nil), (*[]*fbusermodel.FbExternalUserInternal)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusering_FbExternalUserInternals_fbusermodel_FbExternalUserInternals(arg.([]*fbusering.FbExternalUserInternal))
+		*out.(*[]*fbusermodel.FbExternalUserInternal) = out0
 		return nil
 	})
-	s.Register((*fbusering.CreateFbUserInternalArgs)(nil), (*fbusering.FbUserInternal)(nil), func(arg, out interface{}) error {
-		Apply_fbusering_CreateFbUserInternalArgs_fbusering_FbUserInternal(arg.(*fbusering.CreateFbUserInternalArgs), out.(*fbusering.FbUserInternal))
+	s.Register((*fbusering.CreateFbExternalUserInternalArgs)(nil), (*fbusering.FbExternalUserInternal)(nil), func(arg, out interface{}) error {
+		Apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg.(*fbusering.CreateFbExternalUserInternalArgs), out.(*fbusering.FbExternalUserInternal))
 		return nil
 	})
 }
 
-//-- convert o.o/api/fabo/fbusering.ExternalFBUserInfo --//
+//-- convert o.o/api/fabo/fbusering.FbExternalUser --//
 
-func Convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg *fbusermodel.ExternalFBUserInfo, out *fbusering.ExternalFBUserInfo) *fbusering.ExternalFBUserInfo {
+func Convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermodel.FbExternalUser, out *fbusering.FbExternalUser) *fbusering.FbExternalUser {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.ExternalFBUserInfo{}
+		out = &fbusering.FbExternalUser{}
 	}
-	convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg, out)
+	convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg, out)
 	return out
 }
 
-func convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg *fbusermodel.ExternalFBUserInfo, out *fbusering.ExternalFBUserInfo) {
-	out.Name = arg.Name           // simple assign
-	out.FirstName = arg.FirstName // simple assign
-	out.LastName = arg.LastName   // simple assign
-	out.ShortName = arg.ShortName // simple assign
-	out.ImageURL = arg.ImageURL   // simple assign
-}
-
-func Convert_fbusermodel_ExternalFBUserInfoes_fbusering_ExternalFBUserInfoes(args []*fbusermodel.ExternalFBUserInfo) (outs []*fbusering.ExternalFBUserInfo) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]fbusering.ExternalFBUserInfo, len(args))
-	outs = make([]*fbusering.ExternalFBUserInfo, len(args))
-	for i := range tmps {
-		outs[i] = Convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(arg *fbusering.ExternalFBUserInfo, out *fbusermodel.ExternalFBUserInfo) *fbusermodel.ExternalFBUserInfo {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbusermodel.ExternalFBUserInfo{}
-	}
-	convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(arg, out)
-	return out
-}
-
-func convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(arg *fbusering.ExternalFBUserInfo, out *fbusermodel.ExternalFBUserInfo) {
-	out.Name = arg.Name           // simple assign
-	out.FirstName = arg.FirstName // simple assign
-	out.LastName = arg.LastName   // simple assign
-	out.ShortName = arg.ShortName // simple assign
-	out.ImageURL = arg.ImageURL   // simple assign
-}
-
-func Convert_fbusering_ExternalFBUserInfoes_fbusermodel_ExternalFBUserInfoes(args []*fbusering.ExternalFBUserInfo) (outs []*fbusermodel.ExternalFBUserInfo) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]fbusermodel.ExternalFBUserInfo, len(args))
-	outs = make([]*fbusermodel.ExternalFBUserInfo, len(args))
-	for i := range tmps {
-		outs[i] = Convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(args[i], &tmps[i])
-	}
-	return outs
-}
-
-//-- convert o.o/api/fabo/fbusering.FbUser --//
-
-func Convert_fbusermodel_FbUser_fbusering_FbUser(arg *fbusermodel.FbUser, out *fbusering.FbUser) *fbusering.FbUser {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbusering.FbUser{}
-	}
-	convert_fbusermodel_FbUser_fbusering_FbUser(arg, out)
-	return out
-}
-
-func convert_fbusermodel_FbUser_fbusering_FbUser(arg *fbusermodel.FbUser, out *fbusering.FbUser) {
+func convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermodel.FbExternalUser, out *fbusering.FbExternalUser) {
 	out.ID = arg.ID                 // simple assign
-	out.ExternalID = arg.ExternalID // simple assign
 	out.UserID = arg.UserID         // simple assign
-	out.ExternalInfo = Convert_fbusermodel_ExternalFBUserInfo_fbusering_ExternalFBUserInfo(arg.ExternalInfo, nil)
+	out.ExternalID = arg.ExternalID // simple assign
+	out.ExternalInfo = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status       // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusermodel_FbUsers_fbusering_FbUsers(args []*fbusermodel.FbUser) (outs []*fbusering.FbUser) {
+func Convert_fbusermodel_FbExternalUsers_fbusering_FbExternalUsers(args []*fbusermodel.FbExternalUser) (outs []*fbusering.FbExternalUser) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusering.FbUser, len(args))
-	outs = make([]*fbusering.FbUser, len(args))
+	tmps := make([]fbusering.FbExternalUser, len(args))
+	outs = make([]*fbusering.FbExternalUser, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusermodel_FbUser_fbusering_FbUser(args[i], &tmps[i])
+		outs[i] = Convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_fbusering_FbUser_fbusermodel_FbUser(arg *fbusering.FbUser, out *fbusermodel.FbUser) *fbusermodel.FbUser {
+func Convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.FbExternalUser, out *fbusermodel.FbExternalUser) *fbusermodel.FbExternalUser {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusermodel.FbUser{}
+		out = &fbusermodel.FbExternalUser{}
 	}
-	convert_fbusering_FbUser_fbusermodel_FbUser(arg, out)
+	convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg, out)
 	return out
 }
 
-func convert_fbusering_FbUser_fbusermodel_FbUser(arg *fbusering.FbUser, out *fbusermodel.FbUser) {
+func convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.FbExternalUser, out *fbusermodel.FbExternalUser) {
 	out.ID = arg.ID                 // simple assign
-	out.ExternalID = arg.ExternalID // simple assign
 	out.UserID = arg.UserID         // simple assign
-	out.ExternalInfo = Convert_fbusering_ExternalFBUserInfo_fbusermodel_ExternalFBUserInfo(arg.ExternalInfo, nil)
+	out.ExternalID = arg.ExternalID // simple assign
+	out.ExternalInfo = Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status       // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusering_FbUsers_fbusermodel_FbUsers(args []*fbusering.FbUser) (outs []*fbusermodel.FbUser) {
+func Convert_fbusering_FbExternalUsers_fbusermodel_FbExternalUsers(args []*fbusering.FbExternalUser) (outs []*fbusermodel.FbExternalUser) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusermodel.FbUser, len(args))
-	outs = make([]*fbusermodel.FbUser, len(args))
+	tmps := make([]fbusermodel.FbExternalUser, len(args))
+	outs = make([]*fbusermodel.FbExternalUser, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusering_FbUser_fbusermodel_FbUser(args[i], &tmps[i])
+		outs[i] = Convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Apply_fbusering_CreateFbUserArgs_fbusering_FbUser(arg *fbusering.CreateFbUserArgs, out *fbusering.FbUser) *fbusering.FbUser {
+func Apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbusering.CreateFbExternalUserArgs, out *fbusering.FbExternalUser) *fbusering.FbExternalUser {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbUser{}
+		out = &fbusering.FbExternalUser{}
 	}
-	apply_fbusering_CreateFbUserArgs_fbusering_FbUser(arg, out)
+	apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg, out)
 	return out
 }
 
-func apply_fbusering_CreateFbUserArgs_fbusering_FbUser(arg *fbusering.CreateFbUserArgs, out *fbusering.FbUser) {
+func apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbusering.CreateFbExternalUserArgs, out *fbusering.FbExternalUser) {
 	out.ID = arg.ID                     // simple assign
-	out.ExternalID = arg.ExternalID     // simple assign
 	out.UserID = arg.UserID             // simple assign
+	out.ExternalID = arg.ExternalID     // simple assign
 	out.ExternalInfo = arg.ExternalInfo // simple assign
 	out.Status = arg.Status             // simple assign
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
 }
 
-//-- convert o.o/api/fabo/fbusering.FbUserInternal --//
+//-- convert o.o/api/fabo/fbusering.FbExternalUserInfo --//
 
-func Convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(arg *fbusermodel.FbUserInternal, out *fbusering.FbUserInternal) *fbusering.FbUserInternal {
+func Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg *fbusermodel.FbExternalUserInfo, out *fbusering.FbExternalUserInfo) *fbusering.FbExternalUserInfo {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbUserInternal{}
+		out = &fbusering.FbExternalUserInfo{}
 	}
-	convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(arg, out)
+	convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg, out)
 	return out
 }
 
-func convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(arg *fbusermodel.FbUserInternal, out *fbusering.FbUserInternal) {
+func convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg *fbusermodel.FbExternalUserInfo, out *fbusering.FbExternalUserInfo) {
+	out.Name = arg.Name           // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ShortName = arg.ShortName // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
+}
+
+func Convert_fbusermodel_FbExternalUserInfoes_fbusering_FbExternalUserInfoes(args []*fbusermodel.FbExternalUserInfo) (outs []*fbusering.FbExternalUserInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbusering.FbExternalUserInfo, len(args))
+	outs = make([]*fbusering.FbExternalUserInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg *fbusering.FbExternalUserInfo, out *fbusermodel.FbExternalUserInfo) *fbusermodel.FbExternalUserInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbusermodel.FbExternalUserInfo{}
+	}
+	convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg, out)
+	return out
+}
+
+func convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg *fbusering.FbExternalUserInfo, out *fbusermodel.FbExternalUserInfo) {
+	out.Name = arg.Name           // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ShortName = arg.ShortName // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
+}
+
+func Convert_fbusering_FbExternalUserInfoes_fbusermodel_FbExternalUserInfoes(args []*fbusering.FbExternalUserInfo) (outs []*fbusermodel.FbExternalUserInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbusermodel.FbExternalUserInfo, len(args))
+	outs = make([]*fbusermodel.FbExternalUserInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/fabo/fbusering.FbExternalUserInternal --//
+
+func Convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(arg *fbusermodel.FbExternalUserInternal, out *fbusering.FbExternalUserInternal) *fbusering.FbExternalUserInternal {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbusering.FbExternalUserInternal{}
+	}
+	convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(arg, out)
+	return out
+}
+
+func convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(arg *fbusermodel.FbExternalUserInternal, out *fbusering.FbExternalUserInternal) {
 	out.ID = arg.ID               // simple assign
 	out.Token = arg.Token         // simple assign
 	out.ExpiresIn = arg.ExpiresIn // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusermodel_FbUserInternals_fbusering_FbUserInternals(args []*fbusermodel.FbUserInternal) (outs []*fbusering.FbUserInternal) {
+func Convert_fbusermodel_FbExternalUserInternals_fbusering_FbExternalUserInternals(args []*fbusermodel.FbExternalUserInternal) (outs []*fbusering.FbExternalUserInternal) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusering.FbUserInternal, len(args))
-	outs = make([]*fbusering.FbUserInternal, len(args))
+	tmps := make([]fbusering.FbExternalUserInternal, len(args))
+	outs = make([]*fbusering.FbExternalUserInternal, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusermodel_FbUserInternal_fbusering_FbUserInternal(args[i], &tmps[i])
+		outs[i] = Convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_fbusering_FbUserInternal_fbusermodel_FbUserInternal(arg *fbusering.FbUserInternal, out *fbusermodel.FbUserInternal) *fbusermodel.FbUserInternal {
+func Convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(arg *fbusering.FbExternalUserInternal, out *fbusermodel.FbExternalUserInternal) *fbusermodel.FbExternalUserInternal {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusermodel.FbUserInternal{}
+		out = &fbusermodel.FbExternalUserInternal{}
 	}
-	convert_fbusering_FbUserInternal_fbusermodel_FbUserInternal(arg, out)
+	convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(arg, out)
 	return out
 }
 
-func convert_fbusering_FbUserInternal_fbusermodel_FbUserInternal(arg *fbusering.FbUserInternal, out *fbusermodel.FbUserInternal) {
+func convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(arg *fbusering.FbExternalUserInternal, out *fbusermodel.FbExternalUserInternal) {
 	out.ID = arg.ID               // simple assign
 	out.Token = arg.Token         // simple assign
 	out.ExpiresIn = arg.ExpiresIn // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusering_FbUserInternals_fbusermodel_FbUserInternals(args []*fbusering.FbUserInternal) (outs []*fbusermodel.FbUserInternal) {
+func Convert_fbusering_FbExternalUserInternals_fbusermodel_FbExternalUserInternals(args []*fbusering.FbExternalUserInternal) (outs []*fbusermodel.FbExternalUserInternal) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusermodel.FbUserInternal, len(args))
-	outs = make([]*fbusermodel.FbUserInternal, len(args))
+	tmps := make([]fbusermodel.FbExternalUserInternal, len(args))
+	outs = make([]*fbusermodel.FbExternalUserInternal, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusering_FbUserInternal_fbusermodel_FbUserInternal(args[i], &tmps[i])
+		outs[i] = Convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Apply_fbusering_CreateFbUserInternalArgs_fbusering_FbUserInternal(arg *fbusering.CreateFbUserInternalArgs, out *fbusering.FbUserInternal) *fbusering.FbUserInternal {
+func Apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg *fbusering.CreateFbExternalUserInternalArgs, out *fbusering.FbExternalUserInternal) *fbusering.FbExternalUserInternal {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbUserInternal{}
+		out = &fbusering.FbExternalUserInternal{}
 	}
-	apply_fbusering_CreateFbUserInternalArgs_fbusering_FbUserInternal(arg, out)
+	apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg, out)
 	return out
 }
 
-func apply_fbusering_CreateFbUserInternalArgs_fbusering_FbUserInternal(arg *fbusering.CreateFbUserInternalArgs, out *fbusering.FbUserInternal) {
+func apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg *fbusering.CreateFbExternalUserInternalArgs, out *fbusering.FbExternalUserInternal) {
 	out.ID = arg.ID               // simple assign
 	out.Token = arg.Token         // simple assign
 	out.ExpiresIn = arg.ExpiresIn // simple assign

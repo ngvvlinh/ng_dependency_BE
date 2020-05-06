@@ -59,7 +59,7 @@ func PbSummaryData(data []model.SummaryItem) []apishop.SummaryItem {
 	return res
 }
 
-// From up
+// ObjectFrom up
 func PbSummaryTablesNew(tables []*summary.SummaryTable) []*apishop.SummaryTable {
 	res := make([]*apishop.SummaryTable, len(tables))
 	for i, table := range tables {
