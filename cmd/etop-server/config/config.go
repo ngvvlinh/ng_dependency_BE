@@ -189,6 +189,9 @@ func Load(isTest bool) (Config, error) {
 		defCfg = Default()
 	}
 	err := cc.LoadWithDefault(&cfg, defCfg)
+	if err != nil {
+		return cfg, err
+	}
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")

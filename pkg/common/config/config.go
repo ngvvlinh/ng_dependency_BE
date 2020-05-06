@@ -72,7 +72,7 @@ func LoadWithDefault(v, def interface{}) (err error) {
 	if flConfigFile != "" {
 		err := LoadFromFile(flConfigFile, v)
 		if err != nil {
-			ll.S.Errorf("can not load config from file: %v", flConfigFile)
+			ll.S.Errorf("can not load config from file: %v (%v)", flConfigFile, err)
 		}
 		return err
 	}
