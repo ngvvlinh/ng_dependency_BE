@@ -11,6 +11,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbExternalCommentStoreFactory func(ctx context.Context) *FbExternalCommentStore
@@ -62,6 +63,11 @@ func (s *FbExternalCommentStore) ExternalIDs(externalIDs []string) *FbExternalCo
 
 func (s *FbExternalCommentStore) ExternalPageID(externalPageID string) *FbExternalCommentStore {
 	s.preds = append(s.preds, s.ft.ByExternalPageID(externalPageID))
+	return s
+}
+
+func (s *FbExternalCommentStore) ID(ID dot.ID) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByID(ID))
 	return s
 }
 
@@ -164,6 +170,27 @@ func (s *FbExternalCommentStore) GetLatestExternalComment(externalPageID, extern
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (s *FbExternalCommentStore) GetFbExternalCommentDB() (*model.FbExternalComment, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalComment model.FbExternalComment
+	err := query.ShouldGet(&fbExternalComment)
+	return &fbExternalComment, err
+}
+
+func (s *FbExternalCommentStore) GetFbExternalComment() (*fbmessaging.FbExternalComment, error) {
+	fbExternalComment, err := s.GetFbExternalCommentDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbmessaging.FbExternalComment{}
+	err = scheme.Convert(fbExternalComment, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }
 
 func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(

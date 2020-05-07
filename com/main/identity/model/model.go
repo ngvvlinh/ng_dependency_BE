@@ -422,6 +422,7 @@ type Permission struct {
 	Permissions []string
 }
 
+// +convert:type=identity.AccountUser
 // +sqlgen
 type AccountUser struct {
 	AccountID dot.ID

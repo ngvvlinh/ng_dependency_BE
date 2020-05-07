@@ -8,6 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Shopify/sarama"
+
 	"o.o/backend/cmd/fabo-server/config"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
@@ -15,6 +17,9 @@ import (
 	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
+	handlerkafka "o.o/backend/com/handler/etop-handler"
+	"o.o/backend/com/handler/notifier/handler"
+	"o.o/backend/com/main/identity"
 	serviceidentity "o.o/backend/com/main/identity"
 	servicelocation "o.o/backend/com/main/location"
 	customeringquery "o.o/backend/com/shopping/customering/query"
@@ -27,11 +32,14 @@ import (
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/headers"
+	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/middlewares"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
@@ -119,12 +127,32 @@ func main() {
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPageQuery, fbUserQuery, fbUserAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 
+	identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	fbClient := fbclient.New(cfg.FacebookApp)
 	if err := fbClient.Ping(); err != nil {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
 	healthservice.MarkReady()
+	var waiters []interface{ Wait() }
+	eventStream := eventstream.New(ctx)
+	go eventStream.RunForwarder()
+	{
+		kafkaCfg := sarama.NewConfig()
+		kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
+		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, handler.ConsumerGroup, kafkaCfg)
+		if err != nil {
+			ll.Fatal("Unable to connect to Kafka", l.Error(err))
+		}
+		h := handlerkafka.NewHandlerFabo(db, cfg.Kafka.TopicPrefix, fbUserQuery, consumer, eventStream, fbMessagingQuery, fbPageQuery)
+		h.ConsumerAndHandlerFaboTopic(ctx)
+		waiters = append(waiters, h)
+	}
+
+	tokenStore := tokens.NewTokenStore(redisStore)
+	queryService := identity.NewQueryService(db)
+	identityQueryBus := identity.QueryServiceMessageBus(queryService)
+	_ = middleware.New("", tokenStore, identityQueryBus)
 
 	mux := http.NewServeMux()
 	healthservice.RegisterHTTPHandler(mux)
@@ -162,7 +190,16 @@ func main() {
 
 	mux.Handle("/api/", http.StripPrefix("/api",
 		middleware.CORS(headers.ForwardHeaders(bus.Middleware(apiMux)))))
+	eventstream.Init(&identityQuery, &fbPageQuery)
 
+	rt := httpx.New()
+	mux.Handle("/api/event-stream",
+		headers.ForwardHeaders(rt, headers.Config{
+			AllowQueryAuthorization: true,
+		}))
+	rt.Use(httpx.RecoverAndLog(false))
+	rt.Use(httpx.Auth(permission.Shop))
+	rt.GET("/api/event-stream", eventStream.HandleEventStream)
 	{
 		// TODO: Add botWebhook
 
@@ -211,8 +248,10 @@ func main() {
 	// Wait for OS signal or any error from services
 	<-ctx.Done()
 	ll.Info("Gracefully stopped!")
-
 	// Graceful stop
 	svr.Shutdown(context.Background())
+	for _, h := range waiters {
+		h.Wait()
+	}
 	ll.Info("Gracefully stopped!")
 }

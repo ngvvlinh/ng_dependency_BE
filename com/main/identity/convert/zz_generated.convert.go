@@ -39,6 +39,24 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*identitymodel.AccountUser)(nil), (*identity.AccountUser)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_AccountUser_identity_AccountUser(arg.(*identitymodel.AccountUser), out.(*identity.AccountUser))
+		return nil
+	})
+	s.Register(([]*identitymodel.AccountUser)(nil), (*[]*identity.AccountUser)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_AccountUsers_identity_AccountUsers(arg.([]*identitymodel.AccountUser))
+		*out.(*[]*identity.AccountUser) = out0
+		return nil
+	})
+	s.Register((*identity.AccountUser)(nil), (*identitymodel.AccountUser)(nil), func(arg, out interface{}) error {
+		Convert_identity_AccountUser_identitymodel_AccountUser(arg.(*identity.AccountUser), out.(*identitymodel.AccountUser))
+		return nil
+	})
+	s.Register(([]*identity.AccountUser)(nil), (*[]*identitymodel.AccountUser)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_AccountUsers_identitymodel_AccountUsers(arg.([]*identity.AccountUser))
+		*out.(*[]*identitymodel.AccountUser) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Affiliate)(nil), (*identity.Affiliate)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Affiliate_identity_Affiliate(arg.(*identitymodel.Affiliate), out.(*identity.Affiliate))
 		return nil
@@ -309,6 +327,98 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*sharemodel.FeeLine) = out0
 		return nil
 	})
+}
+
+//-- convert o.o/api/main/identity.AccountUser --//
+
+func Convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.AccountUser, out *identity.AccountUser) *identity.AccountUser {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.AccountUser{}
+	}
+	convert_identitymodel_AccountUser_identity_AccountUser(arg, out)
+	return out
+}
+
+func convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.AccountUser, out *identity.AccountUser) {
+	out.AccountID = arg.AccountID                       // simple assign
+	out.UserID = arg.UserID                             // simple assign
+	out.Status = arg.Status                             // simple assign
+	out.ResponseStatus = arg.ResponseStatus             // simple assign
+	out.CreatedAt = arg.CreatedAt                       // simple assign
+	out.UpdatedAt = arg.UpdatedAt                       // simple assign
+	out.DeletedAt = arg.DeletedAt                       // simple assign
+	out.Permission = identity.Permission{}              // types do not match
+	out.FullName = arg.FullName                         // simple assign
+	out.ShortName = arg.ShortName                       // simple assign
+	out.Position = arg.Position                         // simple assign
+	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
+	out.InvitationSentBy = arg.InvitationSentBy         // simple assign
+	out.InvitationAcceptedAt = arg.InvitationAcceptedAt // simple assign
+	out.InvitationRejectedAt = arg.InvitationRejectedAt // simple assign
+	out.DisabledAt = arg.DisabledAt                     // simple assign
+	out.DisabledBy = arg.DisabledBy                     // simple assign
+	out.DisableReason = arg.DisableReason               // simple assign
+	out.Rid = arg.Rid                                   // simple assign
+}
+
+func Convert_identitymodel_AccountUsers_identity_AccountUsers(args []*identitymodel.AccountUser) (outs []*identity.AccountUser) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.AccountUser, len(args))
+	outs = make([]*identity.AccountUser, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_AccountUser_identity_AccountUser(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.AccountUser, out *identitymodel.AccountUser) *identitymodel.AccountUser {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.AccountUser{}
+	}
+	convert_identity_AccountUser_identitymodel_AccountUser(arg, out)
+	return out
+}
+
+func convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.AccountUser, out *identitymodel.AccountUser) {
+	out.AccountID = arg.AccountID                       // simple assign
+	out.UserID = arg.UserID                             // simple assign
+	out.Status = arg.Status                             // simple assign
+	out.ResponseStatus = arg.ResponseStatus             // simple assign
+	out.CreatedAt = arg.CreatedAt                       // simple assign
+	out.UpdatedAt = arg.UpdatedAt                       // simple assign
+	out.DeletedAt = arg.DeletedAt                       // simple assign
+	out.Permission = identitymodel.Permission{}         // types do not match
+	out.FullName = arg.FullName                         // simple assign
+	out.ShortName = arg.ShortName                       // simple assign
+	out.Position = arg.Position                         // simple assign
+	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
+	out.InvitationSentBy = arg.InvitationSentBy         // simple assign
+	out.InvitationAcceptedAt = arg.InvitationAcceptedAt // simple assign
+	out.InvitationRejectedAt = arg.InvitationRejectedAt // simple assign
+	out.DisabledAt = arg.DisabledAt                     // simple assign
+	out.DisabledBy = arg.DisabledBy                     // simple assign
+	out.DisableReason = arg.DisableReason               // simple assign
+	out.Rid = arg.Rid                                   // simple assign
+}
+
+func Convert_identity_AccountUsers_identitymodel_AccountUsers(args []*identity.AccountUser) (outs []*identitymodel.AccountUser) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.AccountUser, len(args))
+	outs = make([]*identitymodel.AccountUser, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_AccountUser_identitymodel_AccountUser(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/main/identity.Affiliate --//

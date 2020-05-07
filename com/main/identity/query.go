@@ -145,3 +145,31 @@ func (q *QueryService) ListPartnersForWhiteLabel(ctx context.Context, _ *meta.Em
 func (q *QueryService) GetPartnerByID(ctx context.Context, args *identity.GetPartnerByIDArgs) (*identity.Partner, error) {
 	return q.partnerStore(ctx).ByID(args.ID).GetPartner()
 }
+
+func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.GetAllAccountUsersArg) ([]*identity.AccountUser, error) {
+	if len(args.UserIDs) == 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
+	}
+
+	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListACcountUserDB()
+	if err != nil {
+		return nil, err
+	}
+	var accountIDs []dot.ID
+	for _, accountUser := range accUser {
+		accountIDs = append(accountIDs, accountUser.AccountID)
+	}
+	accounts, err := q.accountStore(ctx).ByType(args.Type.Enum).ByAccountIds(accountIDs...).ListAccountDB()
+
+	mapAccount := make(map[dot.ID]bool)
+	for _, account := range accounts {
+		mapAccount[account.ID] = true
+	}
+	var result []*identitymodel.AccountUser
+	for _, accountUser := range accUser {
+		if mapAccount[accountUser.AccountID] {
+			result = append(result, accountUser)
+		}
+	}
+	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(result), err
+}

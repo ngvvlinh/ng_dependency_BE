@@ -7,6 +7,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -35,6 +36,11 @@ func (s *AccountUserStore) ByAccountID(id dot.ID) *AccountUserStore {
 
 func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id))
+	return s
+}
+
+func (s *AccountUserStore) ByUserIDs(ids []dot.ID) *AccountUserStore {
+	s.preds = append(s.preds, sq.In("user_id", ids))
 	return s
 }
 
@@ -67,4 +73,12 @@ func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {
 		return err
 	}
 	return nil
+}
+
+func (s *AccountUserStore) ListACcountUserDB() ([]*identitymodel.AccountUser, error) {
+	query := s.query().Where(s.preds)
+
+	var accountUser identitymodel.AccountUsers
+	err := query.Find(&accountUser)
+	return accountUser, err
 }

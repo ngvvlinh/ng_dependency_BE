@@ -10,9 +10,11 @@ import (
 
 	"github.com/lib/pq"
 
+	exttypes "o.o/api/top/external/types"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -55,6 +57,31 @@ type PgEvent struct {
 	Keys map[string]int64 `json:"keys"`
 
 	Timestamp int64 `json:"t"`
+}
+
+type PgEventFabo struct {
+	PgEventComment      *PgEventComment
+	PgEventConversation *PgEventConversation
+	PgEventMessage      *PgEventMessage
+	Timestamp           int64 `json:"t"`
+}
+
+type PgEventComment struct {
+	Op             string                      `json:"op"`
+	FbPageID       dot.ID                      `json:"fb_page_id"`
+	FbEventComment *exttypes.FbExternalComment `json:"fb_comment"`
+}
+
+type PgEventConversation struct {
+	Op                  string                           `json:"op"`
+	FbPageID            dot.ID                           `json:"fb_page_id"`
+	FbEventConversation *exttypes.FbExternalConversation `json:"fb_conversation"`
+}
+
+type PgEventMessage struct {
+	Op             string                      `json:"op"`
+	FbPageID       dot.ID                      `json:"fb_page_id"`
+	FbEventMessage *exttypes.FbExternalMessage `json:"fb_message"`
 }
 
 type Service struct {
@@ -133,7 +160,6 @@ func (s Service) HandleNotificationWithError(noti *pq.Notification) error {
 	}
 
 	partition := int(event.ID % int64(d.Partitions)) // TODO: composition primary key
-
 	ll.Info("HandleNotificationWithError :: ", l.String("topic", topic), l.Object("topic", d), l.Int("partition", partition))
 	s.producer.Send(topic, partition, event.EventKey, data)
 	return nil

@@ -78,6 +78,11 @@ func (s *FbExternalPageStore) ShopID(shopID dot.ID) *FbExternalPageStore {
 	return s
 }
 
+func (s *FbExternalPageStore) ShopIDs(shopIDs ...dot.ID) *FbExternalPageStore {
+	s.preds = append(s.preds, sq.In("shop_id", shopIDs))
+	return s
+}
+
 func (s *FbExternalPageStore) Status(status status3.Status) *FbExternalPageStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s

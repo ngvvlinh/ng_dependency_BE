@@ -40,6 +40,9 @@ type QueryService interface {
 	ListFbExternalComments(context.Context, *ListFbExternalCommentsArgs) (*FbExternalCommentsResponse, error)
 
 	GetFbExternalPostByExternalID(_ context.Context, externalID string) (*FbExternalPost, error)
+	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
+	GetFbExternalCommentByID(_ context.Context, ID dot.ID) (*FbExternalComment, error)
+	GetFbExternalConversationByID(_ context.Context, ID dot.ID) (*FbExternalConversation, error)
 	ListFbExternalPostsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalPost, error)
 	ListFbExternalPostsByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPost, error)
 

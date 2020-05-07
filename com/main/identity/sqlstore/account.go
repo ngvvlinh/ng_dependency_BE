@@ -37,6 +37,7 @@ type AccountStore struct {
 	preds       []interface{}
 	shopFt      ShopFilters
 	affiliateFt AffiliateFilters
+	accountFt   AccountFilters
 	sqlstore.Paging
 	filter         meta.Filters
 	ctx            context.Context
@@ -67,6 +68,11 @@ func (s *AccountStore) ShopByID(id dot.ID) *AccountStore {
 	return s
 }
 
+func (s *AccountStore) ByAccountIds(ids ...dot.ID) *AccountStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *AccountStore) ShopByIDs(ids ...dot.ID) *AccountStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
@@ -74,6 +80,11 @@ func (s *AccountStore) ShopByIDs(ids ...dot.ID) *AccountStore {
 
 func (s *AccountStore) AffiliateByID(id dot.ID) *AccountStore {
 	s.preds = append(s.preds, s.affiliateFt.ByID(id))
+	return s
+}
+
+func (s *AccountStore) ByType(ty account_type.AccountType) *AccountStore {
+	s.preds = append(s.preds, s.accountFt.ByType(ty))
 	return s
 }
 
@@ -283,4 +294,10 @@ func (s *AccountStore) FilterByWhiteLabelPartner(query cmsql.Query, wlPartnerID 
 		return query.Where(s.shopFt.ByWLPartnerID(wlPartnerID))
 	}
 	return query.Where(s.shopFt.NotBelongWLPartner())
+}
+
+func (s *AccountStore) ListAccountDB() ([]*identitymodel.Account, error) {
+	var accounts identitymodel.Accounts
+	err := s.query().Where(s.preds).Find(&accounts)
+	return accounts, err
 }

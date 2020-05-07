@@ -207,6 +207,17 @@ func (h QueryServiceHandler) HandleListFbExternalPagesByIDs(ctx context.Context,
 	return err
 }
 
+type ListFbPagesByShopQuery struct {
+	ShopIDs []dot.ID
+
+	Result []*FbExternalPage `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbPagesByShop(ctx context.Context, msg *ListFbPagesByShopQuery) (err error) {
+	msg.Result, err = h.inner.ListFbPagesByShop(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateFbExternalPageCommand) command()                {}
@@ -225,6 +236,7 @@ func (q *ListFbExternalPagesQuery) query()                    {}
 func (q *ListFbExternalPagesActiveByExternalIDsQuery) query() {}
 func (q *ListFbExternalPagesByExternalIDsQuery) query()       {}
 func (q *ListFbExternalPagesByIDsQuery) query()               {}
+func (q *ListFbPagesByShopQuery) query()                      {}
 
 // implement conversion
 
@@ -377,6 +389,11 @@ func (q *ListFbExternalPagesByIDsQuery) GetArgs(ctx context.Context) (_ context.
 		q.IDs
 }
 
+func (q *ListFbPagesByShopQuery) GetArgs(ctx context.Context) (_ context.Context, shopIDs []dot.ID) {
+	return ctx,
+		q.ShopIDs
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -419,5 +436,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListFbExternalPagesActiveByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPagesByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPagesByIDs)
+	b.AddHandler(h.HandleListFbPagesByShop)
 	return QueryBus{b}
 }

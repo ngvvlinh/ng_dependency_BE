@@ -103,3 +103,7 @@ func (q *FbPageQuery) ListFbExternalPagesActiveByExternalIDs(
 	}
 	return fbPages, nil
 }
+
+func (q *FbPageQuery) ListFbPagesByShop(ctx context.Context, shopIDs []dot.ID) ([]*fbpaging.FbExternalPage, error) {
+	return q.fbPageStore(ctx).ShopIDs(shopIDs...).ListFbPages()
+}

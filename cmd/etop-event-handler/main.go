@@ -12,11 +12,16 @@ import (
 	"github.com/Shopify/sarama"
 
 	"o.o/backend/cmd/etop-event-handler/config"
+	pgeventapi "o.o/backend/cmd/pgevent-forwarder/api"
+	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
+	servicefbpage "o.o/backend/com/fabo/main/fbpage"
+	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	handler "o.o/backend/com/handler/etop-handler"
 	handlerapi "o.o/backend/com/handler/etop-handler/api"
 	"o.o/backend/com/handler/etop-handler/intctl"
 	webhooksender "o.o/backend/com/handler/etop-handler/webhook/sender"
 	"o.o/backend/com/handler/etop-handler/webhook/storage"
+	"o.o/backend/com/handler/pgevent"
 	catalogquery "o.o/backend/com/main/catalog/query"
 	inventoryquery "o.o/backend/com/main/inventory/query"
 	servicelocation "o.o/backend/com/main/location"
@@ -32,6 +37,7 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/l"
 )
@@ -107,7 +113,7 @@ func main() {
 	var webhookSender *webhooksender.WebhookSender
 	var waiters []interface{ Wait() }
 	{
-		// intctl handler
+		// intctl handlerpkg
 		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, intctl.ConsumerGroup)
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
@@ -128,8 +134,20 @@ func main() {
 		if err := webhookSender.Load(); err != nil {
 			ll.Fatal("Error loading webhooks", l.Error(err))
 		}
+		producer, err := mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
+		if err != nil {
+			ll.Fatal("Error while connecting to Kafka", l.Error(err))
+		}
+		sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix)
+		if err != nil {
+			ll.Fatal("Error while lDistening to Postgres")
+		}
+		fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
+		fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
+		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
 
-		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
+		pgeventapi.Init(&sMain)
+		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, fbUserQuery, producer, fbMessagingQuery, fbPageQuery)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)

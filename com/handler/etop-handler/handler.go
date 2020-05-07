@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/Shopify/sarama"
 
+	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/location"
@@ -26,6 +30,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/backend/pkg/etop/eventstream"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -33,24 +38,32 @@ import (
 
 const ConsumerGroup = "handler/webhook"
 
-var ll = l.New()
+var (
+	ll        = l.New()
+	publisher eventstream.Publisher
+)
 
 type Handler struct {
 	db           *cmsql.Database
 	historyStore historysqlstore.HistoryStoreFactory
 
-	consumer mq.KafkaConsumer
-	handlers map[string]pgrid.HandlerFunc
-	prefix   string
-	wg       sync.WaitGroup
+	consumer     mq.KafkaConsumer
+	producer     *mq.KafkaProducer
+	handlers     map[string]pgrid.HandlerFunc
+	handlersfabo map[string]pgrid.HandlerFuncFabo
+	prefix       string
+	wg           sync.WaitGroup
 
 	sender *sender.WebhookSender
 
-	catalogQuery   catalog.QueryBus
-	customerQuery  customering.QueryBus
-	inventoryQuery inventory.QueryBus
-	addressQuery   addressing.QueryBus
-	locationQuery  location.QueryBus
+	catalogQuery     catalog.QueryBus
+	customerQuery    customering.QueryBus
+	inventoryQuery   inventory.QueryBus
+	addressQuery     addressing.QueryBus
+	locationQuery    location.QueryBus
+	fbuserQuery      fbusering.QueryBus
+	fbMessagingQuery fbmessaging.QueryBus
+	fbPagingQuery    fbpaging.QueryBus
 }
 
 func New(
@@ -59,22 +72,27 @@ func New(
 	prefix string, catalogQ catalog.QueryBus,
 	customerQ customering.QueryBus, inventoryQ inventory.QueryBus,
 	addressQ addressing.QueryBus, locationQ location.QueryBus,
+	fbuserQ fbusering.QueryBus, producer *mq.KafkaProducer,
+	fbMessagingQ fbmessaging.QueryBus, fbPageQ fbpaging.QueryBus,
 ) *Handler {
 	h := &Handler{
-		db:             db,
-		historyStore:   historysqlstore.NewHistoryStore(db),
-		consumer:       consumer,
-		prefix:         prefix + "_pgrid_",
-		sender:         sender,
-		catalogQuery:   catalogQ,
-		customerQuery:  customerQ,
-		inventoryQuery: inventoryQ,
-		addressQuery:   addressQ,
-		locationQuery:  locationQ,
+		db:               db,
+		historyStore:     historysqlstore.NewHistoryStore(db),
+		consumer:         consumer,
+		producer:         producer,
+		prefix:           prefix + "_pgrid_",
+		sender:           sender,
+		catalogQuery:     catalogQ,
+		customerQuery:    customerQ,
+		inventoryQuery:   inventoryQ,
+		addressQuery:     addressQ,
+		locationQuery:    locationQ,
+		fbuserQuery:      fbuserQ,
+		fbMessagingQuery: fbMessagingQ,
+		fbPagingQuery:    fbPageQ,
 	}
 	handlers := h.TopicsAndHandlers()
 	h.handlers = handlers
-
 	if len(handlers) != len(pgevent.Topics) {
 		ll.Panic("Handler list mismatch")
 	}
@@ -84,6 +102,26 @@ func New(
 			ll.Panic("Handler not found", l.String("name", d.Name))
 		}
 	}
+	return h
+}
+
+func NewHandlerFabo(
+	db *cmsql.Database, prefix string, fbuserQ fbusering.QueryBus,
+	consumer mq.KafkaConsumer, publisherEvent eventstream.Publisher,
+	fbMessagingQ fbmessaging.QueryBus, fbPageQ fbpaging.QueryBus,
+) *Handler {
+	h := &Handler{
+		db:               db,
+		historyStore:     historysqlstore.NewHistoryStore(db),
+		consumer:         consumer,
+		prefix:           prefix + "_pgrid_",
+		fbuserQuery:      fbuserQ,
+		fbMessagingQuery: fbMessagingQ,
+		fbPagingQuery:    fbPageQ,
+	}
+	publisher = publisherEvent
+	handlers := h.TopicsFaboAndHandlers()
+	h.handlersfabo = handlers
 	return h
 }
 
@@ -103,19 +141,33 @@ func NewWithHandlers(db *cmsql.Database, sender *sender.WebhookSender, consumer 
 
 func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 	return map[string]pgrid.HandlerFunc{
-		"fulfillment":                  h.HandleFulfillmentEvent,
-		"order":                        h.HandleOrderEvent,
-		"notification":                 nil,
-		"money_transaction_shipping":   nil,
-		"shop_product":                 h.HandleShopProductEvent,
-		"shop_variant":                 h.HandleShopVariantEvent,
-		"shop_customer":                h.HandleShopCustomerEvent,
-		"shop_customer_group":          h.HandleShopCustomerGroupEvent,
-		"shop_customer_group_customer": h.HandleShopCustomerGroupCustomerEvent,
-		"inventory_variant":            h.HandleInventoryVariantEvent,
-		"shop_trader_address":          h.HandleShopTraderAddressEvent,
-		"shop_collection":              h.HandleShopProductCollectionEvent,
-		"shop_product_collection":      h.HandleShopProductionCollectionRelationshipEvent,
+		"fulfillment":                   h.HandleFulfillmentEvent,
+		"order":                         h.HandleOrderEvent,
+		"notification":                  nil,
+		"money_transaction_shipping":    nil,
+		"shop_product":                  h.HandleShopProductEvent,
+		"shop_variant":                  h.HandleShopVariantEvent,
+		"shop_customer":                 h.HandleShopCustomerEvent,
+		"shop_customer_group":           h.HandleShopCustomerGroupEvent,
+		"shop_customer_group_customer":  h.HandleShopCustomerGroupCustomerEvent,
+		"inventory_variant":             h.HandleInventoryVariantEvent,
+		"shop_trader_address":           h.HandleShopTraderAddressEvent,
+		"shop_collection":               h.HandleShopProductCollectionEvent,
+		"shop_product_collection":       h.HandleShopProductionCollectionRelationshipEvent,
+		"fb_external_conversation":      h.HandleFbConversationEvent,
+		"fb_external_comment":           h.HandleFbCommentEvent,
+		"fb_external_message":           h.HandleFbMessageEvent,
+		"fb_external_conversation_fabo": nil,
+		"fb_external_comment_fabo":      nil,
+		"fb_external_message_fabo":      nil,
+	}
+}
+
+func (h *Handler) TopicsFaboAndHandlers() map[string]pgrid.HandlerFuncFabo {
+	return map[string]pgrid.HandlerFuncFabo{
+		"fb_external_conversation_fabo": h.HandleFbConversationFaboEvent,
+		"fb_external_comment_fabo":      h.HandleFbCommentFaboEvent,
+		"fb_external_message_fabo":      h.HandleFbMessageFaboEvent,
 	}
 }
 
@@ -124,62 +176,84 @@ func (h *Handler) RegisterTo(intctlHandler *intctl.Handler) {
 }
 
 func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
+	for _, d := range pgevent.Topics {
+		if strings.Contains(d.Name, "fabo") {
+			continue
+		}
+		h.comsumerAndHandlerTopics(ctx, d)
+	}
+}
+
+func (h *Handler) getWrapHandlerFunc(topic string) mq.EventHandler {
+	var result mq.EventHandler
+	if strings.Contains(topic, "fabo") {
+		handler := h.handlersfabo[topic]
+		if handler == nil {
+			ll.Info("No handler for topic", l.String("topic", topic))
+			return result
+		}
+		result = pgrid.WrapHandlerFuncFabo(handler)
+	} else {
+		handler := h.handlers[topic]
+		if handler == nil {
+			ll.Info("No handler for topic", l.String("topic", topic))
+			return result
+		}
+		result = pgrid.WrapHandlerFunc(handler)
+	}
+	return result
+}
+
+func (h *Handler) comsumerAndHandlerTopics(ctx context.Context, d pgevent.TopicDef) {
 	count := 0
 	var m sync.Mutex
 	topics := make(map[string]int)
-
+	wrappedHandler := h.getWrapHandlerFunc(d.Name)
 	var wg sync.WaitGroup
-	for _, d := range pgevent.Topics {
-		handler := h.handlers[d.Name]
-		if handler == nil {
-			ll.Info("No handler for topic", l.String("topic", d.Name))
-			continue
-		}
+	kafkaTopic := h.prefix + d.Name
+	wg.Add(d.Partitions)
+	h.wg.Add(d.Partitions)
 
-		wrappedHandler := pgrid.WrapHandlerFunc(handler)
-		kafkaTopic := h.prefix + d.Name
-		wg.Add(d.Partitions)
-		h.wg.Add(d.Partitions)
+	for i := 0; i < d.Partitions; i++ {
+		partition := i
+		go func() {
+			pc, err := h.consumer.Consume(kafkaTopic, partition)
+			if err != nil {
+				ll.S.Fatalf("Error while consuming topic: %v:%v", kafkaTopic, partition)
+				return
+			}
+			defer h.wg.Done()
+			defer func() { _ = pc.Close() }()
 
-		for i := 0; i < d.Partitions; i++ {
-			partition := i
-			go func() {
-				pc, err := h.consumer.Consume(kafkaTopic, partition)
-				if err != nil {
-					ll.S.Fatalf("Error while consuming topic: %v:%v", kafkaTopic, partition)
-					return
-				}
-				defer h.wg.Done()
-				defer func() { _ = pc.Close() }()
+			wg.Done()
+			m.Lock()
+			count++
+			topics[kafkaTopic]++
+			m.Unlock()
 
-				wg.Done()
-				m.Lock()
-				count++
-				topics[kafkaTopic]++
-				m.Unlock()
-
-				err = pc.ConsumeAndHandle(ctx, wrappedHandler)
-				if err != nil {
-					ll.S.Errorf("Handler for topic %v:%v stopped: %+v", kafkaTopic, partition, err)
-
-					buf := make([]byte, 2048)
-					runtime.Stack(buf, false)
-					msg := fmt.Sprintf(
-						"🔥 Handler for topic %v:%v stoppped: %+v\n\n%s",
-						kafkaTopic, partition, err, buf)
-					ll.SendMessage(msg)
-				}
-			}()
-		}
+			err = pc.ConsumeAndHandle(ctx, wrappedHandler)
+			if err != nil {
+				ll.S.Errorf("Handler for topic %v:%v stopped: %+v", kafkaTopic, partition, err)
+				buf := make([]byte, 2048)
+				runtime.Stack(buf, false)
+				msg := fmt.Sprintf(
+					"🔥 Handler for topic %v:%v stoppped: %+v\n\n%s",
+					kafkaTopic, partition, err, buf)
+				ll.SendMessage(msg)
+			}
+		}()
 	}
-
 	wg.Wait()
 	m.Lock()
 	defer m.Unlock()
+}
 
-	ll.S.Infof("Initialized %v consumers", count)
-	for topic, partitions := range topics {
-		ll.S.Infof("%2v %v\n", partitions, topic)
+func (h *Handler) ConsumerAndHandlerFaboTopic(ctx context.Context) {
+	for _, d := range pgevent.Topics {
+		if !strings.Contains(d.Name, "fabo") {
+			continue
+		}
+		h.comsumerAndHandlerTopics(ctx, d)
 	}
 }
 

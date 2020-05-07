@@ -10,6 +10,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbExternalConversationStoreFactory func(ctx context.Context) *FbExternalConversationStore
@@ -56,6 +57,11 @@ func (s *FbExternalConversationStore) ExternalPageID(externalPageID string) *FbE
 
 func (s *FbExternalConversationStore) ExternalUserID(externalUserID string) *FbExternalConversationStore {
 	s.preds = append(s.preds, s.ft.ByExternalUserID(externalUserID))
+	return s
+}
+
+func (s *FbExternalConversationStore) ID(ID dot.ID) *FbExternalConversationStore {
+	s.preds = append(s.preds, s.ft.ByID(ID))
 	return s
 }
 

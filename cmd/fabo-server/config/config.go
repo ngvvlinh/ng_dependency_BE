@@ -10,6 +10,7 @@ type Config struct {
 	HTTP        cc.HTTP            `yaml:"http"`
 	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
 	Redis       cc.Redis           `yaml:"redis"`
+	Kafka       cc.Kafka           `yaml:"kafka"`
 	Env         string             `yaml:"env"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 	Webhook     WebhookConfig      `yaml:"webhook"`
@@ -27,6 +28,8 @@ func Default() Config {
 			Host: "",
 			Port: 8080,
 		},
+		Kafka: cc.DefaultKafka(),
+		Redis: cc.DefaultRedis(),
 		TelegramBot: cc.TelegramBot{
 			Chats: map[string]int64{
 				"default": 0,
@@ -35,7 +38,6 @@ func Default() Config {
 				"sms":     0,
 			},
 		},
-		Redis: cc.DefaultRedis(),
 		FacebookApp: fbclient.AppConfig{
 			ID:          "1581362285363031",
 			Secret:      "b3962ddf033b295c2bd0b543fff904f7",

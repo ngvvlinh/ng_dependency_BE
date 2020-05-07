@@ -62,6 +62,16 @@ func (s *FbExternalMessageStore) ExternalPageIDs(externalPageIDs []string) *FbEx
 	return s
 }
 
+func (s *FbExternalMessageStore) ExternalID(externalID string) *FbExternalMessageStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
+func (s *FbExternalMessageStore) ID(ID dot.ID) *FbExternalMessageStore {
+	s.preds = append(s.preds, s.ft.ByID(ID))
+	return s
+}
+
 func (s *FbExternalMessageStore) CreateFbExternalMessage(fbExternalMessage *fbmessaging.FbExternalMessage) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalMessageDB := new(model.FbExternalMessage)
@@ -181,4 +191,25 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 		return nil, err
 	}
 	return
+}
+
+func (s *FbExternalMessageStore) GetFbExternalMessageDB() (*model.FbExternalMessage, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalMessage model.FbExternalMessage
+	err := query.ShouldGet(&fbExternalMessage)
+	return &fbExternalMessage, err
+}
+
+func (s *FbExternalMessageStore) GetFbExternalMessage() (*fbmessaging.FbExternalMessage, error) {
+	fbExternalMessage, err := s.GetFbExternalMessageDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbmessaging.FbExternalMessage{}
+	err = scheme.Convert(fbExternalMessage, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }

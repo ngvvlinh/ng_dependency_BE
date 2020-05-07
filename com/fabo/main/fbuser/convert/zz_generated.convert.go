@@ -120,6 +120,7 @@ func Convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermode
 
 func convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermodel.FbExternalUser, out *fbusering.FbExternalUser) {
 	out.ExternalID = arg.ExternalID // simple assign
+	out.ShopID = 0                  // zero value
 	out.ExternalInfo = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status       // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
@@ -182,6 +183,7 @@ func Apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbus
 
 func apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbusering.CreateFbExternalUserArgs, out *fbusering.FbExternalUser) {
 	out.ExternalID = arg.ExternalID     // simple assign
+	out.ShopID = 0                      // zero value
 	out.ExternalInfo = arg.ExternalInfo // simple assign
 	out.Status = arg.Status             // simple assign
 	out.CreatedAt = time.Time{}         // zero value

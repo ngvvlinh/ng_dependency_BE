@@ -9,6 +9,7 @@ import (
 
 	identitytypes "o.o/api/main/identity/types"
 	meta "o.o/api/meta"
+	account_type "o.o/api/top/types/etc/account_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -232,6 +233,18 @@ func (h QueryServiceHandler) HandleGetAffiliatesByOwnerID(ctx context.Context, m
 	return err
 }
 
+type GetAllAccountUsersQuery struct {
+	UserIDs []dot.ID
+	Type    account_type.NullAccountType
+
+	Result []*AccountUser `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAllAccountUsers(ctx context.Context, msg *GetAllAccountUsersQuery) (err error) {
+	msg.Result, err = h.inner.GetAllAccountUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type GetExternalAccountAhamoveQuery struct {
 	OwnerID dot.ID
 	Phone   string
@@ -384,6 +397,7 @@ func (q *GetAffiliateByIDQuery) query()                      {}
 func (q *GetAffiliateWithPermissionQuery) query()            {}
 func (q *GetAffiliatesByIDsQuery) query()                    {}
 func (q *GetAffiliatesByOwnerIDQuery) query()                {}
+func (q *GetAllAccountUsersQuery) query()                    {}
 func (q *GetExternalAccountAhamoveQuery) query()             {}
 func (q *GetExternalAccountAhamoveByExternalIDQuery) query() {}
 func (q *GetPartnerByIDQuery) query()                        {}
@@ -608,6 +622,19 @@ func (q *GetAffiliatesByOwnerIDQuery) SetGetAffiliatesByOwnerIDArgs(args *GetAff
 	q.ID = args.ID
 }
 
+func (q *GetAllAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAllAccountUsersArg) {
+	return ctx,
+		&GetAllAccountUsersArg{
+			UserIDs: q.UserIDs,
+			Type:    q.Type,
+		}
+}
+
+func (q *GetAllAccountUsersQuery) SetGetAllAccountUsersArg(args *GetAllAccountUsersArg) {
+	q.UserIDs = args.UserIDs
+	q.Type = args.Type
+}
+
 func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveArgs) {
 	return ctx,
 		&GetExternalAccountAhamoveArgs{
@@ -762,6 +789,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAffiliateWithPermission)
 	b.AddHandler(h.HandleGetAffiliatesByIDs)
 	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
+	b.AddHandler(h.HandleGetAllAccountUsers)
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetPartnerByID)

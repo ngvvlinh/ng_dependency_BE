@@ -9,6 +9,7 @@ import (
 
 type FbExternalUser struct {
 	ExternalID   string
+	ShopID       dot.ID
 	ExternalInfo *FbExternalUserInfo
 	Status       status3.Status
 	CreatedAt    time.Time

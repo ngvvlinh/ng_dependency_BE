@@ -171,3 +171,32 @@ type ShopExtended struct {
 	Address *address.Address
 	User    *User
 }
+
+type AccountUser struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
+	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
+
+	Permission `sq:"inline"`
+
+	FullName  string
+	ShortName string
+	Position  string
+
+	InvitationSentAt     time.Time
+	InvitationSentBy     dot.ID
+	InvitationAcceptedAt time.Time
+	InvitationRejectedAt time.Time
+
+	DisabledAt    time.Time
+	DisabledBy    time.Time
+	DisableReason string
+
+	Rid dot.ID
+}

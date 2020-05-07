@@ -9,6 +9,7 @@ import (
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
@@ -200,4 +201,22 @@ func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbmessaging.FbExternalPost, error) {
 	return q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
+}
+
+func (q *FbMessagingQuery) GetFbExternalMessageByID(
+	ctx context.Context, ID dot.ID,
+) (*fbmessaging.FbExternalMessage, error) {
+	return q.fbExternalMessagesStore(ctx).ID(ID).GetFbExternalMessage()
+}
+
+func (q *FbMessagingQuery) GetFbExternalCommentByID(
+	ctx context.Context, ID dot.ID,
+) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).ID(ID).GetFbExternalComment()
+}
+
+func (q *FbMessagingQuery) GetFbExternalConversationByID(
+	ctx context.Context, ID dot.ID,
+) (*fbmessaging.FbExternalConversation, error) {
+	return q.fbExternalConversationStore(ctx).ID(ID).GetFbExternalConversation()
 }

@@ -5,6 +5,7 @@ import (
 
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/capi/dot"
 )
 
@@ -76,11 +77,18 @@ type QueryService interface {
 	GetPartnerByID(context.Context, *GetPartnerByIDArgs) (*Partner, error)
 
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+
+	GetAllAccountUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 }
 
 //-- queries --//
 type GetUserByIDQueryArgs struct {
 	UserID dot.ID
+}
+
+type GetAllAccountUsersArg struct {
+	UserIDs []dot.ID
+	Type    account_type.NullAccountType
 }
 
 type GetUserByPhoneOrEmailArgs struct {
