@@ -1,49 +1,66 @@
-package partner
+package partnercarrier
 
 import (
 	"context"
 
 	"o.o/api/main/connectioning"
-	extpartner "o.o/api/top/external/partner"
+	"o.o/api/top/external/partnercarrier"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/connection_type"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/apix/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
-func (s *ShipmentConnectionService) GetConnections(ctx context.Context, r *GetConnectionsEndpoint) error {
+type ShipmentConnectionService struct {
+	session.Sessioner
+	ss *session.Session
+}
+
+func NewShipmentConnectionService(ss *session.Session) *ShipmentConnectionService {
+	return &ShipmentConnectionService{
+		ss: ss,
+	}
+}
+
+func (s *ShipmentConnectionService) Clone() partnercarrier.ShipmentConnectionService {
+	res := *s
+	res.Sessioner, res.ss = s.ss.Split()
+	return &res
+}
+
+func (s *ShipmentConnectionService) GetConnections(ctx context.Context, r *pbcm.Empty) (*partnercarrier.GetConnectionsResponse, error) {
 	query := &connectioning.ListConnectionsQuery{
-		PartnerID:          r.Context.Partner.ID,
+		PartnerID:          s.ss.Partner().ID,
 		ConnectionType:     connection_type.Shipping,
 		ConnectionMethod:   connection_type.ConnectionMethodDirect,
 		ConnectionProvider: connection_type.ConnectionProviderPartner,
 		Result:             nil,
 	}
 	if err := connectionQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &extpartner.GetConnectionsResponse{
+	res := &partnercarrier.GetConnectionsResponse{
 		Connections: convertpb.PbShipmentConnections(query.Result),
 	}
-
-	return nil
+	return res, nil
 }
 
-func (s *ShipmentConnectionService) CreateConnection(ctx context.Context, r *CreateConnectionEndpoint) error {
+func (s *ShipmentConnectionService) CreateConnection(ctx context.Context, r *partnercarrier.CreateConnectionRequest) (*partnercarrier.ShipmentConnection, error) {
 	query := &connectioning.ListConnectionsQuery{
-		PartnerID:        r.Context.Partner.ID,
+		PartnerID:        s.ss.Partner().ID,
 		ConnectionMethod: connection_type.ConnectionMethodDirect,
 	}
 	if err := connectionQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	if len(query.Result) > 0 {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Bạn đã tạo kết nối vận chuyển. Không thể tạo thêm kết nối mới.")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Bạn đã tạo kết nối vận chuyển. Không thể tạo thêm kết nối mới.")
 	}
 
 	cmd := &connectioning.CreateConnectionCommand{
 		Name:      r.Name,
-		PartnerID: r.Context.Partner.ID,
+		PartnerID: s.ss.Partner().ID,
 		Driver:    "",
 		DriverConfig: &connectioning.ConnectionDriverConfig{
 			TrackingURL:            r.TrackingURL,
@@ -59,22 +76,21 @@ func (s *ShipmentConnectionService) CreateConnection(ctx context.Context, r *Cre
 		ConnectionMethod:   connection_type.ConnectionMethodDirect,
 		ConnectionProvider: connection_type.ConnectionProviderPartner,
 	}
-	if err := connectionAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
+	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
 	}
-	r.Result = convertpb.PbShipmentConnection(cmd.Result)
-	return nil
+	return convertpb.PbShipmentConnection(cmd.Result), nil
 }
 
-func (s *ShipmentConnectionService) UpdateConnection(ctx context.Context, r *UpdateConnectionEndpoint) error {
+func (s *ShipmentConnectionService) UpdateConnection(ctx context.Context, r *partnercarrier.UpdateConnectionRequest) (*partnercarrier.ShipmentConnection, error) {
 	if r.ID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "ID không được để trống")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "ID không được để trống")
 	}
 	cmd := &connectioning.UpdateConnectionCommand{
 		ID:        r.ID,
 		Name:      r.Name,
 		ImageURL:  r.ImageURL,
-		PartnerID: r.Context.Partner.ID,
+		PartnerID: s.ss.Partner().ID,
 		DriverConfig: &connectioning.ConnectionDriverConfig{
 			TrackingURL:            r.TrackingURL,
 			CreateFulfillmentURL:   r.CreateFulfillmentURL,
@@ -85,24 +101,22 @@ func (s *ShipmentConnectionService) UpdateConnection(ctx context.Context, r *Upd
 			SignUpURL:              r.SignUpURL,
 		},
 	}
-	if err := connectionAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
+	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
 	}
-	r.Result = convertpb.PbShipmentConnection(cmd.Result)
-	return nil
+	return convertpb.PbShipmentConnection(cmd.Result), nil
 }
 
-func (s *ShipmentConnectionService) DeleteConnection(ctx context.Context, r *DeleteConnectionEndpoint) error {
+func (s *ShipmentConnectionService) DeleteConnection(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
 	if r.Id == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "ID không được để trống")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "ID không được để trống")
 	}
 	cmd := &connectioning.DeleteConnectionCommand{
 		ID:        r.Id,
-		PartnerID: r.Context.Partner.ID,
+		PartnerID: s.ss.Partner().ID,
 	}
-	if err := connectionAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
+	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: 1}
-	return nil
+	return &pbcm.DeletedResponse{Deleted: 1}, nil
 }

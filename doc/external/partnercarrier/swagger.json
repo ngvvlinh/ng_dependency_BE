@@ -1,0 +1,525 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/carrier.Misc/CurrentAccount": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "summary": "CurrentAccount",
+        "operationId": "carrier.Misc-CurrentAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrPartner"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.Misc/GetLocationList": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "summary": "GetLocationList",
+        "operationId": "carrier.Misc-GetLocationList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrLocationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.Shipment/UpdateFulfillment": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillment",
+        "operationId": "carrier.Shipment-UpdateFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/zkUpdateFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/CreateConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "CreateConnection",
+        "operationId": "carrier.ShipmentConnection-CreateConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/zkCreateConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/zkShipmentConnection"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/DeleteConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "DeleteConnection",
+        "operationId": "carrier.ShipmentConnection-DeleteConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/GetConnections": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "GetConnections",
+        "operationId": "carrier.ShipmentConnection-GetConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/zkGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/carrier.ShipmentConnection/UpdateConnection": {
+      "post": {
+        "tags": [
+          "ShipmentConnection"
+        ],
+        "summary": "UpdateConnection",
+        "operationId": "carrier.ShipmentConnection-UpdateConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/zkUpdateConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/zkShipmentConnection"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ]
+    },
+    "jjAccountType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "partner",
+        "shop",
+        "affiliate",
+        "carrier",
+        "etop"
+      ]
+    },
+    "ktDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktIDRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "mrDistrict": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "wards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrWard"
+          }
+        }
+      }
+    },
+    "mrLocationResponse": {
+      "type": "object",
+      "properties": {
+        "provinces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrProvince"
+          }
+        }
+      }
+    },
+    "mrPartner": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "public_name": {
+          "type": "string"
+        },
+        "recognized_hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "redirect_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "$ref": "#/definitions/jjAccountType"
+        },
+        "website": {
+          "description": "only domain, no scheme\n",
+          "type": "string"
+        },
+        "website_url": {
+          "type": "string"
+        }
+      }
+    },
+    "mrProvince": {
+      "type": "object",
+      "properties": {
+        "districts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrDistrict"
+          }
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrWard": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "sfState": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "default",
+        "created",
+        "confirmed",
+        "processing",
+        "picking",
+        "holding",
+        "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "cancelled",
+        "undeliverable"
+      ]
+    },
+    "zkCreateConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_fulfillment_url": {
+          "type": "string"
+        },
+        "create_fulfillment_url": {
+          "type": "string"
+        },
+        "get_fulfillment_url": {
+          "type": "string"
+        },
+        "get_shipping_services_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sign_in_url": {
+          "type": "string"
+        },
+        "sign_up_url": {
+          "type": "string"
+        },
+        "tracking_url": {
+          "type": "string"
+        }
+      }
+    },
+    "zkGetConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/zkShipmentConnection"
+          }
+        }
+      }
+    },
+    "zkShipmentConnection": {
+      "type": "object",
+      "properties": {
+        "cancel_fulfillment_url": {
+          "type": "string"
+        },
+        "create_fulfillment_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "get_fulfillment_url": {
+          "type": "string"
+        },
+        "get_shipping_services_url": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sign_in_url": {
+          "type": "string"
+        },
+        "sign_up_url": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tracking_url": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "zkUpdateConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_fulfillment_url": {
+          "type": "string"
+        },
+        "create_fulfillment_url": {
+          "type": "string"
+        },
+        "get_fulfillment_url": {
+          "type": "string"
+        },
+        "get_shipping_services_url": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sign_in_url": {
+          "type": "string"
+        },
+        "sign_up_url": {
+          "type": "string"
+        },
+        "tracking_url": {
+          "type": "string"
+        }
+      }
+    },
+    "zkUpdateFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Shipment"
+    },
+    {
+      "name": "ShipmentConnection"
+    }
+  ]
+}

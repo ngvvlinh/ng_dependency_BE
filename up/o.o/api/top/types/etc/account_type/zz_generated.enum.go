@@ -19,6 +19,7 @@ var enumAccountTypeName = map[int]string{
 	21:  "partner",
 	33:  "shop",
 	35:  "affiliate",
+	37:  "carrier",
 	101: "etop",
 }
 
@@ -27,6 +28,7 @@ var enumAccountTypeValue = map[string]int{
 	"partner":   21,
 	"shop":      33,
 	"affiliate": 35,
+	"carrier":   37,
 	"etop":      101,
 }
 

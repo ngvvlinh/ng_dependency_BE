@@ -8,4 +8,5 @@ API Documentation:
 - [/doc/admin](/doc/admin) API for eTop admins
 - [/doc/ext/shop](/doc/ext/shop) External API for shops
 - [/doc/ext/partner](/doc/ext/partner) External API for partners
+- [/doc/ext/carrier](/doc/ext/partnercarrier) External API for partners
 - [/doc/sadmin](/doc/sadmin) Special API for super admins

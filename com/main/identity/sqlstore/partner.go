@@ -39,13 +39,16 @@ func (s *PartnerStore) GetPartnerDB() (*model.Partner, error) {
 	return &partner, err
 }
 
-func (s *PartnerStore) GetPartner() (partner *identity.Partner, _ error) {
+func (s *PartnerStore) GetPartner() (*identity.Partner, error) {
 	partnerDB, err := s.GetPartnerDB()
 	if err != nil {
 		return nil, err
 	}
-	err = scheme.Convert(partnerDB, partner)
-	return partner, err
+	var partner identity.Partner
+	if err := scheme.Convert(partnerDB, &partner); err != nil {
+		return nil, err
+	}
+	return &partner, nil
 }
 
 func (s *PartnerStore) WhiteLabel() *PartnerStore {

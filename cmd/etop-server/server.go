@@ -38,10 +38,12 @@ import (
 	sadmin "o.o/backend/pkg/etop/api/sadmin"
 	shop "o.o/backend/pkg/etop/api/shop"
 	partner "o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/apix/partnercarrier"
 	xshop "o.o/backend/pkg/etop/apix/shop"
 	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/logic/hotfix"
 	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
 	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
@@ -53,6 +55,7 @@ import (
 	webhookghtk "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	webhookvtpost "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	aff "o.o/backend/pkg/services/affiliate/api"
+	"o.o/backend/tools/pkg/acl"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -102,7 +105,9 @@ func startEtopServer() *http.Server {
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
 		mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
 
+		extHooks := session.NewHook(acl.GetExtACL()).Build()
 		partner.NewPartnerServer(v1Mux)
+		partnercarrier.NewPartnerCarrierServer(v1Mux, ss, extHooks)
 		xshop.NewShopServer(v1Mux)
 		whitelabelapix.NewWhiteLabelServer(v1Mux)
 
@@ -224,7 +229,7 @@ func startEtopServer() *http.Server {
 
 	// always serve partner documentation
 	mux.Handle("/doc/ext", http.RedirectHandler("/doc", http.StatusTemporaryRedirect))
-	for _, s := range strings.Split("shop,partner", ",") {
+	for _, s := range strings.Split("shop,partner,partnercarrier", ",") {
 		mux.Handle("/doc/ext/"+s, cmservice.RedocHandler())
 		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/swagger.json"))
 	}

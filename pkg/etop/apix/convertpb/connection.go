@@ -2,14 +2,14 @@ package convertpb
 
 import (
 	"o.o/api/main/connectioning"
-	extpartner "o.o/api/top/external/partner"
+	extpartnercarrier "o.o/api/top/external/partnercarrier"
 )
 
-func PbShipmentConnection(in *connectioning.Connection) *extpartner.ShipmentConnection {
+func PbShipmentConnection(in *connectioning.Connection) *extpartnercarrier.ShipmentConnection {
 	if in == nil {
 		return nil
 	}
-	res := &extpartner.ShipmentConnection{
+	res := &extpartnercarrier.ShipmentConnection{
 		ID:        in.ID,
 		Name:      in.Name,
 		Status:    in.Status,
@@ -30,8 +30,8 @@ func PbShipmentConnection(in *connectioning.Connection) *extpartner.ShipmentConn
 	return res
 }
 
-func PbShipmentConnections(items []*connectioning.Connection) []*extpartner.ShipmentConnection {
-	result := make([]*extpartner.ShipmentConnection, len(items))
+func PbShipmentConnections(items []*connectioning.Connection) []*extpartnercarrier.ShipmentConnection {
+	result := make([]*extpartnercarrier.ShipmentConnection, len(items))
 	for i, item := range items {
 		result[i] = PbShipmentConnection(item)
 	}

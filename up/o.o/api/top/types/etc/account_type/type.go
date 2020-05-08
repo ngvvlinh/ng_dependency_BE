@@ -23,6 +23,9 @@ const (
 	// +enum=affiliate
 	Affiliate AccountType = 35
 
+	// +enum=carrier
+	Carrier AccountType = 37
+
 	// +enum=etop
 	Etop AccountType = 101
 )

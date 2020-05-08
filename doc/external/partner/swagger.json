@@ -15,141 +15,6 @@
     "version": "v1"
   },
   "paths": {
-    "/v1/carrier.Shipment/UpdateFulfillment": {
-      "post": {
-        "tags": [
-          "Shipment"
-        ],
-        "summary": "UpdateFulfillment",
-        "operationId": "carrier.Shipment-UpdateFulfillment",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqUpdateFulfillmentRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/carrier.ShipmentConnection/CreateConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "CreateConnection",
-        "operationId": "carrier.ShipmentConnection-CreateConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqCreateConnectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqShipmentConnection"
-            }
-          }
-        }
-      }
-    },
-    "/v1/carrier.ShipmentConnection/DeleteConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "DeleteConnection",
-        "operationId": "carrier.ShipmentConnection-DeleteConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktDeletedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/carrier.ShipmentConnection/GetConnections": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "GetConnections",
-        "operationId": "carrier.ShipmentConnection-GetConnections",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqGetConnectionsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/v1/carrier.ShipmentConnection/UpdateConnection": {
-      "post": {
-        "tags": [
-          "ShipmentConnection"
-        ],
-        "summary": "UpdateConnection",
-        "operationId": "carrier.ShipmentConnection-UpdateConnection",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/iqUpdateConnectionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/iqShipmentConnection"
-            }
-          }
-        }
-      }
-    },
     "/v1/partner.Customer/CreateCustomer": {
       "post": {
         "tags": [
@@ -1935,143 +1800,6 @@
         }
       }
     },
-    "iqCreateConnectionRequest": {
-      "type": "object",
-      "properties": {
-        "cancel_fulfillment_url": {
-          "type": "string"
-        },
-        "create_fulfillment_url": {
-          "type": "string"
-        },
-        "get_fulfillment_url": {
-          "type": "string"
-        },
-        "get_shipping_services_url": {
-          "type": "string"
-        },
-        "image_url": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "sign_in_url": {
-          "type": "string"
-        },
-        "sign_up_url": {
-          "type": "string"
-        },
-        "tracking_url": {
-          "type": "string"
-        }
-      }
-    },
-    "iqGetConnectionsResponse": {
-      "type": "object",
-      "properties": {
-        "connections": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/iqShipmentConnection"
-          }
-        }
-      }
-    },
-    "iqShipmentConnection": {
-      "type": "object",
-      "properties": {
-        "cancel_fulfillment_url": {
-          "type": "string"
-        },
-        "create_fulfillment_url": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "get_fulfillment_url": {
-          "type": "string"
-        },
-        "get_shipping_services_url": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_url": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "sign_in_url": {
-          "type": "string"
-        },
-        "sign_up_url": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "tracking_url": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "iqUpdateConnectionRequest": {
-      "type": "object",
-      "properties": {
-        "cancel_fulfillment_url": {
-          "type": "string"
-        },
-        "create_fulfillment_url": {
-          "type": "string"
-        },
-        "get_fulfillment_url": {
-          "type": "string"
-        },
-        "get_shipping_services_url": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_url": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "sign_in_url": {
-          "type": "string"
-        },
-        "sign_up_url": {
-          "type": "string"
-        },
-        "tracking_url": {
-          "type": "string"
-        }
-      }
-    },
-    "iqUpdateFulfillmentRequest": {
-      "type": "object",
-      "properties": {
-        "shipping_code": {
-          "type": "string"
-        },
-        "shipping_state": {
-          "$ref": "#/definitions/sfState"
-        }
-      }
-    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -2079,6 +1807,7 @@
         "partner",
         "shop",
         "affiliate",
+        "carrier",
         "etop"
       ]
     },
@@ -2132,14 +1861,6 @@
         }
       }
     },
-    "ktDeletedResponse": {
-      "type": "object",
-      "properties": {
-        "deleted": {
-          "type": "integer"
-        }
-      }
-    },
     "ktEmpty": {
       "type": "object"
     },
@@ -2169,14 +1890,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "ktUpdatedResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer"
         }
       }
     },
@@ -4839,12 +4552,6 @@
     },
     {
       "name": "ProductCollectionRelationship"
-    },
-    {
-      "name": "Shipment"
-    },
-    {
-      "name": "ShipmentConnection"
     },
     {
       "name": "Shipping"

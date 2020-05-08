@@ -25,6 +25,7 @@ const (
 	User AuthType = iota + 1
 	APIKey
 	APIPartnerShopKey
+	APIPartnerCarrierKey
 )
 
 const (

@@ -117,6 +117,7 @@ import (
 	"o.o/backend/pkg/etop/api/integration"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/apix/partnercarrier"
 	xshipping "o.o/backend/pkg/etop/apix/shipping"
 	xshop "o.o/backend/pkg/etop/apix/shop"
 	xshopping "o.o/backend/pkg/etop/apix/shopping"
@@ -594,6 +595,13 @@ func main() {
 		&inventoryQuery,
 		&catalogQuery,
 		&catalogAggr,
+		connectionQuery,
+		connectionAggregate,
+		shippingAggr,
+	)
+	partnercarrier.Init(
+		shutdowner,
+		redisStore,
 		connectionQuery,
 		connectionAggregate,
 		shippingAggr,

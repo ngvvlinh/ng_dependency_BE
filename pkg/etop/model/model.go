@@ -56,6 +56,7 @@ const (
 	TagPartner   = 21
 	TagShop      = 33
 	TagAffiliate = 35
+	TagCarrier   = 37
 	TagEtop      = 101
 	TagImport    = 111
 

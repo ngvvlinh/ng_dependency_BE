@@ -110,11 +110,20 @@ func (s *Shop) GetAccount() *Account {
 }
 
 func (s *Partner) GetAccount() *Account {
+	var _type account_type.AccountType
+	switch cm.GetTag(s.ID) {
+	case etopmodel.TagPartner:
+		_type = account_type.Partner
+	case etopmodel.TagCarrier:
+		_type = account_type.Carrier
+	default:
+		panic("account type does not valid")
+	}
 	return &Account{
 		ID:       s.ID,
 		OwnerID:  s.OwnerID,
 		Name:     s.Name,
-		Type:     account_type.Partner,
+		Type:     _type,
 		ImageURL: s.ImageURL,
 		URLSlug:  "",
 	}

@@ -184,7 +184,12 @@ func (s *Session) verifyToken(
 			if err != nil {
 				return
 			}
-			wlPartnerID = account.GetAccount().ID
+			_acc := account.GetAccount()
+			if _acc.Type != account_type.Partner {
+				err = cm.Errorf(cm.PermissionDenied, nil, "")
+				return
+			}
+			wlPartnerID = _acc.ID
 			return
 
 		default:
@@ -198,6 +203,20 @@ func (s *Session) verifyToken(
 			return
 		}
 		wlPartnerID = claim.AuthPartnerID
+		return
+
+	case permission.APIPartnerCarrierKey:
+		claim, account, err = middleware.VerifyAPIKey(ctx, tokenStr, account_type.Carrier)
+		if err != nil {
+			return
+		}
+		_acc := account.GetAccount()
+		if _acc.Type != account_type.Carrier {
+			err = cm.Errorf(cm.PermissionDenied, nil, "")
+			return
+		}
+
+		wlPartnerID = _acc.ID
 		return
 
 	default:

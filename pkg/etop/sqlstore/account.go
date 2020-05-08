@@ -355,8 +355,11 @@ func GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQue
 		Where("aa.status = 1 AND aa.deleted_at IS NULL")
 
 	switch query.AccountType {
-	case account_type.Partner:
-		if cm.GetTag(query.AccountID) != model.TagPartner {
+	case account_type.Partner,
+		account_type.Carrier:
+		switch cm.GetTag(query.AccountID) {
+		case model.TagPartner, model.TagCarrier:
+		default:
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
 

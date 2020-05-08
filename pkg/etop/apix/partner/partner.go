@@ -72,8 +72,6 @@ func init() {
 
 type MiscService struct{}
 type ShopService struct{}
-type ShipmentConnectionService struct{}
-type ShipmentService struct{}
 type WebhookService struct{}
 type HistoryService struct{}
 
@@ -90,16 +88,14 @@ type ProductCollectionService struct{}
 type ProductCollectionRelationshipService struct{}
 type VariantService struct{}
 
-func (s *MiscService) Clone() *MiscService                             { res := *s; return &res }
-func (s *ShopService) Clone() *ShopService                             { res := *s; return &res }
-func (s *ShipmentConnectionService) Clone() *ShipmentConnectionService { res := *s; return &res }
-func (s *ShipmentService) Clone() *ShipmentService                     { res := *s; return &res }
-func (s *WebhookService) Clone() *WebhookService                       { res := *s; return &res }
-func (s *HistoryService) Clone() *HistoryService                       { res := *s; return &res }
-func (s *ShippingService) Clone() *ShippingService                     { res := *s; return &res }
-func (s *CustomerService) Clone() *CustomerService                     { res := *s; return &res }
-func (s *CustomerAddressService) Clone() *CustomerAddressService       { res := *s; return &res }
-func (s *CustomerGroupService) Clone() *CustomerGroupService           { res := *s; return &res }
+func (s *MiscService) Clone() *MiscService                       { res := *s; return &res }
+func (s *ShopService) Clone() *ShopService                       { res := *s; return &res }
+func (s *WebhookService) Clone() *WebhookService                 { res := *s; return &res }
+func (s *HistoryService) Clone() *HistoryService                 { res := *s; return &res }
+func (s *ShippingService) Clone() *ShippingService               { res := *s; return &res }
+func (s *CustomerService) Clone() *CustomerService               { res := *s; return &res }
+func (s *CustomerAddressService) Clone() *CustomerAddressService { res := *s; return &res }
+func (s *CustomerGroupService) Clone() *CustomerGroupService     { res := *s; return &res }
 func (s *CustomerGroupRelationshipService) Clone() *CustomerGroupRelationshipService {
 	res := *s
 	return &res
@@ -131,8 +127,6 @@ var productService = &ProductService{}
 var productCollectionService = &ProductCollectionService{}
 var productCollectionRelationshipService = &ProductCollectionRelationshipService{}
 var variantService = &VariantService{}
-var shipmentConnectionService = &ShipmentConnectionService{}
-var shipmentService = &ShipmentService{}
 
 func Init(
 	sd cmService.Shutdowner,

@@ -85,7 +85,7 @@ func (m *Account) Migration(db *cmsql.Database) {
 			ColumnType:       "account_type.AccountType",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "partner", "shop", "affiliate", "etop"},
+			ColumnEnumValues: []string{"unknown", "partner", "shop", "affiliate", "carrier", "etop"},
 		},
 		"image_url": {
 			ColumnName:       "image_url",

@@ -151,7 +151,11 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		if err != nil {
 			return ctx, err
 		}
-		wlPartnerID = account.GetAccount().ID
+		_acc := account.GetAccount()
+		if _acc.Type != account_type.Partner {
+			return ctx, cm.Errorf(cm.PermissionDenied, nil, "")
+		}
+		wlPartnerID = _acc.ID
 
 	} else if q.RequireAPIPartnerShopKey {
 		claim, account, err = VerifyAPIPartnerShopKey(ctx, token)
@@ -376,7 +380,8 @@ func VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 	}
 
 	switch expectType {
-	case account_type.Partner:
+	case account_type.Partner,
+		account_type.Carrier:
 		partner := query.Result.Account.(*identitymodel.Partner)
 		claim := &claims.Claim{
 			ClaimInfo: claims.ClaimInfo{

@@ -29,6 +29,19 @@ func GetACL() map[string]*permission.Decl {
 	return res
 }
 
+func GetExtACL() map[string]*permission.Decl {
+	res := make(map[string]*permission.Decl)
+	for key, p := range _acl {
+		extPrefix := "ext/"
+		if strings.HasPrefix(key, extPrefix) {
+			key2 := strings.TrimPrefix(key, extPrefix)
+			key3 := "/" + strings.TrimSpace(key2)
+			res[key3] = p
+		}
+	}
+	return res
+}
+
 func ConvertKey(key string) string {
 	key2 := strings.TrimSpace(key)
 	idx := strings.LastIndex(key2, "/")
@@ -47,9 +60,10 @@ const (
 	SuperAdmin = permission.SuperAdmin
 	Secret     = permission.Secret
 
-	User              = permission.User
-	APIKey            = permission.APIKey
-	APIPartnerShopKey = permission.APIPartnerShopKey
+	User                 = permission.User
+	APIKey               = permission.APIKey
+	APIPartnerCarrierKey = permission.APIPartnerCarrierKey
+	APIPartnerShopKey    = permission.APIPartnerShopKey
 
 	Req = permission.Required
 	Opt = permission.Optional
@@ -287,18 +301,13 @@ var _acl = map[string]*permission.Decl{
 
 	//-- external: partner --//
 
-	"ext/partner.Misc/CurrentAccount":                 {Type: Partner, Auth: APIKey},
-	"ext/partner.History/GetChanges":                  {Type: Partner, Auth: APIKey},
-	"ext/partner.Misc/GetLocationList":                {Type: Partner, Auth: APIKey},
-	"ext/partner.Shop/AuthorizeShop":                  {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/CreateWebhook":               {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/GetWebhooks":                 {Type: Partner, Auth: APIKey},
-	"ext/partner.Webhook/DeleteWebhook":               {Type: Partner, Auth: APIKey},
-	"ext/partner.ShipmentConnection/GetConnections":   {Type: Partner, Auth: APIKey},
-	"ext/partner.ShipmentConnection/CreateConnection": {Type: Partner, Auth: APIKey},
-	"ext/partner.ShipmentConnection/UpdateConnection": {Type: Partner, Auth: APIKey},
-	"ext/partner.ShipmentConnection/DeleteConnection": {Type: Partner, Auth: APIKey},
-	"ext/partner.Shipment/UpdateFulfillment":          {Type: Partner, Auth: APIKey},
+	"ext/partner.Misc/CurrentAccount":   {Type: Partner, Auth: APIKey},
+	"ext/partner.History/GetChanges":    {Type: Partner, Auth: APIKey},
+	"ext/partner.Misc/GetLocationList":  {Type: Partner, Auth: APIKey},
+	"ext/partner.Shop/AuthorizeShop":    {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/CreateWebhook": {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/GetWebhooks":   {Type: Partner, Auth: APIKey},
+	"ext/partner.Webhook/DeleteWebhook": {Type: Partner, Auth: APIKey},
 
 	//-- external: partner using partnerShopKey --//
 	"ext/partner.Import/Products":           {Type: Shop, Auth: APIPartnerShopKey},
@@ -375,6 +384,15 @@ var _acl = map[string]*permission.Decl{
 	"ext/partner.Variant/ListVariants":  {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Variant/CreateVariant": {Type: Shop, Auth: APIPartnerShopKey},
 	"ext/partner.Variant/UpdateVariant": {Type: Shop, Auth: APIPartnerShopKey},
+
+	//-- external: carrier -- //
+	"ext/carrier.Misc/GetLocationList":                {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.Misc/CurrentAccount":                 {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.ShipmentConnection/GetConnections":   {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.ShipmentConnection/CreateConnection": {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.ShipmentConnection/UpdateConnection": {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.ShipmentConnection/DeleteConnection": {Type: Partner, Auth: APIPartnerCarrierKey},
+	"ext/carrier.Shipment/UpdateFulfillment":          {Type: Partner, Auth: APIPartnerCarrierKey},
 
 	//-- external: shop --//
 

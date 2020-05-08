@@ -3,14 +3,9 @@ package partner
 import (
 	"context"
 
-	"o.o/api/main/connectioning"
-	shippingcore "o.o/api/main/shipping"
-	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/apix/shipping"
-	"o.o/capi/dot"
 )
 
 func init() {
@@ -60,45 +55,4 @@ func (s *ShippingService) GetFulfillment(ctx context.Context, r *GetFulfillmentE
 	resp, err := shipping.GetFulfillment(ctx, r.Context.Shop.ID, r.FulfillmentIDRequest)
 	r.Result = resp
 	return err
-}
-
-/*
-	UpdateFulfillment
-
-	Api này chỉ sử dụng cho partner là nhà vận chuyển
-	Chỉ update fulfillment thuộc connection của NVC
-*/
-
-func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *UpdateFulfillmentEndpoint) error {
-	if r.ShippingCode == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing shipping_code")
-	}
-	if !r.ShippingState.Valid {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing shipping_state")
-	}
-
-	query := &connectioning.ListConnectionsQuery{
-		PartnerID: r.Context.Partner.ID,
-	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	connIDs := []dot.ID{}
-	for _, conn := range query.Result {
-		connIDs = append(connIDs, conn.ID)
-	}
-	if len(connIDs) == 0 {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể sử dụng api này. Vui lòng liên hệ %v để biết thêm chi tiết.", wl.X(ctx).CSEmail)
-	}
-
-	cmd := &shippingcore.UpdateFulfillmentShippingStateCommand{
-		ShippingCode:  r.ShippingCode,
-		ShippingState: r.ShippingState.Enum,
-		ConnectionIDs: connIDs,
-	}
-	if err := shippingAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &pbcm.UpdatedResponse{Updated: 1}
-	return nil
 }
