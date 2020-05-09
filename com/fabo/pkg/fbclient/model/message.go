@@ -16,6 +16,7 @@ type MessageData struct {
 	Message     string                  `json:"message"`
 	To          *ObjectsTo              `json:"to"`
 	From        *ObjectFrom             `json:"from"`
+	Sticker     string                  `json:"sticker"`
 	Attachments *MessageDataAttachments `json:"attachments"`
 }
 
@@ -25,11 +26,13 @@ type MessageDataAttachments struct {
 }
 
 type MessageDataAttachment struct {
-	ID        string                      `json:"id"`
-	ImageData *MessageDataAttachmentImage `json:"image_data"`
-	MimeType  string                      `json:"mime_type"`
-	Name      string                      `json:"name"`
-	Size      int                         `json:"size"`
+	ID        string                          `json:"id"`
+	ImageData *MessageDataAttachmentImage     `json:"image_data"`
+	MimeType  string                          `json:"mime_type"`
+	Name      string                          `json:"name"`
+	Size      int                             `json:"size"`
+	VideoData *MessageDataAttachmentVideoData `json:"video_data"`
+	FileURL   string                          `json:"file_url"`
 }
 
 type MessageDataAttachmentImage struct {
@@ -41,4 +44,14 @@ type MessageDataAttachmentImage struct {
 	PreviewURL      string `json:"preview_url"`
 	ImageType       int    `json:"image_type"`
 	RenderAsSticker bool   `json:"render_as_sticker"`
+}
+
+type MessageDataAttachmentVideoData struct {
+	Width      int    `json:"width"`
+	Height     int    `json:"height"`
+	Length     int    `json:"length"`
+	VideoType  int    `json:"video_type"`
+	URL        string `json:"url"`
+	PreviewURL string `json:"preview_url"`
+	Rotation   int    `json:"rotation"`
 }

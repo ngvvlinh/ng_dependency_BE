@@ -2,12 +2,14 @@ package sqlstore
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 )
 
@@ -31,6 +33,26 @@ type FbExternalCommentStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *FbExternalCommentStore) WithPaging(paging meta.Paging) *FbExternalCommentStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalPostID(externalPostID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByExternalPostID(externalPostID))
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalUserID(externalUserID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByExternalUserID(externalUserID))
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalIDs(externalIDs []string) *FbExternalCommentStore {
+	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
 }
 
 func (s *FbExternalCommentStore) CreateFbExternalComment(fbExternalComment *fbmessaging.FbExternalComment) error {
@@ -64,4 +86,72 @@ func (s *FbExternalCommentStore) CreateFbExternalComments(fbExternalComments []*
 		return err
 	}
 	return nil
+}
+
+func (s *FbExternalCommentStore) ListFbExternalCommentsDB() ([]*model.FbExternalComment, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFbExternalComment, s.ft.prefix)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterFbExternalComment)
+	if err != nil {
+		return nil, err
+	}
+
+	var fbExternalComments model.FbExternalComments
+	err = query.Find(&fbExternalComments)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(fbExternalComments)
+	return fbExternalComments, nil
+}
+
+func (s *FbExternalCommentStore) ListFbExternalComments() (result []*fbmessaging.FbExternalComment, err error) {
+	fbExternalPosts, err := s.ListFbExternalCommentsDB()
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(fbExternalPosts, &result); err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (s *FbExternalCommentStore) ExternalPageIDAndExternalUserID(externalPageID, externalUserID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf(`
+		external_user_id = '%s' OR 
+		(external_parent_user_id = '%s' AND (external_user_id = '%s' OR external_user_id = '%s'))
+	`, externalUserID, externalUserID, externalUserID, externalPageID)))
+	return s
+}
+
+func (s *FbExternalCommentStore) GetLatestExternalComment(externalPageID, externalPostID, externalUserID string) (*fbmessaging.FbExternalComment, error) {
+	var fbExternalComment model.FbExternalComment
+	if err := s.query().
+		Where(fmt.Sprintf(`
+			external_post_id = '%s' AND 
+			(
+				external_user_id = '%s' OR 
+				(
+					external_user_id = '%s' AND external_parent_user_id = '%s'
+				)
+			)
+		`, externalPostID, externalUserID, externalPageID, externalUserID)).
+		OrderBy("external_created_time desc", "id asc").
+		Limit(1).
+		ShouldGet(&fbExternalComment); err != nil {
+		return nil, err
+	}
+
+	result := fbmessaging.FbExternalComment{}
+	if err := scheme.Convert(&fbExternalComment, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

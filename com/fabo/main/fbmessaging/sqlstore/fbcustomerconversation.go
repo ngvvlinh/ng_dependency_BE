@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -41,8 +42,18 @@ func (s *FbCustomerConversationStore) WithPaging(paging meta.Paging) *FbCustomer
 	return s
 }
 
+func (s *FbCustomerConversationStore) ID(id dot.ID) *FbCustomerConversationStore {
+	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
 func (s *FbCustomerConversationStore) ExternalIDs(externalIDs []string) *FbCustomerConversationStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
+}
+
+func (s *FbCustomerConversationStore) ExternalIDAndExternalUserID(externalID, externalUserID string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf("external_id = '%s' AND external_user_id = '%s'", externalID, externalUserID)))
 	return s
 }
 
@@ -61,14 +72,28 @@ func (s *FbCustomerConversationStore) FbExternalID(fbExternalID string) *FbCusto
 	return s
 }
 
+func (s *FbCustomerConversationStore) FbExternalUserID(fbExternalUserID string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, s.ft.ByExternalUserID(fbExternalUserID))
+	return s
+}
+
 func (s *FbCustomerConversationStore) Type(typ fb_customer_conversation_type.FbCustomerConversationType) *FbCustomerConversationStore {
 	s.preds = append(s.preds, s.ft.ByType(typ.Enum()))
 	return s
 }
 
 func (s *FbCustomerConversationStore) IsRead(isRead bool) *FbCustomerConversationStore {
-	s.preds = append(s.preds, s.ft.ByIsRead(isRead))
+	s.preds = append(s.preds, s.ft.ByIsReadPtr(&isRead))
 	return s
+}
+
+func (s *FbCustomerConversationStore) UpdateStatus(isRead bool) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	updateStatus, err := query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
+		"is_read": isRead,
+	})
+	return updateStatus, err
 }
 
 func (s *FbCustomerConversationStore) CreateFbCustomerConversation(fbCustomerConversation *fbmessaging.FbCustomerConversation) error {
@@ -102,6 +127,27 @@ func (s *FbCustomerConversationStore) CreateFbCustomerConversations(fbCustomerCo
 		return err
 	}
 	return nil
+}
+
+func (s *FbCustomerConversationStore) GetFbCustomerConversationDB() (*model.FbCustomerConversation, error) {
+	query := s.query().Where(s.preds)
+
+	var fbCustomerConversation model.FbCustomerConversation
+	err := query.ShouldGet(&fbCustomerConversation)
+	return &fbCustomerConversation, err
+}
+
+func (s *FbCustomerConversationStore) GetFbCustomerConversation() (*fbmessaging.FbCustomerConversation, error) {
+	fbCustomerConversation, err := s.GetFbCustomerConversationDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbmessaging.FbCustomerConversation{}
+	err = scheme.Convert(fbCustomerConversation, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }
 
 func (s *FbCustomerConversationStore) ListFbCustomerConversationsDB() ([]*model.FbCustomerConversation, error) {

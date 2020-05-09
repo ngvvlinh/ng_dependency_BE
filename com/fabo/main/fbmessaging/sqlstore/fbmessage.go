@@ -2,8 +2,8 @@ package sqlstore
 
 import (
 	"context"
-
-	"github.com/lib/pq"
+	"fmt"
+	"strings"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
@@ -131,22 +131,35 @@ func (s *FbExternalMessageStore) ListFbExternalMessages() (result []*fbmessaging
 }
 
 func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversationIDs []string) (result []*fbmessaging.FbExternalMessage, err error) {
+	if len(externalConversationIDs) == 0 {
+		return nil, nil
+	}
+
 	rows, err := s.query().
-		Select("max(id) as id", "external_conversation_id", "max(external_created_time) as external_created_time").
-		From("fb_external_message").
-		Where(sq.In("external_conversation_id", externalConversationIDs)).
-		GroupBy("external_conversation_id").
+		SQL(fmt.Sprintf(`
+			select a.id
+			from fb_external_message as a
+			where 
+				external_conversation_id in ('%s')
+				and 
+				id =
+				(
+					select id
+					from fb_external_message as b
+					where b.external_conversation_id = a.external_conversation_id
+					order by b.external_created_time desc, id asc
+					limit 1
+				)
+		`, strings.Join(externalConversationIDs, "','"))).
 		Query()
 	if err != nil {
 		return nil, err
 	}
 
 	var fbExternalMessageIDs []dot.ID
-	var externalConversationID string
 	var id dot.ID
-	var externalCreatedTime pq.NullTime
 	for rows.Next() {
-		err := rows.Scan(&id, &externalConversationID, &externalCreatedTime)
+		err := rows.Scan(&id)
 		if err != nil {
 			return nil, err
 		}
@@ -156,6 +169,7 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+
 	var fbExternalMessages model.FbExternalMessages
 	if err := s.query().
 		Where(sq.In("id", fbExternalMessageIDs)).

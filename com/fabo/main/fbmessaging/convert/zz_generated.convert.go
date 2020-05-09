@@ -24,22 +24,22 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*fbmessagingmodel.Attachment)(nil), (*fbmessaging.Attachment)(nil), func(arg, out interface{}) error {
-		Convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(arg.(*fbmessagingmodel.Attachment), out.(*fbmessaging.Attachment))
+	s.Register((*fbmessagingmodel.CommentAttachment)(nil), (*fbmessaging.CommentAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.(*fbmessagingmodel.CommentAttachment), out.(*fbmessaging.CommentAttachment))
 		return nil
 	})
-	s.Register(([]*fbmessagingmodel.Attachment)(nil), (*[]*fbmessaging.Attachment)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbmessagingmodel_Attachments_fbmessaging_Attachments(arg.([]*fbmessagingmodel.Attachment))
-		*out.(*[]*fbmessaging.Attachment) = out0
+	s.Register(([]*fbmessagingmodel.CommentAttachment)(nil), (*[]*fbmessaging.CommentAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_CommentAttachments_fbmessaging_CommentAttachments(arg.([]*fbmessagingmodel.CommentAttachment))
+		*out.(*[]*fbmessaging.CommentAttachment) = out0
 		return nil
 	})
-	s.Register((*fbmessaging.Attachment)(nil), (*fbmessagingmodel.Attachment)(nil), func(arg, out interface{}) error {
-		Convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(arg.(*fbmessaging.Attachment), out.(*fbmessagingmodel.Attachment))
+	s.Register((*fbmessaging.CommentAttachment)(nil), (*fbmessagingmodel.CommentAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.(*fbmessaging.CommentAttachment), out.(*fbmessagingmodel.CommentAttachment))
 		return nil
 	})
-	s.Register(([]*fbmessaging.Attachment)(nil), (*[]*fbmessagingmodel.Attachment)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbmessaging_Attachments_fbmessagingmodel_Attachments(arg.([]*fbmessaging.Attachment))
-		*out.(*[]*fbmessagingmodel.Attachment) = out0
+	s.Register(([]*fbmessaging.CommentAttachment)(nil), (*[]*fbmessagingmodel.CommentAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_CommentAttachments_fbmessagingmodel_CommentAttachments(arg.([]*fbmessaging.CommentAttachment))
+		*out.(*[]*fbmessagingmodel.CommentAttachment) = out0
 		return nil
 	})
 	s.Register((*fbmessagingmodel.FbCustomerConversation)(nil), (*fbmessaging.FbCustomerConversation)(nil), func(arg, out interface{}) error {
@@ -80,6 +80,10 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*fbmessaging.FbExternalComment)(nil), (*[]*fbmessagingmodel.FbExternalComment)(nil), func(arg, out interface{}) error {
 		out0 := Convert_fbmessaging_FbExternalComments_fbmessagingmodel_FbExternalComments(arg.([]*fbmessaging.FbExternalComment))
 		*out.(*[]*fbmessagingmodel.FbExternalComment) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.CreateFbExternalCommentArgs)(nil), (*fbmessaging.FbExternalComment)(nil), func(arg, out interface{}) error {
+		Apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg.(*fbmessaging.CreateFbExternalCommentArgs), out.(*fbmessaging.FbExternalComment))
 		return nil
 	})
 	s.Register((*fbmessagingmodel.FbExternalConversation)(nil), (*fbmessaging.FbExternalConversation)(nil), func(arg, out interface{}) error {
@@ -144,6 +148,10 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbmessagingmodel.FbExternalPost) = out0
 		return nil
 	})
+	s.Register((*fbmessaging.CreateFbExternalPostArgs)(nil), (*fbmessaging.FbExternalPost)(nil), func(arg, out interface{}) error {
+		Apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg.(*fbmessaging.CreateFbExternalPostArgs), out.(*fbmessaging.FbExternalPost))
+		return nil
+	})
 	s.Register((*fbmessagingmodel.FbMessageAttachment)(nil), (*fbmessaging.FbMessageAttachment)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_FbMessageAttachment_fbmessaging_FbMessageAttachment(arg.(*fbmessagingmodel.FbMessageAttachment), out.(*fbmessaging.FbMessageAttachment))
 		return nil
@@ -180,6 +188,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbmessagingmodel.FbMessageAttachmentImageData) = out0
 		return nil
 	})
+	s.Register((*fbmessagingmodel.FbMessageDataAttachmentVideoData)(nil), (*fbmessaging.FbMessageDataAttachmentVideoData)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(arg.(*fbmessagingmodel.FbMessageDataAttachmentVideoData), out.(*fbmessaging.FbMessageDataAttachmentVideoData))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.FbMessageDataAttachmentVideoData)(nil), (*[]*fbmessaging.FbMessageDataAttachmentVideoData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_FbMessageDataAttachmentVideoDatas_fbmessaging_FbMessageDataAttachmentVideoDatas(arg.([]*fbmessagingmodel.FbMessageDataAttachmentVideoData))
+		*out.(*[]*fbmessaging.FbMessageDataAttachmentVideoData) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.FbMessageDataAttachmentVideoData)(nil), (*fbmessagingmodel.FbMessageDataAttachmentVideoData)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(arg.(*fbmessaging.FbMessageDataAttachmentVideoData), out.(*fbmessagingmodel.FbMessageDataAttachmentVideoData))
+		return nil
+	})
+	s.Register(([]*fbmessaging.FbMessageDataAttachmentVideoData)(nil), (*[]*fbmessagingmodel.FbMessageDataAttachmentVideoData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_FbMessageDataAttachmentVideoDatas_fbmessagingmodel_FbMessageDataAttachmentVideoDatas(arg.([]*fbmessaging.FbMessageDataAttachmentVideoData))
+		*out.(*[]*fbmessagingmodel.FbMessageDataAttachmentVideoData) = out0
+		return nil
+	})
 	s.Register((*fbmessagingmodel.FbObjectFrom)(nil), (*fbmessaging.FbObjectFrom)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.(*fbmessagingmodel.FbObjectFrom), out.(*fbmessaging.FbObjectFrom))
 		return nil
@@ -198,6 +224,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbmessagingmodel.FbObjectFrom) = out0
 		return nil
 	})
+	s.Register((*fbmessagingmodel.FbObjectParent)(nil), (*fbmessaging.FbObjectParent)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(arg.(*fbmessagingmodel.FbObjectParent), out.(*fbmessaging.FbObjectParent))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.FbObjectParent)(nil), (*[]*fbmessaging.FbObjectParent)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_FbObjectParents_fbmessaging_FbObjectParents(arg.([]*fbmessagingmodel.FbObjectParent))
+		*out.(*[]*fbmessaging.FbObjectParent) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.FbObjectParent)(nil), (*fbmessagingmodel.FbObjectParent)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(arg.(*fbmessaging.FbObjectParent), out.(*fbmessagingmodel.FbObjectParent))
+		return nil
+	})
+	s.Register(([]*fbmessaging.FbObjectParent)(nil), (*[]*fbmessagingmodel.FbObjectParent)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_FbObjectParents_fbmessagingmodel_FbObjectParents(arg.([]*fbmessaging.FbObjectParent))
+		*out.(*[]*fbmessagingmodel.FbObjectParent) = out0
+		return nil
+	})
 	s.Register((*fbmessagingmodel.FbObjectTo)(nil), (*fbmessaging.FbObjectTo)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_FbObjectTo_fbmessaging_FbObjectTo(arg.(*fbmessagingmodel.FbObjectTo), out.(*fbmessaging.FbObjectTo))
 		return nil
@@ -214,6 +258,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*fbmessaging.FbObjectTo)(nil), (*[]*fbmessagingmodel.FbObjectTo)(nil), func(arg, out interface{}) error {
 		out0 := Convert_fbmessaging_FbObjectToes_fbmessagingmodel_FbObjectToes(arg.([]*fbmessaging.FbObjectTo))
 		*out.(*[]*fbmessagingmodel.FbObjectTo) = out0
+		return nil
+	})
+	s.Register((*fbmessagingmodel.ImageMediaDataSubAttachment)(nil), (*fbmessaging.ImageMediaDataSubAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(arg.(*fbmessagingmodel.ImageMediaDataSubAttachment), out.(*fbmessaging.ImageMediaDataSubAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.ImageMediaDataSubAttachment)(nil), (*[]*fbmessaging.ImageMediaDataSubAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_ImageMediaDataSubAttachments_fbmessaging_ImageMediaDataSubAttachments(arg.([]*fbmessagingmodel.ImageMediaDataSubAttachment))
+		*out.(*[]*fbmessaging.ImageMediaDataSubAttachment) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.ImageMediaDataSubAttachment)(nil), (*fbmessagingmodel.ImageMediaDataSubAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(arg.(*fbmessaging.ImageMediaDataSubAttachment), out.(*fbmessagingmodel.ImageMediaDataSubAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessaging.ImageMediaDataSubAttachment)(nil), (*[]*fbmessagingmodel.ImageMediaDataSubAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_ImageMediaDataSubAttachments_fbmessagingmodel_ImageMediaDataSubAttachments(arg.([]*fbmessaging.ImageMediaDataSubAttachment))
+		*out.(*[]*fbmessagingmodel.ImageMediaDataSubAttachment) = out0
 		return nil
 	})
 	s.Register((*fbmessagingmodel.MediaDataSubAttachment)(nil), (*fbmessaging.MediaDataSubAttachment)(nil), func(arg, out interface{}) error {
@@ -250,24 +312,6 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*fbmessaging.PostAttachment)(nil), (*[]*fbmessagingmodel.PostAttachment)(nil), func(arg, out interface{}) error {
 		out0 := Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.([]*fbmessaging.PostAttachment))
 		*out.(*[]*fbmessagingmodel.PostAttachment) = out0
-		return nil
-	})
-	s.Register((*fbmessagingmodel.PostAttachmentMedia)(nil), (*fbmessaging.PostAttachmentMedia)(nil), func(arg, out interface{}) error {
-		Convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(arg.(*fbmessagingmodel.PostAttachmentMedia), out.(*fbmessaging.PostAttachmentMedia))
-		return nil
-	})
-	s.Register(([]*fbmessagingmodel.PostAttachmentMedia)(nil), (*[]*fbmessaging.PostAttachmentMedia)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbmessagingmodel_PostAttachmentMedias_fbmessaging_PostAttachmentMedias(arg.([]*fbmessagingmodel.PostAttachmentMedia))
-		*out.(*[]*fbmessaging.PostAttachmentMedia) = out0
-		return nil
-	})
-	s.Register((*fbmessaging.PostAttachmentMedia)(nil), (*fbmessagingmodel.PostAttachmentMedia)(nil), func(arg, out interface{}) error {
-		Convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(arg.(*fbmessaging.PostAttachmentMedia), out.(*fbmessagingmodel.PostAttachmentMedia))
-		return nil
-	})
-	s.Register(([]*fbmessaging.PostAttachmentMedia)(nil), (*[]*fbmessagingmodel.PostAttachmentMedia)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbmessaging_PostAttachmentMedias_fbmessagingmodel_PostAttachmentMedias(arg.([]*fbmessaging.PostAttachmentMedia))
-		*out.(*[]*fbmessagingmodel.PostAttachmentMedia) = out0
 		return nil
 	})
 	s.Register((*fbmessagingmodel.SubAttachment)(nil), (*fbmessaging.SubAttachment)(nil), func(arg, out interface{}) error {
@@ -308,62 +352,66 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
-//-- convert o.o/api/fabo/fbmessaging.Attachment --//
+//-- convert o.o/api/fabo/fbmessaging.CommentAttachment --//
 
-func Convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(arg *fbmessagingmodel.Attachment, out *fbmessaging.Attachment) *fbmessaging.Attachment {
+func Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg *fbmessagingmodel.CommentAttachment, out *fbmessaging.CommentAttachment) *fbmessaging.CommentAttachment {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbmessaging.Attachment{}
+		out = &fbmessaging.CommentAttachment{}
 	}
-	convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(arg, out)
+	convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg, out)
 	return out
 }
 
-func convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(arg *fbmessagingmodel.Attachment, out *fbmessaging.Attachment) {
-	out.MediaType = arg.MediaType // simple assign
-	out.Type = arg.Type           // simple assign
-	out.SubAttachments = Convert_fbmessagingmodel_SubAttachments_fbmessaging_SubAttachments(arg.SubAttachments)
+func convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg *fbmessagingmodel.CommentAttachment, out *fbmessaging.CommentAttachment) {
+	out.Media = Convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(arg.Media, nil)
+	out.Target = Convert_fbmessagingmodel_TargetDataSubAttachment_fbmessaging_TargetDataSubAttachment(arg.Target, nil)
+	out.Title = arg.Title // simple assign
+	out.Type = arg.Type   // simple assign
+	out.URL = arg.URL     // simple assign
 }
 
-func Convert_fbmessagingmodel_Attachments_fbmessaging_Attachments(args []*fbmessagingmodel.Attachment) (outs []*fbmessaging.Attachment) {
+func Convert_fbmessagingmodel_CommentAttachments_fbmessaging_CommentAttachments(args []*fbmessagingmodel.CommentAttachment) (outs []*fbmessaging.CommentAttachment) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbmessaging.Attachment, len(args))
-	outs = make([]*fbmessaging.Attachment, len(args))
+	tmps := make([]fbmessaging.CommentAttachment, len(args))
+	outs = make([]*fbmessaging.CommentAttachment, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(args[i], &tmps[i])
+		outs[i] = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(arg *fbmessaging.Attachment, out *fbmessagingmodel.Attachment) *fbmessagingmodel.Attachment {
+func Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg *fbmessaging.CommentAttachment, out *fbmessagingmodel.CommentAttachment) *fbmessagingmodel.CommentAttachment {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbmessagingmodel.Attachment{}
+		out = &fbmessagingmodel.CommentAttachment{}
 	}
-	convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(arg, out)
+	convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg, out)
 	return out
 }
 
-func convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(arg *fbmessaging.Attachment, out *fbmessagingmodel.Attachment) {
-	out.MediaType = arg.MediaType // simple assign
-	out.Type = arg.Type           // simple assign
-	out.SubAttachments = Convert_fbmessaging_SubAttachments_fbmessagingmodel_SubAttachments(arg.SubAttachments)
+func convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg *fbmessaging.CommentAttachment, out *fbmessagingmodel.CommentAttachment) {
+	out.Media = Convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(arg.Media, nil)
+	out.Target = Convert_fbmessaging_TargetDataSubAttachment_fbmessagingmodel_TargetDataSubAttachment(arg.Target, nil)
+	out.Title = arg.Title // simple assign
+	out.Type = arg.Type   // simple assign
+	out.URL = arg.URL     // simple assign
 }
 
-func Convert_fbmessaging_Attachments_fbmessagingmodel_Attachments(args []*fbmessaging.Attachment) (outs []*fbmessagingmodel.Attachment) {
+func Convert_fbmessaging_CommentAttachments_fbmessagingmodel_CommentAttachments(args []*fbmessaging.CommentAttachment) (outs []*fbmessagingmodel.CommentAttachment) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbmessagingmodel.Attachment, len(args))
-	outs = make([]*fbmessagingmodel.Attachment, len(args))
+	tmps := make([]fbmessagingmodel.CommentAttachment, len(args))
+	outs = make([]*fbmessagingmodel.CommentAttachment, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(args[i], &tmps[i])
+		outs[i] = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(args[i], &tmps[i])
 	}
 	return outs
 }
@@ -382,14 +430,18 @@ func Convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 }
 
 func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConversation(arg *fbmessagingmodel.FbCustomerConversation, out *fbmessaging.FbCustomerConversation) {
-	out.ID = arg.ID                                                               // simple assign
-	out.FbPageID = arg.FbPageID                                                   // simple assign
-	out.ExternalID = arg.ExternalID                                               // simple assign
-	out.ExternalUserID = arg.ExternalUserID                                       // simple assign
-	out.ExternalUserName = arg.ExternalUserName                                   // simple assign
+	out.ID = arg.ID                             // simple assign
+	out.FbPageID = arg.FbPageID                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID     // simple assign
+	out.ExternalID = arg.ExternalID             // simple assign
+	out.ExternalUserID = arg.ExternalUserID     // simple assign
+	out.ExternalUserName = arg.ExternalUserName // simple assign
+	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.IsRead = arg.IsRead                                                       // simple assign
 	out.Type = fb_customer_conversation_type.FbCustomerConversationType(arg.Type) // simple conversion
-	out.PostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.PostAttachments)
+	out.ExternalPostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalPostAttachments)
+	out.ExternalCommentAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalCommentAttachment, nil)
+	out.ExternalMessageAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalMessageAttachments)
 	out.LastMessage = arg.LastMessage     // simple assign
 	out.LastMessageAt = arg.LastMessageAt // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
@@ -423,11 +475,15 @@ func Convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConversation(arg *fbmessaging.FbCustomerConversation, out *fbmessagingmodel.FbCustomerConversation) {
 	out.ID = arg.ID                             // simple assign
 	out.FbPageID = arg.FbPageID                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ExternalUserName = arg.ExternalUserName // simple assign
-	out.IsRead = arg.IsRead                     // simple assign
-	out.PostAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.PostAttachments)
+	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
+	out.IsRead = arg.IsRead // simple assign
+	out.ExternalPostAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalPostAttachments)
+	out.ExternalCommentAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalCommentAttachment, nil)
+	out.ExternalMessageAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalMessageAttachments)
 	out.Type = int(arg.Type)              // simple conversion
 	out.LastMessage = arg.LastMessage     // simple assign
 	out.LastMessageAt = arg.LastMessageAt // simple assign
@@ -460,19 +516,23 @@ func Apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 }
 
 func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerConversation(arg *fbmessaging.CreateFbCustomerConversationArgs, out *fbmessaging.FbCustomerConversation) {
-	out.ID = arg.ID                             // simple assign
-	out.FbPageID = arg.FbPageID                 // simple assign
-	out.ExternalID = arg.ExternalID             // simple assign
-	out.ExternalUserID = arg.ExternalUserID     // simple assign
-	out.ExternalUserName = arg.ExternalUserName // simple assign
-	out.IsRead = arg.IsRead                     // simple assign
-	out.Type = arg.Type                         // simple assign
-	out.PostAttachments = arg.PostAttachments   // simple assign
-	out.LastMessage = arg.LastMessage           // simple assign
-	out.LastMessageAt = arg.LastMessageAt       // simple assign
-	out.CreatedAt = time.Time{}                 // zero value
-	out.UpdatedAt = time.Time{}                 // zero value
-	out.DeletedAt = time.Time{}                 // zero value
+	out.ID = arg.ID                                                 // simple assign
+	out.FbPageID = arg.FbPageID                                     // simple assign
+	out.ExternalPageID = arg.ExternalPageID                         // simple assign
+	out.ExternalID = arg.ExternalID                                 // simple assign
+	out.ExternalUserID = arg.ExternalUserID                         // simple assign
+	out.ExternalUserName = arg.ExternalUserName                     // simple assign
+	out.ExternalFrom = arg.ExternalFrom                             // simple assign
+	out.IsRead = arg.IsRead                                         // simple assign
+	out.Type = arg.Type                                             // simple assign
+	out.ExternalPostAttachments = arg.ExternalPostAttachments       // simple assign
+	out.ExternalCommentAttachment = arg.ExternalCommentAttachment   // simple assign
+	out.ExternalMessageAttachments = arg.ExternalMessageAttachments // simple assign
+	out.LastMessage = arg.LastMessage                               // simple assign
+	out.LastMessageAt = arg.LastMessageAt                           // simple assign
+	out.CreatedAt = time.Time{}                                     // zero value
+	out.UpdatedAt = time.Time{}                                     // zero value
+	out.DeletedAt = time.Time{}                                     // zero value
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbExternalComment --//
@@ -491,15 +551,18 @@ func Convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(ar
 func convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(arg *fbmessagingmodel.FbExternalComment, out *fbmessaging.FbExternalComment) {
 	out.ID = arg.ID                                     // simple assign
 	out.FbPostID = arg.FbPostID                         // simple assign
+	out.ExternalPostID = arg.ExternalPostID             // simple assign
 	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID         // simple assign
 	out.ExternalParentUserID = arg.ExternalParentUserID // simple assign
 	out.ExternalMessage = arg.ExternalMessage           // simple assign
 	out.ExternalCommentCount = arg.ExternalCommentCount // simple assign
+	out.ExternalParent = Convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(arg.ExternalParent, nil)
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
-	out.ExternalAttachment = Convert_fbmessagingmodel_Attachment_fbmessaging_Attachment(arg.ExternalAttachment, nil)
+	out.ExternalAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalAttachment, nil)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
@@ -531,15 +594,18 @@ func Convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(ar
 func convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(arg *fbmessaging.FbExternalComment, out *fbmessagingmodel.FbExternalComment) {
 	out.ID = arg.ID                                     // simple assign
 	out.FbPostID = arg.FbPostID                         // simple assign
+	out.ExternalPostID = arg.ExternalPostID             // simple assign
 	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID         // simple assign
 	out.ExternalParentUserID = arg.ExternalParentUserID // simple assign
 	out.ExternalMessage = arg.ExternalMessage           // simple assign
 	out.ExternalCommentCount = arg.ExternalCommentCount // simple assign
+	out.ExternalParent = Convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(arg.ExternalParent, nil)
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
-	out.ExternalAttachment = Convert_fbmessaging_Attachment_fbmessagingmodel_Attachment(arg.ExternalAttachment, nil)
+	out.ExternalAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalAttachment, nil)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
@@ -558,6 +624,37 @@ func Convert_fbmessaging_FbExternalComments_fbmessagingmodel_FbExternalComments(
 	return outs
 }
 
+func Apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg *fbmessaging.CreateFbExternalCommentArgs, out *fbmessaging.FbExternalComment) *fbmessaging.FbExternalComment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbExternalComment{}
+	}
+	apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg, out)
+	return out
+}
+
+func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg *fbmessaging.CreateFbExternalCommentArgs, out *fbmessaging.FbExternalComment) {
+	out.ID = arg.ID                                     // simple assign
+	out.FbPostID = arg.FbPostID                         // simple assign
+	out.ExternalPostID = arg.ExternalPostID             // simple assign
+	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
+	out.ExternalID = arg.ExternalID                     // simple assign
+	out.ExternalUserID = arg.ExternalUserID             // simple assign
+	out.ExternalParentID = arg.ExternalParentID         // simple assign
+	out.ExternalParentUserID = arg.ExternalParentUserID // simple assign
+	out.ExternalMessage = arg.ExternalMessage           // simple assign
+	out.ExternalCommentCount = arg.ExternalCommentCount // simple assign
+	out.ExternalParent = arg.ExternalParent             // simple assign
+	out.ExternalFrom = arg.ExternalFrom                 // simple assign
+	out.ExternalAttachment = arg.ExternalAttachment     // simple assign
+	out.ExternalCreatedTime = arg.ExternalCreatedTime   // simple assign
+	out.CreatedAt = time.Time{}                         // zero value
+	out.UpdatedAt = time.Time{}                         // zero value
+}
+
 //-- convert o.o/api/fabo/fbmessaging.FbExternalConversation --//
 
 func Convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConversation(arg *fbmessagingmodel.FbExternalConversation, out *fbmessaging.FbExternalConversation) *fbmessaging.FbExternalConversation {
@@ -574,14 +671,13 @@ func Convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConve
 func convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConversation(arg *fbmessagingmodel.FbExternalConversation, out *fbmessaging.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
 	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
 	out.ExternalLink = arg.ExternalLink                 // simple assign
 	out.ExternalUpdatedTime = arg.ExternalUpdatedTime   // simple assign
 	out.ExternalMessageCount = arg.ExternalMessageCount // simple assign
-	out.LastMessage = ""                                // zero value
-	out.LastMessageAt = time.Time{}                     // zero value
 	out.CreatedAt = arg.CreatedAt                       // simple assign
 	out.UpdatedAt = arg.UpdatedAt                       // simple assign
 }
@@ -612,6 +708,7 @@ func Convert_fbmessaging_FbExternalConversation_fbmessagingmodel_FbExternalConve
 func convert_fbmessaging_FbExternalConversation_fbmessagingmodel_FbExternalConversation(arg *fbmessaging.FbExternalConversation, out *fbmessagingmodel.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
 	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
@@ -649,14 +746,13 @@ func Apply_fbmessaging_CreateFbExternalConversationArgs_fbmessaging_FbExternalCo
 func apply_fbmessaging_CreateFbExternalConversationArgs_fbmessaging_FbExternalConversation(arg *fbmessaging.CreateFbExternalConversationArgs, out *fbmessaging.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
 	out.FbPageID = arg.FbPageID                         // simple assign
+	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
 	out.ExternalLink = arg.ExternalLink                 // simple assign
 	out.ExternalUpdatedTime = arg.ExternalUpdatedTime   // simple assign
 	out.ExternalMessageCount = arg.ExternalMessageCount // simple assign
-	out.LastMessage = arg.LastMessage                   // simple assign
-	out.LastMessageAt = arg.LastMessageAt               // simple assign
 	out.CreatedAt = time.Time{}                         // zero value
 	out.UpdatedAt = time.Time{}                         // zero value
 }
@@ -679,8 +775,10 @@ func convert_fbmessagingmodel_FbExternalMessage_fbmessaging_FbExternalMessage(ar
 	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
 	out.FbPageID = arg.FbPageID                             // simple assign
+	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
+	out.ExternalSticker = arg.ExternalSticker               // simple assign
 	out.ExternalTo = Convert_fbmessagingmodel_FbObjectToes_fbmessaging_FbObjectToes(arg.ExternalTo)
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalAttachments)
@@ -717,8 +815,10 @@ func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(ar
 	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
 	out.FbPageID = arg.FbPageID                             // simple assign
+	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
+	out.ExternalSticker = arg.ExternalSticker               // simple assign
 	out.ExternalTo = Convert_fbmessaging_FbObjectToes_fbmessagingmodel_FbObjectToes(arg.ExternalTo)
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalAttachments)
@@ -756,8 +856,10 @@ func apply_fbmessaging_CreateFbExternalMessageArgs_fbmessaging_FbExternalMessage
 	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
 	out.FbPageID = arg.FbPageID                             // simple assign
+	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
+	out.ExternalSticker = arg.ExternalSticker               // simple assign
 	out.ExternalTo = arg.ExternalTo                         // simple assign
 	out.ExternalFrom = arg.ExternalFrom                     // simple assign
 	out.ExternalAttachments = arg.ExternalAttachments       // simple assign
@@ -782,15 +884,15 @@ func Convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbm
 func convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbmessagingmodel.FbExternalPost, out *fbmessaging.FbExternalPost) {
 	out.ID = arg.ID                             // simple assign
 	out.FbPageID = arg.FbPageID                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID // simple assign
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalPicture = arg.ExternalPicture // simple assign
 	out.ExternalIcon = arg.ExternalIcon       // simple assign
 	out.ExternalMessage = arg.ExternalMessage // simple assign
-	out.ExternalAttachments = Convert_fbmessagingmodel_Attachments_fbmessaging_Attachments(arg.ExternalAttachments)
+	out.ExternalAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalAttachments)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
-	out.ExternalUpdatedTime = arg.ExternalUpdatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 }
@@ -821,15 +923,16 @@ func Convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbm
 func convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbmessaging.FbExternalPost, out *fbmessagingmodel.FbExternalPost) {
 	out.ID = arg.ID                             // simple assign
 	out.FbPageID = arg.FbPageID                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID // simple assign
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalPicture = arg.ExternalPicture // simple assign
 	out.ExternalIcon = arg.ExternalIcon       // simple assign
 	out.ExternalMessage = arg.ExternalMessage // simple assign
-	out.ExternalAttachments = Convert_fbmessaging_Attachments_fbmessagingmodel_Attachments(arg.ExternalAttachments)
+	out.ExternalAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalAttachments)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
-	out.ExternalUpdatedTime = arg.ExternalUpdatedTime // simple assign
+	out.ExternalUpdatedTime = time.Time{}             // zero value
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.DeletedAt = time.Time{}                       // zero value
@@ -845,6 +948,33 @@ func Convert_fbmessaging_FbExternalPosts_fbmessagingmodel_FbExternalPosts(args [
 		outs[i] = Convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *fbmessaging.CreateFbExternalPostArgs, out *fbmessaging.FbExternalPost) *fbmessaging.FbExternalPost {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbExternalPost{}
+	}
+	apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg, out)
+	return out
+}
+
+func apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *fbmessaging.CreateFbExternalPostArgs, out *fbmessaging.FbExternalPost) {
+	out.ID = arg.ID                                   // simple assign
+	out.FbPageID = arg.FbPageID                       // simple assign
+	out.ExternalPageID = arg.ExternalPageID           // simple assign
+	out.ExternalID = arg.ExternalID                   // simple assign
+	out.ExternalParentID = arg.ExternalParentID       // simple assign
+	out.ExternalFrom = arg.ExternalFrom               // simple assign
+	out.ExternalPicture = arg.ExternalPicture         // simple assign
+	out.ExternalIcon = arg.ExternalIcon               // simple assign
+	out.ExternalMessage = arg.ExternalMessage         // simple assign
+	out.ExternalAttachments = arg.ExternalAttachments // simple assign
+	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
+	out.CreatedAt = time.Time{}                       // zero value
+	out.UpdatedAt = time.Time{}                       // zero value
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbMessageAttachment --//
@@ -866,6 +996,8 @@ func convert_fbmessagingmodel_FbMessageAttachment_fbmessaging_FbMessageAttachmen
 	out.MimeType = arg.MimeType // simple assign
 	out.Name = arg.Name         // simple assign
 	out.Size = arg.Size         // simple assign
+	out.VideoData = Convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(arg.VideoData, nil)
+	out.FileURL = arg.FileURL // simple assign
 }
 
 func Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(args []*fbmessagingmodel.FbMessageAttachment) (outs []*fbmessaging.FbMessageAttachment) {
@@ -897,6 +1029,8 @@ func convert_fbmessaging_FbMessageAttachment_fbmessagingmodel_FbMessageAttachmen
 	out.MimeType = arg.MimeType // simple assign
 	out.Name = arg.Name         // simple assign
 	out.Size = arg.Size         // simple assign
+	out.VideoData = Convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(arg.VideoData, nil)
+	out.FileURL = arg.FileURL // simple assign
 }
 
 func Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(args []*fbmessaging.FbMessageAttachment) (outs []*fbmessagingmodel.FbMessageAttachment) {
@@ -981,6 +1115,74 @@ func Convert_fbmessaging_FbMessageAttachmentImageDatas_fbmessagingmodel_FbMessag
 	return outs
 }
 
+//-- convert o.o/api/fabo/fbmessaging.FbMessageDataAttachmentVideoData --//
+
+func Convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(arg *fbmessagingmodel.FbMessageDataAttachmentVideoData, out *fbmessaging.FbMessageDataAttachmentVideoData) *fbmessaging.FbMessageDataAttachmentVideoData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbMessageDataAttachmentVideoData{}
+	}
+	convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(arg *fbmessagingmodel.FbMessageDataAttachmentVideoData, out *fbmessaging.FbMessageDataAttachmentVideoData) {
+	out.Width = arg.Width           // simple assign
+	out.Height = arg.Height         // simple assign
+	out.Length = arg.Length         // simple assign
+	out.VideoType = arg.VideoType   // simple assign
+	out.URL = arg.URL               // simple assign
+	out.PreviewURL = arg.PreviewURL // simple assign
+	out.Rotation = arg.Rotation     // simple assign
+}
+
+func Convert_fbmessagingmodel_FbMessageDataAttachmentVideoDatas_fbmessaging_FbMessageDataAttachmentVideoDatas(args []*fbmessagingmodel.FbMessageDataAttachmentVideoData) (outs []*fbmessaging.FbMessageDataAttachmentVideoData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.FbMessageDataAttachmentVideoData, len(args))
+	outs = make([]*fbmessaging.FbMessageDataAttachmentVideoData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_FbMessageDataAttachmentVideoData_fbmessaging_FbMessageDataAttachmentVideoData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(arg *fbmessaging.FbMessageDataAttachmentVideoData, out *fbmessagingmodel.FbMessageDataAttachmentVideoData) *fbmessagingmodel.FbMessageDataAttachmentVideoData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.FbMessageDataAttachmentVideoData{}
+	}
+	convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(arg, out)
+	return out
+}
+
+func convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(arg *fbmessaging.FbMessageDataAttachmentVideoData, out *fbmessagingmodel.FbMessageDataAttachmentVideoData) {
+	out.Width = arg.Width           // simple assign
+	out.Height = arg.Height         // simple assign
+	out.Length = arg.Length         // simple assign
+	out.VideoType = arg.VideoType   // simple assign
+	out.URL = arg.URL               // simple assign
+	out.PreviewURL = arg.PreviewURL // simple assign
+	out.Rotation = arg.Rotation     // simple assign
+}
+
+func Convert_fbmessaging_FbMessageDataAttachmentVideoDatas_fbmessagingmodel_FbMessageDataAttachmentVideoDatas(args []*fbmessaging.FbMessageDataAttachmentVideoData) (outs []*fbmessagingmodel.FbMessageDataAttachmentVideoData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.FbMessageDataAttachmentVideoData, len(args))
+	outs = make([]*fbmessagingmodel.FbMessageDataAttachmentVideoData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert o.o/api/fabo/fbmessaging.FbObjectFrom --//
 
 func Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg *fbmessagingmodel.FbObjectFrom, out *fbmessaging.FbObjectFrom) *fbmessaging.FbObjectFrom {
@@ -1041,6 +1243,68 @@ func Convert_fbmessaging_FbObjectFroms_fbmessagingmodel_FbObjectFroms(args []*fb
 	return outs
 }
 
+//-- convert o.o/api/fabo/fbmessaging.FbObjectParent --//
+
+func Convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(arg *fbmessagingmodel.FbObjectParent, out *fbmessaging.FbObjectParent) *fbmessaging.FbObjectParent {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbObjectParent{}
+	}
+	convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(arg *fbmessagingmodel.FbObjectParent, out *fbmessaging.FbObjectParent) {
+	out.CreatedTime = arg.CreatedTime // simple assign
+	out.From = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.From, nil)
+	out.Message = arg.Message // simple assign
+	out.ID = arg.ID           // simple assign
+}
+
+func Convert_fbmessagingmodel_FbObjectParents_fbmessaging_FbObjectParents(args []*fbmessagingmodel.FbObjectParent) (outs []*fbmessaging.FbObjectParent) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.FbObjectParent, len(args))
+	outs = make([]*fbmessaging.FbObjectParent, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_FbObjectParent_fbmessaging_FbObjectParent(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(arg *fbmessaging.FbObjectParent, out *fbmessagingmodel.FbObjectParent) *fbmessagingmodel.FbObjectParent {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.FbObjectParent{}
+	}
+	convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(arg, out)
+	return out
+}
+
+func convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(arg *fbmessaging.FbObjectParent, out *fbmessagingmodel.FbObjectParent) {
+	out.CreatedTime = arg.CreatedTime // simple assign
+	out.From = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.From, nil)
+	out.Message = arg.Message // simple assign
+	out.ID = arg.ID           // simple assign
+}
+
+func Convert_fbmessaging_FbObjectParents_fbmessagingmodel_FbObjectParents(args []*fbmessaging.FbObjectParent) (outs []*fbmessagingmodel.FbObjectParent) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.FbObjectParent, len(args))
+	outs = make([]*fbmessagingmodel.FbObjectParent, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_FbObjectParent_fbmessagingmodel_FbObjectParent(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert o.o/api/fabo/fbmessaging.FbObjectTo --//
 
 func Convert_fbmessagingmodel_FbObjectTo_fbmessaging_FbObjectTo(arg *fbmessagingmodel.FbObjectTo, out *fbmessaging.FbObjectTo) *fbmessaging.FbObjectTo {
@@ -1097,6 +1361,62 @@ func Convert_fbmessaging_FbObjectToes_fbmessagingmodel_FbObjectToes(args []*fbme
 	outs = make([]*fbmessagingmodel.FbObjectTo, len(args))
 	for i := range tmps {
 		outs[i] = Convert_fbmessaging_FbObjectTo_fbmessagingmodel_FbObjectTo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/fabo/fbmessaging.ImageMediaDataSubAttachment --//
+
+func Convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(arg *fbmessagingmodel.ImageMediaDataSubAttachment, out *fbmessaging.ImageMediaDataSubAttachment) *fbmessaging.ImageMediaDataSubAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.ImageMediaDataSubAttachment{}
+	}
+	convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(arg *fbmessagingmodel.ImageMediaDataSubAttachment, out *fbmessaging.ImageMediaDataSubAttachment) {
+	out.Image = Convert_fbmessagingmodel_MediaDataSubAttachment_fbmessaging_MediaDataSubAttachment(arg.Image, nil)
+}
+
+func Convert_fbmessagingmodel_ImageMediaDataSubAttachments_fbmessaging_ImageMediaDataSubAttachments(args []*fbmessagingmodel.ImageMediaDataSubAttachment) (outs []*fbmessaging.ImageMediaDataSubAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.ImageMediaDataSubAttachment, len(args))
+	outs = make([]*fbmessaging.ImageMediaDataSubAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_ImageMediaDataSubAttachment_fbmessaging_ImageMediaDataSubAttachment(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(arg *fbmessaging.ImageMediaDataSubAttachment, out *fbmessagingmodel.ImageMediaDataSubAttachment) *fbmessagingmodel.ImageMediaDataSubAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.ImageMediaDataSubAttachment{}
+	}
+	convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(arg *fbmessaging.ImageMediaDataSubAttachment, out *fbmessagingmodel.ImageMediaDataSubAttachment) {
+	out.Image = Convert_fbmessaging_MediaDataSubAttachment_fbmessagingmodel_MediaDataSubAttachment(arg.Image, nil)
+}
+
+func Convert_fbmessaging_ImageMediaDataSubAttachments_fbmessagingmodel_ImageMediaDataSubAttachments(args []*fbmessaging.ImageMediaDataSubAttachment) (outs []*fbmessagingmodel.ImageMediaDataSubAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.ImageMediaDataSubAttachment, len(args))
+	outs = make([]*fbmessagingmodel.ImageMediaDataSubAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_ImageMediaDataSubAttachment_fbmessagingmodel_ImageMediaDataSubAttachment(args[i], &tmps[i])
 	}
 	return outs
 }
@@ -1175,8 +1495,9 @@ func Convert_fbmessagingmodel_PostAttachment_fbmessaging_PostAttachment(arg *fbm
 }
 
 func convert_fbmessagingmodel_PostAttachment_fbmessaging_PostAttachment(arg *fbmessagingmodel.PostAttachment, out *fbmessaging.PostAttachment) {
-	out.Media = Convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(arg.Media, nil)
-	out.Type = arg.Type // simple assign
+	out.MediaType = arg.MediaType // simple assign
+	out.Type = arg.Type           // simple assign
+	out.SubAttachments = Convert_fbmessagingmodel_SubAttachments_fbmessaging_SubAttachments(arg.SubAttachments)
 }
 
 func Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(args []*fbmessagingmodel.PostAttachment) (outs []*fbmessaging.PostAttachment) {
@@ -1203,8 +1524,9 @@ func Convert_fbmessaging_PostAttachment_fbmessagingmodel_PostAttachment(arg *fbm
 }
 
 func convert_fbmessaging_PostAttachment_fbmessagingmodel_PostAttachment(arg *fbmessaging.PostAttachment, out *fbmessagingmodel.PostAttachment) {
-	out.Media = Convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(arg.Media, nil)
-	out.Type = arg.Type // simple assign
+	out.MediaType = arg.MediaType // simple assign
+	out.Type = arg.Type           // simple assign
+	out.SubAttachments = Convert_fbmessaging_SubAttachments_fbmessagingmodel_SubAttachments(arg.SubAttachments)
 }
 
 func Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(args []*fbmessaging.PostAttachment) (outs []*fbmessagingmodel.PostAttachment) {
@@ -1215,66 +1537,6 @@ func Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(args [
 	outs = make([]*fbmessagingmodel.PostAttachment, len(args))
 	for i := range tmps {
 		outs[i] = Convert_fbmessaging_PostAttachment_fbmessagingmodel_PostAttachment(args[i], &tmps[i])
-	}
-	return outs
-}
-
-//-- convert o.o/api/fabo/fbmessaging.PostAttachmentMedia --//
-
-func Convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(arg *fbmessagingmodel.PostAttachmentMedia, out *fbmessaging.PostAttachmentMedia) *fbmessaging.PostAttachmentMedia {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbmessaging.PostAttachmentMedia{}
-	}
-	convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(arg, out)
-	return out
-}
-
-func convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(arg *fbmessagingmodel.PostAttachmentMedia, out *fbmessaging.PostAttachmentMedia) {
-	out.Height = arg.Height // simple assign
-	out.Width = arg.Width   // simple assign
-	out.Src = arg.Src       // simple assign
-}
-
-func Convert_fbmessagingmodel_PostAttachmentMedias_fbmessaging_PostAttachmentMedias(args []*fbmessagingmodel.PostAttachmentMedia) (outs []*fbmessaging.PostAttachmentMedia) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]fbmessaging.PostAttachmentMedia, len(args))
-	outs = make([]*fbmessaging.PostAttachmentMedia, len(args))
-	for i := range tmps {
-		outs[i] = Convert_fbmessagingmodel_PostAttachmentMedia_fbmessaging_PostAttachmentMedia(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(arg *fbmessaging.PostAttachmentMedia, out *fbmessagingmodel.PostAttachmentMedia) *fbmessagingmodel.PostAttachmentMedia {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbmessagingmodel.PostAttachmentMedia{}
-	}
-	convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(arg, out)
-	return out
-}
-
-func convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(arg *fbmessaging.PostAttachmentMedia, out *fbmessagingmodel.PostAttachmentMedia) {
-	out.Height = arg.Height // simple assign
-	out.Width = arg.Width   // simple assign
-	out.Src = arg.Src       // simple assign
-}
-
-func Convert_fbmessaging_PostAttachmentMedias_fbmessagingmodel_PostAttachmentMedias(args []*fbmessaging.PostAttachmentMedia) (outs []*fbmessagingmodel.PostAttachmentMedia) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]fbmessagingmodel.PostAttachmentMedia, len(args))
-	outs = make([]*fbmessagingmodel.PostAttachmentMedia, len(args))
-	for i := range tmps {
-		outs[i] = Convert_fbmessaging_PostAttachmentMedia_fbmessagingmodel_PostAttachmentMedia(args[i], &tmps[i])
 	}
 	return outs
 }

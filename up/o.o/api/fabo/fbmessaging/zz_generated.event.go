@@ -4,4 +4,6 @@
 
 package fbmessaging
 
-func (e *FbExternalMessagesCreatedEvent) GetTopic() string { return "event/fbmessaging" }
+func (e *FbExternalCommentsCreatedEvent) GetTopic() string      { return "event/fbmessaging" }
+func (e *FbExternalConversationsCreatedEvent) GetTopic() string { return "event/fbmessaging" }
+func (e *FbExternalMessagesCreatedEvent) GetTopic() string      { return "event/fbmessaging" }

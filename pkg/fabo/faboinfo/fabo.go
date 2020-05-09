@@ -10,7 +10,6 @@ import (
 )
 
 type Info struct {
-	FbUserID  dot.ID
 	FbPageIDs []dot.ID
 }
 
@@ -33,18 +32,9 @@ type GetFaboInfoQuery struct {
 }
 
 func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*Info, error) {
-	getFbUserByIDQuery := &fbusering.GetFbExternalUserByUserIDQuery{
-		UserID: userID,
-	}
-	if err := fi.fbUserQuery.Dispatch(ctx, getFbUserByIDQuery); err != nil {
-		return nil, err
-	}
-	fbUserID := getFbUserByIDQuery.Result.ID
-
 	listFbPagesQuery := &fbpaging.ListFbExternalPagesQuery{
-		ShopID:   shopID,
-		UserID:   userID,
-		FbUserID: dot.WrapID(fbUserID),
+		ShopID: shopID,
+		UserID: userID,
 		Filters: []meta.Filter{
 			{
 				Name:  "status",
@@ -63,7 +53,6 @@ func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*In
 	}
 
 	return &Info{
-		FbUserID:  fbUserID,
 		FbPageIDs: fbPageIDs,
 	}, nil
 }

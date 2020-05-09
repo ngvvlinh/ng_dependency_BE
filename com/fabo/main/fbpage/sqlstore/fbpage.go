@@ -155,6 +155,27 @@ func (s *FbExternalPageStore) CreateFbExternalPages(fbExternalPages []*fbpaging.
 	return nil
 }
 
+func (s *FbExternalPageStore) GetFbExternalPageDB() (*model.FbExternalPage, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalPage model.FbExternalPage
+	err := query.ShouldGet(&fbExternalPage)
+	return &fbExternalPage, err
+}
+
+func (s *FbExternalPageStore) GetFbExternalPage() (*fbpaging.FbExternalPage, error) {
+	fbExternalPage, err := s.GetFbExternalPageDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbpaging.FbExternalPage{}
+	err = scheme.Convert(fbExternalPage, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
 func (s *FbExternalPageStore) ListFbExternalPagesDB() ([]*model.FbExternalPage, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

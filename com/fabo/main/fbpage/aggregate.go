@@ -24,7 +24,7 @@ type FbExternalPageAggregate struct {
 	fbExternalPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
 }
 
-func NewExternalFbPageAggregate(db *cmsql.Database) *FbExternalPageAggregate {
+func NewFbPageAggregate(db *cmsql.Database) *FbExternalPageAggregate {
 	return &FbExternalPageAggregate{
 		db:                          db,
 		fbExternalPageStore:         sqlstore.NewFbExternalPageStore(db),

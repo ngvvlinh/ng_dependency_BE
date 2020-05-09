@@ -16,9 +16,10 @@ var FilterFbCustomerConversation = sqlstore.FilterWhitelist{
 }
 
 var SortFbCustomerConversation = map[string]string{
-	"id":         "id",
-	"created_at": "",
-	"updated_at": "",
+	"id":              "id",
+	"created_at":      "",
+	"updated_at":      "",
+	"last_message_at": "last_message_at",
 }
 
 func (ft *FbExternalConversationFilters) NotDeleted() sq.WriterTo {
@@ -51,5 +52,39 @@ var SortFbExternalMessage = map[string]string{
 	"id":                    "id",
 	"created_at":            "",
 	"updated_at":            "",
-	"external_created_time": "",
+	"external_created_time": "external_created_time",
+}
+
+func (ft *FbExternalPostFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
+var FilterFbExternalPost = sqlstore.FilterWhitelist{
+	Dates:   []string{"created_at", "updated_at", "external_created_time"},
+	Numbers: []string{"id", "fb_page_id"},
+	Equals:  []string{"type", "external_id"},
+}
+
+var SortFbExternalPost = map[string]string{
+	"id":                    "id",
+	"created_at":            "",
+	"updated_at":            "",
+	"external_created_time": "external_created_time",
+}
+
+func (ft *FbExternalCommentFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
+var FilterFbExternalComment = sqlstore.FilterWhitelist{
+	Dates:   []string{"created_at", "updated_at", "external_created_time"},
+	Numbers: []string{"id", "fb_page_id"},
+	Equals:  []string{"type", "external_id"},
+}
+
+var SortFbExternalComment = map[string]string{
+	"id":                    "id",
+	"created_at":            "",
+	"updated_at":            "",
+	"external_created_time": "external_created_time",
 }

@@ -10,7 +10,7 @@ replace (
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
-	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20200504171905-7e668d9ad0ba
+	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20200513164142-a9864b03c326
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Shopify/sarama v1.26.3
 	github.com/andybalholm/cascadia v1.2.0 // indirect

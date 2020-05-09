@@ -69,6 +69,18 @@ func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, 
 
 func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/fabo.CustomerConversation/ListCommentsByExternalPostID":
+		msg := &ListCommentsByExternalPostIDRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return nil, err
+			}
+			return inner.ListCommentsByExternalPostID(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/ListCustomerConversations":
 		msg := &ListCustomerConversationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
@@ -91,6 +103,18 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return nil, err
 			}
 			return inner.ListMessages(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/UpdateReadStatus":
+		msg := &UpdateReadStatusRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return nil, err
+			}
+			return inner.UpdateReadStatus(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

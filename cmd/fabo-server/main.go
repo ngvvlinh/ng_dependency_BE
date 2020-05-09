@@ -106,13 +106,13 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	cmwrapper.InitBot(bot)
+
 	eventBus := bus.New()
 	sqlstore.Init(db)
 	sqlstore.AddEventBus(eventBus)
 
 	_ = serviceidentity.NewQueryService(db).MessageBus()
-	fbPageAggr := servicefbpage.NewExternalFbPageAggregate(db).MessageBus()
+	fbPageAggr := servicefbpage.NewFbPageAggregate(db).MessageBus()
 	fbPageQuery := servicefbpage.NewFbPageQuery(db).MessageBus()
 	fbUserAggr := servicefbuser.NewFbUserAggregate(db, fbPageAggr).MessageBus()
 	fbUserQuery := servicefbuser.NewFbUserQuery(db).MessageBus()
@@ -125,6 +125,8 @@ func main() {
 	}
 
 	healthservice.MarkReady()
+
+	cmwrapper.InitBot(bot)
 
 	mux := http.NewServeMux()
 	healthservice.RegisterHTTPHandler(mux)

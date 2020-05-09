@@ -14,8 +14,10 @@ type FbExternalMessage struct {
 	FbConversationID       dot.ID
 	ExternalConversationID string
 	FbPageID               dot.ID
+	ExternalPageID         string
 	ExternalID             string
 	ExternalMessage        string
+	ExternalSticker        string
 	ExternalTo             []*FbObjectTo
 	ExternalFrom           *FbObjectFrom
 	ExternalAttachments    []*FbMessageAttachment
@@ -42,6 +44,8 @@ type FbMessageAttachment struct {
 	MimeType  string
 	Name      string
 	Size      int
+	VideoData *FbMessageDataAttachmentVideoData
+	FileURL   string
 }
 
 type FbMessageAttachmentImageData struct {
@@ -55,34 +59,41 @@ type FbMessageAttachmentImageData struct {
 	RenderAsSticker bool
 }
 
+type FbMessageDataAttachmentVideoData struct {
+	Width      int    `json:"width"`
+	Height     int    `json:"height"`
+	Length     int    `json:"length"`
+	VideoType  int    `json:"video_type"`
+	URL        string `json:"url"`
+	PreviewURL string `json:"preview_url"`
+	Rotation   int    `json:"rotation"`
+}
+
 type FbExternalComment struct {
 	ID                   dot.ID
 	FbPostID             dot.ID
+	ExternalPostID       string
 	FbPageID             dot.ID
+	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
 	ExternalParentID     string
 	ExternalParentUserID string
 	ExternalMessage      string
 	ExternalCommentCount int
+	ExternalParent       *FbObjectParent
 	ExternalFrom         *FbObjectFrom
-	ExternalAttachment   *Attachment
+	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 }
 
-type Attachment struct {
-	MediaType      string
-	Type           string
-	SubAttachments []*SubAttachment
-}
-
-type SubAttachment struct {
-	Media  *MediaDataSubAttachment
-	Target *TargetDataSubAttachment
-	Type   string
-	URL    string
+type FbObjectParent struct {
+	CreatedTime time.Time
+	From        *FbObjectFrom
+	Message     string
+	ID          string
 }
 
 type MediaDataSubAttachment struct {
@@ -99,61 +110,88 @@ type TargetDataSubAttachment struct {
 type FbExternalConversation struct {
 	ID                   dot.ID
 	FbPageID             dot.ID
+	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
 	ExternalUserName     string
 	ExternalLink         string
 	ExternalUpdatedTime  time.Time
 	ExternalMessageCount int
-	LastMessage          string
-	LastMessageAt        time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 }
 
+type FbExternalPosts []*FbExternalPost
+
 type FbExternalPost struct {
 	ID                  dot.ID
 	FbPageID            dot.ID
+	ExternalPageID      string
 	ExternalID          string
 	ExternalParentID    string
 	ExternalFrom        *FbObjectFrom
 	ExternalPicture     string
 	ExternalIcon        string
 	ExternalMessage     string
-	ExternalAttachments []*Attachment
+	ExternalAttachments []*PostAttachment
 	ExternalCreatedTime time.Time
-	ExternalUpdatedTime time.Time
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 }
 
 type FbCustomerConversation struct {
-	ID               dot.ID
-	FbPageID         dot.ID
-	ExternalID       string
-	ExternalUserID   string
-	ExternalUserName string
-	IsRead           bool
-	Type             fb_customer_conversation_type.FbCustomerConversationType
-	PostAttachments  []*PostAttachment
-	LastMessage      string
-	LastMessageAt    time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        time.Time
+	ID                         dot.ID
+	FbPageID                   dot.ID
+	ExternalPageID             string
+	ExternalID                 string
+	ExternalUserID             string
+	ExternalUserName           string
+	ExternalFrom               *FbObjectFrom
+	IsRead                     bool
+	Type                       fb_customer_conversation_type.FbCustomerConversationType
+	ExternalPostAttachments    []*PostAttachment
+	ExternalCommentAttachment  *CommentAttachment
+	ExternalMessageAttachments []*FbMessageAttachment
+	LastMessage                string
+	LastMessageAt              time.Time
+	CreatedAt                  time.Time
+	UpdatedAt                  time.Time
+	DeletedAt                  time.Time
 }
 
 type PostAttachment struct {
-	Media *PostAttachmentMedia
-	Type  string
+	MediaType      string           `json:"media_type"`
+	Type           string           `json:"type"`
+	SubAttachments []*SubAttachment `json:"sub_attachments"`
 }
 
-type PostAttachmentMedia struct {
-	Height int
-	Width  int
-	Src    string
+type SubAttachment struct {
+	Media  *MediaDataSubAttachment  `json:"media"`
+	Target *TargetDataSubAttachment `json:"target"`
+	Type   string                   `json:"type"`
+	URL    string                   `json:"url"`
+}
+
+type ImageMediaDataSubAttachment struct {
+	Image *MediaDataSubAttachment `json:"image"`
+}
+
+type CommentAttachment struct {
+	Media  *ImageMediaDataSubAttachment `json:"media"`
+	Target *TargetDataSubAttachment     `json:"target"`
+	Title  string                       `json:"title"`
+	Type   string                       `json:"type"`
+	URL    string                       `json:"url"`
 }
 
 type FbExternalMessagesCreatedEvent struct {
 	FbExternalMessages []*FbExternalMessage
+}
+
+type FbExternalCommentsCreatedEvent struct {
+	FbExternalComments []*FbExternalComment
+}
+
+type FbExternalConversationsCreatedEvent struct {
+	FbExternalConversations []*FbExternalConversation
 }

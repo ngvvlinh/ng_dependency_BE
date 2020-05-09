@@ -141,37 +141,54 @@ type ListCustomerConversationsRequest struct {
 func (m *ListCustomerConversationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerConversationFilter struct {
-	FbPageIDs        filter.IDs                                                   `json:"fb_page_ids"`
+	FbPageIDs        filter.IDs                                                   `json:"fb_page_id"`
 	FbExternalUserID dot.NullString                                               `json:"fb_external_user_id"`
 	IsRead           dot.NullBool                                                 `json:"is_read"`
 	Type             fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`
 }
 
 type FbCustomerConversation struct {
-	ID                     dot.ID                                                   `json:"id"`
-	FbPageID               dot.ID                                                   `json:"fb_page_id"`
-	ExternalID             string                                                   `json:"external_id"`
-	ExternalUserID         string                                                   `json:"external_user_id"`
-	ExternalUserName       string                                                   `json:"external_user_name"`
-	IsRead                 bool                                                     `json:"is_read"`
-	Type                   fb_customer_conversation_type.FbCustomerConversationType `json:"type"`
-	PostAttachments        []*PostAttachment                                        `json:"post_attachments"`
-	ExternalUserPictureURL string                                                   `json:"external_user_picture_url"`
-	LastMessage            string                                                   `json:"last_message"`
-	LastMessageAt          time.Time                                                `json:"last_message_at"`
-	CreatedAt              time.Time                                                `json:"created_at"`
-	UpdatedAt              time.Time                                                `json:"updated_at"`
+	ID                         dot.ID                 `json:"id"`
+	FbPageID                   dot.ID                 `json:"fb_page_id"`
+	ExternalPageID             string                 `json:"external_page_id"`
+	ExternalID                 string                 `json:"external_id"`
+	ExternalUserID             string                 `json:"external_user_id"`
+	ExternalUserName           string                 `json:"external_user_name"`
+	ExternalFrom               *FbObjectFrom          `json:"external_from"`
+	IsRead                     bool                   `json:"is_read"`
+	Type                       string                 `json:"type"`
+	ExternalPostAttachments    []*PostAttachment      `json:"external_post_attachments"`
+	ExternalCommentAttachment  *CommentAttachment     `json:"external_comment_attachment"`
+	ExternalMessageAttachments []*FbMessageAttachment `json:"external_message_attachments"`
+	ExternalUserPictureURL     string                 `json:"external_user_picture_url"`
+	LastMessage                string                 `json:"last_message"`
+	LastMessageAt              time.Time              `json:"last_message_at"`
+	CreatedAt                  time.Time              `json:"created_at"`
+	UpdatedAt                  time.Time              `json:"updated_at"`
 }
 
 type PostAttachment struct {
-	Media *PostAttachmentMedia `json:"media"`
-	Type  string               `json:"type"`
+	MediaType      string           `json:"media_type"`
+	Type           string           `json:"type"`
+	SubAttachments []*SubAttachment `json:"sub_attachments"`
 }
 
-type PostAttachmentMedia struct {
+type SubAttachment struct {
+	Media  *MediaDataSubAttachment  `json:"media"`
+	Target *TargetDataSubAttachment `json:"target"`
+	Type   string                   `json:"type"`
+	URL    string                   `json:"url"`
+}
+
+type MediaDataSubAttachment struct {
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
 	Src    string `json:"src"`
+}
+
+type TargetDataSubAttachment struct {
+	ID  string `json:"id"`
+	URL string `json:"url"`
 }
 
 type FbCustomerConversationsResponse struct {
@@ -189,7 +206,7 @@ type ListMessagesRequest struct {
 func (m *ListMessagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type MessageFilter struct {
-	FbExternalConversationIDs []string `json:"fb_external_conversation_ids"`
+	FbExternalConversationIDs filter.Strings `json:"fb_external_conversation_ids"`
 }
 
 type FbMessagesResponse struct {
@@ -204,8 +221,10 @@ type FbExternalMessage struct {
 	FbConversationID       dot.ID                 `json:"fb_conversation_id"`
 	ExternalConversationID string                 `json:"external_conversation_id"`
 	FbPageID               dot.ID                 `json:"fb_page_id"`
+	ExternalPageID         string                 `json:"external_page_id"`
 	ExternalID             string                 `json:"external_id"`
 	ExternalMessage        string                 `json:"external_message"`
+	ExternalSticker        string                 `json:"external_sticker"`
 	ExternalTo             []*FbObjectTo          `json:"external_to"`
 	ExternalFrom           *FbObjectFrom          `json:"external_from"`
 	ExternalAttachments    []*FbMessageAttachment `json:"external_attachments"`
@@ -215,22 +234,26 @@ type FbExternalMessage struct {
 }
 
 type FbObjectTo struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID                     string `json:"id"`
+	Name                   string `json:"name"`
+	Email                  string `json:"email"`
+	ExternalUserPictureURL string `json:"external_user_picture_url"`
 }
 
 type FbObjectFrom struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID                     string `json:"id"`
+	Name                   string `json:"name"`
+	Email                  string `json:"email"`
+	ExternalUserPictureURL string `json:"external_user_picture_url"`
 }
 type FbMessageAttachment struct {
-	ID        string                        `json:"id"`
-	ImageData *FbMessageAttachmentImageData `json:"image_data"`
-	MimeType  string                        `json:"mime_type"`
-	Name      string                        `json:"name"`
-	Size      int                           `json:"size"`
+	ID        string                            `json:"id"`
+	ImageData *FbMessageAttachmentImageData     `json:"image_data"`
+	MimeType  string                            `json:"mime_type"`
+	Name      string                            `json:"name"`
+	Size      int                               `json:"size"`
+	VideoData *FbMessageDataAttachmentVideoData `json:"video_data"`
+	FileURL   string                            `json:"file_url"`
 }
 
 type FbMessageAttachmentImageData struct {
@@ -243,3 +266,99 @@ type FbMessageAttachmentImageData struct {
 	ImageType       int    `json:"image_type"`
 	RenderAsSticker bool   `json:"render_as_sticker"`
 }
+
+type FbMessageDataAttachmentVideoData struct {
+	Width      int    `json:"width"`
+	Height     int    `json:"height"`
+	Length     int    `json:"length"`
+	VideoType  int    `json:"video_type"`
+	URL        string `json:"url"`
+	PreviewURL string `json:"preview_url"`
+	Rotation   int    `json:"rotation"`
+}
+
+type ListCommentsByExternalPostIDRequest struct {
+	Filter *CommentFilter       `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListCommentsByExternalPostIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CommentFilter struct {
+	ExternalPostID string `json:"external_post_id"`
+	ExternalUserID string `json:"external_user_id"`
+}
+
+type ListCommentsByExternalPostIDResponse struct {
+	FbPost     *FbExternalPost     `json:"fb_post"`
+	FbComments *FbCommentsResponse `json:"fb_comments"`
+}
+
+func (m *ListCommentsByExternalPostIDResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type FbCommentsResponse struct {
+	FbComments []*FbExternalComment   `json:"data"`
+	Paging     *common.CursorPageInfo `json:"paging"`
+}
+
+type FbExternalPost struct {
+	ID                  dot.ID            `json:"id"`
+	FbPageID            dot.ID            `json:"fb_page_id"`
+	ExternalPageID      string            `json:"external_page_id"`
+	ExternalID          string            `json:"external_id"`
+	ExternalParentID    string            `json:"external_parent_id"`
+	ExternalFrom        *FbObjectFrom     `json:"external_from"`
+	ExternalPicture     string            `json:"external_picture"`
+	ExternalIcon        string            `json:"external_icon"`
+	ExternalMessage     string            `json:"external_message"`
+	ExternalAttachments []*PostAttachment `json:"external_attachments"`
+	ExternalCreatedTime time.Time         `json:"external_created_time"`
+	CreatedAt           time.Time         `json:"created_at"`
+	UpdatedAt           time.Time         `json:"updated_at"`
+}
+
+type FbExternalComment struct {
+	ID                   dot.ID             `json:"id"`
+	FbPostID             dot.ID             `json:"fb_post_id"`
+	ExternalPostID       string             `json:"external_post_id"`
+	FbPageID             dot.ID             `json:"fb_page_id"`
+	ExternalPageID       string             `json:"external_page_id"`
+	ExternalID           string             `json:"external_id"`
+	ExternalUserID       string             `json:"external_user_id"`
+	ExternalParentID     string             `json:"external_parent_id"`
+	ExternalParentUserID string             `json:"external_parent_user_id"`
+	ExternalMessage      string             `json:"external_message"`
+	ExternalCommentCount int                `json:"external_comment_count"`
+	ExternalParent       *FbObjectParent    `json:"external_parent"`
+	ExternalFrom         *FbObjectFrom      `json:"external_from"`
+	ExternalAttachment   *CommentAttachment `json:"external_attachment"`
+	ExternalCreatedTime  time.Time          `json:"external_created_time"`
+	CreatedAt            time.Time          `json:"created_at"`
+	UpdatedAt            time.Time          `json:"updated_at"`
+}
+
+type FbObjectParent struct {
+	CreatedTime time.Time     `json:"created_time"`
+	From        *FbObjectFrom `json:"from"`
+	Message     string        `json:"message"`
+	ID          string        `json:"id"`
+}
+
+type CommentAttachment struct {
+	Media  *ImageMediaDataSubAttachment `json:"media"`
+	Target *TargetDataSubAttachment     `json:"target"`
+	Title  string                       `json:"title"`
+	Type   string                       `json:"type"`
+	URL    string                       `json:"url"`
+}
+
+type ImageMediaDataSubAttachment struct {
+	Image *MediaDataSubAttachment `json:"image"`
+}
+
+type UpdateReadStatusRequest struct {
+	CustomerConversationID dot.ID `json:"customer_conversation_id"`
+	Read                   bool   `json:"read"`
+}
+
+func (m *UpdateReadStatusRequest) String() string { return jsonx.MustMarshalToString(m) }

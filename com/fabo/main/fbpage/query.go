@@ -36,7 +36,7 @@ func (q *FbPageQuery) MessageBus() fbpaging.QueryBus {
 func (f FbPageQuery) GetFbExternalPageByID(
 	ctx context.Context, ID dot.ID,
 ) (*fbpaging.FbExternalPage, error) {
-	panic("implement me")
+	return f.fbPageStore(ctx).ID(ID).GetFbExternalPage()
 }
 
 func (f FbPageQuery) GetFbExternalPageByExternalID(
@@ -54,7 +54,11 @@ func (f FbPageQuery) GetFbExternalPageInternalByID(
 func (q *FbPageQuery) ListFbExternalPagesByIDs(
 	ctx context.Context, IDs filter.IDs,
 ) ([]*fbpaging.FbExternalPage, error) {
-	panic("implement me")
+	fbPages, err := q.fbPageStore(ctx).IDs(IDs).ListFbPages()
+	if err != nil {
+		return nil, err
+	}
+	return fbPages, nil
 }
 
 func (q *FbPageQuery) ListFbExternalPages(

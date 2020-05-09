@@ -10,6 +10,8 @@ import (
 
 	"o.o/backend/cmd/fabo-sync-service/config"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
+	servicefbpaging "o.o/backend/com/fabo/main/fbpage"
+	servicefbusering "o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/sync"
 	cm "o.o/backend/pkg/common"
@@ -69,6 +71,10 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Telegram", l.Error(err))
 	}
+	if bot != nil {
+		bot.SendMessage("–––\n✨ fabo-sync-service started ✨\n" + cm.CommitMessage())
+		defer bot.SendMessage("👹 fabo-sync-service stopped 👹\n–––")
+	}
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
@@ -81,11 +87,15 @@ func main() {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
+	fbPagingQuery := servicefbpaging.NewFbPageQuery(db).MessageBus()
+	fbPagingAggr := servicefbpaging.NewFbPageAggregate(db).MessageBus()
 	fbMessagingAggr := servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus).MessageBus()
 	fbMessagingQuery := servicefbmessaging.NewFbMessagingQuery(db).MessageBus()
-	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr)
+	fbUseringQuery := servicefbusering.NewFbUserQuery(db).MessageBus()
+	fbUseringAggr := servicefbusering.NewFbUserAggregate(db, fbPagingAggr).MessageBus()
+	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbUseringQuery, fbUseringAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
-	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, cfg.TimeLimit)
+	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, bot, cfg.TimeLimit)
 	if err := synchronizer.Init(); err != nil {
 		panic(err)
 	}

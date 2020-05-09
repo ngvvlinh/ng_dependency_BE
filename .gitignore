@@ -1,7 +1,7 @@
 *.cover
 *.out
 *.test
-*config.yml
+__config.yaml
 .DS_Store
 .idea
 .vscode

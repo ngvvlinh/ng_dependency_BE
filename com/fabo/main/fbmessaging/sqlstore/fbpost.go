@@ -9,7 +9,9 @@ import (
 	"o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbExternalPostStoreFactory func(ctx context.Context) *FbExternalPostStore
@@ -34,6 +36,26 @@ type FbExternalPostStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *FbExternalPostStore) ID(ID dot.ID) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByID(ID))
+	return s
+}
+
+func (s *FbExternalPostStore) IDs(IDs []dot.ID) *FbExternalPostStore {
+	s.preds = append(s.preds, sq.In("id", IDs))
+	return s
+}
+
+func (s *FbExternalPostStore) ExternalID(externalID string) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
+func (s *FbExternalPostStore) ExternalIDs(externalIDs []string) *FbExternalPostStore {
+	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
 }
 
 func (s *FbExternalPostStore) CreateFbExternalPost(fbExternalPost *fbmessaging.FbExternalPost) error {
@@ -67,4 +89,60 @@ func (s *FbExternalPostStore) CreateFbExternalPosts(fbExternalPosts []*fbmessagi
 		return err
 	}
 	return nil
+}
+
+func (s *FbExternalPostStore) GetFbExternalPostDB() (*model.FbExternalPost, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalPost model.FbExternalPost
+	err := query.ShouldGet(&fbExternalPost)
+	return &fbExternalPost, err
+}
+
+func (s *FbExternalPostStore) GetFbExternalPost() (*fbmessaging.FbExternalPost, error) {
+	fbExternalPost, err := s.GetFbExternalPostDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbmessaging.FbExternalPost{}
+	err = scheme.Convert(fbExternalPost, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
+func (s *FbExternalPostStore) ListFbExternalPostsDB() ([]*model.FbExternalPost, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFbExternalPost, s.ft.prefix)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterFbExternalPost)
+	if err != nil {
+		return nil, err
+	}
+
+	var fbExternalPosts model.FbExternalPosts
+	err = query.Find(&fbExternalPosts)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(fbExternalPosts)
+	return fbExternalPosts, nil
+}
+
+func (s *FbExternalPostStore) ListFbExternalPosts() (result []*fbmessaging.FbExternalPost, err error) {
+	fbExternalPosts, err := s.ListFbExternalPostsDB()
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(fbExternalPosts, &result); err != nil {
+		return nil, err
+	}
+	return
 }

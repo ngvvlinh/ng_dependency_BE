@@ -40,6 +40,29 @@ func (a *FbUserAggregate) MessageBus() fbusering.CommandBus {
 	return fbusering.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
+func (a *FbUserAggregate) CreateFbExternalUsers(
+	ctx context.Context, args *fbusering.CreateFbExternalUsersArgs,
+) ([]*fbusering.FbExternalUser, error) {
+	newFbExternalUsers := make([]*fbusering.FbExternalUser, 0, len(args.FbExternalUsers))
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		for _, fbExternalUser := range args.FbExternalUsers {
+			newFbExternalUser := new(fbusering.FbExternalUser)
+			if err := scheme.Convert(fbExternalUser, newFbExternalUser); err != nil {
+				return err
+			}
+			newFbExternalUsers = append(newFbExternalUsers, newFbExternalUser)
+		}
+		if err := a.fbUserStore(ctx).CreateFbExternalUsers(newFbExternalUsers); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return newFbExternalUsers, nil
+}
+
 func (a *FbUserAggregate) CreateFbExternalUser(
 	ctx context.Context, args *fbusering.CreateFbExternalUserArgs,
 ) (*fbusering.FbExternalUser, error) {

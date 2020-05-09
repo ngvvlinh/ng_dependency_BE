@@ -118,5 +118,64 @@ func (q *FbMessagingQuery) ListLatestFbExternalMessages(
 	if err != nil {
 		return nil, err
 	}
-	return fbExternalMessages, err
+	return fbExternalMessages, nil
+}
+
+func (q *FbMessagingQuery) ListFbExternalPostsByExternalIDs(
+	ctx context.Context, externalIDs filter.Strings,
+) ([]*fbmessaging.FbExternalPost, error) {
+	fbExternalPosts, err := q.fbExternalPostStore(ctx).ExternalIDs(externalIDs).ListFbExternalPosts()
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPosts, nil
+}
+
+func (q *FbMessagingQuery) ListFbExternalPostsByIDs(
+	ctx context.Context, IDs filter.IDs,
+) ([]*fbmessaging.FbExternalPost, error) {
+	fbExternalPosts, err := q.fbExternalPostStore(ctx).IDs(IDs).ListFbExternalPosts()
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPosts, nil
+}
+
+func (q *FbMessagingQuery) GetFbCustomerConversation(
+	ctx context.Context, customerConversationType fb_customer_conversation_type.FbCustomerConversationType,
+	externalID, externalUserID string,
+) (*fbmessaging.FbCustomerConversation, error) {
+	if customerConversationType == fb_customer_conversation_type.Comment {
+		return q.fbCustomerConversationStore(ctx).
+			FbExternalID(externalID).FbExternalUserID(externalUserID).GetFbCustomerConversation()
+	}
+	return q.fbCustomerConversationStore(ctx).
+		FbExternalID(externalID).GetFbCustomerConversation()
+}
+
+func (q *FbMessagingQuery) GetLatestFbExternalComment(
+	ctx context.Context, externalPageID, externalPostID, externalUserID string,
+) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID)
+}
+
+func (q *FbMessagingQuery) ListFbExternalComments(
+	ctx context.Context, args *fbmessaging.ListFbExternalCommentsArgs,
+) (*fbmessaging.FbExternalCommentsResponse, error) {
+	query := q.fbExternalCommentStore(ctx).WithPaging(args.Paging).
+		ExternalPostID(args.FbExternalPostID).ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID)
+	fbExternalComments, err := query.ListFbExternalComments()
+	if err != nil {
+		return nil, err
+	}
+	return &fbmessaging.FbExternalCommentsResponse{
+		FbExternalComments: fbExternalComments,
+		Paging:             query.GetPaging(),
+	}, nil
+}
+
+func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
+	ctx context.Context, externalID string,
+) (*fbmessaging.FbExternalPost, error) {
+	return q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
 }

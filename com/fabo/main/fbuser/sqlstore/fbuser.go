@@ -10,6 +10,7 @@ import (
 	"o.o/backend/com/fabo/main/fbuser/model"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -38,6 +39,11 @@ type FbExternalUserStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *FbExternalUserStore) ExternalIDs(externalIDs []string) *FbExternalUserStore {
+	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
 }
 
 func (s *FbExternalUserStore) ExternalID(externalID string) *FbExternalUserStore {
@@ -84,6 +90,17 @@ func (s *FbExternalUserStore) CreateFbExternalUser(fbExternalUser *fbusering.FbE
 	return nil
 }
 
+func (s *FbExternalUserStore) CreateFbExternalUsers(fbExternalUsers []*fbusering.FbExternalUser) error {
+	sqlstore.MustNoPreds(s.preds)
+	fbExternalUsersDB := model.FbExternalUsers(convert.Convert_fbusering_FbExternalUsers_fbusermodel_FbExternalUsers(fbExternalUsers))
+
+	_, err := s.query().Upsert(&fbExternalUsersDB)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *FbExternalUserStore) GetFbExternalUserDB() (*model.FbExternalUser, error) {
 	query := s.query().Where(s.preds)
 
@@ -103,4 +120,39 @@ func (s *FbExternalUserStore) GetFbExternalUser() (*fbusering.FbExternalUser, er
 		return nil, err
 	}
 	return result, err
+}
+
+func (s *FbExternalUserStore) ListFbExternalUsersDB() ([]*model.FbExternalUser, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFbExternalUser, s.ft.prefix)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterFbExternalUser)
+	if err != nil {
+		return nil, err
+	}
+
+	var fbExternalUsers model.FbExternalUsers
+	err = query.Find(&fbExternalUsers)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(fbExternalUsers)
+	return fbExternalUsers, nil
+}
+
+func (s *FbExternalUserStore) ListFbExternalUsers() (result []*fbusering.FbExternalUser, err error) {
+	fbExternalUsers, err := s.ListFbExternalUsersDB()
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(fbExternalUsers, &result); err != nil {
+		return nil, err
+	}
+	return
 }

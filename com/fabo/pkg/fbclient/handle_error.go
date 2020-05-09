@@ -166,6 +166,10 @@ func censorTokens(currentURL string) (string, error) {
 
 type Code int
 
+func (c Code) String() string {
+	return fmt.Sprintf("%d", c)
+}
+
 const (
 	ApiUnknown                              = Code(1)
 	ApiService                              = Code(2)

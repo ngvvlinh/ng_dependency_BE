@@ -341,8 +341,8 @@ func (f *FbClient) CallAPIListPostsByIDs(accessToken string, postIDs []string) (
 	return &publishedPostsByIDsResponse, nil
 }
 
-func (f *FbClient) CallAPIGetPost(pageID, postID, accessToken string) (*model.Post, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/%s_%s", f.apiInfo.Url(), pageID, postID))
+func (f *FbClient) CallAPIGetPost(postID, accessToken string) (*model.Post, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), postID))
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +382,7 @@ func (f *FbClient) CallAPIGetPost(pageID, postID, accessToken string) (*model.Po
 }
 
 func (f *FbClient) CallAPIListComments(accessToken, postID string, pagination *model.FacebookPagingRequest) (*model.CommentsResponse, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/%s/comments", f.apiInfo.Url(), postID))
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), postID))
 	if err != nil {
 		return nil, err
 	}
@@ -392,12 +392,17 @@ func (f *FbClient) CallAPIListComments(accessToken, postID string, pagination *m
 		return nil, err
 	}
 
+	limit := DefaultLimitGetComments
+	if pagination != nil && pagination.Limit.Valid {
+		limit = pagination.Limit.Int
+	}
+
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, "message,id,from,attachment,comment_count,parent,created_time")
+	query.Add(Fields, fmt.Sprintf("comments.filter(stream).limit(%d){message,attachment,id,created_time,comment_count,parent,from,is_hidden}", limit))
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()
-	resp, err := http.Get(pagination.AddQueryParams(URL.String(), true, 100))
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, DefaultLimitGetComments))
 	if err != nil {
 		return nil, err
 	}
@@ -577,7 +582,7 @@ func (f *FbClient) CallAPIListMessages(accessToken, conversationID string, pagin
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, fmt.Sprintf("messages.limit(%d){id,from,to,message,created_time,attachments}", defaultPaging))
+	query.Add(Fields, fmt.Sprintf("messages.limit(%d){id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}}", defaultPaging))
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()

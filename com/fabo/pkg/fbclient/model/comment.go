@@ -5,17 +5,24 @@ type CommentsByPostIDsResponse struct {
 }
 
 type CommentsResponse struct {
+	Comments *Comments `json:"comments"`
+	PostID   string    `json:"id"`
+}
+
+type Comments struct {
 	CommentData []*Comment              `json:"data"`
 	Paging      *FacebookPagingResponse `json:"paging"`
 }
 
 type Comment struct {
 	ID           string             `json:"id"`
+	IsHidden     bool               `json:"is_hidden"`
 	Message      string             `json:"message"`
-	CommentCount int                `json:"comment_count"`
 	From         *ObjectFrom        `json:"from"`
+	CommentCount int                `json:"comment_count"`
 	Attachment   *CommentAttachment `json:"attachment"`
-	Parent       *CommentParent     `json:"parent"`
+	Parent       *ObjectParent      `json:"parent"`
+	CreatedTime  *FacebookTime      `json:"created_time"`
 }
 
 type CommentFrom struct {
@@ -26,6 +33,7 @@ type CommentFrom struct {
 type CommentAttachment struct {
 	Media  *CommentAttachmentMedia  `json:"media"`
 	Target *CommentAttachmentTarget `json:"target"`
+	Title  string                   `json:"title"`
 	Type   string                   `json:"type"`
 	URL    string                   `json:"url"`
 }
@@ -43,11 +51,4 @@ type CommentAttachmentMediaImage struct {
 type CommentAttachmentTarget struct {
 	ID  string `json:"id"`
 	URL string `json:"url"`
-}
-
-type CommentParent struct {
-	CreatedTime *FacebookTime `json:"created_time"`
-	From        *ObjectFrom   `json:"from"`
-	Message     string        `json:"message"`
-	ID          string        `json:"id"`
 }

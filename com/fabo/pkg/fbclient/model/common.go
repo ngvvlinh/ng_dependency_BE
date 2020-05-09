@@ -24,3 +24,10 @@ type ObjectFrom struct {
 type ObjectsFrom struct {
 	Data []*ObjectFrom `json:"data"`
 }
+
+type ObjectParent struct {
+	CreatedTime *FacebookTime `json:"created_time"`
+	From        *ObjectFrom   `json:"from"`
+	Message     string        `json:"message"`
+	ID          string        `json:"id"`
+}

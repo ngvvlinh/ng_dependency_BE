@@ -10,6 +10,7 @@ import (
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -68,6 +69,17 @@ func (h AggregateHandler) HandleCreateFbExternalUserInternal(ctx context.Context
 	return err
 }
 
+type CreateFbExternalUsersCommand struct {
+	FbExternalUsers []*CreateFbExternalUserArgs
+
+	Result []*FbExternalUser `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateFbExternalUsers(ctx context.Context, msg *CreateFbExternalUsersCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalUserByExternalIDQuery struct {
 	ExternalID string
 
@@ -112,16 +124,29 @@ func (h QueryServiceHandler) HandleGetFbExternalUserInternalByID(ctx context.Con
 	return err
 }
 
+type ListFbExternalUsersByExternalIDQuery struct {
+	ExternalIDs filter.Strings
+
+	Result []*FbExternalUser `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalUsersByExternalID(ctx context.Context, msg *ListFbExternalUsersByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalUsersByExternalID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateFbExternalUserCommand) command()         {}
 func (q *CreateFbExternalUserCombinedCommand) command() {}
 func (q *CreateFbExternalUserInternalCommand) command() {}
+func (q *CreateFbExternalUsersCommand) command()        {}
 
-func (q *GetFbExternalUserByExternalIDQuery) query() {}
-func (q *GetFbExternalUserByIDQuery) query()         {}
-func (q *GetFbExternalUserByUserIDQuery) query()     {}
-func (q *GetFbExternalUserInternalByIDQuery) query() {}
+func (q *GetFbExternalUserByExternalIDQuery) query()   {}
+func (q *GetFbExternalUserByIDQuery) query()           {}
+func (q *GetFbExternalUserByUserIDQuery) query()       {}
+func (q *GetFbExternalUserInternalByIDQuery) query()   {}
+func (q *ListFbExternalUsersByExternalIDQuery) query() {}
 
 // implement conversion
 
@@ -178,6 +203,17 @@ func (q *CreateFbExternalUserInternalCommand) SetCreateFbExternalUserInternalArg
 	q.ExpiresIn = args.ExpiresIn
 }
 
+func (q *CreateFbExternalUsersCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUsersArgs) {
+	return ctx,
+		&CreateFbExternalUsersArgs{
+			FbExternalUsers: q.FbExternalUsers,
+		}
+}
+
+func (q *CreateFbExternalUsersCommand) SetCreateFbExternalUsersArgs(args *CreateFbExternalUsersArgs) {
+	q.FbExternalUsers = args.FbExternalUsers
+}
+
 func (q *GetFbExternalUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
@@ -198,6 +234,11 @@ func (q *GetFbExternalUserInternalByIDQuery) GetArgs(ctx context.Context) (_ con
 		q.ID
 }
 
+func (q *ListFbExternalUsersByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
+	return ctx,
+		q.ExternalIDs
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -213,6 +254,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateFbExternalUser)
 	b.AddHandler(h.HandleCreateFbExternalUserCombined)
 	b.AddHandler(h.HandleCreateFbExternalUserInternal)
+	b.AddHandler(h.HandleCreateFbExternalUsers)
 	return CommandBus{b}
 }
 
@@ -232,5 +274,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalUserByID)
 	b.AddHandler(h.HandleGetFbExternalUserByUserID)
 	b.AddHandler(h.HandleGetFbExternalUserInternalByID)
+	b.AddHandler(h.HandleListFbExternalUsersByExternalID)
 	return QueryBus{b}
 }

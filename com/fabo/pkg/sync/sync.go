@@ -1,13 +1,14 @@
 package sync
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"sync"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
-	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/convert"
@@ -18,48 +19,60 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()
 
 const (
-	defaultNumWorkers        = 32
-	defaultRecurrentFacebook = 1 * time.Minute
-	defaultRecurrent         = 5 * time.Minute
-	defaultErrRecurr         = 10 * time.Minute
-	maxLogsCount             = 500
+	defaultNumWorkers                  = 32
+	defaultRecurrentFacebook           = 1 * time.Minute
+	defaultRecurrent                   = 5 * time.Minute
+	defaultErrRecurr                   = 10 * time.Minute
+	defaultRecurrentFacebookThrottling = 60 * time.Minute
+	maxLogsCount                       = 500
 )
 
 type TaskActionType int
 
 const (
-	GetPosts             TaskActionType = 737
-	GetConversations     TaskActionType = 363
-	GetMessages          TaskActionType = 160
-	GetCommentsByPostIDs TaskActionType = 655
+	GetPosts         TaskActionType = 737
+	GetChildPost     TaskActionType = 230
+	GetComments      TaskActionType = 655
+	GetConversations TaskActionType = 363
+	GetMessages      TaskActionType = 160
 )
 
-type GetCommentsByPostIDsArguments struct {
-	IDs []string
+type getCommentsArguments struct {
+	externalPostID string
+	postID         dot.ID
 }
 
-type GetMessagesArguments struct {
-	ConversationID         dot.ID
-	ExternalConversationID string
+type getChildPostArguments struct {
+	externalChildPostID string
+	externalPostID      string
+}
+
+type getMessagesArguments struct {
+	conversationID         dot.ID
+	externalConversationID string
 }
 
 type TaskArguments struct {
-	actionType     TaskActionType
-	accessToken    string
-	shopID         dot.ID
-	externalPageID string
-	pageID         dot.ID
+	actionType  TaskActionType
+	accessToken string
+	shopID      dot.ID
 
-	GetCommentsByPostIDsArgs *GetCommentsByPostIDsArguments
-	GetMessages              *GetMessagesArguments
+	pageID         dot.ID
+	externalPageID string
+
+	getCommentsArgs  *getCommentsArguments
+	getChildPostArgs *getChildPostArguments
+	getMessagesArgs  *getMessagesArguments
 
 	fbPagingRequest *model.FacebookPagingRequest
 }
@@ -83,15 +96,16 @@ type Synchronizer struct {
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbMessagingQuery fbmessaging.QueryBus
 
-	timeLimit int
+	bot *telebot.Channel
+	mu  sync.Mutex
 
-	mu sync.Mutex
+	timeLimit int
 }
 
 func New(
 	db *cmsql.Database, fbClient *fbclient.FbClient,
 	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
-	timeLimit int,
+	bot *telebot.Channel, timeLimit int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
@@ -101,6 +115,7 @@ func New(
 		mapTaskArguments: make(map[dot.ID]*TaskArguments),
 		fbMessagingAggr:  fbMessagingAggr,
 		fbMessagingQuery: fbMessagingQuery,
+		bot:              bot,
 		timeLimit:        timeLimit,
 	}
 	return s
@@ -111,6 +126,41 @@ func (s *Synchronizer) Init() error {
 	return nil
 }
 
+func (s *Synchronizer) Start() {
+	s.scheduler.Start()
+}
+
+func (s *Synchronizer) Stop() {
+	s.scheduler.Stop()
+}
+
+func (s *Synchronizer) addTask(taskArguments *TaskArguments) (taskID dot.ID) {
+	if taskArguments == nil {
+		return
+	}
+
+	s.mu.Lock()
+	taskID = cm.NewID()
+	s.mapTaskArguments[taskID] = taskArguments
+	t := rand.Intn(int(time.Second))
+	s.scheduler.AddAfter(taskID, time.Duration(t), s.syncCallbackLogs)
+	s.mu.Unlock()
+	return
+}
+
+func (s *Synchronizer) finishTask(taskID dot.ID) {
+	s.mu.Lock()
+	delete(s.mapTaskArguments, taskID)
+	s.mu.Unlock()
+}
+
+func (s *Synchronizer) getTaskArguments(taskID dot.ID) (taskArguments *TaskArguments) {
+	s.mu.Lock()
+	taskArguments = s.mapTaskArguments[taskID]
+	s.mu.Unlock()
+	return
+}
+
 func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error) {
 	fbPageCombineds, err := listAllFbPagesActive(s.db)
 	if err != nil {
@@ -118,11 +168,9 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 	}
 
 	for _, fbPageCombined := range fbPageCombineds {
-		// task get post of specific page
+		// Task get post of specific page
 		{
-			s.mu.Lock()
-			taskID := cm.NewID()
-			s.mapTaskArguments[taskID] = &TaskArguments{
+			s.addTask(&TaskArguments{
 				actionType:     GetPosts,
 				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
 				shopID:         fbPageCombined.FbExternalPage.ShopID,
@@ -134,17 +182,12 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 						Since: time.Now().AddDate(0, 0, -s.timeLimit),
 					},
 				},
-			}
-			t := rand.Intn(int(time.Second))
-			s.scheduler.AddAfter(taskID, time.Duration(t), s.syncCallbackLogs)
-			s.mu.Unlock()
+			})
 		}
 
-		// task get conversation
+		// Task get conversation
 		{
-			s.mu.Lock()
-			taskID := cm.NewID()
-			s.mapTaskArguments[taskID] = &TaskArguments{
+			s.addTask(&TaskArguments{
 				actionType:     GetConversations,
 				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
 				shopID:         fbPageCombined.FbExternalPage.ShopID,
@@ -152,33 +195,51 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
 				fbPagingRequest: &model.FacebookPagingRequest{
 					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+					TimePagination: &model.TimePaginationRequest{
+						Since: time.Now().AddDate(0, 0, -s.timeLimit),
+					},
 				},
-			}
-			t := rand.Intn(int(time.Second))
-			s.scheduler.AddAfter(taskID, time.Duration(t), s.syncCallbackLogs)
-			s.mu.Unlock()
+			})
 		}
 	}
 
-	s.scheduler.AddAfter(cm.NewID(), 30*time.Second, s.addJobs)
+	s.scheduler.AddAfter(cm.NewID(), 5*time.Minute, s.addJobs)
 
 	return
-}
-
-func (s *Synchronizer) Start() {
-	s.scheduler.Start()
-}
-
-func (s *Synchronizer) Stop() {
-	s.scheduler.Stop()
 }
 
 func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_err error) {
 	taskID := id.(dot.ID)
 	ctx := bus.Ctx()
-	s.mu.Lock()
-	taskArgs := s.mapTaskArguments[taskID]
-	s.mu.Unlock()
+
+	defer func() {
+		if _err == nil {
+			s.finishTask(taskID)
+			return
+		}
+
+		facebookError := _err.(*xerrors.APIError)
+		code := facebookError.Meta["code"]
+		switch code {
+		case fbclient.AccessTokenHasExpired.String():
+			// no-op
+			return
+		case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
+			s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
+			return
+		default:
+			if codeNum, err := strconv.ParseInt(code, 10, 64); err == nil {
+				if 200 <= codeNum && codeNum <= 299 {
+					// no-op
+					return
+				}
+			}
+		}
+		go s.bot.SendMessage(_err.Error())
+		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
+	}()
+
+	taskArgs := s.getTaskArguments(taskID)
 
 	accessToken := taskArgs.accessToken
 	shopID := taskArgs.shopID
@@ -188,426 +249,429 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 
 	switch taskArgs.actionType {
 	case GetPosts:
-		fmt.Println("GetPosts")
-		//fbPostsResp, err := s.fbClient.CallAPIListPublishedPosts(accessToken, externalPageID, fbPagingReq)
-		//if err != nil {
-		//	return err
-		//}
-		//
-		//if len(fbPostsResp.Data) == 0 ||
-		//	fbPostsResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
-		//	return nil
-		//}
-
+		if err := s.HandleTaskGetPosts(ctx, shopID, pageID, accessToken, externalPageID, fbPagingReq); err != nil {
+			return err
+		}
+	case GetChildPost:
+		if err := s.handleTaskGetChildPost(ctx, shopID, pageID, accessToken, externalPageID, taskArgs); err != nil {
+			return err
+		}
+	case GetComments:
+		if err := s.handleTaskGetComments(ctx, pageID, accessToken, externalPageID, fbPagingReq, taskArgs); err != nil {
+			return err
+		}
 	case GetConversations:
-		fmt.Println("GetConversations")
-		fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, fbPagingReq)
-		if err != nil {
-			// TODO: Ngoc classify error type
+		if err := s.handleTaskGetConversations(ctx, shopID, pageID, accessToken, externalPageID, fbPagingReq); err != nil {
 			return err
-		}
-
-		if len(fbConversationsResp.Conversations.ConversationsData) == 0 ||
-			fbConversationsResp.Conversations.Paging.CompareFacebookPagingRequest(fbPagingReq) {
-			return nil
-		}
-
-		isFinished := false
-		mapFbExternalConversation := make(map[string]*model.Conversation)
-		var fbConversationIDs []string
-		for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
-			if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
-				isFinished = true
-				continue
-			}
-			mapFbExternalConversation[fbConversation.ID] = fbConversation
-			fbConversationIDs = append(fbConversationIDs, fbConversation.ID)
-		}
-
-		listFbConversationsQuery := &fbmessaging.ListFbExternalConversationsByExternalIDsQuery{
-			ExternalIDs: fbConversationIDs,
-		}
-		if err := s.fbMessagingQuery.Dispatch(ctx, listFbConversationsQuery); err != nil {
-			return err
-		}
-
-		mapOldFbExternalConversation := make(map[string]*fbmessaging.FbExternalConversation)
-		for _, oldFbConversation := range listFbConversationsQuery.Result {
-			mapOldFbExternalConversation[oldFbConversation.ExternalID] = oldFbConversation
-		}
-
-		mapExternalIDAndID := make(map[string]dot.ID)
-		var fbExternalConversationsArgs []*fbmessaging.CreateFbExternalConversationArgs
-		for externalID, fbExternalConversation := range mapFbExternalConversation {
-			if oldFbExternalConversation, ok := mapOldFbExternalConversation[externalID]; ok {
-				mapExternalIDAndID[oldFbExternalConversation.ExternalID] = oldFbExternalConversation.ID
-				fbExternalConversationsArgs = append(fbExternalConversationsArgs, &fbmessaging.CreateFbExternalConversationArgs{
-					ID:                   oldFbExternalConversation.ID,
-					FbPageID:             oldFbExternalConversation.FbPageID,
-					ExternalID:           oldFbExternalConversation.ExternalID,
-					ExternalUserID:       oldFbExternalConversation.ExternalUserID,
-					ExternalUserName:     oldFbExternalConversation.ExternalUserName,
-					ExternalLink:         oldFbExternalConversation.ExternalLink,
-					ExternalUpdatedTime:  fbExternalConversation.UpdatedTime.ToTime(),
-					ExternalMessageCount: fbExternalConversation.MessageCount,
-					LastMessage:          oldFbExternalConversation.LastMessage,
-					LastMessageAt:        oldFbExternalConversation.LastMessageAt,
-				})
-			} else {
-				var externalUserID, externalUserName string
-				for _, sender := range fbExternalConversation.Senders.Data {
-					if sender.ID != externalPageID {
-						externalUserID = sender.ID
-						externalUserName = sender.Name
-						break
-					}
-				}
-				ID := cm.NewID()
-				mapExternalIDAndID[fbExternalConversation.ID] = ID
-				fbExternalConversationsArgs = append(fbExternalConversationsArgs, &fbmessaging.CreateFbExternalConversationArgs{
-					ID:                   ID,
-					FbPageID:             pageID,
-					ExternalID:           fbExternalConversation.ID,
-					ExternalUserID:       externalUserID,
-					ExternalUserName:     externalUserName,
-					ExternalUpdatedTime:  fbExternalConversation.UpdatedTime.ToTime(),
-					ExternalLink:         fbExternalConversation.Link,
-					ExternalMessageCount: fbExternalConversation.MessageCount,
-				})
-			}
-		}
-
-		if len(fbExternalConversationsArgs) > 0 {
-			if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateFbExternalConversationsCommand{
-				FbExternalConversations: fbExternalConversationsArgs,
-			}); err != nil {
-				return err
-			}
-		}
-
-		listFbCustomerConversationsQuery := &fbmessaging.ListFbCustomerConversationsByExternalIDsQuery{
-			ExternalIDs: fbConversationIDs,
-		}
-		if err := s.fbMessagingQuery.Dispatch(ctx, listFbCustomerConversationsQuery); err != nil {
-			return err
-		}
-
-		mapOldFbCustomerConversation := make(map[string]*fbmessaging.FbCustomerConversation)
-		for _, oldFbCustomerConversation := range listFbCustomerConversationsQuery.Result {
-			mapOldFbCustomerConversation[oldFbCustomerConversation.ExternalID] = oldFbCustomerConversation
-		}
-
-		var fbCustomerConversationsArgs []*fbmessaging.CreateFbCustomerConversationArgs
-		for externalID, fbExternalConversation := range mapFbExternalConversation {
-			if _, ok := mapOldFbCustomerConversation[externalID]; !ok {
-				var externalUserID, externalUserName string
-				for _, sender := range fbExternalConversation.Senders.Data {
-					if sender.ID != externalPageID {
-						externalUserID = sender.ID
-						externalUserName = sender.Name
-						break
-					}
-				}
-				ID := cm.NewID()
-				mapExternalIDAndID[fbExternalConversation.ID] = ID
-				// TODO: Ngoc fbclient get latest message (limit 1)
-				fbCustomerConversationsArgs = append(fbCustomerConversationsArgs, &fbmessaging.CreateFbCustomerConversationArgs{
-					ID:               ID,
-					FbPageID:         pageID,
-					ExternalID:       fbExternalConversation.ID,
-					ExternalUserID:   externalUserID,
-					ExternalUserName: externalUserName,
-					IsRead:           false,
-					Type:             fb_customer_conversation_type.Message,
-				})
-			}
-		}
-
-		if len(fbCustomerConversationsArgs) > 0 {
-			if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateFbCustomerConversationsCommand{
-				FbCustomerConversations: fbCustomerConversationsArgs,
-			}); err != nil {
-				return err
-			}
-		}
-
-		for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
-			if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
-				continue
-			}
-			s.mu.Lock()
-			newTaskID := cm.NewID()
-			s.mapTaskArguments[newTaskID] = &TaskArguments{
-				actionType:  GetMessages,
-				accessToken: accessToken,
-				shopID:      shopID,
-				pageID:      pageID,
-				GetMessages: &GetMessagesArguments{
-					ConversationID:         mapExternalIDAndID[fbConversation.ID],
-					ExternalConversationID: fbConversation.ID,
-				},
-				externalPageID: externalPageID,
-			}
-			t := rand.Intn(int(time.Second))
-			s.scheduler.AddAfter(newTaskID, time.Duration(t), s.syncCallbackLogs)
-			s.mu.Unlock()
-		}
-
-		if !isFinished {
-			s.mu.Lock()
-			newTaskID := cm.NewID()
-			t := rand.Intn(int(time.Second))
-			s.mapTaskArguments[newTaskID] = &TaskArguments{
-				actionType:      GetConversations,
-				accessToken:     accessToken,
-				shopID:          shopID,
-				externalPageID:  externalPageID,
-				pageID:          pageID,
-				fbPagingRequest: fbConversationsResp.Conversations.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetConversations),
-			}
-			s.scheduler.AddAfter(newTaskID, time.Duration(t), s.syncCallbackLogs)
-			s.mu.Unlock()
 		}
 	case GetMessages:
-		fmt.Println("GetMessages")
-		conversationID := taskArgs.GetMessages.ConversationID
-		externalConversationID := taskArgs.GetMessages.ExternalConversationID
-		fbMessagesResp, err := s.fbClient.CallAPIListMessages(accessToken, externalConversationID, fbPagingReq)
-		if err != nil {
-			// TODO: Ngoc classify error type
+		if err := s.handleTaskGetMessages(ctx, shopID, pageID, accessToken, externalPageID, taskArgs, fbPagingReq); err != nil {
 			return err
-		}
-
-		if len(fbMessagesResp.Messages.MessagesData) == 0 ||
-			fbMessagesResp.Messages.Paging.CompareFacebookPagingRequest(fbPagingReq) {
-			return nil
-		}
-
-		mapFbExternalMessage := make(map[string]*model.MessageData)
-		var fbMessageIDs []string
-		for _, fbMessage := range fbMessagesResp.Messages.MessagesData {
-			if time.Now().Sub(fbMessage.CreatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
-				continue
-			}
-			mapFbExternalMessage[fbMessage.ID] = fbMessage
-			fbMessageIDs = append(fbMessageIDs, fbMessage.ID)
-		}
-
-		listFbMessagesQuery := &fbmessaging.ListFbExternalMessagesByExternalIDsQuery{
-			ExternalIDs: fbMessageIDs,
-		}
-		if err := s.fbMessagingQuery.Dispatch(ctx, listFbMessagesQuery); err != nil {
-			return err
-		}
-
-		mapOldFbExternalMessage := make(map[string]*fbmessaging.FbExternalMessage)
-		for _, oldFbMessage := range listFbMessagesQuery.Result {
-			mapOldFbExternalMessage[oldFbMessage.ExternalID] = oldFbMessage
-		}
-
-		var fbExternalMessagesArgs []*fbmessaging.CreateFbExternalMessageArgs
-		for externalID, fbExternalMessage := range mapFbExternalMessage {
-			var externalAttachments []*fbmessaging.FbMessageAttachment
-			if fbExternalMessage.Attachments != nil {
-				externalAttachments = fbclientconvert.ConvertMessageDataAttachments(fbExternalMessage.Attachments.Data)
-			}
-			if oldFbExternalMessage, ok := mapOldFbExternalMessage[externalID]; ok {
-				fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
-					ID:                     oldFbExternalMessage.ID,
-					FbConversationID:       oldFbExternalMessage.FbConversationID,
-					ExternalConversationID: oldFbExternalMessage.ExternalConversationID,
-					FbPageID:               oldFbExternalMessage.FbPageID,
-					ExternalID:             oldFbExternalMessage.ExternalID,
-					ExternalMessage:        fbExternalMessage.Message,
-					ExternalTo:             fbclientconvert.ConvertObjectsTo(fbExternalMessage.To),
-					ExternalFrom:           fbclientconvert.ConvertObjectFrom(fbExternalMessage.From),
-					ExternalAttachments:    externalAttachments,
-					ExternalCreatedTime:    oldFbExternalMessage.ExternalCreatedTime,
-				})
-			} else {
-				fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
-					ID:                     cm.NewID(),
-					FbConversationID:       conversationID,
-					ExternalConversationID: externalConversationID,
-					FbPageID:               pageID,
-					ExternalID:             fbExternalMessage.ID,
-					ExternalMessage:        fbExternalMessage.Message,
-					ExternalTo:             fbclientconvert.ConvertObjectsTo(fbExternalMessage.To),
-					ExternalFrom:           fbclientconvert.ConvertObjectFrom(fbExternalMessage.From),
-					ExternalAttachments:    externalAttachments,
-					ExternalCreatedTime:    fbExternalMessage.CreatedTime.ToTime(),
-				})
-			}
-		}
-
-		if len(fbExternalMessagesArgs) > 0 {
-			if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateFbExternalMessagesCommand{
-				FbExternalMessages: fbExternalMessagesArgs,
-			}); err != nil {
-				return err
-			}
 		}
 	}
 	return nil
 }
 
-//func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_err error) {
-//	taskID := id.(dot.ID)
-//	s.mu.Lock()
-//	taskArgs := s.mapTaskArguments[taskID]
-//	s.mu.Unlock()
-//
-//	accessToken := taskArgs.accessToken
-//	shopID := taskArgs.shopID
-//	pageID := taskArgs.pageID
-//	externalPageID := taskArgs.externalPageID
-//	fbPagingReq := taskArgs.fbPagingRequest
-//
-//	switch taskArgs.actionType {
-//	case GetPosts:
-//		fmt.Println("GetPosts")
-//		fbPostsResponse, err := s.fbClient.CallAPIListPublishedPosts(accessToken, externalPageID, fbPagingReq)
-//		if err != nil {
-//			return err
-//		}
-//
-//		if len(fbPostsResponse.Data) == 0 {
-//			return nil
-//		}
-//
-//		var childPostIDs, postIDs []string
-//		// TODO: Ngoc save posts to database
-//		// Get comments and sub-posts
-//		for _, fbPost := range fbPostsResponse.Data {
-//			postIDs = append(postIDs, fbPost.ID)
-//			if fbPost.Attachments != nil {
-//				for _, attachment := range fbPost.Attachments.Data {
-//					if attachment.Type == string(fbclient.Album) {
-//						for _, subAttachment := range attachment.SubAttachments.Data {
-//							childPostIDs = append(childPostIDs, subAttachment.Target.ID)
-//						}
-//						break
-//					}
-//				}
-//			}
-//		}
-//
-//		// Get next posts
-//		{
-//			if !fbPostsResponse.Paging.CompareFacebookPagingRequest(fbPagingReq) {
-//				newTaskID := cm.NewID()
-//				s.mu.Lock()
-//				t := rand.Intn(int(time.Second))
-//				s.mapTaskArguments[newTaskID] = &TaskArguments{
-//					actionType:      GetPosts,
-//					accessToken:     accessToken,
-//					shopID:          shopID,
-//					externalPageID:  externalPageID,
-//					pageID:          pageID,
-//					fbPagingRequest: fbPostsResponse.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetPosts),
-//				}
-//				s.scheduler.AddAfter(newTaskID, time.Duration(t), s.syncCallbackLogs)
-//				s.mu.Unlock()
-//			}
-//		}
-//
-//		// Get child_posts
-//		{
-//			start, end := 0, 0
-//			numOfChildPosts := len(childPostIDs)
-//
-//			for {
-//				start = end
-//				end = min(end+fbclient.MaximumIDs, numOfChildPosts)
-//				fmt.Println("accessToken ", accessToken)
-//				fbPostsResponse, err := s.fbClient.CallAPIListPostsByIDs(accessToken, childPostIDs[start:end])
-//				if err != nil {
-//					return err
-//				}
-//
-//				if len(fbPostsResponse.Data) == 0 {
-//					break
-//				}
-//
-//				for _, fbPost := range fbPostsResponse.Data {
-//					postIDs = append(postIDs, fbPost.ID)
-//				}
-//
-//				if end == numOfChildPosts {
-//					break
-//				}
-//			}
-//		}
-//
-//		// Get comment summaries and create task getCommentsByPostIDs
-//		{
-//			startPostIDs, endPostIDs := 0, 0
-//			for {
-//				startPostIDs = endPostIDs
-//				endPostIDs = min(endPostIDs+fbclient.MaximumIDs, len(postIDs))
-//				fbCommentSummaries, err := s.fbClient.CallAPIListCommentSummaries(accessToken, postIDs[startPostIDs:endPostIDs])
-//				if err != nil {
-//					return err
-//				}
-//
-//				{
-//					var tempPostIDs []string
-//					for postID := range fbCommentSummaries {
-//						tempPostIDs = append(tempPostIDs, postID)
-//					}
-//
-//					newTaskID := cm.NewID()
-//					s.mu.Lock()
-//					t := rand.Intn(int(time.Second))
-//					s.mapTaskArguments[newTaskID] = &TaskArguments{
-//						actionType:     GetCommentsByPostIDs,
-//						accessToken:    accessToken,
-//						shopID:         shopID,
-//						externalPageID: externalPageID,
-//						pageID:         pageID,
-//						GetCommentsByPostIDsArgs: &GetCommentsByPostIDsArguments{
-//							IDs: tempPostIDs,
-//						},
-//					}
-//					s.scheduler.AddAfter(newTaskID, time.Duration(t), s.syncCallbackLogs)
-//					s.mu.Unlock()
-//				}
-//				if endPostIDs >= len(postIDs) {
-//					break
-//				}
-//			}
-//		}
-//	case GetConversations:
-//	case GetCommentsByPostIDs:
-//		fmt.Println("GetCommentsByPostIDs")
-//
-//		defer func() {
-//			err := recover()
-//			if err != nil {
-//				if cm.ErrorCode(err.(error)) == cm.FacebookError { // TODO: Ngoc handle missing permissions
-//					s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
-//				} else {
-//					s.scheduler.AddAfter(taskID, defaultRecurrent, s.syncCallbackLogs)
-//				}
-//			}
-//		}()
-//
-//		getCommentsByPostIDs := taskArgs.GetCommentsByPostIDsArgs
-//		fbCommentsResponse, err := s.fbClient.CallAPIListCommentsByPostIDs(accessToken, getCommentsByPostIDs.IDs)
-//		if err != nil {
-//			return err
-//		}
-//
-//		for _, fbComment := range fbCommentsResponse.Data {
-//			if fbComment.Parent == nil {
-//				fmt.Printf("Comment: %v\n", fbComment.Message)
-//			} else {
-//				fmt.Printf("Reply comment: %v\n", fbComment.Message)
-//			}
-//		}
-//	}
-//	return nil
-//}
+func (s *Synchronizer) handleTaskGetMessages(
+	ctx context.Context, shopID dot.ID, pageID dot.ID, accessToken string,
+	externalPageID string, taskArgs *TaskArguments, fbPagingReq *model.FacebookPagingRequest,
+) error {
+	fmt.Println("getMessagesArgs")
+
+	conversationID := taskArgs.getMessagesArgs.conversationID
+	externalConversationID := taskArgs.getMessagesArgs.externalConversationID
+
+	fbMessagesResp, err := s.fbClient.CallAPIListMessages(accessToken, externalConversationID, fbPagingReq)
+	if err != nil {
+		return err
+	}
+
+	if fbMessagesResp.Messages == nil ||
+		len(fbMessagesResp.Messages.MessagesData) == 0 ||
+		fbMessagesResp.Messages.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	isFinished := false
+	var fbExternalMessagesArgs []*fbmessaging.CreateFbExternalMessageArgs
+	for _, fbMessage := range fbMessagesResp.Messages.MessagesData {
+		if time.Now().Sub(fbMessage.CreatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
+			isFinished = true
+			continue
+		}
+		var externalAttachments []*fbmessaging.FbMessageAttachment
+		if fbMessage.Attachments != nil {
+			externalAttachments = fbclientconvert.ConvertMessageDataAttachments(fbMessage.Attachments.Data)
+		}
+		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
+			ID:                     cm.NewID(),
+			FbConversationID:       conversationID,
+			ExternalConversationID: externalConversationID,
+			FbPageID:               pageID,
+			ExternalPageID:         externalPageID,
+			ExternalID:             fbMessage.ID,
+			ExternalMessage:        fbMessage.Message,
+			ExternalSticker:        fbMessage.Sticker,
+			ExternalTo:             fbclientconvert.ConvertObjectsTo(fbMessage.To),
+			ExternalFrom:           fbclientconvert.ConvertObjectFrom(fbMessage.From),
+			ExternalAttachments:    externalAttachments,
+			ExternalCreatedTime:    fbMessage.CreatedTime.ToTime(),
+		})
+	}
+
+	if len(fbExternalMessagesArgs) > 0 {
+		if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalMessagesCommand{
+			FbExternalMessages: fbExternalMessagesArgs,
+		}); err != nil {
+			return err
+		}
+	}
+
+	if !isFinished {
+		s.addTask(&TaskArguments{
+			actionType:     GetMessages,
+			accessToken:    accessToken,
+			shopID:         shopID,
+			externalPageID: externalPageID,
+			pageID:         pageID,
+			getMessagesArgs: &getMessagesArguments{
+				conversationID:         conversationID,
+				externalConversationID: externalConversationID,
+			},
+			fbPagingRequest: fbMessagesResp.Messages.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetMessages),
+		})
+	}
+	return nil
+}
+
+func (s *Synchronizer) handleTaskGetConversations(
+	ctx context.Context, shopID dot.ID, pageID dot.ID,
+	accessToken string, externalPageID string, fbPagingReq *model.FacebookPagingRequest,
+) error {
+	fmt.Println("GetConversations")
+
+	// Call api list conversations that depends on externalPageID
+	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, fbPagingReq)
+	if err != nil {
+		// TODO: Ngoc classify error type
+		return err
+	}
+
+	// Finish task when data response is empty
+	if fbConversationsResp.Conversations == nil ||
+		len(fbConversationsResp.Conversations.ConversationsData) == 0 ||
+		fbConversationsResp.Conversations.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	isFinished := false
+	var fbExternalConversationsArgs []*fbmessaging.CreateFbExternalConversationArgs
+	for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
+		if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
+			isFinished = true
+			continue
+		}
+
+		var externalUserID, externalUserName string
+		for _, sender := range fbConversation.Senders.Data {
+			if sender.ID != externalPageID {
+				externalUserID = sender.ID
+				externalUserName = sender.Name
+				break
+			}
+		}
+		fbExternalConversationsArgs = append(fbExternalConversationsArgs, &fbmessaging.CreateFbExternalConversationArgs{
+			ID:                   cm.NewID(),
+			ExternalID:           fbConversation.ID,
+			FbPageID:             pageID,
+			ExternalPageID:       externalPageID,
+			ExternalUserID:       externalUserID,
+			ExternalUserName:     externalUserName,
+			ExternalLink:         fbConversation.Link,
+			ExternalUpdatedTime:  fbConversation.UpdatedTime.ToTime(),
+			ExternalMessageCount: fbConversation.MessageCount,
+		})
+	}
+
+	mapExternalIDAndID := make(map[string]dot.ID)
+	if len(fbExternalConversationsArgs) > 0 {
+		createOrUpdateFbExternalConversationsCmd := &fbmessaging.CreateOrUpdateFbExternalConversationsCommand{
+			FbExternalConversations: fbExternalConversationsArgs,
+		}
+		if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalConversationsCmd); err != nil {
+			return err
+		}
+
+		for _, fbConversation := range createOrUpdateFbExternalConversationsCmd.Result {
+			mapExternalIDAndID[fbConversation.ExternalID] = fbConversation.ID
+		}
+	}
+
+	for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
+		if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
+			continue
+		}
+		s.addTask(&TaskArguments{
+			actionType:     GetMessages,
+			accessToken:    accessToken,
+			shopID:         shopID,
+			externalPageID: externalPageID,
+			pageID:         pageID,
+			getMessagesArgs: &getMessagesArguments{
+				conversationID:         mapExternalIDAndID[fbConversation.ID],
+				externalConversationID: fbConversation.ID,
+			},
+			fbPagingRequest: &model.FacebookPagingRequest{
+				Limit: dot.Int(fbclient.DefaultLimitGetMessages),
+			},
+		})
+	}
+
+	if !isFinished {
+		s.addTask(&TaskArguments{
+			actionType:      GetConversations,
+			accessToken:     accessToken,
+			shopID:          shopID,
+			externalPageID:  externalPageID,
+			pageID:          pageID,
+			fbPagingRequest: fbConversationsResp.Conversations.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetConversations),
+		})
+	}
+	return nil
+}
+
+func (s *Synchronizer) handleTaskGetComments(
+	ctx context.Context, pageID dot.ID, accessToken string,
+	externalPageID string, fbPagingReq *model.FacebookPagingRequest, taskArgs *TaskArguments,
+) error {
+	fmt.Println("GetComments")
+
+	// Get values from arguments
+	externalPostID := taskArgs.getCommentsArgs.externalPostID
+	postID := taskArgs.getCommentsArgs.postID
+
+	// Call api list comments that depends on (externalPostID)
+	fbExternalCommentsResp, err := s.fbClient.CallAPIListComments(accessToken, externalPostID, fbPagingReq)
+	if err != nil {
+		return err
+	}
+
+	// Finish task when data response is empty
+	if fbExternalCommentsResp.Comments == nil ||
+		len(fbExternalCommentsResp.Comments.CommentData) == 0 ||
+		fbExternalCommentsResp.Comments.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
+	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
+		if fbExternalComment.IsHidden {
+			continue
+		}
+		var externalUserID, externalParentID, externalParentUserID string
+		if fbExternalComment.From != nil {
+			externalUserID = fbExternalComment.From.ID
+		}
+		if fbExternalComment.Parent != nil {
+			externalParentID = fbExternalComment.Parent.ID
+			if fbExternalComment.Parent.From != nil {
+				externalParentUserID = fbExternalComment.Parent.From.ID
+			}
+		}
+		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
+			ID:                   cm.NewID(),
+			FbPostID:             postID,
+			ExternalPostID:       externalPostID,
+			FbPageID:             pageID,
+			ExternalPageID:       externalPageID,
+			ExternalID:           fbExternalComment.ID,
+			ExternalUserID:       externalUserID,
+			ExternalParentID:     externalParentID,
+			ExternalParentUserID: externalParentUserID,
+			ExternalMessage:      fbExternalComment.Message,
+			ExternalCommentCount: fbExternalComment.CommentCount,
+			ExternalParent:       fbclientconvert.ConvertFbObjectParent(fbExternalComment.Parent),
+			ExternalFrom:         fbclientconvert.ConvertObjectFrom(fbExternalComment.From),
+			ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(fbExternalComment.Attachment),
+			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
+		})
+	}
+
+	if len(createOrUpdateFbExternalCommentsArgs) == 0 {
+		return nil
+	}
+
+	createOrUpdateFbExternalCommentsCmd := &fbmessaging.CreateOrUpdateFbExternalCommentsCommand{
+		FbExternalComments: createOrUpdateFbExternalCommentsArgs,
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Synchronizer) handleTaskGetChildPost(
+	ctx context.Context, shopID dot.ID, pageID dot.ID,
+	accessToken string, externalPageID string, taskArgs *TaskArguments,
+) error {
+	fmt.Println("GetChildPost")
+
+	// Get values from arguments
+	externalChildPostID := taskArgs.getChildPostArgs.externalChildPostID
+	externalPostID := taskArgs.getChildPostArgs.externalPostID
+
+	// Call api get (child) post that depends on postID
+	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(externalChildPostID, accessToken)
+	if err != nil {
+		return err
+	}
+
+	var createOrUpdateFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+
+	createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
+		ID:                  cm.NewID(),
+		FbPageID:            pageID,
+		ExternalPageID:      externalPageID,
+		ExternalID:          externalChildPostID,
+		ExternalParentID:    externalPostID,
+		ExternalFrom:        fbclientconvert.ConvertObjectFrom(fbExternalPostResp.From),
+		ExternalPicture:     fbExternalPostResp.FullPicture,
+		ExternalIcon:        fbExternalPostResp.Icon,
+		ExternalMessage:     ternaryString(fbExternalPostResp.Message != "", fbExternalPostResp.Message, fbExternalPostResp.Story),
+		ExternalAttachments: fbclientconvert.ConvertAttachments(fbExternalPostResp.Attachments),
+		ExternalCreatedTime: fbExternalPostResp.CreatedTime.ToTime(),
+		ExternalUpdatedTime: fbExternalPostResp.UpdatedTime.ToTime(),
+	})
+
+	createOrUpdateFbExternalPostsCmd := &fbmessaging.CreateOrUpdateFbExternalPostsCommand{
+		FbExternalPosts: createOrUpdateFbExternalPostsArgs,
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalPostsCmd); err != nil {
+		return err
+	}
+	childPostID := createOrUpdateFbExternalPostsCmd.Result[0].ID
+
+	s.addTask(&TaskArguments{
+		actionType:     GetComments,
+		accessToken:    accessToken,
+		shopID:         shopID,
+		pageID:         pageID,
+		externalPageID: externalPageID,
+		getCommentsArgs: &getCommentsArguments{
+			externalPostID: externalChildPostID,
+			postID:         childPostID,
+		},
+		fbPagingRequest: &model.FacebookPagingRequest{
+			Limit: dot.Int(fbclient.DefaultLimitGetComments),
+			TimePagination: &model.TimePaginationRequest{
+				Since: time.Now().AddDate(0, 0, -s.timeLimit),
+			},
+		},
+	})
+	return nil
+}
+
+func (s *Synchronizer) HandleTaskGetPosts(
+	ctx context.Context, shopID dot.ID, pageID dot.ID,
+	accessToken string, externalPageID string, fbPagingReq *model.FacebookPagingRequest,
+) error {
+	fmt.Println("GetPosts")
+
+	// Call api (facebook) listPublishedPosts from facebook
+	fbExternalPostsResp, err := s.fbClient.CallAPIListPublishedPosts(accessToken, externalPageID, fbPagingReq)
+	if err != nil {
+		return err
+	}
+
+	// Finish task when data is empty
+	if len(fbExternalPostsResp.Data) == 0 ||
+		fbExternalPostsResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	// Get all child posts of each post
+	// Create and Update posts
+	mapExternalChildPostIDAndExternalPostID := make(map[string]string)
+	var createOrUpdateFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+	for _, fbPost := range fbExternalPostsResp.Data {
+		if fbPost.ID == "472044163146832_1113902165627692" {
+			fmt.Println("a")
+		}
+		if fbPost.Attachments != nil {
+			for _, attachment := range fbPost.Attachments.Data {
+				// TODO: Ngoc add enum
+				if attachment.Type == "album" {
+					for _, subAttachment := range attachment.SubAttachments.Data {
+						if subAttachment.Type == "photo" {
+							mapExternalChildPostIDAndExternalPostID[fmt.Sprintf("%s_%s", externalPageID, subAttachment.Target.ID)] = fbPost.ID
+						}
+					}
+				}
+			}
+		}
+
+		createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
+			ID:                  cm.NewID(),
+			FbPageID:            pageID,
+			ExternalPageID:      externalPageID,
+			ExternalID:          fbPost.ID,
+			ExternalFrom:        fbclientconvert.ConvertObjectFrom(fbPost.From),
+			ExternalPicture:     fbPost.FullPicture,
+			ExternalIcon:        fbPost.Icon,
+			ExternalMessage:     ternaryString(fbPost.Message != "", fbPost.Message, fbPost.Story),
+			ExternalAttachments: fbclientconvert.ConvertAttachments(fbPost.Attachments),
+			ExternalCreatedTime: fbPost.CreatedTime.ToTime(),
+			ExternalUpdatedTime: fbPost.UpdatedTime.ToTime(),
+		})
+	}
+
+	createOrUpdateFbExternalPostsCmd := &fbmessaging.CreateOrUpdateFbExternalPostsCommand{
+		FbExternalPosts: createOrUpdateFbExternalPostsArgs,
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalPostsCmd); err != nil {
+		return err
+	}
+
+	mapExternalPostIDAndPostID := make(map[string]dot.ID)
+	for _, fbExternalPost := range createOrUpdateFbExternalPostsCmd.Result {
+		mapExternalPostIDAndPostID[fbExternalPost.ExternalID] = fbExternalPost.ID
+	}
+
+	// Create tasks getChildPost
+	for externalChildPostID, externalPostID := range mapExternalChildPostIDAndExternalPostID {
+		s.addTask(&TaskArguments{
+			actionType:     GetChildPost,
+			accessToken:    accessToken,
+			shopID:         shopID,
+			pageID:         pageID,
+			externalPageID: externalPageID,
+			getChildPostArgs: &getChildPostArguments{
+				externalChildPostID: externalChildPostID,
+				externalPostID:      externalPostID,
+			},
+		})
+	}
+
+	// Create tasks getComments
+	for _, fbExternalPost := range createOrUpdateFbExternalPostsCmd.Result {
+		s.addTask(&TaskArguments{
+			actionType:     GetComments,
+			accessToken:    accessToken,
+			shopID:         shopID,
+			pageID:         pageID,
+			externalPageID: externalPageID,
+			getCommentsArgs: &getCommentsArguments{
+				externalPostID: fbExternalPost.ExternalID,
+				postID:         mapExternalPostIDAndPostID[fbExternalPost.ExternalID],
+			},
+			fbPagingRequest: &model.FacebookPagingRequest{
+				Limit: dot.Int(fbclient.DefaultLimitGetComments),
+			},
+		})
+	}
+
+	return nil
+}
 
 func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds, error) {
 	fromID := dot.ID(0)
@@ -663,8 +727,8 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 	return fbExternalPageCombineds, nil
 }
 
-func min(a, b int) int {
-	if a < b {
+func ternaryString(statement bool, a, b string) string {
+	if statement {
 		return a
 	}
 	return b

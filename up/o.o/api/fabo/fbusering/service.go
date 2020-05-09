@@ -5,12 +5,14 @@ import (
 
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 // +gen:api
 
 type Aggregate interface {
 	CreateFbExternalUser(context.Context, *CreateFbExternalUserArgs) (*FbExternalUser, error)
+	CreateFbExternalUsers(context.Context, *CreateFbExternalUsersArgs) ([]*FbExternalUser, error)
 
 	CreateFbExternalUserInternal(context.Context, *CreateFbExternalUserInternalArgs) (*FbExternalUserInternal, error)
 
@@ -21,6 +23,7 @@ type QueryService interface {
 	GetFbExternalUserByID(_ context.Context, ID dot.ID) (*FbExternalUser, error)
 	GetFbExternalUserByExternalID(_ context.Context, externalID string) (*FbExternalUser, error)
 	GetFbExternalUserByUserID(_ context.Context, userID dot.ID) (*FbExternalUser, error)
+	ListFbExternalUsersByExternalID(_ context.Context, externalIDs filter.Strings) ([]*FbExternalUser, error)
 
 	GetFbExternalUserInternalByID(_ context.Context, ID dot.ID) (*FbExternalUserInternal, error)
 }
@@ -33,6 +36,10 @@ type CreateFbExternalUserArgs struct {
 	ExternalInfo *FbExternalUserInfo
 	Token        string
 	Status       status3.Status
+}
+
+type CreateFbExternalUsersArgs struct {
+	FbExternalUsers []*CreateFbExternalUserArgs
 }
 
 // +convert:create=FbExternalUserInternal
