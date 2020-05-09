@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +18,7 @@ import (
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
 )
@@ -90,6 +92,25 @@ func main() {
 
 	go func() {
 		synchronizer.Start()
+	}()
+
+	mux := http.NewServeMux()
+	l.RegisterHTTPHandler(mux)
+	metrics.RegisterHTTPHandler(mux)
+	healthservice.RegisterHTTPHandler(mux)
+
+	svr := &http.Server{
+		Addr:    cfg.HTTP.Address(),
+		Handler: mux,
+	}
+	ll.S.Infof("HTTP server listening at %v", cfg.HTTP.Address())
+	go func() {
+		defer ctxCancel()
+		err := svr.ListenAndServe()
+		if err != http.ErrServerClosed {
+			ll.Error("HTTP server", l.Error(err))
+		}
+		ll.Sync()
 	}()
 
 	healthservice.MarkReady()

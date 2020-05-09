@@ -29,6 +29,7 @@ build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
 build ./cmd/shipping-sync-service $BUILD_SYNC_SERVICE
 build ./cmd/etop-notifier         $BUILD_NOTIFIER
 build ./cmd/etop-etl              $BUILD_ETL
+build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
 
 mkdir -p bin/com/web/ecom
    cp -R     com/web/ecom/assets    bin/com/web/ecom/
