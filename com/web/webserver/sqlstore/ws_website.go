@@ -97,7 +97,7 @@ func (s *WsWebsiteStore) CreateDB(WsWebsite *model.WsWebsite) error {
 
 func (s *WsWebsiteStore) UpdateWsWebsiteDB(args *model.WsWebsite) error {
 	query := s.query().Where(s.preds)
-	return query.ShouldUpdate(args)
+	return query.UpdateAll().ShouldUpdate(args)
 }
 
 func (s *WsWebsiteStore) UpdateWsWebsiteAll(args *webserver.WsWebsite) error {

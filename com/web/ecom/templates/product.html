@@ -42,7 +42,7 @@
                   </button>
                   <div class="owl-carousel" id="product-image">
                     <a href="javascript:;" target="_blank">
-                      <img src="{{ $length := len .Product.Product.ImageURLs }}{{ if eq $length 0 }}/images/placeholder_medium.png{{else}}{{index .Product.Product.ImageURLs 0}}{{end}}" alt="">
+                      <img src="{{ $length := len .Product.Product.ImageURLs }}{{ if eq $length 0 }}/images/placeholder_medium.png{{else}}{{$img := index .Product.Product.ImageURLs 0}} {{if eq $img ""}}/images/placeholder_medium.png{{end}}{{end}}" alt="">
                     </a>
                   </div>
                 </div>

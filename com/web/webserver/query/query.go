@@ -165,14 +165,14 @@ func (w WebserverQueryService) addProductInfo(ctx context.Context, args *webserv
 		}
 		if args.OutstandingProduct != nil {
 			for _, productID := range args.OutstandingProduct.ProductIDs {
-				if mapProducts[productID].Appear {
+				if mapProducts[productID] != nil && mapProducts[productID].Appear {
 					args.OutstandingProduct.Products = append(args.OutstandingProduct.Products, mapProducts[productID])
 				}
 			}
 		}
 		if args.NewProduct != nil {
 			for _, productID := range args.NewProduct.ProductIDs {
-				if mapProducts[productID].Appear {
+				if mapProducts[productID] != nil && mapProducts[productID].Appear {
 					args.NewProduct.Products = append(args.NewProduct.Products, mapProducts[productID])
 				}
 			}
@@ -207,7 +207,7 @@ func (w WebserverQueryService) addProductsInfo(ctx context.Context, args []*webs
 			var productOutStanding []dot.ID
 			if wsWebsite.OutstandingProduct != nil {
 				for _, productID := range wsWebsite.OutstandingProduct.ProductIDs {
-					if mapProducts[productID].Appear {
+					if mapProducts[productID] != nil && mapProducts[productID].Appear {
 						productOutStanding = append(productOutStanding, mapProducts[productID].ID)
 						wsWebsite.OutstandingProduct.Products = append(wsWebsite.OutstandingProduct.Products, mapProducts[productID])
 					}
@@ -219,7 +219,7 @@ func (w WebserverQueryService) addProductsInfo(ctx context.Context, args []*webs
 			var productNew []dot.ID
 			if wsWebsite.NewProduct != nil {
 				for _, productID := range wsWebsite.NewProduct.ProductIDs {
-					if mapProducts[productID].Appear {
+					if mapProducts[productID] != nil && mapProducts[productID].Appear {
 						productNew = append(productNew, mapProducts[productID].ID)
 						wsWebsite.NewProduct.Products = append(wsWebsite.NewProduct.Products, mapProducts[productID])
 					}

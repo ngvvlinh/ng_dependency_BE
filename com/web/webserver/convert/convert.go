@@ -84,6 +84,9 @@ func updateWsWebsite(in *webserver.UpdateWsWebsiteArgs, out *webserver.WsWebsite
 	if in.OutstandingProduct == nil {
 		in.OutstandingProduct = out.OutstandingProduct
 	}
+	if in.NewProduct == nil {
+		in.NewProduct = out.NewProduct
+	}
 	if in.Banner == nil {
 		in.Banner = out.Banner
 	}
