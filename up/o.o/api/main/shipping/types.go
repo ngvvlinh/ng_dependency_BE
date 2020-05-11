@@ -112,6 +112,11 @@ type Fulfillment struct {
 
 	AddressTo   *ordertypes.Address
 	AddressFrom *ordertypes.Address
+
+	// EtopAdjustedShippingFeeMain: eTop điều chỉnh cước phí chính
+	EtopAdjustedShippingFeeMain int
+	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
+	EtopPriceRule bool
 }
 
 type FulfillmentSyncStates struct {

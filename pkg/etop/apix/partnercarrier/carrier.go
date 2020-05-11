@@ -13,6 +13,7 @@ var (
 	connectionQuery connectioning.QueryBus
 	connectionAggr  connectioning.CommandBus
 	shippingAggr    shipping.CommandBus
+	shippingQuery   shipping.QueryBus
 )
 
 const PrefixIdempPartnerCarrierAPI = "IdempPartnerCarrierAPI"
@@ -22,12 +23,14 @@ func Init(
 	rd redis.Store,
 	connQuery connectioning.QueryBus,
 	connAggr connectioning.CommandBus,
-	shippingAggregate shipping.CommandBus,
+	shippingQ shipping.QueryBus,
+	shippingA shipping.CommandBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerCarrierAPI, 0)
 	sd.Register(idempgroup.Shutdown)
 
 	connectionQuery = connQuery
 	connectionAggr = connAggr
-	shippingAggr = shippingAggregate
+	shippingQuery = shippingQ
+	shippingAggr = shippingA
 }

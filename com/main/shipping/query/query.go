@@ -29,16 +29,19 @@ func (q *QueryService) MessageBus() shipping.QueryBus {
 	return shipping.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetFulfillmentByIDOrShippingCode(ctx context.Context, id dot.ID, shippingCode string) (*shipping.Fulfillment, error) {
-	if id == 0 && shippingCode == "" {
+func (q *QueryService) GetFulfillmentByIDOrShippingCode(ctx context.Context, args *shipping.GetFulfillmentByIDOrShippingCodeArgs) (*shipping.Fulfillment, error) {
+	if args.ID == 0 && args.ShippingCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
 	query := q.store(ctx)
-	if id != 0 {
-		query = query.ID(id)
+	if args.ID != 0 {
+		query = query.ID(args.ID)
 	}
-	if shippingCode != "" {
-		query = query.ShippingCode(shippingCode)
+	if args.ShippingCode != "" {
+		query = query.ShippingCode(args.ShippingCode)
+	}
+	if len(args.ConnectionIDs) > 0 {
+		query = query.ConnectionIDs(args.ConnectionIDs...)
 	}
 	return query.GetFulfillment()
 }

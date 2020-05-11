@@ -206,6 +206,21 @@
     }
   },
   "definitions": {
+    "bjShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount"
+      ]
+    },
     "blStatus": {
       "type": "string",
       "enum": [
@@ -463,6 +478,17 @@
         }
       }
     },
+    "zkShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "integer"
+        },
+        "shipping_fee_type": {
+          "$ref": "#/definitions/bjShippingFeeType"
+        }
+      }
+    },
     "zkUpdateConnectionRequest": {
       "type": "object",
       "properties": {
@@ -502,11 +528,23 @@
     "zkUpdateFulfillmentRequest": {
       "type": "object",
       "properties": {
+        "note": {
+          "type": "string"
+        },
         "shipping_code": {
           "type": "string"
         },
+        "shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/zkShippingFeeLine"
+          }
+        },
         "shipping_state": {
           "$ref": "#/definitions/sfState"
+        },
+        "weight": {
+          "type": "integer"
         }
       }
     }

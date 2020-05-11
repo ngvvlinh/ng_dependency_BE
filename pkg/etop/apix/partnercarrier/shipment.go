@@ -52,13 +52,24 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể sử dụng api này. Vui lòng liên hệ %v để biết thêm chi tiết.", wl.X(ctx).CSEmail)
 	}
 
-	cmd := &shippingcore.UpdateFulfillmentShippingStateCommand{
+	ffmQuery := &shippingcore.GetFulfillmentByIDOrShippingCodeQuery{
 		ShippingCode:  r.ShippingCode,
-		ShippingState: r.ShippingState.Enum,
 		ConnectionIDs: connIDs,
+	}
+	if err := shippingQuery.Dispatch(ctx, ffmQuery); err != nil {
+		return nil, err
+	}
+	ffm := ffmQuery.Result
+
+	cmd := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
+		FulfillmentID:            ffm.ID,
+		ShippingState:            r.ShippingState.Enum,
+		ExternalShippingNote:     r.Note,
+		ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+		Weight:                   r.Weight.Int(),
 	}
 	if err := shippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return &pbcm.UpdatedResponse{Updated: 1}, nil
+	return &pbcm.UpdatedResponse{Updated: cmd.Result}, nil
 }

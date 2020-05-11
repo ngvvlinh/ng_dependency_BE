@@ -327,28 +327,16 @@ func CompareFulfillments(olds []*shipmodel.Fulfillment, ffm *shipmodel.Fulfillme
 }
 
 func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *shipping.UpdateFulfillmentShippingStateArgs) (updated int, _ error) {
+	if args.FulfillmentID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Fulfillment ID không được để trống.")
+	}
 	if args.ShippingState == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "shipping_state không được để trống.")
 	}
-	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID)
-	if args.FulfillmentID != 0 {
-		query = query.ID(args.FulfillmentID)
-	}
-	if args.ShippingCode != "" {
-		query = query.ShippingCode(args.ShippingCode)
-	}
-	if len(args.ConnectionIDs) > 0 {
-		query = query.ConnectionIDs(args.ConnectionIDs...)
-	}
+	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID).ID(args.FulfillmentID)
+
 	ffm, err := query.GetFulfillment()
 	if err != nil {
-		return 0, err
-	}
-	event := &shipping.FulfillmentUpdatingEvent{
-		EventMeta:     meta.NewEvent(),
-		FulfillmentID: ffm.ID,
-	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return 0, err
 	}
 	if ffm.MoneyTransactionID != 0 {
@@ -360,7 +348,6 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 		}
 	}
 
-	args.FulfillmentID = ffm.ID
 	if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args, ffm.TotalCODAmount); err != nil {
 		return 0, nil
 	}
@@ -491,4 +478,57 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 	})
 
 	return err
+}
+
+func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, args *shipping.UpdateFfmExternalShippingInfoArgs) (updated int, err error) {
+	if args.FulfillmentID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing Fulfillment ID")
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		// update state
+		if args.ShippingState != 0 {
+			updateState := &shipping.UpdateFulfillmentShippingStateArgs{
+				FulfillmentID: args.FulfillmentID,
+				ShippingState: args.ShippingState,
+			}
+			if _, err := a.UpdateFulfillmentShippingState(ctx, updateState); err != nil {
+				return err
+			}
+			updated = 1
+		}
+
+		// update shipping fee
+		if args.ProviderShippingFeeLines != nil {
+			updateFee := &shipping.UpdateFulfillmentShippingFeesArgs{
+				FulfillmentID:            args.FulfillmentID,
+				ProviderShippingFeeLines: args.ProviderShippingFeeLines,
+			}
+			if err := a.ffmStore(ctx).UpdateFulfillmentShippingFees(updateFee); err != nil {
+				return err
+			}
+			updated = 1
+		}
+
+		// update another info
+		update := &shipmodel.Fulfillment{}
+		count := 0
+		if args.ExternalShippingNote != "" {
+			update.ExternalShippingNote = args.ExternalShippingNote
+			count++
+		}
+		if args.Weight != 0 {
+			update.TotalWeight = args.Weight
+			update.GrossWeight = args.Weight
+			count++
+		}
+		if count > 0 {
+			if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
+				return err
+			}
+			updated = 1
+		}
+		return nil
+	})
+	return
 }

@@ -183,6 +183,8 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ShippingFeeShopTransferedAt = arg.ShippingFeeShopTransferedAt // simple assign
 	out.AddressTo = addressconvert.Convert_addressmodel_Address_orderingtypes_Address(arg.AddressTo, nil)
 	out.AddressFrom = addressconvert.Convert_addressmodel_Address_orderingtypes_Address(arg.AddressFrom, nil)
+	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
+	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
@@ -229,18 +231,18 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ShippingServiceFee = 0                        // zero value
 	out.ExternalShippingFee = arg.ExternalShippingFee // simple assign
 	out.ProviderShippingFeeLines = Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ProviderShippingFeeLines)
-	out.EtopDiscount = arg.EtopDiscount // simple assign
-	out.EtopFeeAdjustment = 0           // zero value
-	out.ShippingFeeMain = 0             // zero value
-	out.ShippingFeeReturn = 0           // zero value
-	out.ShippingFeeInsurance = 0        // zero value
-	out.ShippingFeeAdjustment = 0       // zero value
-	out.ShippingFeeCODS = 0             // zero value
-	out.ShippingFeeInfoChange = 0       // zero value
-	out.ShippingFeeOther = 0            // zero value
-	out.EtopAdjustedShippingFeeMain = 0 // zero value
-	out.EtopPriceRule = false           // zero value
-	out.VariantIDs = nil                // zero value
+	out.EtopDiscount = arg.EtopDiscount                               // simple assign
+	out.EtopFeeAdjustment = 0                                         // zero value
+	out.ShippingFeeMain = 0                                           // zero value
+	out.ShippingFeeReturn = 0                                         // zero value
+	out.ShippingFeeInsurance = 0                                      // zero value
+	out.ShippingFeeAdjustment = 0                                     // zero value
+	out.ShippingFeeCODS = 0                                           // zero value
+	out.ShippingFeeInfoChange = 0                                     // zero value
+	out.ShippingFeeOther = 0                                          // zero value
+	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
+	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
+	out.VariantIDs = nil                                              // zero value
 	out.Lines = orderingconvert.Convert_orderingtypes_ItemLines_orderingmodel_OrderLines(arg.Lines)
 	out.TypeFrom = "" // zero value
 	out.TypeTo = ""   // zero value

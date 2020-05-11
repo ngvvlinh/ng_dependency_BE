@@ -3,7 +3,10 @@ package partnercarrier
 import (
 	"time"
 
+	shippingcore "o.o/api/main/shipping"
+	"o.o/api/top/int/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -63,8 +66,39 @@ type GetConnectionsResponse struct {
 func (m *GetConnectionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentRequest struct {
-	ShippingCode  string                  `json:"shipping_code"`
-	ShippingState shippingstate.NullState `json:"shipping_state"`
+	ShippingCode     string                  `json:"shipping_code"`
+	ShippingState    shippingstate.NullState `json:"shipping_state"`
+	Note             string                  `json:"note"`
+	Weight           types.Int               `json:"weight"`
+	ShippingFeeLines []*ShippingFeeLine      `json:"shipping_fee_lines"`
 }
 
 func (m *UpdateFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShippingFeeLine struct {
+	Cost            types.Int                         `json:"cost"`
+	ShippingFeeType shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
+}
+
+func (m *ShippingFeeLine) String() string { return jsonx.MustMarshalToString(m) }
+
+func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *ShippingFeeLine) *shippingcore.ShippingFeeLine {
+	if in == nil {
+		return nil
+	}
+	return &shippingcore.ShippingFeeLine{
+		ShippingFeeType: in.ShippingFeeType,
+		Cost:            in.Cost.Int(),
+	}
+}
+
+func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*ShippingFeeLine) []*shippingcore.ShippingFeeLine {
+	if items == nil {
+		return nil
+	}
+	result := make([]*shippingcore.ShippingFeeLine, len(items))
+	for i, item := range items {
+		result[i] = Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item)
+	}
+	return result
+}

@@ -32,10 +32,12 @@ type Aggregate interface {
 	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
 
 	CancelFulfillment(context.Context, *CancelFulfillmentArgs) error
+
+	UpdateFulfillmentExternalShippingInfo(context.Context, *UpdateFfmExternalShippingInfoArgs) (updated int, _ error)
 }
 
 type QueryService interface {
-	GetFulfillmentByIDOrShippingCode(ctx context.Context, ID dot.ID, ShippingCode string) (*Fulfillment, error)
+	GetFulfillmentByIDOrShippingCode(context.Context, *GetFulfillmentByIDOrShippingCodeArgs) (*Fulfillment, error)
 
 	ListFulfillmentsByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*Fulfillment, error)
 
@@ -108,10 +110,8 @@ type GetFulfillmentByIDQueryArgs struct {
 type UpdateFulfillmentShippingStateArgs struct {
 	PartnerID                dot.ID
 	FulfillmentID            dot.ID
-	ShippingCode             string
 	ShippingState            shippingstate.State
 	ActualCompensationAmount dot.NullInt
-	ConnectionIDs            []dot.ID
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {
@@ -144,6 +144,20 @@ type UpdateFulfillmentsCODTransferedAtArgs struct {
 	FulfillmentIDs     []dot.ID
 	MoneyTxShippingIDs []dot.ID
 	CODTransferedAt    time.Time
+}
+
+type UpdateFfmExternalShippingInfoArgs struct {
+	FulfillmentID            dot.ID
+	ShippingState            shippingstate.State
+	ExternalShippingNote     string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	Weight                   int
+}
+
+type GetFulfillmentByIDOrShippingCodeArgs struct {
+	ID            dot.ID
+	ShippingCode  string
+	ConnectionIDs []dot.ID
 }
 
 type ListFulfillmentForMoneyTxArgs struct {

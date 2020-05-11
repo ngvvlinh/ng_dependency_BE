@@ -604,6 +604,7 @@ func main() {
 		redisStore,
 		connectionQuery,
 		connectionAggregate,
+		shippingQuery,
 		shippingAggr,
 	)
 	whitelabelapix.Init(db, &catalogAggr)

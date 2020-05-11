@@ -82,6 +82,21 @@ func (h AggregateHandler) HandleRemoveFulfillmentsMoneyTxID(ctx context.Context,
 	return err
 }
 
+type UpdateFulfillmentExternalShippingInfoCommand struct {
+	FulfillmentID            dot.ID
+	ShippingState            shipping.State
+	ExternalShippingNote     string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	Weight                   int
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentExternalShippingInfo(ctx context.Context, msg *UpdateFulfillmentExternalShippingInfoCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentExternalShippingInfo(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateFulfillmentShippingFeesCommand struct {
 	FulfillmentID            dot.ID
 	ShippingCode             string
@@ -99,10 +114,8 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingFees(ctx context.Contex
 type UpdateFulfillmentShippingStateCommand struct {
 	PartnerID                dot.ID
 	FulfillmentID            dot.ID
-	ShippingCode             string
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
-	ConnectionIDs            []dot.ID
 
 	Result int `json:"-"`
 }
@@ -153,8 +166,9 @@ func (h AggregateHandler) HandleUpdateFulfillmentsStatus(ctx context.Context, ms
 }
 
 type GetFulfillmentByIDOrShippingCodeQuery struct {
-	ID           dot.ID
-	ShippingCode string
+	ID            dot.ID
+	ShippingCode  string
+	ConnectionIDs []dot.ID
 
 	Result *Fulfillment `json:"-"`
 }
@@ -250,14 +264,15 @@ func (h QueryServiceHandler) HandleListFulfillmentsForMoneyTx(ctx context.Contex
 
 // implement interfaces
 
-func (q *CancelFulfillmentCommand) command()                 {}
-func (q *CreateFulfillmentsCommand) command()                {}
-func (q *RemoveFulfillmentsMoneyTxIDCommand) command()       {}
-func (q *UpdateFulfillmentShippingFeesCommand) command()     {}
-func (q *UpdateFulfillmentShippingStateCommand) command()    {}
-func (q *UpdateFulfillmentsCODTransferedAtCommand) command() {}
-func (q *UpdateFulfillmentsMoneyTxIDCommand) command()       {}
-func (q *UpdateFulfillmentsStatusCommand) command()          {}
+func (q *CancelFulfillmentCommand) command()                     {}
+func (q *CreateFulfillmentsCommand) command()                    {}
+func (q *RemoveFulfillmentsMoneyTxIDCommand) command()           {}
+func (q *UpdateFulfillmentExternalShippingInfoCommand) command() {}
+func (q *UpdateFulfillmentShippingFeesCommand) command()         {}
+func (q *UpdateFulfillmentShippingStateCommand) command()        {}
+func (q *UpdateFulfillmentsCODTransferedAtCommand) command()     {}
+func (q *UpdateFulfillmentsMoneyTxIDCommand) command()           {}
+func (q *UpdateFulfillmentsStatusCommand) command()              {}
 
 func (q *GetFulfillmentByIDOrShippingCodeQuery) query()            {}
 func (q *GetFulfillmentExtendedQuery) query()                      {}
@@ -337,6 +352,25 @@ func (q *RemoveFulfillmentsMoneyTxIDCommand) SetRemoveFulfillmentsMoneyTxIDArgs(
 	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
 }
 
+func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFfmExternalShippingInfoArgs) {
+	return ctx,
+		&UpdateFfmExternalShippingInfoArgs{
+			FulfillmentID:            q.FulfillmentID,
+			ShippingState:            q.ShippingState,
+			ExternalShippingNote:     q.ExternalShippingNote,
+			ProviderShippingFeeLines: q.ProviderShippingFeeLines,
+			Weight:                   q.Weight,
+		}
+}
+
+func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShippingInfoArgs(args *UpdateFfmExternalShippingInfoArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingState = args.ShippingState
+	q.ExternalShippingNote = args.ExternalShippingNote
+	q.ProviderShippingFeeLines = args.ProviderShippingFeeLines
+	q.Weight = args.Weight
+}
+
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingFeesArgs{
@@ -359,20 +393,16 @@ func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ 
 		&UpdateFulfillmentShippingStateArgs{
 			PartnerID:                q.PartnerID,
 			FulfillmentID:            q.FulfillmentID,
-			ShippingCode:             q.ShippingCode,
 			ShippingState:            q.ShippingState,
 			ActualCompensationAmount: q.ActualCompensationAmount,
-			ConnectionIDs:            q.ConnectionIDs,
 		}
 }
 
 func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStateArgs(args *UpdateFulfillmentShippingStateArgs) {
 	q.PartnerID = args.PartnerID
 	q.FulfillmentID = args.FulfillmentID
-	q.ShippingCode = args.ShippingCode
 	q.ShippingState = args.ShippingState
 	q.ActualCompensationAmount = args.ActualCompensationAmount
-	q.ConnectionIDs = args.ConnectionIDs
 }
 
 func (q *UpdateFulfillmentsCODTransferedAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsCODTransferedAtArgs) {
@@ -422,10 +452,19 @@ func (q *UpdateFulfillmentsStatusCommand) SetUpdateFulfillmentsStatusArgs(args *
 	q.SyncStatus = args.SyncStatus
 }
 
-func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShippingCode string) {
+func (q *GetFulfillmentByIDOrShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetFulfillmentByIDOrShippingCodeArgs) {
 	return ctx,
-		q.ID,
-		q.ShippingCode
+		&GetFulfillmentByIDOrShippingCodeArgs{
+			ID:            q.ID,
+			ShippingCode:  q.ShippingCode,
+			ConnectionIDs: q.ConnectionIDs,
+		}
+}
+
+func (q *GetFulfillmentByIDOrShippingCodeQuery) SetGetFulfillmentByIDOrShippingCodeArgs(args *GetFulfillmentByIDOrShippingCodeArgs) {
+	q.ID = args.ID
+	q.ShippingCode = args.ShippingCode
+	q.ConnectionIDs = args.ConnectionIDs
 }
 
 func (q *GetFulfillmentExtendedQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShippingCode string) {
@@ -500,6 +539,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
+	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
 	b.AddHandler(h.HandleUpdateFulfillmentsCODTransferedAt)

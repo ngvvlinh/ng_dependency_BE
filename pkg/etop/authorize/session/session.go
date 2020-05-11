@@ -155,6 +155,8 @@ func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenS
 	if account != nil {
 		s.isOwner = account.GetAccount().OwnerID == claim.UserID
 	}
+
+	ctx = bus.NewRootContext(ctx)
 	return ctx, nil
 }
 

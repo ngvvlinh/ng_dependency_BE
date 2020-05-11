@@ -284,11 +284,19 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 func (s *FulfillmentStore) UpdateFulfillmentShippingFees(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
 	var lines []*shippingsharemodel.ShippingFeeLine
 	var providerShippingFeeLines []*shippingsharemodel.ShippingFeeLine
-	if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
-		return err
-	}
 	if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
 		return err
+	}
+	if args.ShippingFeeLines != nil {
+		if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
+			return err
+		}
+	} else {
+		ffm, err := s.ID(args.FulfillmentID).GetFulfillment()
+		if err != nil {
+			return err
+		}
+		lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 	}
 
 	update := &model.Fulfillment{
