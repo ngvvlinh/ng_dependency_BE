@@ -432,14 +432,19 @@ func clearRedisUpdateUser(userID dot.ID, method authentication_method.Authentica
 }
 
 func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *UpdateUserEmailEndpoint, user *identitymodel.User) (*UpdateUserEmailEndpoint, error) {
+	normalizeEmail, _ := validate.NormalizeEmail(r.Email)
+	r.Email = normalizeEmail.String()
 	if r.Email == user.Email {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email mới đang trùng với email hiện tại.")
 	}
-	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
+	userByEmailQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: r.Email,
 	}
-	err := bus.Dispatch(ctx, userByPhoneQuery)
-	if err == nil || cm.ErrorCode(err) != cm.NotFound {
+	err := bus.Dispatch(ctx, userByEmailQuery)
+	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return nil, err
+	}
+	if err == nil || userByEmailQuery.Result.ID != 0 {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email đã tồn tại vui lòng kiểm tra lại.")
 	}
 	codeSecond, count, err := getRedisCode(r.Context.User.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
