@@ -3890,14 +3890,6 @@ var Districts = []*types.District{
 		HaravanCode:  "BV693",
 		UrbanType:    1,
 	}, {
-		Code:         "754",
-		ProvinceCode: "77",
-		Name:         "Huyện Tân Thành",
-		GhnID:        1701,
-		VTPostID:     0,
-		HaravanCode:  "BV551",
-		UrbanType:    1,
-	}, {
 		Code:         "760",
 		ProvinceCode: "79",
 		Name:         "Quận 1",
@@ -5739,13 +5731,12 @@ var Districts = []*types.District{
 		HaravanCode:  "DA366",
 		Alias:        []string{"Huyện Hoàng Sa"},
 	}, {
-		Code:         "999",
+		Code:         "754",
 		ProvinceCode: "77",
 		Name:         "Thị xã Phú Mỹ",
-		GhnID:        1688,
+		GhnID:        1701,
 		VTPostID:     596,
 		HaravanCode:  "BV691",
-		Alias:        []string{"Thị trấn Phú Mỹ"},
 	}, {
 		Code:         "755",
 		ProvinceCode: "77",
