@@ -62,10 +62,6 @@ func (d VTPostDriver) CreateFulfillment(
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
 	service *etopmodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	if ffm.AddressReturn != nil {
-		// vtpost does not support address_return
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "VTPost không hỗ trợ địa chỉ trả hàng. Vui lòng để trống thông tin này.")
-	}
 	if ffm.AddressFrom.WardCode == "" || ffm.AddressTo.WardCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "VTPost yêu cầu thông tin phường xã hợp lệ để giao hàng")
 	}

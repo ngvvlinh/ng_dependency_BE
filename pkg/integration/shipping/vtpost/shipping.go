@@ -103,11 +103,6 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 }
 
 func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
-	if ffm.AddressReturn != nil {
-		// vtpost does not support address_return
-		return nil, cm.Error(cm.ExternalServiceError, "VTPost không hỗ trợ địa chỉ trả hàng. Vui lòng để trống thông tin này.", nil)
-	}
-
 	note := shippingprovider.GetShippingProviderNote(order, ffm)
 	weight := order.TotalWeight
 	if weight == 0 {
